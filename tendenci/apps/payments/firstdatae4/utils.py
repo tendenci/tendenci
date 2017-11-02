@@ -20,7 +20,6 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
 
     return hmac.new(settings.MERCHANT_TXN_KEY, msg).hexdigest()
 
-
 def prepare_firstdatae4_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
@@ -63,7 +62,7 @@ def prepare_firstdatae4_form(request, payment):
     if settings.FIRSTDATA_USE_RELAY_RESPONSE:
         params.update({'x_relay_response':'TRUE',
                        'x_relay_url':payment.response_page,})
-    
+
     form = PaymentForm(initial=params)
 
     return form
@@ -77,37 +76,39 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
     except:
         x_invoice_num = 0
 
-    #payment = get_object_or_404(Payment, pk=x_invoice_num)
-    [payment] = Payment.objects.filter(pk=x_invoice_num)[:1] or [None]
-    if not payment:
-        return None
+    if True:
+        #payment = get_object_or_404(Payment, pk=x_invoice_num)
+        [payment] = Payment.objects.filter(pk=x_invoice_num)[:1] or [None]
+        if not payment:
+            return None
 
-    # authenticate with md5 hash to make sure the response is securely received from firstdata.
-    md5_hash = response_d.get('x_MD5_Hash', '')
-    # calculate our md5_hash
-    response_key = settings.FIRSTDATA_RESPONSE_KEY
-    api_login_id = settings.MERCHANT_LOGIN
-    t_id = response_d.get('x_trans_id', '')
-    amount = response_d.get('x_amount', 0)
+        # authenticate with md5 hash to make sure the response is securely
+        # received from firstdata.
+        md5_hash = response_d.get('x_MD5_Hash', '')
+        # calculate our md5_hash
+        response_key = settings.FIRSTDATA_RESPONSE_KEY
+        api_login_id = settings.MERCHANT_LOGIN
+        t_id = response_d.get('x_trans_id', '')
+        amount = response_d.get('x_amount', 0)
 
-    s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
-    my_md5_hash = hashlib.md5(s).hexdigest()
+        s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
+        my_md5_hash = hashlib.md5(s).hexdigest()
 
-    if settings.FIRSTDATA_USE_RELAY_RESPONSE:
-        if my_md5_hash.lower() <> md5_hash.lower():
-            raise Http404
+        if settings.FIRSTDATA_USE_RELAY_RESPONSE:
+            if my_md5_hash.lower() <> md5_hash.lower():
+                raise Http404
 
-    if payment.invoice.balance > 0:     # if balance==0, it means already processed
-        payment_update_firstdatae4(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
+        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+            payment_update_firstdatae4(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
 
-        # log an event
-        log_payment(request, payment)
+            # log an event
+            log_payment(request, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
-    return payment
+        return payment
 
 def payment_update_firstdatae4(request, response_d, payment, **kwargs):
     from decimal import Decimal
@@ -143,7 +144,6 @@ def payment_update_firstdatae4(request, response_d, payment, **kwargs):
     payment.ship_to_zip = response_d.get('x_ship_to_zip', '')
     payment.ship_to_country = response_d.get('x_ship_to_country', '')
 
-
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -152,7 +152,3 @@ def payment_update_firstdatae4(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

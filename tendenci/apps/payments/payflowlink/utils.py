@@ -13,7 +13,6 @@ from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from django.utils.encoding import smart_str
 #from tendenci.apps.site_settings.utils import get_setting
 
-
 def prepare_payflowlink_form(request, payment):
     amount = "%.2f" % payment.amount
     #payment.description = urllib.quote(smart_str(payment.description))
@@ -57,21 +56,22 @@ def payflowlink_thankyou_processing(request, response_d, **kwargs):
         paymentid = int(paymentid)
     except:
         paymentid = 0
-    payment = get_object_or_404(Payment, pk=paymentid)
-    processed = False
+    if True:
+        payment = get_object_or_404(Payment, pk=paymentid)
+        processed = False
 
-    if payment.invoice.balance > 0:     # if balance==0, it means already processed
-        payment_update_payflowlink(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
-        processed = True
+        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+            payment_update_payflowlink(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
+            processed = True
 
-        # log an event
-        log_payment(request, payment)
+            # log an event
+            log_payment(request, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
-    return payment, processed
+        return payment, processed
 
 def payment_update_payflowlink(request, response_d, payment, **kwargs):
     name = response_d.get('name', '')
@@ -121,7 +121,3 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
         if not payment.status_detail:
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

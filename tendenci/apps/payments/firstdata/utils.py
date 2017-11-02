@@ -82,20 +82,20 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
         paymentid = int(paymentid)
     except:
         paymentid = 0
-    payment = get_object_or_404(Payment, pk=paymentid)
+    if True:
+        payment = get_object_or_404(Payment, pk=paymentid)
 
-    if payment.invoice.balance > 0:     # if balance==0, it means already processed
-        payment_update_firstdata(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
+        if payment.invoice.balance > 0:     # if balance==0, it means already processed
+            payment_update_firstdata(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
 
-        # log an event
-        log_payment(request, payment)
+            # log an event
+            log_payment(request, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
-
-    return payment
+        return payment
 
 def payment_update_firstdata(request, response_d, payment, **kwargs):
     bname = response_d.get('bname', '')
@@ -136,7 +136,6 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         payment.response_code = 0
         payment.response_reason_code = 0
         payment.response_reason_text = response_d.get('failReason', '')
-
 
     if payment.is_approved:
         payment.mark_as_paid()

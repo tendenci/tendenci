@@ -16,7 +16,6 @@ from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.site_settings.utils import get_setting
 
-
 def prepare_paypal_form(request, payment):
     amount = "%.2f" % payment.amount
     image_url = get_setting('site', 'global', 'merchantlogo')
@@ -51,7 +50,6 @@ def prepare_paypal_form(request, payment):
 
     return form
 
-
 def parse_pdt_validation(data):
     result_params = {}
     success = False
@@ -65,7 +63,6 @@ def parse_pdt_validation(data):
             result_params.update(cgi.parse_qsl(item))
 
     return success, result_params
-
 
 def validate_with_paypal(request, validate_type):
     """
@@ -114,9 +111,8 @@ def validate_with_paypal(request, validate_type):
     else:
         return data.strip('\n').lower() == 'verified', None
 
-
 def verify_no_fraud(response_d, payment):
-    # Has duplicate txn_id?
+    # Duplicate txn_id?
     txn_id = response_d.get('txn_id')
     if not txn_id:
         return False
@@ -165,7 +161,7 @@ def verify_no_fraud(response_d, payment):
                 payment.save()
         return False
 
-    # Does receiver_email matches?
+    # Does receiver_email match?
     receiver_email = response_d.get('receiver_email')
     if receiver_email != settings.PAYPAL_MERCHANT_LOGIN:
         return False
@@ -180,7 +176,6 @@ def verify_no_fraud(response_d, payment):
         return False
 
     return True
-
 
 def paypal_thankyou_processing(request, response_d, **kwargs):
 
@@ -206,7 +201,9 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     payment = get_object_or_404(Payment, pk=paymentid)
     processed = False
 
-    # To prevent the fraud, verify the following:
+    # if balance==0, it means already processed
+    if payment.invoice.balance > 0:
+    # To prevent fraud, verify the following before updating the database:
     # 1) txn_id is not a duplicate to prevent someone from reusing an old,
     #    completed transaction.
     # 2) receiver_email is an email address registered in your PayPal
@@ -214,10 +211,6 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     #    account.
     # 3) Other transaction details, such as the item number and price,
     #    to confirm that the price has not been changed.
-
-    # if balance==0, it means already processed
-    if payment.invoice.balance > 0:
-        # verify before updating database
         is_valid = verify_no_fraud(response_d, payment)
 
         if is_valid:
@@ -237,7 +230,6 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
             send_payment_notice(request, payment)
 
     return payment, processed
-
 
 def payment_update_paypal(request, response_d, payment, **kwargs):
     payment.first_name = response_d.get('first_name', '')
@@ -282,4 +274,3 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
         if not payment.status_detail:
             payment.status_detail = 'not approved'
         payment.save()
-
