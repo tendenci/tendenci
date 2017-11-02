@@ -102,8 +102,9 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         GET_KEYS = request.GET.keys()
 
         if 'approve' in GET_KEYS:
+            is_renewal = membership.is_renewal()
             membership.approve(request_user=request.user)
-            membership.send_email(request, 'approve')
+            membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
             messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in GET_KEYS:
@@ -1225,8 +1226,9 @@ def membership_default_add(request, slug='', membership_id=None,
                         )
                         memberships_join_notified.append(membership)
                 else:
+                    is_renewal = membership.is_renewal()
                     membership.approve(request_user=customer)
-                    membership.send_email(request, 'approve')
+                    membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
                 membership.application_complete_dt = datetime.now()

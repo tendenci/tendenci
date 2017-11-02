@@ -120,7 +120,7 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
 
-            if notice.notice_type == 'disapprove':
+            if notice.notice_type == 'disapprove' or notice.notice_type == 'disapprove_renewal':
                 status_detail_list = ['disapproved']
             else:
                 status_detail_list = ['active', 'expired']
@@ -140,13 +140,13 @@ class Command(BaseCommand):
                                     renew_dt__month=start_dt.month,
                                     renew_dt__day=start_dt.day,
                                     renewal=True)
-            elif notice.notice_type == 'approve':
+            elif notice.notice_type == 'approve' or notice.notice_type == 'approve_renewal':
                 memberships = memberships.filter(
                                     application_approved_denied_dt__year=start_dt.year,
                                     application_approved_denied_dt__month=start_dt.month,
                                     application_approved_denied_dt__day=start_dt.day,
                                     application_approved=True)
-            elif notice.notice_type == 'disapprove':
+            elif notice.notice_type == 'disapprove' or notice.notice_type == 'disapprove_renewal':
                 memberships = memberships.filter(
                                     application_approved_denied_dt__year=start_dt.year,
                                     application_approved_denied_dt__month=start_dt.month,

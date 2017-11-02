@@ -1852,12 +1852,14 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
+        is_renewal = self.is_renewal()
+
         open_renewal = (
-            self.is_renewal(),
+            is_renewal,
             not self.membership_type.renewal_require_approval)
 
         open_join = (
-            not self.is_renewal(),
+            not is_renewal,
             not self.membership_type.require_approval)
 
         can_approve = all(open_renewal) or all(open_join)
@@ -1873,7 +1875,7 @@ class MembershipDefault(TendenciBaseModel):
             Notice.send_notice(
                 request=request,
                 emails=self.user.email,
-                notice_type='approve',
+                notice_type=('approve_renewal' if is_renewal else 'approve'),
                 membership=self,
                 membership_type=self.membership_type,
             )
@@ -2024,8 +2026,10 @@ NOTICE_TYPES = (
     ('join', _('Join Date')),
     ('renewal', _('Renewal Date')),
     ('expiration', _('Expiration Date')),
-    ('approve', _('Approval Date')),
-    ('disapprove', _('Disapproval Date')),
+    ('approve', _('Join Approval Date')),
+    ('disapprove', _('Join Disapproval Date')),
+    ('approve_renewal', _('Renewal Approval Date')),
+    ('disapprove_renewal', _('Renewal Disapproval Date')),
 )
 
 
@@ -2252,9 +2256,9 @@ class Notice(models.Model):
             template_type = 'joined'
         elif notice_type == 'renewal':
             template_type = 'renewed'
-        elif notice_type == 'approve':
+        elif notice_type == 'approve' or notice_type == 'approve_renewal':
             template_type = 'approved'
-        elif notice_type == 'disapprove':
+        elif notice_type == 'disapprove' or notice_type == 'disapprove_renewal':
             template_type = 'disapproved'
         else:
             return False
