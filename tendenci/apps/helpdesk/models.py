@@ -435,7 +435,7 @@ class Ticket(models.Model):
 
     def _get_priority_css_class(self):
         """
-        Return the boostrap class corresponding to the priority.
+        Return the bootstrap class corresponding to the priority.
         """
         if self.priority == 2:
             return "warning"

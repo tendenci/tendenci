@@ -61,8 +61,8 @@ urlpatterns = patterns(
 
     #delete
     url(r'^%s/speaker/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_speaker', name='event.delete_speaker'),
-    url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing', name='event.delete_group_pricing'),
-    url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing', name='event.delete_special_pricing'),
+    #url(r'^%s/group_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_group_pricing', name='event.delete_group_pricing'),
+    #url(r'^%s/special_pricing/(?P<id>\d+)/delete/$' % urlpath, 'views.delete_special_pricing', name='event.delete_special_pricing'),
 
     # registration confirmation
     url(r'^%s/(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$' % urlpath,
@@ -73,6 +73,7 @@ urlpatterns = patterns(
     # month-view(s) / day-view
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.day_view', name='event.day'),
     url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, 'views.week_view', name='event.week'),
+    url(r'^%s/week/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.week_view', name='event.week'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/$' % urlpath, 'views.month_view', name='event.month'),
     url(r'^%s/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$' % urlpath, 'views.month_view', name='event.month'),
 

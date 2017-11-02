@@ -38,6 +38,7 @@ class NewsletterPermissionMixin(object):
     def get_newsletter_permission(self):
         if not self.newsletter_permission:
             raise ImproperlyConfigured('Permission is not properly configured on the view.')
+        return self.newsletter_permission
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_obj()

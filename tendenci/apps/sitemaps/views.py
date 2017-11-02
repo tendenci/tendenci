@@ -3,7 +3,7 @@ Created on 28-02-2011
 
 @author: hpolloni
 '''
-import subprocess, os
+import subprocess
 
 from django.contrib.sites.models import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from django.core.cache import cache
+from tendenci.libs.utils import python_executable
 from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -72,7 +73,7 @@ def sitemap(request, sitemaps, section=None,
             site_urls = cache.get(sitemap_cache_key)
             if not isinstance(site_urls, list):
                 if not cached:
-                    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'sitemap_cache'])
+                    subprocess.Popen([python_executable(), 'manage.py', 'sitemap_cache'])
                     cached = True
                 site_urls = site.get_urls(page=page, site=req_site,
                                           protocol=req_protocol)

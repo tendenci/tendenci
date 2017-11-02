@@ -22,6 +22,7 @@ from django.http import Http404
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import superuser_required
@@ -533,7 +534,7 @@ def group_members_export(request, group_slug, export_target='all'):
                                             identifier)
     default_storage.save(temp_export_path, ContentFile(''))
     # start the process
-    subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+    subprocess.Popen([python_executable(), "manage.py",
                   "group_members_export",
                   '--group_id=%d' % group.id,
                   '--export_target=%s' % export_target,
@@ -1035,7 +1036,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'import_groups', str(import_id)])
+    subprocess.Popen([python_executable(), 'manage.py', 'import_groups', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,

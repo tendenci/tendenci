@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.base.models import UpdateTracker
@@ -441,7 +442,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        process = SubProcessManager.set_process([os.environ.get('_', 'python'), "manage.py", "install_theme", "--all"])
+        process = SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
         return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404

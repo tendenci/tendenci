@@ -3,18 +3,14 @@
 {% load static from staticfiles %}
 {% load invoice_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_white_width.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_INVOICES_LABEL trans "Invoices" %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/>{% firstof MODULE_INVOICES_LABEL trans "Invoices" %}
-    </a>
-
     {% if invoice %}
         {% invoice_current_app request.user invoice %}
     {% else %}
         {% invoice_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}
-

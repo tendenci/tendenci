@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
-import subprocess, os
+import subprocess
 
 from django.views.generic import DetailView, ListView, CreateView
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.reports.models import Report, Run
 from tendenci.apps.reports.forms import ReportForm, RunForm
@@ -87,7 +88,7 @@ class RunDetailView(DetailView):
         #invalidate('reports_run')
         obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         if obj.status == "unstarted":
-            subprocess.Popen([os.environ.get('_', 'python'), "manage.py", "process_report_run", str(obj.pk)])
+            subprocess.Popen([python_executable(), "manage.py", "process_report_run", str(obj.pk)])
         return obj
 
 

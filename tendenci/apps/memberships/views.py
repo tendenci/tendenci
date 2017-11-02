@@ -5,7 +5,7 @@ from hashlib import md5
 from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
-import subprocess, sys
+import subprocess
 from sets import Set
 import calendar
 from collections import OrderedDict
@@ -32,6 +32,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geraldo.generators import PDFGenerator
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
@@ -101,8 +102,9 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         GET_KEYS = request.GET.keys()
 
         if 'approve' in GET_KEYS:
+            is_renewal = membership.is_renewal()
             membership.approve(request_user=request.user)
-            membership.send_email(request, 'approve')
+            membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
             messages.add_message(request, messages.SUCCESS, _('Successfully Approved'))
 
         if 'disapprove' in GET_KEYS:
@@ -122,7 +124,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         app = get_membership_app(membership)
         # this membership is not associated with any app
         # figure out which app it belongs to
-        
+
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
@@ -430,7 +432,7 @@ def membership_default_import_preview(request, mimport_id,
                                      args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -454,7 +456,7 @@ def membership_default_import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_membership_defaults",
                           str(mimport.pk),
                           str(request.user.pk)])
@@ -633,7 +635,7 @@ def membership_default_export(
             default_storage.save(temp_file_path, ContentFile(''))
 
             # start the process
-            subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+            subprocess.Popen([python_executable(), "manage.py",
                           "membership_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_type=%s' % export_type,
@@ -927,7 +929,7 @@ def membership_default_add(request, slug='', membership_id=None,
                        'corp_membership_renew_link': reverse('corpmembership.renew', args=[corp_membership.id]),
                        'corp_membership': corp_membership,
                        'is_rep': is_corp_rep,
-                       'is_admin': request.user.profile.is_superuser}) 
+                       'is_admin': request.user.profile.is_superuser})
 
         # check if this corp. has exceeded the maximum number of members allowed if applicable
         apply_cap, membership_cap, allow_above_cap, above_cap_price = corp_membership.get_cap_info()
@@ -939,7 +941,7 @@ def membership_default_add(request, slug='', membership_id=None,
                     email_sent = corp_membership.email_reps_cap_reached()
                 else:
                     email_sent = False
-                
+
                 if not allow_above_cap:
                     reps = corp_membership.corp_profile.reps.all()
                     # give them the option to join as an individual membership
@@ -951,7 +953,7 @@ def membership_default_add(request, slug='', membership_id=None,
                                                      )[:1] or [None]
                         if app_for_individuals:
                             join_as_indiv_url = reverse('membership_default.add', args=[app_for_individuals.slug])
-                    
+
                     return render(request, 'memberships/applications/corp_cap_reached.html',
                                   {'app': app,
                                    'join_as_indiv_url': join_as_indiv_url,
@@ -987,7 +989,7 @@ def membership_default_add(request, slug='', membership_id=None,
         join_under_corporate and is_corp_rep,
         username == request.user.username,
     )
-       
+
     if is_renewal:
         user = membership.user
     else:
@@ -1011,69 +1013,23 @@ def membership_default_add(request, slug='', membership_id=None,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
-    user_initial = {}
-    if user:
-        user_initial = {
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-        }
-
     user_form = UserForm(
         app_fields,
         request.POST or None,
         request=request,
         is_corp_rep=is_corp_rep,
-        initial=user_initial)
-    
+        instance=user)
+
     if not (request.user.profile.is_superuser or is_corp_rep) and user and 'username' in user_form.fields:
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
 
-    profile_initial = {}
-    if user:
-        profile_initial = {
-            'salutation': user.profile.salutation,
-            'phone': user.profile.phone,
-            'phone2': user.profile.phone2,
-            'address': user.profile.address,
-            'address2': user.profile.address2,
-            'city': user.profile.city,
-            'state': user.profile.state,
-            'zipcode': user.profile.zipcode,
-            'county': user.profile.county,
-            'country': user.profile.country,
-            'address_type': user.profile.address_type,
-            'url': user.profile.url,
-            'display_name': user.profile.display_name,
-            'mailing_name': user.profile.mailing_name,
-            'company': user.profile.company,
-            'position_title': user.profile.position_title,
-            'position_assignment': user.profile.position_assignment,
-            'fax': user.profile.fax,
-            'work_phone': user.profile.work_phone,
-            'home_phone': user.profile.home_phone,
-            'mobile_phone': user.profile.mobile_phone,
-            'email2': user.profile.email2,
-            'dob': user.profile.dob,
-            'spouse': user.profile.spouse,
-            'department': user.profile.department,
-            # alternate address fields goes here
-            'address_2': user.profile.address_2,
-            'address2_2': user.profile.address2_2,
-            'city_2': user.profile.city_2,
-            'state_2': user.profile.state_2,
-            'zipcode_2': user.profile.zipcode_2,
-            'county_2': user.profile.county_2,
-            'country_2': user.profile.country_2,
-        }
-
+    profile = user.profile if user else None
     profile_form = ProfileForm(
         app_fields,
         request.POST or None,
-        initial=profile_initial
+        instance=profile
     )
 
     params = {
@@ -1095,7 +1051,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if user and (not is_renewal):
         [membership] = user.membershipdefault_set.filter(
             membership_type=membership_type_id).order_by('-pk')[:1] or [None]
-    
+
     demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None, membership=membership)
 
     membership_initial = {}
@@ -1103,6 +1059,7 @@ def membership_default_add(request, slug='', membership_id=None,
         membership_initial = {
             'membership_type': membership.membership_type,
             'payment_method': membership.payment_method,
+            'groups': [group.id for group in membership.groups.all()],
             'certifications': membership.certifications,
             'work_experience': membership.work_experience,
             'referral_source': membership.referral_source,
@@ -1137,7 +1094,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
-    if (not app.discount_eligible or
+    if 'discount_code' in membership_form.fields and (not app.discount_eligible or
         not Discount.has_valid_discount(model=MembershipSet._meta.model_name)):
         del membership_form.fields['discount_code']
 
@@ -1234,7 +1191,7 @@ def membership_default_add(request, slug='', membership_id=None,
                         invoice.balance += donation_amount
                         invoice.save()
 
-                    
+
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False
@@ -1269,8 +1226,9 @@ def membership_default_add(request, slug='', membership_id=None,
                         )
                         memberships_join_notified.append(membership)
                 else:
+                    is_renewal = membership.is_renewal()
                     membership.approve(request_user=customer)
-                    membership.send_email(request, 'approve')
+                    membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
 
                 # application complete
                 membership.application_complete_dt = datetime.now()
@@ -1319,7 +1277,7 @@ def membership_default_add(request, slug='', membership_id=None,
                 recipients = get_notice_recipients(
                     'module', 'memberships',
                     'membershiprecipients')
-     
+
                 extra_context = {
                     'membership': membership,
                     'app': app,
@@ -1638,7 +1596,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
             raise Http403
 
     msg_deleted = ''
-    
+
     if request.method == "POST":
         # reassign owner to current user
         membership.owner = request.user
@@ -1647,7 +1605,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
         msg_deleted = '%s has been deleted.' % membership.__unicode__()
         membership.delete(log=True)
         messages.add_message(request, messages.SUCCESS, _(msg_deleted))
-        
+
         next_page = request.GET.get('next', '')
         if next_page:
             return HttpResponseRedirect(next_page)
@@ -1657,8 +1615,8 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
             'membership': membership,
             'msg_deleted': msg_deleted
         }, context_instance=RequestContext(request))
-    
-    
+
+
 @login_required
 def expire(request, id, template_name="memberships/applications/expire.html"):
     membership = get_object_or_404(MembershipDefault, pk=id)
@@ -1673,15 +1631,15 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
             raise Http403
 
     msg_expired = ''
-    
+
     if request.method == "POST":
         membership.expire(request_user=request.user)
         msg_expired = '%s has been expired.' % membership.__unicode__()
         messages.add_message(request, messages.SUCCESS, _(msg_expired))
-        
+
         # log an event
         EventLog.objects.log(instance=membership, description=msg_expired)
-        
+
         next_page = request.GET.get('next', '')
         if next_page:
             return HttpResponseRedirect(next_page)
@@ -2348,7 +2306,7 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
     types_renew = OrderedDict()
     types_expired = OrderedDict()
     months = calendar.month_abbr[1:]
-    
+
     membership_types = MembershipType.objects.all()
 
     for mtype in membership_types:

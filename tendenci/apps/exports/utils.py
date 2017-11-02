@@ -1,9 +1,10 @@
-import subprocess, os
+import subprocess
 import datetime
 import csv
 from StringIO import StringIO
 from django.http import HttpResponse
 from django.conf import settings
+from tendenci.libs.utils import python_executable
 from tendenci.apps.exports.models import Export
 
 
@@ -69,7 +70,7 @@ def run_export_task(app_label, model_name, fields):
     )
 
     if settings.USE_SUBPROCESS:
-        subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
+        subprocess.Popen([python_executable(), 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
     else:
         from django.core.management import call_command
         args = [unicode(export.pk)] + fields
