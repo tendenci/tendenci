@@ -19,7 +19,6 @@ def payment_processing_object_updates(request, payment, **kwargs):
     except:
         import traceback
         from django.core.mail import send_mail
-        from django.conf import settings
         from tendenci.apps.site_settings.utils import get_setting
 
         err_msg = traceback.format_exc()
@@ -34,7 +33,7 @@ def payment_processing_object_updates(request, payment, **kwargs):
         send_mail(subject, body, sender, recipients, fail_silently=True)
 
         # still want the end user know an error occurred
-        raise Exception, err_msg
+        raise Exception(err_msg)
 
 
 def log_silent_post(request, payment):
@@ -92,4 +91,3 @@ def send_payment_notice(request, payment):
 
     send_notifications('module','payments', 'paymentrecipients',
             'payment_added', notif_context)
-

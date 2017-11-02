@@ -1,15 +1,11 @@
 #import time
 #import hashlib
-import urllib
 from django.conf import settings
 #from django.http import Http404
-from django.core.urlresolvers import reverse
 from django.db import transaction
 from forms import PayflowLinkPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from django.utils.encoding import smart_str
 #from tendenci.apps.site_settings.utils import get_setting

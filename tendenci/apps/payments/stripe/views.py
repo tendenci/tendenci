@@ -1,6 +1,5 @@
 #import os
 import math
-import traceback
 #from datetime import datetime
 from django.shortcuts import render_to_response, get_object_or_404
 #from django.http import HttpResponse
@@ -10,8 +9,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
-
-import simplejson
 
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
@@ -51,7 +48,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                     charge_response = stripe.Charge.create(**params)
                     # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                     #charge_response = simplejson.loads(charge)
-                except Exception, e:
+                except Exception as e:
                     charge_response = e.message
 
                 # update payment status and object

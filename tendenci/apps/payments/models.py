@@ -246,4 +246,3 @@ class PaymentMethod(models.Model):
         if self.is_online:
             return "%s - Online" % name
         return "%s - Offline" % name
-
