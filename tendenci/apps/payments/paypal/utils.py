@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django import forms
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 from tendenci.apps.payments.paypal.forms import PayPalPaymentForm
 from tendenci.apps.payments.models import Payment
@@ -119,9 +120,49 @@ def verify_no_fraud(response_d, payment):
     txn_id = response_d.get('txn_id')
     if not txn_id:
         return False
-
-    txn_id_exists = Payment.objects.filter(trans_id=txn_id).exists()
+    # To prevent a single txn_id from being used for multiple Payments by
+    # simultaneously submitting multiple requests using the same txn_id, either
+    # the Payment.trans_id column in the database must have a unique constraint,
+    # the Payment database table must be locked before checking for duplicates
+    # and the lock must be held until after the trans_id has been saved, or
+    # trans_id must be updated on the database record for the current Payment
+    # object before checking for duplicates.
+    #
+    # Since the Payment.trans_id column has existed for a long time without a
+    # unique constraint, and since it is used by multiple payment modules for
+    # independent payment processors that may not all use unique transaction
+    # IDs, adding a unique constraint to this column may not be practical.  In
+    # addition, since Django does not natively support table locks, and since
+    # table locks can lead to performance issues, it is best to avoid table
+    # locks.  Therefore this code updates trans_id before checking for
+    # duplicates.
+    #
+    # To ensure that the trans_id update can be seen by other processes before
+    # this process checks for duplicates, the database transaction associated
+    # with this update must be committed without being nested in any other
+    # transactions.  transaction.commit() ensures that this transaction is not
+    # nested in any other transactions by committing the current transaction (if
+    # autocommit is disabled), by throwing an exception (if called within a
+    # transaction.atomic block), or by doing nothing (if this transaction is not
+    # nested).  transaction.atomic() with select_for_update() ensures that
+    # payment.trans_id cannot be updated in the database by another process
+    # after this process calls get_object_or_404() and before this process calls
+    # payment.save().
+    transaction.commit()
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment.id)
+        if payment.trans_id == '':
+            payment.trans_id = txn_id
+            payment.save()
+        elif payment.trans_id != txn_id:
+            return False
+    txn_id_exists = Payment.objects.filter(trans_id=txn_id).exclude(pk=payment.id).exists()
     if txn_id_exists:
+        with transaction.atomic():
+            payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment.id)
+            if payment.trans_id == txn_id:
+                payment.trans_id = ''
+                payment.save()
         return False
 
     # Does receiver_email matches?
@@ -226,7 +267,6 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
         payment.response_subcode = '1'
         payment.response_reason_code = '1'
         payment.status_detail = 'approved'
-        payment.trans_id = response_d.get('txn_id')
         payment.response_reason_text = 'This transaction has been approved.'
     else:
         payment.response_code = 0
