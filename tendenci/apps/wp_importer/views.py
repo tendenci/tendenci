@@ -1,9 +1,10 @@
 import os.path
-import subprocess, os
+import subprocess
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.conf import settings
+from tendenci.libs.utils import python_executable
 from tendenci.apps.wp_importer.forms import BlogImportForm
 from tendenci.apps.wp_importer.tasks import WPImportTask
 from tendenci.apps.base.http import MissingApp
@@ -28,7 +29,7 @@ def index(request, template_name="wp_importer/index.html"):
                 result = WPImportTask.delay(file_name, request.user)
                 #uncomment the next line if there is no celery server yet.
                 #result.wait()
-                subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'celeryd_detach'])
+                subprocess.Popen([python_executable(), 'manage.py', 'celeryd_detach'])
 
                 return redirect("detail", result.task_id)
 

@@ -27,8 +27,8 @@
 {% block content %}
 
 <div class="t" style="width:100%;">
-
     <h1 class="set-name">{{ photo_set.name }}</h1> {% fb_like_button_iframe photo_set.get_absolute_url %}
+
     <div class="back-to-photo-sets"><a href="{% url "photoset_latest" %}">&larr; {% trans "Back to Albums" %}</a></div>
     <table class="wrap">
         <tr><td class="set-info">

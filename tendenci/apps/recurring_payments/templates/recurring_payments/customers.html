@@ -17,7 +17,6 @@
 {% block content %}
 <div class="t">
 <div id="t-search">
-
     <h1>{% trans 'Recurring Payment Customers' %}</h1>
 
     <div id="rp-totals">
@@ -48,8 +47,6 @@
     {% endif %}
     </div>
     {% endif %}
-
-
 
     <div style="clear: both"></div>
 
@@ -88,12 +85,9 @@
         No customers available yet.
     {% endif %}
 
-
 </div>
 </div>
-
 <img name="loading_img" style="display:none;" src="{{ STATIC_URL }}images/icons/loading.gif"  />
-
 {% endblock %}
 
 {% block extra_body %}

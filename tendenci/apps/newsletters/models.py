@@ -1,5 +1,5 @@
 import datetime
-import subprocess, os
+import subprocess
 import uuid
 
 from django.conf import settings
@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.models import file_directory
@@ -403,7 +404,7 @@ class Newsletter(models.Model):
         return members
 
     def send_to_recipients(self):
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                               "send_newsletter",
                               str(self.pk)])
 

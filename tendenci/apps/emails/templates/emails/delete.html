@@ -7,7 +7,6 @@
 
 {% block content %}
 <div class="t">
-
 <h1>{% trans "Delete an Email Record" %}</h1>
 <h3>{% blocktrans with email.subject as subject %}Subject: {{ subject }}{% endblocktrans %}</h3>
 <div>{% blocktrans with email.create_dt|date:'long' as dat %} Created on: <b>{{ dat }}{% endblocktrans %}</b></div>
@@ -24,7 +23,5 @@
 <input type="hidden" name="id" value="{{email.id}}" />
 <input type="submit" value="{% trans 'Delete Email' %}" />
 </form>
-
-
 </div>
 {% endblock %}

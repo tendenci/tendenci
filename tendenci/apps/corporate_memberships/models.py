@@ -94,8 +94,8 @@ SIZE_CHOICES = (
                 ('l', _('Large')),
                 )
 NOTICE_TYPES = (
-    ('approve_join', _('Approval Date')),
-    ('disapprove_join', _('Disapproval Date')),
+    ('approve_join', _('Join Approval Date')),
+    ('disapprove_join', _('Join Disapproval Date')),
     ('approve_renewal', _('Renewal Approval Date')),
     ('disapprove_renewal', _('Renewal Disapproval Date')),
     ('expiration', _('Expiration Date')),

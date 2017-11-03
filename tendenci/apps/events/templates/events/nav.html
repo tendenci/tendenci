@@ -22,7 +22,7 @@
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -31,15 +31,14 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a>
-        {% if nav_object %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a>
         <div class="dropdown-menu">
+        {% if nav_object %}
         <ul class="first">
             <li class="heading">{% trans "All Events" %}</li>
             <li class="divider"></li>
         {% else %}
-            <div>
-            <ul class="dropdown-menu">
+        <ul>
         {% endif %}
             {% if can_edit_setting %}
                 <li><a href="{% url "settings.index" "module" "events" %}">{% trans "Settings" %}</a></li>
@@ -152,3 +151,21 @@
  to any calendar application such as MS Outlook, Google calendar, Apple iCal with the following link.{% endblocktrans %}</p>
 <p ><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}">{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}</a>
 </div>
+<script type="text/javascript">
+  // Dialog
+  $('#event_export_dialog').dialog({
+    autoOpen: false,
+    width: 600,
+    buttons: {
+      "Close": function() {
+        $(this).dialog("close");
+      }
+    }
+  });
+  // Dialog Link
+  $('#event_export_link').click(function(){
+    $('#event_export_dialog').show();
+    $('#event_export_dialog').dialog('open');
+    return false;
+  });
+</script>

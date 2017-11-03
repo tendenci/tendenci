@@ -7,7 +7,7 @@ register = Library()
 @register.inclusion_tag("payments/top_nav_items.html", takes_context=True)
 def payment_current_app(context, payment=None):
     context.update({
-        "app_object" : payment,
+        "app_object": payment,
     })
     return context
 
@@ -15,7 +15,7 @@ def payment_current_app(context, payment=None):
 @register.inclusion_tag("payments/nav.html", takes_context=True)
 def payment_nav(context, payment=None):
     context.update({
-        "nav_object" : payment,
+        "nav_object": payment,
     })
     return context
 
@@ -53,11 +53,11 @@ def payment_thankyou_display(request, payment):
             except TemplateDoesNotExist:
                 pass
 
-    return {'request':request,
-            "payment" : payment,
+    return {'request': request,
+            "payment": payment,
             "obj": obj,
             'obj_header': obj_header,
-            'obj_display':obj_display}
+            'obj_display': obj_display}
 
 @register.inclusion_tag('payments/stripe/js_stripe_key.html', takes_context=True)
 def set_stripe_key(context):

@@ -52,7 +52,7 @@ You'll need those packages installed on Ubuntu.
 ::
 
     sudo apt-get install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
-   
+
 
 You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
 ::
@@ -100,7 +100,7 @@ This section includes the entire install process for Mac OS X.  Once you have in
 ::
 
     virtualenv -p venv
-    
+
 Note: If you have anaconda installed on your machine, you would have to specify the path where the version of python is that you would like to use.
 ::
 
@@ -110,12 +110,12 @@ To activate the Virtualenv
 ::
 
     source venv/bin/activate
-    
+
 Note: When you're ready to get out of the Virtualenv simply use the command:
 ::
 
     deactivate
-    
+
 Once inside your VirtualEnv, install Tendenci with PyPy by using the pip command below (you can learn more about PyPy packages at: http://packages.pypy.org/ :
 ::
 
@@ -127,7 +127,7 @@ You can "enter" Postgres with the command line
 ::
 
     psql
-    
+
 One in Postgres, add a project, user, and password
 ::
 
@@ -136,14 +136,14 @@ One in Postgres, add a project, user, and password
 
     ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
     ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
-    ALTER ROLE myprojectuser SET timezone TO 'UTC';   
+    ALTER ROLE myprojectuser SET timezone TO 'UTC';
     GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
 
 To exit:
 ::
 \q
 
-You can also alter your database entirely from the command line using these commmands: 
+You can also alter your database entirely from the command line using these commmands:
 ::
 
     sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
@@ -167,7 +167,7 @@ Next, to start your Tendenci project
     sudo pip install -r requirements/dev.txt
 
     cd ..
-    
+
 Change to your top-level directory where "myproject" and "venv" are.  In order for images to correctly render, you will need to install the jpeg libraries with the commands below
 ::
 
@@ -184,7 +184,7 @@ To remove the files
     cd ..
     rm -r jpeg-9
     rm jpegsrc.v9.tar.gz
-    
+
 
 On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
 
@@ -229,7 +229,7 @@ Then create a superuser to login!
 
 To exit the server
 ::
-    
+
     ^C
 
 To add the tendenci code base to your local machine, pull down forked version to be able to submit pull requests on github.  Add above project folder, go to python packages and delete the tendenci folder then generate a symlink to the github repo
@@ -283,7 +283,7 @@ On Ubuntu 14.04
 
 On Ubuntu 16.04
 ::
-    
+
     sudo apt-get install postgresql postgresql-contrib postgis
 
 
@@ -344,7 +344,7 @@ Install the requirements with the following commands (do not use sudo if run in 
     cd <project_name>
     sudo pip install -r requirements/dev.txt
 
-.. Note:: 
+.. Note::
 
     Make sure you remove "sudo" when installing in your virtualenv. Otherwise, the requirements will be installed in your system.
 
@@ -366,7 +366,7 @@ Setting up SECRET_KEY and SITE_SETTINGS_KEY
 Setting up the site
 -------------------
 
-Now, use the deploy script to create the database tables and static media. 
+Now, use the deploy script to create the database tables and static media.
 ::
 
     python manage.py migrate
@@ -439,12 +439,12 @@ Setting up Upstart
 
 On Ubuntu, the Upstart functionality can be used to add the site as a service.
 
-First, create a file at the path ``/etc/init/tendenci.conf``. 
+First, create a file at the path ``/etc/init/tendenci.conf``.
 ::
 
     cd /etc/init/
     sudo touch tendenci.conf
-    
+
 The contents of that file should match the example below:
 ::
 
@@ -507,11 +507,11 @@ look like this
               --pythonpath=/var/www/<project_name>         \
               --error-logfile=/var/log/<project_name>.error \
               --daemon                                     \
-             conf.wsgi 
+             conf.wsgi
 
     [Install]
     WantedBy=multi-user.target
- 
+
 To start the service run
 
 ::
@@ -546,7 +546,7 @@ First, make an nginx configuration file for the site. This will be created at ``
             access_log off;
             expires 30d;
         }
-     
+
         location /media/ {
             access_log off;
             expires 30d;
@@ -611,8 +611,8 @@ The site should now be viewable, either at the ip address of the server, or at t
 Set up Cron Jobs for Production Sites
 -------------------------------------
 
-For production sites, you'll need to set up cron jobs for the two management commands. The `run_nightly_commands` is 
-to handle the tasks like membership notices, event reminders and other clean up jobs. The `process_unindexed` command 
+For production sites, you'll need to set up cron jobs for the two management commands. The `run_nightly_commands` is
+to handle the tasks like membership notices, event reminders and other clean up jobs. The `process_unindexed` command
 is to process unindexed items in the queue.
 ::
 

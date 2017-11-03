@@ -7,7 +7,7 @@ from PIL import Image as Pil
 import os
 import mimetypes
 import shutil
-import subprocess, sys
+import subprocess
 import zipfile
 import xmlrpclib
 
@@ -29,6 +29,7 @@ from django.views.generic import TemplateView
 
 # local
 from tendenci import __version__ as version
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
@@ -415,14 +416,14 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
     addon_name = addon_zip.namelist()[0]
     addon_name = addon_name.strip('/')
     if not os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon_name)):
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
 
     if request.method == "POST":
         shutil.rmtree(os.path.join(settings.SITE_ADDONS_PATH, addon_name))
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
@@ -469,7 +470,7 @@ def update_tendenci(request, template_name="base/update.html"):
         tos = request.POST.get('tos')
         
         if tos:
-            SubProcessManager.set_process([os.environ.get('_', 'python'), "manage.py", "auto_update",
+            SubProcessManager.set_process([python_executable(), "manage.py", "auto_update",
                                             "--user_id=%s" % request.user.id])
             return redirect('update_tendenci.confirmation')
 

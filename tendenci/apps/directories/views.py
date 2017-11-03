@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import subprocess, os, time
+import subprocess, time
 import string
 import json
 
@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
@@ -610,7 +611,7 @@ def directory_export(request, template_name="directories/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "directory_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_status_detail=%s' % export_status_detail,

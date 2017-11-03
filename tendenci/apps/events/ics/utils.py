@@ -1,7 +1,8 @@
 import re
-import subprocess, sys
+import subprocess
 import os
 from django.conf import settings
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.ics.models import ICS
 
@@ -50,5 +51,5 @@ def run_precreate_ics(app_label, model_name, user):
         model_name=model_name,
         user=user
     )
-    subprocess.Popen([os.environ.get('_', 'python'), 'manage.py', 'run_precreate_ics', unicode(ics.pk)])
+    subprocess.Popen([python_executable(), 'manage.py', 'run_precreate_ics', unicode(ics.pk)])
     return ics.pk

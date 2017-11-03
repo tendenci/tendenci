@@ -3,18 +3,14 @@
 {% load static from staticfiles %}
 {% load speaker_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/folder_table.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Speakers' %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
-        <img class="nav-icon" src="{% static 'famfamfam/icons/folder_table.png' %}"/>{% trans 'Speakers' %}
-   <span class="caret"></span>
-    </button>
-
     {% if speaker %}
         {% speaker_current_app request.user speaker %}
     {% else %}
         {% speaker_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}

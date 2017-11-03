@@ -1,24 +1,18 @@
-{% extends "top_menu/admin_top-new.html" %}
+{% extends 'top_menu/admin_top-new.html' %}
 {% load i18n %}
-{% load staticfiles %}
+{% load static from staticfiles %}
 {% load corporate_memberships_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/user_suit.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_CORPORATE_MEMBERSHIPS_LABEL trans "Corporate Memberships" %}{% endblock %}
 
 {% block current_app %}
-    <li class="dropdown">
-        <button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {% spaceless %}
-            <img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}">
-            <span class="nav-label">{% firstof MODULE_CORPORATE_MEMBERSHIPS_LABEL trans "Corporate Memberships" %}</span>
-            <span class="caret"></span>
-        {% endspaceless %}</button>
-
-        {% if corp_membership %}
-            {% corpmemb_current_app request.user corp_membership %}
-        {% elif corporate_membership %}
-            {% corpmemb_current_app request.user corporate_membership %}
-        {% else %}
-            {% corpmemb_current_app request.user %}
-        {% endif %}
-    </li>
+    {% if corp_membership %}
+        {% corpmemb_current_app request.user corp_membership %}
+    {% elif corporate_membership %}
+        {% corpmemb_current_app request.user corporate_membership %}
+    {% else %}
+        {% corpmemb_current_app request.user %}
+    {% endif %}
 {% endblock %}
-
