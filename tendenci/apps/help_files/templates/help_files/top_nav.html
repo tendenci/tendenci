@@ -5,7 +5,7 @@
 
 {% block nav_icon_url %}{% static 'famfamfam/icons/help.png' %}{% endblock %}
 
-{% block nav_label %}{% firstof MODULE_HELP_FILES_LABEL trans "Help Files" %}{% endblock %}
+{% block nav_label %}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans "Help Files" %}{% endblock %}
 
 {% block current_app %}
     {% if help_file %}
