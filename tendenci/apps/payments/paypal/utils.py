@@ -112,6 +112,20 @@ def validate_with_paypal(request, validate_type):
         return data.strip('\n').lower() == 'verified', None
 
 def verify_no_fraud(response_d, payment):
+    # Does receiver_email match?
+    receiver_email = response_d.get('receiver_email')
+    if receiver_email != settings.PAYPAL_MERCHANT_LOGIN:
+        return False
+
+    # Is the amount correct?
+    payment_gross = response_d.get('mc_gross', 0)
+    try:
+        float(payment_gross)
+    except ValueError:
+        payment_gross = 0
+    if Decimal(payment_gross) != payment.amount:
+        return False
+
     # Duplicate txn_id?
     txn_id = response_d.get('txn_id')
     if not txn_id:
@@ -161,20 +175,6 @@ def verify_no_fraud(response_d, payment):
                 payment.save()
         return False
 
-    # Does receiver_email match?
-    receiver_email = response_d.get('receiver_email')
-    if receiver_email != settings.PAYPAL_MERCHANT_LOGIN:
-        return False
-
-    # Is the amount correct?
-    payment_gross = response_d.get('mc_gross', 0)
-    try:
-        float(payment_gross)
-    except ValueError:
-        payment_gross = 0
-    if Decimal(payment_gross) != payment.amount:
-        return False
-
     return True
 
 def paypal_thankyou_processing(request, response_d, **kwargs):
@@ -191,6 +191,12 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
 
     if not success:
         raise Http404
+
+    charset = response_d.get('charset', '')
+    # make sure data is encoded in utf-8 before processing
+    if charset and charset not in ('ascii', 'utf8', 'utf-8'):
+        for k in response_d.keys():
+            response_d[k] = response_d[k].decode(charset).encode('utf-8')
 
     paymentid = response_d.get('invoice', 0)
 
@@ -222,11 +228,6 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
         # duplicate processing of simultaneous redundant payment requests
         payment = get_object_or_404(Payment.objects.select_for_update(), pk=paymentid)
         if not payment.is_approved:  # if not already processed
-            charset = response_d.get('charset', '')
-            # make sure data is encoded in utf-8 before processing
-            if charset and charset not in ('ascii', 'utf8', 'utf-8'):
-                for k in response_d.keys():
-                    response_d[k] = response_d[k].decode(charset).encode('utf-8')
             payment_update_paypal(request, response_d, payment)
             payment_processing_object_updates(request, payment)
             processed = True
