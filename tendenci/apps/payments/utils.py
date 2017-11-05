@@ -37,12 +37,15 @@ def payment_processing_object_updates(request, payment, **kwargs):
 
 
 def log_silent_post(request, payment):
+    # This is redundant to log_payment(), and the Django access log (if enabled
+    # in local_settings.py), and the nginx access log (if nginx is used).
+    return
+
     now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
     # log the post
     output = """
                 %s \n
                 Referrer: %s \n
-                Remote Address: %s \n
                 Content-Type: %s \n
                 User-Agent: %s \n\n
                 Query-String: \n %s \n
@@ -51,7 +54,6 @@ def log_silent_post(request, payment):
                 Remote-User: %s \n
                 Request-Method: %s \n
             """ % (now_str, request.META.get('HTTP_REFERER', ''),
-                   request.META.get('REMOTE_ADDR', ''),
                    request.META.get('CONTENT_TYPE', ''),
                    request.META.get('HTTP_USER_AGENT', ''),
                    request.META.get('QUERY_STRING', ''),
