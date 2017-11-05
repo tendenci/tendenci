@@ -83,8 +83,7 @@ def get_setting(scope, scope_category, name):
             scope_category, name]
     key = '.'.join(keys)
 
-    # setting = cache.get(key)
-    setting = None
+    setting = cache.get(key)
 
     if not setting:
         #setting is not in the cache
