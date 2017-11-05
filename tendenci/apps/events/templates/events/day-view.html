@@ -135,9 +135,11 @@
             </form>
         </div>
     {% empty %}
-        <div class="no-events">{% trans "No events here, yet. " %}
-            <a href="{% url "event.add" date.year date.month date.day %}">
-            {% trans "I would like to add one." %}</a></div>
+        <div class="no-events">{% trans "No events are currently scheduled on this day." %}
+            {% comment %}
+            <br/><a href="{% url "event.add" date.year date.month date.day %}">{% trans "Add an event" %}</a>
+            {% endcomment %}
+        </div>
     {% endfor %}
 
     {% if events %}
