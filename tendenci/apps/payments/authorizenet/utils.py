@@ -90,8 +90,13 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
         my_md5_hash = hashlib.md5(s).hexdigest()
 
-        if my_md5_hash.lower() != md5_hash.lower():
-            raise Http404
+        # don't break the payment process if md5 hash is not set up
+        if md5_hash_value:
+            if my_md5_hash.lower() != md5_hash.lower():
+                raise Http404
+        else:
+            # TODO: email admin to set up MD5 hash
+            pass
 
         if not payment.is_approved:  # if not already processed
             payment_update_authorizenet(request, response_d, payment)
