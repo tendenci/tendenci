@@ -19,7 +19,6 @@ def payment_processing_object_updates(request, payment, **kwargs):
     except:
         import traceback
         from django.core.mail import send_mail
-        from django.conf import settings
         from tendenci.apps.site_settings.utils import get_setting
 
         err_msg = traceback.format_exc()
@@ -34,16 +33,19 @@ def payment_processing_object_updates(request, payment, **kwargs):
         send_mail(subject, body, sender, recipients, fail_silently=True)
 
         # still want the end user know an error occurred
-        raise Exception, err_msg
+        raise Exception(err_msg)
 
 
 def log_silent_post(request, payment):
+    # This is redundant to log_payment(), and the Django access log (if enabled
+    # in local_settings.py), and the nginx access log (if nginx is used).
+    return
+
     now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
     # log the post
     output = """
                 %s \n
                 Referrer: %s \n
-                Remote Address: %s \n
                 Content-Type: %s \n
                 User-Agent: %s \n\n
                 Query-String: \n %s \n
@@ -52,7 +54,6 @@ def log_silent_post(request, payment):
                 Remote-User: %s \n
                 Request-Method: %s \n
             """ % (now_str, request.META.get('HTTP_REFERER', ''),
-                   request.META.get('REMOTE_ADDR', ''),
                    request.META.get('CONTENT_TYPE', ''),
                    request.META.get('HTTP_USER_AGENT', ''),
                    request.META.get('QUERY_STRING', ''),
@@ -92,4 +93,3 @@ def send_payment_notice(request, payment):
 
     send_notifications('module','payments', 'paymentrecipients',
             'payment_added', notif_context)
-

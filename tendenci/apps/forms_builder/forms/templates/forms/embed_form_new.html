@@ -10,7 +10,7 @@
 }
 </style>
     <h4>{{ embed_form.title }}</h4>
-    <p>{{ embed_form.intro|safe }}</p>
+    <div>{{ embed_form.intro|safe }}</div>
 
     <div class="form-builder-wrap">
         <form method="post" enctype="multipart/form-data" action="{{ embed_form.get_absolute_url }}">{% csrf_token %}

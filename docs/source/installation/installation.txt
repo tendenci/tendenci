@@ -552,6 +552,10 @@ First, make an nginx configuration file for the site. This will be created at ``
             expires 30d;
         }
 
+        location ^~ /media/export/ {
+            return 404;
+        }
+
         location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {
             access_log off;
         }

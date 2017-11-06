@@ -1,4 +1,4 @@
-from django.forms.widgets import Select, TextInput
+from django.forms.widgets import TextInput
 from django.utils.safestring import mark_safe
 
 def _add_name_to_class_attr(name, kwargs_dict):
