@@ -1,8 +1,5 @@
-import os
-from datetime import datetime
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
-from django.conf import settings
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
