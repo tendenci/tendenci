@@ -83,7 +83,10 @@ def get_setting(scope, scope_category, name):
             scope_category, name]
     key = '.'.join(keys)
 
-    setting = cache.get(key)
+    # Commenting it out for now because it causes the "manage.py" to hang if site has memcache enabled
+    # TODO: figure out the root cause of the issue
+    #setting = cache.get(key)
+    setting = None
 
     if not setting:
         #setting is not in the cache
