@@ -219,6 +219,58 @@ class Newsletter(models.Model):
             return content
 
         return ''
+    
+    
+    def clone(self):
+        """
+        Clone this newsletter and return the cloned newsletter.
+        """
+        ignore_fields = [
+            'id',
+            'email',
+            'send_status',
+            'date_created',
+            'date_email_sent',
+            'date_last_resent',
+            'email_sent_count',
+            'resend_count',
+            'security_key'
+        ]
+        field_names = [field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
+
+        newsletter_new = self.__class__()
+        for name in field_names:
+            if hasattr(self, name):
+                setattr(newsletter_new, name, getattr(self, name))
+        newsletter_new.date_created = datetime.datetime.now()
+        newsletter_new.subject = '(Cloned) {}'.format(self.subject)
+        newsletter_new.actionname = newsletter_new.subject
+        
+        # copy email - don't link the cloned newsletter to the same email
+        if self.email:
+            email_ignore_fields = [
+                'id',
+            ]
+            email_field_names = [field.name
+                for field in self.email.__class__._meta.fields
+                if field.name not in email_ignore_fields
+            ]
+            email_new = self.email.__class__()
+            for name in email_field_names:
+                if hasattr(self.email, name):
+                    setattr(email_new, name, getattr(self.email, name))
+            email_new.save()
+            
+            newsletter_new.email = email_new
+            
+        newsletter_new.save()
+        
+        return newsletter_new
+        
+        
 
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
