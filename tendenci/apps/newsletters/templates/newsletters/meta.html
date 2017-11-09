@@ -45,6 +45,7 @@
                         {% endspaceless %}</a>
 
                         <ul class="dropdown-menu" role="menu">
+                            <li><a class="t-meta-clone-link" href="{% url 'newsletter.clone' newsletter.pk %}" title="Clone">{% trans "Clone" %}</a></li>
                             <li><a class="t-meta-delete-link" href="{% url 'newsletter.delete' newsletter.pk %}">{% trans "Delete" %}</a></li>
                             {% if not newsletter.date_email_sent %}
                             <li><a href="{% url 'newsletter.action.step5' newsletter.pk %}">{% trans "Send" %}</a></li>
