@@ -25,6 +25,13 @@ class ListTestimonialNode(ListNode):
     model = Testimonial
     perms = 'testimonials.view_testimonial'
 
+@register.inclusion_tag("testimonials/top_nav_items.html", takes_context=True)
+def testimonial_current_app(context, user, testimonial=None):
+    context.update({
+        "app_object": testimonial,
+        "user": user
+    })
+    return context
 
 @register.tag
 def list_testimonials(parser, token):

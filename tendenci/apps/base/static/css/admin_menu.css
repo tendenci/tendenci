@@ -69,11 +69,11 @@
 /* Small devices (> 767px) */
 @media (min-width: 768px) {
     #t-admin-megamenu-profile-dd {
-        min-width: 550px;
+        min-width: 455px;
     }
 
     #t-admin-megamenu-community-dd {
-        min-width: 445px;
+        min-width: 300px;
     }
 
     #t-admin-megamenu-profile-dd .list-unstyled,
@@ -89,6 +89,10 @@
 
     #t-admin-megamenu-apps-dd {
         min-width: 525px;
+    }
+    
+    #t-admin-megamenu-reports-dd {
+        min-width: 400px;
     }
 }
 
