@@ -168,7 +168,7 @@ class MarketingStepThreeForm(forms.ModelForm):
 class MarketingStepFourForm(forms.ModelForm):
     class Meta:
         model = Newsletter
-        fields = ('send_to_email2', 'sla', 'group', 'member_only')
+        fields = ('subject', 'send_to_email2', 'sla', 'group', 'member_only')
 
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)

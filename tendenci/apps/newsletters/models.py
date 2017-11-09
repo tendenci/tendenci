@@ -463,6 +463,8 @@ class Newsletter(models.Model):
     def save(self, *args, **kwargs):
         if self.security_key == '' or self.security_key == None:
             self.security_key = uuid.uuid1()
+        if self.actionname != self.subject:
+            self.actionname = self.subject
         if "log" in kwargs:
             kwargs.pop('log')
         super(Newsletter, self).save(*args, **kwargs)
