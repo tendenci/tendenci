@@ -12,18 +12,18 @@ template_choices += get_template_list()
 
 class StudyGroupForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
     content = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
     notes = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
-        
+
     class Meta:
         model = StudyGroup
         fields = (
@@ -65,13 +65,13 @@ class StudyGroupForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['syndicate',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -85,16 +85,16 @@ class StudyGroupForm(TendenciBaseForm):
 
 class StudyGroupAdminForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
     content = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
     notes = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':StudyGroup._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':StudyGroup._meta.app_label,
         'storme_model':StudyGroup._meta.model_name.lower()}))
 
     group = forms.ModelChoiceField(required=False, queryset=Group.objects.filter(status=True, status_detail="active").order_by('name'))
@@ -104,7 +104,7 @@ class StudyGroupAdminForm(TendenciBaseForm):
 
     class Meta:
         model = StudyGroup
-        
+
         fields = (
         'title',
         'slug',
@@ -120,8 +120,8 @@ class StudyGroupAdminForm(TendenciBaseForm):
         'syndicate',
         'status_detail',
         )
-        
-    def __init__(self, *args, **kwargs): 
+
+    def __init__(self, *args, **kwargs):
         super(StudyGroupAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
