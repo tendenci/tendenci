@@ -84,7 +84,7 @@ def get_setting(scope, scope_category, name):
     #setting = cache.get(key)
     setting = None
 
-    if not setting:
+    if setting is None:
         #setting is not in the cache
         try:
             #try to get the setting and cache it
@@ -99,7 +99,7 @@ def get_setting(scope, scope_category, name):
             setting = None
 
     #check if the setting has been set and evaluate the value
-    if setting:
+    if setting is not None:
         try:
             # test is get_value will work
             value = setting.get_value().strip()
@@ -140,7 +140,7 @@ def check_setting(scope, scope_category, name):
     key = '.'.join(keys)
 
     setting = cache.get(key)
-    if setting:
+    if setting is not None:
         return True
 
     missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
@@ -148,7 +148,7 @@ def check_setting(scope, scope_category, name):
     missing_key = '.'.join(missing_keys)
 
     missing = cache.get(missing_key)
-    if not missing:
+    if missing is None:
         #check the db if it is not in the cache
         exists = Setting.objects.filter(scope=scope,
             scope_category=scope_category, name=name).exists()
