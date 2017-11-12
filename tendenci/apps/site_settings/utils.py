@@ -1,6 +1,8 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
 from django.utils.translation import ugettext_lazy as _
+from django import VERSION as django_version
+from django.apps import apps
 
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
@@ -79,10 +81,15 @@ def get_setting(scope, scope_category, name):
             scope_category, name]
     key = '.'.join(keys)
 
-    # Commenting it out for now because it causes the "manage.py" to hang if site has memcache enabled
-    # TODO: figure out the root cause of the issue
-    #setting = cache.get(key)
-    setting = None
+    if django_version < (1, 10) and not apps.ready:
+        # django.setup() loads haystack, which imports a bunch of Tendenci
+        # models, some of which indirectly call get_setting() at import time.
+        # Calling cache.get() from within django.setup() on Django 1.7-1.9 will
+        # cause a deadlock.
+        # See https://github.com/django/django/pull/6044
+        setting = None
+    else:
+        setting = cache.get(key)
 
     if setting is None:
         #setting is not in the cache
