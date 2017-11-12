@@ -82,7 +82,6 @@ from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
-#from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.site_settings.utils import get_setting
 
 @is_enabled('corporate_memberships')
@@ -1667,7 +1666,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 @is_enabled('corporate_memberships')
 def corp_reps_lookup(request):
     q = request.GET['term']
-    #use_search_index = get_setting('site', 'global', 'searchindex')
+    #use_search_index = (get_setting('site', 'global', 'searchindex') in ('true', True))
     # TODO: figure out a way of assigning search permission to dues_reps.
     use_search_index = False
     if use_search_index:
