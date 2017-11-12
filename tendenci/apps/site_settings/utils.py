@@ -20,9 +20,7 @@ def cache_setting(scope, scope_category, name, value):
             scope_category, name]
 
     key = '.'.join(keys)
-    is_set = cache.add(key, value)
-    if not is_set:
-        cache.set(key, value)
+    cache.set(key, value)
 
 
 def cache_settings(scope, scope_category):
@@ -39,9 +37,7 @@ def cache_settings(scope, scope_category):
             keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
                     setting.scope, setting.scope_category, setting.name]
             key = '.'.join(keys)
-            is_set = cache.add(key, setting.get_value())
-            if not is_set:
-                cache.set(key, setting.get_value())
+            cache.set(key, setting.get_value())
 
 
 def delete_setting_cache(scope, scope_category, name):
@@ -161,9 +157,7 @@ def check_setting(scope, scope_category, name):
         if not exists:
             #set to True to signify that it is missing so we do not
             #come back into this if statement and query db again
-            is_set = cache.add(missing_key, True)
-            if not is_set:
-                cache.set(missing_key, True)
+            cache.set(missing_key, True)
 
         return exists
     return False

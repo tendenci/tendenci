@@ -47,9 +47,7 @@ def generate_base_colors():
 def cache_colors(colors):
     keys = [settings.CACHE_PRE_KEY, 'event_log_colors']
     key = '.'.join(keys)
-    is_set = cache.add(key, colors)
-    if not is_set:
-        cache.set(key, colors)
+    cache.set(key, colors)
 
 def get_color(event_id):
     """Gets the hex color of an event log based on the event id
