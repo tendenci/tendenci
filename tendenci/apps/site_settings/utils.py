@@ -1,6 +1,8 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
 from django.utils.translation import ugettext_lazy as _
+from django import VERSION as django_version
+from django.apps import apps
 
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
@@ -20,9 +22,7 @@ def cache_setting(scope, scope_category, name, value):
             scope_category, name]
 
     key = '.'.join(keys)
-    is_set = cache.add(key, value)
-    if not is_set:
-        cache.set(key, value)
+    cache.set(key, value)
 
 
 def cache_settings(scope, scope_category):
@@ -39,9 +39,7 @@ def cache_settings(scope, scope_category):
             keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
                     setting.scope, setting.scope_category, setting.name]
             key = '.'.join(keys)
-            is_set = cache.add(key, setting.get_value())
-            if not is_set:
-                cache.set(key, setting.get_value())
+            cache.set(key, setting.get_value())
 
 
 def delete_setting_cache(scope, scope_category, name):
@@ -83,12 +81,17 @@ def get_setting(scope, scope_category, name):
             scope_category, name]
     key = '.'.join(keys)
 
-    # Commenting it out for now because it causes the "manage.py" to hang if site has memcache enabled
-    # TODO: figure out the root cause of the issue
-    #setting = cache.get(key)
-    setting = None
+    if django_version < (1, 10) and not apps.ready:
+        # django.setup() loads haystack, which imports a bunch of Tendenci
+        # models, some of which indirectly call get_setting() at import time.
+        # Calling cache.get() from within django.setup() on Django 1.7-1.9 will
+        # cause a deadlock.
+        # See https://github.com/django/django/pull/6044
+        setting = None
+    else:
+        setting = cache.get(key)
 
-    if not setting:
+    if setting is None:
         #setting is not in the cache
         try:
             #try to get the setting and cache it
@@ -103,7 +106,7 @@ def get_setting(scope, scope_category, name):
             setting = None
 
     #check if the setting has been set and evaluate the value
-    if setting:
+    if setting is not None:
         try:
             # test is get_value will work
             value = setting.get_value().strip()
@@ -144,7 +147,7 @@ def check_setting(scope, scope_category, name):
     key = '.'.join(keys)
 
     setting = cache.get(key)
-    if setting:
+    if setting is not None:
         return True
 
     missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
@@ -152,7 +155,7 @@ def check_setting(scope, scope_category, name):
     missing_key = '.'.join(missing_keys)
 
     missing = cache.get(missing_key)
-    if not missing:
+    if missing is None:
         #check the db if it is not in the cache
         exists = Setting.objects.filter(scope=scope,
             scope_category=scope_category, name=name).exists()
@@ -161,9 +164,7 @@ def check_setting(scope, scope_category, name):
         if not exists:
             #set to True to signify that it is missing so we do not
             #come back into this if statement and query db again
-            is_set = cache.add(missing_key, True)
-            if not is_set:
-                cache.set(missing_key, True)
+            cache.set(missing_key, True)
 
         return exists
     return False

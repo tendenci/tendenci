@@ -6,10 +6,6 @@ from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField
-from tendenci.apps.base.utils import get_template_list
-
-template_choices = [('default.html','Default')]
-template_choices += get_template_list()
 
 class CommitteeForm(TendenciBaseForm):
     mission = forms.CharField(required=False,

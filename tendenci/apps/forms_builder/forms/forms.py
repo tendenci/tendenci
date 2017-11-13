@@ -29,13 +29,6 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import CountrySelectField
 
 
-template_choices = [
-    ('', _('None')),
-    ('default.html', _('Default')),
-    ('forms/base.html', _('Forms Base'))
-]
-template_choices += get_template_list()
-
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
 
 FIELD_FNAME_LENGTH = 30
@@ -270,12 +263,18 @@ class FormAdminForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.model_name.lower()}))
-    
+
     email_text = forms.CharField(required=False, label=_('Confirmation Text'),
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.model_name.lower()}))
 
+    template_choices = [
+        ('', _('None')),
+        ('default.html', _('Default')),
+        ('forms/base.html', _('Forms Base'))
+    ]
+    template_choices += get_template_list()
     template = forms.ChoiceField(choices=template_choices, required=False)
     group = forms.ChoiceField(required=True, choices=[])
 
