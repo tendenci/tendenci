@@ -200,7 +200,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
-        return redirect(cached_image)
+        return redirect('{0}{1}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
 
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
