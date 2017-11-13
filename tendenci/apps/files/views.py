@@ -644,8 +644,6 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(
-        event_id__in=(185000, 186000), create_dt__range=(start_dt, end_dt))
-    event_logs = event_logs | EventLog.objects.values('object_id').filter(
         application='files', action='details', create_dt__range=(start_dt, end_dt))
 
     if file_type != 'all':
