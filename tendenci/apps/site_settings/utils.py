@@ -7,9 +7,21 @@ from django.apps import apps
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
+
+def get_setting_key(items=[]):
+    """
+    Generate a setting key string from a list of string items.
+    Spaces are also removed as memcached doesn't allow space characters.
+    """
+    if not items:
+        return None
+
+    key = ('.'.join([d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY] + items)).replace(' ', '')
+    return key
+    
+
 def delete_all_settings_cache():
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
-    key = '.'.join(keys)
+    key = get_setting_key(['all'])
     cache.delete(key)
 
 
@@ -18,10 +30,7 @@ def cache_setting(scope, scope_category, name, value):
     Caches a single setting within a scope
     and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-
-    key = '.'.join(keys)
+    key = get_setting_key([scope, scope_category, name])
     cache.set(key, value)
 
 
@@ -36,9 +45,7 @@ def cache_settings(scope, scope_category):
     settings = Setting.objects.filter(**filters)
     if settings:
         for setting in settings:
-            keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
-                    setting.scope, setting.scope_category, setting.name]
-            key = '.'.join(keys)
+            key = get_setting_key([setting.scope, setting.scope_category, setting.name])
             cache.set(key, setting.get_value())
 
 
@@ -47,9 +54,7 @@ def delete_setting_cache(scope, scope_category, name):
         Deletes a single setting within a
         scope and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
+    key = get_setting_key([scope, scope_category, name])
     cache.delete(key)
 
 
@@ -64,9 +69,7 @@ def delete_settings_cache(scope, scope_category):
     }
     settings = Setting.objects.filter(**filters)
     for setting in settings:
-        keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
-                setting.scope, setting.scope_category, setting.name]
-        key = '_'.join(keys)
+        key = get_setting_key([setting.scope, setting.scope_category, setting.name])
         cache.delete(key)
 
 
@@ -77,9 +80,7 @@ def get_setting(scope, scope_category, name):
         Returns the value of the setting if it exists
         otherwise it returns an empty string
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
+    key = get_setting_key([scope, scope_category, name])
 
     if django_version < (1, 10) and not apps.ready:
         # django.setup() loads haystack, which imports a bunch of Tendenci
@@ -142,17 +143,12 @@ def get_module_setting(scope_category, name):
 
 def check_setting(scope, scope_category, name):
     #check cache first
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
-
+    key = get_setting_key([scope, scope_category, name])
     setting = cache.get(key)
     if setting is not None:
         return True
 
-    missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name, "missing"]
-    missing_key = '.'.join(missing_keys)
+    missing_key = get_setting_key([scope, scope_category, name, "missing"])
 
     missing = cache.get(missing_key)
     if missing is None:
