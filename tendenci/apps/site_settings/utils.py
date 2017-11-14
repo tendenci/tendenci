@@ -66,7 +66,7 @@ def delete_settings_cache(scope, scope_category):
     for setting in settings:
         keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
                 setting.scope, setting.scope_category, setting.name]
-        key = '_'.join(keys)
+        key = '.'.join(keys)
         cache.delete(key)
 
 
