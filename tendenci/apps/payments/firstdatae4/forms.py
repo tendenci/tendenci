@@ -35,5 +35,3 @@ class PaymentForm(forms.Form):
     x_fp_timestamp = forms.CharField(max_length=55, widget=forms.HiddenInput)
     x_fp_hash = forms.CharField(max_length=55, widget=forms.HiddenInput)
     #x_test_request = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
-
-

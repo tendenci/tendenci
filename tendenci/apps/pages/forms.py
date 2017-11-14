@@ -13,9 +13,6 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.utils import get_template_list
 from tendenci.apps.files.utils import get_max_file_upload_size
 
-template_choices = [('default.html',_('Default'))]
-template_choices += get_template_list()
-
 ALLOWED_IMG_EXT = (
     '.jpg',
     '.jpeg',
@@ -39,6 +36,8 @@ class PageAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 
+    template_choices = [('default.html',_('Default'))]
+    template_choices += get_template_list()
     template = forms.ChoiceField(choices=template_choices)
 
     meta_title = forms.CharField(required=False)
@@ -80,10 +79,6 @@ class PageAdminForm(TendenciBaseForm):
                 self.fields['meta_canonical_url'].initial = self.instance.meta.canonical_url
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-
-        template_choices = [('default.html',_('Default'))]
-        template_choices += get_template_list()
-        self.fields['template'].choices = template_choices
 
     def clean_syndicate(self):
         """
@@ -138,6 +133,8 @@ class PageForm(TendenciBaseForm):
 
     tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">%s</a>' % _('Open All Tags list in a new window')))
 
+    template_choices = [('default.html',_('Default'))]
+    template_choices += get_template_list()
     template = forms.ChoiceField(choices=template_choices)
 
     class Meta:
@@ -256,9 +253,6 @@ class PageForm(TendenciBaseForm):
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
 
-        template_choices = [('default.html',_('Default'))]
-        template_choices += get_template_list()
-        self.fields['template'].choices = template_choices
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
 
         if not self.user.profile.is_superuser:

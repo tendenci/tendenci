@@ -168,7 +168,7 @@ class MarketingStepThreeForm(forms.ModelForm):
 class MarketingStepFourForm(forms.ModelForm):
     class Meta:
         model = Newsletter
-        fields = ('send_to_email2', 'sla',)
+        fields = ('subject', 'send_to_email2', 'sla', 'member_only', 'group')
 
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)
@@ -180,6 +180,16 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+        
+    def clean_group(self):
+        data = self.cleaned_data
+        group = data.get('group', None)
+        member_only = data.get('member_only', False)
+
+        if not member_only and not group:
+            raise forms.ValidationError(_('Usergroup field is required if Send to members only is unchecked.'))
+
+        return group
 
 
 class MarketingStepFiveForm(forms.ModelForm):

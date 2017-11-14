@@ -30,4 +30,3 @@ class FirstDataPaymentForm(forms.Form):
     comments = forms.CharField(max_length=255, required=False, widget=forms.HiddenInput)
     responseSuccessURL = forms.CharField(max_length=255, required=False, widget=forms.HiddenInput)
     responseFailURL = forms.CharField(max_length=255, required=False, widget=forms.HiddenInput)
-

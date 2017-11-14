@@ -3,18 +3,14 @@
 {% load static from staticfiles %}
 {% load staff_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/drive_user.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Staff' %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-   <button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
-        <img class="nav-icon" src="{% static 'famfamfam/icons/drive_user.png' %}"/>{% trans 'Staff' %}
-    <span class="caret"></span>
-    </button>
-
     {% if staff %}
         {% staff_current_app request.user staff %}
     {% else %}
         {% staff_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}

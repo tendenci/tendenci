@@ -3,19 +3,14 @@
 {% load static from staticfiles %}
 {% load photo_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/photo.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_PHOTOS_LABEL trans "Photos" %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <button type="button" class="btn btn-primary" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
-        <img class="nav-icon" src="{% static 'famfamfam/icons/photo.png' %}"/>{% firstof MODULE_PHOTOS_LABEL trans "Photos" %}
-    <span class="caret"></span>
-    </button>
-
     {% if photo %}
         {% photo_current_app request.user photo %}
     {% else %}
         {% photo_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}
-

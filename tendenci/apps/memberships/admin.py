@@ -92,8 +92,9 @@ def approve_selected(modeladmin, request, queryset):
     ).exclude(qs_active | qs_expired | qs_archived)
 
     for membership in memberships:
+        is_renewal = membership.is_renewal()
         membership.approve(request_user=request.user)
-        membership.send_email(request, 'approve')
+        membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if membership.corporate_membership_id:
             # notify corp reps
             membership.email_corp_reps(request)
@@ -134,8 +135,9 @@ def disapprove_selected(modeladmin, request, queryset):
     memberships = queryset.filter(qs_pending, qs_active)
 
     for membership in memberships:
+        is_renewal = membership.is_renewal()
         membership.disapprove(request_user=request.user)
-        membership.send_email(request, 'disapprove')
+        membership.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
 disapprove_selected.short_description = u'Disapprove selected'
 
@@ -476,8 +478,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             raise Http403
 
         m = get_object_or_404(MembershipDefault, pk=pk)
+        is_renewal = m.is_renewal()
         m.approve(request_user=request.user)
-        m.send_email(request, 'approve')
+        m.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if m.corporate_membership_id:
             # notify corp reps
             m.email_corp_reps(request)
@@ -519,8 +522,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         membershipdefault change page.
         """
         m = get_object_or_404(MembershipDefault, pk=pk)
+        is_renewal = m.is_renewal()
         m.disapprove(request_user=request.user)
-        m.send_email(request, 'disapprove')
+        m.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
         messages.add_message(
             request,

@@ -185,7 +185,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                   ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
                                                       rendered_fixed_option1_day,
                                                       rendered_fixed_option1_year))),
-                                  ("1", mark_safe("%s %s of current year" % \
+                                  ("1", mark_safe("%s %s of current/next year" % \
                                                   (rendered_fixed_option2_month,
                                                    rendered_fixed_option2_day))))
 
@@ -371,7 +371,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         donation_amount_widget.attrs = {'size':'8'}
         rendered_donation_amount = self.render_widget(donation_amount_widget,
                                     name, value, final_attrs, self.pos_d['donation_amount'][0], id_)
-        
+
         # donation_option
         OPTION_CHOICE = (
                           ("default", "%s%s" % (currency_symbol, self.default_amount)),

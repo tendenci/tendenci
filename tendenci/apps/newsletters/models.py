@@ -1,5 +1,5 @@
 import datetime
-import subprocess, os
+import subprocess
 import uuid
 
 from django.conf import settings
@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.models import file_directory
@@ -218,6 +219,58 @@ class Newsletter(models.Model):
             return content
 
         return ''
+    
+    
+    def clone(self):
+        """
+        Clone this newsletter and return the cloned newsletter.
+        """
+        ignore_fields = [
+            'id',
+            'email',
+            'send_status',
+            'date_created',
+            'date_email_sent',
+            'date_last_resent',
+            'email_sent_count',
+            'resend_count',
+            'security_key'
+        ]
+        field_names = [field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
+
+        newsletter_new = self.__class__()
+        for name in field_names:
+            if hasattr(self, name):
+                setattr(newsletter_new, name, getattr(self, name))
+        newsletter_new.date_created = datetime.datetime.now()
+        newsletter_new.subject = '(Cloned) {}'.format(self.subject)
+        newsletter_new.actionname = newsletter_new.subject
+        
+        # copy email - don't link the cloned newsletter to the same email
+        if self.email:
+            email_ignore_fields = [
+                'id',
+            ]
+            email_field_names = [field.name
+                for field in self.email.__class__._meta.fields
+                if field.name not in email_ignore_fields
+            ]
+            email_new = self.email.__class__()
+            for name in email_field_names:
+                if hasattr(self.email, name):
+                    setattr(email_new, name, getattr(self.email, name))
+            email_new.save()
+            
+            newsletter_new.email = email_new
+            
+        newsletter_new.save()
+        
+        return newsletter_new
+        
+        
 
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
@@ -228,10 +281,8 @@ class Newsletter(models.Model):
 
         if '[content]' in content:
             full_content = data.get('opening_text') + \
-                            data.get('login_content') + \
-                            data.get('footer_text') + \
-                            data.get('unsubscribe_text') + \
-                            data.get('browser_text')
+                           data.get('login_content')
+                            
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -254,6 +305,12 @@ class Newsletter(models.Model):
 
         if '[resumes]' in content:
             content = content.replace('[resumes]', data.get('resumes_content'))
+            
+        if '[footer]' in content:
+            content = content.replace('[footer]', data.get('footer_text'))
+            
+        if '[unsubscribe]' in content:
+            content = content.replace('[unsubscribe]', data.get('unsubscribe_text'))
 
         content = content.replace('[site_url]', get_setting('site', 'global', 'siteurl'))
         content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
@@ -399,13 +456,15 @@ class Newsletter(models.Model):
         return members
 
     def send_to_recipients(self):
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                               "send_newsletter",
                               str(self.pk)])
 
     def save(self, *args, **kwargs):
         if self.security_key == '' or self.security_key == None:
             self.security_key = uuid.uuid1()
+        if self.actionname != self.subject:
+            self.actionname = self.subject
         if "log" in kwargs:
             kwargs.pop('log')
         super(Newsletter, self).save(*args, **kwargs)

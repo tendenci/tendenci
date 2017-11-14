@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from datetime import datetime, time, timedelta
 import time as ttime
-import subprocess, os
+import subprocess
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -17,6 +17,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
@@ -500,7 +501,7 @@ def export(request, template_name="invoices/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "invoice_export_process",
                           '--start_dt=%s' % start_dt,
                           '--end_dt=%s' % end_dt,

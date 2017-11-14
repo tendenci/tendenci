@@ -2,7 +2,10 @@
 {% load i18n %}
 
 {% block content %}
-    <h1>{% trans "User Activity Summary Reports (TOP 10s)" %}</h1>
+
+<div class="page-header">
+  <h1>{% trans "User Activity Summary Reports (Top 10)" %}</h1>
+</div>
 
     <h2>{% trans "Top 10 Most Active Users - Last 30 days" %}</h2>
 
@@ -23,5 +26,6 @@
     {% with users90days as users %}
         {% include "reports/user_activity_table.html" %}
     {% endwith %}
+<br />
 {% endblock content %}
 

@@ -1893,7 +1893,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                 membership.set_expire_dt()
 
                 membership.archive_old_memberships()
-                membership.send_email(request, 'approve')
+                membership.send_email(request, ('approve_renewal' if membership.is_renewal() else 'approve'))
 
             else:  # approval required
                 # save invoice estimate

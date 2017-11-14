@@ -21,6 +21,14 @@
 <div class="day-view">
     <h2>{{ date|date:"l, F j Y" }}</h2>
 
+    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Events Views">
+      <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+      <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
+      <a href="{% url "event.today" %}" class="btn btn-secondary">{% trans "Day View" %}</a>
+      <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+      <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+    </div>
+
 <form class="search-form" action="{% url "event.today" %}" method="get">
 
 <div class="form-field clearfix">
@@ -55,8 +63,7 @@
         <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
             <div class="event-sidebar">
                 <div class="time-stamp">
-                {% if not event.all_day %}
-                {{ event.start_dt|date:"f a" }}{% endif %}
+                  {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}{% endif %}
                 </div>
                 <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
             {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
@@ -128,9 +135,11 @@
             </form>
         </div>
     {% empty %}
-        <div class="no-events">{% trans "No events here, yet. " %}
-            <a href="{% url "event.add" date.year date.month date.day %}">
-            {% trans "I would like to add one." %}</a></div>
+        <div class="no-events">{% trans "No events are currently scheduled on this day." %}
+            {% comment %}
+            <br/><a href="{% url "event.add" date.year date.month date.day %}">{% trans "Add an event" %}</a>
+            {% endcomment %}
+        </div>
     {% endfor %}
 
     {% if events %}

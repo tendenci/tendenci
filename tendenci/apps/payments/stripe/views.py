@@ -1,6 +1,5 @@
 #import os
 import math
-import traceback
 #from datetime import datetime
 from django.shortcuts import render_to_response, get_object_or_404
 #from django.http import HttpResponse
@@ -8,12 +7,12 @@ from django.conf import settings
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-
-import simplejson
+from django.db import transaction
+# import simplejson
 
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
@@ -28,17 +27,18 @@ from tendenci.apps.perms.utils import has_perm
 
 
 def pay_online(request, payment_id, template_name='payments/stripe/payonline.html'):
-    payment = get_object_or_404(Payment, pk=payment_id)
-    form = StripeCardForm(request.POST or None)
-    billing_info_form = BillingInfoForm(request.POST or None, instance=payment)
-    currency = get_setting('site', 'global', 'currency')
-    if not currency:
-        currency = 'usd'
-    if request.method == "POST":
-        if form.is_valid():
-            # get stripe token and make a payment immediately
-            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
-            token = request.POST.get('stripe_token')
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+        form = StripeCardForm(request.POST or None)
+        billing_info_form = BillingInfoForm(request.POST or None, instance=payment)
+        currency = get_setting('site', 'global', 'currency')
+        if not currency:
+            currency = 'usd'
+        if request.method == "POST":
+            if form.is_valid():
+                # get stripe token and make a payment immediately
+                stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+                token = request.POST.get('stripe_token')
 
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
@@ -99,9 +99,9 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                               'customer_profile_id': customer.id,
                               }
                     membership.get_or_create_rp(request.user, **kwargs)
-                    
+
             # update payment status and object
-            if  payment.invoice.balance > 0:
+            if not payment.is_approved:  # if not already processed
                 payment_update_stripe(request, charge_response, payment)
                 payment_processing_object_updates(request, payment)
 

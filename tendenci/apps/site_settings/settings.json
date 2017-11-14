@@ -875,7 +875,7 @@
         "client_editable": true,
         "name": "overridebootstrapcss",
         "value": "false",
-        "label": "Override Boostrap CSS",
+        "label": "Override Bootstrap CSS",
         "input_value": "true,false",
         "parent_id": 0,
         "scope": "site",

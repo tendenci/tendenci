@@ -7,86 +7,89 @@
 {% block title %}{{ block.super }}{% trans 'Invoice Search' %}{% endblock %}
 
 {% block extra_head %}
-    {{ block.super }}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
+{{ block.super }}
 
-    <style type="text/css">
-        .float-left{
-            float: left;
-        }
-        .clear-left{
-            clear: left;
-        }
-        #id_start_dt, #id_end_dt, #id_start_amount, #id_end_amount {
-            width: 18%;
-        }
-        #id_search_criteria, #id_search_text, #id_last_name{
-            width: 150px;
-        }
-        #id_search_method{
-            width: 100px;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
-    <div class="t">
-        <div class="t-invoice">
-            <div class="t-search">
-                <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
-                {% invoice_search %}
-                {% autopaginate invoices 25 %}
-                <div class="invoices-wrap">
-                    {% if query %}
-                    <div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
-                    {% endif %}
-                    {% for invoice in invoices %}
-                    {% with invoice|get_object as invoice %}
-                        <div class="invoice-row">
-                            <div class="invoice-row-inner">
-                                {% invoices_search_results_line request invoice %}
-                            </div>
-                        </div>
-                    {% endwith %}
-                    {% empty %}
-                        <div>{% trans "0 Results Found" %}</div>
-                    {% endfor %}
-                </div>
-                {% paginate %}
-            </div>
+<div class="t">
+  <div class="t-invoice">
+    <div class="t-search">
+      
+      <div class="page-header">
+        <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
+      </div>
+      
+      {% invoice_search %}
+      
+      <br />
+      <table class="table table-tendenci-reports">
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>No.</td>
+            <td>Member/User</td>
+            <td>Item</td>
+            <td>Total Amount</td>
+            <td>Status</td>
+            <td>Action</td>
+          </tr>
+        </thead>
+        
+        {% autopaginate invoices 25 %}
+        
+        {% if query %}
+        <div>{{ INDEX_UPDATE_NOTE }}</div>
+        {% endif %}
+        {% for invoice in invoices %}
+        {% with invoice|get_object as invoice %}
+        <div class="invoice-row">
+          <div class="invoice-row-inner">
+            {% invoices_search_results_line request invoice %}
+          </div>
         </div>
+        {% endwith %}
+        {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+        {% endfor %}
+        
+        {% paginate %}
+        
+      </table>
+      <br />
     </div>
+  </div>
+  
+</div>
 
 {% endblock %}
 
 {% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}timepicker/timepicker.js"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            //Hide advanced options
-
-            var event_type = $("select#id_invoice_type").val();
-            if(event_type != 'events') {
-                $('div.eventFields').hide();
-            }
-        });
-
-        $(document).ready(function () {
-            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
-        });
-
-        $("select#id_invoice_type").change(function() {
-            if($(this).val() == 'events') {
-                $('div.eventFields').show();
-            }
-            else {
-                $('div.eventFields').hide();
-            }
-        });
-    </script>
+<script type="text/javascript">
+  $(document).ready(function() {
+  //Hide advanced options
+  
+  var event_type = $("select#id_invoice_type").val();
+  if(event_type != 'events') {
+  $('div.eventFields').hide();
+  }
+  });
+  
+  $(document).ready(function () {
+  $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+  });
+  
+  $("select#id_invoice_type").change(function() {
+  if($(this).val() == 'events') {
+  $('div.eventFields').show();
+  }
+  else {
+  $('div.eventFields').hide();
+  }
+  });
+</script>
 {% endblock %}

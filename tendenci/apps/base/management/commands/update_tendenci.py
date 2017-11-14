@@ -8,6 +8,8 @@ from django.core.management.base import BaseCommand
 from django.core.management import call_command, CommandError
 from django.template.loader import render_to_string
 
+from tendenci.libs.utils import python_executable
+
 
 class Command(BaseCommand):
     """
@@ -50,7 +52,7 @@ class Command(BaseCommand):
 
         try:
             print "Updating tendenci"
-            subprocess.check_output("%s -m pip install tendenci --upgrade" % os.environ.get('_', 'python'), stderr=subprocess.STDOUT, shell=True)
+            subprocess.check_output("%s -m pip install tendenci --upgrade" % python_executable(), stderr=subprocess.STDOUT, shell=True)
             pass_update_tendenci = True
 
         except subprocess.CalledProcessError as e:
@@ -60,7 +62,7 @@ class Command(BaseCommand):
         if pass_update_tendenci:
             try:
                 print "Updating tendenci site"
-                subprocess.check_output("%s deploy.py" % os.environ.get('_', 'python'), stderr=subprocess.STDOUT, shell=True)
+                subprocess.check_output("%s deploy.py" % python_executable(), stderr=subprocess.STDOUT, shell=True)
                 pass_update_tendenci_site = True
 
             except subprocess.CalledProcessError as e:

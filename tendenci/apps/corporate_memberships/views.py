@@ -5,7 +5,7 @@ import csv
 import operator
 from hashlib import md5
 from sets import Set
-import subprocess, sys
+import subprocess
 import mimetypes
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -26,6 +26,8 @@ from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import ugettext_lazy as _
+
+from tendenci.libs.utils import python_executable
 
 from tendenci.apps.exports.utils import render_csv
 
@@ -80,7 +82,6 @@ from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
-#from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.site_settings.utils import get_setting
 
 @is_enabled('corporate_memberships')
@@ -401,22 +402,22 @@ def corpmembership_upgrade(request, id,
                         status=True).exclude(
                         status_detail='archive'
                         ).filter(
-                    Q(corp_profile_id=corp_profile.id) 
+                    Q(corp_profile_id=corp_profile.id)
                     | Q(corporate_membership_id=corp_membership.id))
             memberships.update(membership_type=membership_type)
-            
+
             # log an event
             description = 'Updated corp. membership type from (id: %s) to (id: %s)' % (
                                         original_corp_memb_type.id,
                                         corp_membership.corporate_membership_type.id)
             EventLog.objects.log(instance=corp_membership, description=description)
-            
+
             msg_string = 'Successfully upgraded membership type from "%s" to "%s" for "%s"' % (
                                     original_corp_memb_type,
                                     corp_membership.corporate_membership_type,
                                     corp_profile.name)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
-                
+
             # redirect to view
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
@@ -944,7 +945,7 @@ def corp_renew(request, id,
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
     if corp_membership.is_archive:
-        # don't renew archive 
+        # don't renew archive
         [latest_renewed] = CorpMembership.objects.filter(
                                     corp_profile=corp_membership.corp_profile,
                                     expiration_dt__gt=corp_membership.expiration_dt,
@@ -953,7 +954,7 @@ def corp_renew(request, id,
         if latest_renewed:
             return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[latest_renewed.id]))
-        
+
     corpmembership_app = CorpMembershipApp.objects.current_app()
     new_corp_membership = corp_membership.copy()
     form = CorpMembershipRenewForm(
@@ -992,7 +993,7 @@ def corp_renew(request, id,
                 indiv_renewal_price = corp_memb_type.membership_type.renewal_price
                 if not indiv_renewal_price:
                     indiv_renewal_price = 0
-                    
+
                 count_members = len(members)
                 if corp_memb_type.apply_cap and corp_memb_type.allow_above_cap and count_members > corp_memb_type.membership_cap:
                     count_ind_within_cap = corp_memb_type.membership_cap
@@ -1003,7 +1004,7 @@ def corp_renew(request, id,
                 else:
                     renewal_total = corp_renewal_price + \
                             indiv_renewal_price * count_members
-                        
+
                 opt_d = {'renewal': True,
                          'renewal_total': renewal_total}
                 # create an invoice
@@ -1102,14 +1103,14 @@ def corp_renew(request, id,
         summary_data['membership_cap'] = cmt.membership_cap
         summary_data['allow_above_cap'] = cmt.allow_above_cap
         summary_data['above_cap_price'] = cmt.above_cap_price
-        summary_data['individual_count'] = summary_data['total_individual_count'] 
+        summary_data['individual_count'] = summary_data['total_individual_count']
 
         if summary_data['apply_cap'] and summary_data['allow_above_cap']:
             if summary_data['total_individual_count'] > summary_data['membership_cap']:
                 summary_data['individual_count'] = summary_data['membership_cap']
-                summary_data['above_cap_individual_count'] = summary_data['total_individual_count'] - summary_data['membership_cap']                
-            
-        
+                summary_data['above_cap_individual_count'] = summary_data['total_individual_count'] - summary_data['membership_cap']
+
+
     summary_data['individual_total'] = summary_data['individual_count'
                                         ] * summary_data['individual_price']
     summary_data['above_cap_individual_total'] = summary_data['above_cap_individual_count'
@@ -1257,7 +1258,7 @@ def roster_search(request,
     else:
         EventLog.objects.log()
     corp_profile = corp_membership and corp_membership.corp_profile
-    
+
     is_rep = False
     if corp_profile:
         is_rep = corp_profile.is_rep(request.user)
@@ -1412,7 +1413,7 @@ def import_preview(request, mimport_id,
 #                                 args=[mimport.id]))
         else:
             if mimport.status == 'not_started':
-                subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "corp_membership_import_preprocess",
                               str(mimport.pk)])
 
@@ -1452,7 +1453,7 @@ def import_process(request, mimport_id):
         mimport.num_processed = 0
         mimport.save()
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_corp_memberships",
                           str(mimport.pk),
                           str(request.user.pk)])
@@ -1665,7 +1666,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 @is_enabled('corporate_memberships')
 def corp_reps_lookup(request):
     q = request.GET['term']
-    #use_search_index = get_setting('site', 'global', 'searchindex')
+    #use_search_index = (get_setting('site', 'global', 'searchindex') in ('true', True))
     # TODO: figure out a way of assigning search permission to dues_reps.
     use_search_index = False
     if use_search_index:

@@ -22,6 +22,7 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import checklist_update
@@ -199,7 +200,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
-        return redirect(cached_image)
+        return redirect('{0}{1}'.format(get_setting('site', 'global', 'siteurl'), cached_image))
 
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
@@ -577,7 +578,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     # serialize queryset
     data = serializers.serialize("json", Image.objects.filter(id=photo.id))
 
-    cache_image = Popen([os.environ.get('_', 'python'), "manage.py", "precache_photo", str(photo.pk)])
+    cache_image = Popen([python_executable(), "manage.py", "precache_photo", str(photo.pk)])
 
 
 @is_enabled('photos')

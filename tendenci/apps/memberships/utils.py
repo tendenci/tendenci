@@ -6,6 +6,7 @@ from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
 import time as ttime
+from dateutil.relativedelta import relativedelta
 
 from django.http import HttpResponseServerError
 from django.conf import settings
@@ -1855,4 +1856,57 @@ def get_membership_app(membership):
             if membership.membership_type_id in mt_ids:
                 return app
                 
-    return None 
+    return None
+
+
+def get_membership_summary_data():
+    summary = []
+    memb_types = MembershipType.objects.all()
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_in_grace_period = 0
+    total_total = 0
+    now = datetime.now()
+    for membership_type in memb_types:
+        grace_period = membership_type.expiration_grace_period
+        date_to_expire = now - relativedelta(days=grace_period)
+        mems = MembershipDefault.objects.filter(
+                    membership_type=membership_type)
+        active = mems.filter(status=True, status_detail='active')
+        expired = mems.filter(status=True,
+                              status_detail='expired')
+        in_grace_period = mems.filter(status=True,
+                              status_detail='active',
+                              expire_dt__lte=now,
+                              expire_dt__gt=date_to_expire)
+        pending = mems.filter(status=True, status_detail__contains='ending')
+
+        active_count = active.count()
+        pend_count = pending.count()
+        expired_count = expired.count()
+        in_grace_period_count = in_grace_period.count()
+        type_total = sum([active_count,
+                          pend_count,
+                          expired_count])
+
+        total_active += active_count
+        total_pending += pend_count
+        total_expired += expired_count
+        total_in_grace_period += in_grace_period_count
+        total_total += type_total
+        summary.append({
+            'type': membership_type,
+            'active': active_count,
+            'pending': pend_count,
+            'expired': expired_count,
+            'in_grace_period': in_grace_period_count,
+            'total': type_total,
+        })
+
+    return (sorted(summary, key=lambda x: x['type'].name),
+        {'total_active': total_active,
+         'total_pending': total_pending,
+         'total_expired': total_expired,
+         'total_in_grace_period': total_in_grace_period,
+         'total_total': total_total})

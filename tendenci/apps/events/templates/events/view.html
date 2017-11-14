@@ -43,6 +43,7 @@
             {% endif %}
             <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span></h1>
 
+            {% if event_files or speaker_files or organizer_files or place_files %}
             <div class="event-tabs">
                 <ul class="nav nav-tabs">
                     <li role="presentation" class="dropdown active">
@@ -53,6 +54,9 @@
                     </li>
                 </ul>
             </div>
+            {% else %}
+            <hr/>
+            {% endif %}
 
             <!-- Event Details -->
             <div class="details-wrap clearfix">
@@ -64,7 +68,7 @@
                     </div>
                     {% endif %}
                     <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
-                
+
                 {% if event.groups.count > 0 %}
                 <div><strong>{% trans "Group(s):" %}</strong>
                 {% for group in event.groups.all %}
@@ -72,7 +76,7 @@
                 {% endfor %}
                 </div>
                 {% endif %}
-                
+
                 </div>
 
                 {% for speaker in speakers %}
@@ -335,23 +339,6 @@
                 return false;
             });
 
-            // // Dialog
-            // $('#event_export_dialog').dialog({
-                // autoOpen: false,
-                // width: 600,
-                // buttons: {
-                    // "Close": function() {
-                        // $(this).dialog("close");
-                    // }
-                // }
-            // });
-            // // Dialog Link
-            // $('#event_export_link').click(function(){
-                // $('#event_export_dialog').show();
-                // $('#event_export_dialog').dialog('open');
-// 
-                // return false;
-            // });
         });
     </script>
 {% endblock %}

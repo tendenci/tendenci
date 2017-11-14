@@ -1,4 +1,4 @@
-import subprocess, os
+import subprocess
 import time
 
 from datetime import datetime
@@ -18,6 +18,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
@@ -393,7 +394,7 @@ def export(request, template_name="articles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "articles_export_process",
                           '--identifier=%s' % identifier,
                           '--user=%s' % request.user.id])

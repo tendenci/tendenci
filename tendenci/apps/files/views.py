@@ -58,7 +58,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         constrain=constrain)
 
     cached_image = cache.get(cache_key)
-    
+
     if cached_image:
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
@@ -304,7 +304,7 @@ class FileTinymceCreateView(CreateView):
     #fields = ("file",)
     template_name_suffix = '_tinymce_upload_form'
     form_class = TinymceUploadForm
-    
+
     @method_decorator(is_enabled('files'))
     @method_decorator(login_required)
     @method_decorator(csrf_protect)
@@ -312,7 +312,7 @@ class FileTinymceCreateView(CreateView):
         if not has_perm(request.user, 'files.add_file'):
             return HttpResponseForbidden()
         return super(FileTinymceCreateView, self).dispatch(request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super(FileTinymceCreateView, self).get_context_data(**kwargs)
         context['app_label'] = self.request.GET.get('app_label', '')
@@ -323,7 +323,7 @@ class FileTinymceCreateView(CreateView):
         context['accept_file_types'] = '|'.join(x[1:] for x in get_allowed_upload_file_exts(context['upload_type']))
 
         return context
-    
+
     def form_valid(self, form):
         app_label = self.request.POST['app_label']
         model = unicode(self.request.POST['model']).lower()
@@ -373,7 +373,7 @@ class FileTinymceCreateView(CreateView):
 #         data = json.dumps(form.errors)
 #         print 'data=', data
 #         return HttpResponse(content=data, status=400, content_type='application/json')
-    
+
 
 @is_enabled('files')
 @login_required
@@ -644,8 +644,6 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(
-        event_id__in=(185000, 186000), create_dt__range=(start_dt, end_dt))
-    event_logs = event_logs | EventLog.objects.values('object_id').filter(
         application='files', action='details', create_dt__range=(start_dt, end_dt))
 
     if file_type != 'all':

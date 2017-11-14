@@ -50,11 +50,11 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
-        
+
     def get_queryset(self, request):
         qs = super(CorporateMembershipTypeAdmin, self).get_queryset(request)
         # filter out soft-deleted items
-        return qs.filter(status=True)        
+        return qs.filter(status=True)
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -397,7 +397,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
 class CorpProfileAdmin(admin.ModelAdmin):
     model = CorpProfile
-    
+
     def has_add_permission(self, request):
         return False
 

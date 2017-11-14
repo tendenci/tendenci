@@ -6,7 +6,7 @@
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -15,13 +15,11 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans 'Settings' %}</a>
-            <div>
-            <ul class="dropdown-menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Settings' %}</a>
+        <ul class="dropdown-menu">
             <li><a href="/settings/site/global/">{% trans "Global Site Settings" %}</a></li>
             <li><a href="/settings/">{% trans "Full Settings List" %}</a></li>
         </ul>
-        </div>
     </li>
     {% if scope_category %}
         {% if scope_category == 'events' %}

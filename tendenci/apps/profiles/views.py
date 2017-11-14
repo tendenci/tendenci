@@ -2,7 +2,7 @@
 import os
 import math
 import time
-import subprocess, sys
+import subprocess
 from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -23,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 import simplejson
+
+from tendenci.libs.utils import python_executable
 
 from tendenci.apps.base.decorators import ssl_required, password_required
 from tendenci.apps.base.utils import get_pagination_page_range
@@ -129,7 +131,7 @@ def index(request, username='', template_name="profiles/index.html"):
                                                  object_content_type__model='membershipdefault').exists():
             auto_renew_is_set = True
         
-    registrations = Registrant.objects.filter(user=user_this)
+    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
 
     EventLog.objects.log(instance=profile)
 
@@ -144,7 +146,7 @@ def index(request, username='', template_name="profiles/index.html"):
 
     multiple_apps = False
     membership_reminders = ()
-    
+
     if get_setting('module', 'memberships', 'enabled'):
         from tendenci.apps.memberships.models import MembershipApp
         membership_apps = MembershipApp.objects.filter(
@@ -155,7 +157,7 @@ def index(request, username='', template_name="profiles/index.html"):
                                          ).order_by('name')
         if len(membership_apps) > 1:
             multiple_apps = True
-            
+
         if request.user == user_this or request.user.profile.is_superuser:
             membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
     else:
@@ -257,9 +259,9 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(Q(status=True))
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
-        if request.user.is_authenticated() and request.user.profile.is_member:            
+        if request.user.is_authenticated() and request.user.profile.is_member:
             filters = get_query_filters(request.user, 'profiles.view_profile')
-        
+
             if membership_view_perms == 'private':
                 # show non-members only
                 profiles = profiles.filter(member_number='')  # exclude all members
@@ -277,15 +279,15 @@ def search(request, template_name="profiles/search.html"):
                                                                   status_detail='active'
                                                 ).values_list('user_id'))
                 profiles = profiles.filter(filters)
-    
+
             if not allow_user_search:
                 # exclude non-members
                 profiles = profiles.exclude(member_number='')
-    
+
         else: # non-member
             if membership_view_perms != 'public':
                 # show non-members only
-                profiles = profiles.filter(member_number='')           
+                profiles = profiles.filter(member_number='')
 
     profiles = profiles.distinct()
 
@@ -1129,7 +1131,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         if form.is_valid():
             master = form.cleaned_data["master_record"]
             users = form.cleaned_data['user_list']
-            
+
             master_user = master.user
 
             if master and users:
@@ -1145,24 +1147,24 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                 profile.user.username,
                                 profile.user.id
                                 ) for profile in users if profile != master]))
-        
+
                 related = master_user._meta.get_fields()
                 field_names = [field.name for field in master._meta.get_fields()]
-        
+
                 valnames = dict()
                 for r in related:
                     if not r.related_model is Profile:
                         if not r.related_model:
                             continue
                         valnames.setdefault(r.related_model, []).append(r)
-        
+
                 for profile in users:
                     user_to_delete = profile.user
                     if profile != master:
                         for field in field_names:
                             if getattr(master, field) == '':
                                 setattr(master, field, getattr(profile, field))
-        
+
                         for model, fields in valnames.iteritems():
                             # skip auth_user
                             if model is User:
@@ -1179,11 +1181,11 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                         # clear from user_to_delete
                                         eval('user_to_delete.%s.clear()' % field.name)
                                     continue
-                                
+
                                 field_name = field.field.name
                                 if not isinstance(field, models.OneToOneField) and not isinstance(field, models.OneToOneRel):
                                     objs = model.objects.filter(**{field_name: user_to_delete})
-        
+
                                     # handle unique_together fields. for example, GroupMembership
                                     # unique_together = ('group', 'member',)
                                     [unique_together] = model._meta.unique_together[:1] or [None]
@@ -1197,7 +1199,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             if model.objects.filter(**field_dict).exists():
                                                 if hasattr(obj, 'hard_delete'):
                                                     obj.hard_delete()
-                                                else:  
+                                                else:
                                                     obj.delete()
                                             else:
                                                 setattr(obj, field_name, master_user)
@@ -1230,19 +1232,19 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                             # delete obj
                                             if hasattr(obj, 'hard_delete'):
                                                 obj.hard_delete()
-                                            else: 
+                                            else:
                                                 obj.delete()
-        
+
                         master.save()
                         profile.delete()
                         user_to_delete.delete()
-                        
-        
+
+
                 # log an event
                 EventLog.objects.log(description=description[:120])
                 #invalidate('profiles_profile')
                 messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
-        
+
             return redirect("profile.search")
 
     return render_to_response(template_name, {
@@ -1268,7 +1270,7 @@ def profile_export(request, template_name="profiles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "profile_export_process",
                           '--export_fields=%s' % export_fields,
                           '--identifier=%s' % identifier,
@@ -1443,7 +1445,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
                                      args=[uimport.id]))
         else:
             if uimport.status == 'not_started':
-                subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "users_import_preprocess",
                               str(uimport.pk)])
 
@@ -1468,7 +1470,7 @@ def user_import_process(request, uimport_id):
         uimport.num_processed = 0
         uimport.save()
         # start the process
-        subprocess.Popen([os.environ.get('_', 'python'), "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_users",
                           str(uimport.pk),
                           str(request.user.pk)])
@@ -1591,7 +1593,7 @@ def download_user_template(request):
 
 def activate_email(request):
     """
-    Send an activation email to user to activate an inactive user account for a given an email address. 
+    Send an activation email to user to activate an inactive user account for a given an email address.
     Optional parameter: username
     """
     from tendenci.apps.registration.models import RegistrationProfile
@@ -1604,7 +1606,7 @@ def activate_email(request):
         u = None
         if email and username:
             [u] = User.objects.filter(is_active=False, email=email, username=username)[:1] or [None]
-            
+
         if email and not u:
             [u] = User.objects.filter(is_active=False, email=email).order_by('-is_active')[:1] or [None]
 
@@ -1623,4 +1625,4 @@ def activate_email(request):
                               { 'email': email},
                               context_instance=context)
 
-    raise Http404       
+    raise Http404

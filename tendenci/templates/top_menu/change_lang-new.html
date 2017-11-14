@@ -1,10 +1,12 @@
 {% load i18n %}
 
 
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
 <li class="dropdown">
     {% with request.user.profile.lang as user_lang %}
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-            <i class="fa fa-globe"></i>{% get_language_info for user_lang as l %}<span class="nav-label">{{ l.name_local }}</span><span class="caret"></span>
+            <i class="fa fa-globe"></i>{% trans 'Language:' %} {% get_language_info for user_lang as l %}<span class="nav-label">{{ l.name_local }}</span><span class="caret"></span>
         </a>
 
         <ul id="t-megamenu-lang-dd" class="dropdown-menu lang-dropdown" role="menu">
@@ -24,3 +26,6 @@
         </form>
     {% endwith %}
 </li>
+
+</ul>
+</div>
