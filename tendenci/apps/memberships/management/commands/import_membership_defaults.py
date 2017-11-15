@@ -36,7 +36,7 @@ class Command(BaseCommand):
         for idata in data_list:
             try:
                 imd.process_default_membership(idata)
-            except Exception, e:
+            except Exception as e:
                 print(e)
 
             mimport.num_processed += 1

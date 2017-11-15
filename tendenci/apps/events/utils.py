@@ -1536,13 +1536,13 @@ def event_import_process(import_i, preview=True):
             try:
                 datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
                 datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
-            except ValueError, e:
+            except ValueError as e:
                 invalid = True
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
 
             try:
                 timezone(event_object_dict["timezone"])
-            except UnknownTimeZoneError, e:
+            except UnknownTimeZoneError as e:
                 invalid = True
                 invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 
@@ -1573,7 +1573,7 @@ def event_import_process(import_i, preview=True):
         if not preview:  # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()

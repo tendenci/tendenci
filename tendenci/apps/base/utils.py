@@ -889,7 +889,7 @@ def validate_email(s, quiet=True):
     try:
         _validate_email(s)
         return True
-    except Exception, e:
+    except Exception as e:
         if not quiet:
             raise e
     return False

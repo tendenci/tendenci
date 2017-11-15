@@ -280,13 +280,13 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                         client_id, template.name,
                         html_url, zip_url
                     )
-            except BadRequest, e:
+            except BadRequest as e:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
-            except Exception, e:
+            except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
@@ -349,12 +349,12 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             try:
                 t = CST(auth=auth, template_id = form.instance.template_id)
                 t.update(str(template.name), html_url, zip_url)
-            except BadRequest, e:
+            except BadRequest as e:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 return render_to_response(template_name, {'form':form},
                     context_instance=RequestContext(request))
-            except Exception, e:
+            except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 return render_to_response(template_name, {'form':form},
@@ -418,11 +418,11 @@ def template_update(request, template_id):
     try:
         t = CST(auth=auth, template_id = template.template_id)
         t.update(unicode(template.name), html_url, zip_url)
-    except BadRequest, e:
+    except BadRequest as e:
         msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
         messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
-    except Exception, e:
+    except Exception as e:
         msg_string = 'Error: %s' % e
         messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
@@ -449,11 +449,11 @@ def template_delete(request, template_id):
 
     try:
         CST(auth=auth, template_id=t_id).delete()
-    except BadRequest, e:
+    except BadRequest as e:
         msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
         messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
-    except Exception, e:
+    except Exception as e:
         msg_string = 'Error: %s' % e
         messages.add_message(request, messages.ERROR, _(msg_string))
         return redirect(template)
@@ -552,10 +552,10 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             try:
                 t = CST(auth=auth, template_id = template.template_id)
                 t.update(unicode(template.name), html_url, zip_url)
-            except BadRequest, e:
+            except BadRequest as e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return redirect('campaign_monitor.campaign_generate')
-            except Exception, e:
+            except Exception as e:
                 messages.add_message(request, messages.ERROR, 'Error: %s' % e)
                 return redirect('campaign_monitor.campaign_generate')
             return redirect("%s/campaign/create/new" % settings.CAMPAIGNMONITOR_URL)
@@ -579,11 +579,11 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
 
         try:
             CSC(auth=auth, campaign_id=campaign.campaign_id).delete()
-        except BadRequest, e:
+        except BadRequest as e:
             msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
             messages.add_message(request, messages.ERROR, _(msg_string))
             return redirect(campaign)
-        except Exception, e:
+        except Exception as e:
             msg_string = 'Error: %s' % e
             messages.add_message(request, messages.ERROR, _(msg_string))
             return redirect(campaign)

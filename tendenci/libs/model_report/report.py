@@ -284,7 +284,7 @@ class ReportAdmin(object):
                         if pattname in cattname:
                             if pfield.model == cfield.model:
                                 self.related_inline_filters.append([pattname, cattname, self.parent_report.get_fields().index(pattname)])
-                    except Exception, e:
+                    except Exception as e:
                         pass
 
 

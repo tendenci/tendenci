@@ -550,7 +550,7 @@ class OpenIdAuth(BaseAuth):
             openid_url = self.openid_url()
             try:
                 openid_request = self.consumer().begin(openid_url)
-            except DiscoveryFailure, err:
+            except DiscoveryFailure as err:
                 raise ValueError('OpenID discovery error: %s' % err)
             else:
                 setattr(self, '_openid_request', openid_request)

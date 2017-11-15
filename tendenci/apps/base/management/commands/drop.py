@@ -42,7 +42,7 @@ class Command(BaseCommand):
             for sql in sql_list:
                 cursor.execute(sql)
             cursor.execute('SET FOREIGN_KEY_CHECKS = 1;')
-        except Exception, e:
+        except Exception as e:
             transaction.rollback_unless_managed()
             raise CommandError("""
                 Error running SQL. Possible reasons:

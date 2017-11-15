@@ -86,7 +86,7 @@ class Command(BaseCommand):
                                         setattr(obj, field.name, new_val)
                                         try:
                                             obj.save()
-                                        except Exception, e:
+                                        except Exception as e:
                                             print("failed to update %s %s" % (model._meta.verbose_name, obj.pk))
                                             print(e)
 

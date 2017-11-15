@@ -45,7 +45,7 @@ class Command(BaseCommand):
             # catch any error
             try:
                 imd.process_corp_membership(cmemb_data)
-            except Exception, e:
+            except Exception as e:
                 # mimport.status = 'error'
                 # TODO: add a field to log the error
                 # mimport.save()

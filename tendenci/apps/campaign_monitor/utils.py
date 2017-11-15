@@ -125,7 +125,7 @@ def sync_templates(request=None):
             cst = CST(auth, template_id=template.template_id)
             cst.update(unicode(template.name), html_url, zip_url)
             success = True
-        except BadRequest, e:
+        except BadRequest as e:
             success = False
             if request:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
@@ -133,7 +133,7 @@ def sync_templates(request=None):
             else:
                 print(e.data.Code, e.data.Message)
                 return
-        except Exception, e:
+        except Exception as e:
             success = False
             if request:
                 msg_string = 'Error: %s' % e
@@ -199,5 +199,5 @@ def update_subscription(profile, old_email):
                 subscriber = Subscriber(auth, listmap.list_id, old_email)
                 try:
                     subscriber.update(user.email, user.get_full_name(), [], False)
-                except BadRequest, e:
+                except BadRequest as e:
                     print(e)
