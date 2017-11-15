@@ -1,0 +1,25 @@
+[flake8]
+ignore =
+  # Ignored key in dict
+  F601,F999,
+  # Deprecated/discouraged syntax
+  E711,E712,E713,E714,E721,E731,W601,W602,W603,
+  # Unused/undefined/redefined variables
+  F811,F812,F821,F841,
+  # Import issues
+  E401,E402,F401,F402,F403,F405,
+  # Continuation/semicolon issues
+  E502,E701,E703,
+  # Assorted whitespace issues
+  E101,E303,W191,W291,W292,W293,W391,
+
+  # Indentation warnings
+  E111,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,
+  # Spacing warnings within statements
+  E201,E202,E203,E211,E221,E222,E225,E226,E227,E228,E231,E241,E251,E271,E272,W503,
+  # Spacing between function definitions
+  E301,E302,E305,E306,
+  # Comment formatting issues
+  E114,E115,E116,E261,E262,E265,E266,
+  # Line length
+  E501
