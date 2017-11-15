@@ -182,7 +182,7 @@ def get_ACRF_queryset(event=None):
             for regfield in data:
                 regfield['fields']['form'] = form
                 CustomRegField.objects.create(**regfield['fields'])
-                if regfield['fields'].has_key('map_to_field'):
+                if 'map_to_field' in regfield['fields']:
                     map_to_fields.append(regfield['fields']['map_to_field'])
 
             for field in map_to_fields:
@@ -584,7 +584,7 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     # to avoid email duplications
     for recipient in notice_recipients:
         clean_recipient = recipient.strip()
-        if clean_recipient and (not clean_recipient in email_list):
+        if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
     notification.send_emails(
@@ -871,7 +871,7 @@ def add_registration(*args, **kwargs):
 #                override_price = amount
 
         # the table registration form does not have the DELETE field
-        if event.is_table or not form in registrant_formset.deleted_forms:
+        if event.is_table or form not in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
                 event,
@@ -1710,7 +1710,7 @@ def add_sf_attendance(registrant, event):
                         'MailingPostalCode':registrant.zip
                         })
                     # update field Company_Name__c
-                    if registrant.company_name and contact.has_key('Company_Name__c'):
+                    if registrant.company_name and 'Company_Name__c' in contact:
                         sf.Contact.update(contact['id'], {'Company_Name__c': registrant.company_name})
 
                     contact_id = contact['id']

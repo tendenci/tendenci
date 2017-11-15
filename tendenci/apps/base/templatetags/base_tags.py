@@ -126,14 +126,14 @@ def callMethod(obj, methodName):
     """
     method = getattr(obj, methodName)
 
-    if obj.__dict__.has_key("__callArg"):
+    if "__callArg" in obj.__dict__:
         ret = method(*obj.__callArg)
         del obj.__callArg
         return ret
     return method()
 
 def args(obj, arg):
-    if not obj.__dict__.has_key("__callArg"):
+    if "__callArg" not in obj.__dict__:
         obj.__callArg = []
 
     obj.__callArg += [arg]

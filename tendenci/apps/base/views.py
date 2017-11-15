@@ -301,7 +301,7 @@ def base_file(request, file_name):
     Only predefined extensions are allowed.
     """
     ext = os.path.splitext(file_name)[1].strip('.')
-    if not ext in BASEFILE_EXTENSIONS:
+    if ext not in BASEFILE_EXTENSIONS:
         raise Http404
 
     try:
@@ -408,7 +408,7 @@ def addon_upload(request, template_name="base/addon_upload.html"):
 @superuser_required
 def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.html"):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 
@@ -435,7 +435,7 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
 @superuser_required
 def addon_upload_process(request, sid, template_name="base/addon_upload_process.html"):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 
@@ -450,7 +450,7 @@ def addon_upload_process(request, sid, template_name="base/addon_upload_process.
 
 def addon_upload_check(request, sid):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 

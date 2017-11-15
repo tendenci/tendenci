@@ -154,7 +154,7 @@ class CIMBase(object):
 
             children = sub_e.getchildren()
             if not children:
-                if d.has_key(name):
+                if name in d:
                     if not type(d[name]) is list:
                         d[name] = list([d[name]])
                     d[name].append(sub_e.text)

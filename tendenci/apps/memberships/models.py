@@ -1402,7 +1402,7 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         # can only renew from active or expired
-        if not self.get_status() in ['active', 'expired']:
+        if self.get_status() not in ['active', 'expired']:
             return False
 
         # assert that we're within the renewal period
@@ -1421,7 +1421,7 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         # can only renew from approved state
-        if not self.get_status() in ['active', 'expired']:
+        if self.get_status() not in ['active', 'expired']:
             return False
 
         # assert that we're within the renewal period
@@ -2552,7 +2552,7 @@ class MembershipAppField(OrderingBaseModel):
 
         if fld:
             field_type = fld.get_internal_type()
-            if not field_type in available_field_types:
+            if field_type not in available_field_types:
                 if field_type in ['ForeignKey', 'OneToOneField']:
                     field_type = 'ChoiceField'
                 elif field_type in ['ManyToManyField']:

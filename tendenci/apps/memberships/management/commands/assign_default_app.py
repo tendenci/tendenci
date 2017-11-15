@@ -75,7 +75,7 @@ class Command(BaseCommand):
                                                          membership.id))
             else:
                 mt_id = membership.membership_type.id
-                if not membership.app in type_to_apps_map[mt_id]:
+                if membership.app not in type_to_apps_map[mt_id]:
                     membership.app = type_to_apps_map[mt_id][0]
                     membership.save()
                     count += 1

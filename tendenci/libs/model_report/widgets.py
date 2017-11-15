@@ -32,7 +32,7 @@ class RangeField(forms.MultiValueField):
     }
 
     def __init__(self, field_class, widget=forms.TextInput, *args, **kwargs):
-        if not 'initial' in kwargs:
+        if 'initial' not in kwargs:
             kwargs['initial'] = ['', '']
 
         fields = (field_class(), field_class())

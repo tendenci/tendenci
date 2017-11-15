@@ -333,7 +333,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
                 key_list.append(key)
         missing_columns = []
         for item in key_list:
-            if not item in header_list:
+            if item not in header_list:
                 missing_columns.append(item)
         if missing_columns:
             msg_string = """

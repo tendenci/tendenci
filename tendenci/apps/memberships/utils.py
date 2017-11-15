@@ -353,7 +353,7 @@ def process_export(
             if not field.__class__ == AutoField]
         profile_field_list = [
             name for name in profile_field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
         if 'status' in profile_field_list:
@@ -1168,7 +1168,7 @@ class ImportMembDefault(object):
 
             if str(value).isdigit():
                 value = int(value)
-                if not value in self.all_membership_type_ids:
+                if value not in self.all_membership_type_ids:
                     is_valid = False
                     error_msg = 'Invalid membership type "%d"' % value
                 else:
@@ -1213,14 +1213,14 @@ class ImportMembDefault(object):
 
             if str(value).isdigit():
                 value = int(value)
-                if not value in self.membership_app_ids_dict:
+                if value not in self.membership_app_ids_dict:
                     is_valid = False
                     error_msg = 'Invalid app "%d"' % value
                 else:
                     memb_data['app'] = value
             else:
                 # check for app name
-                if not value in self.membership_app_names_dict:
+                if value not in self.membership_app_names_dict:
                     is_valid = False
                     error_msg = 'Invalid app "%s"' % value
                 else:

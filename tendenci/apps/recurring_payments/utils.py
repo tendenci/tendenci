@@ -571,7 +571,7 @@ def api_add_rp(data):
 
 
     if not all([validate_email(email),
-                data.has_key('description'),
+                'description' in data,
                 payment_amount>0]):
         return False, {}
 

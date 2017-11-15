@@ -1,7 +1,7 @@
 [flake8]
 ignore =
   # Deprecated/discouraged syntax
-  E711,E712,E713,E714,E721,E731,W601,
+  E711,E714,E712,E721,E731,
   # Unused/undefined/redefined variables
   F811,F812,F821,F841,
   # Import issues

@@ -51,7 +51,7 @@ class TinyMCE(forms.Textarea):
         super(TinyMCE, self).__init__(attrs)
         mce_attrs = mce_attrs or {}
         self.mce_attrs = mce_attrs
-        if not 'mode' in self.mce_attrs:
+        if 'mode' not in self.mce_attrs:
             self.mce_attrs['mode'] = 'exact'
         self.mce_attrs['strict_loading_mode'] = 1
         if content_language is None:

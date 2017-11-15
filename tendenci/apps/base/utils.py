@@ -407,17 +407,17 @@ def filelog(*args, **kwargs):
         filelog(args...Nargs)
         filelog(args, mode='a+', filename='log.txt', path=path)
     """
-    if kwargs.has_key('path'):
+    if 'path' in kwargs:
         path = kwargs['path']
     else:
         path = getattr(settings,'PROJECT_ROOT','/var/log')
 
-    if kwargs.has_key('filename'):
+    if 'filename' in kwargs:
         filename = kwargs['filename']
     else:
         filename = 'filelog.txt'
 
-    if kwargs.has_key('mode'):
+    if 'mode' in kwargs:
         mode = kwargs['mode']
     else:
         mode = 'a+'
@@ -811,7 +811,7 @@ def create_salesforce_contact(profile):
                     })
     
                 # update field Company_Name__c
-                if profile.company and contact.has_key('Company_Name__c'):
+                if profile.company and 'Company_Name__c' in contact:
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
     
                 profile.sf_contact_id = contact['id']

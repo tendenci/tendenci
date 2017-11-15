@@ -332,7 +332,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             if not field.__class__ == AutoField]
         profile_field_list = [
             name for name in profile_field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
         # append base fields at the end

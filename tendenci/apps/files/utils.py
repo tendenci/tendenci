@@ -488,7 +488,7 @@ class AppRetrieveFiles(object):
         Append the broken link to the list.
         """
         key = kwargs['content_url']
-        if not key in self.broken_links.keys():
+        if key not in self.broken_links.keys():
             self.broken_links[key] = [broken_link]
         else:
             self.broken_links[key].append(broken_link)
@@ -546,6 +546,6 @@ def get_allowed_mimetypes(file_exts):
     for ext in file_exts:
         if ext in exts:
             mime_type = types_map[ext]
-            if not mime_type in allowed_mimetypes:
+            if mime_type not in allowed_mimetypes:
                 allowed_mimetypes.append(types_map[ext])
     return allowed_mimetypes

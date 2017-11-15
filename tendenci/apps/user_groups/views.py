@@ -838,7 +838,7 @@ def group_all_export(request, group_slug):
 
     # index the group key mappings and insert them into the sheet.
     for key in group_mappings.keys():
-        if not key in col_index:
+        if key not in col_index:
             col = len(col_index.keys())
             col_index[key] = col
             sheet.write(0, col, key, style=default_style)
@@ -848,7 +848,7 @@ def group_all_export(request, group_slug):
         for row, row_data in enumerate(values_list):
             for col, val in enumerate(row_data):
 
-                if not row in row_index:
+                if row not in row_index:
                     # assign the row if it is not yet available
                     row_index[row] = row + 1
 

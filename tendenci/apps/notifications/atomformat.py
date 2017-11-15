@@ -461,7 +461,7 @@ class AtomFeed(object):
                     if '/' in content_type and \
                         not content_type.startswith('text/') and \
                         not content_type.endswith('/xml') and not content_type.endswith('+xml') and \
-                        not content_type in ['application/xml-external-parsed-entity', 'application/xml-dtd']:
+                        content_type not in ['application/xml-external-parsed-entity', 'application/xml-dtd']:
                         # @@@ check content is Base64
                         if not item.get('summary'):
                             raise ValidationError('content in Base64 requires a summary too')

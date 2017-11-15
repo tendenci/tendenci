@@ -105,7 +105,7 @@ class CorpMembershipImportProcessor(object):
         of a corp_membership
         """
         self.cmemb_data = cmemb_data
-        if not 'id' in self.cmemb_data:
+        if 'id' not in self.cmemb_data:
             del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
@@ -116,7 +116,7 @@ class CorpMembershipImportProcessor(object):
         status_detail = self.cmemb_data.get('status_detail', 'active')
         if status_detail == 'archived':
             status_detail = 'archive'
-        if not status_detail in CorpMembership.VALID_STATUS_DETAIL:
+        if status_detail not in CorpMembership.VALID_STATUS_DETAIL:
             status_detail = 'active'
         self.cmemb_data['status_detail'] = status_detail
         expiration_dt = self.cmemb_data.get('expiration_dt', None)
@@ -396,7 +396,7 @@ class CorpMembershipImportProcessor(object):
             return 0
 
         if field_type == 'ForeignKey':
-            if not field.name in ['creator', 'owner']:
+            if field.name not in ['creator', 'owner']:
                 try:
                     model = field.related.parent_model()
                 except AttributeError:
@@ -507,7 +507,7 @@ class CorpMembershipImportProcessor(object):
                                             name=orignal_value)[:1] or [None]
 
             if not value and not field.null:
-                if not field.name in ['creator', 'owner']:
+                if field.name not in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
                     try:
                         model = field.related.parent_model()

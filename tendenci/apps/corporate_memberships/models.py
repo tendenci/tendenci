@@ -1512,7 +1512,7 @@ class CorpMembershipAppField(OrderingBaseModel):
 
         if fld:
             field_type = fld.get_internal_type()
-            if not field_type in available_field_types:
+            if field_type not in available_field_types:
                 if field_type in ['ForeignKey', 'OneToOneField']:
                     field_type = 'ChoiceField'
                 elif field_type in ['ManyToManyField']:
@@ -1898,7 +1898,7 @@ class Notice(models.Model):
             'disapprove_renewal',
             'expiration']
 
-        if not notice_type in allowed_notice_types:
+        if notice_type not in allowed_notice_types:
             return False
 
         # recipients list required

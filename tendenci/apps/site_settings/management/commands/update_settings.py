@@ -123,7 +123,7 @@ class Command(BaseCommand):
             # update the setting
             if (current_setting):
                 # skip the value for the existing setting
-                if setting.has_key('value'):
+                if 'value' in setting:
                     del setting['value']
                 current_setting.__dict__.update(setting)
                 current_setting.save()

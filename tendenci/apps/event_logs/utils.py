@@ -99,7 +99,7 @@ def get_app_list_choices():
             if app_name == 'base':
                 app_name = 'homepage'
 
-            if not app_name in app_exclude_list:
+            if app_name not in app_exclude_list:
                 app_list.append(app_name)
 
     app_list.append('django.auth')

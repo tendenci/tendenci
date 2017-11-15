@@ -2309,7 +2309,7 @@ class StandardRegAdminForm(forms.Form):
         scope_category = 'events'
 
         for field_name, value in cleaned_data.items():
-            if not field_name in self.READONLY_FIELDS:
+            if field_name not in self.READONLY_FIELDS:
                 try:
                     setting = Setting.objects.get(scope=scope, scope_category=scope_category,
                                                   name='regform_%s' % field_name)

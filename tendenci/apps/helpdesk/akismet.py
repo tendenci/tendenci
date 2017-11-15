@@ -203,13 +203,13 @@ class Akismet(object):
         worked out.
         """
         data['comment_content'] = comment
-        if not 'user_ip' in data:
+        if 'user_ip' not in data:
             try:
                 val = os.environ['REMOTE_ADDR']
             except KeyError:
                 raise AkismetError("No 'user_ip' supplied")
             data['user_ip'] = val
-        if not 'user_agent' in data:
+        if 'user_agent' not in data:
             try:
                 val = os.environ['HTTP_USER_AGENT']
             except KeyError:
