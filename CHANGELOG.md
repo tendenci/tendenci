@@ -1,3 +1,32 @@
+### 7.4.0 [2017-11-15]
+
+#### Notable changes:
+
+1. New top menu (for both admin and logged in users) 
+2. Newsletters format update and clone feature
+3. Reports format update (including invoices, memberships, ..)
+4. Events views - Added sub menu for month view, week view, day view
+5. Separated join approval and renewal approval for membership notices
+6. Wysiwyg editor - Enabled the image title input field in the image dialog. Added class dropdown to the tinymce link dialog box 
+7. Updated the directories categories to make it easy manage
+8. Added drag-drop functionality to the testimonials
+9. Added memberships overview report
+10. Added a link on Profile page to view past events.
+11. More minor changes
+
+
+#### Fixes:
+
+1. (Security) Disabled GZipMiddleware to prevent BREACH attacks
+2. (Security) Prevent fraudulent simultaneous reuse of PayPal transactions 
+3. Resolved the issue regarding manage.py hangs when caching is enabled. Re-enabled the cache for site settings.
+4. Resolved the subprocess venv issue.
+5. Fixed exports for directories, jobs, resumes, pages.
+6. Fixed "Most Viewed Files" report.
+7. More fixes
+
+Special thanks to @PaulSD for lots of fixes and update!
+
 ### 7.3.12 [2017-10-09]
 
 * Added horizontal rule (hr) to tinymce editor
