@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
         for statement in statements.split(sql.decode(settings.FILE_CHARSET)):
             # Remove any comments from the file
-            statement = re.sub(ur"--.*([\n\Z]|$)", "", statement)
+            statement = re.sub(r"--.*([\n\Z]|$)", "", statement)
             if statement.strip():
                 sql_list.append(statement + u";")
 
