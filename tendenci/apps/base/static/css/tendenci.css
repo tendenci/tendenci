@@ -230,3 +230,233 @@
 .t-jobs-search-result .fa-star{
 	color: #FFD700;
 }
+
+
+/* REPORTS
+============= */
+.table.table-tendenci-reports>thead>tr>td,
+.table.table-tendenci-reports>tbody>tr>td,
+.table.table-tendenci-reports>tfoot>tr>td {
+  border-top: 1px solid #cccccc !important;
+}
+.table.table-tendenci-reports th,
+.table.table-tendenci-reports thead {
+  border-bottom: 2px solid #cccccc;
+  background: #cccccc;
+  font-weight: bold;
+}
+.table.table-tendenci-reports>tfoot,
+.table.table-tendenci-reports tf {
+  background: #DDDDDD;
+  font-weight: bold;
+}
+.table.table-tendenci-reports {
+  border: 1px solid #cccccc;
+}
+#id_days {
+  border: 2px solid #cccccc;
+  height: 40px;
+}
+.similar_group .group {
+  border: 1px solid #cccccc;
+}
+table.events-summary-chart {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/* MEMBERSHIP IMPORT
+===================== */
+#upload-form-wrap {
+  border-top: 1px solid #ccc;
+}
+
+/* INVOICES
+============== */
+#ui-datepicker-div {
+  position: absolute;
+  top: 266px;
+  left: 112.406px;
+  z-index: 1;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #ccc;
+}
+#id_variance {
+  margin-bottom: 10px;
+}
+#id_variance_notes,
+#id_admin_notes {
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+}
+div.invoice-admin-notes {
+  border: 0;
+}
+
+/* ACCOUNTING
+================ */
+#offline-payment-form-wrap #id_amount {
+  margin-bottom: 10px !important;
+}
+#offline-payment-form-wrap #id_payment_method {
+  margin-bottom: 10px !important;
+}
+
+/* NEWSLETTERS MODULE (AND REPORTS FORMS)
+===================== */
+#id_group,
+#id_member_only {
+  margin-left: 10px;
+}
+#t-newsletters .form-control {
+  height: auto;
+}
+.newsletter-label {
+  padding-top: 10px;
+}
+#id_subject{
+  margin-top: 10px;
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+#id_actionname {
+  width: 350px;
+  padding-left: 5px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+.form-horizontal .control-label {
+  text-align: left !important;
+}
+
+/* INPUT NO WIDTH */
+#id_group,
+#id_event_start_dt_month,
+#id_event_start_dt_day,
+#id_event_start_dt_year,
+#id_event_end_dt_month,
+#id_event_end_dt_day,
+#id_event_end_dt_year,
+#id_articles_days,
+#id_news_days,
+#id_jobs_days,
+#id_pages_days,
+#id_directories_days,
+#id_resumes_days,
+#id_send_to_email2,
+#id_actionname,
+#id_actiontype,
+#id_membership_type,
+#id_membership_status,
+#id_start_date,
+#id_end_date,
+#id_start_dt,
+#id_end_dt,
+#id_start_amount,
+#id_end_amount,
+#id_invoice_type,
+#id_last_name,
+#id_tendered,
+#id_balance,
+#id_search_criteria,
+#id_search_text,
+#id_search_method,
+#id_amount,
+#id_payment_method,
+#id_submit_dt_0,
+#id_submit_dt_1,
+#id_variance,
+#id_event_id,
+#id_ip,
+#id_user_id,
+#id_session_id,
+#id_start_dt_0,
+#id_start_dt_1,
+#id_end_dt_0,
+#id_end_dt_1,
+#id_request_method,
+#id_user_name,
+#id_user_ip_address,
+#id_object_id,
+#id_application,
+#id_action,
+#id_password,
+#id_override,
+#id_key,
+#id_export_status_detail,
+#id_export_fields,
+#id_export_type,
+#id_group_id,
+#id_type,
+#id_invoice_display,
+#id_invoice_status,
+#id_invoice_membership_filter,
+#id_report,
+#id_range_start_dt,
+#id_range_end_dt,
+#id_output_type,
+#id_file_type {
+  height: 40px;
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+}
+#id_event_id,
+#id_ip,
+#id_user_id,
+#id_session_id,
+#id_start_dt_0,
+#id_start_dt_1,
+#id_end_dt_0,
+#id_end_dt_1,
+#id_user_name,
+#id_user_ip_address,
+#id_object_id,
+#id_password,
+#id_export_status_detail,
+#id_export_fields,
+#id_export_type,
+#id_group_id {
+  margin-bottom: 10px;
+}
+/* INPUT 100 WIDTH */
+#id_jump_links,
+#id_events,
+#id_articles,
+#id_news,
+#id_jobs,
+#id_pages,
+#id_directories,
+#id_resumes {
+  height: 40px;
+  border: 2px solid #cccccc;
+  width: 100%;
+}
+#id_file_type {
+  margin-top: -3px;
+}
+table.table.table-responsive.bottomless {
+  margin-bottom: 0;
+}
+ul#id_format {
+  list-style: none;
+  padding-left: 0;
+}
+#t-newsletters .template_list {
+  margin-left: 1.5em;
+}
+input#id_format_0,
+input#id_format_1 {
+  margin-right: 10px;
+}
+.errorlist {
+  padding: 10px;
+  color: #a94442;
+  list-style: none;
+  background: #f2dede;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
+  margin: 10px 0;
+}
