@@ -1139,7 +1139,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
                 valnames = dict()
                 for r in related:
-                    if not r.related_model is Profile:
+                    if r.related_model is not Profile:
                         if not r.related_model:
                             continue
                         valnames.setdefault(r.related_model, []).append(r)
@@ -1210,7 +1210,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                                 master_val = getattr(master_obj, fld)
                                                 if master_val == '' or master_val is None:
                                                     val = getattr(obj, fld)
-                                                    if val != '' and not val is None:
+                                                    if val != '' and val is not None:
                                                         setattr(master_obj, fld, val)
                                                         updated = True
                                             if updated:

@@ -21,11 +21,11 @@ class TypeExpMethodField(forms.MultiValueField):
     def compress(self, data_list):
         for i in range(0, len(data_list)):
             if type(data_list[i]) is bool:
-                if data_list[i] == False:
+                if not data_list[i]:
                     data_list[i] = ''
                 else:
                     data_list[i] = '1'
-            if data_list[i] == None:
+            if data_list[i] is None:
                 data_list[i] = ''
 
         if data_list:
@@ -46,11 +46,11 @@ class DonationOptionAmountField(forms.MultiValueField):
     def compress(self, data_list):
         for i in range(0, len(data_list)):
             if type(data_list[i]) is bool:
-                if data_list[i] == False:
+                if not data_list[i]:
                     data_list[i] = ''
                 else:
                     data_list[i] = '1'
-            if data_list[i] == None:
+            if data_list[i] is None:
                 data_list[i] = ''
         return data_list
 

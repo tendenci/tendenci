@@ -709,7 +709,7 @@ class ImportUsers(object):
         self.assign_import_values_from_dict(profile, action_info['action'])
         profile.user = user
 
-        if profile.status == None or profile.status == '' or \
+        if profile.status is None or profile.status == '' or \
             self.user_data.get('status', '') == '':
             profile.status = True
         if not profile.status_detail:
@@ -751,7 +751,7 @@ class ImportUsers(object):
                         self.uimport.override,
                         not hasattr(instance, field_name) or \
                         getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.user_data[field_name]
                     value = self.clean_data(value, assign_to_fields[field_name])
@@ -764,7 +764,7 @@ class ImportUsers(object):
                 if field_name not in self.private_settings.keys():
                     value = self.get_default_value(assign_to_fields[field_name])
 
-                    if value != None:
+                    if value is not None:
                         setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):

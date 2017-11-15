@@ -1666,7 +1666,7 @@ class ImportMembDefault(object):
                         self.mimport.override,
                         not hasattr(instance, field_name) or \
                         getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.memb_data[field_name]
                     value = self.clean_data(value, assign_to_fields[field_name])
@@ -1679,7 +1679,7 @@ class ImportMembDefault(object):
                 if field_name not in self.private_settings.keys():
                     value = self.get_default_value(assign_to_fields[field_name])
 
-                    if value != None:
+                    if value is not None:
                         setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):

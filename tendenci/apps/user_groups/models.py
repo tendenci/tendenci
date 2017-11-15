@@ -218,7 +218,7 @@ class GroupMembership(models.Model):
             self.newsletter_key = uuid.uuid1()
             self.save()
             return True
-        elif self.newsletter_key == None:
+        elif self.newsletter_key is None:
             self.newsletter_key = uuid.uuid1()
             self.save()
             return True

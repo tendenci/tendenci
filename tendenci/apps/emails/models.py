@@ -199,7 +199,7 @@ class Email(TendenciBaseModel):
             for key in email_d.keys():
                 # need to convert [blah] to %5Bblah%5D for replace line
                 tmp_value = "%5B" + key[1:-1] + "%5D"
-                if email_d[key] != None:
+                if email_d[key] is not None:
                     self.body = self.body.replace(key, email_d[key])
                     self.body = self.body.replace(tmp_value, email_d[key])
                 else:

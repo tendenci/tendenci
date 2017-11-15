@@ -928,7 +928,7 @@ class MembershipDefault(TendenciBaseModel):
         dupe.status_detail = 'active'
 
         dupe.renewal = True
-        if not dupe is self:
+        if dupe is not self:
             dupe.renew_from_id = self.id
 
         # application approved ---------------
@@ -1261,7 +1261,7 @@ class MembershipDefault(TendenciBaseModel):
         the group.
         """
 
-        active = (self.status == True, self.status_detail.lower() == 'active')
+        active = (self.status, self.status_detail.lower() == 'active')
 
         if all(active):  # should be in group; make sure they're in
             self.membership_type.group.add_user(self.user)

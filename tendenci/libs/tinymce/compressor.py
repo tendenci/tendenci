@@ -72,7 +72,7 @@ def gzip_compressor(request):
     cacheKey = '|'.join(plugins + languages + themes)
     cacheData = cache.get(cacheKey)
 
-    if not cacheData is None:
+    if cacheData is not None:
         if 'ETag' in cacheData:
             if_none_match = request.META.get('HTTP_IF_NONE_MATCH', None)
             if if_none_match == cacheData['ETag']:

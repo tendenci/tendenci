@@ -215,7 +215,7 @@ def ticket_from_message(message, queue, quiet):
         if name:
             name = collapse_rfc2231_value(name)
 
-        if part.get_content_maintype() == 'text' and name == None:
+        if part.get_content_maintype() == 'text' and name is None:
             if part.get_content_subtype() == 'plain':
                 body_plain = EmailReplyParser.parse_reply(decodeUnknown(part.get_content_charset(), part.get_payload(decode=True)))
             else:
@@ -290,7 +290,7 @@ def ticket_from_message(message, queue, quiet):
     if smtp_priority in high_priority_types or smtp_importance in high_priority_types:
         priority = 2
 
-    if ticket == None:
+    if ticket is None:
         t = Ticket(
             title=subject,
             queue=queue,

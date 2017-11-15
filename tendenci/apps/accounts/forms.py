@@ -160,7 +160,7 @@ class LoginForm(forms.Form):
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user)
 
-            if user.is_active and profile.status == True and profile.status_detail.lower() == 'active':
+            if user.is_active and profile.status and profile.status_detail.lower() == 'active':
                 self.user = user
             else:
                 raise forms.ValidationError(_("This account is currently inactive."))

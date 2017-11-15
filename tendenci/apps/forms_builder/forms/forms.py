@@ -134,7 +134,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 pricing_options = []
                 for pricing in formforform.pricing_set.all():
 
-                    if pricing.price == None:
+                    if pricing.price is None:
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
@@ -516,7 +516,7 @@ class FormForField(forms.ModelForm):
                         if not validate_email(val[1].strip()):
                             raise forms.ValidationError(_("\"%(val)s\" is not a valid email address" % {'val':val[1]}))
 
-        if field_function != None and field_function.startswith("Email"):
+        if field_function is not None and field_function.startswith("Email"):
             if field_type != "CharField":
                 raise forms.ValidationError(_("This field's function requires Text as a field type"))
 

@@ -233,7 +233,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_profile, action_info['corp_profile_action'])
 
-        if corp_profile.status == None or corp_profile.status == '' or \
+        if corp_profile.status is None or corp_profile.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_profile.status = True
         if not corp_profile.status_detail:
@@ -262,7 +262,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_memb, action_info['corp_memb_action'])
 
-        if corp_memb.status == None or corp_memb.status == '' or \
+        if corp_memb.status is None or corp_memb.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_memb.status = True
         if not corp_memb.status_detail:
@@ -350,7 +350,7 @@ class CorpMembershipImportProcessor(object):
                         self.mimport.override,
                         not hasattr(instance, field_name) or \
                         getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.cmemb_data[field_name]
                     value = self.clean_data(value,
@@ -367,7 +367,7 @@ class CorpMembershipImportProcessor(object):
                                           'owner_username']:
                         value = self.get_default_value(
                                         assign_to_fields[field_name])
-                        if value != None:
+                        if value is None:
                             setattr(instance, field_name, value)
 
     def get_default_value(self, field):

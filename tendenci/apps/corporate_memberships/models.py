@@ -1917,7 +1917,7 @@ class Notice(models.Model):
 
             notice_requirments = (
                 notice.corporate_membership_type == corp_membership_type,
-                notice.corporate_membership_type == None
+                notice.corporate_membership_type is None
             )
 
             if any(notice_requirments):

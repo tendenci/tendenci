@@ -11,7 +11,7 @@ try:
 except:
     DEFAULT_USER_SETTINGS = None
 
-if type(DEFAULT_USER_SETTINGS) != type(dict()):
+if not isinstance(DEFAULT_USER_SETTINGS, dict):
     DEFAULT_USER_SETTINGS = {
             'use_email_as_submitter': True,
             'email_on_ticket_assign': True,

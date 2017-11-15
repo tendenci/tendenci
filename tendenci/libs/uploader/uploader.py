@@ -50,7 +50,7 @@ def post(request, callback):
         dest_path = os.path.join(settings.UPLOAD_DIRECTORY, file_attrs['qquuid'])
         dest_file = os.path.join(dest_path, file_attrs['qqfilename'])
         chunk = False
-        if file_attrs['qqtotalparts'] != None and int(file_attrs['qqtotalparts']) > 1:
+        if file_attrs['qqtotalparts'] is not None and int(file_attrs['qqtotalparts']) > 1:
             dest_file = os.path.join(dest_file+'.chunks', str(file_attrs['qqpartindex']))
             chunk = True
 

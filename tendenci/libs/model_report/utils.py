@@ -183,4 +183,4 @@ class ReportRow(list):
         """
         Evaluate True if the row is a normal row or not
         """
-        return self.is_total == False and self.is_caption == False
+        return not self.is_total and not self.is_caption

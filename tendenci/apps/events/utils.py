@@ -725,7 +725,7 @@ def get_registrants_prices(*args):
     if event.is_table and request.user.is_superuser:
         override_table = reg_form.cleaned_data.get('override_table', False)
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
-        if override_price_table == None:
+        if override_price_table is None:
             override_price_table = 0
         
     amount_list = []
@@ -790,7 +790,7 @@ def add_registration(*args, **kwargs):
     if event.is_table and request.user.is_superuser:
         override_table = reg_form.cleaned_data.get('override_table', False)
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
-        if override_price_table == None:
+        if override_price_table is None:
             override_price_table = 0
 
     # get the list of amount for registrants.

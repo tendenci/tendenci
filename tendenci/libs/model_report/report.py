@@ -390,7 +390,7 @@ class ReportAdmin(object):
         else:
             qs = self.model.objects.all()
         for selected_field, field_value in filter_kwargs.items():
-            if not field_value is None and field_value != '':
+            if field_value is not None and field_value != '':
                 if hasattr(field_value, 'values_list'):
                     field_value = field_value.values_list('pk', flat=True)
                     selected_field = '%s__pk__in' % selected_field.split("__")[0]
@@ -470,7 +470,7 @@ class ReportAdmin(object):
                             if r.is_value():
                                 rows.remove(r)
 
-                if not context_request.GET.get('export', None) is None and not self.parent_report:
+                if context_request.GET.get('export', None) is not None and not self.parent_report:
                     exporter_class = self.exporters.get(context_request.GET.get('export'), None)
                     if exporter_class:
                         report_inlines = [ir(self, context_request) for ir in self.inlines]

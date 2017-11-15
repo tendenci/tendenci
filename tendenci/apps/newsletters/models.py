@@ -461,7 +461,7 @@ class Newsletter(models.Model):
                               str(self.pk)])
 
     def save(self, *args, **kwargs):
-        if self.security_key == '' or self.security_key == None:
+        if self.security_key == '' or self.security_key is None:
             self.security_key = uuid.uuid1()
         if self.actionname != self.subject:
             self.actionname = self.subject

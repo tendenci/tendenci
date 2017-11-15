@@ -54,7 +54,7 @@ class GlobalFeed(Feed):
 
     def item_title(self, item):
         feed = self.feed_for_item[item]
-        if hasattr(feed, 'title_template') and not feed.title_template is None:
+        if hasattr(feed, 'title_template') and feed.title_template is not None:
             # use the template instead of the method
             #print(feed.title_template)
             return render_to_string(feed.title_template, { 'obj' : item })
@@ -62,7 +62,7 @@ class GlobalFeed(Feed):
 
     def item_description(self, item):
         feed = self.feed_for_item[item]
-        if hasattr(feed, 'description_template') and not feed.description_template is None:
+        if hasattr(feed, 'description_template') and feed.description_template is not None:
             # use the template instead
             #print(feed.description_template)
             return render_to_string(feed.description_template, { 'obj' : item })

@@ -398,7 +398,7 @@ class AtomFeed(object):
 
         alternate_links = {}
         for link in self.feed.get('links'):
-            if link.get('rel') == 'alternate' or link.get('rel') == None:
+            if link.get('rel') == 'alternate' or link.get('rel') is None:
                 key = (link.get('type'), link.get('hreflang'))
                 if key in alternate_links:
                     raise ValidationError('alternate links must have unique type/hreflang')
@@ -438,7 +438,7 @@ class AtomFeed(object):
 
             alternate_links = {}
             for link in item.get('links'):
-                if link.get('rel') == 'alternate' or link.get('rel') == None:
+                if link.get('rel') == 'alternate' or link.get('rel') is None:
                     key = (link.get('type'), link.get('hreflang'))
                     if key in alternate_links:
                         raise ValidationError('alternate links must have unique type/hreflang')
