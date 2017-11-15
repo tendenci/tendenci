@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_syncdb

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -18,4 +19,4 @@ class Command(BaseCommand):
             for cache_kwargs in cache_kwargs_list:
                 cache_photo_size(**cache_kwargs)
 
-            print photo.pk
+            print(photo.pk)

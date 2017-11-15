@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 import os
 from django.core.management import call_command
@@ -74,7 +75,7 @@ class Command(BaseCommand):
         Ouput sql statement status
         """
         if not app_names:
-            print "%s called without apps specified." % __name__, "Sad bear."
+            print("%s called without apps specified." % __name__, "Sad bear.")
 
         for app_name in app_names:
             statements = self.drop_tables(app_name, **options)
@@ -84,6 +85,6 @@ class Command(BaseCommand):
 
             # chatty Kathy --------------
             if statements:
-                print "%s: tables dropped" % app_name
+                print("%s: tables dropped" % app_name)
             else:
-                print "%s: No tables to drop" % app_name
+                print("%s: No tables to drop" % app_name)

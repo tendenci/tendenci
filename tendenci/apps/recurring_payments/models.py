@@ -1,3 +1,4 @@
+from __future__ import print_function
 import uuid
 import re
 from datetime import datetime
@@ -146,7 +147,7 @@ class RecurringPayment(models.Model):
                 d = {'email': self.user.email,
                      'customer_id': str(self.id)}
                 success, response_d = cp.create(**d)
-                print success, response_d
+                print(success, response_d)
                 if success:
                     self.customer_profile_id = response_d['customer_profile_id']
                     self.save()

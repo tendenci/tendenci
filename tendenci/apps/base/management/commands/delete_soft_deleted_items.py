@@ -22,5 +22,5 @@ class Command(BaseCommand):
                 else:
                     items = model.objects.filter(status=False)
                 for item in items:
-                    #print 'Deleting ', item
+                    #print('Deleting ', item)
                     item.hard_delete()

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -23,6 +24,6 @@ class Command(BaseCommand):
             if not isinstance(site_urls, list):
                 site_urls = site.get_urls(site=Site.objects.get_current())
                 cache.set(sitemap_cache_key, list(site_urls), 86400)
-                print "Caching %s" % site_key
+                print("Caching %s" % site_key)
 
-        print "Sitemap is cached."
+        print("Sitemap is cached.")

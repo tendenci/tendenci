@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db.models import get_models, get_app
@@ -87,7 +88,7 @@ class Command(BaseCommand):
             n = n - 1
 
         if related_tables:
-            print "ERROR: Sorting not completed."
+            print("ERROR: Sorting not completed.")
 
         # copy the list to your conf.yml file
-        print '-', '\n- '.join(sorted_list)
+        print('-', '\n- '.join(sorted_list))

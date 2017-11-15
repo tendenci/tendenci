@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 from django.core.management.base import BaseCommand
 
@@ -46,4 +47,4 @@ class Command(BaseCommand):
         destination = open(file_path, 'w+')
         destination.write(ics_str)
         destination.close()
-        print 'Created ics for user %s pk=%s' % (user, user.pk)
+        print('Created ics for user %s pk=%s' % (user, user.pk))

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 import requests
@@ -81,8 +82,8 @@ class Command(BaseCommand):
             broken_links = self.get_broken_links(links)
             # broken_images = self.get_broken_images(images)
 
-            # print page.slug,
-            # print 'images', '%s/%s' % (len(images), len(broken_images)),
-            # print 'links', '%s/%s' % (len(links), len(broken_links)), broken_links
+            # print(page.slug)
+            # print('images', '%s/%s' % (len(images), len(broken_images)))
+            # print('links', '%s/%s' % (len(links), len(broken_links)), broken_links)
 
-            print page.slug, broken_links
+            print(page.slug, broken_links)

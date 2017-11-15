@@ -1,3 +1,4 @@
+from __future__ import print_function
 import subprocess, os
 from datetime import datetime
 from datetime import date
@@ -173,7 +174,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         return redirect('group.detail', group_slug=group_slug)
 
     else:
-        print 'form errors', form.errors.items()
+        print('form errors', form.errors.items())
 
 
     return render(request, template_name, {

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -19,4 +20,4 @@ class Command(BaseCommand):
             if entity != new_entity:
                 invoice.entity = new_entity
                 invoice.save()
-        print 'done'
+        print('done')

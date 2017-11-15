@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.contrib.auth.models import User
 from tastypie import fields
 from tendenci.apps.api_tasty.resources import TendenciResource
@@ -82,7 +83,7 @@ class MembershipResource(TendenciResource):
         data = bundle.data
 
         if data['create_user']:
-            print "creating user"
+            print("creating user")
             user = User.objects.create(username=data['username'])
             user.set_password(data['password'])
         else:

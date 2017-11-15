@@ -1503,7 +1503,7 @@ def event_import_process(import_i, preview=True):
     in the event_object_dict. Then it updates the database
     if preview=False.
     """
-    #print "START IMPORT PROCESS"
+    #print("START IMPORT PROCESS")
     data_dict_list = extract_from_excel(unicode(import_i.file))
 
     event_obj_list = []
@@ -1578,7 +1578,7 @@ def event_import_process(import_i, preview=True):
         import_i.failure_reason = unicode(e)
         import_i.save()
 
-    #print "END IMPORT PROCESS"
+    #print("END IMPORT PROCESS")
     return event_obj_list, invalid_list
 
 

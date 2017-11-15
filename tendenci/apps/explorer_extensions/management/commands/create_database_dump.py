@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 
@@ -66,7 +67,7 @@ class Command(BaseCommand):
         dump_obj.export_format = fmt
         dump_obj.save()
 
-        print "Creating database dump..."
+        print("Creating database dump...")
 
         content = StringIO()
         call_command('dumpdata', format=fmt, stdout=content, exclude=['captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
@@ -85,4 +86,4 @@ class Command(BaseCommand):
         email = Email(recipient=dump_obj.author.email, subject=email_subject, body=email_body)
         email.send()
 
-        print "Done!"
+        print("Done!")

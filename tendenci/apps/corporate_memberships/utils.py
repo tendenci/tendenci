@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import csv
 from dateutil.relativedelta import relativedelta
@@ -682,7 +683,7 @@ def create_salesforce_lead(sf, corporate_profile):
                 'Email':corporate_profile.email,
                 'Website':corporate_profile.url})
         except:
-            print 'Salesforce lead not found'
+            print('Salesforce lead not found')
 
     else:
         # Create a new Salesforce Lead object

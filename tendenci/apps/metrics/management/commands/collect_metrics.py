@@ -1,3 +1,4 @@
+from __future__ import print_function
 import commands
 from datetime import date, timedelta
 from decimal import Decimal
@@ -49,13 +50,13 @@ class Command(BaseCommand):
         metric.invoice_totals = Decimal(self.get_invoice_totals())
 
         if verbosity >= 2:
-            print 'metric.users', metric.users
-            print 'metric.members', metric.members
-            print 'metric.visits', metric.visits
-            print 'metric.disk_usage', metric.disk_usage
-            print 'metric.invoices', metric.invoices
-            print 'metric.positive_invoices', metric.positive_invoices
-            print 'metric.invoice_totals', metric.invoice_totals
+            print('metric.users', metric.users)
+            print('metric.members', metric.members)
+            print('metric.visits', metric.visits)
+            print('metric.disk_usage', metric.disk_usage)
+            print('metric.invoices', metric.invoices)
+            print('metric.positive_invoices', metric.positive_invoices)
+            print('metric.invoice_totals', metric.invoice_totals)
 
         metric.save()
 

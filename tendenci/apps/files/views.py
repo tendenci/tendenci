@@ -371,7 +371,7 @@ class FileTinymceCreateView(CreateView):
                 }
         return JsonResponse(data)
 #         data = json.dumps(form.errors)
-#         print 'data=', data
+#         print('data=', data)
 #         return HttpResponse(content=data, status=400, content_type='application/json')
 
 

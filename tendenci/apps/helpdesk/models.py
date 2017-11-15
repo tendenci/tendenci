@@ -403,7 +403,7 @@ class Ticket(models.Model):
     owner_username = models.CharField(max_length=50, default='')
 
     def _get_assigned_to(self):
-        """ Custom property to allow us to easily print 'Unassigned' if a
+        """ Custom property to allow us to easily print('Unassigned') if a
         ticket has no owner, or the users name if it's assigned. If the user
         has a full name configured, we use that, otherwise their username. """
         if not self.assigned_to:

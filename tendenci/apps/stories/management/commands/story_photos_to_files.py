@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import shutil
 import commands
@@ -14,7 +15,7 @@ class Command(BaseCommand):
 
         status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
         if status > 0:
-            print output
+            print(output)
             return
 
         stories = Story.objects.all()
@@ -30,7 +31,7 @@ class Command(BaseCommand):
                 src = photo.path
                 dest = photo.path.replace(settings.MEDIA_ROOT + '/stories', settings.MEDIA_ROOT + '/files/stories')
                 if src != dest:
-                    print "Moving %s to %s" % (src, dest)
+                    print("Moving %s to %s" % (src, dest))
                     dir = os.path.dirname(dest)
                     if not os.path.exists(dir):
                         os.makedirs(dir)
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                     shutil.move(src, dest)
                     story.photo.save(dest.replace(settings.MEDIA_ROOT + '/files/stories/', ''), File(open(dest)))
                     story.save()
-                print "Creating StoryPhoto %s for %s" % (dest, story.title)
+                print("Creating StoryPhoto %s for %s" % (dest, story.title))
                 image = StoryPhoto(
                     creator = story.creator,
                     creator_username = story.creator_username,

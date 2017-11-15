@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
@@ -79,9 +80,9 @@ class Command(BaseCommand):
                     registrant.last_name = ln
                     if verbosity == 2:
                         try:
-                            print '%s (%s -- %s)' % (registrant.name, registrant.last_name, registrant.first_name,)
+                            print('%s (%s -- %s)' % (registrant.name, registrant.last_name, registrant.first_name,))
                         except:
                             pass
                     registrant.save()
                     count += 1
-        print 'Separated %d registrant names to first_name and last_name' % count
+        print('Separated %d registrant names to first_name and last_name' % count)

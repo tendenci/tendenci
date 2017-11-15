@@ -1,3 +1,4 @@
+from __future__ import print_function
 def get_response(msg, func=int, default=None):
     while True:
         resp = raw_input(msg)
@@ -6,7 +7,7 @@ def get_response(msg, func=int, default=None):
         try:
             return func(resp)
         except:
-            print 'Invalid input.'
+            print('Invalid input.')
 
 
 def create_photosize(name, width=0, height=0, crop=False, pre_cache=False, increment_count=False):
@@ -22,7 +23,7 @@ def create_photosize(name, width=0, height=0, crop=False, pre_cache=False, incre
         msg = 'A "%s" photo size already exists. Do you want to replace it? (yes, no):' % name
         if not get_response(msg, lambda inp: inp == 'yes', False):
             return
-    print '\nWe will now define the "%s" photo size:\n' % size
+    print('\nWe will now define the "%s" photo size:\n' % size)
     w = get_response('Width (in pixels):', lambda inp: int(inp), width)
     h = get_response('Height (in pixels):', lambda inp: int(inp), height)
     c = get_response('Crop to fit? (yes, no):', lambda inp: inp == 'yes', crop)
@@ -34,5 +35,5 @@ def create_photosize(name, width=0, height=0, crop=False, pre_cache=False, incre
     size.pre_cache = p
     size.increment_count = i
     size.save()
-    print '\nA "%s" photo size has been created.\n' % name
+    print('\nA "%s" photo size has been created.\n' % name)
     return size

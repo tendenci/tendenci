@@ -21,7 +21,7 @@ class RedirectMiddleware(object):
         except Exception, e:
             # No redirect was found. Return the response.
             # Log the 404
-            # print "e: ", e
+            # print("e: ", e)
             report_list = Report404.objects.filter(url=path)[:1]
             if report_list:
                 report = report_list[0]

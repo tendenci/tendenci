@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import traceback
 
@@ -49,7 +50,7 @@ class Command(BaseCommand):
                 # TODO: add a field to log the error
                 # mimport.save()
                 # raise  Exception(traceback.format_exc())
-                print e
+                print(e)
 
             mimport.num_processed += 1
             # save the status

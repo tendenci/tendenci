@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from tendenci.apps.site_settings.models import Setting
 
@@ -22,7 +23,7 @@ class Command(BaseCommand):
 
         # example if no settings are passed.
         if not settings and verbosity > 0:
-            print self.help
+            print(self.help)
 
         for setting in settings:
             if setting.count('/') == 2:
@@ -38,7 +39,7 @@ class Command(BaseCommand):
                     message = "Multiple Results!? %s:%s:%s" & (scope, scope_category, name)
 
                 if verbosity > 0:
-                    print message
+                    print(message)
 
             elif setting.count('/') == 1:
                 scope, scope_category = setting.split('/')
@@ -51,4 +52,4 @@ class Command(BaseCommand):
                     message = "Does Not Exist %s:%s" % (scope, scope_category)
 
                 if verbosity > 0:
-                    print message
+                    print(message)

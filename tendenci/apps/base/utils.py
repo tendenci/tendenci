@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 from datetime import datetime
@@ -769,7 +770,7 @@ def get_salesforce_access():
                             sandbox=is_sandbox)
             return sf
         except:
-            print 'Salesforce authentication failed'
+            print('Salesforce authentication failed')
 
     return None
 

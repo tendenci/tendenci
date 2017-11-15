@@ -1456,7 +1456,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     #     payment_methods = self.instance.payment_method.all()
 
 
-    #     print 'price_sum', type(price_sum), price_sum
+    #     print('price_sum', type(price_sum), price_sum)
 
     #     if price_sum and not payment_methods:
     #         raise forms.ValidationError("Please select possible payment methods for your attendees.")

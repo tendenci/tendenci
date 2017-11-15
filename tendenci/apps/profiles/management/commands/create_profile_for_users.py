@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -17,4 +18,4 @@ class Command(BaseCommand):
             except ObjectDoesNotExist:
                 profile = Profile.objects.create_profile(user)
                 if options['verbosity'] > 1:
-                    print profile
+                    print(profile)

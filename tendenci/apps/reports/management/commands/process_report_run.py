@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
@@ -161,7 +162,7 @@ class Command(BaseCommand):
             run.save()
             #invalidate('reports_run')
 
-            print "running report"
+            print("running report")
 
             report_output = "Report Output Here"
             run.output = report_output
@@ -169,7 +170,7 @@ class Command(BaseCommand):
             if run.report.type == "invoices":
                 run.output = self.report_output_invoices(run=run)
 
-            print "report complete"
+            print("report complete")
             if not run.status == "error":
                 run.status = "complete"
 
@@ -178,4 +179,4 @@ class Command(BaseCommand):
             #invalidate('reports_run')
 
         else:
-            print "Report is already running"
+            print("Report is already running")

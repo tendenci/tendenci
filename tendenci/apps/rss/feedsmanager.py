@@ -37,4 +37,4 @@ def _try_import(module):
         __import__(module)
     except ImportError:
         pass
-        #print "Failed to import feeds file: %s" % e
+        #print("Failed to import feeds file: %s" % e)

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import random, string
 
 from django.contrib.auth.decorators import login_required
@@ -92,7 +93,7 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
                 return HttpResponseRedirect(reverse('contact', args=[contact.pk]))
         else:
             form = form_class()
-            print form_class()
+            print(form_class())
 
         return render_to_response(template_name, {'form':form},
             context_instance=RequestContext(request))

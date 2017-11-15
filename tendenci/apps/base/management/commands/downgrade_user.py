@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from optparse import make_option
 
@@ -37,7 +38,7 @@ class Command(BaseCommand):
         try:
             u = User.objects.get(username=username)
         except ObjectDoesNotExist:
-            print 'User with username (%s) could not be found' % username
+            print('User with username (%s) could not be found' % username)
             return
 
         # Remove the user from all groups
@@ -58,4 +59,4 @@ class Command(BaseCommand):
             m.delete()
 
         if verbosity >= 2:
-            print 'Done downgrading user (%s).' % u
+            print('Done downgrading user (%s).' % u)
