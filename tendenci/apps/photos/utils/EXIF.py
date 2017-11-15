@@ -694,7 +694,6 @@ MAKERNOTE_OLYMPUS_TAGS={
     0x1001: ('ISOValue', ),
     0x1002: ('ApertureValue', ),
     0x1003: ('BrightnessValue', ),
-    0x1004: ('FlashMode', ),
     0x1004: ('FlashMode',
        {2: 'On',
         3: 'Off'}),

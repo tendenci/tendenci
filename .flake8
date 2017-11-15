@@ -1,7 +1,5 @@
 [flake8]
 ignore =
-  # Ignored key in dict
-  F601,F999,
   # Deprecated/discouraged syntax
   E711,E712,E713,E714,E721,E731,W601,
   # Unused/undefined/redefined variables

@@ -171,7 +171,7 @@ colors = {
     '301100':'FF3333', # edit
     '303000':'FF0033', # delete
     '304000':'FF0033', # search 
-    '305000':'FF0066', # view
+    #'305000':'FF0066', # view (Duplicate of news base)
     '301001':'FF0033', # submitted
     '301005':'FF0099', # resend
 
@@ -239,7 +239,7 @@ colors = {
     '1001500':'D13800', # view       
         
     # impersonation
-    '1080000':'FF0000',
+    #'1080000':'FF0000', # (Duplicate of membership entries base)
 
     # events
     '170000':'FF6600', # base
@@ -338,7 +338,7 @@ colors = {
     '1200500':'55AACC', # detail
     
     # staff
-    '1080000':'EE7733', # base
+    #'1080000':'EE7733', # base (Duplicate of membership entries base)
     '1080100':'119933', # add
     '1080200':'EEDD55', # edit
     '1080300':'AA2222', # delete
@@ -361,13 +361,13 @@ colors = {
     '154000':'CC55EE', # search
     '155000':'55AACC', # detail
     
-    # case_studies
-    '1000000':'EE8877', # base
-    '1000100':'119933', # add
-    '1000200':'EEDD55', # edit
-    '1000300':'AA2222', # delete
-    '1000400':'CC55EE', # search
-    '1000500':'55AACC', # detail
+    # case_studies (Duplicate of help files)
+    #'1000000':'EE8877', # base
+    #'1000100':'119933', # add
+    #'1000200':'EEDD55', # edit
+    #'1000300':'AA2222', # delete
+    #'1000400':'CC55EE', # search
+    #'1000500':'55AACC', # detail
     
     # attorneys
     '490000':'773300', # base

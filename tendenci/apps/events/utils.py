@@ -1700,15 +1700,14 @@ def add_sf_attendance(registrant, event):
                     contact = sf.Contact.create({
                         'FirstName':registrant.first_name,
                         'LastName':registrant.last_name,
-                        'Email':registrant.email,
                         'Title':registrant.position_title,
+                        'Email':registrant.email,
                         'Phone':registrant.phone,
                         'MailingStreet':registrant.address,
                         'MailingCity':registrant.city,
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
-                        'MailingPostalCode':registrant.zip,
-                        'Title': registrant.position_title
+                        'MailingPostalCode':registrant.zip
                         })
                     # update field Company_Name__c
                     if registrant.company_name and contact.has_key('Company_Name__c'):
