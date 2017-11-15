@@ -117,7 +117,7 @@ class MultipleFileAdmin(admin.ModelAdmin):
         return render(request,
             'admin/files/file/multiple_file_upload.html',{
             'adminform': form
-        });
+        })
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:multiplefile_add'))

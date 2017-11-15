@@ -280,7 +280,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
         return render(request,
             'admin/events/standardregform/standard_reg_form_edit.html',
-            {'adminform': form});
+            {'adminform': form})
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:standardregform_edit'))

@@ -89,7 +89,7 @@ def gzip_compressor(request):
                 response['Content-Length'] = '0'
                 return response
 
-    content.append("var tinyMCEPreInit={base:'%s',suffix:''};" % tinymce_settings.JS_BASE_URL);
+    content.append("var tinyMCEPreInit={base:'%s',suffix:''};" % tinymce_settings.JS_BASE_URL)
 
     # Add core
     files = ["tiny_mce"]

@@ -134,7 +134,7 @@ def build_settings_form(user, settings):
                 'label_suffix': "",
             }
             if setting.input_type == 'textarea':
-                options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30});
+                options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30})
 
             if setting.client_editable:
                 fields.update({"%s" % setting.name: forms.CharField(**options)})

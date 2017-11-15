@@ -6,8 +6,8 @@ ignore =
   F811,F812,F821,F841,
   # Import issues
   E401,E402,F401,F402,F403,F405,
-  # Continuation/semicolon issues
-  E502,E701,E703,
+  # Line continuation issues
+  E502,E701,
   # Assorted whitespace issues
   E101,E303,W191,W291,W292,W293,W391,
 
