@@ -701,7 +701,7 @@ def split_table_price(total_price, quantity):
     avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
 
-    if diff <> 0:
+    if diff != 0:
         return (avg+diff, avg)
     return (avg, avg)
 

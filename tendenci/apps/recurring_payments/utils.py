@@ -763,7 +763,7 @@ def api_verify_rp_payment_profile(data):
                 # success
 
                 # update rp and rp_invoice
-                if rp.status_detail <> 'active':
+                if rp.status_detail != 'active':
                     rp.status_detail = 'active'
 
                 now = datetime.now()

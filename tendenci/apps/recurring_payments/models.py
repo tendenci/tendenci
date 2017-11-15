@@ -269,7 +269,7 @@ class RecurringPayment(models.Model):
                                 cim_payment_profile['payment']['credit_card'].has_key('card_number'):
 
                         card_num = cim_payment_profile['payment']['credit_card']['card_number'][-4:]
-                        if payment_profile.card_num <> card_num:
+                        if payment_profile.card_num != card_num:
                             payment_profile.card_num = card_num
                             payment_profile.save()
 

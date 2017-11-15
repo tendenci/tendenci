@@ -388,7 +388,7 @@ class RegConfPricing(OrderingBaseModel):
                       'end_dt__gt': now,
                       }
 
-        if spots_available <> -1:
+        if spots_available != -1:
             if not user.profile.is_superuser:
                 filter_and['quantity__lte'] = spots_available
 

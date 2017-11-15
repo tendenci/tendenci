@@ -99,7 +99,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    if request.user.profile.is_superuser or membership_view_perms <> 'private': 
+    if request.user.profile.is_superuser or membership_view_perms != 'private':
         groupmemberships = GroupMembership.objects.filter(
             group=group,
             status=True,

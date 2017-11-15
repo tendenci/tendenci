@@ -1780,7 +1780,7 @@ class RegistrantForm(forms.Form):
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
             # Both 'validated' and 'strict' require validation.
-            if self.event.anony_setting <> 'open':
+            if self.event.anony_setting != 'open':
                 # check if user is eligiable for this pricing
                 email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)
