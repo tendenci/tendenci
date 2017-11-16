@@ -714,7 +714,7 @@ def corpmembership_search(request, my_corps_only=False,
         corp_profiles_choices = [(0, _('Select One'))]
         for corp_memb in corp_members:
             t = (corp_memb.corp_profile.id, corp_memb.corp_profile.name)
-            if not t in corp_profiles_choices:
+            if t not in corp_profiles_choices:
                 corp_profiles_choices.append(t)
 
         search_form.fields['cp_id'].choices = corp_profiles_choices
@@ -1529,7 +1529,7 @@ def download_template(request):
                        in CorpProfile._meta.fields \
                      if not field.__class__ == AutoField]
     corp_profile_field_list = [name for name in corp_profile_field_list \
-                               if not name in base_field_list]
+                               if name not in base_field_list]
     corp_profile_field_list.remove('guid')
     corp_profile_field_list.extend(['dues_rep', 'authorized_domains'])
     # change name to company_name to avoid the confusion
@@ -1540,7 +1540,7 @@ def download_template(request):
                        in CorpMembership._meta.fields \
                      if not field.__class__ == AutoField]
     corp_memb_field_list = [name for name in corp_memb_field_list \
-                               if not name in base_field_list]
+                               if name not in base_field_list]
     corp_memb_field_list.remove('guid')
     corp_memb_field_list.remove('corp_profile')
     corp_memb_field_list.remove('anonymous_creator')
@@ -1573,7 +1573,7 @@ def corpmembership_export(request,
                                in CorpProfile._meta.fields \
                              if not field.__class__ == AutoField]
             corp_profile_field_list = [name for name in corp_profile_field_list \
-                                       if not name in base_field_list]
+                                       if name not in base_field_list]
             corp_profile_field_list.remove('guid')
             corp_profile_field_list.append('dues_rep')
             corp_profile_field_list.append('member_rep')

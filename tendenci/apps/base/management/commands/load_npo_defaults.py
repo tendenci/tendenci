@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from optparse import make_option
 from random import randint
@@ -83,7 +84,7 @@ class Command(BaseCommand):
                 if not os.path.exists(dir_path):
                     os.makedirs(dir_path)
 
-                print dst
+                print(dst)
 
                 if '/story/' in source_key.name:
                     source_key = self.get_random_stock(bucket)
@@ -106,7 +107,7 @@ class Command(BaseCommand):
                 target_key_name = os.path.join(settings.MEDIA_ROOT, target_key_name)
 
                 # TODO: Check if exists before copying over
-                print settings.AWS_STORAGE_BUCKET_NAME, target_key_name
+                print(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
                 source_key.copy(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
 
     def call_loaddata(self, reset_nav=False):
@@ -126,21 +127,21 @@ class Command(BaseCommand):
                 pass
 
         staff_installed = "addons.staff" in settings.INSTALLED_APPS
-        print 'npo_default_auth_user.json'
+        print('npo_default_auth_user.json')
         call_command('loaddata', 'npo_default_auth_user.json')
-        print 'npo_default_entities.json'
+        print('npo_default_entities.json')
         call_command('loaddata', 'npo_default_entities.json')
-        print 'npo_default_user_groups.json'
+        print('npo_default_user_groups.json')
         call_command('loaddata', 'npo_default_user_groups.json')
-        print 'npo_default_files.json'
+        print('npo_default_files.json')
         call_command('loaddata', 'npo_default_files.json')
-        print 'load paymentmethod.json'
+        print('load paymentmethod.json')
         call_command('loaddata', 'paymentmethod.json')
-        print 'load default_forums.json'
+        print('load default_forums.json')
         call_command('loaddata', 'default_forums.json')
-        print 'load regions_region.json'
+        print('load regions_region.json')
         call_command('loaddata', 'regions_region.json')
-        print 'load npo_default_directories_pricings.json'
+        print('load npo_default_directories_pricings.json')
         call_command('loaddata', 'npo_default_directories_pricings.json')
         
         
@@ -156,7 +157,7 @@ class Command(BaseCommand):
 
         files = File.objects.all()
 
-        print 'updating files'
+        print('updating files')
         for f in files:
 
             if 'box' in unicode(f.file):
@@ -192,6 +193,6 @@ class Command(BaseCommand):
         for suffix in suffix_list:
             filename = 'npo_default_%s.json' % suffix
 
-            print filename
+            print(filename)
             call_command('loaddata', filename)
 

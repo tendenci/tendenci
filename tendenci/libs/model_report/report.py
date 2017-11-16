@@ -259,7 +259,7 @@ class ReportAdmin(object):
                 else:
                     if field in self.extra_fields:
                         model_field = self.extra_fields[field]
-                    elif not 'self.' in field:
+                    elif 'self.' not in field:
                         model_field = self.model._meta.get_field_by_name(field)[0]
                     else:
                         get_attr = lambda s: getattr(s, field.split(".")[1])
@@ -284,7 +284,7 @@ class ReportAdmin(object):
                         if pattname in cattname:
                             if pfield.model == cfield.model:
                                 self.related_inline_filters.append([pattname, cattname, self.parent_report.get_fields().index(pattname)])
-                    except Exception, e:
+                    except Exception as e:
                         pass
 
 
@@ -348,7 +348,7 @@ class ReportAdmin(object):
         return [dictrow[field_name] for field_name in self.get_fields()]
 
     def get_fields(self):
-        return [x for x in self.fields if not x in self.related_fields]
+        return [x for x in self.fields if x not in self.related_fields]
 
     def get_column_names(self, ignore_columns={}):
         """
@@ -368,7 +368,7 @@ class ReportAdmin(object):
     def get_query_field_names(self):
         values = []
         for field in self.get_fields():
-            if not 'self.' in field:
+            if 'self.' not in field:
                 values.append(field.split(".")[0])
             else:
                 values.append(field)
@@ -390,7 +390,7 @@ class ReportAdmin(object):
         else:
             qs = self.model.objects.all()
         for selected_field, field_value in filter_kwargs.items():
-            if not field_value is None and field_value != '':
+            if field_value is not None and field_value != '':
                 if hasattr(field_value, 'values_list'):
                     field_value = field_value.values_list('pk', flat=True)
                     selected_field = '%s__pk__in' % selected_field.split("__")[0]
@@ -470,7 +470,7 @@ class ReportAdmin(object):
                             if r.is_value():
                                 rows.remove(r)
 
-                if not context_request.GET.get('export', None) is None and not self.parent_report:
+                if context_request.GET.get('export', None) is not None and not self.parent_report:
                     exporter_class = self.exporters.get(context_request.GET.get('export'), None)
                     if exporter_class:
                         report_inlines = [ir(self, context_request) for ir in self.inlines]
@@ -630,7 +630,7 @@ class ReportAdmin(object):
 
                         else:
                             field = model_field.formfield()
-                            if self.list_filter_widget.has_key(k):
+                            if k in self.list_filter_widget:
                                 use_widget, widget, field_class = self.check_for_widget(self.list_filter_widget, k)
                                 if use_widget:
                                     field.__class__ = field_class
@@ -844,7 +844,7 @@ class ReportAdmin(object):
                         if is_date_field(field):
                             fname, flookup = f.rsplit('__', 1)
                             fname = fname.split('__')[-1]
-                            if not flookup in ('year', 'month', 'day'):
+                            if flookup not in ('year', 'month', 'day'):
                                 break
                             if flookup == 'year':
                                 if 'sqlite' in backend:

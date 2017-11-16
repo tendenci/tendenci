@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.db.models.loading import get_models
@@ -75,7 +76,7 @@ class Command(BaseCommand):
             entity = Entity(**params)
 
             entity.save()
-            print 'entity created: ', entity.entity_name
+            print('entity created: ', entity.entity_name)
 
         # loop through all the tables and populate
         # the entity field only if it's null.
@@ -97,10 +98,10 @@ class Command(BaseCommand):
                     table_updated.append(table_name)
 
         if verbosity >= 2:
-            print
-            print 'List of tables updated: '
-            print '\n'.join(table_updated)
-            print
+            print()
+            print('List of tables updated: ')
+            print('\n'.join(table_updated))
+            print()
 
         # GROUP - check if we have a group associated with
         group_exists = Group.objects.filter(entity=entity).exists()
@@ -127,8 +128,8 @@ class Command(BaseCommand):
 
             try:
                 group.save()
-                print 'Group created: ', group.name
+                print('Group created: ', group.name)
             except Exception as e:
-                print e
+                print(e)
 
-        print 'All done.'
+        print('All done.')

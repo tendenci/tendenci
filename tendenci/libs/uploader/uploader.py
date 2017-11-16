@@ -50,7 +50,7 @@ def post(request, callback):
         dest_path = os.path.join(settings.UPLOAD_DIRECTORY, file_attrs['qquuid'])
         dest_file = os.path.join(dest_path, file_attrs['qqfilename'])
         chunk = False
-        if file_attrs['qqtotalparts'] != None and int(file_attrs['qqtotalparts']) > 1:
+        if file_attrs['qqtotalparts'] is not None and int(file_attrs['qqtotalparts']) > 1:
             dest_file = os.path.join(dest_file+'.chunks', str(file_attrs['qqpartindex']))
             chunk = True
 
@@ -66,13 +66,13 @@ def post(request, callback):
         if not chunk:
             try:
                 callback(file_path=dest_file, uuid=file_attrs['qquuid'])
-            except CallbackError, e:
+            except CallbackError as e:
                 return make_response(status=400,
                     content=json.dumps({
                         'success': False,
                         'error': '%s' % repr(e)
                     }))
-            except Exception, e:
+            except Exception as e:
                 return make_response(status=500,
                     content=json.dumps({
                         'success': False,
@@ -94,13 +94,13 @@ def delete(request, callback, *args, **kwargs):
     if uuid:
         try:
             callback(uuid=uuid)
-        except CallbackError, e:
+        except CallbackError as e:
             return make_response(status=400,
                 content=json.dumps({
                     'success': False,
                     'error': '%s' % repr(e)
                 }))
-        except Exception, e:
+        except Exception as e:
             return make_response(status=500,
                 content=json.dumps({
                     'success': False,

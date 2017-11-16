@@ -126,14 +126,14 @@ def callMethod(obj, methodName):
     """
     method = getattr(obj, methodName)
 
-    if obj.__dict__.has_key("__callArg"):
+    if "__callArg" in obj.__dict__:
         ret = method(*obj.__callArg)
         del obj.__callArg
         return ret
     return method()
 
 def args(obj, arg):
-    if not obj.__dict__.has_key("__callArg"):
+    if "__callArg" not in obj.__dict__:
         obj.__callArg = []
 
     obj.__callArg += [arg]
@@ -250,10 +250,10 @@ def reset(parser, token):
     try:
         variable = bits[1]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least three arguments." % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least three arguments." % {'b':bits[0]}))
 
     if bits[1] == 'as':
-        raise TemplateSyntaxError, _("'%(b)s' first argument must be a context var." % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' first argument must be a context var." % {'b':bits[0]}))
 
     # get the user
     try:
@@ -264,7 +264,7 @@ def reset(parser, token):
         context = None
 
     if not variable and not context:
-        raise TemplateSyntaxError, _("'%(b)s' missing arguments. Syntax {% reset var1 as var2 %}" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' missing arguments. Syntax {% reset var1 as var2 %}" % {'b':bits[0]}))
 
     return ResetNode(variable, context=context)
 
@@ -308,12 +308,12 @@ def image_preview(parser, token):
     try:
         instance = bits[1]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least 2 arguments" % {'b':bits[0]}))
 
     try:
         size = bits[2]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least 2 arguments" % {'b':bits[0]}))
 
     try:
         context = bits[4]

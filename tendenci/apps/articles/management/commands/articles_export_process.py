@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 from optparse import make_option
 from django.core.management.base import BaseCommand
@@ -40,4 +41,4 @@ class Command(BaseCommand):
             identifier=identifier,
             user_id=user_id)
 
-        print 'Article export done %s.' % identifier
+        print('Article export done %s.' % identifier)

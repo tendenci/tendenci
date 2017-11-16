@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from optparse import make_option
 from random import randint
@@ -52,23 +53,23 @@ class Command(BaseCommand):
             except:
                 pass
 
-        print 'creative_default_auth_user.json'
+        print('creative_default_auth_user.json')
         call_command('loaddata', 'creative_default_auth_user.json')
-        print 'creative_default_auth_groups.json'
+        print('creative_default_auth_groups.json')
         call_command('loaddata', 'creative_default_auth_groups.json')
-        print 'creative_default_entities.json'
+        print('creative_default_entities.json')
         call_command('loaddata', 'creative_default_entities.json')
-        print 'creative_default_user_groups.json'
+        print('creative_default_user_groups.json')
         call_command('loaddata', 'creative_default_user_groups.json')
-        print 'creative_default_files.json'
+        print('creative_default_files.json')
         call_command('loaddata', 'creative_default_files.json')
-        print 'load creative_default_paymentmethod.json'
+        print('load creative_default_paymentmethod.json')
         call_command('loaddata', 'creative_default_paymentmethod.json')
-        print 'load creative_default_forums.json'
+        print('load creative_default_forums.json')
         call_command('loaddata', 'creative_default_forums.json')
-        print 'load creative_default_regions_region.json'
+        print('load creative_default_regions_region.json')
         call_command('loaddata', 'creative_default_regions_region.json')
-        print 'load creative_default_directories_pricings.json'
+        print('load creative_default_directories_pricings.json')
         call_command('loaddata', 'creative_default_directories_pricings.json')
 
 
@@ -95,6 +96,6 @@ class Command(BaseCommand):
         for suffix in suffix_list:
             filename = 'creative_default_%s.json' % suffix
 
-            print filename
+            print(filename)
             call_command('loaddata', filename)
 

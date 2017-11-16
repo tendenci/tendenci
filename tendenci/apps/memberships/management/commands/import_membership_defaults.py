@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -35,8 +36,8 @@ class Command(BaseCommand):
         for idata in data_list:
             try:
                 imd.process_default_membership(idata)
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
 
             mimport.num_processed += 1
 

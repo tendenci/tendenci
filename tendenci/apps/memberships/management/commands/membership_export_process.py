@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 from optparse import make_option
 from django.core.management.base import BaseCommand
@@ -85,4 +86,4 @@ class Command(BaseCommand):
             user_id=user_id,
             cp_id=cp_id)
 
-        print 'Membership export done %s.' % identifier
+        print('Membership export done %s.' % identifier)

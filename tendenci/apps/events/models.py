@@ -296,7 +296,7 @@ class RegConfPricing(OrderingBaseModel):
         Note that the delete() method for an object is not necessarily
         called when deleting objects in bulk using a QuerySet.
         """
-        #print "%s, %s" % (self, "status set to false" )
+        #print("%s, %s" % (self, "status set to false" ))
         self.status = False
         self.save(*args, **kwargs)
 
@@ -388,7 +388,7 @@ class RegConfPricing(OrderingBaseModel):
                       'end_dt__gt': now,
                       }
 
-        if spots_available <> -1:
+        if spots_available != -1:
             if not user.profile.is_superuser:
                 filter_and['quantity__lte'] = spots_available
 
@@ -1400,9 +1400,9 @@ class Event(TendenciBaseModel):
         """
         Check if event is private (i.e. if private enabled)
         """
-        # print 'enable_private_slug', self.enable_private_slug
-        # print 'private_slug', self.private_slug
-        # print 'slug', slug
+        # print('enable_private_slug', self.enable_private_slug)
+        # print('private_slug', self.private_slug)
+        # print('slug', slug)
 
         return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
 

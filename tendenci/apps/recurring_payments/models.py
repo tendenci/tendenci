@@ -1,3 +1,4 @@
+from __future__ import print_function
 import uuid
 import re
 from datetime import datetime
@@ -146,7 +147,7 @@ class RecurringPayment(models.Model):
                 d = {'email': self.user.email,
                      'customer_id': str(self.id)}
                 success, response_d = cp.create(**d)
-                print success, response_d
+                print(success, response_d)
                 if success:
                     self.customer_profile_id = response_d['customer_profile_id']
                     self.save()
@@ -202,7 +203,7 @@ class RecurringPayment(models.Model):
         success, response_d = customer_profile.get()
 
         if success:
-            if response_d['profile'].has_key('payment_profiles'):
+            if 'payment_profiles' in response_d['profile']:
                 # 1) get a list of payment_profiles from gateway
                 cim_payment_profiles = response_d['profile']['payment_profiles']
                 if not type(cim_payment_profiles) is list:
@@ -264,11 +265,11 @@ class RecurringPayment(models.Model):
                     else:
                         payment_profile = payment_profiles[0]
 
-                    if cim_payment_profile['payment'].has_key('credit_card') and \
-                                cim_payment_profile['payment']['credit_card'].has_key('card_number'):
+                    if 'credit_card' in cim_payment_profile['payment'] and \
+                                'card_number' in cim_payment_profile['payment']['credit_card']:
 
                         card_num = cim_payment_profile['payment']['credit_card']['card_number'][-4:]
-                        if payment_profile.card_num <> card_num:
+                        if payment_profile.card_num != card_num:
                             payment_profile.card_num = card_num
                             payment_profile.save()
 
@@ -515,9 +516,9 @@ class PaymentProfile(models.Model):
         success, response_d = cim_payment_profile.get()
 
         if success:
-            if response_d['payment_profile'].has_key('payment'):
-                if response_d['payment_profile']['payment'].has_key('credit_card') and \
-                        response_d['payment_profile']['payment']['credit_card'].has_key('card_number'):
+            if 'payment' in response_d['payment_profile']:
+                if 'credit_card' in response_d['payment_profile']['payment'] and \
+                        'card_number' in response_d['payment_profile']['payment']['credit_card']:
                     card_num = response_d['payment_profile']['payment']['credit_card']['card_number'][-4:]
                     self.card_num = card_num
 

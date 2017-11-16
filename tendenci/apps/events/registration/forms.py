@@ -200,7 +200,7 @@ class RegistrantForm(forms.Form):
                 if hasattr(self, 'clean_%s' % name):
                     value = getattr(self, 'clean_%s' % name)()
                     self.cleaned_data[name] = value
-            except forms.ValidationError, e:
+            except forms.ValidationError as e:
                 self._errors[name] = self.error_class(e.messages)
                 if name in self.cleaned_data:
                     del self.cleaned_data[name]

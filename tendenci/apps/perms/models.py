@@ -108,7 +108,7 @@ class TendenciBaseModel(models.Model):
                     Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
                 except Exception as e:
                     pass
-                    #print "version error: ", e
+                    #print("version error: ", e)
 
             if "log" in kwargs:
                 kwargs.pop('log')

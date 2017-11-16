@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -28,4 +29,4 @@ class Command(BaseCommand):
                     if owner:
                         invoice.set_owner(owner)
                         invoice.save()
-        print 'done'
+        print('done')

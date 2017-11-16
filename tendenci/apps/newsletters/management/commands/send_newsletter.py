@@ -1,3 +1,4 @@
+from __future__ import print_function
 import datetime
 import traceback
 import re
@@ -36,7 +37,7 @@ class Command(BaseCommand):
             return
 
 
-        print "Started sending newsletter..."
+        print("Started sending newsletter...")
         
         if newsletter_id == 0:
             raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter <newsletter_id>')
@@ -108,17 +109,17 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
-            print "Sending to %s" % recipient.member.email
+            print("Sending to %s" % recipient.member.email)
             email_to_send.send(connection=connection)
             counter += 1
-            print "Newsletter sent to %s" % recipient.member.email
+            print("Newsletter sent to %s" % recipient.member.email)
 
             if newsletter.send_to_email2 and hasattr(recipient.member, 'profile') \
                 and validate_email(recipient.member.profile.email2):
                 email_to_send.recipient = recipient.member.profile.email2
                 email_to_send.send(connection=connection)
                 counter += 1
-                print "Newsletter sent to %s" % recipient.member.profile.email2
+                print("Newsletter sent to %s" % recipient.member.profile.email2)
 
         if newsletter.send_status == 'sending':
             newsletter.send_status = 'sent'
@@ -135,9 +136,9 @@ class Command(BaseCommand):
 
         newsletter.save()
 
-        print "Successfully sent %s newsletter emails." % counter
+        print("Successfully sent %s newsletter emails." % counter)
 
-        print "Sending confirmation message to creator..."
+        print("Sending confirmation message to creator...")
         # send confirmation email
         subject = "Newsletter Submission Recap for %s" % newsletter.email.subject
         detail_url = get_setting('site', 'global', 'siteurl') + newsletter.get_absolute_url()
@@ -156,12 +157,12 @@ class Command(BaseCommand):
 
         email.send(connection=connection)
         
-        print "Confirmation email sent."
+        print("Confirmation email sent.")
 
         # add cache clear to resolve issue
         # TODO: cache clear only to specifies
         cache.clear()
-        print 'Cache cleared!'
+        print('Cache cleared!')
         
 
     def handle(self, *args, **options):
@@ -173,7 +174,7 @@ class Command(BaseCommand):
         try:
             self.send_newsletter(newsletter_id)
         except:
-            print traceback.format_exc()
+            print(traceback.format_exc())
             newsletter_url = '%s%s' % (get_setting('site', 'global', 'siteurl'),
                                         reverse('newsletter.detail.view', kwargs={'pk': newsletter_id}))
             logger.error('Error sending newsletter %s...\n\n%s' % (newsletter_url, traceback.format_exc()))

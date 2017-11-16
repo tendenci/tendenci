@@ -38,7 +38,7 @@ def complete_process(request, backend):
 
     try:
         user = backend.auth_complete()
-    except ValueError, e:  # some Authentication error ocurred
+    except ValueError as e:  # some Authentication error ocurred
         user = None
         error_key = getattr(settings, 'SOCIAL_AUTH_ERROR_KEY', None)
         if error_key:  # store error in session

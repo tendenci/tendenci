@@ -20,13 +20,16 @@ _notes/
 *.pyc
 
 # except for .gitignore
-!.gitignore
+!/.gitignore
 
 # except for .tx/config
-!.tx/
+!/.tx/
 
 # except for .travis.yml
-!.travis.yml
+!/.travis.yml
+
+# except for .flake8
+!/.flake8
 
 # Ignore docs build files
 docs/build/

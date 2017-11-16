@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.db.models import Count
 
@@ -55,11 +56,11 @@ class Command(BaseCommand):
                         membership.status_detail = 'archive'
                         membership.save()
                         if verbosity > 1:
-                            print 'Archived for membership ID=%d' % membership.id
+                            print('Archived for membership ID=%d' % membership.id)
 
                 if not first_membership.renewal:
                     if not skip_renewal_bit_update:
                         first_membership.renewal = True
                         if verbosity > 1:
-                            print 'Set renewal=True for membership ID=%d' % first_membership.id
-        print 'Done'
+                            print('Set renewal=True for membership ID=%d' % first_membership.id)
+        print('Done')

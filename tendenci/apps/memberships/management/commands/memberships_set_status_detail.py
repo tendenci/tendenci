@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -21,4 +22,4 @@ class Command(BaseCommand):
 
 
         if verbosity:
-            print 'Success!', '%s set to expired and %s set to active.' % (expired, active)
+            print('Success!', '%s set to expired and %s set to active.' % (expired, active))

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 
 from tendenci.apps.site_settings.models import Setting
@@ -49,4 +50,4 @@ class Command(BaseCommand):
                 setting = settings[0]
                 return_str += setting.get_value()
 
-        print return_str
+        print(return_str)

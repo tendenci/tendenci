@@ -608,7 +608,7 @@ class UserGroupsForm(forms.Form):
 
         for old_m in old_memberships:
             if old_m.group not in data['groups']:
-                #print "membership to %s deleted" % old_m.group
+                #print("membership to %s deleted" % old_m.group)
                 log_defaults = {
                     'event_id' : 223000,
                     'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, self.editor),
@@ -805,7 +805,7 @@ class UserUploadForm(forms.ModelForm):
             key_list.append(key)
         missing_columns = []
         for item in key_list:
-            if not item in header_list:
+            if item not in header_list:
                 missing_columns.append(item)
         if missing_columns:
             raise forms.ValidationError(_(

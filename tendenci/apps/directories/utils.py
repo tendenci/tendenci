@@ -214,7 +214,7 @@ def process_export(export_fields='all_fields', export_status_detail='',
             if not field.__class__ == AutoField]
         field_list = [
             name for name in field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         field_list.remove('guid')
         # append base fields at the end
         field_list = field_list + base_field_list

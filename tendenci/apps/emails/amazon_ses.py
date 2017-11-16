@@ -177,7 +177,7 @@ class AmazonResponseParser:
 
         def getChild(self, *itemPath):
             node = self._findNode(self._rootElement, self._namespace, *itemPath)
-            if node != None:
+            if node is not None:
                 return node
             else:
                 raise AmazonAPIError('Node with the specified path was not found.')

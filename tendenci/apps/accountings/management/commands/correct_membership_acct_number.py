@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 
@@ -45,4 +46,4 @@ class Command(BaseCommand):
                         num_trans_updated += acct_trans.count()
                         acct_trans.update(account=acct)
 
-        print '# acct_tran updated ', num_trans_updated
+        print('# acct_tran updated ', num_trans_updated)

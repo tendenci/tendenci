@@ -22,7 +22,7 @@ def assign_discount(price_list, discount):
     discount_value = discount.value
 
     count = len(price_list)
-    if limit <> 0 and limit < len(price_list):
+    if limit != 0 and limit < len(price_list):
         count = limit
         msg = 'Discount is only available for %s. ' % count
 

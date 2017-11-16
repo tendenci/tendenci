@@ -49,7 +49,7 @@ def handle_uploaded_file(f, file_path):
 def get_user_import_settings(request, id):
     d = {}
 
-    if not id in request.session:
+    if id not in request.session:
         return d
 
     d['file_name'] = (request.session[id]).get('file_name', u'')
@@ -440,13 +440,13 @@ def get_unique_username(user):
 
 # populate user object to its dictionary, so we can display to the preview page
 def populate_user_dict(user, user_dict, import_setting_list):
-    if not 'first_name' in user_dict:
+    if 'first_name' not in user_dict:
         user_dict['first_name'] = user.first_name
-    if not 'last_name' in user_dict:
+    if 'last_name' not in user_dict:
         user_dict['last_name'] = user.last_name
-    if not 'email' in user_dict:
+    if 'email' not in user_dict:
         user_dict['email'] = user.email
-    if not 'username' in user_dict:
+    if 'username' not in user_dict:
         user_dict['username'] = user.username
     if not import_setting_list['override']:
         if user.first_name:

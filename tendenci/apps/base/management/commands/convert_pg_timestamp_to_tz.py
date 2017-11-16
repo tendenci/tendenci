@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 from dateutil import tz
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
             updated_field_count = 0
             total_values_updated = 0
             start_dt = datetime.now()
-            print "START: %s" % start_dt
+            print("START: %s" % start_dt)
 
             models = get_models()
             for model in models:
@@ -60,12 +61,12 @@ class Command(BaseCommand):
 
                         if field_type == 1114 and field.db_type(connection=connection) == "timestamp with time zone":
 
-                            print "Updating %s.%s data" % (model._meta.db_table, field.name)
-                            print "%s\n" % datetime.now()
+                            print("Updating %s.%s data" % (model._meta.db_table, field.name))
+                            print("%s\n" % datetime.now())
                             try:
                                 objects = model.objects.all()
-                                print objects
-                                print "%s objects" % objects.count()
+                                print(objects)
+                                print("%s objects" % objects.count())
                                 total_values_updated = total_values_updated + objects.count()
                             except:
                                 objects = []
@@ -80,19 +81,19 @@ class Command(BaseCommand):
                                     if val:
                                         new_val = self.convert_to_utc(val)
                                         if verbosity >= 2:
-                                            print "%s %s ID:%s %s -> %s" % (model._meta.verbose_name, field.name, obj.pk, val, new_val)
+                                            print("%s %s ID:%s %s -> %s" % (model._meta.verbose_name, field.name, obj.pk, val, new_val))
 
                                         setattr(obj, field.name, new_val)
                                         try:
                                             obj.save()
-                                        except Exception, e:
-                                            print "failed to update %s %s" % (model._meta.verbose_name, obj.pk)
-                                            print e
+                                        except Exception as e:
+                                            print("failed to update %s %s" % (model._meta.verbose_name, obj.pk))
+                                            print(e)
 
                             # Change the field type to be 'timestamp with time zone', 1184
                             cursor = connection.cursor()
                             cursor.execute("UPDATE pg_attribute SET atttypid = '1184' WHERE attrelid = '%s'::regclass AND attname = '%s';" % (model._meta.db_table, field.name))
-                            print "Finished %s.%s data\n" % (model._meta.db_table, field.name)
+                            print("Finished %s.%s data\n" % (model._meta.db_table, field.name))
 
                             updated_field_count = updated_field_count + 1
 
@@ -101,9 +102,9 @@ class Command(BaseCommand):
                     if field.name in ['update_dt', 'date_done', 'action_time', 'date_changed']:
                         field.auto_now = True
 
-            print "FINISH at : %s" % datetime.now()
-            print "Started at: %s" % start_dt
-            print "Updated %s timestamp fields to utc with timezone support." % updated_field_count
-            print "Updated %s timestamp values." % total_values_updated
+            print("FINISH at : %s" % datetime.now())
+            print("Started at: %s" % start_dt)
+            print("Updated %s timestamp fields to utc with timezone support." % updated_field_count)
+            print("Updated %s timestamp values." % total_values_updated)
         else:
-            print "This command only runs on Postgresql databases."
+            print("This command only runs on Postgresql databases.")

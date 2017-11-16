@@ -182,7 +182,7 @@ def get_ACRF_queryset(event=None):
             for regfield in data:
                 regfield['fields']['form'] = form
                 CustomRegField.objects.create(**regfield['fields'])
-                if regfield['fields'].has_key('map_to_field'):
+                if 'map_to_field' in regfield['fields']:
                     map_to_fields.append(regfield['fields']['map_to_field'])
 
             for field in map_to_fields:
@@ -584,7 +584,7 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     # to avoid email duplications
     for recipient in notice_recipients:
         clean_recipient = recipient.strip()
-        if clean_recipient and (not clean_recipient in email_list):
+        if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
     notification.send_emails(
@@ -701,7 +701,7 @@ def split_table_price(total_price, quantity):
     avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
 
-    if diff <> 0:
+    if diff != 0:
         return (avg+diff, avg)
     return (avg, avg)
 
@@ -725,7 +725,7 @@ def get_registrants_prices(*args):
     if event.is_table and request.user.is_superuser:
         override_table = reg_form.cleaned_data.get('override_table', False)
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
-        if override_price_table == None:
+        if override_price_table is None:
             override_price_table = 0
         
     amount_list = []
@@ -790,7 +790,7 @@ def add_registration(*args, **kwargs):
     if event.is_table and request.user.is_superuser:
         override_table = reg_form.cleaned_data.get('override_table', False)
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
-        if override_price_table == None:
+        if override_price_table is None:
             override_price_table = 0
 
     # get the list of amount for registrants.
@@ -871,7 +871,7 @@ def add_registration(*args, **kwargs):
 #                override_price = amount
 
         # the table registration form does not have the DELETE field
-        if event.is_table or not form in registrant_formset.deleted_forms:
+        if event.is_table or form not in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
                 event,
@@ -1503,7 +1503,7 @@ def event_import_process(import_i, preview=True):
     in the event_object_dict. Then it updates the database
     if preview=False.
     """
-    #print "START IMPORT PROCESS"
+    #print("START IMPORT PROCESS")
     data_dict_list = extract_from_excel(unicode(import_i.file))
 
     event_obj_list = []
@@ -1536,13 +1536,13 @@ def event_import_process(import_i, preview=True):
             try:
                 datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
                 datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
-            except ValueError, e:
+            except ValueError as e:
                 invalid = True
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
 
             try:
                 timezone(event_object_dict["timezone"])
-            except UnknownTimeZoneError, e:
+            except UnknownTimeZoneError as e:
                 invalid = True
                 invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 
@@ -1573,12 +1573,12 @@ def event_import_process(import_i, preview=True):
         if not preview:  # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()
 
-    #print "END IMPORT PROCESS"
+    #print("END IMPORT PROCESS")
     return event_obj_list, invalid_list
 
 
@@ -1700,18 +1700,17 @@ def add_sf_attendance(registrant, event):
                     contact = sf.Contact.create({
                         'FirstName':registrant.first_name,
                         'LastName':registrant.last_name,
-                        'Email':registrant.email,
                         'Title':registrant.position_title,
+                        'Email':registrant.email,
                         'Phone':registrant.phone,
                         'MailingStreet':registrant.address,
                         'MailingCity':registrant.city,
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
-                        'MailingPostalCode':registrant.zip,
-                        'Title': registrant.position_title
+                        'MailingPostalCode':registrant.zip
                         })
                     # update field Company_Name__c
-                    if registrant.company_name and contact.has_key('Company_Name__c'):
+                    if registrant.company_name and 'Company_Name__c' in contact:
                         sf.Contact.update(contact['id'], {'Company_Name__c': registrant.company_name})
 
                     contact_id = contact['id']

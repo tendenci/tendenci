@@ -50,7 +50,7 @@ class FileValidator(object):
         for value in values:    
             # Check the extension
             ext = splitext(value.name)[1].lower()
-            if self.allowed_extensions and not ext in self.allowed_extensions:
+            if self.allowed_extensions and ext not in self.allowed_extensions:
                 message = self.extension_message % {
                     'extension' : ext,
                     'allowed_extensions': ', '.join(self.allowed_extensions)
@@ -61,7 +61,7 @@ class FileValidator(object):
             # Check the content type
             try:
                 mime_type = magic.from_buffer(value.read(1024), mime=True)
-                if self.allowed_mimetypes and not mime_type in self.allowed_mimetypes:
+                if self.allowed_mimetypes and mime_type not in self.allowed_mimetypes:
                     message = self.mime_message % {
                         'mimetype': mime_type,
                         'allowed_mimetypes': ', '.join(self.allowed_mimetypes)

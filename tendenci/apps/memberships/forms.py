@@ -333,7 +333,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
                 key_list.append(key)
         missing_columns = []
         for item in key_list:
-            if not item in header_list:
+            if item not in header_list:
                 missing_columns.append(item)
         if missing_columns:
             msg_string = """
@@ -524,7 +524,7 @@ def assign_fields(form, app_field_objs):
                 # create form field with customized behavior
                 field = obj.get_field_class(
                         initial=form.fields[obj.field_name].initial)
-                if obj.default_value != None and obj.default_value != '':
+                if obj.default_value is not None and obj.default_value != '':
                     field.initial = obj.default_value
                 form.fields[obj.field_name] = field
             else:

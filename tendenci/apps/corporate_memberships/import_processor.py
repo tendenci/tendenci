@@ -105,7 +105,7 @@ class CorpMembershipImportProcessor(object):
         of a corp_membership
         """
         self.cmemb_data = cmemb_data
-        if not 'id' in self.cmemb_data:
+        if 'id' not in self.cmemb_data:
             del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
@@ -116,7 +116,7 @@ class CorpMembershipImportProcessor(object):
         status_detail = self.cmemb_data.get('status_detail', 'active')
         if status_detail == 'archived':
             status_detail = 'archive'
-        if not status_detail in CorpMembership.VALID_STATUS_DETAIL:
+        if status_detail not in CorpMembership.VALID_STATUS_DETAIL:
             status_detail = 'active'
         self.cmemb_data['status_detail'] = status_detail
         expiration_dt = self.cmemb_data.get('expiration_dt', None)
@@ -233,7 +233,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_profile, action_info['corp_profile_action'])
 
-        if corp_profile.status == None or corp_profile.status == '' or \
+        if corp_profile.status is None or corp_profile.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_profile.status = True
         if not corp_profile.status_detail:
@@ -262,7 +262,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_memb, action_info['corp_memb_action'])
 
-        if corp_memb.status == None or corp_memb.status == '' or \
+        if corp_memb.status is None or corp_memb.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_memb.status = True
         if not corp_memb.status_detail:
@@ -350,7 +350,7 @@ class CorpMembershipImportProcessor(object):
                         self.mimport.override,
                         not hasattr(instance, field_name) or \
                         getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.cmemb_data[field_name]
                     value = self.clean_data(value,
@@ -367,7 +367,7 @@ class CorpMembershipImportProcessor(object):
                                           'owner_username']:
                         value = self.get_default_value(
                                         assign_to_fields[field_name])
-                        if value != None:
+                        if value is None:
                             setattr(instance, field_name, value)
 
     def get_default_value(self, field):
@@ -396,7 +396,7 @@ class CorpMembershipImportProcessor(object):
             return 0
 
         if field_type == 'ForeignKey':
-            if not field.name in ['creator', 'owner']:
+            if field.name not in ['creator', 'owner']:
                 try:
                     model = field.related.parent_model()
                 except AttributeError:
@@ -507,7 +507,7 @@ class CorpMembershipImportProcessor(object):
                                             name=orignal_value)[:1] or [None]
 
             if not value and not field.null:
-                if not field.name in ['creator', 'owner']:
+                if field.name not in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
                     try:
                         model = field.related.parent_model()

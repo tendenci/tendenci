@@ -18,7 +18,7 @@ def detail(request, slug=None, cv=None):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (staff.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
+    if (staff.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if cv:

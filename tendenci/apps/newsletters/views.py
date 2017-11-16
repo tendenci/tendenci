@@ -459,7 +459,7 @@ def default_template_view(request):
 def view_email_from_browser(request, pk):
     nl = get_object_or_404(Newsletter, pk=pk)
     email = nl.email
-    if email == None:
+    if email is None:
         raise Http404
     if not email.allow_view_by(request.user):
         # check if security_key is in GET

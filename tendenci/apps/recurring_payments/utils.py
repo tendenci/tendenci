@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import time
 from decimal import Decimal
@@ -224,14 +225,14 @@ def run_a_recurring_payment(rp, verbosity=0):
 
         # check and store payment profiles in local db
         if verbosity > 1:
-            print
-            print 'Processing for "%s":' % rp
-            print '...Populating payment profiles from payment gateway...'
+            print()
+            print('Processing for "%s":' % rp)
+            print('...Populating payment profiles from payment gateway...')
         rp.populate_payment_profile()
 
         # create invoices if needed
         if verbosity > 1:
-            print '...Checking and generating invoice(s)  ...'
+            print('...Checking and generating invoice(s)  ...')
         rp.check_and_generate_invoices()
 
         # look for unpaid invoices with current due date or pass due date
@@ -267,11 +268,11 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
-                        print '...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                        print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
                                 % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
                                    rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
                                    currency_symbol,
-                                   rp_invoice.invoice.balance)
+                                   rp_invoice.invoice.balance))
 
                     success = False
 
@@ -287,12 +288,12 @@ def run_a_recurring_payment(rp, verbosity=0):
                         rp_invoice.payment_received_dt = now
                         rp_invoice.save()
                         rp.num_billing_cycle_completed += 1
-                        print '...Success.'
+                        print('...Success.')
                     else:
                         rp.num_billing_cycle_failed += 1
-                        print '...Failed  - \n\t code - %s \n\t text - %s' \
+                        print('...Failed  - \n\t code - %s \n\t text - %s' \
                                             % (payment_transaction.message_code,
-                                               payment_transaction.message_text)
+                                               payment_transaction.message_text))
 
                     # send out email notifications - for both successful and failed transactions
                     # to admin
@@ -570,7 +571,7 @@ def api_add_rp(data):
 
 
     if not all([validate_email(email),
-                data.has_key('description'),
+                'description' in data,
                 payment_amount>0]):
         return False, {}
 
@@ -762,7 +763,7 @@ def api_verify_rp_payment_profile(data):
                 # success
 
                 # update rp and rp_invoice
-                if rp.status_detail <> 'active':
+                if rp.status_detail != 'active':
                     rp.status_detail = 'active'
 
                 now = datetime.now()

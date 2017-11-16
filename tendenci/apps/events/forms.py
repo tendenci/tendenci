@@ -1456,7 +1456,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     #     payment_methods = self.instance.payment_method.all()
 
 
-    #     print 'price_sum', type(price_sum), price_sum
+    #     print('price_sum', type(price_sum), price_sum)
 
     #     if price_sum and not payment_methods:
     #         raise forms.ValidationError("Please select possible payment methods for your attendees.")
@@ -1780,7 +1780,7 @@ class RegistrantForm(forms.Form):
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
             # Both 'validated' and 'strict' require validation.
-            if self.event.anony_setting <> 'open':
+            if self.event.anony_setting != 'open':
                 # check if user is eligiable for this pricing
                 email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)
@@ -2309,7 +2309,7 @@ class StandardRegAdminForm(forms.Form):
         scope_category = 'events'
 
         for field_name, value in cleaned_data.items():
-            if not field_name in self.READONLY_FIELDS:
+            if field_name not in self.READONLY_FIELDS:
                 try:
                     setting = Setting.objects.get(scope=scope, scope_category=scope_category,
                                                   name='regform_%s' % field_name)

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import traceback
 from django.core.management.base import BaseCommand
@@ -41,8 +42,8 @@ class Command(BaseCommand):
         for idata in data_list:
             try:
                 imu.process_user(idata)
-            except Exception, e:
-                print traceback.format_exc()
+            except Exception as e:
+                print(traceback.format_exc())
 
             uimport.num_processed += 1
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 from datetime import datetime, timedelta
 from optparse import make_option
@@ -94,5 +95,5 @@ class Command(BaseCommand):
                              identifier=identifier,
                              user_id=user_id)
 
-        print 'Event export done %s.' % identifier
+        print('Event export done %s.' % identifier)
 

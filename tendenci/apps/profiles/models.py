@@ -145,7 +145,7 @@ class Profile(Person):
 
     @property
     def lang(self):
-        if not self.language in [l[0] for l in settings.LANGUAGES]:
+        if self.language not in [l[0] for l in settings.LANGUAGES]:
             self.language = 'en'
             self.save()
         return self.language

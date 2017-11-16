@@ -989,7 +989,7 @@ class CSVForm(forms.Form):
         csv = self.cleaned_data['csv']
         SUPPORTED_FILE_TYPES = ['text/csv',]
 
-        if not csv.content_type in SUPPORTED_FILE_TYPES:
+        if csv.content_type not in SUPPORTED_FILE_TYPES:
             raise forms.ValidationError(_('File type is not supported. Please upload a CSV File.'))
         return csv
 

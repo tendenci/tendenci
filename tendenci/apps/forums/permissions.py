@@ -43,7 +43,7 @@ class DefaultPermissionHandler(object):
 
     def may_view_forum(self, user, forum):
         """ return True if user may view this forum, False if not """
-        return user.is_staff or ( forum.hidden == False and forum.category.hidden == False )
+        return user.is_staff or (not forum.hidden and not forum.category.hidden)
 
     def may_create_topic(self, user, forum):
         """ return True if `user` is allowed to create a new topic in `forum` """
@@ -221,7 +221,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         """ return True if user may view this forum, False if not """
         if user.is_staff:
             return True
-        return forum.hidden == False and self.may_view_category(user, forum.category)
+        return not forum.hidden and self.may_view_category(user, forum.category)
 
     def may_create_topic(self, user, forum):
         """ return True if `user` is allowed to create a new topic in `forum` """

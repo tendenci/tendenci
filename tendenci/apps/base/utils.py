@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 from datetime import datetime
@@ -406,17 +407,17 @@ def filelog(*args, **kwargs):
         filelog(args...Nargs)
         filelog(args, mode='a+', filename='log.txt', path=path)
     """
-    if kwargs.has_key('path'):
+    if 'path' in kwargs:
         path = kwargs['path']
     else:
         path = getattr(settings,'PROJECT_ROOT','/var/log')
 
-    if kwargs.has_key('filename'):
+    if 'filename' in kwargs:
         filename = kwargs['filename']
     else:
         filename = 'filelog.txt'
 
-    if kwargs.has_key('mode'):
+    if 'mode' in kwargs:
         mode = kwargs['mode']
     else:
         mode = 'a+'
@@ -769,7 +770,7 @@ def get_salesforce_access():
                             sandbox=is_sandbox)
             return sf
         except:
-            print 'Salesforce authentication failed'
+            print('Salesforce authentication failed')
 
     return None
 
@@ -810,7 +811,7 @@ def create_salesforce_contact(profile):
                     })
     
                 # update field Company_Name__c
-                if profile.company and contact.has_key('Company_Name__c'):
+                if profile.company and 'Company_Name__c' in contact:
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
     
                 profile.sf_contact_id = contact['id']
@@ -888,7 +889,7 @@ def validate_email(s, quiet=True):
     try:
         _validate_email(s)
         return True
-    except Exception, e:
+    except Exception as e:
         if not quiet:
             raise e
     return False

@@ -80,7 +80,7 @@ class UploadView(View):
             try:
                 handle_deleted_file(qquuid)
                 return make_response(content=json.dumps({ 'success': True }))
-            except Exception, e:
+            except Exception as e:
                 return make_response(status=400,
                     content=json.dumps({
                         'success': False,

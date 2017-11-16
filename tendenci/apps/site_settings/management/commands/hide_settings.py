@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import simplejson as json
 
@@ -41,12 +42,12 @@ class Command(BaseCommand):
                     )
                 except:
                     current_setting = None
-                print current_setting
+                print(current_setting)
                 # update the setting
                 if (current_setting):
                     current_setting.client_editable = False
                     current_setting.save()
-                    print '%s (%s)  - hidden.' % (
+                    print('%s (%s)  - hidden.' % (
                         setting.name,
                         setting.scope_category
-                    )
+                    ))

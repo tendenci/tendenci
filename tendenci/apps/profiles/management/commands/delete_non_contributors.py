@@ -1,3 +1,4 @@
+from __future__ import print_function
 from optparse import make_option
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
@@ -70,10 +71,10 @@ class Command(BaseCommand):
         contribs = list(set(contribs))  # remove duplicates
         slackers = User.objects.exclude(username__in=[c.username for c in contribs if c])
 
-        print 'contribs', len(contribs)
-        print 'slackers', slackers.count()
-        print 'everyone', User.objects.count()
-        print 'Pass the -d or --delete fn to delete no contributors'
+        print('contribs', len(contribs))
+        print('slackers', slackers.count())
+        print('everyone', User.objects.count())
+        print('Pass the -d or --delete fn to delete no contributors')
 
         delete = options['delete']
 
@@ -86,9 +87,9 @@ class Command(BaseCommand):
             cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
             for slacker in slackers:
                 try:
-                    print slacker
+                    print(slacker)
                     slacker.delete()
                 except IntegrityError as e:
-                    print 'Integrity Error deleting', slacker
+                    print('Integrity Error deleting', slacker)
 
             cursor.execute('SET FOREIGN_KEY_CHECKS=1;')

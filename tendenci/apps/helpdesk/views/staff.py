@@ -985,7 +985,7 @@ def raw_details(request, type):
     # in the future it needs to be expanded to include other items. All it
     # does is return a plain-text representation of an object.
 
-    if not type in ('preset',):
+    if type not in ('preset',):
         raise Http404
 
     if type == 'preset' and request.GET.get('id', False):

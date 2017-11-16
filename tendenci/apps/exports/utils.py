@@ -18,7 +18,7 @@ def full_model_to_dict(instance, fields=None, exclude=None):
     opts = instance._meta
     data = {}
     for f in opts.fields + opts.many_to_many:
-        if fields and not f.name in fields:
+        if fields and f.name not in fields:
             continue
         if exclude and f.name in exclude:
             continue

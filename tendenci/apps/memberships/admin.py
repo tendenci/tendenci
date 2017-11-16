@@ -403,8 +403,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
 
         do_next_url = (
-            not '_addanother' in POST_KEYS,
-            not '_continue' in POST_KEYS,
+            '_addanother' not in POST_KEYS,
+            '_continue' not in POST_KEYS,
             'next' in GET_KEYS)
 
         if all(do_next_url):

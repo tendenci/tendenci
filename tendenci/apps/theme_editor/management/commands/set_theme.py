@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 import os
 from django.core.management import call_command
@@ -35,6 +36,6 @@ class Command(BaseCommand):
             call_command('clear_cache')
         except Setting.DoesNotExist:
             if int(options['verbosity']) > 0:
-                print "We could not update the theme because the setting or theme is not available."
+                print("We could not update the theme because the setting or theme is not available.")
 
 

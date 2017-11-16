@@ -252,7 +252,7 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
     if request.user.is_authenticated():
         rp = get_object_or_404(RecurringPayment, pk=rp_id)
         # only admin or user self can access this page
-        if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+        if not request.user.profile.is_superuser and request.user.id != rp.user.id:
             raise Http403
     else:
         if not rp_guid: raise Http403
@@ -283,7 +283,7 @@ def disable_account(request, rp_id,
     rp = get_object_or_404(RecurringPayment, pk=rp_id)
 
     # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id != rp.user.id:
         raise Http403
     if request.method == "POST":
         if request.POST.get('cancel'):

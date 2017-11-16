@@ -172,7 +172,7 @@ def create_new_template(request, form_class=AddTemplateForm):
         template_name = form.cleaned_data['template_name'].strip()
         template_full_name = 'default-%s.html' % template_name
         existing_templates = [t[0] for t in get_template_list()]
-        if not template_full_name in existing_templates:
+        if template_full_name not in existing_templates:
             # create a new template and assign default content
             use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
             if use_s3_storage:

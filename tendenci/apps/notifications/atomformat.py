@@ -398,7 +398,7 @@ class AtomFeed(object):
 
         alternate_links = {}
         for link in self.feed.get('links'):
-            if link.get('rel') == 'alternate' or link.get('rel') == None:
+            if link.get('rel') == 'alternate' or link.get('rel') is None:
                 key = (link.get('type'), link.get('hreflang'))
                 if key in alternate_links:
                     raise ValidationError('alternate links must have unique type/hreflang')
@@ -438,7 +438,7 @@ class AtomFeed(object):
 
             alternate_links = {}
             for link in item.get('links'):
-                if link.get('rel') == 'alternate' or link.get('rel') == None:
+                if link.get('rel') == 'alternate' or link.get('rel') is None:
                     key = (link.get('type'), link.get('hreflang'))
                     if key in alternate_links:
                         raise ValidationError('alternate links must have unique type/hreflang')
@@ -461,7 +461,7 @@ class AtomFeed(object):
                     if '/' in content_type and \
                         not content_type.startswith('text/') and \
                         not content_type.endswith('/xml') and not content_type.endswith('+xml') and \
-                        not content_type in ['application/xml-external-parsed-entity', 'application/xml-dtd']:
+                        content_type not in ['application/xml-external-parsed-entity', 'application/xml-dtd']:
                         # @@@ check content is Base64
                         if not item.get('summary'):
                             raise ValidationError('content in Base64 requires a summary too')

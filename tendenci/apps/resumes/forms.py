@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 from datetime import timedelta
 from os.path import splitext
@@ -219,6 +220,6 @@ class ResumeForm(TendenciBaseForm):
     def clean(self):
         cleaned_data = super(ResumeForm, self).clean()
 
-        print self.errors
+        print(self.errors)
 
         return cleaned_data

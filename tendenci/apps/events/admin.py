@@ -151,7 +151,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         result = super(CustomRegFormAdmin, self).change_view(request,
                         object_id, form_url=form_url, extra_context=extra_context)
 
-        if not '_addanother' in request.POST and not '_continue' in request.POST and 'next' in request.GET:
+        if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 
@@ -280,7 +280,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
         return render(request,
             'admin/events/standardregform/standard_reg_form_edit.html',
-            {'adminform': form});
+            {'adminform': form})
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:standardregform_edit'))

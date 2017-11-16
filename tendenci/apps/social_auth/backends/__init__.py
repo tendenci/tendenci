@@ -279,7 +279,7 @@ class SocialAuthBackend(ModelBackend):
         # Signal handlers must return True or False to signal instance
         # changes. Send method returns a list of tuples with receiver
         # and it's response.
-        signal_response = lambda (receiver, response): response
+        signal_response = lambda receiver_response: receiver_response[1]
 
         kwargs = {'sender': self.__class__, 'user': user,
                   'response': response, 'details': details}
@@ -550,7 +550,7 @@ class OpenIdAuth(BaseAuth):
             openid_url = self.openid_url()
             try:
                 openid_request = self.consumer().begin(openid_url)
-            except DiscoveryFailure, err:
+            except DiscoveryFailure as err:
                 raise ValueError('OpenID discovery error: %s' % err)
             else:
                 setattr(self, '_openid_request', openid_request)
