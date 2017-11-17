@@ -84,7 +84,6 @@ class Payment(models.Model):
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 
-
     class Meta:
         app_label = 'payments'
 

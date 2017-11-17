@@ -120,7 +120,6 @@ class Akismet(object):
         self.user_agent = user_agent % (agent, __version__)
         self.setAPIKey(key, blog_url)
 
-
     def _getURL(self):
         """
         Fetch the url to make requests to.
@@ -129,14 +128,12 @@ class Akismet(object):
         """
         return 'http://%s.%s' % (self.key, self.baseurl)
 
-
     def _safeRequest(self, url, data, headers):
         try:
             resp = _fetch_url(url, data, headers)
         except Exception as e:
             raise AkismetError(str(e))
         return resp
-
 
     def setAPIKey(self, key=None, blog_url=None):
         """
@@ -160,7 +157,6 @@ class Akismet(object):
         else:
             self.key = key
             self.blog_url = blog_url
-
 
     def verify_key(self):
         """
@@ -232,7 +228,6 @@ class Akismet(object):
             ''))
         data.setdefault('HTTP_ACCEPT', os.environ.get('HTTP_ACCEPT', ''))
         data.setdefault('blog', self.blog_url)
-
 
     def comment_check(self, comment, data=None, build_data=True, DEBUG=False):
         """
@@ -329,7 +324,6 @@ class Akismet(object):
             # NOTE: Happens when you get a 'howdy wilbur' response !
             raise AkismetError('missing required argument.')
 
-
     def submit_spam(self, comment, data=None, build_data=True):
         """
         This function is used to tell akismet that a comment it marked as ham,
@@ -349,7 +343,6 @@ class Akismet(object):
         # so if akismet is down it will raise an HTTPError or URLError
         headers = {'User-Agent' : self.user_agent}
         self._safeRequest(url, urlencode(data), headers)
-
 
     def submit_ham(self, comment, data=None, build_data=True):
         """

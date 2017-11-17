@@ -706,7 +706,6 @@ def corpmembership_search(request, my_corps_only=False,
                                                 my_corps_only=my_corps_only)
         corp_members = corp_members.exclude(status_detail='archive').order_by('corp_profile__name')
 
-
     if not corp_members.exists():
         del search_form.fields['cp_id']
     else:
@@ -1109,7 +1108,6 @@ def corp_renew(request, id,
             if summary_data['total_individual_count'] > summary_data['membership_cap']:
                 summary_data['individual_count'] = summary_data['membership_cap']
                 summary_data['above_cap_individual_count'] = summary_data['total_individual_count'] - summary_data['membership_cap']
-
 
     summary_data['individual_total'] = summary_data['individual_count'
                                         ] * summary_data['individual_price']

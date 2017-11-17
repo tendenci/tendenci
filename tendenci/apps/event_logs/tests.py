@@ -37,7 +37,6 @@ class EventLogTest(TestCase):
 
         self.assertRaises(Exception, EventLog.objects.log(**event_log_defaults))
 
-
     def test_log_user_object(self):
         """
             Basic event log test with user object

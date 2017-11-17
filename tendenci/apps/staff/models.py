@@ -38,7 +38,6 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         blank=True,
         help_text='List personal websites followed by a return')
 
-
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 
     perms = GenericRelation(ObjectPermission,

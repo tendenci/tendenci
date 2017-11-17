@@ -91,7 +91,6 @@ def search(request, release_year=None, template_name="news/search.html"):
             raise Http404
         news = news.filter(release_dt_local__year=release_year)
 
-
     return render_to_response(template_name, {'search_news': news,
                                               'form': form,
                                               'release_year': release_year,

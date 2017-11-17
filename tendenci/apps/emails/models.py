@@ -44,7 +44,6 @@ class Email(TendenciBaseModel):
     class Meta:
         app_label = 'emails'
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("email.view", [self.pk])
@@ -61,7 +60,6 @@ class Email(TendenciBaseModel):
         email_domain = email_to_test.split('@')[1]
         return EmailBlock.objects.filter(Q(email=email_to_test) | Q(email_domain=email_domain)
                                          ).exists()
-
 
     def send(self, fail_silently=False, **kwargs):
         recipient_list = []
@@ -170,7 +168,6 @@ class Email(TendenciBaseModel):
                         if self.status:
                             boo = True
         return boo
-
 
     def template_body(self, email_d):
         """

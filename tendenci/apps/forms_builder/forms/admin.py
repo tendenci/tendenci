@@ -119,7 +119,6 @@ class FormAdmin(TendenciBaseModelAdmin):
     export_all_link.allow_tags = True
     export_all_link.short_description = ''
 
-
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = self.get_object(request, unquote(object_id))
         if obj:

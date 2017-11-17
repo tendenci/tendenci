@@ -32,7 +32,6 @@ class CategoryManager(Manager):
             cat_item.parent = category
             cat_item.save()
 
-
     def remove(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk
@@ -100,7 +99,6 @@ class CategoryManager(Manager):
         sub_categories = sorted(sub_categories, key=lambda sub_categories: sub_categories.name)
 
         return (categories, sub_categories)
-
 
     def get_for_object(self, object, type):
         ct = ContentType.objects.get_for_model(object)

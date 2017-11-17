@@ -53,7 +53,6 @@ class Command(BaseCommand):
                             dest='database',
             default=DEFAULT_DB_ALIAS, help='Specifies the database to use. Default is "default".'),
 
-
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import Profile
 

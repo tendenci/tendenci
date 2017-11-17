@@ -102,7 +102,6 @@ class JobForm(TendenciBaseForm):
                                           empty_label=_("Please choose a category first"),
                                           required=False)
 
-
     class Meta:
         model = Job
         fields = (

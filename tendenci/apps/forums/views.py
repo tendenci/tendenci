@@ -781,7 +781,6 @@ def block_user(request, username):
             except Forum.DoesNotExist:
                 pass
 
-
     msg = _('User successfuly blocked')
     messages.success(request, msg, fail_silently=True)
     return redirect('pybb:index')

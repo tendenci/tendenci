@@ -220,7 +220,6 @@ class Newsletter(models.Model):
 
         return ''
 
-
     def clone(self):
         """
         Clone this newsletter and return the cloned newsletter.
@@ -269,8 +268,6 @@ class Newsletter(models.Model):
         newsletter_new.save()
 
         return newsletter_new
-
-
 
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)

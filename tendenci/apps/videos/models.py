@@ -87,7 +87,6 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         verbose_name_plural = get_setting('module', 'videos', 'label_plural') or "Videos"
         app_label = 'videos'
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("video.details", [self.slug])

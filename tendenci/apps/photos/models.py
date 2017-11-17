@@ -788,8 +788,6 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
 
-
-
     @models.permalink
     def get_absolute_url(self):
         try:

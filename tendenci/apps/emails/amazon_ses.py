@@ -103,14 +103,12 @@ class AmazonSES:
         return self._performAction('SendEmail', params)
 
 
-
 class EmailMessage:
     def __init__(self):
         self.charset = 'UTF-8'
         self.subject = None
         self.bodyHtml = None
         self.bodyText = None
-
 
 
 class AmazonError(Exception):
@@ -122,7 +120,6 @@ class AmazonError(Exception):
 class AmazonAPIError(Exception):
     def __init__(self, message):
         self.message = message
-
 
 
 class AmazonResult:
@@ -194,7 +191,6 @@ class AmazonResponseParser:
             for s in args:
                 match += '/{%s}%s' % (namespace, s)
             return rootElement.find(match)
-
 
     def __init__(self):
         self._simpleResultActions = ['DeleteVerifiedEmailAddress', 'VerifyEmailAddress']

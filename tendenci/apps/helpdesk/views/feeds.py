@@ -113,7 +113,6 @@ class UnassignedTickets(Feed):
     def item_pubdate(self, item):
         return item.created
 
-
     def item_author_name(self, item):
         if item.assigned_to:
             return item.assigned_to.get_username()

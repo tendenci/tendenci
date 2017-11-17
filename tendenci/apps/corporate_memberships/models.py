@@ -244,7 +244,6 @@ class CorpProfile(TendenciBaseModel):
     def __unicode__(self):
         return "%s" % (self.name)
 
-
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
             self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
@@ -551,7 +550,6 @@ class CorpMembership(TendenciBaseModel):
                         (value[0], truncate_words(value[1], 10)) for value in corp_members
                                               ])
         return choices
-
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):

@@ -303,7 +303,6 @@ class Command(BaseCommand):
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
 
-
     def get_expiring_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
 

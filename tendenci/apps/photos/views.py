@@ -214,7 +214,6 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if download:
         attachment = 'attachment;'
 
-
     if not photo.image or not default_storage.exists(photo.image.name):
         raise Http404
 

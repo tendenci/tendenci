@@ -442,7 +442,6 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
             else:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
 
-
     def save(self, *args, **kwargs):
         self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
         if self.instance:
@@ -1156,7 +1155,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 payment_method_qs = payment_method_qs.exclude(admin_only=True)
             self.fields['payment_method'].queryset = payment_method_qs
 
-
     def clean_donation_option_value(self):
         value_list = self.cleaned_data['donation_option_value']
         if value_list:
@@ -1171,7 +1169,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
-
 
     def save(self, *args, **kwargs):
         """
@@ -1265,7 +1262,6 @@ class MembershipExportForm(forms.Form):
         EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + \
                 list(MembershipType.objects.values_list('pk', 'name'))
         self.fields['export_type'].choices = EXPORT_TYPE_CHOICES
-
 
 
 class NoticeForm(forms.ModelForm):
@@ -1685,7 +1681,6 @@ class MembershipDefaultForm(TendenciBaseForm):
                 self.fields[user_attr].initial = \
                     getattr(self.instance.user, user_attr)
 
-
             # initialize profile fields
             if hasattr(self.instance.user, 'profile'):
                 for profile_attr in profile_attrs:
@@ -1943,7 +1938,6 @@ class MembershipDefaultForm(TendenciBaseForm):
                         degree=degree,
                         graduation_year=graduation_year
                     )
-
 
             # save career fields -------------------------------
             careers = zip(

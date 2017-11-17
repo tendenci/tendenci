@@ -8,8 +8,6 @@ ignore =
   E401,E402,F401,F402,F403,F405,
   # Line continuation issues
   E502,E701,
-  # Assorted whitespace issues
-  E303,
 
   # Indentation warnings
   E111,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,

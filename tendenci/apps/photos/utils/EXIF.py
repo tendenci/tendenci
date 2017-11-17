@@ -1572,7 +1572,6 @@ class EXIF_header:
                 self.canon_decode_tag(self.tags[i[0]].values, i[1])
             return
 
-
     # XXX TODO decode Olympus MakerNote tag based on offset within tag
     def olympus_decode_tag(self, value, dict):
         pass

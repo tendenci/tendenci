@@ -54,7 +54,6 @@ class DonationAdminForm(forms.ModelForm):
         if preset_amount_str:
             self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))
 
-
     def clean_donation_amount(self):
         try:
             if float(self.cleaned_data['donation_amount']) <= 0:
@@ -135,7 +134,6 @@ class DonationForm(forms.ModelForm):
         preset_amount_str = (get_setting('module', 'donations', 'donationspresetamounts')).strip('')
         if preset_amount_str:
             self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))
-
 
     def clean_donation_amount(self):
         #raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))

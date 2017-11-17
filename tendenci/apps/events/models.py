@@ -159,7 +159,6 @@ class RegistrationConfiguration(models.Model):
         (False, _('Use separate form for each pricing'),
     ))
 
-
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
@@ -895,7 +894,6 @@ class Registrant(models.Model):
                 setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
-
 
     def populate_custom_form_entry(self):
         """
@@ -1654,7 +1652,6 @@ class Addon(models.Model):
 
     class Meta:
         app_label = 'events'
-
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields

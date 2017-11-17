@@ -215,7 +215,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
 
-
             #save relationships
             job.save()
             msg_string = u'Successfully added %s' % unicode(job)

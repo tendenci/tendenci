@@ -19,7 +19,6 @@ class Command(BaseCommand):
         parser.add_argument('export_format', type=str)
         parser.add_argument('obj_id', type=int, nargs='?')
 
-
     def handle(self, *args, **options):
         import datetime
         import uuid

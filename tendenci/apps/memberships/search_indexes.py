@@ -33,7 +33,6 @@ class MembershipDefaultIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return email
 
 
-
 # Removed from index after search view was updated to perform
 # all searches on the database.
 # site.register(AppEntry, MemberAppEntryIndex)

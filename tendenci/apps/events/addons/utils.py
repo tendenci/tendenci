@@ -65,9 +65,7 @@ def get_addon_access_filter(user, is_strict=False):
                     'allow_member': True,
                     'group__id__gt': 0}
 
-
     return filter_and, filter_or
-
 
 
 def get_addons_for_list(event, users):

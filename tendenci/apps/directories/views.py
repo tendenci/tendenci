@@ -260,7 +260,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
-
     return render_to_response(template_name, {'directory': directory, 'form':form},
         context_instance=RequestContext(request))
 
@@ -587,7 +586,6 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))
-
 
     return render_to_response(template_name, {'directory':directory, 'form':form},
         context_instance=RequestContext(request))

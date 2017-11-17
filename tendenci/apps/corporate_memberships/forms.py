@@ -196,7 +196,6 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
                 self.fields['choices'].widget = forms.widgets.Select(
                                             choices=(('yesno', _('Yes/No')),))
 
-
     def save(self, *args, **kwargs):
         self.instance = super(CorpMembershipAppFieldAdminForm, self).save(*args, **kwargs)
         if self.instance:
@@ -456,7 +455,6 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
             File.objects.filter(
                         content_type=content_type,
                         object_id=self.instance.pk).delete()
-
 
         return self.instance
 

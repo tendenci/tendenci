@@ -91,7 +91,6 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
             self.save()
 
 
-
 class TestimonialPhoto(File):
     class Meta:
         app_label = 'testimonials'

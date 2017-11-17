@@ -31,7 +31,6 @@ class TicketBasicsTestCase(TestCase):
         self.assertEqual(ticket.ticket_for_url, "q1-%s" % ticket.id)
         self.assertEqual(email_count, len(mail.outbox))
 
-
     def test_create_ticket_public(self):
         email_count = len(mail.outbox)
 

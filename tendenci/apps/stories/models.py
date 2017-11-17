@@ -137,7 +137,6 @@ class Story(OrderingBaseModel, TendenciBaseModel):
 
             self.save()
 
-
     @property
     def category_set(self):
         items = {}

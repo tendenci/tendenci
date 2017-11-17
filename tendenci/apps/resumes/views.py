@@ -215,7 +215,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
     }
     resume.meta = MetaTags(**defaults)
 
-
     if request.method == "POST":
         form = form_class(request.POST, instance=resume.meta)
         if form.is_valid():

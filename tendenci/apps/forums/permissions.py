@@ -293,5 +293,4 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         return qs
 
 
-
 perms = util.resolve_class(defaults.PYBB_PERMISSION_HANDLER)

@@ -211,7 +211,6 @@ def create_new_template(request, form_class=AddTemplateForm):
         else:
             ret_dict['err'] = _('Template "%(name)s" already exists' % {'name':template_full_name})
 
-
     return HttpResponse(json.dumps(ret_dict))
 
 @login_required

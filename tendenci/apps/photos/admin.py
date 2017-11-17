@@ -42,7 +42,6 @@ class PhotoAdmin(admin.ModelAdmin):
             'js/admin/admin-list-reorder.js',
         )
 
-
     def log_deletion(self, request, object, object_repr):
         super(PhotoAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {

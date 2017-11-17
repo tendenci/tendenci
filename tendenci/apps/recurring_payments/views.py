@@ -196,7 +196,6 @@ def run_now(request):
                     result_data['total_amount_received'] = 0
                 result_data['total_amount_received'] = tcurrency(result_data['total_amount_received'])
 
-
     return HttpResponse(simplejson.dumps(result_data))
 
 
@@ -265,7 +264,6 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
                     payment_profile_id=payment_transaction.payment_profile_id)[0]
     invoice = payment_transaction.payment.invoice
 
-
     return render_to_response(template_name, {
                     'rp': rp,
                     'invoice': invoice,
@@ -303,12 +301,9 @@ def disable_account(request, rp_id,
                 rp.customer_profile_id = ''
                 rp.save()
 
-
-
             # send an email to admin
             rp_email_notice = RecurringPaymentEmailNotices()
             rp_email_notice.email_admins_account_disabled(rp, request.user)
-
 
             # log an event
             EventLog.objects.log(instance=rp)
@@ -316,7 +311,6 @@ def disable_account(request, rp_id,
             messages.add_message(request, messages.SUCCESS, _('Successfully disabled %(rp)s' % {'rp': rp}))
 
             return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
-
 
     return render_to_response(template_name, {
                     'rp': rp},

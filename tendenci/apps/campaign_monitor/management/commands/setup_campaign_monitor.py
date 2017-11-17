@@ -38,7 +38,6 @@ class Command(BaseCommand):
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.emails.models import Email
 
-
         def get_contact_email():
             site_name = get_setting('site', 'global', 'sitedisplayname')
             email = 't5+%s@schipul.com' % site_name.replace(' ', '')
@@ -111,8 +110,6 @@ class Command(BaseCommand):
                                 """ % (company_name, contact_name, contact_email, now_str)
                     send_mail(subject, email_body, sender, [recipient], fail_silently=True)
 
-
-
                 # add/update the client_id in the local_settings.py
                 local_setting_file = os.path.join(getattr(settings, 'PROJECT_ROOT'), 'settings.py')
                 f = open(local_setting_file, 'r')
@@ -130,7 +127,6 @@ class Command(BaseCommand):
 
             else:
                 print('Already has a campaign monitor account')
-
 
         def email_script_errors(err_msg):
             """Send error message to us in case of an error.

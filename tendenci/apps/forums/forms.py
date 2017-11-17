@@ -122,7 +122,6 @@ class PostForm(forms.ModelForm):
         for k in self.fields.keys():
             self.fields[k].widget.attrs['class'] = 'form-control'
 
-
     def clean_body(self):
         body = self.cleaned_data['body']
         user = self.user or self.instance.user

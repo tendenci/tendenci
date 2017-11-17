@@ -20,7 +20,6 @@ class ArticleTest(TestCase):
         self.user.is_active = True
         self.user.save()
 
-
     def tearDown(self):
         self.client = None
         self.article = None

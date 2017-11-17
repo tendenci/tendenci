@@ -283,7 +283,6 @@ class ProfileForm(TendenciBaseForm):
                         self.fields[myfield].required = True
                         continue
 
-
     def clean_username(self):
         """
         Validate that the username is alphanumeric and is not already
@@ -587,7 +586,6 @@ class UserGroupsForm(forms.Form):
                                            | Q(allow_user_view=True))
             self.fields['groups'].queryset = queryset
 
-
     def save(self):
         data = self.cleaned_data
 
@@ -604,7 +602,6 @@ class UserGroupsForm(forms.Form):
             else:
                 old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True)
                                            | Q(group__allow_user_view=True))
-
 
         for old_m in old_memberships:
             if old_m.group not in data['groups']:

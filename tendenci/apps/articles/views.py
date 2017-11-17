@@ -216,7 +216,6 @@ def edit(request, id, form_class=ArticleForm,
             categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,)
 
-
         return render_to_response(template_name, {'article': article,
                                                   'form': form,
                                                   'categoryform': categoryform,},
@@ -300,7 +299,6 @@ def add(request, form_class=ArticleForm,
             }
             categoryform = category_form_class(content_type,
                                                initial=initial_category_form_data,)
-
 
         return render_to_response(template_name, {'form': form,
                                                   'categoryform': categoryform,},

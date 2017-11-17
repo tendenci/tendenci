@@ -75,7 +75,6 @@ def process_email(quiet=False):
         if not q.email_box_interval:
             q.email_box_interval = 0
 
-
         queue_time_delta = timedelta(minutes=q.email_box_interval)
 
         if (q.email_box_last_check + queue_time_delta) > timezone.now():
@@ -121,7 +120,6 @@ def process_queue(q, quiet=False):
         server.getwelcome()
         server.user(q.email_box_user or settings.QUEUE_EMAIL_BOX_USER)
         server.pass_(q.email_box_pass or settings.QUEUE_EMAIL_BOX_PASSWORD)
-
 
         messagesInfo = server.list()[1]
 
@@ -338,7 +336,6 @@ def ticket_from_message(message, queue, quiet):
             a.save()
             if not quiet:
                 print("    - %s" % filename)
-
 
     context = safe_template_context(t)
 

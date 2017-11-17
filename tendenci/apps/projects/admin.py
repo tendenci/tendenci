@@ -160,7 +160,6 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
-
     def save_formset(self, request, form, formset, change):
         for f in formset.forms:
             if f.changed_data:

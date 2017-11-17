@@ -22,7 +22,6 @@ class Command(BaseCommand):
         parser.add_argument('import_id', type=int)
         parser.add_argument('user_id', type=int)
 
-
     def handle(self, *args, **options):
         from tendenci.apps.corporate_memberships.models import CorpMembershipImport
         from tendenci.apps.corporate_memberships.models import CorpMembershipImportData

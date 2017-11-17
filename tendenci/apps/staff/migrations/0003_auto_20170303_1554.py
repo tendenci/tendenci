@@ -18,9 +18,6 @@ def assign_slug(apps, schema_editor):
             department.save()
 
 
-
-
-
 class Migration(migrations.Migration):
 
     dependencies = [

@@ -145,7 +145,6 @@ def migrate_customized_jobs_templates():
                 # save the updated content back to file
                 f.write(content)
 
-
     # jobs/meta.html
     file_path = '{}/templates/jobs/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -167,7 +166,6 @@ def migrate_customized_jobs_templates():
 
         with open(file_path, 'w') as f:
             f.write(content)
-
 
     # jobs/search-form.html
     file_path = '{}/templates/jobs/search-form.html'.format(dir_path)
@@ -192,7 +190,6 @@ def migrate_customized_jobs_templates():
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
         with open(file_path, 'w') as f:
             f.write(content)
-
 
     #jobs/top_nav_items.html
     file_path = '{}/templates/jobs/top_nav_items.html'.format(dir_path)

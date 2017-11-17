@@ -73,9 +73,6 @@ class CIMBase(object):
                 node.text = value
         return parent_node
 
-
-
-
     def process_request(self, xml_root):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
         #print request_xml_str
@@ -87,7 +84,6 @@ class CIMBase(object):
         data = response.read()
 
         return self.process_response(data)
-
 
     def process_response(self, raw_response_xml):
         """
@@ -113,7 +109,6 @@ class CIMBase(object):
 #        </directResponse>
 #        </createCustomerProfileTransactionResponse>"""
 
-
         e = ET.XML(raw_response_xml)
         d = self._recurive_parse(e)
         success = (d['messages']['result_code'].lower() == 'ok')
@@ -123,7 +118,6 @@ class CIMBase(object):
         d['message_text'] = d['messages']['message']['text']
 
         return success, d
-
 
     def _recurive_parse(self, element):
         """
@@ -263,7 +257,6 @@ class CIMCustomerProfile(CIMBase):
 
         return self.process_request(xml_root)
 
-
     def delete(self, **kwargs):
         """
         Delete an existing customer profile along with all
@@ -280,8 +273,6 @@ class CIMCustomerProfile(CIMBase):
         customer_profile_id_node.text = self.customer_profile_id
 
         return self.process_request(xml_root)
-
-
 
     def get(self, **kwargs):
         """
@@ -316,7 +307,6 @@ class CIMCustomerProfile(CIMBase):
         xml_root = self.create_base_xml(root_name)
         return  self.process_request(xml_root)
 
-
     def update(self, **kwargs):
         """
         Update an existing customer profile on authorize.net.
@@ -344,7 +334,6 @@ class CIMCustomerProfile(CIMBase):
         xml_root.append(profile_node)
 
         return self.process_request(xml_root)
-
 
     def create_profile_node(self, **kwargs):
         customer_id = kwargs.get('customer_id', '')
@@ -384,7 +373,6 @@ class CIMCustomerProfile(CIMBase):
                                                                          billing_info,
                                                                          credit_card_info)
 
-
                 profile_node.append(payment_profiles_node)
 
         return profile_node
@@ -396,7 +384,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
-
 
     def create(self, **kwargs):
         """
@@ -467,7 +454,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         return  self.process_request(xml_root)
 
-
     def delete(self, **kwargs):
         """
         Delete a customer payment profile from an existing customer profile.
@@ -494,7 +480,6 @@ class CIMCustomerPaymentProfile(CIMBase):
         customer_payment_profile_id_node.text = self.customer_payment_profile_id
 
         return self.process_request(xml_root)
-
 
     def get(self, **kwargs):
         """
@@ -576,7 +561,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         return  self.process_request(xml_root)
 
-
     def validate(self, **kwargs):
         """
         Test if the last updated payment profile is valid.
@@ -622,7 +606,6 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
-
 
     def create(self, **kwargs):
         """
@@ -671,8 +654,6 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         return self.process_request(xml_root)
 
-
-
     def create_transaction_node(self, **kwargs):
         amount = kwargs.get('amount', 0)
         if amount <= 0:
@@ -691,7 +672,6 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         transaction_node = ET.Element("transaction")
         trans_auth_capture_node = ET.SubElement(transaction_node, 'profileTransAuthCapture')
-
 
         # amount node
         amount_node = ET.SubElement(trans_auth_capture_node, "amount")
@@ -763,7 +743,6 @@ class CIMCustomerProfileTransaction(CIMBase):
             split_tender_id_node = ET.SubElement(trans_auth_capture_node, "splitTenderId")
             split_tender_id_node.text = split_tender_id
 
-
         return transaction_node
 
 
@@ -816,13 +795,11 @@ class CIMHostedProfilePage(CIMBase):
         return self.process_request(xml_root)
 
 
-
 class CIMCustomerShippingAddress(CIMBase):
     def __init__(self, customer_profile_id):
         super(CIMCustomerShippingAddress, self).__init__()
 
         self.customer_profile_id = customer_profile_id
-
 
     def create(self, **kwargs):
         pass

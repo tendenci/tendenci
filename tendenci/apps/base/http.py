@@ -34,7 +34,6 @@ def render_to_missing_app(*args, **kwargs):
         args = []
         args.append('base/missing_app.html')
 
-
     httpresponse_kwargs = {'content_type': kwargs.pop('mimetype', None)}
 
     value = sys.exc_info()[1]

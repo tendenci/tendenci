@@ -280,7 +280,6 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
 
-
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
         form_template = "forms/base.html"

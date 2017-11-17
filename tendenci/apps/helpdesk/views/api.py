@@ -106,7 +106,6 @@ class API:
     def __init__(self, request):
         self.request = request
 
-
     def api_public_create_ticket(self):
         form = TicketForm(self.request.POST)
         form.fields['queue'].choices = [[q.id, q.title] for q in Queue.objects.all()]
@@ -118,10 +117,8 @@ class API:
         else:
             return api_return(STATUS_ERROR, text=form.errors.as_text())
 
-
     def api_public_list_queues(self):
         return api_return(STATUS_OK, simplejson.dumps([{"id": "%s" % q.id, "title": "%s" % q.title} for q in Queue.objects.all()]), json=True)
-
 
     def api_public_find_user(self):
         username = self.request.POST.get('username', False)
@@ -132,7 +129,6 @@ class API:
 
         except User.DoesNotExist:
             return api_return(STATUS_ERROR, "Invalid username provided")
-
 
     def api_public_delete_ticket(self):
         if not self.request.POST.get('confirm', False):
@@ -147,7 +143,6 @@ class API:
 
         return api_return(STATUS_OK)
 
-
     def api_public_hold_ticket(self):
         try:
             ticket = Ticket.objects.get(id=self.request.POST.get('ticket', False))
@@ -159,7 +154,6 @@ class API:
 
         return api_return(STATUS_OK)
 
-
     def api_public_unhold_ticket(self):
         try:
             ticket = Ticket.objects.get(id=self.request.POST.get('ticket', False))
@@ -170,7 +164,6 @@ class API:
         ticket.save()
 
         return api_return(STATUS_OK)
-
 
     def api_public_add_followup(self):
         try:
@@ -255,7 +248,6 @@ class API:
         ticket.save()
 
         return api_return(STATUS_OK)
-
 
     def api_public_resolve(self):
         try:

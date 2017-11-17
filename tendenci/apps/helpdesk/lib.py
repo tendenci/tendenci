@@ -103,7 +103,6 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
 
     email_html_base_file = os.path.join('helpdesk', locale, 'email_html_base.html')
 
-
     ''' keep new lines in html emails '''
     from django.utils.safestring import mark_safe
 

@@ -25,7 +25,6 @@ def add(request, form_class=EmailForm, template_name="emails/edit.html"):
                                    'sender_display': request.user.get_full_name,
                                    'reply_to': request.user.email})
 
-
     return render_to_response(template_name, {'form':form, 'email':None},
         context_instance=RequestContext(request))
 
@@ -57,7 +56,6 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
             return HttpResponseRedirect(next)
     else:
         form = form_class(instance=email)
-
 
     return render_to_response(template_name, {'form':form, 'email':email, 'next':next},
         context_instance=RequestContext(request))

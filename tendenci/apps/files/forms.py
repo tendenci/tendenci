@@ -148,7 +148,6 @@ class TinymceUploadForm(forms.ModelForm):
                                             'data_size': filesizeformat(data.size)})
         return data
 
-
     def clean(self):
         # file type check
         data = self.cleaned_data

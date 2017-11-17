@@ -125,7 +125,6 @@ class MultipleFileAdmin(admin.ModelAdmin):
 admin.site.register(MultipleFile, MultipleFileAdmin)
 
 
-
 class CategoryAdminInline(admin.TabularInline):
     fieldsets = ((None, {'fields': ('name',)}),)
     model = FilesCategory

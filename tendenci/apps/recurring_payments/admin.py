@@ -120,7 +120,6 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     form = RecurringPaymentForm
 
-
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 
@@ -144,7 +143,6 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
         # save the object
         instance.save()
-
 
         return instance
 

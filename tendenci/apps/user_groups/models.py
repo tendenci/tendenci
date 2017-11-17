@@ -174,7 +174,6 @@ class GroupMembership(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
 
-
     # The following fields are for Newletter Subscribe and Unsubscribe
     is_newsletter_subscribed = models.BooleanField(default=True)
     newsletter_key = models.CharField(max_length=50, null=True, blank=True) # will be the secret key for unsubscribe

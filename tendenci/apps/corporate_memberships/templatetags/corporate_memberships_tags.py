@@ -62,7 +62,6 @@ def individual_pricing_desp(corp_membership):
     return ''
 
 
-
 @register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
 def corpmemb_nav(context, user, corp_memb=None):
     context.update({

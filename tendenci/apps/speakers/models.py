@@ -42,12 +42,10 @@ class Speaker(TendenciBaseModel):
     flickr = models.CharField(blank=True, max_length=100)
     slideshare = models.CharField(blank=True, max_length=100)
 
-
     personal_sites = models.TextField(
         _('Personal Sites'),
         blank=True,
         help_text='List personal websites followed by a return')
-
 
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 

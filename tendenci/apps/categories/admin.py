@@ -35,7 +35,6 @@ class CategoryItemAdmin(admin.ModelAdmin):
     ordering = ['content_type', 'object_id']
     view_on_site = False
 
-
     def __init__(self,*args,**kwargs):
         super(CategoryItemAdmin, self).__init__(*args, **kwargs)
         admin.views.main.EMPTY_CHANGELIST_VALUE = '-'

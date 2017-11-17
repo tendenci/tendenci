@@ -45,7 +45,6 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
 
-
     def sub_categories(self, instance):
         return ', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True))
     sub_categories.allow_tags = True

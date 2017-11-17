@@ -144,10 +144,8 @@ class Command(BaseCommand):
         print('load npo_default_directories_pricings.json')
         call_command('loaddata', 'npo_default_directories_pricings.json')
 
-
         # default sqls for explorer
         call_command('load_sqlexplorer_defaults')
-
 
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')

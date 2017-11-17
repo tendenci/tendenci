@@ -72,7 +72,6 @@ class Command(BaseCommand):
         print('load creative_default_directories_pricings.json')
         call_command('loaddata', 'creative_default_directories_pricings.json')
 
-
         suffix_list = [
             'profiles_profile',
             'explorer',

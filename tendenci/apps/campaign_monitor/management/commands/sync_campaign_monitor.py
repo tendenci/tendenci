@@ -100,7 +100,6 @@ class Command(BaseCommand):
                     list_map.list_id = list_id
                     list_map.save()
 
-
             # sync subscribers in this group
             print("Subscribing users to the C.M. list '%s'..." % group.name)
             members = group.members.all()

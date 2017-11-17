@@ -281,7 +281,6 @@ def view_ticket(request, ticket_id):
     else:
         users = User.objects.filter(is_active=True).order_by(User.USERNAME_FIELD)
 
-
     # TODO: shouldn't this template get a form to begin with?
     form = TicketForm(initial={'due_date':ticket.due_date})
 
@@ -468,7 +467,6 @@ def update_ticket(request, ticket_id, public=False):
                 # settings.MAX_EMAIL_ATTACHMENT_SIZE) are sent via email.
                 files.append([a.filename, a.file])
 
-
     if title != ticket.title:
         c = TicketChange(
             followup=f,
@@ -514,7 +512,6 @@ def update_ticket(request, ticket_id, public=False):
         )
 
     if public and (f.comment or (f.new_status in (Ticket.RESOLVED_STATUS, Ticket.CLOSED_STATUS))):
-
 
         if f.new_status == Ticket.RESOLVED_STATUS:
             template = 'resolved_'
@@ -880,7 +877,6 @@ def ticket_list(request):
     if 'query' in context and settings.DATABASES['default']['ENGINE'].endswith('sqlite'):
         search_message = _('<p><strong>Note:</strong> Your keyword search is case sensitive because of your database. This means the search will <strong>not</strong> be accurate. By switching to a different database system you will gain better searching! For more information, read the <a href="http://docs.djangoproject.com/en/dev/ref/databases/#sqlite-string-matching">Django Documentation on string matching in SQLite</a>.')
 
-
     try:
         import pickle
     except ImportError:
@@ -892,7 +888,6 @@ def ticket_list(request):
 
     querydict = request.GET.copy()
     querydict.pop('page', 1)
-
 
     return render_to_response('helpdesk/ticket_list.html',
         RequestContext(request, dict(

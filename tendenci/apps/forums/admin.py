@@ -46,7 +46,6 @@ class CategoryAdmin(admin.ModelAdmin):
         # filter out soft-deleted items
         return qs.filter(status=True)
 
-
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)

@@ -49,7 +49,6 @@ def manage_payment_info(request, recurring_payment_id,
         else:
             gateway_error = True
 
-
     #payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
 
     # get the token from payment gateway for this customer (customer_profile_id=4356210)
@@ -95,11 +94,9 @@ def update_payment_info(request, recurring_payment_id,
     else:
         payment_profile = None
 
-
     token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage,
                                      is_secure=request.is_secure())
     test_mode = get_test_mode()
-
 
     return render_to_response(template_name, {'rp': rp,
                                               'payment_profile': payment_profile,

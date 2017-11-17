@@ -107,7 +107,6 @@ class File(TendenciBaseModel):
 
         return False
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])

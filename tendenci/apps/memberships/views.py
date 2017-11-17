@@ -1191,7 +1191,6 @@ def membership_default_add(request, slug='', membership_id=None,
                         invoice.balance += donation_amount
                         invoice.save()
 
-
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False
@@ -1551,7 +1550,6 @@ def membership_default_corp_pre_add(request, cm_id=None,
                 return HttpResponseRedirect('%s?username=%s' % (redirect_url, passed_username))
             return redirect(redirect_url)
 
-
     c = {'app': app, "form": form}
 
     return render_to_response(template_name, c,
@@ -1688,7 +1686,6 @@ def membership_join_report(request):
     memberships = memberships.filter(application_approved_dt__gte=start_date,
                                      application_approved_dt__lt=end_date_time)
     memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
-
 
     EventLog.objects.log()
 

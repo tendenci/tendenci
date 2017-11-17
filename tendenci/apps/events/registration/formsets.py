@@ -122,7 +122,6 @@ class RegistrantBaseFormSet(BaseFormSet):
             if len(self.pricings[pricing]) % pricing.quantity != 0:
                 raise forms.ValidationError(_("Please enter a valid number of registrants."))
 
-
         errors = []
         users = []
 

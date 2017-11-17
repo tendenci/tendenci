@@ -82,7 +82,6 @@ def escalate_tickets(queues, verbose):
                 days += 1
             workdate = workdate + timedelta(days=1)
 
-
         req_last_escl_date = date.today() - timedelta(days=days)
 
         if verbose:

@@ -12,7 +12,6 @@ def populate_release_dt(apps, schema_editor):
             video.save()
 
 
-
 class Migration(migrations.Migration):
 
     dependencies = [

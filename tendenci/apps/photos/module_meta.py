@@ -73,7 +73,6 @@ class PhotoMeta():
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
 
-
         ### Build string -----------------------
         value = ''
 
@@ -89,7 +88,6 @@ class PhotoMeta():
                 list.remove(item)
 
         value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
-
 
         return value
 

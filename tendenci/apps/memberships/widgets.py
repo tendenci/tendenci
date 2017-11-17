@@ -240,8 +240,6 @@ class TypeExpMethodWidget(forms.MultiWidget):
 
         return mark_safe(output_html)
 
-
-
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
         id_ = id
@@ -256,7 +254,6 @@ class TypeExpMethodWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         if value:
@@ -318,8 +315,6 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         return mark_safe(output_html)
 
-
-
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
         id_ = id
@@ -334,7 +329,6 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         if value:
@@ -365,7 +359,6 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         id_ = final_attrs.get('id', None)
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
-
         # donation_amount
         donation_amount_widget = self.pos_d['donation_amount'][1]
         donation_amount_widget.attrs = {'size':'8'}
@@ -386,8 +379,6 @@ class DonationOptionAmountWidget(forms.MultiWidget):
 
         return mark_safe(output_html)
 
-
-
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
         id_ = id
@@ -402,7 +393,6 @@ class DonationOptionAmountWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         return value

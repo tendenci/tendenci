@@ -99,7 +99,6 @@ class EditTicketForm(CustomFieldMixin, forms.ModelForm):
 
             self.customfield_to_field(field, instanceargs)
 
-
     def save(self, *args, **kwargs):
 
         for field, value in self.cleaned_data.items():
@@ -202,7 +201,6 @@ class TicketForm(CustomFieldMixin, forms.Form):
                     }
 
             self.customfield_to_field(field, instanceargs)
-
 
     def save(self, user):
         """

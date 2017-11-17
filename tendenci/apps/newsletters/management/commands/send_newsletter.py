@@ -36,7 +36,6 @@ class Command(BaseCommand):
             print('Exiting..Please set up your newsletter email provider before proceeding.')
             return
 
-
         print("Started sending newsletter...")
 
         if newsletter_id == 0:
@@ -68,7 +67,6 @@ class Command(BaseCommand):
         self.site_url = get_setting('site', 'global', 'siteurl')
         email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)
         email.body = email.body.replace("href=\"/", "href=\"%s/" % self.site_url)
-
 
         counter = 0
         for recipient in recipients:
@@ -163,7 +161,6 @@ class Command(BaseCommand):
         # TODO: cache clear only to specifies
         cache.clear()
         print('Cache cleared!')
-
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting

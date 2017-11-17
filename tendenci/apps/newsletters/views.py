@@ -48,7 +48,6 @@ from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
 
 
-
 class NewsletterGeneratorView(TemplateView):
     template_name="newsletters/newsletter_generator.html"
 

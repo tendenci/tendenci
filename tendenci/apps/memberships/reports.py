@@ -116,6 +116,5 @@ class MembershipReport(ReportAdmin):
     base_template_name = ''
 
 
-
 # register your report with the slug and name
 reports.register('memberships', MembershipReport)

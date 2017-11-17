@@ -188,7 +188,6 @@ def register(request, success_url=None,
                         gm.owner_username = new_user.username
                         gm.save()
 
-
             EventLog.objects.log(instance=new_user)
 
             return HttpResponseRedirect(success_url or reverse('registration_complete'))

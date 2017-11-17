@@ -158,7 +158,6 @@ def get_ACRF_queryset(event=None):
         rcp = ''
     sql = sql % (rc, rcp)
 
-
     # need to return a queryset not raw queryset
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -530,7 +529,6 @@ def email_registrants(event, email, **kwargs):
 
     payment_status = kwargs.get('payment_status', 'all')
 
-
     if payment_status == 'all':
         registrants = event.registrants()
     elif payment_status == 'paid':
@@ -754,7 +752,6 @@ def get_registrants_prices(*args):
 
             amount_list.append(amount)
 
-
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -899,7 +896,6 @@ def add_registration(*args, **kwargs):
                 if registrant.user:
                     free_pass_stat.user = registrant.user
                 free_pass_stat.save()
-
 
     # create each regaddon
     for form in addon_formset.forms:
@@ -1049,7 +1045,6 @@ def get_pricing(user, event, pricing=None):
             reg_conf=event.registration_configuration,
             status=True,
         )
-
 
     # iterate and create a dictionary based
     # on dates and permissions

@@ -38,7 +38,6 @@ class Loader(BaseLoader):
     """
     is_usable = True
 
-
     def __init__(self, *args, **kwargs):
         """
         Hold the theme_root in self.theme_root instead of calling get_theme_root()
@@ -49,7 +48,6 @@ class Loader(BaseLoader):
         """
         self.theme_root = get_theme_root()
         super(Loader, self).__init__(engine)
-
 
     def get_template_sources(self, template_name, template_dirs=None):
         """Return the absolute paths to "template_name", when appended to the
@@ -76,7 +74,6 @@ class Loader(BaseLoader):
                 # template_dir (it might be inside another one, so this isn't
                 # fatal).
                 pass
-
 
     def load_template_source(self, template_name, template_dirs=None):
         tried = []

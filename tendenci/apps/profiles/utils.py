@@ -72,7 +72,6 @@ def user_add_remove_admin_auth_group(user, auth_group=None):
                 auth_group_name = 'Admin'
             auth_group = get_admin_auth_group(name=auth_group_name)
 
-
         if not user.id: # new user
             user.groups = [auth_group]
             user.save()
@@ -445,7 +444,6 @@ def check_missing_fields(user_data, key, **kwargs):
     return is_valid, missing_field_msg
 
 
-
 def get_user_by_email(email):
     """
     Get user by email address.
@@ -545,7 +543,6 @@ class ImportUsers(object):
         else:
             self.uimport.group = None
 
-
     def init_summary(self):
         return {
                  'insert': 0,
@@ -619,7 +616,6 @@ class ImportUsers(object):
                                    self.user_data['company'])
             elif self.key == 'username':
                 users = User.objects.filter(username__iexact=self.user_data['username'])
-
 
             if users:
                 user_display['action'] = 'update'
@@ -731,7 +727,6 @@ class ImportUsers(object):
                       'owner_id': self.request_user.pk,
                       'owner_username': self.request_user.username}
                 self.uimport.group.add_user(user, **params)
-
 
     def assign_import_values_from_dict(self, instance, action):
         """

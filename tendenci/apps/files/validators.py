@@ -71,7 +71,6 @@ class FileValidator(object):
             except AttributeError as e:
                 raise ValidationError(_('File type is not valid'))
 
-
             # Check the file size
             filesize = len(value)
             if self.max_size and filesize > self.max_size:

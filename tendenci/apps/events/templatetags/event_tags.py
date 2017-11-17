@@ -188,7 +188,6 @@ class EventListNode(Node):
             else:
                 events = events.order_by('-priority', 'start_dt')
 
-
         if cat == 'priority':
             events = events.filter(**{cat : True })
         elif query and cat:

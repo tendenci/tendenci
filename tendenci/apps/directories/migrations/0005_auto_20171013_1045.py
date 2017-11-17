@@ -137,7 +137,6 @@ def migrate_customized_directories_templates():
                 # save the updated content back to file
                 f.write(content)
 
-
     # directories/meta.html
     file_path = '{}/templates/directories/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -159,7 +158,6 @@ def migrate_customized_directories_templates():
 
         with open(file_path, 'w') as f:
             f.write(content)
-
 
     # directories/search-form.html
     file_path = '{}/templates/directories/search-form.html'.format(dir_path)
@@ -191,7 +189,6 @@ def migrate_customized_directories_templates():
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
         with open(file_path, 'w') as f:
             f.write(content)
-
 
     #directories/top_nav_items.html
     file_path = '{}/templates/directories/top_nav_items.html'.format(dir_path)

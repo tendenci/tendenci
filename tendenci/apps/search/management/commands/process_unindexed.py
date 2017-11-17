@@ -5,8 +5,6 @@ from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
 
-
-
 class Command(BaseCommand):
     """
     Command used to process unindexed items by querying per Model

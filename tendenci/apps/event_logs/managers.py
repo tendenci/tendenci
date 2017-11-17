@@ -104,7 +104,6 @@ class EventLogManager(Manager):
             elif 'request' in inspect.getargvalues(stack[3][0]).locals:
                 request = inspect.getargvalues(stack[3][0]).locals['request']
 
-
         # If this eventlog is being triggered by something without a request, we
         # do not want to log it. This is usually some other form of logging
         # like Contributions or perhaps Versions in the future. - JMO 2012-05-14

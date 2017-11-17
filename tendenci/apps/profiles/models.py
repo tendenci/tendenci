@@ -192,7 +192,6 @@ class Profile(Person):
         else:
             self.allow_member_view = True
 
-
         super(Profile, self).save(*args, **kwargs)
 
         try:
@@ -202,8 +201,6 @@ class Profile(Person):
                 del self.old_email
         except ImportError:
             pass
-
-
 
     def allow_search_users(self):
         """

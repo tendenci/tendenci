@@ -67,7 +67,6 @@ class RecurringPaymentForm(forms.ModelForm):
                                         <a href="%s">create a new user</a> before proceeding
                                         """ % reverse('profile.add')
 
-
     def clean_billing_cycle(self):
         value = self.cleaned_data['billing_cycle']
 

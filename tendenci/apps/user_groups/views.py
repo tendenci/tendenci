@@ -134,7 +134,6 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         request=request,
         num_members=num_members)
 
-
     if request.method == 'POST' and form.is_valid():
 
         email = Email()
@@ -175,7 +174,6 @@ def message(request, group_slug, template_name='user_groups/message.html'):
 
     else:
         print('form errors', form.errors.items())
-
 
     return render(request, template_name, {
         'group': group,

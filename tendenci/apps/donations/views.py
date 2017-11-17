@@ -126,7 +126,6 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
         form = form_class(user=request.user)
         captcha_form = CaptchaForm()
 
-
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
 

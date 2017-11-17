@@ -1235,7 +1235,6 @@ class MembershipDefault(TendenciBaseModel):
                 membership_from.status_detail = 'archive'
                 membership_from.save()
 
-
     def approval_required(self):
         """
         Returns a boolean value on whether approval is required
@@ -2227,7 +2226,6 @@ class Notice(models.Model):
                 notice_log_record.save()
         return True
 
-
     @classmethod
     def send_notice(cls, **kwargs):
         """
@@ -2560,8 +2558,6 @@ class MembershipAppField(OrderingBaseModel):
                 else:
                     field_type = 'CharField'
         return field_type
-
-
 
 
 class MembershipDemographic(models.Model):

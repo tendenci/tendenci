@@ -109,7 +109,6 @@ def box_title(parser, token):
     return GetBoxTitleNode(pk)
 
 
-
 class ListBoxesNode(ListNode):
     model = Box
     perms = 'boxes.view_box'

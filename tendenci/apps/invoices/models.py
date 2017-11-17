@@ -263,7 +263,6 @@ class Invoice(models.Model):
 
         return self.status_detail
 
-
     @property
     def is_tendered(self):
         boo = False

@@ -358,7 +358,6 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         formset = FormSet(**params)
         hidden_form = formset.forms[0]
 
-
     return render_to_response(template_name, {
             'event':event,
             'reg_form':reg_form,

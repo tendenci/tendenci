@@ -13,7 +13,6 @@ def autodiscover():
     may want.
     """
 
-
     for app in settings.INSTALLED_APPS:
         mod = import_module(app)
         # Attempt to import the app's admin module.

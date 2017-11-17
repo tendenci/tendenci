@@ -48,7 +48,6 @@ class Command(BaseCommand):
 
         }
 
-
         event_id = options['event']
         limit = options['limit']
 

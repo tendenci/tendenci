@@ -22,7 +22,6 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--user_id', type=int)
 
-
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci import __version__ as version
@@ -43,7 +42,6 @@ class Command(BaseCommand):
                 print("No update for this version {}.".format(version))
                 print("Please consider to upgrade https://tendenci.readthedocs.org/en/latest/")
             return
-
 
         project_root = settings.PROJECT_ROOT
         err_list = []

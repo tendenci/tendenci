@@ -21,7 +21,6 @@ from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
 
 
-
 class FormsExportTask(Task):
     """Export Task for Celery
     This exports all forms along with their fields.

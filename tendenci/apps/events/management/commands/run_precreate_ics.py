@@ -20,7 +20,6 @@ class Command(BaseCommand):
 
                 self.stdout.write('Started compiling ics file...')
 
-
                 result = EventsICSTask()
                 response = result.run(ics=ics)
 

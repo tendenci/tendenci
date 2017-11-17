@@ -145,7 +145,6 @@ class Command(BaseCommand):
         # default sqls for explorer
         call_command('load_sqlexplorer_defaults')
 
-
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')
         setting_ct = ContentType.objects.get(app_label='site_settings', model='setting')
