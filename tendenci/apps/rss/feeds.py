@@ -89,4 +89,3 @@ class GlobalFeed(Feed):
                 method = getattr(feed, methodname)
                 return method.__func__(feed, item)
         return None
-

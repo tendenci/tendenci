@@ -183,5 +183,3 @@ pattern_pages = patterns('',
     url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),
 )
 urlpatterns += pattern_pages
-
-

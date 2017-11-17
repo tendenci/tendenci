@@ -49,5 +49,3 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(populate_usersettings, reverse_code=noop),
     ]
-
-

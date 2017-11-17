@@ -65,4 +65,3 @@ class Command(BaseCommand):
             user_id=user_id)
 
         print('Directory export done %s.' % identifier)
-

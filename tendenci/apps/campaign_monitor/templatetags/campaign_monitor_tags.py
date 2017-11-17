@@ -45,4 +45,3 @@ def campaign_nav(context, user, campaign=None):
         "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
-

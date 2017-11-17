@@ -234,4 +234,3 @@ def get_group_list(user):
         choices.append((group.pk, group.name))
 
     return choices, initial_group.id
-

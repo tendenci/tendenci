@@ -26,4 +26,3 @@ class SettingResource(TendenciResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'put']
         fields = ['name', 'description', 'value', 'data_type', 'input_value']
-

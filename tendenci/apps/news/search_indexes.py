@@ -59,5 +59,3 @@ class NewsIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_order(self, obj):
         return obj.release_dt
-
-

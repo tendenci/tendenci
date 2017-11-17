@@ -1480,6 +1480,3 @@ def date_rel_to_today(today, offset):
 
 def sort_string(begin, end):
     return 'sort=created&date_from=%s&date_to=%s&status=%s&status=%s&status=%s' %(begin, end, Ticket.OPEN_STATUS, Ticket.REOPENED_STATUS, Ticket.RESOLVED_STATUS)
-
-
-

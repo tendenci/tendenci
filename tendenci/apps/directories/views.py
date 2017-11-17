@@ -665,4 +665,3 @@ def directory_export_download(request, identifier):
     response['Content-Disposition'] = 'attachment; filename="directory_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
-

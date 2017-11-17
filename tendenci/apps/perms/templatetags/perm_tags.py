@@ -195,4 +195,3 @@ def obj_status(obj):
         value = t % ('inactive','Inactive')
 
     return value
-

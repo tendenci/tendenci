@@ -2376,5 +2376,3 @@ def memberships_overview(request,
         'summary': summary,
         'total': total,
         }, context_instance=RequestContext(request))
-
-

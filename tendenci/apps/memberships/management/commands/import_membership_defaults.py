@@ -57,4 +57,3 @@ class Command(BaseCommand):
 
         # generate a recap file
         mimport.generate_recap()
-

@@ -21,4 +21,3 @@ urlpatterns = patterns('tendenci.apps.social_services.views',
     url(r'^social-services/relief-areas/$', 'relief_areas_list', name='social-services.relief_areas'),
     url(r'^social-services/relief-area/(?P<area_id>\d+)/$', 'relief_area_detail', name='social-services.relief_area'),
 )
-

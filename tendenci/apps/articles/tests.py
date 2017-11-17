@@ -43,5 +43,3 @@ class ArticleTest(TestCase):
         self.article.save()
 
         self.assertEquals(type(self.article.id), long)
-
-

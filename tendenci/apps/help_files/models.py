@@ -87,5 +87,3 @@ class HelpFileMigration(models.Model):
         managed = False
         db_table = 'mig_help_files_helpfile_t4_to_t5'
         app_label = 'help_files'
-
-

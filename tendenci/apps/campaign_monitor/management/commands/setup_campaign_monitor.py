@@ -164,5 +164,3 @@ class Command(BaseCommand):
         except:
             err_msg = traceback.format_exc()
             email_script_errors(err_msg)
-
-

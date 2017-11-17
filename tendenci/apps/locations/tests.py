@@ -43,5 +43,3 @@ class LocationLocationTest(TestCase):
         self.location.save()
 
         self.assertEquals(type(self.location.id), long)
-
-

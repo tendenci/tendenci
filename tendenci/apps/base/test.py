@@ -83,7 +83,3 @@ class TestCase(TestCase):
         self.browser.save_screenshot(
             '%s%s.jpg' % (settings.TEST_SCREENSHOTS, relative_url)
         )
-
-
-
-

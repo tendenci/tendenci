@@ -29,4 +29,3 @@ def copy_story(story, user):
     )
 
     return new_story
-

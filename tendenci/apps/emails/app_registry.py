@@ -19,4 +19,3 @@ class EmailRegistry(LogRegistry):
     }
 
 site.register(Email, EmailRegistry)
-

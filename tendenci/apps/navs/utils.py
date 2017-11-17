@@ -41,4 +41,3 @@ def clear_nav_cache(nav):
         keys = [settings.CACHE_PRE_KEY, get_pre_key(is_site_map), str(nav.id)]
         key = '.'.join(keys)
         cache.delete(key)
-

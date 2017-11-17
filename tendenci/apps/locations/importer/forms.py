@@ -66,4 +66,3 @@ class ImportMapForm(forms.Form):
             # if they match; set initial
             if native_field_machine in machine_choices:
                 self.fields[native_field_machine].initial = native_field_machine
-

@@ -645,4 +645,3 @@ When creating the database for any additional sites, be sure to use a unique dat
 Each additional Tendenci site will need to run on a different port internally. In the instructions, port 8000 was used. This will be changed for additional sites in the nginx configuration file as well as the ``.upstart.sh`` file for each new site.
 
 You should also consider running a separate memcache instance for each tendenci install. This will increase the dedicated cache vailable for each instance and improve site performance.
-

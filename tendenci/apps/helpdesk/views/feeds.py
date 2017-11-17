@@ -171,4 +171,3 @@ class OpenTicketsByQueue(Feed):
             return item.assigned_to.get_username()
         else:
             return _('Unassigned')
-

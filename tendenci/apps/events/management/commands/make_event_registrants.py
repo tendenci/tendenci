@@ -88,5 +88,3 @@ class Command(BaseCommand):
         login(request, request.user)
 
         return request
-
-

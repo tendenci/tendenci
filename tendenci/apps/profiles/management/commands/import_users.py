@@ -62,4 +62,3 @@ class Command(BaseCommand):
 
         # generate a recap file
         uimport.generate_recap()
-

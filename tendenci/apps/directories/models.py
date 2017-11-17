@@ -286,4 +286,3 @@ class DirectoryPricing(models.Model):
                 return self.regular_price
             else:
                 return self.premium_price
-

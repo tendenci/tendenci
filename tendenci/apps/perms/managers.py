@@ -600,4 +600,3 @@ class TendenciBaseManager(models.Manager):
         but be sure to call this function first.
         """
         return super(TendenciBaseManager, self).get_queryset().filter(status=False)
-

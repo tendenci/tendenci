@@ -176,4 +176,3 @@ class TendenciBaseModel(models.Model):
                 Category.objects.remove(self, 'sub_category')
             else:
                 Category.objects.update(self, subcategory_value, 'sub_category')
-

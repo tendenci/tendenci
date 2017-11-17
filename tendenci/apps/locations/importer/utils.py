@@ -80,4 +80,3 @@ def parse_locs_from_csv(file_path, mapping, parse_range=None):
         'added': total-skipped,
     }
     return location_dicts, stats
-

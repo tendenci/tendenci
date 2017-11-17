@@ -249,4 +249,3 @@ class PasswordResetForm(forms.Form):
                 subject=_("Password reset on %s") % site_name,
                 body=t.render(Context(c)))
         email.send()
-

@@ -81,9 +81,3 @@ class Command(BaseCommand):
             m = l
 
         return new_list
-
-
-
-
-
-

@@ -38,4 +38,3 @@ class Tests(TestCase):
         self.client.login(username=username, password=password)
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-

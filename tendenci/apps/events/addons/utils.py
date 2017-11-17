@@ -100,4 +100,3 @@ def create_regaddon(form, event, reg8n):
     regaddon = RegAddon()
 
     return regaddon
-

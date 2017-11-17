@@ -617,4 +617,3 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
             output.append(u'</div>')
         output.append(u'</div>')
         return mark_safe(u'\n'.join(output))
-

@@ -551,4 +551,3 @@ class UserImportData(BaseImportData):
 
     class Meta:
         app_label = 'profiles'
-

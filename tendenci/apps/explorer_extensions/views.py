@@ -85,4 +85,3 @@ def delete_dump(request, dump_id):
 def can_create_dump():
     db_objs = DatabaseDumpFile.objects.filter(~Q(status='expired'))
     return db_objs.count() < 3
-

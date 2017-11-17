@@ -86,4 +86,3 @@ def edit_categories(request, app_label, model, pk, form_class=CategoryForm, temp
 
     return render_to_response(template_name, response_data,
             context_instance=RequestContext(request))
-

@@ -105,4 +105,3 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
         form = build_settings_form(request.user, settings)()
 
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
-

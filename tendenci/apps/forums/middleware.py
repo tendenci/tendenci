@@ -31,4 +31,3 @@ class PybbMiddleware(object):
             request.session['django_language'] = profile.language
             translation.activate(profile.language)
             request.LANGUAGE_CODE = translation.get_language()
-

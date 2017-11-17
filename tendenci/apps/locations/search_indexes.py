@@ -19,5 +19,3 @@ class LocationIndex(TendenciBaseSearchIndex, indexes.Indexable):
         description = strip_tags(description)
         description = strip_entities(description)
         return description
-
-

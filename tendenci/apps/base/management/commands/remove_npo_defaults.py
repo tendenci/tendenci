@@ -96,5 +96,3 @@ class Command(BaseCommand):
                     import sys, traceback
                     traceback.print_exc(file=sys.stdout)
                     pass
-
-

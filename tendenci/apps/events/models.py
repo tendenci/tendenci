@@ -1743,4 +1743,3 @@ class RegAddonOption(models.Model):
     def __unicode__(self):
         #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
         return "%s: %s" % (self.regaddon.pk, self.option.title)
-

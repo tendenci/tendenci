@@ -257,6 +257,3 @@ Security Awareness - YOU ARE RESPONSIBLE
   - You can arrange with your developer to have a scheduled backup of your site pushed to your own S3 bucket on Amazon via SSH.
 
 5. You, or your developer, are responsible to keep the code up to date to be sure you have the latest security patches.
-
-
-

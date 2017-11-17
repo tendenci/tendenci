@@ -239,6 +239,3 @@ class MarketingStep2EmailFilterForm(forms.Form):
         queryset = queryset.filter(**query)
 
         return queryset
-
-
-

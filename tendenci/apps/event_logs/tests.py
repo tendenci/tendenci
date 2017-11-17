@@ -117,4 +117,3 @@ class EventLogTest(TestCase):
         }
 
         self.assertRaises(Exception, EventLog.objects.log(**event_log_defaults))
-

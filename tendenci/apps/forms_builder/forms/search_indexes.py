@@ -25,5 +25,3 @@ class FormsIndex(TendenciBaseSearchIndex, indexes.Indexable):
         response = strip_tags(response)
         response = strip_entities(response)
         return response
-
-

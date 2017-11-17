@@ -32,5 +32,3 @@ urlpatterns = patterns("tendenci.apps.forms_builder.forms.views",
     url(r"^%s/(?P<slug>.*)/sent/$" % urlpath, "form_sent", name="form_sent"),
     url(r"^%s/(?P<slug>.*)/$" % urlpath, "form_detail", name="form_detail"),
 )
-
-

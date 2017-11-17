@@ -139,8 +139,3 @@ class Command(BaseCommand):
 
         if verbosity >= 1:
           print('User %s (%s) created successfully' % (user.username, user.pk))
-
-
-
-
-

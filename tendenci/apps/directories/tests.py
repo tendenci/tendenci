@@ -43,5 +43,3 @@ class DirectoryTest(TestCase):
         self.directory.save()
 
         self.assertEquals(type(self.directory.id), long)
-
-

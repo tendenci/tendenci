@@ -79,4 +79,3 @@ class Command(BaseCommand):
                                user_id=user_id)
 
         print('Invoice export done %s.' % identifier)
-

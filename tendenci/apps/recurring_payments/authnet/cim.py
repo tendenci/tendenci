@@ -835,5 +835,3 @@ class CIMCustomerShippingAddress(CIMBase):
 
     def update(self, **kwargs):
         pass
-
-

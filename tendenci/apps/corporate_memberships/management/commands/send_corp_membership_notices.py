@@ -329,4 +329,3 @@ class Command(BaseCommand):
         else:
             if verbosity > 1:
                 print("No notices on the site.")
-

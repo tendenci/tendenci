@@ -402,4 +402,3 @@ def ticket_from_message(message, queue, quiet):
 
 if __name__ == '__main__':
     process_email()
-

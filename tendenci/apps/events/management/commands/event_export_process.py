@@ -96,4 +96,3 @@ class Command(BaseCommand):
                              user_id=user_id)
 
         print('Event export done %s.' % identifier)
-

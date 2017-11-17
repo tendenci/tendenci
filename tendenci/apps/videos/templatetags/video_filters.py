@@ -15,5 +15,3 @@ def video_embed(video, width):
     """
     from django.template.defaultfilters import safe
     return safe(video.embed_code(width=width))
-
-

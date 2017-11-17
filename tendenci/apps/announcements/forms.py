@@ -23,4 +23,3 @@ class EmergencyAnnouncementAdminForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-

@@ -62,8 +62,3 @@ class Meta(models.Model):
         """
         for field in ('keywords','title','description', 'canonical_url'):
             setattr(self,'get_%s' % field, curry(self.__get_meta, field))
-
-
-
-
-

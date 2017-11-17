@@ -2085,4 +2085,3 @@ class MembershipDefaultForm(TendenciBaseForm):
         # ***** end demographics *****
 
         return membership
-

@@ -35,5 +35,3 @@ class CorpMembershipIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_corp_app(self, obj):
         return obj.corp_app.name
-
-

@@ -128,7 +128,3 @@ Finally, restart your new T6 site.
     1) Make sure the theme is bootstrap 3 compatible.
     2) Update templates to replace `{% block body %}` with `{% block content %}`.
     3) Update templates to add quotes to the first argument of url tags. For example, if you have url tag `{% url admin:boxes_box_change box.pk %}`, it needs to be updated to `{% url 'admin:boxes_box_change' box.pk %}`.
-
-
-
-

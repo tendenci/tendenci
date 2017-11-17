@@ -14,5 +14,3 @@ export PYTHONPATH=$PYTHONPATH:$PATHTODJANGO:$PATHTOPROJECT:
 
 cd $PATHTOPROJECT
 /usr/bin/python manage.py get_email
-
-

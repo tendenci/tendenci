@@ -482,4 +482,3 @@ class DirectoryExportForm(forms.Form):
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES, required=False)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
-

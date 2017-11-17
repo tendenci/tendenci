@@ -77,6 +77,3 @@ class PybbProfile(models.Model):
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
         return gravatar_url
-
-
-

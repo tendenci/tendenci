@@ -174,4 +174,3 @@ class RegistrantBaseFormSet(BaseFormSet):
         # raise any errors found
         for error in errors:
             raise error
-

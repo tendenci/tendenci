@@ -106,4 +106,3 @@ class Donation(models.Model):
                     'request': request,
                 }
                 notification.send_emails(recipients,'donation_added', extra_context)
-

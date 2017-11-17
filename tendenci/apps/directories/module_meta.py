@@ -199,5 +199,3 @@ class DirectoryMeta():
             if object.meta and object.meta.canonical_url: return object.meta.canonical_url
             else: return self.get_canonical_url()
         return ''
-
-

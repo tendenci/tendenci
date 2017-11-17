@@ -917,6 +917,3 @@ def add_tendenci_footer(email_content, content_type='html'):
     if email_content.find('</body>') != -1:
         return email_content.replace("</body>", footer + "\n</body>")
     return email_content + footer
-
-
-

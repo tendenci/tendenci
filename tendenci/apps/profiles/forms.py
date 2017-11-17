@@ -821,4 +821,3 @@ class ActivateForm(forms.Form):
     email = forms.CharField(max_length=75)
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=30, required=False)
-

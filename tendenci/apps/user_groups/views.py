@@ -1115,4 +1115,3 @@ def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key
         raise Http404
 
     return render(request, 'user_groups/newsletter_unsubscribe.html')
-

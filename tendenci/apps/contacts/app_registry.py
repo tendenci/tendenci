@@ -12,4 +12,3 @@ class ContactRegistry(LogRegistry):
     }
 
 site.register(Contact, ContactRegistry)
-

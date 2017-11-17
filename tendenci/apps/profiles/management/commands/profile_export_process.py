@@ -55,4 +55,3 @@ class Command(BaseCommand):
             user_id=user_id)
 
         print('Profile export done %s.' % identifier)
-

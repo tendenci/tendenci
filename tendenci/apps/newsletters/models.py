@@ -472,8 +472,3 @@ class Newsletter(models.Model):
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
         return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
-
-
-
-
-

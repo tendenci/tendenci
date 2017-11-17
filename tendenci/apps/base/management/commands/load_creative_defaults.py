@@ -98,4 +98,3 @@ class Command(BaseCommand):
 
             print(filename)
             call_command('loaddata', filename)
-
