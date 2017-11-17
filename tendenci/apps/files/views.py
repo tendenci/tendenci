@@ -48,6 +48,8 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     """
     Return an image response after paramters have been applied.
     """
+    file = get_object_or_404(File, pk=id)
+    
     cache_key = generate_image_cache_key(
         file=id,
         size=size,
@@ -60,9 +62,10 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     cached_image = cache.get(cache_key)
 
     if cached_image:
+        if file.type() != 'image':
+            # log an event
+            EventLog.objects.log(instance=file)
         return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
-
-    file = get_object_or_404(File, pk=id)
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
