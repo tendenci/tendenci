@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns, url
 from tendenci.apps.videos.feeds import LatestEntriesFeed
 from tendenci.apps.site_settings.utils import get_setting
 

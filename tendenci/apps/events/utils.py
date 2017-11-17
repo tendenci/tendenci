@@ -6,7 +6,7 @@ import os.path
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
-from dateutil.rrule import *
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
 
 from django.contrib.auth.models import User

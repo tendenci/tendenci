@@ -1,5 +1,5 @@
 from os.path import join
-from django.conf.urls import *
+from django.conf.urls import patterns, url, include
 from django.conf import settings
 from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin

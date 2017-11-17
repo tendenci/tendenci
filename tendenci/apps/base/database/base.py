@@ -1,4 +1,4 @@
-from django.db.backends.postgresql_psycopg2.base import *
+from django.db.backends.postgresql_psycopg2.base import DatabaseOperations, DatabaseWrapper
 
 class DatabaseOperations(DatabaseOperations):
     def lookup_cast(self, lookup_type):
