@@ -39,16 +39,17 @@ from tendenci.apps.perms.decorators import is_enabled
 
 
 from tendenci.apps.corporate_memberships.models import (
-                                            CorpMembershipApp,
-                                            CorpMembershipRep,
-                                            CorpMembership,
-                                            CorpProfile,
-                                            IndivMembershipRenewEntry,
-                                            CorpMembershipAppField,
-                                            CorpMembershipImport,
-                                            CorpMembershipImportData,
-                                          CorporateMembershipType,
-                                          Creator)
+                                         CorpMembershipApp,
+                                         CorpMembershipRep,
+                                         CorpMembership,
+                                         CorpProfile,
+                                         IndivMembershipRenewEntry,
+                                         CorpMembershipAppField,
+                                         CorpMembershipImport,
+                                         CorpMembershipImportData,
+                                         CorporateMembershipType,
+                                         Creator,
+                                         )
 from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipForm,
                                          CorpMembershipUpgradeForm,
@@ -64,7 +65,7 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CorpApproveForm,
                                          )
 from tendenci.apps.corporate_memberships.utils import (
-                                        get_corporate_membership_type_choices,
+                                         get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
@@ -73,7 +74,8 @@ from tendenci.apps.corporate_memberships.utils import (
                                          corp_memb_inv_add,
                                          dues_rep_emails_list,
                                          get_over_time_stats,
-                                         get_summary)
+                                         get_summary,
+                                         )
 from tendenci.apps.corporate_memberships.import_processor import CorpMembershipImportProcessor
 #from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.models import MembershipDefault
@@ -1577,8 +1579,8 @@ def corpmembership_export(request,
             corp_profile_field_list.append('member_rep')
             corp_profile_field_list.append('authorized_domains')
             corp_memb_field_list = [smart_str(field.name) for field \
-                               in CorpMembership._meta.fields]
-                             #if not field.__class__ == AutoField]
+                                    in CorpMembership._meta.fields]
+            #                        if not field.__class__ == AutoField]
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')

@@ -388,7 +388,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     start_date_filter = {'start_dt__%s' %filter_op: start_dt}
     end_date_filter = {'end_dt__%s' % filter_op: start_dt }
-    events = events.filter(Q(**start_date_filter)|Q(**end_date_filter))
+    events = events.filter(Q(**start_date_filter) | Q(**end_date_filter))
 
     if past:
         events = events.order_by('-start_dt', '-priority')
@@ -1504,7 +1504,7 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
         recurring_manager = event.recurring_event
         for event in event_list:
             eventlog = EventLog.objects.log(instance=event)
-                # send email to admins
+            # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
                 notification.send_emails(recipients,'event_deleted', {

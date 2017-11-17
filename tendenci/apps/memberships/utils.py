@@ -1027,7 +1027,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 

@@ -47,5 +47,5 @@ class StoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return ''
 
     def prepare_can_syndicate(self, obj):
-        return obj.syndicate and obj.status == 1  and obj.status_detail == 'active' \
+        return obj.syndicate and obj.status == 1 and obj.status_detail == 'active' \
                 and datetime.now() > obj.end_dt

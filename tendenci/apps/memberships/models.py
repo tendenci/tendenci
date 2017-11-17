@@ -1479,8 +1479,8 @@ class MembershipDefault(TendenciBaseModel):
         elif status == 'disapproved':
             pass
             # actions.update({
-                # '?action=pend': u'Make Pending',
-                # expire_link: u'Expire Membership'})
+            #     '?action=pend': u'Make Pending',
+            #     expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
                 approve_link: u'Approve',

@@ -2345,7 +2345,7 @@ class EventReportFilterForm(forms.Form):
 
         if queryset:
             if start_dt and end_dt:
-                return queryset.filter(Q(start_dt__gte=start_dt)&Q(start_dt__lte=end_dt))
+                return queryset.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
             else:
                 return queryset
 

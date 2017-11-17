@@ -1093,7 +1093,7 @@ class CorpMembership(TendenciBaseModel):
             typical corporate membership emails.
         Returns outcome via boolean.
         """
-        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True) | (Q(is_member_rep=True)))
 
         return Notice.send_notice(
             request=request,

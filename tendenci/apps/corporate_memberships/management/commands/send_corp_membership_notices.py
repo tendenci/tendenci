@@ -203,7 +203,7 @@ class Command(BaseCommand):
 
         def email_member(notice, membership, global_context):
             corp_profile = membership.corp_profile
-            representatives = corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+            representatives = corp_profile.reps.filter(Q(is_dues_rep=True) | (Q(is_member_rep=True)))
             sent = 0
 
             corp_app = CorpMembershipApp.objects.current_app()

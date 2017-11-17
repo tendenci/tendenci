@@ -294,7 +294,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        corp_memberships = CorpMembership.objects.filter(active_qs|expired_qs)
+        corp_memberships = CorpMembership.objects.filter(active_qs | expired_qs)
         corp_memberships = corp_memberships.filter(expiration_dt__gte=dt, expiration_dt__lte=now)
         corp_memberships = corp_memberships.order_by("-expiration_dt")[:items]
         corp_mem_list = []
@@ -401,7 +401,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
+        memberships = MembershipDefault.objects.filter(active_qs | expired_qs)
         memberships = memberships.filter(expire_dt__gte=dt, expire_dt__lte=now)
         count = memberships.count()
         mem_list = [count]

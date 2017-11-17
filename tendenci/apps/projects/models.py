@@ -94,7 +94,7 @@ class Project(TendenciBaseModel):
         max_length=50,
         choices=STATUS_CHOICES)
 
-    cost = models.DecimalField (
+    cost = models.DecimalField(
         _(u'Project Cost'),
         max_digits = 10,
         decimal_places = 2,

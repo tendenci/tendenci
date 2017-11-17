@@ -472,7 +472,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     """
     Get user by first name, last name and phone.
     """
-    if not any ([first_name, last_name, phone]):
+    if not any([first_name, last_name, phone]):
         return None
 
     profiles = Profile.objects.filter(
@@ -483,7 +483,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_superuser',
                     '-user__is_staff')
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 def get_user_by_fn_ln_company(first_name, last_name, company):
@@ -502,7 +502,7 @@ def get_user_by_fn_ln_company(first_name, last_name, company):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 

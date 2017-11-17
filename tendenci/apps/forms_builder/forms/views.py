@@ -368,7 +368,7 @@ def search(request, template_name="forms/search.html"):
     forms = Form.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
     if query:
-        forms = forms.filter(Q(title__icontains=query)|Q(intro__icontains=query)|Q(response__icontains=query))
+        forms = forms.filter(Q(title__icontains=query) | Q(intro__icontains=query) | Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
 

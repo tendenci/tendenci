@@ -452,7 +452,7 @@ def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
         raise Http404
-    return render (request, template_name)
+    return render(request, template_name)
 
 
 def view_email_from_browser(request, pk):

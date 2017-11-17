@@ -4,9 +4,11 @@ from django.template import Library
 register = Library()
 
 
-PROFILE_DROPDOWN_MIN_COL_COUNT = 1                      # Avatar and profile columns are always visible
-                                                        # NOTE: Avatar col removed temporarily
-COMMUNITY_DROPDOWN_MIN_COL_COUNT = 1                    # Member column is always visible
+# Avatar and profile columns are always visible
+# NOTE: Avatar col removed temporarily
+PROFILE_DROPDOWN_MIN_COL_COUNT = 1
+# Member column is always visible
+COMMUNITY_DROPDOWN_MIN_COL_COUNT = 1
 BOOTSTRAP_GRID_COL_COUNT = 12
 
 
