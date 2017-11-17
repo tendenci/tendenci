@@ -2,13 +2,16 @@ import os
 import simplejson as json
 import urllib2
 import mimetypes
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import (
-    HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError, JsonResponse, HttpResponseForbidden)
+    HttpResponseRedirect, HttpResponse, Http404, JsonResponse, HttpResponseForbidden)
 import simplejson
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
@@ -33,7 +36,6 @@ from tendenci.apps.perms.decorators import admin_required, is_enabled
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import (
     update_perms_and_save, has_perm, has_view_perm, get_query_filters)
-from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
@@ -624,12 +626,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
-    from django.db.models import Count
-    from datetime import date
-    from dateutil.relativedelta import relativedelta
-
     start_dt = date.today() + relativedelta(months=-2)
-    end_dt = date.today()
+    end_dt = datetime.now()
     file_type = 'all'
 
     form = form_class(
