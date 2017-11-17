@@ -311,11 +311,11 @@ def membership_default_import_upload(request,
                                      args=[memb_import.id]))
 
     # list of foreignkey fields
-    user_fks = [field.name for field in User._meta.fields \
+    user_fks = [field.name for field in User._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
-    profile_fks = [field.name for field in Profile._meta.fields \
+    profile_fks = [field.name for field in Profile._meta.fields
                    if isinstance(field, (ForeignKey, OneToOneField))]
-    memb_fks = [field.name for field in MembershipDefault._meta.fields \
+    memb_fks = [field.name for field in MembershipDefault._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
 
     fks = Set(user_fks + profile_fks + memb_fks)
@@ -563,7 +563,7 @@ def download_default_template(request):
 
     filename = "memberships_import_template.csv"
 
-    title_list = [field for field in MembershipDefault._meta.fields \
+    title_list = [field for field in MembershipDefault._meta.fields
                      if not field.__class__ == AutoField]
     title_list = [smart_str(field.name) for field in title_list]
     # adjust the order for some fields

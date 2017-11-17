@@ -521,12 +521,12 @@ class ImportUsers(object):
         self.uimport = uimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -744,8 +744,8 @@ class ImportUsers(object):
                 if any([
                         action == 'insert',
                         self.uimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
                         getattr(instance, field_name) is None
                         ]):
                     value = self.user_data[field_name]

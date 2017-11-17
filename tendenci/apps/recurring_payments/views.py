@@ -37,8 +37,8 @@ def view_account(request, recurring_payment_id, guid=None,
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
 
     # only admin or user self can access this page
-    if not (request.user.is_authenticated() and \
-        (request.user.profile.is_superuser \
+    if not (request.user.is_authenticated() and
+        (request.user.profile.is_superuser
             or request.user.id == rp.user.id) or rp.guid == guid):
         raise Http403
 

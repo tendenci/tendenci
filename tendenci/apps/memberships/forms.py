@@ -501,8 +501,8 @@ def get_field_size(app_field_obj):
 def assign_fields(form, app_field_objs):
     form_field_keys = form.fields.keys()
     # a list of names of app fields
-    field_names = [field.field_name for field in app_field_objs \
-                   if field.field_name != '' and \
+    field_names = [field.field_name for field in app_field_objs
+                   if field.field_name != '' and
                    field.field_name in form_field_keys]
 
     for name in form_field_keys:
@@ -1705,8 +1705,8 @@ class MembershipDefaultForm(TendenciBaseForm):
                     cnt += 1
 
         # demographic fields - include only those selected on app
-        demographic_field_names = [field.name \
-                        for field in MembershipDemographic._meta.fields \
+        demographic_field_names = [field.name
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField']
         for field_name in demographic_field_names:
             if hasattr(self.fields, field_name):

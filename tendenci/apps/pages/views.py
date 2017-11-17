@@ -115,8 +115,8 @@ def search(request, template_name="pages/search.html"):
 
         else:
             pages = pages.filter(
-                Q(title__icontains=query) \
-                | Q(content__icontains=query) \
+                Q(title__icontains=query)
+                | Q(content__icontains=query)
                 | Q(slug__icontains=query))
             pages = pages.exclude(status_detail='archive')
 

@@ -112,8 +112,8 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
                            'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
         (_("Trial Period"), {'fields': ('has_trial_period',  'trial_amount',
                            'trial_period_start_dt',  'trial_period_end_dt',  ),
-                          'description': '*** Note that if the trial period overlaps with ' + \
-                          'the initial billing cycle start date, the trial period will end' + \
+                          'description': '*** Note that if the trial period overlaps with ' +
+                          'the initial billing cycle start date, the trial period will end' +
                           ' on the initial billing cycle start date.'}),
         (_('Other Options'), {'fields': ('status', 'status_detail',)}),
     )

@@ -186,10 +186,10 @@ class Command(BaseCommand):
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         forms = Form.objects.extra(select={
-            'submissions': "SELECT COUNT(*) " + \
-                           "FROM forms_formentry " + \
-                           "WHERE forms_formentry.form_id = " + \
-                               "forms_form.id AND " + \
+            'submissions': "SELECT COUNT(*) " +
+                           "FROM forms_formentry " +
+                           "WHERE forms_formentry.form_id = " +
+                               "forms_form.id AND " +
                                "forms_formentry.create_dt >= TIMESTAMP '%s'" % dt})
         forms = forms.order_by("-submissions")[:items]
         forms_list = []
@@ -324,10 +324,10 @@ class Command(BaseCommand):
 
         total = MembershipDefault.QS_ACTIVE().exclude(corp_profile_id=0).count()
         corp_memberships = CorpMembership.objects.filter(status_detail='active').extra(select={
-            'members': "SELECT COUNT(*) " + \
-                           "FROM memberships_membershipdefault " + \
-                           "WHERE memberships_membershipdefault.corp_profile_id = " + \
-                               "corporate_memberships_corpmembership.corp_profile_id AND " +\
+            'members': "SELECT COUNT(*) " +
+                           "FROM memberships_membershipdefault " +
+                           "WHERE memberships_membershipdefault.corp_profile_id = " +
+                               "corporate_memberships_corpmembership.corp_profile_id AND " +
                                "memberships_membershipdefault.status_detail = 'active'"}) \
                                 .order_by('-members')[:items].iterator()
 

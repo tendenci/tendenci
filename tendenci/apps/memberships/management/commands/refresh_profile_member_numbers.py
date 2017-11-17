@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
             if verbosity:
                 if member_number:
-                    print('profile(%d) has member number %s' % \
+                    print('profile(%d) has member number %s' %
                         (profile.pk, member_number))
                 else:
                     print('profile(%d) is not a member' % profile.pk)

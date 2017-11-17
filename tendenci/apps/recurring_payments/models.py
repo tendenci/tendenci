@@ -55,7 +55,7 @@ class RecurringPayment(models.Model):
                                         default='month')
     billing_frequency = models.IntegerField(default=1)
     billing_start_dt = models.DateTimeField(_("Initial billing cycle start date"),
-                                            help_text=_("The initial start date for the recurring payments."+\
+                                            help_text=_("The initial start date for the recurring payments."+
                                             "That is, the start date of the first billing cycle."))
     # num days after billing cycle end date to determine billing_dt or payment due date
     num_days = models.IntegerField(default=0)

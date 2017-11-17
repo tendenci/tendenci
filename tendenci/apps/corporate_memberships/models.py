@@ -612,7 +612,7 @@ class CorpMembership(TendenciBaseModel):
 
             for name, value in items.iteritems():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__() \
+                    items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
         return items
 
@@ -1294,15 +1294,15 @@ class CorpMembershipApp(TendenciBaseModel):
     authentication_method = models.CharField(_("Authentication Method"),
                                              choices=AUTH_METHOD_CHOICES,
                                     default='admin', max_length=50,
-                                    help_text=_('Define a method for ' + \
-                                    'individuals to be bound to their' + \
+                                    help_text=_('Define a method for ' +
+                                    'individuals to be bound to their' +
                                     ' corporate memberships when signing up.'))
     description = tinymce_models.HTMLField(_("Description"),
                                     blank=True, null=True,
-                                   help_text=_('Will display at the top of ' + \
+                                   help_text=_('Will display at the top of ' +
                                    'the application form.'))
     notes = models.TextField(_("Notes"), blank=True, null=True,
-                                   help_text=_('Notes for editor. ' + \
+                                   help_text=_('Notes for editor. ' +
                                    'Will not display on the application form.'))
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
@@ -1493,8 +1493,8 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                 FIELD_CHOICES]
-        corp_profile_fields = dict([(field.name, field) \
-                        for field in CorpProfile._meta.fields \
+        corp_profile_fields = dict([(field.name, field)
+                        for field in CorpProfile._meta.fields
                         if field.get_internal_type() != 'AutoField'])
         fld = None
         field_type = 'CharField'
@@ -1502,7 +1502,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         if field_name in corp_profile_fields:
             fld = corp_profile_fields[field_name]
         if not fld:
-            corp_memb_fields = dict([(field.name, field) \
+            corp_memb_fields = dict([(field.name, field)
                             for field in CorpMembership._meta.fields])
 
             if field_name in corp_memb_fields:

@@ -166,7 +166,7 @@ class RegistrationConfiguration(models.Model):
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
-    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
+    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " +
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
@@ -189,7 +189,7 @@ class RegistrationConfiguration(models.Model):
     # base email for reminder email
     email = models.ForeignKey(Email, null=True)
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
-    reminder_days = models.CharField(_('Specify when (? days before the event ' + \
+    reminder_days = models.CharField(_('Specify when (? days before the event ' +
                                        'starts) the reminder should be sent '),
                                      max_length=20,
                                      null=True, blank=True,
@@ -1469,7 +1469,7 @@ class CustomRegForm(models.Model):
         """
         Clone this custom registration form and associate it with the event if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_obj = self.__class__.objects.create(**params)
         # clone fiellds
@@ -1521,7 +1521,7 @@ class CustomRegField(OrderingBaseModel):
         """
         Clone this custom registration field, and associate it with the form if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
 

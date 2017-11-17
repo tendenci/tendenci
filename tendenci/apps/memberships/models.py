@@ -1812,7 +1812,7 @@ class MembershipDefault(TendenciBaseModel):
 
             for name, value in items.iteritems():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__() \
+                    items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
 
         return items
@@ -2345,7 +2345,7 @@ class MembershipApp(TendenciBaseModel):
     name = models.CharField(_("Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True,
-        help_text=_("Description of this application. " + \
+        help_text=_("Description of this application. " +
         "Displays at top of application."))
     confirmation_text = tinymce_models.HTMLField()
     notes = models.TextField(blank=True, default='')
@@ -2388,7 +2388,7 @@ class MembershipApp(TendenciBaseModel):
         """
         Clone this app.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
         params['name'] = 'Clone of %s' % params['name']
@@ -2475,7 +2475,7 @@ class MembershipAppField(OrderingBaseModel):
         """
         Clone this field.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
 
@@ -2529,8 +2529,8 @@ class MembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                  MembershipAppField.FIELD_TYPE_CHOICES]
-        user_fields = dict([(field.name, field) \
-                        for field in User._meta.fields \
+        user_fields = dict([(field.name, field)
+                        for field in User._meta.fields
                         if field.get_internal_type() != 'AutoField'])
         fld = None
         field_type = 'CharField'
@@ -2538,12 +2538,12 @@ class MembershipAppField(OrderingBaseModel):
         if field_name in user_fields:
             fld = user_fields[field_name]
         if not fld:
-            profile_fields = dict([(field.name, field) \
+            profile_fields = dict([(field.name, field)
                             for field in Profile._meta.fields])
             if field_name in profile_fields:
                 fld = profile_fields[field_name]
         if not fld:
-            membership_fields = dict([(field.name, field) \
+            membership_fields = dict([(field.name, field)
                             for field in MembershipDefault._meta.fields])
             if field_name in membership_fields:
                 fld = membership_fields[field_name]

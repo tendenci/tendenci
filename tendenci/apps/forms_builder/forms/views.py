@@ -399,8 +399,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             return response
         if request.user.is_superuser and not email_field:
             messages.add_message(request, messages.WARNING,
-                    'Please edit the form to include an email field ' + \
-                    'as it is required for setting up a recurring ' + \
+                    'Please edit the form to include an email field ' +
+                    'as it is required for setting up a recurring ' +
                     'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)

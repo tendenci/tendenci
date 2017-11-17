@@ -233,8 +233,8 @@ def get_field_size(app_field_obj):
 def assign_fields(form, app_field_objs, instance=None):
     form_field_keys = form.fields.keys()
     # a list of names of app fields
-    field_names = [field.field_name for field in app_field_objs \
-                   if field.field_name != '' and \
+    field_names = [field.field_name for field in app_field_objs
+                   if field.field_name != '' and
                    field.field_name in form_field_keys]
     for name in form_field_keys:
         if name not in field_names:
@@ -591,7 +591,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
 
         members_choices = get_indiv_memberships_choices(self.instance)
         self.fields['members'].choices = members_choices
-        self.fields['members'].label = _("Select the individual members you " + \
+        self.fields['members'].label = _("Select the individual members you " +
                                         "want to renew")
 
         #if not self.instance.corporate_membership_type.membership_type.renewal_price:

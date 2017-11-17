@@ -268,7 +268,7 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
-                        print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                        print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
                                 % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
                                    rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
                                    currency_symbol,
@@ -290,7 +290,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                         print('...Success.')
                     else:
                         rp.num_billing_cycle_failed += 1
-                        print('...Failed  - \n\t code - %s \n\t text - %s' \
+                        print('...Failed  - \n\t code - %s \n\t text - %s'
                                             % (payment_transaction.message_code,
                                                payment_transaction.message_text))
 

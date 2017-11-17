@@ -780,7 +780,7 @@ class UserUploadForm(forms.ModelForm):
         self.fields['key'].initial = 'email'
         # move the choices down here to fix the error
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
-        GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
+        GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in
                      Group.objects.filter(status=True, status_detail='active'
                                           ).exclude(type='membership')]
         self.fields['group_id'].choices = GROUP_CHOICES

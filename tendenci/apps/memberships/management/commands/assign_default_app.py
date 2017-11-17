@@ -45,7 +45,7 @@ class Command(BaseCommand):
         if errors:
             print('\nWARNING:')
             print(errors)
-            print('Please correct the issue(s) then ' + \
+            print('Please correct the issue(s) then ' +
                     'run this command "assign_default_app" again.\n')
             return
 

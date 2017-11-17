@@ -32,11 +32,11 @@ class CorpMembershipImportProcessor(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.corp_profile_fields = dict([(field.name, field) \
-                            for field in CorpProfile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.corp_profile_fields = dict([(field.name, field)
+                            for field in CorpProfile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['guid']])
-        self.corp_membership_fields = dict([(field.name, field) \
+        self.corp_membership_fields = dict([(field.name, field)
                             for field in CorpMembership._meta.fields \
                             # comment it out if you want to make id import possible
                             if field.get_internal_type() != 'AutoField' and \
@@ -348,8 +348,8 @@ class CorpMembershipImportProcessor(object):
                 if any([
                         action == 'insert',
                         self.mimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
                         getattr(instance, field_name) is None
                         ]):
                     value = self.cmemb_data[field_name]

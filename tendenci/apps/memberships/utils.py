@@ -130,8 +130,8 @@ def get_selected_demographic_fields(membership_app, forms):
     """
     Get the selected demographic fields for the app.
     """
-    demographic_field_dict = dict([(field.name, field) \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_dict = dict([(field.name, field)
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField'])
     demographic_field_names = demographic_field_dict.keys()
     app_fields = MembershipAppField.objects.filter(
@@ -156,8 +156,8 @@ def get_selected_demographic_field_names(membership_app=None):
     """
     if not membership_app:
         membership_app = MembershipApp.objects.current_app()
-    demographic_field_names = [field.name \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_names = [field.name
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField']
     app_field_names = MembershipAppField.objects.filter(
                                 membership_app=membership_app,
@@ -1046,16 +1046,16 @@ class ImportMembDefault(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
-        self.membershipdemographic_fields = dict([(field.name, field) \
-                            for field in MembershipDemographic._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.membershipdemographic_fields = dict([(field.name, field)
+                            for field in MembershipDemographic._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user']])
         self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
                                   'school2', 'major2', 'degree2', 'graduation_year2',
@@ -1063,9 +1063,9 @@ class ImportMembDefault(object):
                                   'school4', 'major4', 'degree4', 'graduation_year4',]
         self.should_handle_demographic = False
         self.should_handle_education = False
-        self.membership_fields = dict([(field.name, field) \
-                            for field in MembershipDefault._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.membership_fields = dict([(field.name, field)
+                            for field in MembershipDefault._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -1106,11 +1106,11 @@ class ImportMembDefault(object):
                     else:
                         self.membership_types_to_apps_map[
                                     mt_id][0].append(app.id)
-        [self.default_membership_type_id] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
-        [self.default_membership_type_id_for_corp_indiv] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id_for_corp_indiv] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
 
         apps = MembershipApp.objects.filter(
@@ -1664,8 +1664,8 @@ class ImportMembDefault(object):
                 if any([
                         action == 'insert',
                         self.mimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
                         getattr(instance, field_name) is None
                         ]):
                     value = self.memb_data[field_name]

@@ -69,20 +69,20 @@ class Email(TendenciBaseModel):
 
         if isinstance(self.recipient, basestring):
             recipient_list = self.recipient.split(',')
-            recipient_list = [recipient.strip() for recipient in recipient_list \
+            recipient_list = [recipient.strip() for recipient in recipient_list
                               if recipient.strip() != '']
         else:
             recipient_list = list(self.recipient)
         if isinstance(self.recipient_cc, basestring):
             recipient_cc_list = self.recipient_cc.split(',')
-            recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if \
+            recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if
                                   recipient_cc.strip() != '']
             recipient_list += recipient_cc_list
         else:
             recipient_list += list(self.recipient_cc)
         if isinstance(self.recipient_bcc, basestring):
             recipient_bcc_list = self.recipient_bcc.split(',')
-            recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if \
+            recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if
                                    recipient_bcc.strip() != '']
         else:
             recipient_bcc_list = list(self.recipient_bcc)

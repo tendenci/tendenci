@@ -1822,14 +1822,14 @@ class RegistrantForm(forms.Form):
 
         if price_requires_member:
             if not memberid:
-                raise forms.ValidationError(_("We don't detect you as a member. " + \
+                raise forms.ValidationError(_("We don't detect you as a member. " +
                                             "Please choose another price option. "))
         else:
             if memberid:
-                raise forms.ValidationError(_("You have entered a member id but " + \
-                                            "have selected an option that does not " + \
-                                            "require membership." + \
-                                            "Please either choose the member option " + \
+                raise forms.ValidationError(_("You have entered a member id but " +
+                                            "have selected an option that does not " +
+                                            "require membership." +
+                                            "Please either choose the member option " +
                                             "or remove your member id."))
 
         return memberid
@@ -2011,7 +2011,7 @@ class EmailForm(forms.ModelForm):
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
-        label=_('Message'), help_text=_('Available tokens: <br />' + \
+        label=_('Message'), help_text=_('Available tokens: <br />' +
         ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 
     class Meta:

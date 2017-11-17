@@ -14,7 +14,7 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type(
                     "corp_memb_added_user",
                     _("Corporate Membership Added User Notice"),
-                    _("A corporate membership has been added " + \
+                    _("A corporate membership has been added " +
                       "- notice to user."))
         notification.create_notice_type(
                     "corp_memb_edited",
@@ -27,7 +27,7 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type(
                     "corp_memb_renewed_user",
                     _("Corporate Membership Renewal User Notice"),
-                    _("A corporate membership has been renewed " + \
+                    _("A corporate membership has been renewed " +
                       "- notice to user."))
         notification.create_notice_type(
                     "corp_memb_join_approved",
