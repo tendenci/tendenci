@@ -21,7 +21,6 @@ from tendenci.apps.studygroups.models import StudyGroup, Officer, Position
 from tendenci.apps.studygroups.forms import StudyGroupForm, StudyGroupAdminForm, OfficerForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
-from tendenci.apps.event_logs.models import EventLog
 
 try:
     from tendenci.apps.notifications import models as notification

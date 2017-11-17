@@ -329,12 +329,12 @@ def generate_meta_keywords(value):
         while search_end < value_length:
             s = one_word_pattern.search(value, search_end)
             if s:
-                word = s.group(1)
+                one_word = s.group(1)
                 # remove the : from the word
-                if word[-1] == ':':
-                    word = word[:-1]
+                if one_word[-1] == ':':
+                    one_word = one_word[:-1]
 
-                one_words.append(word)
+                one_words.append(one_word)
                 search_end = s.end()
             else: break
 

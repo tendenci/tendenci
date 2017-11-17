@@ -691,7 +691,7 @@ def get_over_time_stats():
     """
     today = date.today()
     year = datetime(day=1, month=1, year=today.year)
-    times = [
+    time_ranges = [
         ("Last Month", months_back(1)),
         ("Last 3 Months", months_back(3)),
         ("Last 6 Months", months_back(6)),
@@ -701,8 +701,8 @@ def get_over_time_stats():
     ]
 
     stats = []
-    for time in times:
-        start_dt = time[1]
+    for time_range in time_rangess:
+        start_dt = time_range[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
                         status=True,
@@ -711,7 +711,7 @@ def get_over_time_stats():
                      ).distinct('user__id', 'membership_type__id')
         d['new'] = active_mems.filter(renewal=False).count()
         d['renewing'] = active_mems.filter(renewal=True).count()
-        d['time'] = time[0]
+        d['time'] = time_range[0]
         d['start_dt'] = start_dt
         stats.append(d)
 

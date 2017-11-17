@@ -1,7 +1,7 @@
 [flake8]
 ignore =
-  # Unused/undefined/redefined variables
-  F402,F811,F812,F821,F841,
+  # Unused/undefined variables
+  F821,F841,
   # Import issues
   E401,E402,F401,
   # Unnecessary lambdas

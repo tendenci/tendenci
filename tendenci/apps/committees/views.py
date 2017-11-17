@@ -22,7 +22,6 @@ from tendenci.apps.committees.models import Committee, Officer, Position
 from tendenci.apps.committees.forms import CommitteeForm, CommitteeAdminForm, OfficerForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
-from tendenci.apps.event_logs.models import EventLog
 
 try:
     from tendenci.apps.notifications import models as notification

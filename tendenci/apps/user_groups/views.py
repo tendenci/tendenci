@@ -37,7 +37,7 @@ from tendenci.apps.event_logs.utils import request_month_range, day_bars
 from tendenci.apps.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
-from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, MessageForm
+from tendenci.apps.user_groups.forms import MessageForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask

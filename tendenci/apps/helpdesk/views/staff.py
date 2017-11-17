@@ -385,7 +385,6 @@ def update_ticket(request, ticket_id, public=False):
 
     # We need to allow the 'ticket' and 'queue' contexts to be applied to the
     # comment.
-    from django.template import loader, Context
     context = safe_template_context(ticket)
     # this line sometimes creates problems if code is sent as a comment.
     # if comment contains some django code, like "why does {% if bla %} crash",

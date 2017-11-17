@@ -244,7 +244,6 @@ def encode_news(xml, offset=0):
 def encode_jobs(xml, offset=0):
     try:
         from tendenci.apps.jobs.models import Job
-        from tendenci.apps.jobs.models import Job
         jobs = Job.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Job)
         for job in jobs:

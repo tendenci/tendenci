@@ -1370,8 +1370,6 @@ class TicketCustomFieldValue(models.Model):
 
     class Meta:
         unique_together = ('ticket', 'field'),
-
-    class Meta:
         verbose_name = _('Ticket custom field value')
         verbose_name_plural = _('Ticket custom field values')
 

@@ -1123,11 +1123,11 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                                master_user.username,
                                                master_user.id),
                                 ', '.join(['%s %s (%s)(id=%d)' % (
-                                profile.user.first_name,
-                                profile.user.last_name,
-                                profile.user.username,
-                                profile.user.id
-                                ) for profile in users if profile != master]))
+                                user_profile.user.first_name,
+                                user_profile.user.last_name,
+                                user_profile.user.username,
+                                user_profile.user.id
+                                ) for user_profile in users if user_profile != master]))
 
                 related = master_user._meta.get_fields()
                 field_names = [field.name for field in master._meta.get_fields()]

@@ -353,7 +353,6 @@ def api_rp_setup(data):
         username
         result_code
     """
-    from decimal import Decimal
     from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
@@ -553,7 +552,6 @@ def api_add_rp(data):
                       'trial_period_end_dt',
                       'trial_amount',
                       )
-    from decimal import Decimal
     from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
