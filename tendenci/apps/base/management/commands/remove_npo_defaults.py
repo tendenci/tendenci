@@ -7,7 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldError
 
 
@@ -58,7 +57,6 @@ class Command(BaseCommand):
             if module is None or module == core:
                 modules_list.append( "tendenci.apps.%s.models" % core )
 
-
         contenttypes = ContentType.objects.all()
 
         for module in modules_list:
@@ -96,5 +94,3 @@ class Command(BaseCommand):
                     import sys, traceback
                     traceback.print_exc(file=sys.stdout)
                     pass
-
-

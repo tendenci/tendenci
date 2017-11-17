@@ -72,7 +72,6 @@ def user_add_remove_admin_auth_group(user, auth_group=None):
                 auth_group_name = 'Admin'
             auth_group = get_admin_auth_group(name=auth_group_name)
 
-
         if not user.id: # new user
             user.groups = [auth_group]
             user.save()
@@ -445,7 +444,6 @@ def check_missing_fields(user_data, key, **kwargs):
     return is_valid, missing_field_msg
 
 
-
 def get_user_by_email(email):
     """
     Get user by email address.
@@ -474,7 +472,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     """
     Get user by first name, last name and phone.
     """
-    if not any ([first_name, last_name, phone]):
+    if not any([first_name, last_name, phone]):
         return None
 
     profiles = Profile.objects.filter(
@@ -485,7 +483,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_superuser',
                     '-user__is_staff')
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 def get_user_by_fn_ln_company(first_name, last_name, company):
@@ -504,7 +502,7 @@ def get_user_by_fn_ln_company(first_name, last_name, company):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -523,12 +521,12 @@ class ImportUsers(object):
         self.uimport = uimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -544,7 +542,6 @@ class ImportUsers(object):
             [self.uimport.group] = Group.objects.filter(id=self.uimport.group_id)[:1] or [None]
         else:
             self.uimport.group = None
-
 
     def init_summary(self):
         return {
@@ -619,7 +616,6 @@ class ImportUsers(object):
                                    self.user_data['company'])
             elif self.key == 'username':
                 users = User.objects.filter(username__iexact=self.user_data['username'])
-
 
             if users:
                 user_display['action'] = 'update'
@@ -732,7 +728,6 @@ class ImportUsers(object):
                       'owner_username': self.request_user.username}
                 self.uimport.group.add_user(user, **params)
 
-
     def assign_import_values_from_dict(self, instance, action):
         """
         Assign the import value from a dictionary object
@@ -749,8 +744,8 @@ class ImportUsers(object):
                 if any([
                         action == 'insert',
                         self.uimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
                         getattr(instance, field_name) is None
                         ]):
                     value = self.user_data[field_name]

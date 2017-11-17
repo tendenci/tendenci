@@ -43,6 +43,6 @@ $(function () {
         //acceptFileTypes: /(\.|\/)({{ accept_file_types }})$/i
         acceptFileTypes: /(\.)({{ accept_file_types }})$/i
     });
-    
+
 
 });

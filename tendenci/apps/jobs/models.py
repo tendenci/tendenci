@@ -37,11 +37,11 @@ class Category(models.Model):
         return self.name
 #         full_path = [self.name]
 #         p = self.parent
-# 
+#
 #         while p is not None:
 #             full_path.append(p.name)
 #             p = p.parent
-# 
+#
 #         return ' -> '.join(full_path[::-1])
 
 
@@ -103,7 +103,7 @@ class BaseJob(TendenciBaseModel):
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
-    
+
     cat = models.ForeignKey(Category, verbose_name=_("Category"),
                                  related_name="job_cat", null=True, on_delete=models.SET_NULL)
     sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),

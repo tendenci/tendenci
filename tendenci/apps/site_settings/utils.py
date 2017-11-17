@@ -18,7 +18,7 @@ def get_setting_key(items=[]):
 
     key = ('.'.join([d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY] + items)).replace(' ', '')
     return key
-    
+
 
 def delete_all_settings_cache():
     key = get_setting_key(['all'])
@@ -234,4 +234,3 @@ def get_group_list(user):
         choices.append((group.pk, group.name))
 
     return choices, initial_group.id
-

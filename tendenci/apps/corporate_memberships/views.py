@@ -39,16 +39,17 @@ from tendenci.apps.perms.decorators import is_enabled
 
 
 from tendenci.apps.corporate_memberships.models import (
-                                            CorpMembershipApp,
-                                            CorpMembershipRep,
-                                            CorpMembership,
-                                            CorpProfile,
-                                            IndivMembershipRenewEntry,
-                                            CorpMembershipAppField,
-                                            CorpMembershipImport,
-                                            CorpMembershipImportData,
-                                          CorporateMembershipType,
-                                          Creator)
+                                         CorpMembershipApp,
+                                         CorpMembershipRep,
+                                         CorpMembership,
+                                         CorpProfile,
+                                         IndivMembershipRenewEntry,
+                                         CorpMembershipAppField,
+                                         CorpMembershipImport,
+                                         CorpMembershipImportData,
+                                         CorporateMembershipType,
+                                         Creator,
+                                         )
 from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipForm,
                                          CorpMembershipUpgradeForm,
@@ -64,7 +65,7 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CorpApproveForm,
                                          )
 from tendenci.apps.corporate_memberships.utils import (
-                                        get_corporate_membership_type_choices,
+                                         get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
@@ -73,7 +74,8 @@ from tendenci.apps.corporate_memberships.utils import (
                                          corp_memb_inv_add,
                                          dues_rep_emails_list,
                                          get_over_time_stats,
-                                         get_summary)
+                                         get_summary,
+                                         )
 from tendenci.apps.corporate_memberships.import_processor import CorpMembershipImportProcessor
 #from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.models import MembershipDefault
@@ -706,7 +708,6 @@ def corpmembership_search(request, my_corps_only=False,
                                                 my_corps_only=my_corps_only)
         corp_members = corp_members.exclude(status_detail='archive').order_by('corp_profile__name')
 
-
     if not corp_members.exists():
         del search_form.fields['cp_id']
     else:
@@ -1110,7 +1111,6 @@ def corp_renew(request, id,
                 summary_data['individual_count'] = summary_data['membership_cap']
                 summary_data['above_cap_individual_count'] = summary_data['total_individual_count'] - summary_data['membership_cap']
 
-
     summary_data['individual_total'] = summary_data['individual_count'
                                         ] * summary_data['individual_price']
     summary_data['above_cap_individual_total'] = summary_data['above_cap_individual_count'
@@ -1301,9 +1301,9 @@ def import_upload(request,
                                     ).exists()
 
     # list of foreignkey fields
-    corp_profile_fks = [field.name for field in CorpProfile._meta.fields \
+    corp_profile_fks = [field.name for field in CorpProfile._meta.fields
                    if isinstance(field, (ForeignKey, OneToOneField))]
-    corp_memb_fks = [field.name for field in CorpMembership._meta.fields \
+    corp_memb_fks = [field.name for field in CorpMembership._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
 
     fks = Set(corp_profile_fks + corp_memb_fks)
@@ -1522,13 +1522,13 @@ def download_template(request):
         raise Http403
 
     filename = "corp_memberships_import_template.csv"
-    base_field_list = [smart_str(field.name) for field \
-                       in TendenciBaseModel._meta.fields \
+    base_field_list = [smart_str(field.name) for field
+                       in TendenciBaseModel._meta.fields
                      if not field.__class__ == AutoField]
-    corp_profile_field_list = [smart_str(field.name) for field \
-                       in CorpProfile._meta.fields \
+    corp_profile_field_list = [smart_str(field.name) for field
+                       in CorpProfile._meta.fields
                      if not field.__class__ == AutoField]
-    corp_profile_field_list = [name for name in corp_profile_field_list \
+    corp_profile_field_list = [name for name in corp_profile_field_list
                                if name not in base_field_list]
     corp_profile_field_list.remove('guid')
     corp_profile_field_list.extend(['dues_rep', 'authorized_domains'])
@@ -1536,10 +1536,10 @@ def download_template(request):
     corp_profile_field_list.remove('name')
     corp_profile_field_list.insert(0, 'company_name')
 
-    corp_memb_field_list = [smart_str(field.name) for field \
-                       in CorpMembership._meta.fields \
+    corp_memb_field_list = [smart_str(field.name) for field
+                       in CorpMembership._meta.fields
                      if not field.__class__ == AutoField]
-    corp_memb_field_list = [name for name in corp_memb_field_list \
+    corp_memb_field_list = [name for name in corp_memb_field_list
                                if name not in base_field_list]
     corp_memb_field_list.remove('guid')
     corp_memb_field_list.remove('corp_profile')
@@ -1566,21 +1566,21 @@ def corpmembership_export(request,
     form = CorpExportForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            base_field_list = [smart_str(field.name) for field \
-                               in TendenciBaseModel._meta.fields \
+            base_field_list = [smart_str(field.name) for field
+                               in TendenciBaseModel._meta.fields
                              if not field.__class__ == AutoField]
-            corp_profile_field_list = [smart_str(field.name) for field \
-                               in CorpProfile._meta.fields \
+            corp_profile_field_list = [smart_str(field.name) for field
+                               in CorpProfile._meta.fields
                              if not field.__class__ == AutoField]
-            corp_profile_field_list = [name for name in corp_profile_field_list \
+            corp_profile_field_list = [name for name in corp_profile_field_list
                                        if name not in base_field_list]
             corp_profile_field_list.remove('guid')
             corp_profile_field_list.append('dues_rep')
             corp_profile_field_list.append('member_rep')
             corp_profile_field_list.append('authorized_domains')
-            corp_memb_field_list = [smart_str(field.name) for field \
-                               in CorpMembership._meta.fields]
-                             #if not field.__class__ == AutoField]
+            corp_memb_field_list = [smart_str(field.name) for field
+                                    in CorpMembership._meta.fields]
+            #                        if not field.__class__ == AutoField]
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
             corp_memb_field_list.remove('anonymous_creator')
@@ -1588,9 +1588,9 @@ def corpmembership_export(request,
             title_list = corp_profile_field_list + corp_memb_field_list
 
             # list of foreignkey fields
-            corp_profile_fks = [field.name for field in CorpProfile._meta.fields \
+            corp_profile_fks = [field.name for field in CorpProfile._meta.fields
                            if isinstance(field, (ForeignKey, OneToOneField))]
-            corp_memb_fks = [field.name for field in CorpMembership._meta.fields \
+            corp_memb_fks = [field.name for field in CorpMembership._meta.fields
                         if isinstance(field, (ForeignKey, OneToOneField))]
 
             fks = Set(corp_profile_fks + corp_memb_fks)
@@ -1678,9 +1678,9 @@ def corp_reps_lookup(request):
         # they don't have search index, probably just check username only
         # for the performance sake
         profiles = Profile.objects.filter(
-                                 Q(user__first_name__istartswith=q) \
-                               | Q(user__last_name__istartswith=q) \
-                               | Q(user__username__istartswith=q) \
+                                 Q(user__first_name__istartswith=q)
+                               | Q(user__last_name__istartswith=q)
+                               | Q(user__username__istartswith=q)
                                | Q(user__email__istartswith=q))
         profiles = profiles.order_by('user__last_name')
 

@@ -31,9 +31,9 @@
     <th>{% trans "Expire Date" %}</th>
     <th>{% trans "Status" %}</th>
   </tr>
-  
+
   {% for membership in memberships %}
-  
+
   {% if membership.is_active %}
   <tr>
     {% elif membership.is_pending %}
@@ -56,16 +56,16 @@
         </tr>
         {% endfor %}
       </table>
-        
+
         {% endblock content %}
-        
+
         {% block extra_body %}
         {{ block.super }}
         <script src="{{ STATIC_URL}}js/bootstrap-datepicker.js"></script>
         <script type="text/javascript">
           var nowTemp = new Date();
           var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
-          
+
           var checkin = $('#id_start_date').datepicker(
           ).on('changeDate', function(ev) {
           if (ev.date.valueOf() > checkout.date.valueOf()) {
@@ -76,7 +76,7 @@
           checkin.hide();
           $('#id_end_date')[0].focus();
           }).data('datepicker');
-          
+
           var checkout = $('#id_end_date').datepicker({
           onRender: function(date) {
           return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
@@ -84,9 +84,9 @@
           }).on('changeDate', function(ev) {
           checkout.hide();
           }).data('datepicker');
-          
+
           </script>
-          
+
           <script type="text/javascript">
             $('#reportrange').daterangepicker(
             {
@@ -104,7 +104,5 @@
             }
             );
           </script>
-          
+
           {% endblock %}
-          
-          

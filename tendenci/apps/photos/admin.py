@@ -31,7 +31,7 @@ class PhotoAdmin(admin.ModelAdmin):
     )
     form = PhotoSetAddForm
     ordering = ['position']
-    
+
     class Media:
         css = {
             "all": ("css/websymbols.css",)
@@ -41,7 +41,6 @@ class PhotoAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             'js/admin/admin-list-reorder.js',
         )
-
 
     def log_deletion(self, request, object, object_repr):
         super(PhotoAdmin, self).log_deletion(request, object, object_repr)

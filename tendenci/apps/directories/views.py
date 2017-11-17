@@ -229,7 +229,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
     if not has_perm(request.user,'directories.change_directory', directory):
         raise Http403
-    
+
     if request.user.is_superuser:
         if not directory.activation_dt:
             # auto-populate activation_dt
@@ -259,7 +259,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
-
 
     return render_to_response(template_name, {'directory': directory, 'form':form},
         context_instance=RequestContext(request))
@@ -588,7 +587,6 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))
 
-
     return render_to_response(template_name, {'directory':directory, 'form':form},
         context_instance=RequestContext(request))
 
@@ -665,4 +663,3 @@ def directory_export_download(request, identifier):
     response['Content-Disposition'] = 'attachment; filename="directory_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
-

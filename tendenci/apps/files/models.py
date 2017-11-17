@@ -107,7 +107,6 @@ class File(TendenciBaseModel):
 
         return False
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])
@@ -299,7 +298,7 @@ class File(TendenciBaseModel):
             return im.size
         except Exception:
             return (0, 0)
-        
+
     def get_size(self):
         try:
             return self.file.size

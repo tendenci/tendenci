@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.site_settings.crypt import encrypt, decrypt

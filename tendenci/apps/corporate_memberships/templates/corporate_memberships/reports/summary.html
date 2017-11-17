@@ -68,7 +68,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-    
+
      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
@@ -79,7 +79,7 @@
 	    	          title: 'By Status',
 	    	          colors: ['#1c91c0', '#e49307', '#DC3912']
 	    	        };
-	    	  
+	    	
 	        var status_data = google.visualization.arrayToDataTable([
 	          ['{% trans 'Status' %}', '{% trans 'Count' %}'],
 	          ['{% trans 'Active' %}',  {{ total.total_active  }}],
@@ -89,7 +89,7 @@
 	
 	        var chart = new google.visualization.PieChart(document.getElementById('chart_bystatus_div'));
 	        chart.draw(status_data, options);
-	        
+	
 	        options = {
 	    	          title: 'By Corporate Membership Type'
 	    	        };
@@ -102,8 +102,8 @@
    	
    	        var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
    	        chart.draw(type_data, options);
-	        
-    	  
+	
+    	
     	  var data = google.visualization.arrayToDataTable([
            ['{% trans 'Corp. Membership Type' %}',
            '{% trans 'Active' %}', '{% trans 'Pending' %}',
@@ -128,9 +128,9 @@
 
         chart = new google.visualization.ColumnChart(document.getElementById('chart_summary_div'));
         chart.draw(data, options);
-    
+
       }
-      
-  </script>  
+
+  </script>
 
 {% endblock extra_body %}

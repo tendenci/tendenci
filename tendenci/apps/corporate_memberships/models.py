@@ -134,7 +134,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                           blank=True,
                                           null=True,
                                           help_text=_('Price for members who join above cap.'))
-                                
+
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
@@ -243,8 +243,7 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
-    
-    
+
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
             self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
@@ -308,7 +307,7 @@ class CorpProfile(TendenciBaseModel):
             if rep.user.id == this_user.id:
                 return True
         return False
-    
+
     def get_logo_url(self):
         if not self.logo:
             return u''
@@ -552,7 +551,6 @@ class CorpMembership(TendenciBaseModel):
                                               ])
         return choices
 
-
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
@@ -614,7 +612,7 @@ class CorpMembership(TendenciBaseModel):
 
             for name, value in items.iteritems():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__() \
+                    items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
         return items
 
@@ -868,7 +866,7 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.save()
                 # archive old memberships
                 new_membership.archive_old_memberships()
-                
+
                 # show member_number on profile
                 new_membership.profile_refresh_member_number()
 
@@ -1095,7 +1093,7 @@ class CorpMembership(TendenciBaseModel):
             typical corporate membership emails.
         Returns outcome via boolean.
         """
-        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True) | (Q(is_member_rep=True)))
 
         return Notice.send_notice(
             request=request,
@@ -1136,7 +1134,7 @@ class CorpMembership(TendenciBaseModel):
     @property
     def is_archive(self):
         return self.status_detail.lower() in ('archive',)
-    
+
     def get_latest_renewed(self):
         """
         Get the latest renewed corpMembership.
@@ -1148,7 +1146,7 @@ class CorpMembership(TendenciBaseModel):
                                     status_detail='active'
                                     ).order_by('-expiration_dt')[:1] or [None]
             return latest_renewed
-            
+
         return None
 
     @property
@@ -1207,7 +1205,7 @@ class CorpMembership(TendenciBaseModel):
         apply_cap, cap,  = self.get_cap_info()[:2]
 
         return apply_cap and self.members_count - num_exclude >= cap
-    
+
     def get_above_cap_price(self, num_exclude=0):
         """
         get the above cap price for individual memberships.
@@ -1238,7 +1236,7 @@ class CorpMembership(TendenciBaseModel):
                          'roster_link': "%s?cm_id=%s" % (reverse('corpmembership.roster_search'), self.id),
                          'upgrade_link': reverse('corpmembership.upgrade', args=[self.id])}
         membership_recipients = get_setting('module', 'memberships', 'membershiprecipients')
-        
+
         if reps:
             email_context['to_reps'] =  True
             subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
@@ -1252,7 +1250,7 @@ class CorpMembership(TendenciBaseModel):
             email.content_type = 'html'
             email.send()
             email_sent_to_reps = True
-        
+
         # email to site admins
         if membership_recipients:
             email_context['to_reps'] =  False
@@ -1265,7 +1263,7 @@ class CorpMembership(TendenciBaseModel):
             email.recipient = membership_recipients
             email.content_type = 'html'
             email.send()
-        
+
         return email_sent_to_reps
 
 
@@ -1278,7 +1276,7 @@ class FreePassesStat(TendenciBaseModel):
 
     class Meta:
         app_label = 'corporate_memberships'
- 
+
     def set_creator_owner(self, request_user):
         if request_user and not request_user.is_anonymous():
             self.creator = request_user
@@ -1296,15 +1294,15 @@ class CorpMembershipApp(TendenciBaseModel):
     authentication_method = models.CharField(_("Authentication Method"),
                                              choices=AUTH_METHOD_CHOICES,
                                     default='admin', max_length=50,
-                                    help_text=_('Define a method for ' + \
-                                    'individuals to be bound to their' + \
+                                    help_text=_('Define a method for ' +
+                                    'individuals to be bound to their' +
                                     ' corporate memberships when signing up.'))
     description = tinymce_models.HTMLField(_("Description"),
                                     blank=True, null=True,
-                                   help_text=_('Will display at the top of ' + \
+                                   help_text=_('Will display at the top of ' +
                                    'the application form.'))
     notes = models.TextField(_("Notes"), blank=True, null=True,
-                                   help_text=_('Notes for editor. ' + \
+                                   help_text=_('Notes for editor. ' +
                                    'Will not display on the application form.'))
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
@@ -1495,8 +1493,8 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                 FIELD_CHOICES]
-        corp_profile_fields = dict([(field.name, field) \
-                        for field in CorpProfile._meta.fields \
+        corp_profile_fields = dict([(field.name, field)
+                        for field in CorpProfile._meta.fields
                         if field.get_internal_type() != 'AutoField'])
         fld = None
         field_type = 'CharField'
@@ -1504,7 +1502,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         if field_name in corp_profile_fields:
             fld = corp_profile_fields[field_name]
         if not fld:
-            corp_memb_fields = dict([(field.name, field) \
+            corp_memb_fields = dict([(field.name, field)
                             for field in CorpMembership._meta.fields])
 
             if field_name in corp_memb_fields:

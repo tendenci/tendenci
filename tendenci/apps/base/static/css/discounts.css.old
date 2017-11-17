@@ -74,7 +74,7 @@
 	display: none; /* todo: port-over dropdown js */
 }
 
-/* discount Search table 
+/* discount Search table
  ------------------------- */
 
 table#discounts { width: 100%}

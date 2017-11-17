@@ -6,7 +6,7 @@ from tendenci.apps.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_
 
 class BillingDateSelectInput(forms.TextInput):
     def render(self, name, value, attrs=None):
-        return mark_safe('%s day(s) after billing cycle end date' \
+        return mark_safe('%s day(s) after billing cycle end date'
                          % super(BillingDateSelectInput, self).render(name, value, attrs))
 
 

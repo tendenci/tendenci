@@ -219,8 +219,7 @@ class Newsletter(models.Model):
             return content
 
         return ''
-    
-    
+
     def clone(self):
         """
         Clone this newsletter and return the cloned newsletter.
@@ -248,7 +247,7 @@ class Newsletter(models.Model):
         newsletter_new.date_created = datetime.datetime.now()
         newsletter_new.subject = '(Cloned) {}'.format(self.subject)
         newsletter_new.actionname = newsletter_new.subject
-        
+
         # copy email - don't link the cloned newsletter to the same email
         if self.email:
             email_ignore_fields = [
@@ -263,14 +262,12 @@ class Newsletter(models.Model):
                 if hasattr(self.email, name):
                     setattr(email_new, name, getattr(self.email, name))
             email_new.save()
-            
+
             newsletter_new.email = email_new
-            
+
         newsletter_new.save()
-        
+
         return newsletter_new
-        
-        
 
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
@@ -282,7 +279,7 @@ class Newsletter(models.Model):
         if '[content]' in content:
             full_content = data.get('opening_text') + \
                            data.get('login_content')
-                            
+
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -305,10 +302,10 @@ class Newsletter(models.Model):
 
         if '[resumes]' in content:
             content = content.replace('[resumes]', data.get('resumes_content'))
-            
+
         if '[footer]' in content:
             content = content.replace('[footer]', data.get('footer_text'))
-            
+
         if '[unsubscribe]' in content:
             content = content.replace('[unsubscribe]', data.get('unsubscribe_text'))
 
@@ -472,8 +469,3 @@ class Newsletter(models.Model):
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
         return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
-
-
-
-
-

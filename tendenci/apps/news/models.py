@@ -174,7 +174,6 @@ class News(TendenciBaseModel):
             self.release_dt_local = self.release_dt
 
 
-
 class NewsImage(File):
     pass
 

@@ -1,6 +1,6 @@
-/* 
+/*
 Slugify - Glen Zangirolami
-usage: 
+usage:
 var slugit = new Slugify({
 	input_element : 'string',
 	slug_element : 'string',
@@ -43,7 +43,7 @@ Slugify.prototype.events = function() {
 	});
 
 	// the keyup is debatable - personally I didn't like it
-	//$(self.elements.input).keyup(function(){							  
+	//$(self.elements.input).keyup(function(){							
 	//		self.render_slug();
 	//});
 

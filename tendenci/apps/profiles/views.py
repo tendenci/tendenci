@@ -456,7 +456,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                     # remove them from auth_group if any
                     user_edit.groups = []
 
-
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False
 
@@ -514,8 +513,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
         context_instance=RequestContext(request))
 
 
-
-
 def delete(request, id, template_name="profiles/delete.html"):
     user = get_object_or_404(User, pk=id)
     try:
@@ -542,7 +539,6 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-
 
         return HttpResponseRedirect(reverse('profile.search'))
 
@@ -630,7 +626,6 @@ def password_change(request, id, template_name='registration/custom_password_cha
 def password_change_done(request, id, template_name='registration/custom_password_change_done.html'):
     user_edit = get_object_or_404(User, pk=id)
     return render_to_response(template_name, {'user_this': user_edit}, context_instance=RequestContext(request))
-
 
 
 ### REPORTS ###########################################################################
@@ -1128,11 +1123,11 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                                                master_user.username,
                                                master_user.id),
                                 ', '.join(['%s %s (%s)(id=%d)' % (
-                                profile.user.first_name,
-                                profile.user.last_name,
-                                profile.user.username,
-                                profile.user.id
-                                ) for profile in users if profile != master]))
+                                user_profile.user.first_name,
+                                user_profile.user.last_name,
+                                user_profile.user.username,
+                                user_profile.user.id
+                                ) for user_profile in users if user_profile != master]))
 
                 related = master_user._meta.get_fields()
                 field_names = [field.name for field in master._meta.get_fields()]
@@ -1225,7 +1220,6 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                         profile.delete()
                         user_to_delete.delete()
 
-
                 # log an event
                 EventLog.objects.log(description=description[:120])
                 #invalidate('profiles_profile')
@@ -1237,7 +1231,6 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         'form': form,
         'profiles': profiles,
     }, context_instance=RequestContext(request))
-
 
 
 @login_required

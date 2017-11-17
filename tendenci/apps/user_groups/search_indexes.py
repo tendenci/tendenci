@@ -15,5 +15,3 @@ class GroupIndex(TendenciBaseSearchIndex, indexes.Indexable):
     @classmethod
     def get_model(self):
         return Group
-
-

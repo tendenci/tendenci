@@ -37,7 +37,7 @@ from tendenci.apps.event_logs.utils import request_month_range, day_bars
 from tendenci.apps.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
-from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, MessageForm
+from tendenci.apps.user_groups.forms import MessageForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
@@ -134,7 +134,6 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         request=request,
         num_members=num_members)
 
-
     if request.method == 'POST' and form.is_valid():
 
         email = Email()
@@ -175,7 +174,6 @@ def message(request, group_slug, template_name='user_groups/message.html'):
 
     else:
         print('form errors', form.errors.items())
-
 
     return render(request, template_name, {
         'group': group,
@@ -1115,4 +1113,3 @@ def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key
         raise Http404
 
     return render(request, 'user_groups/newsletter_unsubscribe.html')
-

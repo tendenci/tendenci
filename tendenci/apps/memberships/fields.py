@@ -106,7 +106,7 @@ class MembershipTypeModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return obj.get_price_display(self.customer, self.corp_membership)
-    
+
     def to_python(self, value):
         if value in self.empty_values:
             return None

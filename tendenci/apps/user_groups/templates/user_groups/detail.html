@@ -32,7 +32,7 @@
             <ul>
             	{% if request.user.profile.is_superuser and count_members > 0 %}
                 <li><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
-                
+
                 <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
                 {% endif %}
 

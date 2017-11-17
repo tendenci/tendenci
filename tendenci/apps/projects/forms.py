@@ -47,9 +47,9 @@ class ProjectForm(TendenciBaseForm):
                 'status',
                 'status_detail',
         )
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    project_description = forms.CharField(required=False, 
+    project_description = forms.CharField(required=False,
         widget=TinyMCE(
             attrs={'style':'width:100%'},
             mce_attrs={
@@ -70,7 +70,7 @@ class ProjectForm(TendenciBaseForm):
                 'storme_app_label':u'projects',
                 'storme_model':Project._meta.model_name.lower()
             }))
-    
+
     def __init__(self, *args, **kwargs):
         super(ProjectForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
@@ -86,16 +86,16 @@ class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
         fields = ['title', 'photo_description', 'file']
-    
+
     def __init__(self, *args, **kwargs):
         super(PhotoForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("Photo")
-        
+
 class DocumentsForm(forms.ModelForm):
     class Meta:
         model = Documents
         fields = ['type', 'document_dt', 'other', 'file']
-    
+
     def __init__(self, *args, **kwargs):
         super(DocumentsForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("File")
@@ -104,7 +104,7 @@ class TeamMembersForm(forms.ModelForm):
     class Meta:
         model = TeamMembers
         fields = ['first_name', 'last_name', 'title', 'role', 'team_description', 'file']
-        
+
     def __init__(self, *args, **kwargs):
         super(TeamMembersForm, self).__init__(*args, **kwargs)
 

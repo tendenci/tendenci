@@ -17,7 +17,7 @@
     <div class="page-header">
       <h1>{% trans 'View Newsletter' %} - {% trans 'Status' %}: <span class="capitalize">{{ object.send_status }}</span></h1>
     </div>
-    
+
     <div>
       <div class="form-inline">
         <p>
@@ -25,7 +25,7 @@
         </p>
       </div>
     </div>
-    
+
     <div>
       <div>
         <div class="form-inline">
@@ -41,14 +41,14 @@
             <label>{% trans 'Newsletter Subject' %}:</label>&nbsp;&nbsp;{{ object.email.subject }}
           </p>
         </div>
-        
+
         <a class="btn btn-primary" href="{% url 'email.viewbody' object.email.pk %}">
           {% trans 'View Newsletter' %}
         </a>
         <a class="btn btn-warning" href="{% url 'email.edit' object.email.pk %}">
           {% trans 'Edit Newsletter Contents' %}
         </a>
-        
+
       </div>
     </div>
     <div>
@@ -70,7 +70,7 @@
       </div>
     </div>
     <div class='step-section cf'>
-      
+
       <div>
         <h3>
           {% trans 'Confirm acceptance of site policies and common sense.' %}
@@ -93,12 +93,12 @@
             </p>
           </div>
           {% endif %}
-          
+
         </p>
       </div>
     </div>
     <div class='step-section cf'>
-      
+
       <div class="step-contents">
         <p>
           {% trans 'Send Email' %}
@@ -147,7 +147,7 @@
               </div>
               </div>
                 {% endblock %}
-                
+
                 {% block extra_body %}
                 {{ block.super }}
                 <script type="text/javascript">
@@ -162,4 +162,3 @@
                   });
                 </script>
                 {% endblock %}
-                

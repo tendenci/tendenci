@@ -242,7 +242,6 @@ class ReliefAssessmentForm(BetterModelForm):
 
         return cleaned_data
 
-
     def save(self, *args, **kwargs):
         relief = super(ReliefAssessmentForm, self).save(commit=False)
 

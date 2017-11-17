@@ -145,4 +145,3 @@ def payment_history_display(request, invoice):
     return {'request':request,
             'invoice':invoice,
             'payments': payments}
-

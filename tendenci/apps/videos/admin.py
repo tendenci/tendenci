@@ -21,7 +21,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['name']}
     inlines = [VideoInline]
     ordering = ('position',)
-    
+
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
@@ -70,7 +70,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
             'js/admin/admin-list-reorder.js',
             'js/global/tinymce.event_handlers.js',
         )
-    
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(VideoAdmin, self).get_fieldsets(request, obj)
         if not obj or (obj and not obj.image):

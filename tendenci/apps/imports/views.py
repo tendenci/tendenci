@@ -137,17 +137,17 @@ def user_upload_subprocess(request, sid,
         content = fd.read()
         fd.close()
         recap_dict = cPickle.loads(content)
-        recap_dict.update({'users_list': recap_dict['users_list'] + \
+        recap_dict.update({'users_list': recap_dict['users_list'] +
                                         import_dict['users_list'],
-                           'invalid_list': recap_dict['invalid_list'] + \
+                           'invalid_list': recap_dict['invalid_list'] +
                                             invalid_list,
                            'total': import_dict['total'],
                            'total_done': import_dict['total_done'],
-                           'count_insert': recap_dict['count_insert'] + \
+                           'count_insert': recap_dict['count_insert'] +
                                             import_dict['count_insert'],
-                           'count_update': recap_dict['count_update'] + \
+                           'count_update': recap_dict['count_update'] +
                                             import_dict['count_update'],
-                           'count_invalid': recap_dict['count_invalid'] + \
+                           'count_invalid': recap_dict['count_invalid'] +
                                             import_dict['count_invalid']
                            })
         import_dict['count_invalid'] = recap_dict['count_invalid']

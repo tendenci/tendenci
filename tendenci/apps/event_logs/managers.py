@@ -82,16 +82,16 @@ class EventLogManager(Manager):
         Simple Example:
             from tendenci.apps.event_logs.models import EventLog
             EventLog.objects.log()
-        
+
         If you have a Tendenci Base Object, then use the following
-        
+
             EventLog.objects.log(instance=obj_local_var)
 
         """
         request, user, instance = None, None, None
-        
+
         stack = inspect.stack()
-        
+
         # If the request is not present in the kwargs, we try to find it
         # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14
         if 'request' in kwargs:
@@ -104,7 +104,6 @@ class EventLogManager(Manager):
             elif 'request' in inspect.getargvalues(stack[3][0]).locals:
                 request = inspect.getargvalues(stack[3][0]).locals['request']
 
-
         # If this eventlog is being triggered by something without a request, we
         # do not want to log it. This is usually some other form of logging
         # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
@@ -114,7 +113,7 @@ class EventLogManager(Manager):
         # skip if pingdom
         if 'pingdom.com' in request.META.get('HTTP_USER_AGENT', ''):
             return None
-        
+
         event_log = self.model()
 
         # Set the following fields to blank

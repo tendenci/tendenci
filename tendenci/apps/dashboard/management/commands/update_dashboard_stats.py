@@ -186,10 +186,10 @@ class Command(BaseCommand):
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         forms = Form.objects.extra(select={
-            'submissions': "SELECT COUNT(*) " + \
-                           "FROM forms_formentry " + \
-                           "WHERE forms_formentry.form_id = " + \
-                               "forms_form.id AND " + \
+            'submissions': "SELECT COUNT(*) " +
+                           "FROM forms_formentry " +
+                           "WHERE forms_formentry.form_id = " +
+                               "forms_form.id AND " +
                                "forms_formentry.create_dt >= TIMESTAMP '%s'" % dt})
         forms = forms.order_by("-submissions")[:items]
         forms_list = []
@@ -294,7 +294,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        corp_memberships = CorpMembership.objects.filter(active_qs|expired_qs)
+        corp_memberships = CorpMembership.objects.filter(active_qs | expired_qs)
         corp_memberships = corp_memberships.filter(expiration_dt__gte=dt, expiration_dt__lte=now)
         corp_memberships = corp_memberships.order_by("-expiration_dt")[:items]
         corp_mem_list = []
@@ -302,7 +302,6 @@ class Command(BaseCommand):
             corp_mem_list.append([corp_mem.corp_profile.name,
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
-
 
     def get_expiring_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
@@ -325,10 +324,10 @@ class Command(BaseCommand):
 
         total = MembershipDefault.QS_ACTIVE().exclude(corp_profile_id=0).count()
         corp_memberships = CorpMembership.objects.filter(status_detail='active').extra(select={
-            'members': "SELECT COUNT(*) " + \
-                           "FROM memberships_membershipdefault " + \
-                           "WHERE memberships_membershipdefault.corp_profile_id = " + \
-                               "corporate_memberships_corpmembership.corp_profile_id AND " +\
+            'members': "SELECT COUNT(*) " +
+                           "FROM memberships_membershipdefault " +
+                           "WHERE memberships_membershipdefault.corp_profile_id = " +
+                               "corporate_memberships_corpmembership.corp_profile_id AND " +
                                "memberships_membershipdefault.status_detail = 'active'"}) \
                                 .order_by('-members')[:items].iterator()
 
@@ -402,7 +401,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
+        memberships = MembershipDefault.objects.filter(active_qs | expired_qs)
         memberships = memberships.filter(expire_dt__gte=dt, expire_dt__lte=now)
         count = memberships.count()
         mem_list = [count]

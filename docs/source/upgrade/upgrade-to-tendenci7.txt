@@ -41,20 +41,20 @@ Replace:
     TEMPLATE_CONTEXT_PROCESSORS += (
         'django.core.context_processors.static',
         'tendenci.apps.base.context_processors.newrelic',)
-    
+
 With:
 ::
 
     TEMPLATES[0]['OPTIONS']['context_processors'] += (
         'django.core.context_processors.static',
         'tendenci.apps.base.context_processors.newrelic',)
- 
+
 Also, check your addons to make sure they are T7 compatible. If they are not, comment out these two lines.
 ::
 
     from tendenci.apps.registry.utils import update_addons
     INSTALLED_APPS = update_addons(INSTALLED_APPS, SITE_ADDONS_PATH)
-    
+
 
 **conf/local_settings.py**:
 
@@ -68,7 +68,7 @@ With:
 
     'autocommit': True,
 
-Remove: 
+Remove:
 ::
 
     TEMPLATE_CONTEXT_PROCESSORS = get_setting('TEMPLATE_CONTEXT_PROCESSORS')
@@ -118,7 +118,7 @@ Replace:
      ('^', include('studygroups.urls')),
      ('^', include('videos.urls')),
      ('^', include('testimonials.urls')),
-     
+
 
 With:
 ::
@@ -159,7 +159,7 @@ Step 4: Remove south and common addons modules from environment
     pip uninstall tendenci-videos
 
 
-.. Note:: 
+.. Note::
 
     For some reason, we were not able to make a clean install in docker containers. We ended up rebuilding the dist-packages.
     ::
@@ -178,7 +178,7 @@ Step 5: Install requirements
 
     pip install -r requirements.txt --upgrade
 
-.. Note:: 
+.. Note::
 
     If you encountered the error "bash: /usr/bin/pip: No such file or directory" or similar, please exit and re-enter the container then try again.
 
@@ -189,7 +189,7 @@ Step 5: Fake initials
 
     python manage.py fake_initials
 
-.. Note:: 
+.. Note::
 
     If you encountered the error "no module 'testimonials' is installed" or similar, please check if 'testimonials' is removed from `INSTALLED_APPS` in conf/local_settings.py.
 

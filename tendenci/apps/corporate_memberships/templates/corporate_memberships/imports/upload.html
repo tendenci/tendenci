@@ -126,7 +126,7 @@
 
         </div>
     </div>
-    
+
     </div>
 
     <div class="clear"></div>
@@ -157,7 +157,7 @@
         {% endif %}
 
         <div class="fields-block">
-        
+
         	{% if form.upload_file.errors %}
             <div class="error">
                 {% for error in form.upload_file.errors %}
@@ -167,7 +167,7 @@
             {% endif %}
 
              <div class="form-group">{{ form.upload_file }}</div>
-        
+
             {% if form.override.errors %}
             <div class="error">
                 {% for error in form.override.errors %}
@@ -175,7 +175,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
+
             <div class="form-group">
 			    <label for="id_override">{% trans 'Update' %}:</label>
 			      {{ form.override }}
@@ -202,7 +202,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
+
             <div class="checkbox">
             	<label>
 			    {{ form.bind_members }} {{ form.bind_members.label }}
@@ -218,4 +218,3 @@
 </div>
 </div>
 {% endblock %}
-

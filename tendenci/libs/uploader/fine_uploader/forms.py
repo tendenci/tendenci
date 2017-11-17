@@ -16,4 +16,3 @@ class UploadFileForm(forms.Form):
     qqpartbyteoffset = forms.IntegerField(required=False)
     qqtotalfilesize = forms.IntegerField(required=False)
     qqtotalparts = forms.IntegerField(required=False)
-

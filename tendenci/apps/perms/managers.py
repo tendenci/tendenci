@@ -497,7 +497,6 @@ class TendenciBaseManager(models.Manager):
 #                                            user__in=[user]).values_list('id', flat=True)
             group_perm_q = SQ(id__in=group_allowed_object_ids)
 
-
         filters = None
         if status_q or fields_ors_sq:
             if status_q and fields_ors_sq:
@@ -600,4 +599,3 @@ class TendenciBaseManager(models.Manager):
         but be sure to call this function first.
         """
         return super(TendenciBaseManager, self).get_queryset().filter(status=False)
-

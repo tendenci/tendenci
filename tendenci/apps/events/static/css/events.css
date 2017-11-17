@@ -115,14 +115,14 @@ form.search-form select {
 
 /*= Details View
  ------------------------- */
- 
+
  .t div.event-desc {
     margin-bottom: 10px;
     /* border-bottom: 1px solid #CCC; */
 }
 
 .spots-status{
-    color: #871B1B; 
+    color: #871B1B;
 }
  /* speaker and organizer */
 .t .speaker-wrap {
@@ -222,22 +222,22 @@ div.forms div.form-field div.id_fax .field input {
 }
 
 /* start_dt */
-div.forms div.form-field 
+div.forms div.form-field
 div.id_start_dt .field input {
     margin: 0 5px 0 0;
     width: 18%;
 }
-div.forms div.form-field 
+div.forms div.form-field
 div.id_start_dt .field input#id_start_dt_1 {
     width: 80px;
 }
 /* end_dt */
-div.forms div.form-field 
+div.forms div.form-field
 div.id_end_dt .field input {
     margin: 0 5px 0 0;
     width: 18%;
 }
-div.forms div.form-field 
+div.forms div.form-field
 div.id_end_dt .field input#id_end_dt_1 {
     width: 80px;
 }
@@ -407,7 +407,7 @@ div.type-wrap .type-item .associated-events li{
 }
 .item .field .mceLayout {
     /* WYSIWYG; .1 keeps border intact */
-    width: 100.1% !important; 
+    width: 100.1% !important;
 }
 .item .field-short input,
 .item .field-short select {
@@ -524,7 +524,7 @@ ul.errorlist {;
     display: block;
     text-decoration: none;
 }
-.event-wrap .vitals .register-btn a:active, 
+.event-wrap .vitals .register-btn a:active,
 .event-wrap .vitals .register-btn a:hover {
     background-color: #007F20;
 }
@@ -860,7 +860,7 @@ div.pricing-list-wrap {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    text-align: center;    
+    text-align: center;
 }
 
 input.registration-green-button {

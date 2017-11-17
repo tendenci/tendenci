@@ -1,7 +1,7 @@
 Upgrade 7.0 to 7.1
 ===================
 
-We've refactored tendenci by pulling the common addons into the core. As a result, 
+We've refactored tendenci by pulling the common addons into the core. As a result,
 T7.1 is not backwards compatible with T7.0. This guide helps you migrate from T7.0 to T7.1.
 
 Step 1: Update 2 files in conf/
@@ -9,7 +9,7 @@ Step 1: Update 2 files in conf/
 
   - conf/local_settings.py
   - conf/local_urls.py
-    
+
 
 **conf/local_settings.py**:
 
@@ -52,7 +52,7 @@ Replace:
      ('^', include('studygroups.urls')),
      ('^', include('videos.urls')),
      ('^', include('testimonials.urls')),
-     
+
 
 With:
 ::
@@ -94,7 +94,7 @@ Step 4: Install requirements
     pip install -r requirements.txt --upgrade
 
 
-.. Note:: 
+.. Note::
 
     If you encountered the error "no module 'testimonials' is installed" or similar, please check if 'testimonials' is removed from `INSTALLED_APPS` in conf/local_settings.py.
     If you encountered the error "bash: /usr/bin/pip: No such file or directory" or similar, please exit and re-enter the container.
@@ -121,14 +121,14 @@ If you hit any errors on the migrations while running deploy.py, swbug it from t
 Make a note of any of the migrations that are missing an "x" in the brackets. In this example for some reason the django migrations skipped the third migration in events.
 ::
 
-     events  
-      [X] 0001_initial  
-      [X] 0002_auto_20150804_1545  
-      [ ] 0003_registrant_salutation  
+     events
+      [X] 0001_initial
+      [X] 0002_auto_20150804_1545
+      [ ] 0003_registrant_salutation
 
 whccih was resolved by faking the third migration in events like this:
 ::
 
       python manage.py migrate events 0003 --fake
-    
+
 Of course realize that if your database structure is off and you fake that migratoin it won't update your database table and will probably cause NGINX to just deliver of 502 error without logging anything helpful.

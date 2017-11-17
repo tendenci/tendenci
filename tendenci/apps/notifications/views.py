@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.syndication.views import Feed
 
-from tendenci.apps.notifications.models import *
+from tendenci.apps.notifications.models import Notice, NoticeType, NoticeEmail, NOTICE_MEDIA, get_notification_setting
 from tendenci.apps.notifications.decorators import basic_auth_required, simple_basic_auth_callback
 from tendenci.apps.notifications.feeds import NoticeUserFeed
 

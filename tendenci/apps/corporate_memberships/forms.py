@@ -195,7 +195,6 @@ class CorpMembershipAppFieldAdminForm(forms.ModelForm):
                                     _("Select One from a list (Radio Buttons)")),)
                 self.fields['choices'].widget = forms.widgets.Select(
                                             choices=(('yesno', _('Yes/No')),))
-            
 
     def save(self, *args, **kwargs):
         self.instance = super(CorpMembershipAppFieldAdminForm, self).save(*args, **kwargs)
@@ -234,8 +233,8 @@ def get_field_size(app_field_obj):
 def assign_fields(form, app_field_objs, instance=None):
     form_field_keys = form.fields.keys()
     # a list of names of app fields
-    field_names = [field.field_name for field in app_field_objs \
-                   if field.field_name != '' and \
+    field_names = [field.field_name for field in app_field_objs
+                   if field.field_name != '' and
                    field.field_name in form_field_keys]
     for name in form_field_keys:
         if name not in field_names:
@@ -382,7 +381,7 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
             '.gif',
             '.png'
         )
-        
+
         logo_file = self.cleaned_data['logo_file']
         if logo_file:
             try:
@@ -434,11 +433,11 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
         if self.corpmembership_app.authentication_method == 'email':
             update_authorized_domains(self.instance,
                             self.cleaned_data['authorized_domain'])
-        
+
         content_type = ContentType.objects.get(
             app_label=self.instance._meta.app_label,
-            model=self.instance._meta.model_name) 
-        logo_file = self.cleaned_data.get('logo_file', None) 
+            model=self.instance._meta.model_name)
+        logo_file = self.cleaned_data.get('logo_file', None)
         if logo_file:
             file_object, created = File.objects.get_or_create(
                 file=logo_file,
@@ -456,8 +455,7 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
             File.objects.filter(
                         content_type=content_type,
                         object_id=self.instance.pk).delete()
-            
-            
+
         return self.instance
 
 
@@ -466,7 +464,7 @@ class CorpMembershipUpgradeForm(forms.ModelForm):
     class Meta:
         model = CorpMembership
         fields = ["corporate_membership_type"]
-        
+
     def __init__(self, *args, **kwargs):
         self.request_user = kwargs.pop('request_user')
         self.corpmembership_app = kwargs.pop('corpmembership_app')
@@ -593,7 +591,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
 
         members_choices = get_indiv_memberships_choices(self.instance)
         self.fields['members'].choices = members_choices
-        self.fields['members'].label = _("Select the individual members you " + \
+        self.fields['members'].label = _("Select the individual members you " +
                                         "want to renew")
 
         #if not self.instance.corporate_membership_type.membership_type.renewal_price:
@@ -607,7 +605,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
         self.fields['payment_method'].empty_label = None
         self.fields['payment_method'].initial = \
                 self.instance.payment_method
-                
+
     def clean(self):
         cleaned_data = super(CorpMembershipRenewForm, self).clean()
         cmt = cleaned_data['corporate_membership_type']
@@ -618,7 +616,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
                 if count_members > cmt.membership_cap:
                     raise forms.ValidationError(
                         _("You've selected {count} individual members, but the maximum allowed is {cap}.".format(count=count_members,  cap=cmt.membership_cap)) )
-        
+
         return cleaned_data
 
 

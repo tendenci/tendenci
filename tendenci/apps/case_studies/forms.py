@@ -35,7 +35,7 @@ class CaseStudyForm(TendenciBaseForm):
             self.fields['results'].widget.mce_attrs['app_instance_id'] = 0
 
     class Meta:
-        model = CaseStudy 
+        model = CaseStudy
         fields = (
             'client',
             'slug',
@@ -62,5 +62,3 @@ class FileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(FileForm, self).__init__(*args, **kwargs)
-
-    

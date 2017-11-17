@@ -10,8 +10,7 @@ def populate_release_dt(apps, schema_editor):
         if not video.release_dt:
             video.release_dt = video.create_dt
             video.save()
-    
-    
+
 
 class Migration(migrations.Migration):
 

@@ -109,7 +109,6 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
         payment.response_code = 0
         payment.response_reason_code = 0
 
-
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()

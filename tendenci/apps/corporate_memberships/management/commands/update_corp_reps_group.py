@@ -83,5 +83,3 @@ class Command(BaseCommand):
                 if verbosity >= 2:
                     print('Adding user "%s" to group' % user.username)
                 group.add_user(user)
-
-

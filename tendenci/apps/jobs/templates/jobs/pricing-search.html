@@ -21,7 +21,7 @@
         <div class="job-wrap-search">
 
             <h2><a href="{% url "job_pricing.view" jp.pk %}">{% if jp.get_title %}{{ jp.get_title }} - {% endif %}{% trans "Duration:" %} {{ jp.duration }}</a></h2>
-            
+
             <div>{% trans "Regular Price:" %} {{ jp.regular_price|format_currency }}</div>
             <div>{% trans "Premium Price:" %} {{ jp.premium_price|format_currency }}</div>
             <div>{% trans "Member Regular Price:" %} {{ jp.regular_price_member|format_currency }}</div>
@@ -33,7 +33,7 @@
             <div class="meta">
                 <div class="submitted">{% blocktrans with jp.create_dt|date:"long" as create_date and jp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
             </div>
-            
+
             <div class="options options-search text-right">
                 <div class="quick-options">
                     {% job_pricing_options request.user jp %}

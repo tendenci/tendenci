@@ -166,10 +166,10 @@ class ReliefAssessment(models.Model):
 
     def get_address(self):
         return "%s %s %s, %s %s %s" % (
-            self.address, 
-            self.address2, 
-            self.city, 
-            self.state, 
+            self.address,
+            self.address2,
+            self.city,
+            self.state,
             self.zipcode,
             self.country
         )

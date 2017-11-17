@@ -71,7 +71,7 @@
                                         <a href="{% url 'admin:projects_project_change' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_PROJECTS_LABEL trans "Project" %}</a>
                                     </span>
                                 </li>
-                               
+
                             {% endif %}
 
                             {% if can_delete_project and request.user.is_staff %}

@@ -18,7 +18,6 @@ class Command(BaseCommand):
     """
     help = 'Query the site settings for the value of one or more settings'
 
-
     def handle(self, *args, **options):
         params_list = args
         site_url_setting = Setting.objects.get(**{

@@ -22,7 +22,6 @@ class Command(BaseCommand):
         if 'verbosity' in options:
             verbosity = int(options['verbosity'])
 
-
         metrics = Metric.objects.filter(invoices__isnull=True)
         for metric in metrics:
             metric.invoices = self.get_invoices(metric.create_dt).count()

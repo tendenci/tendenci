@@ -128,7 +128,7 @@ class TinymceUploadForm(forms.ModelForm):
         model = File
         fields = (
             'file',)
-    
+
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
@@ -136,7 +136,7 @@ class TinymceUploadForm(forms.ModelForm):
             self.user = None
 
         super(TinymceUploadForm, self).__init__(*args, **kwargs)
-    
+
     def clean_file(self):
         data = self.cleaned_data.get('file')
         # file size check
@@ -147,7 +147,6 @@ class TinymceUploadForm(forms.ModelForm):
                                             'max_upload_size': filesizeformat(max_upload_size),
                                             'data_size': filesizeformat(data.size)})
         return data
-    
 
     def clean(self):
         # file type check

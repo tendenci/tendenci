@@ -23,5 +23,3 @@ class DiscountIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_num_of_uses(self, obj):
         return obj.num_of_uses()
-
-

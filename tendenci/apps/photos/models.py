@@ -740,12 +740,12 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             self.guid = str(uuid.uuid1())
 
         super(Image, self).save(*args, **kwargs)
-       # # clear the cache
-       # caching.instance_cache_clear(self, self.pk)
-       # caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
+        # clear the cache
+        #caching.instance_cache_clear(self, self.pk)
+        #caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
 
-       # # re-add instance to the cache
-       # caching.instance_cache_add(self, self.pk)
+        # re-add instance to the cache
+        #caching.instance_cache_add(self, self.pk)
 
         if not self.is_public_photo() or not self.is_public_photoset():
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE and hasattr(self.image, 'file'):
@@ -787,8 +787,6 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
-
-
 
     @models.permalink
     def get_absolute_url(self):

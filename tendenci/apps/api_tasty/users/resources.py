@@ -40,4 +40,3 @@ class UserResource(ModelResource):
             bundle.obj.set_password(password)
         bundle.obj.save()
         return bundle
-

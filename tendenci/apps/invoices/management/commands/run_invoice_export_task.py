@@ -10,7 +10,7 @@ class Command(BaseCommand):
         parser.add_argument('export_id', type=int)
         parser.add_argument('start_dt')
         parser.add_argument('end_dt')
-        
+
     def handle(self, *args, **options):
         from tendenci.apps.exports.models import Export
         from tendenci.apps.invoices.tasks import InvoiceExportTask

@@ -67,7 +67,7 @@
             {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
         </div>
 
-        
+
         {% if event.groups.count > 0 %}
 	        <div><strong>{% trans "Group(s):" %}</strong>
 	        {% for group in event.groups.all %}
@@ -75,7 +75,7 @@
 	        {% endfor %}
 	        </div>
         {% endif %}
-        
+
         {% with event.organizers as organizers %}
         {% if organizers %}
         <div><strong>{% trans "Organizer:" %}</strong>

@@ -16,4 +16,3 @@ class EntityRegistry(LogRegistry):
     }
 
 site.register(Entity, EntityRegistry)
-

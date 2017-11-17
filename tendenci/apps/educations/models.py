@@ -28,11 +28,11 @@ class Education(TendenciBaseModel):
                                   content_type_field="content_type")
 
     objects = EducationManager()
-    
+
     def __init__(self, *args, **kwargs):
         super(Education, self).__init__(*args, **kwargs)
         # Handle the case that degree can be a a multi select field on membership forms
-        # So make sure it shows as a string e.g. PHD, MS/MA rather than [u'PHD', u'MS/MA'], 
+        # So make sure it shows as a string e.g. PHD, MS/MA rather than [u'PHD', u'MS/MA'],
         if self.degree:
             try:
                 self.degree = ast.literal_eval(self.degree)
@@ -40,8 +40,6 @@ class Education(TendenciBaseModel):
                     self.degree = ', '.join(self.degree)
             except:
                 pass
-        
-        
 
     class Meta:
         permissions = (("view_education", _("Can view education")),)

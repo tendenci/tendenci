@@ -180,7 +180,7 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
-        
+
     def clean_group(self):
         data = self.cleaned_data
         group = data.get('group', None)
@@ -239,6 +239,3 @@ class MarketingStep2EmailFilterForm(forms.Form):
         queryset = queryset.filter(**query)
 
         return queryset
-
-
-

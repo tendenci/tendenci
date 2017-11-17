@@ -106,7 +106,7 @@ div.forms{
         	{% endif %}
         	<br />
         {% endif %}
-        
+
         {% if corp_profile.city or corp_profile.state or corp_profile.zip %}
         {% if corp_profile.city %}
             {{ corp_profile.city }}
@@ -212,7 +212,7 @@ div.forms{
            </div>
         <div style="clear: both"></div>
      </div>
-    
+
      <div class="form-field">
         <div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
           <div class="field-label{% if form.payment_method.field.required %} required{% endif %}">
@@ -230,8 +230,8 @@ div.forms{
        </div>
     </div>
    </div>
-   
-   
+
+
    <div id="summary-form-wrap" class="clearfix">
     <div id="summary-form-box" class="pull-right">
         <div id="summary-content">
@@ -295,7 +295,7 @@ div.forms{
         </div>
     </div>
 </div>
-   
+
 
     <div class="submit-btn-wrap pull-right">
         <input type="submit" value="{% trans 'Renew Now' %}" class="btn btn-primary" />
@@ -326,12 +326,12 @@ div.forms{
         var ind_price = parseFloat($("#ind-price").html());
         var ind_sub_total = parseFloat($("#ind-sub-total").html());
         var total_amount = parseFloat($("#total-amount").html());
-        
+
         var above_cap_ind_qty = parseInt($("#above-cap-ind-qty").html());
         var above_cap_ind_price = parseFloat($("#above-cap-ind-price").html());
         var above_cap_ind_sub_total = parseFloat($("#above-cap-ind-sub-total").html());
         $("#cap-error-msg").html("");
-        
+
     	
     	if (cap_obj && cap_obj.apply_cap === "True"){
     		if(memb.checked){
@@ -355,7 +355,7 @@ div.forms{
                         }
     				}
     			}
-                
+
             }else{
             	total_individual_count = total_individual_count - 1;
             	if (!isNaN(above_cap_ind_qty) && above_cap_ind_qty > 0){
@@ -371,7 +371,7 @@ div.forms{
                         total_amount = parseFloat(total_amount) - parseFloat(ind_price);
                     }
             	}
-                
+
             }
     		
     	}else{
@@ -400,11 +400,11 @@ div.forms{
         $("#above-cap-ind-qty")
         $("#above-cap-ind-qty").html(above_cap_ind_qty);
     	$("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
-        
+
     	$("#ind-qty").data('total_individual_count', total_individual_count);
     }
 
-    
+
     function TypeUpdateSummary(corp_type){
         var corp_price = $("#corp-price").html();
         var ind_qty = $("#ind-qty").html();
@@ -415,13 +415,13 @@ div.forms{
         //var total_amount = $("#total-amount").html();
         var above_cap_ind_sub_total = 0;
         var total_amount = 0;
-        
+
         var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
-        
+
         if (cap_obj.apply_cap === "True"){
         	var above_cap_ind_qty;
-        } 
-        
+        }
+
 		//console.log(cap_obj);
 		//console.log(cap_obj.apply_cap);
 		//console.log(cap_obj.membership_cap);
@@ -519,7 +519,7 @@ div.forms{
                     IndUpdateSummary(this);
                 }
             });
-            
+
             if(checked_status){
             	$("#id_members").hide();
             }else{
@@ -536,13 +536,13 @@ div.forms{
         {
             TypeUpdateSummary(this);
         });
-        
+
         {% if summary_data.apply_cap and summary_data.allow_above_cap %}
         $("#above-cap-ind").show();
         {% else %}
         $("#above-cap-ind").hide();
         {% endif %}
-        
+
 
     });
 

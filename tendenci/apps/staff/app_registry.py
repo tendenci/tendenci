@@ -10,7 +10,7 @@ class StaffRegistry(AppRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create staff biographies easily with photo,' \
                   ' position, tagline and more ..'
-                  
+
     event_logs = {
         'staff':{
             'base':('1080000','EE7733'),

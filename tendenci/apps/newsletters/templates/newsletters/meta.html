@@ -3,23 +3,23 @@
 {% load base_filters %}
 
 
-<ul class="list-unstyled t-meta-data">   
+<ul class="list-unstyled t-meta-data">
   {% if user.is_authenticated %}
        {% if newsletter.send_status %}
         <li><strong>{% trans "Status:" %}</strong> {{ newsletter.send_status|title }}</li>
      {% endif %}
-     
+
      {% if newsletter.date_created %}
      <li><strong>{% trans "Created:" %}</strong> {{ newsletter.date_created }}</li>
      {% endif %}
      {% if newsletter.date_submitted %}
      <li><strong>{% trans "Submitted:" %}</strong> {{ newsletter.date_submitted }}</li>
      {% endif %}
-     
+
      {% if newsletter.date_email_sent %}
      <li><strong>{% trans "Sent:" %}</strong> {{ newsletter.date_email_sent }}</li>
         {% endif %}
-        
+
         {% if newsletter.date_last_resent %}
          <li><strong>{% trans "Resent:" %}</strong> {{ newsletter.date_last_resent }}</li>
           <li><strong>{% trans "Resend Count:" %}</strong> {{ newsletter.resend_count }}</li>

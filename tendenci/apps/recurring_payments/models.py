@@ -55,7 +55,7 @@ class RecurringPayment(models.Model):
                                         default='month')
     billing_frequency = models.IntegerField(default=1)
     billing_start_dt = models.DateTimeField(_("Initial billing cycle start date"),
-                                            help_text=_("The initial start date for the recurring payments."+\
+                                            help_text=_("The initial start date for the recurring payments."+
                                             "That is, the start date of the first billing cycle."))
     # num days after billing cycle end date to determine billing_dt or payment due date
     num_days = models.IntegerField(default=0)
@@ -84,7 +84,6 @@ class RecurringPayment(models.Model):
     current_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     outstanding_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
-
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="recurring_payment_creator",  null=True, on_delete=models.SET_NULL)
@@ -95,7 +94,6 @@ class RecurringPayment(models.Model):
     status = models.BooleanField(default=True)
 
     objects = RecurringPaymentManager()
-
 
     class Meta:
         app_label = 'recurring_payments'
@@ -117,7 +115,6 @@ class RecurringPayment(models.Model):
     @property
     def tax_rate_percentage(self):
         return '%.2f%s' % (float(self.tax_rate * 100), '%')
-
 
     @property
     def user_profile(self):
@@ -174,8 +171,6 @@ class RecurringPayment(models.Model):
                 PaymentProfile.objects.filter(customer_profile_id=self.customer_profile_id).delete()
                 return True
         return False
-
-
 
     def populate_payment_profile(self, *args, **kwargs):
         """
@@ -234,7 +229,6 @@ class RecurringPayment(models.Model):
                         else:
                             valid_cim_payment_profile_ids.append(cim_payment_profile['customer_payment_profile_id'])
 
-
                 list_cim_payment_profile_ids = [cim_payment_profile['customer_payment_profile_id']
                                                 for cim_payment_profile in cim_payment_profiles]
                 if not validation_mode:
@@ -274,7 +268,6 @@ class RecurringPayment(models.Model):
                             payment_profile.save()
 
         return valid_cim_payment_profile_ids, invalid_cim_payment_profile_ids
-
 
     def within_trial_period(self):
         now = datetime.now()
@@ -319,7 +312,6 @@ class RecurringPayment(models.Model):
 
             billing_cycle_end = billing_cycle_start + timedelta
 
-
         return (billing_cycle_start, billing_cycle_end)
 
     def get_last_billing_cycle(self):
@@ -348,7 +340,6 @@ class RecurringPayment(models.Model):
 
         return billing_dt
 
-
     def check_and_generate_invoices(self, last_billing_cycle=None):
         """
         Check and generate invoices if needed.
@@ -372,8 +363,6 @@ class RecurringPayment(models.Model):
             # might need to notify admin and/or user that an invoice has been created.
 
             self.check_and_generate_invoices(next_billing_cycle)
-
-
 
     def create_invoice(self, billing_cycle, billing_dt):
         """
@@ -585,7 +574,6 @@ class RecurringPaymentInvoice(models.Model):
                                     trans_type='auth_capture',
                                     amount=amount,
                                     status=success)
-
 
         # update the payment entry with the direct response returned from payment gateway
         #print success, response_d

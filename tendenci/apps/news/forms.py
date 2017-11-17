@@ -223,7 +223,7 @@ class NewsSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(NewsSearchForm, self).__init__(*args, **kwargs)
-        
+
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters).distinct(
                                         ).order_by('name').values_list('id', 'name')

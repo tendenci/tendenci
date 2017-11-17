@@ -10,100 +10,100 @@ from django.conf import settings
 def migrate_customized_directories_templates():
     """
     Update those directories templates that are pulled to sites
-    
+
     directories/add.html, directories/edit.html:
     ============================================
-    
+
     Replace:
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
-    
+
     With:
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
     <script type="text/javascript">{% include 'directories/include/get_subcategories.js' %} </script>
-    
-    
+
+
     directories/meta.html:
     ======================
-    
+
     Replace:
     {% with directory.category_set as directory_cat %}
-    
+
     With:
     {% with directory.cat as directory_cat %}
-    
+
     Replace:
     {% if directory_cat.category %}
-    
+
     With:
     {% if directory_cat %}
-    
+
     Replace:
     category={{ directory_cat.category.pk }}">{{ directory_cat.category }}
-    
+
     With:
     cat={{ directory_cat.pk }}">{{ directory_cat.name }}
-    
+
     Replace:
     {% if directory_cat.sub_category %}
-    
+
     With:
     {% if directory.sub_cat %}
-    
-    
+
+
     Replace:
     sub_category={{ directory_cat.sub_category.pk }}">{{ directory_cat.sub_category }}
-    
+
     With:
     cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}
-    
-    
+
+
     Remove:
    <li>
         <a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>
     </li>
-    
+
     directories/search-form.html:
     ======================
-    
+
     # Remove:
     {% for form.category in form.category_list %}
         {{ form.category.name }}
     {% endfor %}
-    
-    
+
+
     Replace:
     form.category
-    
+
     With:
     form.cat
-    
+
     Replace:
     form.sub_category
-    
+
     With:
     form.sub_cat
-    
-    
+
+
     directories/search.html:
     =================
-    
+
     Replace:
     var $catAndSubcatSelect = $('#id_category, #id_sub_category')
-    
+
     With:
     var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')
-    
-    
+
+
     directories/top_nav_items.html:
     ========================
-    
+
     Replace:
     <li class="content-item">
       <span class="app-name">
         <a href="{% url 'category.update' app_object.opt_app_label app_object.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
        </span>
     </li>
-   
+
    With:
    {% if request.user.is_superuser %}
         <li class="content-item">
@@ -112,8 +112,8 @@ def migrate_customized_directories_templates():
             </span>
         </li>
     {% endif %}
-     
-    
+
+
     """
     import re
     from tendenci.apps.site_settings.utils import get_setting
@@ -126,7 +126,7 @@ def migrate_customized_directories_templates():
         if os.path.isfile(file_path):
             with open(file_path, 'r') as f:
                 content = f.read()
-                
+
                 # add js link
                 p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js">'),
                                         re.escape('</script>'))
@@ -136,8 +136,7 @@ def migrate_customized_directories_templates():
             with open(file_path, 'w') as f:
                 # save the updated content back to file
                 f.write(content)
-    
-    
+
     # directories/meta.html
     file_path = '{}/templates/directories/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -151,16 +150,15 @@ def migrate_customized_directories_templates():
             content = f.read()
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
-                
-            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'), 
-                                        re.escape("""<a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>"""), 
+
+            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'),
+                                        re.escape("""<a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</li>'))
             content = re.sub(p, '', content)
 
         with open(file_path, 'w') as f:
             f.write(content)
-            
-    
+
     # directories/search-form.html
     file_path = '{}/templates/directories/search-form.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -169,19 +167,19 @@ def migrate_customized_directories_templates():
                              ]
         with open(file_path, 'r') as f:
             content = f.read()
-            
+
             # remove
-            p = r'{0}\s*{1}\s*{2}'.format(re.escape('{% for form.category in form.category_list %}'), 
-                                                re.escape(' {{ form.category.name }}'), 
+            p = r'{0}\s*{1}\s*{2}'.format(re.escape('{% for form.category in form.category_list %}'),
+                                                re.escape(' {{ form.category.name }}'),
                                                 re.escape('{% endfor %}'))
             content = re.sub(p, '', content)
-            
+
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
-        
+
         with open(file_path, 'w') as f:
             f.write(content)
-    
+
     # directories/search.html
     file_path = '{}/templates/directories/search.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -191,8 +189,7 @@ def migrate_customized_directories_templates():
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
         with open(file_path, 'w') as f:
             f.write(content)
-    
-    
+
     #directories/top_nav_items.html
     file_path = '{}/templates/directories/top_nav_items.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -200,8 +197,8 @@ def migrate_customized_directories_templates():
             content = f.read()
             p = r'{0}\s+{1}\s+{2}\s+{3}\s+{4}'.format(
                                         re.escape('<li class="content-item">'),
-                                        re.escape('<span class="app-name">'),  
-                                        re.escape("""<a href="{% url 'category.update' app_object.opt_app_label app_object.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""), 
+                                        re.escape('<span class="app-name">'),
+                                        re.escape("""<a href="{% url 'category.update' app_object.opt_app_label app_object.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</span>'),
                                         re.escape('</li>'))
             manage_cat = """
@@ -215,7 +212,7 @@ def migrate_customized_directories_templates():
             """
             content = re.sub(p, manage_cat, content)
 
-        with open(file_path, 'w') as f:  
+        with open(file_path, 'w') as f:
             f.write(content)
 
 def migrate_categories_data(apps, schema_editor):
@@ -250,7 +247,7 @@ def migrate_categories_data(apps, schema_editor):
             if directory_sub_cat:
                 directory.sub_cat = directory_sub_cat
             directory.save(log=False)
-            
+
     migrate_customized_directories_templates()
 
 class Migration(migrations.Migration):

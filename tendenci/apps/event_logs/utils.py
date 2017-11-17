@@ -53,24 +53,24 @@ def month_days(year, month):
     day = date(year, month, 1)
     while day.month == month:
         yield day
-        day += timedelta(days=1) 
+        day += timedelta(days=1)
 
 def request_month_range(request):
     "returns month start date and end date"
     now = date.today()
     year = int(request.GET.get('year') or str(now.year))
     month = int(request.GET.get('month') or str(now.month))
-    days = list(month_days(year, month)) 
+    days = list(month_days(year, month))
     return days[0], days[-1]
 
 
 def day_bars(data, year, month, height, color_func=None):
     "Returns bars prepared for event-summary chart"
-    
+
     def _sum_counts(items):
         for values in items.values():
             yield sum([i['count'] for i in values])
-    
+
     if color_func:
         color_func(data)
     result = SortedDict([(d, []) for d in month_days(year, month)])

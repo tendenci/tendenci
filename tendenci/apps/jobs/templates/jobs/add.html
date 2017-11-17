@@ -27,7 +27,7 @@
                 </div>
             {% endif %}
             {{ form|styled_form }}
-            
+
             <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}" />
         </div>
     </form>
@@ -70,7 +70,7 @@
     {% if request.user.is_superuser %}
     <script type="text/javascript">
     {% include 'categories/include/add_categories.js' %}
-    
+
     $(document).ready(function(){
         $('#add_id_pricing').click(function(){
             return showAddAnotherPopup(this);
@@ -93,7 +93,7 @@
                 $('#category-title span').text('-');}
             else {$('#category-title span').text('+');}
         }); */
-        
+
     </script>
 
     {% if require_payment %}

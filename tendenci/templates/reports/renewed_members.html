@@ -30,13 +30,13 @@
       </select>
     </div>
   </form>
-  
+
   {% if members %}
   <p>
-    
+
     <a class="btn btn-default" href="{% url "reports-renewed-members" %}?output=csv&days={{ days }}">
       {% trans 'Download CSV File' %}</a>
-    
+
   </p>
   <table class="table table-tendenci-reports">
     <tr>

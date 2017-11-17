@@ -22,7 +22,6 @@ class Command(NoArgsCommand):
     )
     help = "Dowload themes from S3 to the local themes directory"
 
-
     def set_options(self, **options):
         """
         Set instance variables based on an options dict

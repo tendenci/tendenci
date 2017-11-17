@@ -30,7 +30,6 @@ class TicketBasicsTestCase(TestCase):
         ticket = Ticket.objects.create(**ticket_data)
         self.assertEqual(ticket.ticket_for_url, "q1-%s" % ticket.id)
         self.assertEqual(email_count, len(mail.outbox))
-        
 
     def test_create_ticket_public(self):
         email_count = len(mail.outbox)
@@ -94,7 +93,7 @@ class TicketBasicsTestCase(TestCase):
         last_redirect = response.redirect_chain[-1]
         last_redirect_url = last_redirect[0]
         last_redirect_status = last_redirect[1]
-        
+
         # Ensure we landed on the "View" page.
         # Django 1.9 compatible way of testing this
         # https://docs.djangoproject.com/en/1.9/releases/1.9/#http-redirects-no-longer-forced-to-absolute-uris

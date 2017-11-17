@@ -60,7 +60,7 @@ urlpatterns = [
         register,
         {'form_class' : RegistrationCustomForm, 'template_name': 'accounts/registration_form.html'},
         name='registration_register'),
-  
+
     url(r'^register/event/(?P<event_id>\d+)/$',
         register,
         {'form_class' : RegistrationCustomForm, 'template_name': 'accounts/registration_form.html'},

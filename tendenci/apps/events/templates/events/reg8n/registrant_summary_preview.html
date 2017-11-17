@@ -25,11 +25,11 @@
                 <li>{{ field.label }}:  {{ field.value|field_to_string }}</li>
             {% endif %}
         {% endfor %}
-        
+
         {% if registrant.discount > 0 %}
         <li>{% trans 'Discount: ' %} {{ currency_symbol }}{{ registrant.discount }}</li>
          <li>{% trans 'Final Price: ' %} {{ currency_symbol }}{{ registrant.final_price }}</li>
         {% endif %}
-        
+
     </ul>
 </div>

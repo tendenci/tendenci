@@ -15,7 +15,7 @@ class Command(BaseCommand):
         python manage.py membership_export_process --identifier 1359048111
                                                    --user 1
 
-    """ 
+    """
     def add_arguments(self, parser):
         parser.add_argument('--identifier',
             dest='identifier',

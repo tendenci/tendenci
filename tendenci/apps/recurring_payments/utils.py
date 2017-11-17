@@ -268,7 +268,7 @@ def run_a_recurring_payment(rp, verbosity=0):
 
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
-                        print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                        print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
                                 % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
                                    rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
                                    currency_symbol,
@@ -282,7 +282,6 @@ def run_a_recurring_payment(rp, verbosity=0):
                         success = True
                         num_processed += 1
 
-
                     if success:
                         rp.last_payment_received_dt = now
                         rp_invoice.payment_received_dt = now
@@ -291,7 +290,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                         print('...Success.')
                     else:
                         rp.num_billing_cycle_failed += 1
-                        print('...Failed  - \n\t code - %s \n\t text - %s' \
+                        print('...Failed  - \n\t code - %s \n\t text - %s'
                                             % (payment_transaction.message_code,
                                                payment_transaction.message_text))
 
@@ -311,7 +310,6 @@ def run_a_recurring_payment(rp, verbosity=0):
                 rp_email_notice.email_admins_no_payment_profile(rp)
                 # to customer
                 rp_email_notice.email_customer_no_payment_profile(rp)
-
 
         # calculate the balance by checking for unpaid invoices
         rp.balance = rp.get_current_balance()
@@ -355,7 +353,6 @@ def api_rp_setup(data):
         username
         result_code
     """
-    from decimal import Decimal
     from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
@@ -503,7 +500,6 @@ def api_rp_setup(data):
     rp_invoice.invoice.make_payment(rp.user, Decimal(payment.amount))
     rp_invoice.invoice.save()
 
-
     rp_invoice.payment_received_dt = now
     rp_invoice.save()
     rp.last_payment_received_dt = now
@@ -518,7 +514,6 @@ def api_rp_setup(data):
     payment_transaction.save()
 
     site_url = get_setting('site', 'global', 'siteurl')
-
 
     return True, {'rp_id': rp.id,
                   'rp_url': '%s%s' %  (site_url,
@@ -557,7 +552,6 @@ def api_add_rp(data):
                       'trial_period_end_dt',
                       'trial_amount',
                       )
-    from decimal import Decimal
     from tendenci.apps.base.utils import validate_email
     import dateutil.parser as dparser
     from tendenci.apps.imports.utils import get_unique_username
@@ -569,12 +563,10 @@ def api_add_rp(data):
     except:
         payment_amount = 0
 
-
     if not all([validate_email(email),
                 'description' in data,
                 payment_amount>0]):
         return False, {}
-
 
     rp = RecurringPayment()
     for key, value in data.items():
@@ -701,7 +693,6 @@ def api_get_rp_token(data):
 
     d['payment_profile_id'] = payment_profile_id
 
-
     if gateway_error:
         status = False
     else:
@@ -773,7 +764,6 @@ def api_verify_rp_payment_profile(data):
                 rp_invoice.payment_received_dt = now
                 rp_invoice.save()
 
-
                 # send out the invoice view page
                 d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'),
                                              reverse('recurring_payment.transaction_receipt',
@@ -784,8 +774,6 @@ def api_verify_rp_payment_profile(data):
                 # email to user
                 rp_email_notice = RecurringPaymentEmailNotices()
                 rp_email_notice.email_customer_transaction_result(payment_transaction)
-
-
 
     if invalid_cpp_ids:
         d['invalid_cpp_id']= invalid_cpp_ids[0]

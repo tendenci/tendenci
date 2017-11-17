@@ -13,7 +13,7 @@ def assign_position(apps, schema_editor):
     for video in Video.objects.all():
         video.position = video.ordering
         video.save()
-        
+
 class Migration(migrations.Migration):
 
     dependencies = [

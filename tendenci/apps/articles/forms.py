@@ -74,7 +74,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
-            
+
         categories, sub_categories = Article.objects.get_categories()
 
         categories = [(cat.name, cat) for cat in categories]

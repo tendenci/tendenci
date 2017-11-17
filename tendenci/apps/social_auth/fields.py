@@ -3,7 +3,7 @@ from django.db import models
 import simplejson
 from django.utils.encoding import smart_unicode
 # from south.modelsinspector import add_introspection_rules
-# 
+#
 # # introspection rules for south migration for the JSONField
 # add_introspection_rules([], ['^tendenci\.apps\.social_auth\.fields\.JSONField'])
 

@@ -59,4 +59,3 @@ def vote(request, item):
         item.save()
 
     return HttpResponseRedirect(item.get_absolute_url())
-

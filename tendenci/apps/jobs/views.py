@@ -84,7 +84,7 @@ def search(request, template_name="jobs/search.html"):
                 tag = query.strip('tag:')
                 jobs = jobs.filter(tags__icontains=tag)
             else:
-                jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query)) 
+                jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
@@ -93,7 +93,7 @@ def search(request, template_name="jobs/search.html"):
             creator_username=request.user.username,
             status_detail__contains='pending'
         )
-    
+
     jobs = jobs.order_by('list_type', '-post_dt', '-update_dt')
 
     EventLog.objects.log()
@@ -215,7 +215,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
 
-    
             #save relationships
             job.save()
             msg_string = u'Successfully added %s' % unicode(job)

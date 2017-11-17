@@ -13,7 +13,7 @@ register = Library()
 class ListForumCategoriesNode(ListNode):
     model = Category
     perms = 'forums.view_category'
-    
+
     def custom_model_filter(self, items, user):
         if not user.is_staff:
             return items.filter(hidden=False)

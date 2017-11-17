@@ -515,7 +515,7 @@ class AppRetrieveFiles(object):
 
 
 def get_max_file_upload_size(file_module=False):
-    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or 
+    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or
                               "26214400")  # default value if ever site setting is missing
     if file_module:
         return int(get_setting('module', 'files', 'maxfilesize') or global_max_upload_size)
@@ -539,7 +539,7 @@ def get_allowed_upload_file_exts(file_type='other'):
 def get_allowed_mimetypes(file_exts):
     if not file_exts or not hasattr(file_exts, '__iter__'):
         return None
-    
+
     types_map = mimetypes.types_map
     exts = types_map.keys()
     allowed_mimetypes = []

@@ -53,7 +53,7 @@
                                     {% endspaceless %}
                                 </a>
                             </li>
-                            
+
                             {% if MODULE_MEMBERSHIPS_ENABLED %}
                             {% with profile.membership as membership %}
                             {% if membership %}
@@ -67,7 +67,7 @@
 							 <li class="content-item">
                                 <a href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user.id }}&search_method=exact"><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span></a>
                             </li>
-                            
+
                             {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                             {% if user.corpmembershiprep_set.count > 0 %}
                             <li class="content-item">
@@ -75,15 +75,15 @@
                             </li>
                             {% endif %}
                              {% endif %}
-                            
+
                             <li class="content-item">
                                 <a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/><span class="nav-label">{% trans 'Events' %}</span></a>
                             </li>
-                            
+
                             <li class="content-item">
                                 <a href="{% url 'contribution.search' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Content' %}</span></a>
                             </li>
-                            
+
                             {% if USE_I18N %}
                             {% with request.user.profile.lang as user_lang %}
 							 <li>
@@ -124,24 +124,21 @@
 								
 								  </div>
 								</div>
-                           
-                           
+
+
                             </li>
                             {% endwith %}
 							{% endif %}
-                            
+
                             <li class="content-item">
 			                    <a href="{% url 'auth_logout' %}"><span class="glyph">&#88;</span><span class="nav-label">{% trans "Logout" %}</span></a>
 			                </li>
-                            
+
                         </ul>
-                  
+
                     </div>
                 </div>
             </div>
         </li>
     </ul>
 </li>
-
-
-

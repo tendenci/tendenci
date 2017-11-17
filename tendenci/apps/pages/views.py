@@ -112,11 +112,11 @@ def search(request, template_name="pages/search.html"):
                 pages = pages.filter(id__in=page_ids)
             else:
                 pages = Page.objects.none()
-                
+
         else:
             pages = pages.filter(
-                Q(title__icontains=query) \
-                | Q(content__icontains=query) \
+                Q(title__icontains=query)
+                | Q(content__icontains=query)
                 | Q(slug__icontains=query))
             pages = pages.exclude(status_detail='archive')
 

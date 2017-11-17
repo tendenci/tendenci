@@ -114,4 +114,3 @@ class Command(BaseCommand):
             email.to = [email_recipient]
             email.content_subtype = 'html'
             email.send()
-

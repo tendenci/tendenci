@@ -58,7 +58,6 @@ HELPDESK_VIEW_A_TICKET_PUBLIC = getattr(settings, 'HELPDESK_VIEW_A_TICKET_PUBLIC
 HELPDESK_SUBMIT_A_TICKET_PUBLIC = getattr(settings, 'HELPDESK_SUBMIT_A_TICKET_PUBLIC', True)
 
 
-
 ''' options for update_ticket views '''
 # allow non-staff users to interact with tickets? this will also change how 'staff_member_required'
 # in staff.py will be defined.
@@ -87,7 +86,6 @@ HELPDESK_EMAIL_SUBJECT_TEMPLATE = getattr(settings, 'HELPDESK_EMAIL_SUBJECT_TEMP
 ''' options for staff.create_ticket view '''
 # hide the 'assigned to' / 'Case owner' field from the 'create_ticket' view?
 HELPDESK_CREATE_TICKET_HIDE_ASSIGNED_TO = getattr(settings, 'HELPDESK_CREATE_TICKET_HIDE_ASSIGNED_TO', False)
-
 
 
 ''' email options '''

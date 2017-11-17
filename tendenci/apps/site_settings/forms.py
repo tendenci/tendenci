@@ -141,7 +141,7 @@ def build_settings_form(user, settings):
             else:
                 if user.is_superuser:
                     fields.update({"%s" % setting.name: forms.CharField(**options)})
-            
+
         elif setting.input_type in ['select', 'selectmultiple']:
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)

@@ -1,15 +1,15 @@
 {% load i18n %}
 
-{{ site_name }} - {{ first_name }} 
+{{ site_name }} - {{ first_name }}
 
 {% if last_name %}
-{{ last_name }} 
+{{ last_name }}
 {% endif %}
- 
+
 {% if phone %}
-- {{ phone }} 
+- {{ phone }}
 {% else %}
-- {{ email }} 
+- {{ email }}
 {% endif %}
 
 - {% trans "Contact Form" %}

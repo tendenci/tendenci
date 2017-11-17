@@ -36,17 +36,16 @@ class CategoryAdmin(admin.ModelAdmin):
             'group_perms',
         )}),
     )
-    
+
     form = CategoryAdminForm
 
     inlines = [ForumInlineAdmin]
-    
+
     def get_queryset(self, request):
         qs = super(CategoryAdmin, self).get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
-        
-    
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)
@@ -103,7 +102,7 @@ class TopicAdmin(admin.ModelAdmin):
          ),
         )
     inlines = [PollAnswerAdmin, ]
-    
+
     def get_form(self, request, obj=None, **kwargs):
         form = super(TopicAdmin, self).get_form(request, obj=obj, **kwargs)
         form.base_fields['user'].initial = request.user

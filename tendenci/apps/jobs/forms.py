@@ -102,7 +102,6 @@ class JobForm(TendenciBaseForm):
                                           empty_label=_("Please choose a category first"),
                                           required=False)
 
-
     class Meta:
         model = Job
         fields = (
@@ -270,7 +269,7 @@ class JobForm(TendenciBaseForm):
             self.fields['payment_method'].choices = choices
             #self.fields['payment_method'].widget = forms.RadioSelect(choices=choices)
             if choices and len(choices) == 1:
-                self.fields['payment_method'].initial = choices[0][0]            
+                self.fields['payment_method'].initial = choices[0][0]
 
         # adjust fields depending on user status
         fields_to_pop = []
@@ -407,7 +406,7 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
 
         # setup categories
         categories = JobCategory.objects.filter(parent__isnull=True)
-        categories_count = categories.count() 
+        categories_count = categories.count()
         self.fields['cat'].queryset = categories
         self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
         data = args[0]

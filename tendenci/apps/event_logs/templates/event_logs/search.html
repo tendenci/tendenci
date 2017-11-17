@@ -24,13 +24,13 @@
   <div class="page-header">
     <h1>{% firstof MODULE_EVENT_LOGS_LABEL trans 'Event Logs' %} {% trans "Search" %}</h1>
   </div>
-  
+
   {% event_log_search search_form %}
   {% autopaginate event_logs 10 %}
   <p>
     {% blocktrans with paginator.count as pag_count %} Found <strong>{{ pag_count }}</strong> results{% endblocktrans %}
   </p>
-  
+
   <div class="event-logs-wrap">
     {% for event_log in event_logs %}
     <div class="event-log-search-wrap">
@@ -165,7 +165,7 @@
     </div>
     {% endfor %}
   </div>
-  
+
   {% paginate %}
 </div>
 {% endblock %}
@@ -181,11 +181,11 @@
   $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
   $('.timepicker').timepicker({'step': 15});
   });
-  
+
   var adv_opt_legend = $('fieldset legend');
   var adv_opt = adv_opt_legend.parent();
   var adv_opt_fields = adv_opt.find('.form-field');
-  
+
   // hide the user form fields
   adv_opt_fields.hide();
   adv_opt_legend.html('<a href="#">' + adv_opt_legend.html() + '</a>');
@@ -193,11 +193,11 @@
   adv_opt_fields.toggle();
   return false;
   });
-  
+
   if (window.location.hash == '#advanced') {
   adv_opt_legend.trigger('click');
   }
-  
+
   $('.form-field > div >.help-text').each(function() {
   var title_text = $(this).text();
   $(this).hide();

@@ -46,7 +46,6 @@ def export_page(request):
     else:
         form = DatabaseDumpForm()
 
-
     # get all active DB Dump Files
     # if current existing DB Dump Files are less than the limit, enable form submission
     db_objs = DatabaseDumpFile.objects.filter(~Q(status='expired'))
@@ -85,4 +84,3 @@ def delete_dump(request, dump_id):
 def can_create_dump():
     db_objs = DatabaseDumpFile.objects.filter(~Q(status='expired'))
     return db_objs.count() < 3
-

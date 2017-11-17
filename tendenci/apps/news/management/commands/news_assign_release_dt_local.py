@@ -2,10 +2,10 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    
+
     def handle(self, *args, **options):
         from tendenci.apps.news.models import News
-        
+
         news = News.objects.all()
         for n in news:
             if not n.release_dt_local:

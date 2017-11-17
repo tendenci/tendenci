@@ -19,13 +19,13 @@
   <div class="page-header">
     <h1>{% trans "Most Viewed Files" %}</h1>
   </div>
-  
+
   <form class="form-inline" action="{% url "file.report_most_viewed" %}" method="POST">
-    
+
     {% for field in form %}
     {{ field.errors }}
     {% endfor %}
-    
+
     {% csrf_token %}
     {{ form.start_dt }}
     {{ form.end_dt }}
@@ -33,11 +33,11 @@
     <input class="btn btn-primary" type="submit" value="{% trans 'Filter Files' %}" />
     <div id="results">{{ event_logs|length }} {% trans 'Results' %}</div>
   </form>
-  
+
   {% autopaginate event_logs 10 %}
-  
+
   <div class="files-wrap">
-    
+
     <table>
       <tr>
         <th>{% trans "Clicks" %}</th>
@@ -45,15 +45,15 @@
         <th>{% trans "File Name" %}</th>
         <th colspan="2">{% trans "Actions" %}</th>
       </tr>
-      
+
       {% for event_log in event_logs %}
       {% most_viewed_result %}
       {% endfor %}
-      
+
     </table>
-    
+
   </div>
-  
+
   {% paginate %}
 </div>
 {% endblock %}
@@ -63,7 +63,7 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <script type="text/javascript">
   $(document).ready(function(){
-  
+
   // url exists
   url_exists = function(url){
   var http = new XMLHttpRequest();
@@ -71,21 +71,21 @@
   http.send();
   return http.status!=404;
   }
-  
+
   // delete confirmation
   $('.delete').click(function(){
   var delete_file = confirm('{% trans "Permenantly delete file?" %}');    // confirm
   if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
   return false;    // cancel
   });
-  
+
   // if url is broken; add 'broken' class
   $('.t .file-wrap h2 a').each(function(){
   if(!url_exists(this.href)){
   $(this).addClass('broken');
   }
   });
-  
+
   $(function() {
   var dates = $( "#id_start_dt, #id_end_dt" ).datepicker({
   defaultDate: "-60d",
@@ -102,7 +102,7 @@
   }
   });
   });
-  
+
   });
 </script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>

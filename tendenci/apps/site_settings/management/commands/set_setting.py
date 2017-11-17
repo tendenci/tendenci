@@ -7,7 +7,7 @@ class Command(BaseCommand):
     """
     Example: python manage.py set_setting site global siteurl http://example.com
     """
-    
+
     def add_arguments(self, parser):
         # Positional arguments
         parser.add_argument('scope')

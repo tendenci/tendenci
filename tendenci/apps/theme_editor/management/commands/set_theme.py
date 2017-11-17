@@ -12,7 +12,7 @@ class Command(BaseCommand):
     """
     Example: python manage.py set_theme thinksmart
     """
-    
+
     def add_arguments(self, parser):
         # Positional arguments
         parser.add_argument('theme_name')
@@ -37,5 +37,3 @@ class Command(BaseCommand):
         except Setting.DoesNotExist:
             if int(options['verbosity']) > 0:
                 print("We could not update the theme because the setting or theme is not available.")
-
-

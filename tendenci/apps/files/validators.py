@@ -47,7 +47,7 @@ class FileValidator(object):
         if not isinstance(values, list):
             values = [values]
 
-        for value in values:    
+        for value in values:
             # Check the extension
             ext = splitext(value.name)[1].lower()
             if self.allowed_extensions and ext not in self.allowed_extensions:
@@ -55,9 +55,9 @@ class FileValidator(object):
                     'extension' : ext,
                     'allowed_extensions': ', '.join(self.allowed_extensions)
                 }
-    
+
                 raise ValidationError(message)
-    
+
             # Check the content type
             try:
                 mime_type = magic.from_buffer(value.read(1024), mime=True)
@@ -66,12 +66,11 @@ class FileValidator(object):
                         'mimetype': mime_type,
                         'allowed_mimetypes': ', '.join(self.allowed_mimetypes)
                     }
-        
+
                     raise ValidationError(message)
             except AttributeError as e:
                 raise ValidationError(_('File type is not valid'))
-    
-    
+
             # Check the file size
             filesize = len(value)
             if self.max_size and filesize > self.max_size:
@@ -79,5 +78,5 @@ class FileValidator(object):
                     'size': filesizeformat(filesize),
                     'allowed_size': filesizeformat(self.max_size)
                 }
-    
+
                 raise ValidationError(message)

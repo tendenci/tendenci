@@ -5,10 +5,10 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, 
+    1. Redistributions of source code must retain the above copyright notice,
        this list of conditions and the following disclaimer.
-    
-    2. Redistributions in binary form must reproduce the above copyright 
+
+    2. Redistributions in binary form must reproduce the above copyright
        notice, this list of conditions and the following disclaimer in the
        documentation and/or other materials provided with the distribution.
 
@@ -43,7 +43,7 @@ function html_unescape(text) {
 
 // IE doesn't accept periods or dashes in the window name, but the element IDs
 // we use to generate popup window names may contain them, therefore we map them
-// to allowed characters in a reversible way so that we can locate the correct 
+// to allowed characters in a reversible way so that we can locate the correct
 // element when the popup window is dismissed.
 function id_to_windowname(text) {
     text = text.replace(/\./g, '__dot__');
@@ -240,7 +240,7 @@ function findPosX(obj) {
          curleft += obj.offsetLeft - ((isOpera) ? 0 : obj.scrollLeft);
          obj = obj.offsetParent;
      }
-     // IE offsetParent does not include the top-level 
+     // IE offsetParent does not include the top-level
      if (isIE && obj.parentElement){
          curleft += obj.offsetLeft - obj.scrollLeft;
      }
@@ -257,7 +257,7 @@ function findPosY(obj) {
          curtop += obj.offsetTop - ((isOpera) ? 0 : obj.scrollTop);
          obj = obj.offsetParent;
      }
-     // IE offsetParent does not include the top-level 
+     // IE offsetParent does not include the top-level
      if (isIE && obj.parentElement){
          curtop += obj.offsetTop - obj.scrollTop;
      }
@@ -622,19 +622,19 @@ var SelectFilter2 = {
         from_box.setAttribute('name', from_box.getAttribute('name') + '_old');
 
         // Set up the JavaScript event handlers for the select box filter interface
-        addEvent(filter_input, 'keyup', function(e) { 
-            SelectFilter2.filter_key_up(e, field_id + '_from', field_id + '_to', field_id + '_input'); 
+        addEvent(filter_input, 'keyup', function(e) {
+            SelectFilter2.filter_key_up(e, field_id + '_from', field_id + '_to', field_id + '_input');
             });
-        addEvent(filter_input, 'keydown', function(e) { 
+        addEvent(filter_input, 'keydown', function(e) {
             SelectFilter2.filter_key_down(e, field_id + '_from', field_id + '_to');
             });
-        addEvent(filter_input2, 'keyup', function(e) { 
-            SelectFilter2.filter_key_up(e, field_id + '_to', field_id + '_from', field_id + '_input2'); 
+        addEvent(filter_input2, 'keyup', function(e) {
+            SelectFilter2.filter_key_up(e, field_id + '_to', field_id + '_from', field_id + '_input2');
             });
-        addEvent(filter_input2, 'keydown', function(e) { 
-            SelectFilter2.filter_key_down(e, field_id + '_to', field_id + '_from'); 
+        addEvent(filter_input2, 'keydown', function(e) {
+            SelectFilter2.filter_key_down(e, field_id + '_to', field_id + '_from');
             });
-        
+
         addEvent(from_box, 'dblclick', function() { SelectBox.move(field_id + '_from', field_id + '_to'); });
         addEvent(to_box, 'dblclick', function() { SelectBox.move(field_id + '_to', field_id + '_from'); });
         addEvent(findForm(from_box), 'submit', function() { SelectBox.select_all(field_id + '_to'); });

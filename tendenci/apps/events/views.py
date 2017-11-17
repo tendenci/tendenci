@@ -388,7 +388,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     start_date_filter = {'start_dt__%s' %filter_op: start_dt}
     end_date_filter = {'end_dt__%s' % filter_op: start_dt }
-    events = events.filter(Q(**start_date_filter)|Q(**end_date_filter))
+    events = events.filter(Q(**start_date_filter) | Q(**end_date_filter))
 
     if past:
         events = events.order_by('-start_dt', '-priority')
@@ -1504,7 +1504,7 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
         recurring_manager = event.recurring_event
         for event in event_list:
             eventlog = EventLog.objects.log(instance=event)
-                # send email to admins
+            # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
                 notification.send_emails(recipients,'event_deleted', {
@@ -1588,14 +1588,12 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
     if not (individual_pricings or table_pricings):
         raise Http404
 
-
     return render_to_response(template_name, {
         'event':event,
         'individual_pricings': individual_pricings,
         'table_pricings': table_pricings,
         'quantity_options': range(31)
     }, context_instance=RequestContext(request))
-
 
 
 def multi_register_redirect(request, event, msg):
@@ -1667,7 +1665,6 @@ def register(request, event_id=0,
             return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
                                                         reverse('event.register', args=[event.id])))
 
-
     # check if event allows registration
     if not (event.registration_configuration and
             event.registration_configuration.enabled):
@@ -1682,7 +1679,6 @@ def register(request, event_id=0,
             # is no more spots available, redirect to event view.
             return multi_register_redirect(request, event, _('Registration is full.'))
     event.limit, event.spots_taken, event.spots_available = limit, spots_taken, spots_available
-
 
     reg_conf=event.registration_configuration
 
@@ -1699,7 +1695,6 @@ def register(request, event_id=0,
         if len(pricings) > 1:
             return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),))
 
-
         pricing = pricings[0]
         if pricing.quantity == 1:
             individual = True
@@ -1711,9 +1706,7 @@ def register(request, event_id=0,
     else:
         pricings = None
 
-
     event.is_table = is_table
-
 
     event.require_guests_info = reg_conf.require_guests_info
 
@@ -1749,13 +1742,11 @@ def register(request, event_id=0,
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
 
-
     # check if using a custom reg form
     custom_reg_form = None
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
-
 
     if custom_reg_form:
         RF = FormForCustomRegForm
@@ -1827,7 +1818,6 @@ def register(request, event_id=0,
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1
 
         addon_extra_params.update({'valid_addons':addons})
-
 
     # check if we have any valid discount code for the event.
     # if not, we don't have to display the discount code box.
@@ -1948,14 +1938,11 @@ def register(request, event_id=0,
                                 )
                                 #email the admins as well
 
-
                                 # fix the price
                                 email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
 
-
                         # log an event
                         EventLog.objects.log(instance=event)
-
 
                     else:
                         msg_string = 'You were already registered on %s' % date_filter(reg8n.create_dt)
@@ -2072,7 +2059,6 @@ def check_free_pass_eligibility(request, form_class=FreePassCheckForm):
             ret_dict['corp_id'] = corp_membership.id
 
     return HttpResponse(json.dumps(ret_dict))
-
 
 
 @is_enabled('events')
@@ -2465,7 +2451,6 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 if key in ['phone', 'company_name']:
                     form.fields[key].required = False
 
-
     if request.method == 'POST':
         if formset.is_valid():
             updated = False
@@ -2495,7 +2480,6 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
             return HttpResponseRedirect(reg8n_conf_url)
 
-
     total_regt_forms = Registrant.objects.filter(registration=reg8n).count()
 
     # check formset error
@@ -2507,7 +2491,6 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                 break
         if formset_errors:
             break
-
 
     return render_to_response(template_name, {'formset': formset,
                                               'formset_errors':formset_errors,
@@ -2528,7 +2511,6 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         )
     except Registration.DoesNotExist as e:
         raise Http404
-
 
     perms = (
         has_perm(request.user, 'events.change_registration', registration),  # has perm
@@ -2567,7 +2549,6 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         invoice.subtotal -= registrant.amount
                         invoice.balance -= registrant.amount
                         invoice.save(request.user)
-
 
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
@@ -2681,8 +2662,6 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             if not exist_not_canceled:
                 reg8n.canceled = True
                 reg8n.save()
-
-
 
             EventLog.objects.log(instance=registrant)
 

@@ -18,7 +18,7 @@ class TicketAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     list_filter = ('assigned_to', 'status', )
     exclude = ['owner_username']
-    
+
     def save_model(self, request, obj, form, change):
         super(TicketAdmin, self).save_model(request, obj, form, change)
         if obj.owner:

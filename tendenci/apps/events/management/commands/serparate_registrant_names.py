@@ -66,7 +66,7 @@ class Command(BaseCommand):
         last_name = last_name.replace(',','')
 
         return (first_name, last_name,)
-        
+
     def handle(self, *args, **options):
         verbosity = options['verbosity']
         count = 0

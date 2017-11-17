@@ -21,7 +21,6 @@ from tendenci.apps.pages.models import Page
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.navs.models import Nav, NavItem
-from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
 from tendenci.apps.navs.utils import cache_nav
 

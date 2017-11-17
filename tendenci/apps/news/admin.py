@@ -47,7 +47,7 @@ class NewsAdmin(TendenciBaseModelAdmin):
     )
     form = NewsForm
     ordering = ['-update_dt']
-    
+
     def get_form(self, request, obj=None, **kwargs):
         form_model = super(NewsAdmin, self).get_form(request, obj, **kwargs)
         form_model.user = request.user

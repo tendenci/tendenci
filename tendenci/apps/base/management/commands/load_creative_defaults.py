@@ -72,7 +72,6 @@ class Command(BaseCommand):
         print('load creative_default_directories_pricings.json')
         call_command('loaddata', 'creative_default_directories_pricings.json')
 
-
         suffix_list = [
             'profiles_profile',
             'explorer',
@@ -90,7 +89,7 @@ class Command(BaseCommand):
             'navs',
             'stories',
             'videos',
-        ]   
+        ]
 
         # call loaddata on fixtures
         for suffix in suffix_list:
@@ -98,4 +97,3 @@ class Command(BaseCommand):
 
             print(filename)
             call_command('loaddata', filename)
-

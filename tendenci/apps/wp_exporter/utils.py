@@ -177,19 +177,19 @@ def encode_item(xml, offset, item, ct, title="", content=""):
     #encode item's categories
     for cat in cats:
         xml.write("<category><![CDATA[%s]]></category>"%cat.name, depth=2)
-        xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>' \
+        xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>'
             % (slugify(cat.name),cat.name), depth=2)
 
     #encode ct as category
     xml.write("<category><![CDATA[%s]]></category>"%ct, depth=2)
-    xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>' \
+    xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>'
             % (slugify(ct),ct), depth=2)
 
     # get all the item's tags and encode
     tags = Tag.objects.get_for_object(item)
     for tag in tags:
         xml.write('<category domain="tag"><![CDATA[%s]]></category>'%tag.name, depth=2)
-        xml.write('<category domain="tag" nicename="%s"><![CDATA[%s]]></category>' \
+        xml.write('<category domain="tag" nicename="%s"><![CDATA[%s]]></category>'
             % (slugify(tag.name), tag.name), depth=2)
 
     xml.write("<description></description>", depth=2)
@@ -243,7 +243,6 @@ def encode_news(xml, offset=0):
 
 def encode_jobs(xml, offset=0):
     try:
-        from tendenci.apps.jobs.models import Job
         from tendenci.apps.jobs.models import Job
         jobs = Job.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Job)

@@ -38,4 +38,3 @@ def save_file_content(name, content, storage_type='default'):
         storage = get_default_storage()
 
     return storage.save(name, content)
-

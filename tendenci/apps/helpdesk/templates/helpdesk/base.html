@@ -43,7 +43,7 @@
         {% endif %}
     {% endif %}
 {% endwith %}
-{% endwith %} 
+{% endwith %}
 {% endblock %}
 
 
@@ -64,13 +64,11 @@
     {% if user.is_superuser %}<div class="col-md-2"><a href='{% url 'helpdesk_system_settings' %}'>{% trans "System Settings" %}</a></div>{% endif %}
 </div>
 {% include "helpdesk/debug.html" %}
-    
+
 {% endblock %}
 
 {% block extra_body %}
  {{ block.super }}
         <script src='{% static "helpdesk/jquery-ui-1.8.9.custom.min.js" %}' type='text/javascript' language='javascript'></script>
- 
-{% endblock %}
- 
 
+{% endblock %}

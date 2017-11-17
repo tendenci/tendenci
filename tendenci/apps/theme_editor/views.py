@@ -211,7 +211,6 @@ def create_new_template(request, form_class=AddTemplateForm):
         else:
             ret_dict['err'] = _('Template "%(name)s" already exists' % {'name':template_full_name})
 
-
     return HttpResponse(json.dumps(ret_dict))
 
 @login_required
@@ -365,6 +364,7 @@ def upload_file(request):
         if form.is_valid():
             file_dir = form.cleaned_data['file_dir']
             overwrite = form.cleaned_data['overwrite']
+
             def callback(file_path, uuid, file_dir=file_dir, overwrite=overwrite):
                 file_name = os.path.basename(file_path)
                 full_filename = os.path.join(file_dir, file_name)

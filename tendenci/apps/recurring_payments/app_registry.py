@@ -16,4 +16,3 @@ class RecurringPaymentRegistry(LogRegistry):
     }
 
 site.register(RecurringPayment, RecurringPaymentRegistry)
-

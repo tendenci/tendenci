@@ -114,11 +114,11 @@ class ProjectAdmin(TendenciBaseModelAdmin):
     actions = []
     inlines = (PhotoAdmin, TeamMembersAdmin, DocumentsAdmin,)
     prepopulated_fields = {'slug': ['project_name']}
-    
+
     form = ProjectForm
-    
+
     fieldsets = (
-        (None, 
+        (None,
             {'fields': (
                 'project_name',
                 'slug',
@@ -154,12 +154,11 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             'status_detail'
         )}),
     )
-    
+
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
-
 
     def save_formset(self, request, form, formset, change):
         for f in formset.forms:
@@ -197,33 +196,33 @@ class ProjectAdmin(TendenciBaseModelAdmin):
     #     super(ProjectAdmin, self).log_deletion(request, object, object_repr)
     #     log_defaults = {
     #         'event_id' : 1180300,
-    #         'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+    #         'event_data': '%s (%d) deleted by %s' % (object._meta.object_name,
     #                                                 object.pk, request.user),
     #         'description': '%s deleted' % object._meta.object_name,
     #         'user': request.user,
     #         'request': request,
     #         'instance': object,
     #     }
-    #     EventLog.objects.log(**log_defaults)           
+    #     EventLog.objects.log(**log_defaults)
 
     # def log_change(self, request, object, message):
     #     super(ProjectAdmin, self).log_change(request, object, message)
     #     log_defaults = {
     #         'event_id' : 1180200,
-    #         'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+    #         'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
     #                                                 object.pk, request.user),
     #         'description': '%s edited' % object._meta.object_name,
     #         'user': request.user,
     #         'request': request,
     #         'instance': object,
     #     }
-    #     EventLog.objects.log(**log_defaults)               
+    #     EventLog.objects.log(**log_defaults)
 
     # def log_addition(self, request, object):
     #     super(ProjectAdmin, self).log_addition(request, object)
     #     log_defaults = {
     #         'event_id' : 1180100,
-    #         'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+    #         'event_data': '%s (%d) added by %s' % (object._meta.object_name,
     #                                                object.pk, request.user),
     #         'description': '%s added' % object._meta.object_name,
     #         'user': request.user,
@@ -231,7 +230,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
     #         'instance': object,
     #     }
     #     EventLog.objects.log(**log_defaults)
-                     
+
     # def get_form(self, request, obj=None, **kwargs):
     #     """
     #     inject the user in the form.

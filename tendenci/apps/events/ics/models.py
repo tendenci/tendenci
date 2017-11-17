@@ -20,10 +20,10 @@ class ICS(models.Model):
     result = PickledObjectField(null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)
     date_done = models.DateTimeField(auto_now=True)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("ics.status", [self.app_label, self.model_name])
-    
+
     def __unicode__(self):
         return "ICS for %s %s - %s" % (self.app_label, self.model_name, self.user)

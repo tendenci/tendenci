@@ -311,11 +311,11 @@ def membership_default_import_upload(request,
                                      args=[memb_import.id]))
 
     # list of foreignkey fields
-    user_fks = [field.name for field in User._meta.fields \
+    user_fks = [field.name for field in User._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
-    profile_fks = [field.name for field in Profile._meta.fields \
+    profile_fks = [field.name for field in Profile._meta.fields
                    if isinstance(field, (ForeignKey, OneToOneField))]
-    memb_fks = [field.name for field in MembershipDefault._meta.fields \
+    memb_fks = [field.name for field in MembershipDefault._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
 
     fks = Set(user_fks + profile_fks + memb_fks)
@@ -563,7 +563,7 @@ def download_default_template(request):
 
     filename = "memberships_import_template.csv"
 
-    title_list = [field for field in MembershipDefault._meta.fields \
+    title_list = [field for field in MembershipDefault._meta.fields
                      if not field.__class__ == AutoField]
     title_list = [smart_str(field.name) for field in title_list]
     # adjust the order for some fields
@@ -1191,7 +1191,6 @@ def membership_default_add(request, slug='', membership_id=None,
                         invoice.balance += donation_amount
                         invoice.save()
 
-
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False
@@ -1551,7 +1550,6 @@ def membership_default_corp_pre_add(request, cm_id=None,
                 return HttpResponseRedirect('%s?username=%s' % (redirect_url, passed_username))
             return redirect(redirect_url)
 
-
     c = {'app': app, "form": form}
 
     return render_to_response(template_name, c,
@@ -1688,7 +1686,6 @@ def membership_join_report(request):
     memberships = memberships.filter(application_approved_dt__gte=start_date,
                                      application_approved_dt__lt=end_date_time)
     memberships = memberships.filter(renewal=False).distinct('user__id', 'membership_type__id')
-
 
     EventLog.objects.log()
 
@@ -2357,7 +2354,7 @@ def report_members_donated(request, template_name='reports/members_donated.html'
     return render_to_response(template_name,
                               {'memberships': memberships,},
                               context_instance=RequestContext(request))
-    
+
 @is_enabled('memberships')
 @staff_member_required
 def memberships_overview(request,
@@ -2376,5 +2373,3 @@ def memberships_overview(request,
         'summary': summary,
         'total': total,
         }, context_instance=RequestContext(request))
-
-

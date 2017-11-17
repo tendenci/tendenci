@@ -75,7 +75,6 @@ def process_email(quiet=False):
         if not q.email_box_interval:
             q.email_box_interval = 0
 
-
         queue_time_delta = timedelta(minutes=q.email_box_interval)
 
         if (q.email_box_last_check + queue_time_delta) > timezone.now():
@@ -122,7 +121,6 @@ def process_queue(q, quiet=False):
         server.user(q.email_box_user or settings.QUEUE_EMAIL_BOX_USER)
         server.pass_(q.email_box_pass or settings.QUEUE_EMAIL_BOX_PASSWORD)
 
-
         messagesInfo = server.list()[1]
 
         for msg in messagesInfo:
@@ -156,7 +154,7 @@ def process_queue(q, quiet=False):
                 ticket = ticket_from_message(message=data[0][1], queue=q, quiet=quiet)
                 if ticket:
                     server.store(num, '+FLAGS', '\\Deleted')
-        
+
         server.expunge()
         server.close()
         server.logout()
@@ -234,7 +232,7 @@ def ticket_from_message(message, queue, quiet):
                 body_html = body_html.replace("<table>", "\n<table>")
                 body_html = body_html.replace("</table>", "</table>\n")
                 body_html = body_html.replace("<br />", "<br />\n")
-                
+
                 try:
                     # strip html tags
                     body_plain = striptags(body_html)
@@ -318,7 +316,7 @@ def ticket_from_message(message, queue, quiet):
     if t.status == Ticket.REOPENED_STATUS:
         f.new_status = Ticket.REOPENED_STATUS
         f.title = _('Ticket Re-Opened by E-Mail Received from %(sender_email)s' % {'sender_email': sender_email})
-    
+
     f.save()
 
     if not quiet:
@@ -338,7 +336,6 @@ def ticket_from_message(message, queue, quiet):
             a.save()
             if not quiet:
                 print("    - %s" % filename)
-
 
     context = safe_template_context(t)
 
@@ -402,4 +399,3 @@ def ticket_from_message(message, queue, quiet):
 
 if __name__ == '__main__':
     process_email()
-

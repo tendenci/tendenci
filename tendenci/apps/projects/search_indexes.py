@@ -19,8 +19,7 @@ class ProjectIndex(TendenciBaseSearchIndex, indexes.Indexable):
     video_embed_code = indexes.CharField(model_attr='video_embed_code',)
     video_title = indexes.CharField(model_attr='video_title',)
     video_description = indexes.CharField(model_attr='video_description',)
-    
+
     @classmethod
     def get_model(self):
         return Project
-

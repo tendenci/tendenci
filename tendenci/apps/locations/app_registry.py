@@ -10,7 +10,7 @@ class LocationRegistry(CoreRegistry):
     version = '1.0'
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = _('A list of locations associated with your organization' \
+    description = _('A list of locations associated with your organization'
         'Includes a search that sort by nearest location.')
     icon = '%simages/icons/locations-color-64x64.png' % settings.STATIC_URL
 

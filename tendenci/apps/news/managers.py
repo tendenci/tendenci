@@ -11,4 +11,3 @@ class NewsManager(TendenciBaseManager):
             kwargs['tags-query'] = True
 
         return super(NewsManager, self).search(query, *args, **kwargs)
-

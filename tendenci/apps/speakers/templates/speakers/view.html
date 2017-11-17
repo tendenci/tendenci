@@ -87,7 +87,7 @@
             {% trans 'Send email to ' %}{{ speaker.email|obfuscate_email:speaker.name }}
         </div>
         {% endif %}
-        
+
          <div class="speaker-media">
          	{% if speaker.facebook %}
 	            <a href="{{ speaker.facebook }}"><img src="{{ STATIC_URL }}images/icons/facebook-24x24.png" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
@@ -98,7 +98,7 @@
             {% if speaker.linkedin %}
             	<a href="{{ speaker.linkedin }}"><img src="{{ STATIC_URL }}images/icons/linkedin-24x24.png" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
             {% endif %}
-            
+
             {% if speaker.get_satisfaction %}
 	         	<div>
 	            {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>

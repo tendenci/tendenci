@@ -99,7 +99,7 @@ echo $result;
         </dl>
 
         <p>Responses will have one of two content-types:</p>
-        
+
         <dl>
             <dt>text/plain</dt>
             <dd>Any error messages, or simple responses (eg a ticket ID)</dd>
@@ -151,7 +151,7 @@ echo $result;
         <p>This method responds with <strong>plain-text</strong>.</p>
 
         <p>If you receive a 200 OK <a href='#response'>response</a>, then the content of the response will be the ticket ID.</p>
-        
+
         <h3 id='method_delete_ticket'>delete_ticket</h3>
 
         <p>When given a ticket ID and confirmation, this method will delete a ticket entirely. This also deletes any followups, attachments, and other details.</p>
@@ -181,10 +181,10 @@ echo $result;
         </dl>
 
         <h4>Response</h4>
-        
+
         <p>A standard <a href='#response'>200 OK response</a> is given on success, or an error message on failure.</p>
 
-        
+
         <h3 id='method_unhold_ticket'>unhold_ticket</h3>
 
         <p>If a ticket is currently on hold and you wish to remove that hold, use this method.</p>
@@ -196,10 +196,10 @@ echo $result;
         </dl>
 
         <h4>Response</h4>
-        
+
         <p>A standard <a href='#response'>200 OK response</a> is given on success, or an error message on failure.</p>
-        
-        
+
+
         <h3 id='method_add_followup'>add_followup</h3>
 
         <p>This method adds a comment / followup to a ticket. The followup can be public, in which case it is e-mailed to the submitter, or private. The followup will also be sent to others involved in the ticket: The owner and the queue notification / CC address.</p>
@@ -220,10 +220,10 @@ echo $result;
         <h4>Response</h4>
 
         <p>A standard <a href='#response'>200 OK response</a> is given on success, or an error message on failure.</p>
-        
-        
+
+
         <h3 id='method_resolve'>resolve</h3>
-        
+
         <p>This method adds a resolution to a ticket and marks it as resolved. The resolution will be e-mailed to everybody involved with the ticket, including the submitter.</p>
 
         <h4>Parameters</h4>
@@ -239,8 +239,8 @@ echo $result;
         <h4>Response</h4>
 
         <p>A standard <a href='#response'>200 OK response</a> is given on success, or an error message on failure.</p>
-        
-        
+
+
         <h3 id='method_list_queues'>list_queues</h3>
 
         <p>This method provides a JSON-parsable list of queues, letting you access the individual queue ID in order to create tickets.</p>
@@ -248,21 +248,21 @@ echo $result;
         <h4>Response</h4>
 
         <p>This method responds with <strong>json</strong>.</p>
-        
+
         <p>It provides a list of queues in JSON format. The fields provided are ID and Title.</p>
 
-        
+
         <h3 id='method_find_user'>find_user</h3>
 
         <p>When given a username, this method provides the related numeric user ID - commonly used when creating or reassigning tickets.</p>
-        
+
         <h4>Parameters</h4>
 
         <dl>
             <dt>username</dt>
             <dd>The case-sensitive username of the user for which you require the user ID</dd>
         </dl>
-        
+
         <h4>Response</h4>
 
         <p>This method responds with <strong>plain-text</strong>.</p>

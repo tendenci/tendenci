@@ -21,7 +21,6 @@ from tendenci.apps.studygroups.models import StudyGroup, Officer, Position
 from tendenci.apps.studygroups.forms import StudyGroupForm, StudyGroupAdminForm, OfficerForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
-from tendenci.apps.event_logs.models import EventLog
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -83,55 +82,55 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
 
     if not has_perm(request.user,'studygroups.add_studygroup'):
         raise Http403
-    
+
     content_type = get_object_or_404(ContentType, app_label='studygroups',model='studygroup')
-        
+
     #OfficerFormSet = inlineformset_factory(StudyGroup, Officer, form=OfficerForm, extra=1)
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
-        
+
         #formset = OfficerFormSet(request.POST, prefix="officers")
-        
+
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             study_group = form.save(commit=False)
             study_group = update_perms_and_save(request, form, study_group)
-            
+
             #save meta
             meta = metaform.save()
             study_group.meta = meta
-            
+
             #setup categories
             category = Category.objects.get_for_object(study_group,'category')
             sub_category = Category.objects.get_for_object(study_group,'sub_category')
-            
+
             ## update the category of the studygroup
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
+            if category != '0':
                 Category.objects.update(study_group ,category,'category')
             else: # remove
                 category_removed = True
                 Category.objects.remove(study_group ,'category')
                 Category.objects.remove(study_group ,'sub_category')
-            
+
             if not category_removed:
                 # update the sub category of the studygroup
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
+                if sub_category != '0':
                     Category.objects.update(study_group, sub_category,'sub_category')
                 else: # remove
-                    Category.objects.remove(study_group,'sub_category')  
-            
+                    Category.objects.remove(study_group,'sub_category')
+
             #save relationships
             study_group.save()
-            
+
             EventLog.objects.log()
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % study_group)
-            
+
             if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'studygroups', 'studygrouprecipients')
@@ -152,8 +151,8 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
         form = form_class(user=request.user)
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
-        
-    return render_to_response(template_name, 
+
+    return render_to_response(template_name,
             {
                 'form':form,
                 'metaform':metaform,
@@ -163,18 +162,18 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
 
 @login_required
 def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/edit.html"):
-        
+
     study_group = get_object_or_404(StudyGroup, pk=id)
-    
+
     if not has_perm(request.user,'studygroups.change_studygroup',study_group):
         raise Http403
-        
+
     content_type = get_object_or_404(ContentType, app_label='studygroups',model='studygroup')
-    
+
     #setup categories
     category = Category.objects.get_for_object(study_group,'category')
     sub_category = Category.objects.get_for_object(study_group,'sub_category')
-        
+
     initial_category_form_data = {
         'app_label': 'studygroups',
         'model': 'studygroup',
@@ -190,9 +189,9 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         form = form_class(request.POST, request.FILES, instance=study_group, user=request.user)
         metaform = meta_form_class(request.POST, instance=study_group.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
-            
+
         formset = OfficerFormSet(request.POST, instance=study_group, prefix="officers")
-        
+
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             study_group = form.save(commit=False)
             # update all permissions and save the model
@@ -201,27 +200,27 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
             #save meta
             meta = metaform.save()
             study_group.meta = meta
-            
+
             officers = formset.save()
-                
+
             ## update the category of the studygroup
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
+            if category != '0':
                 Category.objects.update(study_group ,category,'category')
             else: # remove
                 category_removed = True
                 Category.objects.remove(study_group ,'category')
                 Category.objects.remove(study_group ,'sub_category')
-            
+
             if not category_removed:
                 # update the sub category of the studygroup
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
+                if sub_category != '0':
                     Category.objects.update(study_group, sub_category,'sub_category')
                 else: # remove
-                    Category.objects.remove(study_group,'sub_category')    
-            
+                    Category.objects.remove(study_group,'sub_category')
+
             #save relationships
             study_group.save()
 

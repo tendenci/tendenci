@@ -181,7 +181,6 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
         self.add_form_control_class()
 
-
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
         pricing_option = self.form.pricing_set.get(pk=pricing_pk)

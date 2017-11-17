@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.apps.memberships.models import MembershipAppField
-        
+
         app_id = options['app_id']
         po = 92
         for i in xrange(6, 31):

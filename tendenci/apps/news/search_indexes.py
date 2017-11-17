@@ -51,13 +51,11 @@ class NewsIndex(TendenciBaseSearchIndex, indexes.Indexable):
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.syndicate \
-                and obj.status == 1  and obj.status_detail == 'active' \
+                and obj.status == 1 and obj.status_detail == 'active' \
                 and obj.release_dt <= datetime.now()
-    
+
     def prepare_groups(self, obj):
         return [group.pk for group in obj.groups.all()] or None
 
     def prepare_order(self, obj):
         return obj.release_dt
-
-

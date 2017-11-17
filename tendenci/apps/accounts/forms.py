@@ -82,7 +82,6 @@ class RegistrationCustomForm(RegistrationForm):
 
         return self.cleaned_data
 
-
     def save(self, profile_callback=None, event=None):
         #
         #new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
@@ -249,4 +248,3 @@ class PasswordResetForm(forms.Form):
                 subject=_("Password reset on %s") % site_name,
                 body=t.render(Context(c)))
         email.send()
-

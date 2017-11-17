@@ -23,7 +23,7 @@
             </li>
         {% endif %}
     {% endwith %}
-    
+
     {% if tags %}
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
@@ -32,10 +32,10 @@
            {% endfor %}
         <li>
     {% endif %}
-    
+
     {% if user.is_superuser %}
     	<li>
-    		Created {{ committee.create_dt|date:"long" }} by 
+    		Created {{ committee.create_dt|date:"long" }} by
             <a href="{{ committee.creator.get_absolute_url }}">
                 {% if committee.creator.first_name %}
                     {{ committee.creator.first_name }} {{ committee.creator.last_name }}
@@ -45,7 +45,7 @@
             </a>
     	</li>
     	<li>
-    		Last updated {{ committee.update_dt|date:"long" }} by 
+    		Last updated {{ committee.update_dt|date:"long" }} by
             <a href="{{ committee.owner.get_absolute_url }}">
                 {% if committee.owner.first_name %}
                     {{ committee.owner.first_name }} {{ committee.owner.last_name }}
@@ -54,7 +54,7 @@
                 {% endif %}
             </a
     	</li>
-    {% endif %}  
+    {% endif %}
 </ul>
 
 

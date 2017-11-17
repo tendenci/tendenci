@@ -114,4 +114,3 @@ class TendenciBaseSearchIndex(indexes.SearchIndex):
         (app_label).view_(module_name)
         """
         return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.model_name), obj)
-

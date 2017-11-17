@@ -2,12 +2,12 @@
 
 #### Notable changes:
 
-1. New top menu (for both admin and logged in users) 
+1. New top menu (for both admin and logged in users)
 2. Newsletters format update and clone feature
 3. Reports format update (including invoices, memberships, ..)
 4. Events views - Added sub menu for month view, week view, day view
 5. Separated join approval and renewal approval for membership notices
-6. Wysiwyg editor - Enabled the image title input field in the image dialog. Added class dropdown to the tinymce link dialog box 
+6. Wysiwyg editor - Enabled the image title input field in the image dialog. Added class dropdown to the tinymce link dialog box
 7. Updated the directories categories to make it easy manage
 8. Added drag-drop functionality to the testimonials
 9. Added memberships overview report
@@ -18,7 +18,7 @@
 #### Fixes:
 
 1. (Security) Disabled GZipMiddleware to prevent BREACH attacks
-2. (Security) Prevent fraudulent simultaneous reuse of PayPal transactions 
+2. (Security) Prevent fraudulent simultaneous reuse of PayPal transactions
 3. Resolved the issue regarding manage.py hangs when caching is enabled. Re-enabled the cache for site settings.
 4. Resolved the subprocess venv issue.
 5. Fixed exports for directories, jobs, resumes, pages.
@@ -52,7 +52,7 @@ Special thanks to @PaulSD for lots of fixes and update!
 * Some updates on corp memberships
 * Added tendenci footer to email notifications
 * Added category and subcategory drop downs to articles search
-* Added reference_number field to /py/ 
+* Added reference_number field to /py/
 * Made videos sort draggable
 * Sending notification only at the time the corp cap is reached
 * Made category and video_type editable for the videos list
@@ -70,7 +70,7 @@ Special thanks to @PaulSD for lots of fixes and update!
 
 **Fixes**
 
-* Bugfix on event registration with custom form 
+* Bugfix on event registration with custom form
 * Set start_dt and end_dt to current year for newsletter events
 * Fixed AttributeError: 'Options' object has no attribute 'module_name'
 * Fixed TypeError: Related Field got invalid lookup: icontains

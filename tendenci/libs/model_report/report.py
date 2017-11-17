@@ -287,7 +287,6 @@ class ReportAdmin(object):
                     except Exception as e:
                         pass
 
-
     def _get_grouper_text(self, groupby_field, value):
         try:
             model_field = [mfield for mfield, field in self.model_fields if field == groupby_field][0]
@@ -512,7 +511,6 @@ class ReportAdmin(object):
         """ Override this method to another one raising Forbidden
         exceptions if you want to limit the access to the report """
 
-
     def render(self, request, extra_context={}):
         context_or_response = self.get_render_context(request, extra_context)
         self.check_permissions(request)
@@ -561,7 +559,7 @@ class ReportAdmin(object):
             return None
 
         GroupByForm.groupby_fields = groupby_fields
-        
+
         form = GroupByForm(data=request.GET or None)
         if hasattr(self, 'hide_show_only_totals') and self.hide_show_only_totals:
             del form.fields['onlytotals']
@@ -579,7 +577,6 @@ class ReportAdmin(object):
             for field_to_set_widget, widget in widget.iteritems():
                 if field_to_set_widget == field:
                     return (True, widget, MultipleChoiceField().__class__)
-
 
     def get_form_filter(self, request):
         form_fields = fields_for_model(self.model, [f for f in self.get_query_field_names() if f in self.list_filter])

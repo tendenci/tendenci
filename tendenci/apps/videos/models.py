@@ -87,7 +87,6 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         verbose_name_plural = get_setting('module', 'videos', 'label_plural') or "Videos"
         app_label = 'videos'
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("video.details", [self.slug])
@@ -120,10 +119,10 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
     def thumbnail(self):
         return get_oembed_thumbnail(self.video_url, 600, 400)
-    
+
     def is_youtube_video(self):
         return 'www.youtube.com' in self.video_url
-        
+
     def youtube_video_id(self):
         if self.is_youtube_video():
             return get_embed_ready_url(self.video_url).replace('https://www.youtube.com/embed/', '')
@@ -204,11 +203,11 @@ class OembedlyCache(models.Model):
                 return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
             obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
             obj.save()
-            
-        # Strip the obsolete attributes from iframe to avoid html validation errors 
+
+        # Strip the obsolete attributes from iframe to avoid html validation errors
         code = code.replace('scrolling="no" ', '')
         code = code.replace('frameborder="0" ', '')
-        
+
         return code
 
 def get_embed_ready_url(url):
@@ -223,14 +222,14 @@ def get_embed_ready_url(url):
         match = p.search(url)
     if match:
         return 'https://www.youtube.com/embed/{}'.format(match.group(1))
-    
+
     # check if it's a vimeo video
     p = re.compile(r'vimeo\.com/(\d+)')
     match = p.search(url)
     if match:
         return 'https://player.vimeo.com/video/{}'.format(match.group(1))
     return url
-        
+
 
 def get_oembed_code(url, width, height):
     return OembedlyCache.get_code(url, width, height)

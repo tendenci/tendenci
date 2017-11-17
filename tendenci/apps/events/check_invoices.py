@@ -18,4 +18,3 @@ for reg in regs:
 
         if inv:
             print(inv, "invoice found for", reg.pk)
-

@@ -151,7 +151,7 @@ class EventListNode(Node):
         else:
             cat = None
             query = ''
-        
+
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
 
@@ -187,7 +187,6 @@ class EventListNode(Node):
                 events = events.order_by(self.ordering)
             else:
                 events = events.order_by('-priority', 'start_dt')
-
 
         if cat == 'priority':
             events = events.filter(**{cat : True })
@@ -407,7 +406,7 @@ class ListEventsNode(ListNode):
 
         if start_dt:
             items = items.filter(start_dt__gte=start_dt)
-            
+
         # exclude private events
         items = items.filter(enable_private_slug=False)
 

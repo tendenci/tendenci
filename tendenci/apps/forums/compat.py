@@ -63,6 +63,7 @@ def get_paginator_class():
     except ImportError:
         # the simplest emulation of django-pure-pagination behavior
         from django.core.paginator import Paginator, Page
+
         class PageRepr(int):
             def querystring(self):
                 return 'page=%s' % self

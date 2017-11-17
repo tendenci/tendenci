@@ -4,12 +4,12 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    text-align: left;   
+    text-align: left;
     margin-bottom: 10px;
     width: 61%;
 }
 .event-title {
-    font-size: 1.3em;   
+    font-size: 1.3em;
     margin-bottom: 10px;
 }
 .event-time {
@@ -46,7 +46,7 @@
     -moz-border-radius: 4px;
     border-radius: 4px;
     width: 200px;
-    
+
 }
 #reg-form-box input[type="text"]{
     width: 150px;
@@ -70,7 +70,7 @@
     border-top: 1px solid #ccc;
     margin-bottom: 1em;
 }
-#total-label,#total-amount{ 
+#total-label,#total-amount{
     font-weight: bold;
 }
 #summary-price, #summary-total-price{

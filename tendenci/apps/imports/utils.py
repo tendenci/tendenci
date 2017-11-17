@@ -196,8 +196,8 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
         data_dict = data_dict_list[r]
 
-        missing_keys = [key for key in data_dict.keys() \
-                        if key in key_list \
+        missing_keys = [key for key in data_dict.keys()
+                        if key in key_list
                         and data_dict[key] == '']
 
         for key in data_dict.keys():

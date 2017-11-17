@@ -30,7 +30,7 @@ class EventAdmin(TendenciBaseModelAdmin):
     search_fields = ("title",)
     list_filter = ('enable_private_slug',)
     ordering = ['-start_dt']
-    
+
     def __init__(self, *args, **kwargs):
         super(EventAdmin, self).__init__(*args, **kwargs)
         if 'edit_link' in self.list_display:
@@ -104,11 +104,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
                                                  ('zip', 'country', 'meal_option'),
                                                  ('comments',)),
                                      'classes': ('mapped-fields',),
-                                     'description': _('The fields you selected will be automatically added to ' + \
-                                     'your form. These fields are mapped to the user fields in ' + \
-                                     'the registration. To delete a mapped field, uncheck its corresponding ' + \
-                                     'check box here. Please do not add another custom field ' + \
-                                     'if you can find a field here. To add a custom field, click Add a ' + \
+                                     'description': _('The fields you selected will be automatically added to ' +
+                                     'your form. These fields are mapped to the user fields in ' +
+                                     'the registration. To delete a mapped field, uncheck its corresponding ' +
+                                     'check box here. Please do not add another custom field ' +
+                                     'if you can find a field here. To add a custom field, click Add a ' +
                                      'Custom Field in the Fields section below.')})
     )
 

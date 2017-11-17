@@ -29,5 +29,3 @@ class ProfileResource(TendenciResource):
         validation = TendenciValidation(form_class=ProfileForm)
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-
-

@@ -14,7 +14,7 @@ def event_group_to_groups(apps, schema_editor):
     for event in Event.objects.all():
         if event.group:
             event.groups.add(event.group)
-        
+
 
 class Migration(migrations.Migration):
 

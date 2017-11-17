@@ -72,4 +72,3 @@ class MakePaymentForm(forms.ModelForm):
                     self.fields['phone'].initial = profile.phone
             except:
                 pass
-

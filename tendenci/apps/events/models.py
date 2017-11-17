@@ -159,7 +159,6 @@ class RegistrationConfiguration(models.Model):
         (False, _('Use separate form for each pricing'),
     ))
 
-
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
@@ -167,7 +166,7 @@ class RegistrationConfiguration(models.Model):
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
-    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
+    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " +
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
@@ -184,13 +183,13 @@ class RegistrationConfiguration(models.Model):
                                  help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=BIND_CHOICES, 
+                                 choices=BIND_CHOICES,
                                  default=BIND_TRUE)
 
     # base email for reminder email
     email = models.ForeignKey(Email, null=True)
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
-    reminder_days = models.CharField(_('Specify when (? days before the event ' + \
+    reminder_days = models.CharField(_('Specify when (? days before the event ' +
                                        'starts) the reminder should be sent '),
                                      max_length=20,
                                      null=True, blank=True,
@@ -373,7 +372,7 @@ class RegConfPricing(OrderingBaseModel):
                 filter_or = {'allow_anonymous': True,
                              'allow_user': True,
                              'allow_member': True}
-                
+
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
@@ -896,10 +895,9 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
-
     def populate_custom_form_entry(self):
         """
-        When, for some reason, registrants don't have the associated custom reg form entry 
+        When, for some reason, registrants don't have the associated custom reg form entry
         registered for an event with a custom form, they cannot be edited.
         We're going to check and populate the entry if not existing so that they can edit.
         """
@@ -1471,7 +1469,7 @@ class CustomRegForm(models.Model):
         """
         Clone this custom registration form and associate it with the event if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_obj = self.__class__.objects.create(**params)
         # clone fiellds
@@ -1523,7 +1521,7 @@ class CustomRegField(OrderingBaseModel):
         """
         Clone this custom registration field, and associate it with the form if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
 
@@ -1655,7 +1653,6 @@ class Addon(models.Model):
     class Meta:
         app_label = 'events'
 
-    
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True)
@@ -1743,4 +1740,3 @@ class RegAddonOption(models.Model):
     def __unicode__(self):
         #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
         return "%s: %s" % (self.regaddon.pk, self.option.title)
-

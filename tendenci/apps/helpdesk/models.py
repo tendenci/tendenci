@@ -393,7 +393,7 @@ class Ticket(models.Model):
         help_text=_('The date this ticket was last escalated - updated '
             'automatically by management/commands/escalate_tickets.py.'),
         )
-    
+
     creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="%(app_label)s_%(class)s_creator", editable=False)
     creator_username = models.CharField(max_length=50, default='', editable=False)
@@ -1370,8 +1370,6 @@ class TicketCustomFieldValue(models.Model):
 
     class Meta:
         unique_together = ('ticket', 'field'),
-
-    class Meta:
         verbose_name = _('Ticket custom field value')
         verbose_name_plural = _('Ticket custom field values')
 

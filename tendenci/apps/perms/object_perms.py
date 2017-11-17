@@ -24,6 +24,6 @@ class ObjectPermission(models.Model):
     object = GenericForeignKey('content_type', 'object_id')
 
     objects = ObjectPermissionManager()
-    
+
     class Meta:
         app_label = 'perms'

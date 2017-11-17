@@ -11,4 +11,3 @@ class Command(BaseCommand):
         for config in reg8n_configs:
             config.end_dt = config.late_dt
             config.save()
-

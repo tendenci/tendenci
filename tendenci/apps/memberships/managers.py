@@ -141,10 +141,10 @@ class MembershipDefaultManager(TendenciBaseManager):
         """
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
-    
+
     def active(self, **kwargs):
         """
-        Returns active memberships 
+        Returns active memberships
         """
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')

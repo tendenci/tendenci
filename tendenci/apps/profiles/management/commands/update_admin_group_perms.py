@@ -32,4 +32,3 @@ class Command(BaseCommand):
         #self.stdout.write('Successfully added all permissions to group "Admin".')
         out += 'Successfully added/updated all permissions to group "%s".' % name
         print(out)
-

@@ -45,9 +45,9 @@
         <p>{{SITE_GLOBAL_SITEURL}}{{ case_study.get_absolute_url }}</p>
         <h2>{{ case_study.client }} {% trans "Case Study" %}</h2>
         <section id="case-study-text" class="clearfix">
-          
+
               <div id="service-tech">
-              
+
                 {% for img in case_study.featured_screenshots %}
                   {% if forloop.first %}
                   <div id="featured-screenshot">
@@ -71,9 +71,9 @@
                   <h2>Results</h2>
                   <p>{{ case_study.results|safe }}</p>
               {% endif %}
-        
+
           </section><!-- /case-study-text -->
-          
+
           <h2>Screenshots</h2>
           <div id="cs-photos" class="clearfix">
               {% for img in case_study.screenshots %}
@@ -82,13 +82,13 @@
           </div>
           {% if tags %}
         <div class="tags">
-            Tags: 
+            Tags:
             {% for tag in tags %}
               <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>
-            {% endfor %}  
+            {% endfor %}
         </div>
         {% endif %}
-        
+
     </div>
 
 </div>

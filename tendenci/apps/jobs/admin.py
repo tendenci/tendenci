@@ -115,7 +115,7 @@ class CategoryAdminInline(admin.TabularInline):
     verbose_name = _("Job Sub-Category")
     verbose_name_plural = _("Job Sub-Categories")
     ordering = ['name']
-    
+
 
 class JobCategoryAdmin(admin.ModelAdmin):
     list_display = [
@@ -128,12 +128,11 @@ class JobCategoryAdmin(admin.ModelAdmin):
     inlines = (CategoryAdminInline,)
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
-    
-   
+
     def sub_categories(self, instance):
         return ', '.join(JobCategory.objects.filter(parent=instance).values_list('name', flat=True))
     sub_categories.allow_tags = True
-    
+
     def get_queryset(self, request):
         qs = super(JobCategoryAdmin, self).get_queryset(request)
         return qs.filter(parent__isnull=True)

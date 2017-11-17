@@ -21,5 +21,3 @@ def newsletter_current_app(context, user, newsletter=None):
         "user": user
     })
     return context
-
-

@@ -21,7 +21,7 @@
                                     </a>
                                 </li>
                             {% endif %}
-                        
+
                             {% if MODULE_MEMBERSHIPS_ENABLED %}
                             {% if USER_IS_SUPERUSER or user.profile.is_member %}
                             {% if USER_IS_SUPERUSER or MODULE_USERS_ALLOWUSERSEARCH or MODULE_MEMBERSHIPS_MEMBERPROTECTION == 'public' %}
@@ -32,7 +32,7 @@
                                 </li>
                             {% endif %}
                             {% endif %}
-                            
+
                             {% if USER_IS_SUPERUSER %}
                             	<li class="content-item">
                                     <a href="{% url 'admin:memberships_membershipdefault_changelist' %}">
@@ -41,9 +41,9 @@
                                 </li>
                             {% endif %}
 
-                            
+
                             {% endif %}
-                            
+
 
                             {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                             {% if USER_IS_SUPERUSER %}
@@ -60,8 +60,8 @@
                                     </a>
                                 </li>
                             {% endif %}
-                            
-                            
+
+
 
                             {% if MODULE_COMMITTEES_ENABLED %}
                                 <li class="content-item">

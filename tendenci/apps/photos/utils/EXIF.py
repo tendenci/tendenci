@@ -1572,7 +1572,6 @@ class EXIF_header:
                 self.canon_decode_tag(self.tags[i[0]].values, i[1])
             return
 
-
     # XXX TODO decode Olympus MakerNote tag based on offset within tag
     def olympus_decode_tag(self, value, dict):
         pass
@@ -1659,7 +1658,7 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
             intr_off = hdr.tags.get('EXIF SubIFD InteroperabilityOffset')
             if intr_off:
                 if debug:
-                    print(' EXIF Interoperability SubSubIFD at offset %d:' \
+                    print(' EXIF Interoperability SubSubIFD at offset %d:'
                           % intr_off.values[0])
                 hdr.dump_IFD(intr_off.values[0], 'EXIF Interoperability',
                              dict=INTR_TAGS, stop_tag=stop_tag)
@@ -1759,7 +1758,7 @@ if __name__ == '__main__':
             if i in ('JPEGThumbnail', 'TIFFThumbnail'):
                 continue
             try:
-                print('   %s (%s): %s' % \
+                print('   %s (%s): %s' %
                       (i, FIELD_TYPES[data[i].field_type][2], data[i].printable))
             except:
                 print('error', i, '"', data[i], '"')

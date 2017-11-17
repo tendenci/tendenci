@@ -2,7 +2,7 @@
 
 (function($) {
   $.fn.highchartTable = function() {
-    
+
     var allowedGraphTypes = ['column', 'line', 'area', 'spline', 'pie'];
 
     var getCallable = function (table, attribute) {
@@ -139,7 +139,7 @@
           vlines[indexTh]      = thGraphConfig;
         }
       });
-      
+
       var series = [];
       $(columns).each(function(indexColumn, column) {
         if(indexColumn!=0 && !column.skip) {
@@ -193,7 +193,7 @@
       var xValues         = [];
       var callablePoint   = getCallable(table, 'graph-point-callback');
       var isGraphDatetime = $table.data('graph-xaxis-type') == 'datetime';
-      
+
       var rows            = $('tbody:first tr', table);
       rows.each(function(indexRow, row) {
         if (!!$(row).data('graph-skip')) {
@@ -324,15 +324,15 @@
       var marginRight  = $table.data('graph-margin-right');
       var marginBottom = $table.data('graph-margin-bottom');
       var marginLeft   = $table.data('graph-margin-left');
-      
+
       var xAxisLabelsEnabled = $table.data('graph-xaxis-labels-enabled');
 
       var xAxisLabelStyle = {};
       var xAxisLabelFontSize = $table.data('graph-xaxis-labels-font-size');
-      
+
       if (typeof xAxisLabelFontSize != 'undefined')
       {
-        xAxisLabelStyle.fontSize = xAxisLabelFontSize; 
+        xAxisLabelStyle.fontSize = xAxisLabelFontSize;
       }
 
       var highChartConfig = {
@@ -381,7 +381,7 @@
           labels:
           {
             rotation: $table.data('graph-xaxis-rotation') || 0,
-            align:    $table.data('graph-xaxis-align') || 'center', 
+            align:    $table.data('graph-xaxis-align') || 'center',
             enabled:  typeof xAxisLabelsEnabled != 'undefined' ? xAxisLabelsEnabled : true,
             style:    xAxisLabelStyle
           },
@@ -463,7 +463,7 @@
     //for fluent api
     return this;
   };
-  
+
   var getXAxisMinMax = function(table, minOrMax) {
     var value = $(table).data('graph-xaxis-'+minOrMax);
     if (typeof value != 'undefined') {
@@ -489,5 +489,5 @@
     }
     return new Date(parseInt(dateDayInfos[0], 10), parseInt(dateDayInfos[1], 10)-1, parseInt(dateDayInfos[2], 10), min, hour);
   };
-  
+
 })(jQuery);

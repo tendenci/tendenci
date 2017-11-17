@@ -7,7 +7,6 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.testimonials.models import Testimonial
 from tendenci.apps.testimonials.forms import TestimonialForm
-from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
 
 

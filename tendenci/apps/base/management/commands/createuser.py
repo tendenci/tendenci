@@ -30,7 +30,7 @@ def is_valid_email(value):
 
 class Command(BaseCommand):
     help = 'User to create low level user with profile'
-    
+
     def add_arguments(self, parser):
         parser.add_argument('--username',
                             dest='username',
@@ -52,7 +52,6 @@ class Command(BaseCommand):
                             action='store',
                             dest='database',
             default=DEFAULT_DB_ALIAS, help='Specifies the database to use. Default is "default".'),
-        
 
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import Profile
@@ -139,8 +138,3 @@ class Command(BaseCommand):
 
         if verbosity >= 1:
           print('User %s (%s) created successfully' % (user.username, user.pk))
-
-
-
-
-

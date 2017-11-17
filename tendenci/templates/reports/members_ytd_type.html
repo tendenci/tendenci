@@ -10,7 +10,7 @@
   <h1>{% trans "Members YTD by type" %}</h1>
 </div>
 <div>
-  
+
   <form class="search-form form-inline pull-right" action="{% url "reports-members-ytd-type" %}" method="get">
     <div class="form-group">
       <label class="control-label" for="id_year">{% trans "Year" %}:</label>
@@ -22,11 +22,11 @@
       </select>
     </div>
   </form>
-  
+
   {% blocktrans with year=year %}
   <p>Currently showing data for {{ year }}.</p>
   {% endblocktrans %}
-  
+
   <h2>{% trans "New Members" %}</h2>
   <table class="table table-tendenci-reports">
     <tr>
@@ -35,7 +35,7 @@
       <th>{{ month }}</th>
       {% endfor %}
     </tr>
-    
+
     {% for k, v in types_new.items %}
     <tr>
       <td>{{ k }}</td>
@@ -44,7 +44,7 @@
       {% endfor %}
     </tr>
     {% endfor %}
-    
+
     <tfoot>
       <tr>
         <td><strong>{% trans "Total" %}</strong></td>
@@ -53,9 +53,9 @@
         {% endfor %}
       </tr>
     </tfoot>
-    
+
   </table>
-  
+
   <h2>{% trans "Renewed Members" %}</h2>
   <table class="table table-tendenci-reports">
     <tr>
@@ -64,7 +64,7 @@
       <th>{{ month }}</th>
       {% endfor %}
     </tr>
-    
+
     {% for k, v in types_renew.items %}
     <tr>
       <td>{{ k }}</td>
@@ -73,7 +73,7 @@
       {% endfor %}
     </tr>
     {% endfor %}
-    
+
     <tfoot>
       <tr>
         <td><strong>{% trans "Total" %}</strong></td>
@@ -82,9 +82,9 @@
         {% endfor %}
       </tr>
     </tfoot>
-    
+
   </table>
-  
+
   <h2>{% trans "Expired Members" %}</h2>
   <table class="table table-tendenci-reports">
     <tr>
@@ -93,8 +93,8 @@
       <th>{{ month }}</th>
       {% endfor %}
     </tr>
-    
-    
+
+
     {% for k, v in types_expired.items %}
     <tr>
       <td>{{ k }}</td>
@@ -103,7 +103,7 @@
       {% endfor %}
     </tr>
     {% endfor %}
-    
+
     <tfoot>
       <tr>
         <td><strong>{% trans "Total" %}</strong></td>
@@ -112,10 +112,10 @@
         {% endfor %}
       </tr>
     </tfoot>
-    
+
   </table>
   <br />
-  
+
 </div>
 
 {% endblock content %}

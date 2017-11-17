@@ -38,7 +38,6 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         blank=True,
         help_text='List personal websites followed by a return')
 
-    
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 
     perms = GenericRelation(ObjectPermission,
@@ -77,7 +76,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         delta = datetime.now().date() - self.start_date
         years = abs(round((delta.days / (365.25)), 2))
         return years
-        
+
     def featured_photo(self):
         try:
             return self.stafffile_set.get(photo_type='Featured')
@@ -93,7 +92,7 @@ class Department(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("staff.department_view", [self.slug])
@@ -143,7 +142,7 @@ class StaffFile(OrderingBaseModel, File):
     class Meta:
         ordering = ('position',)
         app_label = 'staff'
-        
+
 def post_save_setting(sender, **kwargs):
     instance = kwargs.get('instance', None)
     if instance and instance.name=='staff_url':

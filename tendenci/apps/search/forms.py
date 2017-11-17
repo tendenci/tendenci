@@ -36,9 +36,9 @@ apps_not_to_search = [
 ]
 
 registered_apps = registry_site.get_registered_apps()
-registered_apps_names = [app['model']._meta.model_name for app in registered_apps \
+registered_apps_names = [app['model']._meta.model_name for app in registered_apps
                         if app['verbose_name'].lower() not in apps_not_to_search]
-registered_apps_models = [app['model'] for app in registered_apps \
+registered_apps_models = [app['model'] for app in registered_apps
                          if app['verbose_name'].lower() not in apps_not_to_search]
 
 

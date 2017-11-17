@@ -13,7 +13,7 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     event = kwargs.pop('event', None)
     event_url = None
     if event: event_url = event.get_absolute_url()
-    
+
     next = kwargs.pop('next', '')
 
     site_url = get_setting('site', 'global', 'siteurl')

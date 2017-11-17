@@ -117,7 +117,7 @@ Currently showing members who expired in the last {{ days }} days.
         <a href="{% url "reports-active-members" %}?sort=invoice" ><i class="fa fa-arrow-up"></i></a>&nbsp;
         <a href="{% url "reports-active-members" %}?sort=-invoice" ><i class="fa fa-arrow-down"></i></a>
       </th>
-      
+
       {% else %}
       <!-- EXPIRED REPORT -->
       <th></th>
@@ -177,8 +177,7 @@ Currently showing members who expired in the last {{ days }} days.
         {% endfor %}
         </table>
         </div>
-        
+
         {% paginate %}
         <br /><br />
         {% endblock content %}
-                

@@ -42,15 +42,13 @@ class Speaker(TendenciBaseModel):
     flickr = models.CharField(blank=True, max_length=100)
     slideshare = models.CharField(blank=True, max_length=100)
 
-
     personal_sites = models.TextField(
         _('Personal Sites'),
         blank=True,
         help_text='List personal websites followed by a return')
 
-    
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
-    
+
     perms = GenericRelation(ObjectPermission,
                   object_id_field="object_id",
                   content_type_field="content_type")
@@ -70,13 +68,13 @@ class Speaker(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("speaker.view", [self.slug])
-        
+
     def professional_photo(self):
         try:
             return self.speakerfile_set.filter(photo_type__iexact='professional')[0]
         except:
             return False
-    
+
     def fun_photo(self):
         try:
             return self.speakerfile_set.filter(photo_type__iexact='fun')[0]

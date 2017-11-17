@@ -28,7 +28,7 @@ class Category(TendenciBaseModel):
     hidden = models.BooleanField(_('Hidden'), blank=False, null=False, default=False,
                                  help_text=_('If checked, this category will be visible only for staff and the rest of the permissions below will be ignored'))
     slug = models.SlugField(_("Slug"), max_length=255, unique=True)
-    
+
     perms = GenericRelation(ObjectPermission,
                             object_id_field="object_id",
                             content_type_field="content_type")

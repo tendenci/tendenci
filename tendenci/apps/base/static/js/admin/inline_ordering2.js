@@ -14,7 +14,7 @@ jQuery(function($) {
     });
     $('div.inline-related h3').css('cursor', 'move');
     $('div.inline-related').find('input[id$=order]').parent('div').hide();
-    
+
     $('#corpapp_form').submit(function() {
         $('div.inline-group > div.inline-related').not('div.inline-related:last').each(function(i) {
             //if ($(this).find('input[id$=label]').val()) {
@@ -23,5 +23,5 @@ jQuery(function($) {
         });
     });
 
-    
+
 });

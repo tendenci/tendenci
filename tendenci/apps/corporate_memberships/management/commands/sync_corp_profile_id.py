@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Command(BaseCommand):
     """
-    Make corporate_membership_id and corp_profile_id consistent for memberships 
+    Make corporate_membership_id and corp_profile_id consistent for memberships
     """
     def handle(self, *args, **kwargs):
         from tendenci.apps.corporate_memberships.models import CorpMembership

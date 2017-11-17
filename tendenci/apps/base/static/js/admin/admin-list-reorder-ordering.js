@@ -9,7 +9,7 @@ $(document).ready(function() {
 
     for (i = 0; i < cols.length; i++) {
         var inputs = $(cols[i]).find('input[name*=' + pos_field + ']')
-        
+
         if (inputs.length > 0) {
             // Found!
             var pos_col = i;
@@ -63,7 +63,7 @@ $(document).ready(function() {
                 // Reverse order
                 items.reverse()
             }
-            
+
             $(items).each(function(index) {
                 var pos_td = $(this).children()[pos_col]
                 var input = $(pos_td).children('input').first()

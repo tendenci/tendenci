@@ -48,7 +48,7 @@
                             <a href="{% url 'corpmembership.edit' opt_object.pk %}">{% trans "Edit" %}</a>
                         </li>
                     {% endif %}
-                            
+
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                             {% trans "More Options" %} <span class="caret"></span>
@@ -56,7 +56,7 @@
 
                         <ul class="dropdown-menu" role="menu">
 
-                                
+
 	                        {% if request.user.is_superuser and opt_object.is_active %}
 	                        	<li>
 	                                <a href="{% url 'corpmembership.upgrade' opt_object.pk %}">{% trans "Upgrade" %}</a>
@@ -123,4 +123,3 @@
         </span>
     </div>
 {% endif %}
-

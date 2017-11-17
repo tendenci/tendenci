@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         # Positional arguments
         parser.add_argument('scope_category')
-        
+
     def handle(self, scope_category, **options):
         try:
             verbosity = int(options['verbosity'])

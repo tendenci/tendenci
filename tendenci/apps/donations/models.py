@@ -34,7 +34,7 @@ class Donation(models.Model):
     status = models.NullBooleanField(default=True)
 
     objects = DonationManager()
-    
+
     class Meta:
         app_label = 'donations'
 
@@ -106,4 +106,3 @@ class Donation(models.Model):
                     'request': request,
                 }
                 notification.send_emails(recipients,'donation_added', extra_context)
-

@@ -111,7 +111,7 @@ def get_deleted_objects(objs, user):
                            get_permission_codename('delete', opts))
         if not user.has_perm(p):
             perms_needed.add(opts.verbose_name)
-                
+
         if hasattr(obj, 'get_absolute_url'):
             url = obj.get_absolute_url()
             # Display a link to the admin page.
@@ -329,12 +329,12 @@ def generate_meta_keywords(value):
         while search_end < value_length:
             s = one_word_pattern.search(value, search_end)
             if s:
-                word = s.group(1)
+                one_word = s.group(1)
                 # remove the : from the word
-                if word[-1] == ':':
-                    word = word[:-1]
+                if one_word[-1] == ':':
+                    one_word = one_word[:-1]
 
-                one_words.append(word)
+                one_words.append(one_word)
                 search_end = s.end()
             else: break
 
@@ -473,11 +473,11 @@ def dec_pass(password):
 
 def url_exists(url):
     o = urlparse(url)
-    
+
     if not o.scheme:
         # doesn't have a scheme, relative url
         url = '%s%s' %  (get_setting('site', 'global', 'siteurl'), url)
-        
+
     r = requests.head(url)
     return r.status_code == 200
 
@@ -640,7 +640,7 @@ def is_blank(item):
         l = item
     elif isinstance(item, basestring):
         l = list(item)
-        
+
     item = []
 
     # return not bool([i for i in l if i.strip)
@@ -785,7 +785,7 @@ def create_salesforce_contact(profile):
             result = sf.query("SELECT FirstName, LastName, Email FROM Contact WHERE Id='%s'" % profile.sf_contact_id)
             if 'records' in result and result['records']:
                 return profile.sf_contact_id
-            
+
         # Make sure that user last name is not blank
         # since that is a required field for Salesforce Contact.
         user = profile.user
@@ -809,11 +809,11 @@ def create_salesforce_contact(profile):
                     'MailingCountry':profile.country,
                     'MailingPostalCode':profile.zipcode,
                     })
-    
+
                 # update field Company_Name__c
                 if profile.company and 'Company_Name__c' in contact:
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
-    
+
                 profile.sf_contact_id = contact['id']
                 profile.save()
                 return contact['id']
@@ -917,6 +917,3 @@ def add_tendenci_footer(email_content, content_type='html'):
     if email_content.find('</body>') != -1:
         return email_content.replace("</body>", footer + "\n</body>")
     return email_content + footer
-
-
-

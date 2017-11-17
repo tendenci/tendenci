@@ -315,7 +315,7 @@ class FormEntry(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
-    
+
     @property
     def owner(self):
         return self.creator
@@ -413,7 +413,7 @@ class FormEntry(models.Model):
     def get_email_address(self):
         return self.get_type_of("emailverificationfield")
 
-     # Called by payments_pop_by_invoice_user in Payment model.
+    # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
         The description will be sent to payment gateway and displayed on invoice.

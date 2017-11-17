@@ -300,8 +300,8 @@ def dues_rep_emails_list(corp_memb):
                                 corp_profile=corp_memb.corp_profile,
                                 is_dues_rep=True)
     if dues_reps:
-        return [dues_rep.user.email \
-                for dues_rep in dues_reps \
+        return [dues_rep.user.email
+                for dues_rep in dues_reps
                 if dues_rep.user.email]
     return []
 

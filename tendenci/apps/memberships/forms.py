@@ -364,8 +364,8 @@ class MembershipAppForm(TendenciBaseForm):
         ),
         initial='published'
     )
-    
-    donation_label = forms.CharField(label=_("Label"), required=False, 
+
+    donation_label = forms.CharField(label=_("Label"), required=False,
                                      initial=_("Select or specify your contribution"),)
     donation_default_amount = PriceField(label=_("Default Amount"), decimal_places=2,
                                          help_text=_("Set a default amount for donation."),
@@ -442,7 +442,6 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
             else:
                 self.fields['field_type'].choices = MembershipAppField.FIELD_TYPE_CHOICES1
 
-
     def save(self, *args, **kwargs):
         self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
         if self.instance:
@@ -502,8 +501,8 @@ def get_field_size(app_field_obj):
 def assign_fields(form, app_field_objs):
     form_field_keys = form.fields.keys()
     # a list of names of app fields
-    field_names = [field.field_name for field in app_field_objs \
-                   if field.field_name != '' and \
+    field_names = [field.field_name for field in app_field_objs
+                   if field.field_name != '' and
                    field.field_name in form_field_keys]
 
     for name in form_field_keys:
@@ -561,7 +560,7 @@ def assign_fields(form, app_field_objs):
 class UserForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = User
-        fields = "__all__" 
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -645,21 +644,21 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         username_validate_err_msg = mark_safe(_('This Username already exists in the system. If this is your Username, %s Else, select a new Username to continue.') % login_link)
         email_validate_err_msg = mark_safe(_('This Email address already exists in the system. If this is your Email address, %s Else, select a different Email address to continue.') % login_link)
         activation_link = _('<a href="{activate_link}?username={username}&email={email}&next={next_path}">HERE</a>').format(
-                                                    activate_link=reverse('profile.activate_email'), 
-                                                    username=requests.utils.quote(un), email=requests.utils.quote(email), 
+                                                    activate_link=reverse('profile.activate_email'),
+                                                    username=requests.utils.quote(un), email=requests.utils.quote(email),
                                                     next_path=self.request.get_full_path())
         inactive_user_err_msg =  mark_safe(_('''This email "{email}" is associated with previous site activity.
-                    Please click {activation_link} and we'll send you an email to activate your account and then you 
+                    Please click {activation_link} and we'll send you an email to activate your account and then you
                     will be returned to this application.''').format(email=email, activation_link=activation_link))
 
         if self.request.user.is_authenticated() and self.request.user.username == un:
-            # they are logged in and join or renewal for themselves 
+            # they are logged in and join or renewal for themselves
             if email and email !=  self.request.user.email:
                 # email is changed
                 if User.objects.filter(email=email).exists():
                     raise forms.ValidationError(_('''This Email address "%s" already exists in the system.
                                     Please select a different one to continue.''') % email)
-                
+
         else:
             if un and pw:
                 # assert passwords match
@@ -667,9 +666,9 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(
                         _('Passwords do not match.')
                     )
-    
+
                 [u] = User.objects.filter(username=un)[:1] or [None]
-    
+
                 if u and u.is_active:
                     # assert password;
                     if not u.check_password(pw):
@@ -680,7 +679,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                         if email and u.email == email:
                             raise forms.ValidationError(inactive_user_err_msg)
                         raise forms.ValidationError('This username is taken. Please choose a new username.')
-    
+
             elif un:
                 [u] = User.objects.filter(username=un)[:1] or [None]
                 # assert username
@@ -688,7 +687,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(
                         _('This username exists. If it\'s yours, please provide your password.')
                     )
-                    
+
             if not u and not self.is_renewal:
                 # we didn't find user, check if email address is already in use
                 if un and email:
@@ -696,13 +695,13 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                         if self.request.user.is_authenticated():
                             # user is logged in
                             raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
-                        
+
                         # user is not logged in. prompt them to log in if the user record with this email address is active
                         u = User.objects.filter(email=email).order_by('-is_active')[0]
                         [profile] = Profile.objects.filter(user=u)[:1] or [None]
                         if (profile and profile.is_active) or u.is_active:
                             raise forms.ValidationError(email_validate_err_msg)
-                        
+
                         # at this point, user is not logged in and user record with this email is inactive
                         # let them activate the account before applying for membership
                         raise forms.ValidationError(inactive_user_err_msg)
@@ -771,7 +770,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
     country_2 = CountrySelectField(label=_('Country'), required=False)
     class Meta:
         model = Profile
-        fields = "__all__" 
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
@@ -869,8 +868,8 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
             education_list = user.educations.all().order_by('pk')[0:4]
         else: # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
-        
-        cnt = 0 
+
+        cnt = 0
         if education_list:
             for i, education in enumerate(education_list):
                 cnt = i + 1
@@ -911,7 +910,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = MembershipDemographic
-        fields = "__all__" 
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         self.request = kwargs.pop('request', None)
@@ -1033,7 +1032,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
     class Meta:
         model = MembershipDefault
-        fields = "__all__" 
+        fields = "__all__"
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
@@ -1138,7 +1137,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             else:
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
-                
+
         self.add_form_control_class()
 
         if self.membership_app.donation_enabled:
@@ -1155,7 +1154,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             if not (request_user and request_user.is_authenticated() and request_user.is_superuser):
                 payment_method_qs = payment_method_qs.exclude(admin_only=True)
             self.fields['payment_method'].queryset = payment_method_qs
-   
 
     def clean_donation_option_value(self):
         value_list = self.cleaned_data['donation_option_value']
@@ -1171,7 +1169,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
-        
 
     def save(self, *args, **kwargs):
         """
@@ -1259,13 +1256,12 @@ class MembershipExportForm(forms.Form):
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
     export_type = forms.ChoiceField(choices=())
-    
+
     def __init__(self, *args, **kwargs):
         super(MembershipExportForm, self).__init__(*args, **kwargs)
         EXPORT_TYPE_CHOICES = [(u'all', _('Export All Types'))] + \
                 list(MembershipType.objects.values_list('pk', 'name'))
         self.fields['export_type'].choices = EXPORT_TYPE_CHOICES
-        
 
 
 class NoticeForm(forms.ModelForm):
@@ -1685,7 +1681,6 @@ class MembershipDefaultForm(TendenciBaseForm):
                 self.fields[user_attr].initial = \
                     getattr(self.instance.user, user_attr)
 
-
             # initialize profile fields
             if hasattr(self.instance.user, 'profile'):
                 for profile_attr in profile_attrs:
@@ -1693,7 +1688,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                         getattr(self.instance.user.profile, profile_attr)
             else:
                 Profile.objects.create_profile(user=self.instance.user)
-                
+
             if 'renew_dt' in self.fields:
                 self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
         # -----------------------------------------------------
@@ -1710,8 +1705,8 @@ class MembershipDefaultForm(TendenciBaseForm):
                     cnt += 1
 
         # demographic fields - include only those selected on app
-        demographic_field_names = [field.name \
-                        for field in MembershipDemographic._meta.fields \
+        demographic_field_names = [field.name
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField']
         for field_name in demographic_field_names:
             if hasattr(self.fields, field_name):
@@ -1743,7 +1738,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                 else:
                     self.fields[field_name].initial = getattr(demographics, field_name)
         # end demographic
-        
+
         # industry field
         [industry_field] = MembershipAppField.objects.filter(field_name='industry',
                     membership_app=app, display=True)[:1] or [None]
@@ -1944,7 +1939,6 @@ class MembershipDefaultForm(TendenciBaseForm):
                         graduation_year=graduation_year
                     )
 
-
             # save career fields -------------------------------
             careers = zip(
                 request.POST.getlist('career_name'),
@@ -2085,4 +2079,3 @@ class MembershipDefaultForm(TendenciBaseForm):
         # ***** end demographics *****
 
         return membership
-

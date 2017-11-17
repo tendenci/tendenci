@@ -20,7 +20,7 @@ class Email(TendenciBaseModel):
     CONTENT_TYPE_CHOICES = (
         (CONTENT_TYPE_HTML, 'text/html'),
         (CONTENT_TYPE_TEXT, 'text'),
-    )   
+    )
 
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
@@ -44,24 +44,22 @@ class Email(TendenciBaseModel):
     class Meta:
         app_label = 'emails'
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("email.view", [self.pk])
 
     def __unicode__(self):
         return self.subject
-    
+
     @staticmethod
     def is_blocked(email_to_test):
         if not email_to_test or '@' not in email_to_test:
             return False
-        
+
         email_to_test = email_to_test.lower()
         email_domain = email_to_test.split('@')[1]
         return EmailBlock.objects.filter(Q(email=email_to_test) | Q(email_domain=email_domain)
                                          ).exists()
-        
 
     def send(self, fail_silently=False, **kwargs):
         recipient_list = []
@@ -71,20 +69,20 @@ class Email(TendenciBaseModel):
 
         if isinstance(self.recipient, basestring):
             recipient_list = self.recipient.split(',')
-            recipient_list = [recipient.strip() for recipient in recipient_list \
+            recipient_list = [recipient.strip() for recipient in recipient_list
                               if recipient.strip() != '']
         else:
             recipient_list = list(self.recipient)
         if isinstance(self.recipient_cc, basestring):
             recipient_cc_list = self.recipient_cc.split(',')
-            recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if \
+            recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if
                                   recipient_cc.strip() != '']
             recipient_list += recipient_cc_list
         else:
             recipient_list += list(self.recipient_cc)
         if isinstance(self.recipient_bcc, basestring):
             recipient_bcc_list = self.recipient_bcc.split(',')
-            recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if \
+            recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if
                                    recipient_bcc.strip() != '']
         else:
             recipient_bcc_list = list(self.recipient_bcc)
@@ -170,7 +168,6 @@ class Email(TendenciBaseModel):
                         if self.status:
                             boo = True
         return boo
-
 
     def template_body(self, email_d):
         """

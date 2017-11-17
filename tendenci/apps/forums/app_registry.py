@@ -11,7 +11,7 @@ class ForumRegistry(CoreRegistry):
     author_email = 'programmers@tendenci.com'
     description = _("Forums")
     icon = '%simages/icons/forums-color-64x64.png' % settings.STATIC_URL
-    
+
     url = {
         'list': lazy_reverse('pybb:index'),
     }

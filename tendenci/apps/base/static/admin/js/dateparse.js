@@ -36,7 +36,7 @@ var weekdayNames = gettext("Sunday Monday Tuesday Wednesday Thursday Friday Satu
    an error if 0 or more than 1 matches
 */
 function parseMonth(month) {
-    var matches = monthNames.filter(function(item) { 
+    var matches = monthNames.filter(function(item) {
         return new RegExp("^" + month, "i").test(item);
     });
     if (matches.length == 0) {
@@ -61,22 +61,22 @@ function parseWeekday(weekday) {
     return weekdayNames.indexOf(matches[0]);
 }
 
-/* Array of objects, each has 're', a regular expression and 'handler', a 
-   function for creating a date from something that matches the regular 
-   expression. Handlers may throw errors if string is unparseable. 
+/* Array of objects, each has 're', a regular expression and 'handler', a
+   function for creating a date from something that matches the regular
+   expression. Handlers may throw errors if string is unparseable.
 */
 var dateParsePatterns = [
     // Today
     {   re: /^tod/i,
-        handler: function() { 
+        handler: function() {
             return new Date();
-        } 
+        }
     },
     // Tomorrow
     {   re: /^tom/i,
         handler: function() {
-            var d = new Date(); 
-            d.setDate(d.getDate() + 1); 
+            var d = new Date();
+            d.setDate(d.getDate() + 1);
             return d;
         }
     },
@@ -89,7 +89,7 @@ var dateParsePatterns = [
         }
     },
     // 4th
-    {   re: /^(\d{1,2})(st|nd|rd|th)?$/i, 
+    {   re: /^(\d{1,2})(st|nd|rd|th)?$/i,
         handler: function(bits) {
             var d = new Date();
             d.setDate(parseInt(bits[1], 10));
@@ -97,7 +97,7 @@ var dateParsePatterns = [
         }
     },
     // 4th Jan
-    {   re: /^(\d{1,2})(?:st|nd|rd|th)? (\w+)$/i, 
+    {   re: /^(\d{1,2})(?:st|nd|rd|th)? (\w+)$/i,
         handler: function(bits) {
             var d = new Date();
             d.setDate(parseInt(bits[1], 10));
@@ -116,7 +116,7 @@ var dateParsePatterns = [
         }
     },
     // Jan 4th
-    {   re: /^(\w+) (\d{1,2})(?:st|nd|rd|th)?$/i, 
+    {   re: /^(\w+) (\d{1,2})(?:st|nd|rd|th)?$/i,
         handler: function(bits) {
             var d = new Date();
             d.setDate(parseInt(bits[2], 10));
@@ -209,7 +209,7 @@ function magicDate(input) {
     var messagespan = input.id + 'Msg';
     try {
         var d = parseDateString(input.value);
-        input.value = d.getFullYear() + '-' + (fmt00(d.getMonth() + 1)) + '-' + 
+        input.value = d.getFullYear() + '-' + (fmt00(d.getMonth() + 1)) + '-' +
             fmt00(d.getDate());
         input.className = '';
         // Human readable date

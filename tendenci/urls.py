@@ -1,5 +1,5 @@
 from os.path import join
-from django.conf.urls import *
+from django.conf.urls import patterns, url, include
 from django.conf import settings
 from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
@@ -7,7 +7,7 @@ from tendenci.libs.model_report import report
 from tendenci.apps.registry.register import autodiscover as registry_autodiscover
 
 registry_autodiscover()
-        
+
 # django model report
 report.autodiscover()
 
@@ -183,5 +183,3 @@ pattern_pages = patterns('',
     url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),
 )
 urlpatterns += pattern_pages
-
-

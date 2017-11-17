@@ -47,7 +47,7 @@
 	        <b>{% trans "Invoice Count:" %}</b> {{ profile.user|invoice_count }}<br />
 	        <b>{% trans "Number of Contributions:" %}</b> {{ profile.user.contributions_contribution_owner.count }}<br />
 	        <b>{% trans "Number of Group Memberships:" %}</b> {{ profile.get_groups|length }}<br />
-	    </div>  
+	    </div>
    </div>
 </div>
 {% endif %}

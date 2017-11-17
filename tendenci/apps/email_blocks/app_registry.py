@@ -15,4 +15,3 @@ class EmailBlockRegistry(LogRegistry):
     }
 
 site.register(EmailBlock, EmailBlockRegistry)
-

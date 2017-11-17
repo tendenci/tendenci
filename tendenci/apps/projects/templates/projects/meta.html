@@ -30,7 +30,7 @@
 			{% endif %}</a>
 		 </li>
 		 {% endif %}
-		 
+		
 		 {% if project.owner %}
 		 <li><strong>{% trans "Last updated" %}</strong> {{ project.update_dt|date:"long" }} {% trans "by" %}
         	<a href="{{ project.owner.get_absolute_url }}">
@@ -40,7 +40,7 @@
 			{% endif %}</a>
 		 </li>
 		 {% endif %}
-		 
+		
 		 {% if project.project_status %}
             <li><strong>{% trans "Project Status:" %}</strong> <span>{{ project.project_status }}</span></li>
          {% endif %}

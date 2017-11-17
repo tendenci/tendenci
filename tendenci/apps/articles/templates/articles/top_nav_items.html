@@ -26,7 +26,7 @@
                             <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</span>
                         </li>
                     {% endif %}
-                    
+
                     {% if can_edit_setting %}
                         <li class="content-item">
                             <span class="app-name">
@@ -34,7 +34,7 @@
                             </span>
                         </li>
                     {% endif %}
-                    
+
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'articles' %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</a>

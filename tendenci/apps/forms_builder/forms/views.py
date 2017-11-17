@@ -280,7 +280,6 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
 
-
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
         form_template = "forms/base.html"
@@ -369,7 +368,7 @@ def search(request, template_name="forms/search.html"):
     forms = Form.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
     if query:
-        forms = forms.filter(Q(title__icontains=query)|Q(intro__icontains=query)|Q(response__icontains=query))
+        forms = forms.filter(Q(title__icontains=query) | Q(intro__icontains=query) | Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
 
@@ -400,8 +399,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             return response
         if request.user.is_superuser and not email_field:
             messages.add_message(request, messages.WARNING,
-                    'Please edit the form to include an email field ' + \
-                    'as it is required for setting up a recurring ' + \
+                    'Please edit the form to include an email field ' +
+                    'as it is required for setting up a recurring ' +
                     'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
@@ -468,11 +467,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # log the spam
                 description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
                 EventLog.objects.log(instance=form, description=description)
-                
+
                 if form.completion_url:
                     return HttpResponseRedirect(form.completion_url)
                 return redirect("form_sent", form.slug)
-                
+
             email = Email()
             email.subject = subject
             email.reply_to = form.email_from
@@ -572,12 +571,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
-                    
+
                     update_invoice_for_entry(invoice, billing_form)
-                    
+
                     # log an event for invoice add
                     EventLog.objects.log(instance=form)
-                    
+
                     # redirect to online payment
                     if (entry.payment_method.machine_name).lower() == 'credit-card':
                         return redirect('payment.pay_online', invoice.id, invoice.guid)

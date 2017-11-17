@@ -78,7 +78,7 @@ def activate(request, activation_key,
         }
         user = authenticate(**credentials)
         login(request, user)
-        
+
         # send notification to administrators
         recipients = get_notice_recipients('module', 'users', 'userrecipients')
         if recipients:
@@ -88,13 +88,13 @@ def activate(request, activation_key,
                     'request': request,
                 }
                 notification.send_emails(recipients,'user_added', extra_context)
-        
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
-        
+
     next_url = request.GET.get('next', '')
     if account and next_url:
         return HttpResponseRedirect(next_url)

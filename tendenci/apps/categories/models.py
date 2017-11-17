@@ -32,7 +32,6 @@ class CategoryManager(Manager):
             cat_item.parent = category
             cat_item.save()
 
-
     def remove(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk
@@ -101,7 +100,6 @@ class CategoryManager(Manager):
 
         return (categories, sub_categories)
 
-
     def get_for_object(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk
@@ -132,7 +130,7 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     class Meta:
         app_label = 'categories'
         verbose_name = _("Category")

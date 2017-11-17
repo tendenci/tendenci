@@ -115,7 +115,7 @@ class EventSearchForm(forms.Form):
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
-        
+
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters).distinct(
                                         ).order_by('name').values_list('id', 'name')
@@ -458,7 +458,6 @@ class FormForCustomRegForm(forms.ModelForm):
 
         return memberid
 
-
     def clean_override_price(self):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
@@ -481,7 +480,6 @@ class FormForCustomRegForm(forms.ModelForm):
             elif not corp_membership.free_pass_avail:
                 raise forms.ValidationError(_('Free pass not available for "%s".' % corp_membership.corp_profile.name))
         return use_free_pass
-
 
     def save(self, event, **kwargs):
         """
@@ -517,11 +515,9 @@ class FormForCustomRegForm(forms.ModelForm):
                     #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
                     field_entry = CustomRegFieldEntry(field=field, entry=entry, value=value)
 
-
                 field_entry.save()
             return entry
         return
-
 
 
 def _get_price_labels(pricing):
@@ -821,7 +817,6 @@ class EventForm(TendenciBaseForm):
 
         # Always return the full collection of cleaned data.
         return cleaned_data
-
 
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
@@ -1186,7 +1181,6 @@ class Reg8nConfPricingForm(BetterModelForm):
             quantity = 1
         return quantity
 
-
     def clean(self):
         data = self.cleaned_data
         if 'end_dt' in data and data['start_dt'] > data['end_dt']:
@@ -1319,7 +1313,6 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'bind_reg_form_to_conf_only': forms.RadioSelect
         }
 
-
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
@@ -1446,15 +1439,12 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
 
         return super(Reg8nEditForm, self).save(*args, **kwargs)
 
-
-
     # def clean(self):
     #     from django.db.models import Sum
 
     #     cleaned_data = self.cleaned_data
     #     price_sum = self.instance.regconfpricing_set.aggregate(sum=Sum('price'))['sum']
     #     payment_methods = self.instance.payment_method.all()
-
 
     #     print('price_sum', type(price_sum), price_sum)
 
@@ -1540,7 +1530,6 @@ class RegistrationPreForm(forms.Form):
         if self.table_only:
             del self.fields['is_table']
 
-
     def clean_pricing(self):
         if not self.table_only:
             is_table = self.cleaned_data['is_table'] == '1'
@@ -1614,7 +1603,6 @@ class RegistrationForm(forms.Form):
             except:
                 pass
         return None
-
 
     def clean_override_price_table(self):
         override_table = self.cleaned_data['override_table']
@@ -1727,7 +1715,6 @@ class RegistrantForm(forms.Form):
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
 
-
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
 
@@ -1835,14 +1822,14 @@ class RegistrantForm(forms.Form):
 
         if price_requires_member:
             if not memberid:
-                raise forms.ValidationError(_("We don't detect you as a member. " + \
+                raise forms.ValidationError(_("We don't detect you as a member. " +
                                             "Please choose another price option. "))
         else:
             if memberid:
-                raise forms.ValidationError(_("You have entered a member id but " + \
-                                            "have selected an option that does not " + \
-                                            "require membership." + \
-                                            "Please either choose the member option " + \
+                raise forms.ValidationError(_("You have entered a member id but " +
+                                            "have selected an option that does not " +
+                                            "require membership." +
+                                            "Please either choose the member option " +
                                             "or remove your member id."))
 
         return memberid
@@ -1991,8 +1978,6 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
                  queryset, **kwargs)
 
 
-
-
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
@@ -2026,7 +2011,7 @@ class EmailForm(forms.ModelForm):
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
-        label=_('Message'), help_text=_('Available tokens: <br />' + \
+        label=_('Message'), help_text=_('Available tokens: <br />' +
         ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 
     class Meta:
@@ -2302,7 +2287,6 @@ class StandardRegAdminForm(forms.Form):
                     self.fields[field_name] = forms.ChoiceField(**field_args)
                     self.fields[field_name].widget.attrs['class'] = 'form-control'
 
-
     def apply_changes(self):
         cleaned_data = self.cleaned_data
         scope = 'module'
@@ -2361,7 +2345,7 @@ class EventReportFilterForm(forms.Form):
 
         if queryset:
             if start_dt and end_dt:
-                return queryset.filter(Q(start_dt__gte=start_dt)&Q(start_dt__lte=end_dt))
+                return queryset.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
             else:
                 return queryset
 

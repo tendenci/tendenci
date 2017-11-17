@@ -6,7 +6,6 @@ class Command(BaseCommand):
     args = '<export_pk, field, field, field...>'
     help = "Runs an export task for the specified model."
 
-
     def handle(self, *args, **options):
         from tendenci.apps.exports.models import Export
         from tendenci.apps.exports.tasks import TendenciExportTask

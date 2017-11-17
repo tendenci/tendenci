@@ -185,13 +185,12 @@ class Profile(Person):
             self.allow_anonymous_view = False
         else:
             self.allow_anonymous_view = get_setting('module', 'users', 'allowanonymoususersearchuser')
-            
+
         self.allow_user_view =  get_setting('module', 'users', 'allowusersearch')
         if get_setting('module', 'memberships', 'memberprotection') == 'private':
             self.allow_member_view = False
         else:
             self.allow_member_view = True
-        
 
         super(Profile, self).save(*args, **kwargs)
 
@@ -203,8 +202,6 @@ class Profile(Person):
         except ImportError:
             pass
 
-
-
     def allow_search_users(self):
         """
         Check if this user can search users.
@@ -215,18 +212,18 @@ class Profile(Person):
         # allow anonymous search users
         if get_setting('module', 'users', 'allowanonymoususersearchuser'):
             return True
-        
+
         # allow user search users
         if get_setting('module', 'users', 'allowusersearch') \
             and self.user.is_authenticated():
             return True
-        
+
         # allow members search users/members
         if get_setting('module', 'memberships', 'memberprotection') != 'private':
             if self.user.is_authenticated() and self.user.profile.is_member:
                 return True
-        
-        return False    
+
+        return False
 
     def allow_view_by(self, user2_compare):
         """
@@ -235,22 +232,22 @@ class Profile(Person):
         # user2_compare is superuser
         if user2_compare.is_superuser:
             return True
-        
+
         # this user is user2_compare self
         if user2_compare == self.user:
             return True
-        
+
         # user2_compare is creator or owner of this user
         if (self.creator and self.creator == user2_compare) or \
             (self.owner and self.owner == user2_compare):
             if self.status:
                 return True
-        
-        # user2_compare can search users and has view perm    
+
+        # user2_compare can search users and has view perm
         if user2_compare.profile.allow_search_users():
             if user2_compare.has_perm('profiles.view_profile', self):
                 return True
-        
+
         # False for everythin else
         return False
 
@@ -271,7 +268,7 @@ class Profile(Person):
 
         if user2_compare.has_perm('profiles.change_profile', self):
             return True
-        
+
         return False
 
     def can_renew(self):
@@ -460,9 +457,9 @@ class Profile(Person):
 
     def getMD5(self):
         m = hashlib.md5()
-        m.update(self.user.email)        
+        m.update(self.user.email)
         return m.hexdigest()
-    
+
     def get_gravatar_url(self, size):
         # Use old avatar, if exists, as the default
         default = ''
@@ -477,7 +474,7 @@ class Profile(Person):
                                        row[0])
             except ProgrammingError:
                 pass
-    
+
             c.close()
 
         if not default:
@@ -551,4 +548,3 @@ class UserImportData(BaseImportData):
 
     class Meta:
         app_label = 'profiles'
-

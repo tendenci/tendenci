@@ -16,9 +16,6 @@ def assign_slug(apps, schema_editor):
                 slug = '%s%s' % (slug, department.id)
             department.slug = slug
             department.save()
-            
-                
-        
 
 
 class Migration(migrations.Migration):

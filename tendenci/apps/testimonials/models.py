@@ -30,7 +30,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
                                           content_type_field="content_type")
 
     objects = TestimonialManager()
-    
+
     class Meta:
         permissions = (("view_testimonial","Can view testimonial"),)
         verbose_name = 'Testimonial'
@@ -40,7 +40,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
 
     def __unicode__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("testimonial.view", [self.pk])
@@ -56,7 +56,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         photo_upload = kwargs.pop('photo', None)
-        
+
         if self.pk is None:
             # Append to top of the list on add
             try:
@@ -89,8 +89,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
-    
-    
+
 
 class TestimonialPhoto(File):
     class Meta:

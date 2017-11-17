@@ -45,14 +45,13 @@ class Command(BaseCommand):
             'end_dt': datetime.datetime.now(),
             'timezone': 1,
             'place': 1,
-            
-        }
 
+        }
 
         event_id = options['event']
         limit = options['limit']
 
-        if event_id: event = Event.objects.get(pk=event_id) 
+        if event_id: event = Event.objects.get(pk=event_id)
         else: event = Event.objects.latest('pk')
 
         price = event.registration_configuration.price
@@ -62,7 +61,7 @@ class Command(BaseCommand):
 
         for n in range(limit):
             request = self.random_request
-            save_registration(user=request.user, event=event, 
+            save_registration(user=request.user, event=event,
                 payment_method=PaymentMethod.objects.get(pk=3), price=price)
 
             # print registrant
@@ -88,5 +87,3 @@ class Command(BaseCommand):
         login(request, request.user)
 
         return request
-    
-    

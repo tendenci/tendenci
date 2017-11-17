@@ -14,14 +14,13 @@ from tendenci.libs.utils import python_executable
 class Command(BaseCommand):
     """
     Update tendenci to the latest version.
-    
+
     Usage:
         python manage.py auto_update --user_id=1 --verbosity=2
     """
-    
+
     def add_arguments(self, parser):
         parser.add_argument('--user_id', type=int)
-
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting
@@ -35,7 +34,7 @@ class Command(BaseCommand):
         else:
             request_user = None
         site_url = get_setting('site', 'global', 'siteurl')
-        
+
         # check what tendenci version we're on
         major_bit = int(version.split('.')[0])
         if major_bit < 7:
@@ -43,11 +42,10 @@ class Command(BaseCommand):
                 print("No update for this version {}.".format(version))
                 print("Please consider to upgrade https://tendenci.readthedocs.org/en/latest/")
             return
-        
-        
+
         project_root = settings.PROJECT_ROOT
         err_list = []
-        
+
         # check the latest version
         latest_version = get_latest_version()
         if int(latest_version.split('.')[0]) < 7 or  version == latest_version:
@@ -70,7 +68,7 @@ class Command(BaseCommand):
                 err_list.append(e.output)
 
         # update tendenci
-        if not err_list:     
+        if not err_list:
             try:
                 if verbosity >1:
                     print("Updating tendenci...")
@@ -79,7 +77,7 @@ class Command(BaseCommand):
                                         stderr=subprocess.STDOUT, shell=True)
             except subprocess.CalledProcessError as e:
                 err_list.append(e.output)
-                
+
         if not err_list:
             # run migrate, collectstatic, etc via deploy.py
             try:
@@ -120,14 +118,14 @@ class Command(BaseCommand):
                                             stderr=subprocess.STDOUT, shell=True)
                 except subprocess.CalledProcessError as e:
                     err_list.append(e.output)
-                    
+
         if verbosity >1:
             if err_list:
                 print('Sorry, updating tendenci is not complete due to the following error(s):\n\n')
                 print('\n\n'.join(err_list))
             else:
                 print("Update is done.")
-                    
+
         if request_user and request_user.email:
             # notify update is done
             if err_list:
@@ -139,6 +137,6 @@ class Command(BaseCommand):
                 body = 'Successfully updated tendenci for %s.\n\n' % site_url
                 body += 'Tendenci version: %s\n\n' % latest_version
             body += "Thanks!\n%s\n\n" % get_setting('site', 'global', 'sitedisplayname')
-            
+
             msg = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [request_user.email])
             msg.send()

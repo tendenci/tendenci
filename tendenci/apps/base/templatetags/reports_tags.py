@@ -36,7 +36,6 @@ class MonthUrlNode(template.Node):
         return year, month
 
 
-
 @register.tag
 def month_url(parser, token):
     try:

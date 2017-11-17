@@ -15,4 +15,3 @@ class AccountRegistry(LogRegistry):
     }
 
 site.register(User, AccountRegistry)
-

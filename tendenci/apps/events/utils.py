@@ -6,11 +6,10 @@ import os.path
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
-from dateutil.rrule import *
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.core.exceptions import AppRegistryNotReady
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db import connection
@@ -28,18 +27,6 @@ from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
     TypeColorSet, RecurringEvent)
-try: from tendenci.apps.events.forms import (FormForCustomRegForm,
-    EMAIL_AVAILABLE_TOKENS)
-# This module is imported by search_indexes.py during Django initialization
-# before translations are available.  However, tendenci.apps.events.forms
-# imports tendenci.apps.base.forms, which iterates through
-# django_countries.countries, which causes the django_countries module to
-# attempt to translate the country names.  search_indexes.py does not require
-# any of the functionality provided by tendenci.apps.events.forms, so simply
-# ignore the exception that is thrown when this happens.
-# tendenci.apps.events.forms will be imported again later when this module is
-# imported by other modules after Django initialization.
-except AppRegistryNotReady: pass
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
@@ -157,7 +144,6 @@ def get_ACRF_queryset(event=None):
     else:
         rcp = ''
     sql = sql % (rc, rcp)
-
 
     # need to return a queryset not raw queryset
     cursor = connection.cursor()
@@ -530,7 +516,6 @@ def email_registrants(event, email, **kwargs):
 
     payment_status = kwargs.get('payment_status', 'all')
 
-
     if payment_status == 'all':
         registrants = event.registrants()
     elif payment_status == 'paid':
@@ -719,7 +704,7 @@ def get_registrants_prices(*args):
     # Get the list of final prices for registrants
     (request, event, reg_form, registrant_formset, addon_formset,
     price, event_price) = args
-    
+
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
@@ -727,7 +712,7 @@ def get_registrants_prices(*args):
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
         if override_price_table is None:
             override_price_table = 0
-        
+
     amount_list = []
     if event.is_table:
         if override_table:
@@ -753,7 +738,6 @@ def get_registrants_prices(*args):
                 amount = price.price
 
             amount_list.append(amount)
-
 
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
@@ -900,7 +884,6 @@ def add_registration(*args, **kwargs):
                     free_pass_stat.user = registrant.user
                 free_pass_stat.save()
 
-
     # create each regaddon
     for form in addon_formset.forms:
         form.save(reg8n)
@@ -941,7 +924,7 @@ def create_registrant_from_form(*args, **kwargs):
     impementation of events in the registration module.
     """
     from tendenci.apps.events.forms import FormForCustomRegForm
-                                            
+
     # arguments were getting kinda long
     # moved them to an unpacked version
     form, event, reg8n, \
@@ -1049,7 +1032,6 @@ def get_pricing(user, event, pricing=None):
             reg_conf=event.registration_configuration,
             status=True,
         )
-
 
     # iterate and create a dictionary based
     # on dates and permissions
@@ -1999,4 +1981,3 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
-

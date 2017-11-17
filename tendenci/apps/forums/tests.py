@@ -942,7 +942,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         response = client.get(self.topic.get_absolute_url())
         subscribe_links = html.fromstring(response.content).xpath('//a[@href="%s"]' % subscribe_url)
         self.assertEqual(len(subscribe_links), 0)
-        
+
         response = client.get(subscribe_url, follow=True)
         self.assertEqual(response.status_code, 403)
 
@@ -995,7 +995,7 @@ class FeaturesTest(TestCase, SharedTestModule):
 
         # there should be no email in the outbox
         self.assertEqual(len(mail.outbox), 0)
-        
+
         defaults.PYBB_DISABLE_NOTIFICATIONS = orig_conf
 
     @skipUnlessDBFeature('supports_microsecond_precision')
@@ -1544,9 +1544,9 @@ class FiltersTest(TestCase, SharedTestModule):
 
 
 class CustomPermissionHandler(permissions.DefaultPermissionHandler):
-    """ 
+    """
     a custom permission handler which changes the meaning of "hidden" forum:
-    "hidden" forum or category is visible for all logged on users, not only staff 
+    "hidden" forum or category is visible for all logged on users, not only staff
     """
 
     def filter_categories(self, user, qs):
@@ -1859,7 +1859,7 @@ class LogonRedirectTest(TestCase, SharedTestModule):
         nostaff.is_staff = False
         nostaff.save()
 
-        # create topic, post in hidden category 
+        # create topic, post in hidden category
         self.category = Category(name='private', hidden=True)
         self.category.save()
         self.forum = Forum(name='priv1', category=self.category)
@@ -1949,7 +1949,7 @@ class LogonRedirectTest(TestCase, SharedTestModule):
         # allowed user is allowed
         r = self.get_with_user(edit_post_url, 'staff', 'staff')
         self.assertEquals(r.status_code, 200)
-        
+
     def test_profile_autocreation_signal_on(self):
         user = User.objects.create_user('cronos', 'cronos@localhost', 'cronos')
         profile = getattr(user, defaults.PYBB_PROFILE_RELATED_NAME, None)

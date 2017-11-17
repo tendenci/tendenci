@@ -44,7 +44,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
 #                 request, messages.INFO,
 #                 _(u"The password entered for account %(uname)s is invalid." % {
 #                     'uname' : form.user_exists.username }))
-# 
+#
 #             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
@@ -187,7 +187,6 @@ def register(request, success_url=None,
                         gm.owner_id =  new_user.id
                         gm.owner_username = new_user.username
                         gm.save()
-
 
             EventLog.objects.log(instance=new_user)
 

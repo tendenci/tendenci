@@ -26,7 +26,7 @@
                             <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "Testimonials" %}</span>
                         </li>
                     {% endif %}
-                    
+
                     {% if can_edit_setting %}
                         <li class="content-item">
                             <span class="app-name">
@@ -34,7 +34,7 @@
                             </span>
                         </li>
                     {% endif %}
-                    
+
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'testimonials' %}">{% trans "Search" %} {% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "testimonials" %}</a>
@@ -48,7 +48,7 @@
                                 <a href="{% url 'admin:testimonials_testimonial_add' %}">{% trans "Add" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "Testimonial" %}</a>
                             </span>
                         </li>
-                    {% endif %} 
+                    {% endif %}
                 </ul>
 
                 {% if app_object %}

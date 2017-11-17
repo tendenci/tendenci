@@ -32,7 +32,7 @@ class Group(TendenciBaseModel):
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     dashboard_url = models.CharField(_('Dashboard URL'), max_length=255, default='', blank=True,
                                      help_text=_('Enable Group Dashboard Redirect in site settings to use this feature.'))
-    type = models.CharField(max_length=75, blank=True, choices=TYPE_CHOICES, 
+    type = models.CharField(max_length=75, blank=True, choices=TYPE_CHOICES,
                                            default=TYPE_DISTRIBUTION)
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=True, blank=True)
@@ -167,13 +167,12 @@ class GroupMembership(models.Model):
     owner_id = models.IntegerField(default=0, editable=False)
     owner_username = models.CharField(max_length=50, editable=False)
     status = models.BooleanField(default=True)
-    status_detail = models.CharField(max_length=50, 
+    status_detail = models.CharField(max_length=50,
                                      choices=STATUS_CHOICES,
                                      default=STATUS_ACTIVE)
 
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
-
 
     # The following fields are for Newletter Subscribe and Unsubscribe
     is_newsletter_subscribed = models.BooleanField(default=True)

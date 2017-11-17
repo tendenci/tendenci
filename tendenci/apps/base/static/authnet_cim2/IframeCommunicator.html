@@ -5,7 +5,7 @@
 <script type="text/javascript">
 //<![CDATA[
 function callParentFunction(str) {
-  if (str && str.length > 0 && window.parent && window.parent.parent 
+  if (str && str.length > 0 && window.parent && window.parent.parent
     && window.parent.parent.AuthorizeNetPopup && window.parent.parent.AuthorizeNetPopup.onReceiveCommunication)
   {
     window.parent.parent.AuthorizeNetPopup.onReceiveCommunication(str);

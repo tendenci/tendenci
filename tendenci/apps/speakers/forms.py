@@ -27,7 +27,7 @@ class SpeakerForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
             mce_attrs={'storme_app_label':Speaker._meta.app_label,
             'storme_model':Speaker._meta.model_name.lower()}))
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
     def clean_photo(self):

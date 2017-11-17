@@ -39,9 +39,9 @@ class CategoryAdminForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(CategoryAdminForm, self).__init__(*args, **kwargs)
-        self.fields['user_perms'].help_text = _('Select view/change to allow all ' + \
+        self.fields['user_perms'].help_text = _('Select view/change to allow all ' +
                             'authenticated users to view or post (change) in this category')
-        self.fields['member_perms'].help_text = _('Select view/change to allow all ' + \
+        self.fields['member_perms'].help_text = _('Select view/change to allow all ' +
                             'members to view or post (change) in this category')
 
 
@@ -117,11 +117,10 @@ class PostForm(forms.ModelForm):
 
         self.available_smiles = defaults.PYBB_SMILES
         self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
-        
+
         # add form-control class
         for k in self.fields.keys():
             self.fields[k].widget.attrs['class'] = 'form-control'
-
 
     def clean_body(self):
         body = self.cleaned_data['body']

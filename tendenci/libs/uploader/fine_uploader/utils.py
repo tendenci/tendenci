@@ -35,5 +35,3 @@ def save_upload(f, path):
                 destination.write(chunk)
         else:
             destination.write(f.read())
-
-

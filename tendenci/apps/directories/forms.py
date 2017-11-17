@@ -87,7 +87,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
         # setup categories
         categories = DirectoryCategory.objects.filter(parent__isnull=True)
-        categories_count = categories.count() 
+        categories_count = categories.count()
         self.fields['cat'].queryset = categories
         self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
         data = args[0]
@@ -145,7 +145,7 @@ class DirectoryForm(TendenciBaseForm):
 
     pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
                     **request_duration_defaults)
-    
+
     cat = forms.ModelChoiceField(label=_("Category"),
                                       queryset=DirectoryCategory.objects.filter(parent=None),
                                       empty_label="-----------",
@@ -255,7 +255,7 @@ class DirectoryForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
-        
+
     def __init__(self, *args, **kwargs):
         super(DirectoryForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
@@ -280,7 +280,7 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
         self.fields['timezone'].initial = settings.TIME_ZONE
-        
+
         # cat and sub_cat
         if self.user.profile.is_superuser:
             self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
@@ -482,4 +482,3 @@ class DirectoryExportForm(forms.Form):
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES, required=False)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
-

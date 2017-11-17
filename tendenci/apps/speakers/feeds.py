@@ -30,10 +30,10 @@ class SpeakerSitemap(TendenciSitemap):
     """ Sitemap information for speakers """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = Speaker.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items
-    
+
     def lastmod(self, obj):
         return obj.update_dt

@@ -39,7 +39,7 @@ class ProfileLanguageMiddleware(object):
             lang = self.get_user_language(request)
 
             request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = lang
- 
+
         def process_response(self, request, response):
             """assign user_language to cookie LANGUAGE_COOKIE_NAME
             """

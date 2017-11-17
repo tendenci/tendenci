@@ -20,7 +20,6 @@ class Command(BaseCommand):
         parser.add_argument('import_id', type=int)
         parser.add_argument('user_id', type=int)
 
-
     def handle(self, *args,  **options):
         from tendenci.apps.memberships.models import MembershipImport
         from tendenci.apps.memberships.models import MembershipImportData
@@ -57,4 +56,3 @@ class Command(BaseCommand):
 
         # generate a recap file
         mimport.generate_recap()
-

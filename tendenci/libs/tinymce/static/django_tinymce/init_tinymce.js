@@ -15,7 +15,7 @@
       if ('convert_urls' in mce_conf && mce_conf['convert_urls'] == 'false'){
         	mce_conf['convert_urls'] = false;
         }
-      
+
       if ('file_browser_callback' in mce_conf && mce_conf['file_browser_callback'] == 'tendenciFileManager'){
       	// have to convert the string to function, otherwise it won't work'
       	mce_conf['file_browser_callback'] = callbacks['tendenciFileManager'];

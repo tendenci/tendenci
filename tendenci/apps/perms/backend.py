@@ -155,7 +155,6 @@ class ObjectPermBackend(object):
             if obj.owner_id == user.id:
                 return True
 
-
         if not isinstance(obj, Model):
             return False
 

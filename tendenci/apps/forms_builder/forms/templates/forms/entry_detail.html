@@ -30,7 +30,7 @@
             </p>
             {% endif %}
         {% endfor %}
-        
+
         {% if form.custom_payment %}
         	{% if entry.pricing %}
         		<p>
@@ -44,19 +44,19 @@
         	
         	{% endif %}
         {% endif %}
-        
+
         <p>
            <strong>{% trans 'Entry Time' %}</strong><br />
            <em>{{ entry.entry_time }}</em>
        </p>
-        
+
         {% if entry.creator %}
             <p>
                 <strong>{% trans 'Created by' %}</strong><br />
                 <em><a href="{% url 'profile' entry.creator.username %}">{{ entry.creator.username }}</a></em>
             </p>
         {% endif %}
-            
+
         {% if entry.entry_path %}
             <p>
                 <strong>{% trans 'Entry Path' %}</strong><br />

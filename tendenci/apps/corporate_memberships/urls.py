@@ -41,7 +41,7 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
 
     url(r"^%s/applications/search/$" % urlpath,
         "corpmembership_search", name="corpmembership.search"),
-                       
+
     url(r"^%s/applications/cap_status/$" % urlpath,
         "corpmembership_cap_status", name="corpmembership.cap_status"),
 

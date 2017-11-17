@@ -29,4 +29,3 @@ class Export(models.Model):
 
     def __unicode__(self):
         return "Export for %s %s" % (self.app_label, self.model_name)
-

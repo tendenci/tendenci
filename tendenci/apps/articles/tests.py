@@ -20,7 +20,6 @@ class ArticleTest(TestCase):
         self.user.is_active = True
         self.user.save()
 
-
     def tearDown(self):
         self.client = None
         self.article = None
@@ -43,5 +42,3 @@ class ArticleTest(TestCase):
         self.article.save()
 
         self.assertEquals(type(self.article.id), long)
-
-

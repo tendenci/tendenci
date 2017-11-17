@@ -79,12 +79,12 @@ def get_default_membership_corp_fields():
 def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
     from tendenci.apps.corporate_memberships.models import CorpMembership
-     
+
     corp_membs = CorpMembership.objects.exclude(status_detail='archive')
     if active_only:
         corp_membs = corp_membs.filter(status_detail='active')
     corp_membs = corp_membs.order_by('corp_profile__name')
-     
+
     for corp_memb in corp_membs:
         if corp_memb.status_detail == 'active':
             cm_list.append((corp_memb.id, corp_memb.corp_profile.name))
@@ -130,8 +130,8 @@ def get_selected_demographic_fields(membership_app, forms):
     """
     Get the selected demographic fields for the app.
     """
-    demographic_field_dict = dict([(field.name, field) \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_dict = dict([(field.name, field)
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField'])
     demographic_field_names = demographic_field_dict.keys()
     app_fields = MembershipAppField.objects.filter(
@@ -156,8 +156,8 @@ def get_selected_demographic_field_names(membership_app=None):
     """
     if not membership_app:
         membership_app = MembershipApp.objects.current_app()
-    demographic_field_names = [field.name \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_names = [field.name
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField']
     app_field_names = MembershipAppField.objects.filter(
                                 membership_app=membership_app,
@@ -394,7 +394,7 @@ def process_export(
         'degree4',
         'graduation_dt4',
     ]
-    
+
     profile_field_list.extend(['profile_status', 'profile_status_detail'])
 
     title_list = (
@@ -691,7 +691,7 @@ def get_over_time_stats():
     """
     today = date.today()
     year = datetime(day=1, month=1, year=today.year)
-    times = [
+    time_ranges = [
         ("Last Month", months_back(1)),
         ("Last 3 Months", months_back(3)),
         ("Last 6 Months", months_back(6)),
@@ -701,8 +701,8 @@ def get_over_time_stats():
     ]
 
     stats = []
-    for time in times:
-        start_dt = time[1]
+    for time_range in time_rangess:
+        start_dt = time_range[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
                         status=True,
@@ -711,7 +711,7 @@ def get_over_time_stats():
                      ).distinct('user__id', 'membership_type__id')
         d['new'] = active_mems.filter(renewal=False).count()
         d['renewing'] = active_mems.filter(renewal=True).count()
-        d['time'] = time[0]
+        d['time'] = time_range[0]
         d['start_dt'] = start_dt
         stats.append(d)
 
@@ -840,7 +840,7 @@ def get_notice_token_help_text(notice=None):
                                 $('#notice_token_list').toggle();
                             });
                         });
-                    }(jQuery));                  
+                    }(jQuery));
                 </script>
                 """
 
@@ -1027,7 +1027,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -1046,16 +1046,16 @@ class ImportMembDefault(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
-        self.membershipdemographic_fields = dict([(field.name, field) \
-                            for field in MembershipDemographic._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.membershipdemographic_fields = dict([(field.name, field)
+                            for field in MembershipDemographic._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user']])
         self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
                                   'school2', 'major2', 'degree2', 'graduation_year2',
@@ -1063,9 +1063,9 @@ class ImportMembDefault(object):
                                   'school4', 'major4', 'degree4', 'graduation_year4',]
         self.should_handle_demographic = False
         self.should_handle_education = False
-        self.membership_fields = dict([(field.name, field) \
-                            for field in MembershipDefault._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.membership_fields = dict([(field.name, field)
+                            for field in MembershipDefault._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -1106,11 +1106,11 @@ class ImportMembDefault(object):
                     else:
                         self.membership_types_to_apps_map[
                                     mt_id][0].append(app.id)
-        [self.default_membership_type_id] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
-        [self.default_membership_type_id_for_corp_indiv] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id_for_corp_indiv] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
 
         apps = MembershipApp.objects.filter(
@@ -1277,7 +1277,7 @@ class ImportMembDefault(object):
                 return True
 
         return False
-    
+
     def has_education_fields(self, field_names):
         """
         Check if import has education fields.
@@ -1494,8 +1494,8 @@ class ImportMembDefault(object):
             profile.status_detail = 'active'
         else:
             profile.status_detail = profile.status_detail.lower()
-        
-        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile   
+
+        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile
         if profile.status_detail == 'expired':
             profile.status_detail = 'active'
 
@@ -1518,7 +1518,7 @@ class ImportMembDefault(object):
             self.assign_import_values_from_dict(demographic,
                                                 action_info['user_action'])
             demographic.save()
-            
+
         if self.should_handle_education:
             educations = user.educations.all().order_by('pk')[0:4]
             for x in xrange(1, 5):
@@ -1559,7 +1559,7 @@ class ImportMembDefault(object):
             memb.entity_id = 1
         if not memb.lang:
             memb.lang = 'eng'
-        
+
         # Set status to True
         # The False status means DELETED - It would defeat the purpose of import
         memb.status = True
@@ -1664,8 +1664,8 @@ class ImportMembDefault(object):
                 if any([
                         action == 'insert',
                         self.mimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
                         getattr(instance, field_name) is None
                         ]):
                     value = self.memb_data[field_name]
@@ -1853,7 +1853,7 @@ def get_membership_app(membership):
             mt_ids = app.membership_types.all().values_list('id', flat=True)
             if membership.membership_type_id in mt_ids:
                 return app
-                
+
     return None
 
 

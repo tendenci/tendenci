@@ -89,7 +89,7 @@ def gravatar(user, size=settings.GAVATAR_DEFAULT_SIZE, **kwargs):
         url = user.profile.get_gravatar_url(size=size)
     except:
         return ''
-    
+
     context = dict(kwargs, **{
         'user': user,
         'url': url,

@@ -70,7 +70,7 @@ class Discount(TendenciBaseModel):
                             end_dt__gte=now)
                             ).filter(apps__model=model).exists()
         return discount_exists
-    
+
     def delete(self, *args, **kwargs):
         # Append id to the discount_code to avoid IntegrityError when the discount_code
         # is used again later

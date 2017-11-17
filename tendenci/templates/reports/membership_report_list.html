@@ -13,14 +13,14 @@
       <li><a href="{% url "reports-members-quick-list" %}">{% trans "Current Members Quick List" %}</a></li>
       <li><a href="{% url "reports-members-by-company" %}">{% trans "Current Member Totals by Company" %}</a></li>
     </ol>
-    
+
     <h2>{% trans "Membership Trends" %}</h2>
     <ol>
       <li><a href="{% url "reports-members-over-time" %}">{% trans "Memberships Over Time" %}</a></li>
       <li><a href="{% url "reports-active-members-ytd" %}">{% trans "Active Members YTD" %}</a></li>
       <li><a href="{% url "reports-members-ytd-type" %}">{% trans "Members YTD by Type" %}</a></li>
     </ol>
-    
+
     <h2>{% trans "Member Data" %}</h2>
     <ol>
       <li><a href='{% url "reports-memberships-joins" %}'>{% trans "Membership Joins Report Summary" %}</a></li>
@@ -32,14 +32,14 @@
       <li><a href='{% url "reports-grace-period-members" %}'>{% trans "Expired Members in Grace Period" %}</a></li>
       <li><a href='{% url "reports-members-stats" %}'>{% trans "Active, Pending & Expired Members by Type" %}</a></li>
         </ol>
-        
+
         <h2>{% trans "Financial Reporting" %}</h2>
         <ol>
           <li><a href="{% url 'invoices' %}?invoice_type=memberships">{% trans "Membership Invoices" %}</a></li>
           <li><a href="{% url 'reports-members-donated' %}">{% trans "Members Donated On Signup/Renewal" %}</a></li>
         </ol>
         </div>
-        
+
         <div class="report_column end">
           <h2>{% trans "User Reports" %}</h2>
           <ol>
@@ -52,7 +52,7 @@
             <li><a href="{% url "reports-top-spenders" %}">{% trans "Top Spenders" %}</a></li>
             <li><a href="{% url "reports-users-not-in-groups" %}">{% trans "Users not in Groups" %}</a></li>
           </ol>
-          
+
           <h2>{% trans "Management Tools" %}</h2>
           <ol>
             <li><a href="{% url "profile.similar" %}">{% trans "Similar Users List" %}</a></li>
@@ -62,7 +62,6 @@
             <li><a href="{% url "memberships.default_export" %}">{% trans "Membership Export" %}</li>
               </ol>
               </div>
-              
+
               </div><br /><br />
               {% endblock content %}
-              
