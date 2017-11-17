@@ -33,7 +33,7 @@ def detail(request, slug=None, template_name="projects/detail.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-		
+
 def search(request, template_name="projects/search.html"):
     query = request.GET.get('q', None)
     

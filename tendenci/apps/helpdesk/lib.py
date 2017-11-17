@@ -82,8 +82,7 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
         try:
             t = EmailTemplate.objects.get(template_name__iexact=template_name, locale__isnull=True)
         except EmailTemplate.DoesNotExist:
-            logger.warning('template "%s" does not exist, no mail sent' %
-			   template_name)
+            logger.warning('template "%s" does not exist, no mail sent' % template_name)
             return # just ignore if template doesn't exist
 
     if not sender:

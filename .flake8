@@ -9,7 +9,7 @@ ignore =
   # Line continuation issues
   E502,E701,
   # Assorted whitespace issues
-  E101,E303,W191,W291,W292,W293,W391,
+  E303,W291,W292,W293,W391,
 
   # Indentation warnings
   E111,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,

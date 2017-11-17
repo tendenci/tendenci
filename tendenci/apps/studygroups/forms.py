@@ -143,7 +143,7 @@ class StudyGroupAdminChangelistForm(TendenciBaseForm):
 
 class OfficerForm(forms.ModelForm):
     #user = forms.ChoiceField(choices=[])
-	
+
     class Meta:
         model = Officer
         exclude = ('study_group',)
