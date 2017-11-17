@@ -299,7 +299,7 @@ class File(TendenciBaseModel):
             return im.size
         except Exception:
             return (0, 0)
-        
+
     def get_size(self):
         try:
             return self.file.size

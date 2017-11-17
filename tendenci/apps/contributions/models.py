@@ -40,8 +40,8 @@ class Contribution(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
-    
-    
+
+
 def save_contribution(sender, **kwargs):
     instance = kwargs['instance']
 

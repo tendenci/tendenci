@@ -90,7 +90,7 @@ class Command(BaseCommand):
             'navs',
             'stories',
             'videos',
-        ]   
+        ]
 
         # call loaddata on fixtures
         for suffix in suffix_list:

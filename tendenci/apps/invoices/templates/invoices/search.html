@@ -15,13 +15,13 @@
 <div class="t">
   <div class="t-invoice">
     <div class="t-search">
-      
+
       <div class="page-header">
         <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
       </div>
-      
+
       {% invoice_search %}
-      
+
       <br />
       <table class="table table-tendenci-reports">
         <thead>
@@ -35,9 +35,9 @@
             <td>Action</td>
           </tr>
         </thead>
-        
+
         {% autopaginate invoices 25 %}
-        
+
         {% if query %}
         <div>{{ INDEX_UPDATE_NOTE }}</div>
         {% endif %}
@@ -52,14 +52,14 @@
         {% empty %}
         <div>{% trans "0 Results Found" %}</div>
         {% endfor %}
-        
+
         {% paginate %}
-        
+
       </table>
       <br />
     </div>
   </div>
-  
+
 </div>
 
 {% endblock %}
@@ -72,17 +72,17 @@
 <script type="text/javascript">
   $(document).ready(function() {
   //Hide advanced options
-  
+
   var event_type = $("select#id_invoice_type").val();
   if(event_type != 'events') {
   $('div.eventFields').hide();
   }
   });
-  
+
   $(document).ready(function () {
   $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
   });
-  
+
   $("select#id_invoice_type").change(function() {
   if($(this).val() == 'events') {
   $('div.eventFields').show();

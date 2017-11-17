@@ -468,7 +468,7 @@ def update_tendenci(request, template_name="base/update.html"):
 
     if request.method == "POST":
         tos = request.POST.get('tos')
-        
+
         if tos:
             SubProcessManager.set_process([python_executable(), "manage.py", "auto_update",
                                             "--user_id=%s" % request.user.id])

@@ -19,8 +19,8 @@ class Command(BaseCommand):
             queries = (
 ('All Interactive Users',
 'All Interactive Users - People Who Can Login to the Site',
-"""SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,  
-        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2, 
+"""SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,
+        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2,
         p.member_number, p.city, p.state, p.zipcode, p.country, p.url, p.sex,
         p.address_type, p.phone2, p.fax, p.work_phone, p.home_phone, p.mobile_phone,
         p.notes, p.admin_notes
@@ -57,38 +57,38 @@ AND m.status_detail <> 'archive'"""),
      cp.annual_revenue, cp.annual_ad_expenditure, cp.description, cp.expectations,
      cp.notes, cp.referral_source, cp.ud1, cp.ud2, cp.ud3, cp.ud4, cp.ud5, cp.ud6,
      cp.ud7, cp.ud8, cm.corporate_membership_type_id, cm.renewal, cm.renew_dt,
-     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail 
+     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail
 FROM corporate_memberships_corpprofile cp
 INNER JOIN corporate_memberships_corpmembership cm
 ON cp.id=cm.corp_profile_id
 WHERE cm.status_detail <> 'archive'"""),
 ('Users By Group ID (All Groups)',
 'All groups - dump this into Excel and filter by the group_name field as needed',
-"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff, 
-      u.is_superuser, p.salutation, p.company, p.position_title, p.phone, 
-      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode, 
-      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone, 
-      p.home_phone, p.mobile_phone 
-FROM auth_user u 
-INNER JOIN profiles_profile p ON u.id=p.user_id 
-INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id 
-INNER JOIN user_groups_group ug on ug.id=ugm.group_id 
+"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
+      u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
+      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
+      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,
+      p.home_phone, p.mobile_phone
+FROM auth_user u
+INNER JOIN profiles_profile p ON u.id=p.user_id
+INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id
+INNER JOIN user_groups_group ug on ug.id=ugm.group_id
 WHERE ug.id>0
-AND ugm.status=True 
+AND ugm.status=True
 AND ugm.status_detail='active'"""),
 ('Users By Group ID (Edit the Group ID)',
 'Users by Group ID - this query shows group id = 1 on line number 10, so edit that for whichever group you are looking for.',
-"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff, 
-      u.is_superuser, p.salutation, p.company, p.position_title, p.phone, 
-      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode, 
-      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone, 
-      p.home_phone, p.mobile_phone 
-FROM auth_user u 
-INNER JOIN profiles_profile p ON u.id=p.user_id 
-INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id 
-INNER JOIN user_groups_group ug on ug.id=ugm.group_id 
-WHERE ug.id=1 
-AND ugm.status=True 
+"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
+      u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
+      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
+      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,
+      p.home_phone, p.mobile_phone
+FROM auth_user u
+INNER JOIN profiles_profile p ON u.id=p.user_id
+INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id
+INNER JOIN user_groups_group ug on ug.id=ugm.group_id
+WHERE ug.id=1
+AND ugm.status=True
 AND ugm.status_detail='active'"""),
 ('Tables - List All Database Tables',
 'A list of all tables including system tables',
@@ -110,6 +110,6 @@ and m.status_detail<>'archive'"""),
                               sql=sql)
                 query.save()
                 print('Inserted: ', title)
-                
+
         else:
             print('NO default sqls loaded for SQL Explorer because django-sqlexplorer is not installed')

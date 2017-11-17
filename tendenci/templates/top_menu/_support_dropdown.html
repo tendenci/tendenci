@@ -17,11 +17,11 @@
                 <div class="row">
                     <div class="col-sm-12 content-dropdown-col">
                         <ul class="list-unstyled">
-                          
+
                           <li class="content-head">
                             <span class="nav-label"><strong>{% trans 'My Site' %}</strong></span>
                             </li>
-                          
+
                           <li class="content-item">
                                 <a href="{% url 'clear_cache' %}"
                                     ><img class="nav-icon" src="{% static 'famfamfam/icons/computer_delete.png' %}"/><span class="nav-label">{% trans 'Clear Cache' %}</span>
@@ -31,13 +31,13 @@
                           <li class="content-head">
                             <span class="nav-label"><strong>{% trans 'Request Help' %}</strong></span>
                             </li>
-                            
+
                             <li class="content-item">
                                 <a href="https://www.tendenci.com/help-files/" target="_blank"
                                     ><img class="nav-icon" src="{% static 'famfamfam/icons/help.png' %}"/><span class="nav-label">{% trans "Search Help Files" %}</span>
                                 </a>
                             </li>
-                            
+
                             <li class="content-item">
                               <a href="https://www.tendenci.com/forums/" target="_blank"
                                     ><img class="nav-icon" src="{% static 'famfamfam/icons/application_get.png' %}"/><span class="nav-label">{% trans 'Community Forums' %}</span>
@@ -53,7 +53,7 @@
                            <li class="content-head">
                             <span class="nav-label"><strong>{% trans 'Contact Tendenci' %}</strong></span>
                             </li>
-                          
+
                             {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
                                 <li class="content-item">
                                     <a href="https://www.tendenci.com/py/" target="_blank"
@@ -67,13 +67,13 @@
                                     ><img class="nav-icon" src="{% static 'famfamfam/icons/telephone.png' %}"/><span class="nav-label">{% trans "Contact Form" %}</span>
                                 </a>
                             </li>
-                            
+
                             <li class="content-item">
                                 <a href="//github.com/tendenci/tendenci">
                                     <span class="nav-label">{% blocktrans with version=TENDENCI_VERSION %}Tendenci Version: {{ version }}{% endblocktrans %}</span>
                                 </a>
                             </li>
-                            
+
                         </ul>
                     </div>
                 </div>

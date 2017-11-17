@@ -13,7 +13,7 @@ function html_unescape(text) {
 
 // IE doesn't accept periods or dashes in the window name, but the element IDs
 // we use to generate popup window names may contain them, therefore we map them
-// to allowed characters in a reversible way so that we can locate the correct 
+// to allowed characters in a reversible way so that we can locate the correct
 // element when the popup window is dismissed.
 function id_to_windowname(text) {
     text = text.replace(/\./g, '__dot__');
@@ -81,16 +81,16 @@ function dismissAddAnotherPopup(win, newId, newRepr) {
 			
 			// add option to the rest of dropdowns for page and section
 			var td_node = elem.parentNode;
-			if (td_node !=null) { 
+			if (td_node !=null) {
 				var class_name = td_node.className;
 				
-				if (class_name !=null && (class_name=='page' || class_name=='section')) { 
+				if (class_name !=null && (class_name=='page' || class_name=='section')) {
 					var tr_node;
 					var c_node;
 					var s_node;
 				
 					tr_node = td_node.parentNode;
-					if (tr_node !=null && tr_node.nodeName=='TR') { 
+					if (tr_node !=null && tr_node.nodeName=='TR') {
 					
 						// traverse  nextSibling
 						var ns = tr_node.nextSibling;
@@ -108,7 +108,7 @@ function dismissAddAnotherPopup(win, newId, newRepr) {
 							ns = ns.nextSibling;
 						}
 						
-						// traverse previousSibling 
+						// traverse previousSibling
 						var ps = tr_node.previousSibling;
 						while (ps !=null && ps.nodeType==1){
 							c_node = ps.getElementsByClassName(class_name);

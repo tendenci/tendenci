@@ -30,11 +30,11 @@
         {% if topic.poll_type %}
             {% include 'pybb/poll.html' %}
         {% endif %}
-        
+
         {% if not user.is_authenticated %}
                 {% include 'pybb/_need_to_login_message.html' %}
         {% endif %}
-      
+
         <div class="posts">
             {% if first_post %}{% ifnotequal first_post post_list.0 %}
                 {% with first_post as post %}

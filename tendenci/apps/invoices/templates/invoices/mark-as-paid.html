@@ -21,7 +21,7 @@
   </div>
   <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">View Invoice #{{ invoice.pk }}</a>
   <br />
-  
+
   {% with invoice.get_object as object %}
   <div class="invoice-meta">
     <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
@@ -65,7 +65,7 @@
     </table>
   </div>
   {% endwith %}
-  
+
   <br />
   <form method="POST">
     <div id="offline-payment-form-wrap">
@@ -78,12 +78,12 @@
         </tr>
       </table>
       {% endfor %}
-      
+
       <div>
         <input class="field-submit btn btn-primary" type="submit" value="{% trans 'Save Payment' %}"></div>
     </div>
   </form>
-  
+
 </div>
 {% endblock %}
 

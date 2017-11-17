@@ -1,5 +1,5 @@
-# settings: label, donationspaymenttypes, donationsallocations, 
-#           donationsrecipients, 
+# settings: label, donationspaymenttypes, donationsallocations,
+#           donationsrecipients,
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
@@ -36,16 +36,16 @@ def donation_inv_add(user, donation, **kwargs):
     inv.ship_date = datetime.now()
     inv.message = 'Thank You.'
     inv.status = True
-        
+
     inv.estimate = True
     inv.status_detail = 'tendered'
-    inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label, 
+    inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label,
                                               model=donation._meta.model_name)
     inv.object_id = donation.id
     inv.subtotal = donation.donation_amount
     inv.total = donation.donation_amount
     inv.balance = donation.donation_amount
-    
+
     inv.save(user)
     donation.invoice = inv
 
@@ -56,8 +56,8 @@ def donation_email_user(request, donation, invoice, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
     from django.template import RequestContext
-    
-    subject = render_to_string('donations/email_user_subject.txt', 
+
+    subject = render_to_string('donations/email_user_subject.txt',
                                {'donation':donation},
                                context_instance=RequestContext(request))
     body = render_to_string('donations/email_user.txt', {'donation':donation,
@@ -82,26 +82,26 @@ def get_payment_method_choices(user):
         if donation_payment_types:
             donation_payment_types_list = donation_payment_types.split(',')
             donation_payment_types_list = [item.strip() for item in donation_payment_types_list]
-            
+
             return [(item, item) for item in donation_payment_types_list]
         else:
             return ()
-        
+
 def get_allocation_choices(user, allocation_str):
     #allocation_str = get_setting('module', 'donations', 'donationsallocations')
     if allocation_str:
         allocation_list = allocation_str.split(',')
         allocation_list = [item.strip() for item in allocation_list]
-        
+
         return [(item, item) for item in allocation_list]
     else:
         return ()
-    
+
 def get_preset_amount_choices(preset_amount_str):
     if preset_amount_str:
         preset_amount_list = preset_amount_str.split(',')
         preset_amount_list = [item.strip() for item in preset_amount_list]
-        
+
         return [(item, item) for item in preset_amount_list]
     else:
         return ()

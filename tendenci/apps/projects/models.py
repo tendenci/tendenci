@@ -21,7 +21,7 @@ class ClientList(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
 class Category(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
     image = models.ForeignKey('CategoryPhoto', help_text=_('Photo that represents this category.'), null=True, default=None)
@@ -55,7 +55,7 @@ class Category(models.Model):
 class ProjectManager(models.Model):
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
     last_name = models.CharField(_(u'Last Name'), max_length=200, blank=True)
-    
+
 
     def __unicode__(self):
         displayname = "%s %s" % (self.first_name, self.last_name)

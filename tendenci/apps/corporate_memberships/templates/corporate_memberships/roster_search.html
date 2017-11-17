@@ -208,20 +208,20 @@
                     </div>
                 </div>
             </div>
-            
-        {% include 'corporate_memberships/roster_meta.html' %} 
-          
+
+        {% include 'corporate_memberships/roster_meta.html' %}
+
         <!-- delete membership form -->
 	    <form name="membership-delete" method="POST" action="{% url "membership.delete" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
 	        <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
 	        <input type="hidden" name="action" value="delete">
 	    </form>
-	    
+	
 	    <!-- expire membership form -->
 	    <form name="membership-expire" method="POST" action="{% url "membership.expire" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
 	        <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
 	    </form>
-          
+
         </div>
         {% endwith %}
 		{% endwith %}
@@ -263,6 +263,6 @@
         	
         });
     </script>
-{% endblock %}  
-    
+{% endblock %}
+
 

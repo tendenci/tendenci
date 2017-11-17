@@ -148,7 +148,7 @@ class Notice(models.Model):
     on_site = models.BooleanField(_('on site'), default=False)
 
     objects = NoticeManager()
-    
+
     class Meta:
         ordering = ["-added"]
         verbose_name = _("notice")

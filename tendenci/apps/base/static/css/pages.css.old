@@ -172,7 +172,7 @@
 }
 .item .field .mceLayout {
 	/* WYSIWYG; .1 keeps border intact */
-	width: 100.1% !important; 
+	width: 100.1% !important;
 }
 .item .field-short input,
 .item .field-short select {

@@ -3,7 +3,7 @@ CodeMirror.defineMode("less", function(config) {
   function ret(style, tp) {type = tp; return style;}
   //html5 tags
   var tags = ["a","abbr","acronym","address","applet","area","article","aside","audio","b","base","basefont","bdi","bdo","big","blockquote","body","br","button","canvas","caption","cite","code","col","colgroup","command","datalist","dd","del","details","dfn","dir","div","dl","dt","em","embed","fieldset","figcaption","figure","font","footer","form","frame","frameset","h1","h2","h3","h4","h5","h6","head","header","hgroup","hr","html","i","iframe","img","input","ins","keygen","kbd","label","legend","li","link","map","mark","menu","meta","meter","nav","noframes","noscript","object","ol","optgroup","option","output","p","param","pre","progress","q","rp","rt","ruby","s","samp","script","section","select","small","source","span","strike","strong","style","sub","summary","sup","table","tbody","td","textarea","tfoot","th","thead","time","title","tr","track","tt","u","ul","var","video","wbr"];
-  
+
   function inTagsArray(val){
     for(var i=0; i<tags.length; i++){
       if(val === tags[i]){
@@ -74,7 +74,7 @@ CodeMirror.defineMode("less", function(config) {
 	  return ret("number", "unit");
 	}else{
 	  stream.eatWhile(/[\w\-]/);
-	  return ret("atom", "tag"); 
+	  return ret("atom", "tag");
 	}
       }else{
 	stream.eatWhile(/[\w\-]/);
@@ -99,7 +99,7 @@ CodeMirror.defineMode("less", function(config) {
       	return ret("variable", "variable");
       }
     }
-    
+
   }
 
   function tokenSComment(stream, state) {// SComment = Slash comment
@@ -107,7 +107,7 @@ CodeMirror.defineMode("less", function(config) {
     state.tokenize = tokenBase;
     return ret("comment", "comment");
   }
-  
+
   function tokenCComment(stream, state) {
     var maybeEnd = false, ch;
     while ((ch = stream.next()) != null) {

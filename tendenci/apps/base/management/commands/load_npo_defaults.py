@@ -45,7 +45,7 @@ class Command(BaseCommand):
             self.copy_to_s3()
         else:
             self.copy_to_local()
-            
+
     def next_rand_number(self, top=30):
         """
         Get the next unused random number
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             x = randint(1, top)
         self.number_used.append(x)
         return x
-         
+
     def get_random_stock(self, bucket):
         """
         Return a key from a random stock image
@@ -143,11 +143,11 @@ class Command(BaseCommand):
         call_command('loaddata', 'regions_region.json')
         print('load npo_default_directories_pricings.json')
         call_command('loaddata', 'npo_default_directories_pricings.json')
-        
-        
+
+
         # default sqls for explorer
         call_command('load_sqlexplorer_defaults')
-        
+
 
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')

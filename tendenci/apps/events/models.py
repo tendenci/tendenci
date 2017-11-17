@@ -184,7 +184,7 @@ class RegistrationConfiguration(models.Model):
                                  help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=BIND_CHOICES, 
+                                 choices=BIND_CHOICES,
                                  default=BIND_TRUE)
 
     # base email for reminder email
@@ -373,7 +373,7 @@ class RegConfPricing(OrderingBaseModel):
                 filter_or = {'allow_anonymous': True,
                              'allow_user': True,
                              'allow_member': True}
-                
+
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
@@ -899,7 +899,7 @@ class Registrant(models.Model):
 
     def populate_custom_form_entry(self):
         """
-        When, for some reason, registrants don't have the associated custom reg form entry 
+        When, for some reason, registrants don't have the associated custom reg form entry
         registered for an event with a custom form, they cannot be edited.
         We're going to check and populate the entry if not existing so that they can edit.
         """
@@ -1655,7 +1655,7 @@ class Addon(models.Model):
     class Meta:
         app_label = 'events'
 
-    
+
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True)

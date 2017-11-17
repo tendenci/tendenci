@@ -27,7 +27,7 @@ Basic Functionality Testing
 2. Email sending from site is tested and sender address is client's email
 
   - Do a password reset and confirm you received the email
- 
+
 3. Redirects have been tested
 
   - If they are using /redirects - click links in the list. Try in a new browser window when you are specifically NOT logged in.
@@ -55,11 +55,11 @@ Site Content Review
 
 2. Favicon and apple-touch-icon.png are logo
 
-3. Check Title Tag Spelling and Unique Meta and keywords on homepage. 
+3. Check Title Tag Spelling and Unique Meta and keywords on homepage.
 
   - Check "Site Display Name", "Site Primary Keywords", and "Site Secondary Keywords" first. These are located at /settings/site/global/
-  - Do a view source to see what is pulling in for <title></title>. 
-  - Check for duplicate wording. 
+  - Do a view source to see what is pulling in for <title></title>.
+  - Check for duplicate wording.
   - *Danger* You can override dynamic title tags in the theme editor: /theme-editor/?file=/templates/homepage.html but this is a terrible idea. Instead check your base.html file in theme, that homepage.html is extending from base. Then check that your homepage.html is doing a block.super either at the front or back of the title tag block in your homepage.
 
 4. Page titles are H1's on interior pages and no duplicate H1s on homepage or interior page
@@ -67,9 +67,9 @@ Site Content Review
 Contact and Custom Forms
 ------------------------
 
-1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist. 
+1. Verify the official "contact" form is using the "contacts" module and not the custom forms module. There are many technical reasons for this beyond the scope of a checklist.
 
-  - Default Contact form has an email address in th "Send Copies To" field. 
+  - Default Contact form has an email address in th "Send Copies To" field.
 
 2. Custom forms - a necessary evil. Verify all forms if used on the site are in "published" status
 
@@ -84,7 +84,7 @@ Edit Default Data to Make Sense
 *To Repeat - this should already have been done because this is a QA checklist*
 
 1. Unused Applications disabled in /admin/
- 
+
   - Check if default users have email address ending in @<YOUR DOMAIN NAME>. Maybe delete them but be careful for deleting relational data.
   - Company listed as <WHATEVER YOUR ORGANIZATION NAME IS>
   - Edit, don't delete, default user groups. *warning* Edit/Don't Delete.
@@ -106,7 +106,7 @@ Site Settings
 1. Site URL field contains an url that starts with "www"
 
   - The canonical name must *NOT* be the apex/naked url. (This is BAD --> "example.org" and so very 1990s. Do NOT do this.)
-  - Do an nslookup and be sure apex "example.org" forwards to "www.example.org" 
+  - Do an nslookup and be sure apex "example.org" forwards to "www.example.org"
   - Do an nslookup to confirm www.example.org is using a CNAME to a host and not the IP address. Verify your site is future proof.
 
 2. Site name is correct, spelled out and not abbreviated if possible.
@@ -114,13 +114,13 @@ Site Settings
   - there are exceptions but generally this is best practice.
   - Example: "California Dog Walking Association"
 
-3. Physical address is the actual physical address. 
+3. Physical address is the actual physical address.
 
   - Required for email delivery by law.
   - Should match registered corporate or 501c address for SSL if possible
 
 4. Location setting is correct (and Time Zone).
- 
+
   - this is important for reminders for events and merchant approvals
 
 5. Email - *CRITICAL*
@@ -137,20 +137,20 @@ Search Engine Visibility Site Settings
 
 2. RSS feed is referenced in HTML header (view source)
 
-3. check /robots.txt 
- 
-  - if it is set to disallow all, update your site settings to make it public. 
+3. check /robots.txt
+
+  - if it is set to disallow all, update your site settings to make it public.
   - Make sure robots.txt links to your sitemap.xml file which is generated dynamically as well
 
 4. check /sitemap.xml to be sure it is updating and can be crawled by Google.
 
 5. Site Primary Keywords are set up
 
-  - *MUST NOT* be the orgnaization's name 
+  - *MUST NOT* be the orgnaization's name
   - Consequence is spammy titles like "NAME - NAME"
   - two to three words max with no commas
   - Example: "Leadership Training"
-  - Note that these show up ON PAGES like articles list view so use proper case. They are not just used in metadata. 
+  - Note that these show up ON PAGES like articles list view so use proper case. They are not just used in metadata.
 
 6. Secondary Keywords are set up
 
@@ -158,8 +158,8 @@ Search Engine Visibility Site Settings
   - Example: "dog walking, california dog walking, walking your dog in LA"
   - Don't spam - should reflect what your site is about
   - Most modules have seo meta options at the bottom which override these on a per module or per page basis.
-  
-7. Google Analytics is set up in site settings. 
+
+7. Google Analytics is set up in site settings.
 
   - There is a field for the UA- code
   - If using google "tags" put javascript below the <body> tag in "base.html"
@@ -185,7 +185,7 @@ Cross Browser Site Checking
   - you CAN use other frameworks in conjunction with it
   - use DIV IDs to avoid css conflicts if using other frameworks
 
-3. IE - We make little to no effort to support IE more than the current and previous version. 
+3. IE - We make little to no effort to support IE more than the current and previous version.
 
   - Example: If the current version of IE is 10, then Tendenci tries to support 10 and 9. Nothing further. (You can of course modify it to support older versions by doing a fork or submitting a pull request.)
   - Safari is getting to be more like IE so same policy - current and previous versions are the only ones we check.
@@ -193,10 +193,10 @@ Cross Browser Site Checking
 Accessibility
 -------------
 
-1. Check for Accessibility 
- 
+1. Check for Accessibility
+
   - Web Accessibility Measurement Tool http://wave.webaim.org/
-  - Note: The community's goal is to make Tendenci 100% Accessible. 
+  - Note: The community's goal is to make Tendenci 100% Accessible.
 
 2. Submit issues if you see something in core that is broken
 
@@ -224,24 +224,24 @@ Security Recommendations
 
 4. Audit your site settings monthly
 
-  - Frequently what looks like a security issue is a site setting. 
+  - Frequently what looks like a security issue is a site setting.
   - Audit your site settings at least monthly
 
-5. Run the "administrators report" 
+5. Run the "administrators report"
 
   - remove security as needed
 
 Security Awareness - YOU ARE RESPONSIBLE
 ----------------------------------------
 
-1. Check that all content on your site is licensed properly 
- 
-  - know where the licenses are now and in the future. 
+1. Check that all content on your site is licensed properly
+
+  - know where the licenses are now and in the future.
   - Examples include but are not limited to images, content, video, audio, cat gifs, 3d monsters that jump out of your computer, etc.
 
-2. Tendenci is FOSS (Free/Open Source Software) 
+2. Tendenci is FOSS (Free/Open Source Software)
 
-  - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE.md 
+  - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE.md
   - Themes use a variety of licenses such as the Apache Open Source license, etc. Read them.
   - Components may use other similar open source licenses which are distributed in the code.
 
@@ -250,7 +250,7 @@ Security Awareness - YOU ARE RESPONSIBLE
   - Example: a user picks the password "12345678" that is guessed by a competitor and something inappropriate gets uploaded.
 
 4. Backups are your responsibility and strongly recommended.
- 
+
   - Tendenci is not your typical software. This community pushes limits and moves fast. So sometimes things break. Use common sense.
   - You can download your database at /explorer/ on your site. If not enabled talk to your developer
   - You can create a static backup of your site by following the instructions on this blog post http://blog.tendenci.com/tag/make-a-static-copy-of-your-website/

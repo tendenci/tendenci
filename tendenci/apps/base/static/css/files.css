@@ -31,15 +31,15 @@
 }
 
 .t .files-wrap .file-wrap.grid-wrap {
-	width: 215px; 
-	height: 330px; 
+	width: 215px;
+	height: 330px;
   	float: left;
 	margin: 0 7px 12px;
   	position: relative;
   	background-color: #F6F6F6;
   	word-wrap: break-word;
 }
-  
+
 .t .files-wrap .grid-wrap .download {
 	margin-left: 15px;
 }

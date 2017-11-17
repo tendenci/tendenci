@@ -11,8 +11,8 @@ These instructions create a Tendenci site on an Ubuntu server (14.04 is recommen
 Testing Installation
 ====================
 
-You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb). 
-This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, 
+You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb).
+This Django project is intended to help create a Tendenci site that you can deploy on a public hosting,
 but it's recommended that you install locally first in order to test your themes and designs.
 
 If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fusion, or at least

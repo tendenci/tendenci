@@ -45,13 +45,13 @@ class Meta(models.Model):
 
     def get_title(self):
         return self.__get_meta(self.title)
-    
+
     def get_keywords(self):
         return self.__get_meta(self.keywords)
-    
+
     def get_description(self):
         return self.__get_meta(self.description)
-    
+
     def get_canonical_url(self):
         return self.__get_meta(self.canonical_url)
 

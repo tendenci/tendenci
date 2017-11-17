@@ -236,8 +236,8 @@ def get_query_filters(user, perm, **kwargs):
 
             if '.' in perm and perms_field:
                 group_perm = Q(perms__codename=perm.split(".")[-1])
-            
-            # skip checking the allow_xxx_view for profiles 'cause those fields are not editable in profiles 
+
+            # skip checking the allow_xxx_view for profiles 'cause those fields are not editable in profiles
             if perm == 'profiles.view_profile':
                 return (Q(status=True) & group_perm & Q(status_detail='active')) | (Q(creator=user) | Q(owner=user))
 

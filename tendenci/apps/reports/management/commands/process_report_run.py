@@ -149,7 +149,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.apps.reports.models import Run
-        
+
         run_id = options['run_id']
         try:
             run = Run.objects.get(pk=run_id)

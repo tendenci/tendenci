@@ -134,7 +134,7 @@ def filebrowser(request):
 #         fb_url = request.build_absolute_uri(urlresolvers.reverse('fb_browse'))
 #     except:
 #         fb_url = request.build_absolute_uri(urlresolvers.reverse('filebrowser:fb_browse'))
-# 
+#
 #     return render_to_response('tinymce/filebrowser.js', {'fb_url': fb_url},
 #             context_instance=RequestContext(request),
 #             content_type="application/x-javascript")

@@ -4,7 +4,7 @@ from tendenci.apps.forms_builder.forms.signals import init_signals
 
 
 init_signals()
-             
+
 urlpath = get_setting('module', 'forms', 'url')
 if not urlpath:
     urlpath = "forms"

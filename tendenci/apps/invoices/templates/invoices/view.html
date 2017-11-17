@@ -18,11 +18,11 @@
   <div class="page-header">
     <h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}</h1>
   </div>
-  
+
   {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
   <p><address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address></p>
   {% endif %}
-  
+
   {% if invoice.balance > 0 and can_pay %}
   {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
   <div class="invoice-options">
@@ -32,14 +32,14 @@
   </div>
   {% endif %}
   {% endif %}
-  
+
   {% if request.user.is_superuser %}
   <div class="invoice-options">
     <ul>
       <li><a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a></li>
     </ul>
   </div>
-  
+
   <div class="invoice-options">
     <ul>
       {% if invoice.is_tendered %}
@@ -49,7 +49,7 @@
       <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
     </ul>
   </div>
-  
+
   {% if invoice.payments_credits > 0 %}
   <div class="invoice-options">
     <ul>
@@ -57,7 +57,7 @@
     </ul>
   </div>
   {% endif %}
-  
+
   <div class="invoice-options">
     <ul>
       {% if invoice.is_void %}
@@ -68,13 +68,13 @@
     </ul>
   </div>
   {% endif %}
-  
+
   <div class="invoice-options">
     <ul>
       <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
     </ul>
   </div>
-  
+
   {% if request.user.is_superuser or can_edit_invoice %}
   <div class="invoice-admin-notes">
     <form method="post" action=".">
@@ -84,7 +84,7 @@
     </form>
   </div>
   {% endif %}
-  
+
   {% with invoice.get_object as object %}
   <div class="invoice-meta-wrapper">
     <div class="invoice-meta">
@@ -138,11 +138,11 @@
       <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
     </div>
     {% endif %}
-    
+
     <div class="invoice-meta-clear"></div>
   </div>
   {% endwith %}
-  
+
   <div class="invoice-table">
     <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
       <tr class="invoice-table-header">
@@ -152,7 +152,7 @@
       {% invoice_object_display request invoice %}
     </table>
   </div>
-  
+
   <div class="invoice-total-wrap">
     <div class="invoice-total">
       {% invoice_total_display request invoice %}

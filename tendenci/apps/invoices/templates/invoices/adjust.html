@@ -15,10 +15,10 @@
   <div class="page-header">
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Adjustment'%}</h1>
   </div>
-  
+
   <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">View Invoice #{{ invoice.pk }}</a>
   <br /><br />
-  
+
   <div class="invoice-adjust">
     <div class="field-wrapper required">
       <label class="field-label">{% trans 'Billing Information:'%}</label>
@@ -34,31 +34,31 @@
       </div>
     </div>
     <div class="clear-left"></div>
-    
+
     <div class="field-wrapper">
       <label class="field-label">{% trans 'Current Invoice Totals:'%}</label>
     </div>
     <div class="clear-left"></div>
-    
+
     <div class="field-wrapper">
       <label class="field-label">{% trans 'Total:'%}</label>
       <div>{{invoice.total|format_currency }}</div>
     </div>
     <div class="clear-left"></div>
-    
+
     <div class="field-wrapper">
       <label class="field-label">{% trans 'Payments/Credits:'%}</label>
       <div>{{invoice.payments_credits|format_currency }}</div>
     </div>
     <div class="clear-left"></div>
-    
+
     <div class="field-wrapper">
       <label class="field-label">{% trans 'Balance:'%}</label>
       <div>{{invoice.balance|format_currency }}</div>
     </div>
     <div class="clear-left"></div>
     <p>&nbsp;</p>
-    
+
     <form method="post" action=".">{% csrf_token %}
       <div class="field-wrapper required">
         {% if form.variance.errors %}
@@ -68,7 +68,7 @@
         {{ form.variance }}
       </div>
       <div class="clear-left"></div>
-      
+
       <div class="field-wrapper">
         {% if form.variance_notes.errors %}
         {{ form.variance_notes.errors }}
@@ -77,13 +77,13 @@
         {{ form.variance_notes }}
       </div>
       <div class="clear-left"></div>
-      
+
       <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Submit' %}" id="adjust-sumit-button" />
     </form>
     <br /><br />
-    
-    
+
+
   </div>
-  
+
 </div>
 {% endblock %}

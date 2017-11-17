@@ -8,7 +8,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel='stylesheet' href='{% static "helpdesk/helpdesk-extend.css" %}' type='text/css' />
-        
+
  {% block helpdesk_head %}{% endblock %}
 {% endblock %}
 
@@ -43,7 +43,7 @@
 <div id='footer' class="row">
     <p>{% include "helpdesk/attribution.html" %}</p>
 </div>
-    
+
 {% include "helpdesk/debug.html" %}
 
 {% endwith %}

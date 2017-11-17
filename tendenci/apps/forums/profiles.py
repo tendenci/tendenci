@@ -68,15 +68,15 @@ class PybbProfile(models.Model):
 
     def getMD5(self):
         m = hashlib.md5()
-        m.update(self.user.email)        
+        m.update(self.user.email)
         return m.hexdigest()
-    
+
     def get_gravatar_url(self):
         size = defaults.PYBB_AVATAR_WIDTH
         default = get_setting('site', 'global', 'siteurl') +  defaults.PYBB_DEFAULT_AVATAR_URL
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
         return gravatar_url
-        
-        
-        
+
+
+

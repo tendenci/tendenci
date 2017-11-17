@@ -10,7 +10,7 @@ class SpeakerRegistry(AppRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create speaker biographies easily with photo,' \
                   ' position, tagline and more ..'
-                  
+
     event_logs = {
         'speaker':{
             'base':('1070000','99EE66'),

@@ -132,7 +132,7 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     class Meta:
         app_label = 'categories'
         verbose_name = _("Category")

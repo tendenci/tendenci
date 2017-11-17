@@ -1,6 +1,6 @@
 /**
  * xmlpure.js
- * 
+ *
  * Building upon and improving the CodeMirror 2 XML parser
  * @author: Dror BG (deebug.dev@gmail.com)
  * @date: August, 2011
@@ -21,7 +21,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
     var TAG_CDATA = "!cdata";
     var TAG_COMMENT = "!comment";
     var TAG_TEXT = "!text";
-    
+
     var doNotIndent = {
         "!cdata": true,
         "!comment": true,
@@ -34,13 +34,13 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
 
     ///////////////////////////////////////////////////////////////////////////
     // helper functions
-    
+
     // chain a parser to another parser
     function chain(stream, state, parser) {
         state.tokenize = parser;
         return parser(stream, state);
     }
-    
+
     // parse a block (comment, CDATA or text)
     function inBlock(style, terminator, nextTokenize) {
         return function(stream, state) {
@@ -55,7 +55,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             return style;
         };
     }
-    
+
     // go down a level in the document
     // (hint: look at who calls this function to know what the contexts are)
     function pushContext(state, tagName) {
@@ -70,7 +70,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
         };
         state.context = newContext;
     }
-    
+
     // go up a level in the document
     function popContext(state) {
         if (state.context) {
@@ -78,11 +78,11 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             state.context = oldContext.prev;
             return oldContext;
         }
-        
+
         // we shouldn't be here - it means we didn't have a context to pop
         return null;
     }
-    
+
     // return true if the current token is seperated from the tokens before it
     // which means either this is the start of the line, or there is at least
     // one space or tab character behind the token
@@ -92,10 +92,10 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             stream.string.charAt(stream.start - 1) == " " ||
             stream.string.charAt(stream.start - 1) == "\t";
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // context: document
-    // 
+    //
     // an XML document can contain:
     // - a single declaration (if defined, it must be the very first line)
     // - exactly one root element
@@ -121,7 +121,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
                 return STYLE_ELEMENT_NAME;
             }
         }
-        
+
         // error on line
         stream.skipToEnd();
         return STYLE_ERROR;
@@ -159,11 +159,11 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             stream.eat(">");
             return STYLE_ERROR;
         }
-        
+
         stream.skipToEnd();
         return null;
     }
-    
+
     function parseElement(stream, state) {
         if(stream.match(/^\/>/)) {
             // self-closing tag
@@ -178,17 +178,17 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             state.tokenize = parseAttribute;
             return STYLE_ATTRIBUTE;
         }
-        
+
         // no other options - this is an error
         state.tokenize = state.context == null ? parseDocument : parseDocument;
         stream.eatWhile(/[^>]/);
         stream.eat(">");
         return STYLE_ERROR;
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // context: attribute
-    // 
+    //
     // attribute values may contain everything, except:
     // - the ending quote (with ' or ") - this marks the end of the value
     // - the character "<" - should never appear
@@ -203,8 +203,8 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             state.tokenize = parseElement;
             return STYLE_ERROR;
         }
-        
-        state.tokParams.quote = quote;    
+
+        state.tokParams.quote = quote;
         state.tokenize = parseAttributeValue;
         return STYLE_WORD;
     }
@@ -228,14 +228,14 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             } else if(ch == "&") {
                 // reference - look for a semi-colon, or return error if none found
                 ch = stream.next();
-                
+
                 // make sure that semi-colon isn't right after the ampersand
                 if(ch == ';') {
                     stream.skipToEnd()
                     state.tokenize = parseElement;
                     return STYLE_ERROR;
                 }
-                
+
                 // make sure no less-than characters slipped in
                 while(!stream.eol() && ch != ";") {
                     if(ch == "<") {
@@ -251,14 +251,14 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
                     stream.skipToEnd();
                     state.tokenize = parseElement;
                     return STYLE_ERROR;
-                }                
+                }
             }
         }
-        
+
         // attribute value continues to next line
         return STYLE_WORD;
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // context: element block
     //
@@ -301,12 +301,12 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
             state.tokenize = parseText;
             return null;
         }
-        
+
         state.tokenize = state.context == null ? parseDocument : parseElementBlock;
         stream.skipToEnd();
         return null;
     }
-    
+
     function parseText(stream, state) {
         stream.eatWhile(/[^<]/);
         if(!stream.eol()) {
@@ -363,7 +363,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
         return STYLE_INSTRUCTION;
     }
 
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // context: XML declaration
     //
@@ -377,7 +377,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
     // - cannot contain anything else on the line
     function parseDeclarationVersion(stream, state) {
         state.tokenize = parseDeclarationEncoding;
-        
+
         if(isTokenSeparated(stream) && stream.match(/^version( )*=( )*"([a-zA-Z0-9_.:]|\-)+"/)) {
             return STYLE_INSTRUCTION;
         }
@@ -387,7 +387,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
 
     function parseDeclarationEncoding(stream, state) {
         state.tokenize = parseDeclarationStandalone;
-        
+
         if(isTokenSeparated(stream) && stream.match(/^encoding( )*=( )*"[A-Za-z]([A-Za-z0-9._]|\-)*"/)) {
             return STYLE_INSTRUCTION;
         }
@@ -396,7 +396,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
 
     function parseDeclarationStandalone(stream, state) {
         state.tokenize = parseDeclarationEndTag;
-        
+
         if(isTokenSeparated(stream) && stream.match(/^standalone( )*=( )*"(yes|no)"/)) {
             return STYLE_INSTRUCTION;
         }
@@ -405,7 +405,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
 
     function parseDeclarationEndTag(stream, state) {
         state.tokenize = parseDocument;
-        
+
         if(stream.match("?>") && stream.eol()) {
             popContext(state);
             return STYLE_INSTRUCTION;
@@ -418,7 +418,7 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
     // returned object
     return {
         electricChars: "/[",
-        
+
         startState: function() {
             return {
                 tokenize: parseDocument,
@@ -443,19 +443,19 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
 
             // run the current tokenize function, according to the state
             var style = state.tokenize(stream, state);
-            
+
             // is there an error somewhere in the line?
             state.lineError = (state.lineError || style == "error");
 
             return style;
         },
-        
+
         blankLine: function(state) {
             // blank lines are lines too!
             state.lineNumber++;
             state.lineError = false;
         },
-        
+
         indent: function(state, textAfter) {
             if(state.context) {
                 if(state.context.noIndent == true) {
@@ -468,14 +468,14 @@ CodeMirror.defineMode("xmlpure", function(config, parserConfig) {
                 }
                 if(textAfter.match(/^<!\[CDATA\[/)) {
                     // a stand-alone CDATA start-tag - indent back to column 0
-                    return 0;                
+                    return 0;
                 }
                 // indent to last context + regular indent unit
                 return state.context.indent + indentUnit;
             }
             return 0;
         },
-        
+
         compareStates: function(a, b) {
             if (a.indented != b.indented) return false;
             for (var ca = a.context, cb = b.context; ; ca = ca.prev, cb = cb.prev) {

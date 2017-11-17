@@ -25,10 +25,10 @@ def get_type_choices():
 
 def get_default_template_choices():
     newsletters_relative_path = 'newsletters/templates/default/'
-    path_in_core = os.path.join(settings.TENDENCI_ROOT, 
+    path_in_core = os.path.join(settings.TENDENCI_ROOT,
                 'apps/newsletters/templates/', newsletters_relative_path)
-    path_in_theme = os.path.join(settings.THEMES_DIR, 
-                    get_setting('module', 'theme_editor', 'theme'), 
+    path_in_theme = os.path.join(settings.THEMES_DIR,
+                    get_setting('module', 'theme_editor', 'theme'),
                     'templates/', newsletters_relative_path)
     if os.path.isdir(path_in_theme):
         list_in_theme = os.listdir(path_in_theme)

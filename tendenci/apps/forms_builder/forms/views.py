@@ -468,11 +468,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # log the spam
                 description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
                 EventLog.objects.log(instance=form, description=description)
-                
+
                 if form.completion_url:
                     return HttpResponseRedirect(form.completion_url)
                 return redirect("form_sent", form.slug)
-                
+
             email = Email()
             email.subject = subject
             email.reply_to = form.email_from
@@ -572,12 +572,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
-                    
+
                     update_invoice_for_entry(invoice, billing_form)
-                    
+
                     # log an event for invoice add
                     EventLog.objects.log(instance=form)
-                    
+
                     # redirect to online payment
                     if (entry.payment_method.machine_name).lower() == 'credit-card':
                         return redirect('payment.pay_online', invoice.id, invoice.guid)

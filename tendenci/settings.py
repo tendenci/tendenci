@@ -145,7 +145,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-            
+
                 # tendenci context processors
                 'tendenci.apps.theme.context_processors.theme',
                 'tendenci.apps.site_settings.context_processors.settings',
@@ -172,7 +172,7 @@ TEMPLATES = [
             ],
          'debug': DEBUG
         }
-     }                
+     }
 ]
 
 
@@ -375,7 +375,7 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title': 'Primary Button', 'value': 'btn btn-primary'},
         {'title': 'Default Button', 'value': 'btn btn-default'}
         ],
-    
+
     'tabfocus_elements': ":prev,:next",
     'convert_urls': 'false',
     'handle_event_callback': "event_handler",

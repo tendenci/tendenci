@@ -35,7 +35,7 @@
             <div class="meta">
                 <div class="submitted">{% blocktrans with dp.create_dt|date:"long" as create_date and dp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
             </div>
-            
+
             <div class="options options-search text-right">
                 <div class="quick-options">
                     {% directory_pricing_options request.user dp %}

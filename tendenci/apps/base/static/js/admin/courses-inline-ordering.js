@@ -1,6 +1,6 @@
 position_field = 'number'; // Name of inline model field (integer) used for ordering. Defaults to "position".
 
-jQuery(function($) {    
+jQuery(function($) {
     // This script is applied to all TABULAR inlines
     $('div.inline-group div.tabular').each(function() {
         table = $(this).find('table');
@@ -12,7 +12,7 @@ jQuery(function($) {
             $(this).find('td.' + position_field).hide();
             td_pos_field_index = table.find('tbody tr td').index($(this).find('td.' + position_field));
             $(this).find('th:eq(' + (td_pos_field_index-1) + ')').hide();
-            
+
             // Hide "original"-field and set any colspan to 1 (why show in the first case?)
             $(this).find('td.original').hide();
             $(this).find('th[colspan]').removeAttr('colspan');
@@ -28,8 +28,8 @@ jQuery(function($) {
                     update_positions($(this));
                 }
             });
-            
-            
+
+
             // Re-order <tr>:s based on the "position"-field values.
             // This is a very simple ordering which only works with correct position number sequences,
             // which the rest of this script (hopefully) guarantees.
@@ -37,11 +37,11 @@ jQuery(function($) {
             table.find('tbody tr').each(function() {
                 position = $(this).find('td.' + position_field + ' input').val();
                 rows[position] = $(this);
-                
+
                 // Add move cursor to table row.
                 table.find('tr:has(td)').css('cursor', 'move')
             });
-            
+
             for (var i in rows) { table.append(rows[i]); } // Move <tr> to its correct position
             update_positions($(this), true);
         }
@@ -64,7 +64,7 @@ function update_positions(table, update_ids)
             // Update position field
             $(this).find('td.' + position_field + ' input').val(position + 1);
             position++;
-            
+
             // Update row coloring
             $(this).removeClass('row1 row2');
             if (even)
@@ -79,7 +79,7 @@ function update_positions(table, update_ids)
             }
         }
     });
-    
+
 }
 
 // Updates actual id and name attributes of inputs, selects and so on.
@@ -87,33 +87,33 @@ function update_positions(table, update_ids)
 function update_id_fields(row, new_position)
 {
     // Fix IDs, names etc.
-    
+
     // <select ...>
     row.find('select').each(function() {
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id)
-        
+
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('name', new_id)
     });
-    
+
     // <input ...>
     row.find('input').each(function() {
         // id=...
         old_id = $(this).attr('id').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id)
-        
+
         // name=...
         old_id = $(this).attr('name').toString();
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('name', new_id)
     });
-    
+
     // <a ...>
     row.find('a').each(function() {
         // id=...
@@ -121,11 +121,11 @@ function update_id_fields(row, new_position)
         new_id = old_id.replace(/([^ ]+\-)[0-9]+(\-[^ ]+)/i, "$1" + new_position + "$2");
         $(this).attr('id', new_id)
     });
-    
+
     // Are there other element types...? Add here.
 }
 
 // Replace "Add another question" link in inline with blank question add form link.
-jQuery(function($) { 
+jQuery(function($) {
     $(".ui-sortable tr:last").find('a').replaceWith('<a href="/admin/courses/question/add">Add a Question</a>');
 });

@@ -52,11 +52,11 @@ class Command(BaseCommand):
                 disable_fk_sql = "SET FOREIGN_KEY_CHECKS=0;"
                 enable_fk_sql = "SET FOREIGN_KEY_CHECKS=1;"
                 update_sql = """
-                UPDATE events_registration 
+                UPDATE events_registration
                 SET reg_conf_price_id = %s
                 WHERE id = %s;
                 """
-                # clean up the pretty sql to a 
+                # clean up the pretty sql to a
                 # usable statements
                 pattern = re.compile(r'[\s\t]+')
                 update_sql = update_sql.replace('\n',' ')

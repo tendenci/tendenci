@@ -28,7 +28,7 @@
         <input type="hidden" name="entry_path" value="{{ request.path }}">
 
         {{ form_for_form|styled_form }}
-        
+
         {% if billing_form %}
          <h2>{% trans "Billing Information" %}</h2>
         	{{ billing_form|styled_form }}

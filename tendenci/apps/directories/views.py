@@ -229,7 +229,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
     if not has_perm(request.user,'directories.change_directory', directory):
         raise Http403
-    
+
     if request.user.is_superuser:
         if not directory.activation_dt:
             # auto-populate activation_dt

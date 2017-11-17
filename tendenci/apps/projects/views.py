@@ -29,14 +29,14 @@ def detail(request, slug=None, template_name="projects/detail.html"):
             'instance': project,
         }
         EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'project': project, 'project_photos': project_photos}, 
+        return render_to_response(template_name, {'project': project, 'project_photos': project_photos},
             context_instance=RequestContext(request))
     else:
         raise Http403
 
 def search(request, template_name="projects/search.html"):
     query = request.GET.get('q', None)
-    
+
     if get_setting('site', 'global', 'searchindex') and query:
         projects = Project.objects.search(query, user=request.user)
     else:
@@ -64,11 +64,11 @@ def search(request, template_name="projects/search.html"):
         'source': 'projects'
     }
     EventLog.objects.log(**log_defaults)
-    
+
     return render_to_response(template_name, {'projects':projects, 'categories': categories
-        }, 
+        },
         context_instance=RequestContext(request))
-    
+
 def category(request, template_name="projects/category.html"):
     query = request.GET.get('q', None)
 

@@ -10,7 +10,7 @@ class Command(BaseCommand):
         from tendenci.apps.invoices.models import Invoice
 
         registrations = Registration.objects.filter(creator__isnull=False)
-        
+
         for registration in registrations:
             related_invoice = Invoice.objects.filter(id=registration.invoice_id)
             for invoice in related_invoice:

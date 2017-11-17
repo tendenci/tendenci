@@ -233,7 +233,7 @@ followup_delete = staff_member_required(followup_delete)
 
 def view_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    
+
     if not request.user.is_staff:
         if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
             raise Http403
@@ -348,7 +348,7 @@ def update_ticket(request, ticket_id, public=False):
         return HttpResponseRedirect('%s?next=%s' % (reverse('login'), request.path))
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    
+
     if not request.user.is_staff:
         if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
             raise Http403
@@ -914,7 +914,7 @@ ticket_list = staff_member_required(ticket_list)
 
 def edit_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    
+
     if not request.user.is_staff:
         if not has_perm(request.user, 'helpdesk.change_ticket', ticket):
             raise Http403
@@ -951,14 +951,14 @@ def create_ticket(request):
         form.fields['assigned_to'].choices = [('', '--------')] + [[u.id, u.get_username()] for u in assignable_users]
         if form.is_valid():
             ticket = form.save(user=request.user)
-            
+
             # assign creator and owner
             ticket.creator = request.user
             ticket.creator_username = request.user.username
             ticket.owner = request.user
             ticket.owner_username = request.user.username
             ticket.save()
-            
+
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         initial_data = {}

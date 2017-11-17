@@ -50,7 +50,7 @@
             	 {% gravatar user_this 128 %}
             {% endif %}
         </div>
-        
+
         {% if profile.display_name %}
             <h1>{% firstof profile.display_name %}</h1>
             <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
@@ -77,7 +77,7 @@
         {% if city_state %}
             <p>{{ city_state }}</p>
         {% endif %}
-        
+
         {% if user_this.skillset and user_this.skillset.is_first_responder %}
             <p class="capitalize">{% trans "first responder" %} - <a href="{% url 'user.skills' user_this.username %}">{% trans "see skills" %}</a></p>
         {% endif %}

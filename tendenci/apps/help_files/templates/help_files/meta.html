@@ -45,7 +45,7 @@
 		        <li>{{ help_file.obj_perms }}</li>
 		        <li>{{ help_file.obj_status }}</li>
 		    </ul>
-    
+
 		    <ul class="nav navbar-nav navbar-right t-meta-options-links">
 		        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ help_file.pk }}&source={{ help_file.opt_app_label }}">{% trans 'Eventlogs' %}</a></li>
 		        <li><a class="edit-link" href="{% url "help_files.edit" help_file.pk %}">{% trans 'Edit' %}</a></li>

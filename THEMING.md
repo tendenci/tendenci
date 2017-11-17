@@ -25,7 +25,7 @@ A theme should be installed in the themes folder of the site root. The themename
   - media
 
       - css
-    
+
           - styles.css
 
       - fonts
@@ -34,16 +34,16 @@ A theme should be installed in the themes folder of the site root. The themename
           - Font-name.svg
           - Font-name.ttf
           - Font-name.woff
-    
+
       - img
-    
+
           - apple-touch-icon.png
           - favicon.ico
           - header-background.jpg (optional)
           - logo.png
 
       - js
-    
+
           - jquery.cycle.all.min.js
           - jcarousellite.min.js
 
@@ -54,7 +54,7 @@ A theme should be installed in the themes folder of the site root. The themename
       - header.html (optional)
       - footer.html (optional)
       - sidebar.html (optional)
-    
+
 ### Root
 
 **theme.info** - This file contains a set of attributes associated with a theme. See the example below for some common attributes.
@@ -127,7 +127,7 @@ On occasion, it may be necessary to override a template used in the site. For ex
 
 Specify the about comments, similar to WordPress, like so:
 
-    /*   
+    /*
     Theme Name: The Theme Name
     Theme URI: http://tendenci.com/
     Description: Custom theme design for Tendenci
@@ -141,7 +141,7 @@ Specify the about comments, similar to WordPress, like so:
 CSS comments are very similar, written like so:
 
     /* ------------------------------
-        Reset HTML 
+        Reset HTML
     ------------------------------ */
 
 The header line begins with forward slash, asterisk, and a space, followed by 30 dashes. The footer line is the same, but in reverse. The name row has 4 spaces, then the name of the comments section.
@@ -153,7 +153,7 @@ Comments should have empty line after them. The code should begin on the very ne
 A standard CSS reset should be used like so:
 
     /* ------------------------------
-        Reset HTML 
+        Reset HTML
     ------------------------------ */
     html, body, div, span, object, iframe,
     h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -171,12 +171,12 @@ A standard CSS reset should be used like so:
       font: inherit;
       vertical-align: baseline;
     }
-    
+
     article, aside, details, figcaption, figure,
     footer, header, hgroup, menu, section {
       display: block;
     }
-    
+
 This reset should have the comment above it as demonstrated. After this bit of code, an empty line should be present, followed by the next CSS comment denoting the next section.
 
 ### Base HTML Elements
@@ -184,37 +184,37 @@ This reset should have the comment above it as demonstrated. After this bit of c
 Here is a sample of code that can be used for base HTML elements.
 
     /* ------------------------------
-        Base HTML Elements 
+        Base HTML Elements
     ------------------------------ */
     body { background-color: #ffffff; font-family: Helvetica, Arial, "sans-serif"; font:13px/1.231 sans-serif; *font-size:small; color: #333333; margin: 0; }
-    
+
     h1, h1 a { font-size: 32px; line-height: 34px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
     h2, h2 a { font-size: 24px; line-height: 26px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
     h3, h3 a { font-size: 20px; line-height: 22px; text-decoration: none; font-weight: bold; margin-bottom: 6px; }
     h4, h4 a,
     h5, h5 a,
     h6, h6 a { font-size: 16px; line-height: 18px; text-decoration: none; font-weight: bold; margin-bottom: 6px; }
-    
+
     a { color: #0000ff; }
     a:hover { color: #5555ff; }
     a:visited, a:active { color: #BB55ff; }
-    
+
     p { margin-bottom: 10px; line-height: 18px; }
-    
+
     ul, ol { margin: 0 0 10px 24px; }
     ol { list-style-type: decimal; }
-    
+
     select, input, textarea, button { font:99% sans-serif; }
     pre, code, kbd, samp { font-family: monospace, sans-serif; margin-bottom: 10px; padding: 8px; }
-    
+
     small { font-size: 85%; }
     strong, th { font-weight: bold; }
-    
-    td, td img { vertical-align: top; } 
-    
+
+    td, td img { vertical-align: top; }
+
     sub { vertical-align: sub; font-size: smaller; }
     sup { vertical-align: super; font-size: smaller; }
-    
+
     blockquote { margin: 0 0 10px 20px; }
 
 Note that several variables are used in these base elements. You can also see the layout of a single style. Taking a closer look at the `p` tag, we can see some ways of writing our CSS.
@@ -232,7 +232,7 @@ Yuck. While this code will still work, it is hard to read and becomes more diffi
 Mostly this is just the clearfix code. This should be the last section of CSS in the document.
 
     /* ------------------------------
-        Extras 
+        Extras
     ------------------------------ */
     .clear { clear: both; }
     .clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; }
@@ -268,7 +268,7 @@ An example `homepage.html` should start like this:
     {% load nav_tags %}
     {% load story_tags %}
     {% load base_tags %}
-    
+
     {% theme_extends 'base.html' %}
 
 Each library loaded at the top will make more template tags available for use. You should only include tag libraries that are used on the page, as loading unused libraries can increase page load times.
@@ -314,7 +314,7 @@ Blocks are listed below in the order they typically appear in for a template.
 Within the templates, when referencing files in the `media` directory, you will need to prepend the path with `{{ THEME_URL }}`. For example, to pull in the default stylesheet, the following link would be included in the `extra_head` block:
 
      <link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css"/>
-     
+
 For other files like javascript files, please follow this same pattern, like the example below:
 
     <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
@@ -341,14 +341,14 @@ First, we start with our loaded tag libraries:
     {% load nav_tags %}
     {% load story_tags %}
     {% load base_tags %}
-    
+
     <!-- Extends Tendenci Base Structure
     ================================================== -->
     {% theme_extends 'base.html' %}
 
 Notice that we have a comment regarding the extends tag. We will use more of these comments in this style to aid developers that may be also working on our template.
 
-#### SEO Meta    
+#### SEO Meta
 
 Next, we define the SEO options for our homepage:
 
@@ -367,16 +367,16 @@ Next, we have `{% block extra_head %}` which includes our main stylesheet, our h
     ================================================== -->
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
+
     <!-- Favicons
     ================================================== -->
       <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
       <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
-    
+
       <!-- CSS
     ================================================== -->
       <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css"/>
-    
+
     <!-- IE Specific Compatibility
     ================================================== -->
       <!--[if lt IE 9]>
@@ -385,10 +385,10 @@ Next, we have `{% block extra_head %}` which includes our main stylesheet, our h
       <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
       <![endif]-->
-      <!--[if lt IE 9]>   
+      <!--[if lt IE 9]>
       <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
       <![endif]-->
-      
+
     {% endblock extra_head %}
 
 Again, we have comments to indicate certain areas of the code. Note that the only javascript included so far is the html5 shiv and shims used for IE support.
@@ -410,22 +410,22 @@ Next is `{% block html_body %}`, which includes the bulk of our html for the hom
     ================================================== -->
     {% block html_body %}
     <div class="wrapper">
-    
+
       <div class="header">
         {% theme_include "header.html" %}
       </div> <!-- /.header -->
-      
+
       ...
-      
+
       <div class="footer">
         {% theme_include "footer.html" %}
       </div> <!-- /.footer -->
-      
+
     </div> <!-- /.wrapper -->
     <!-- End Document
     ================================================== -->
     {% endblock html_body %}
-  
+
 The middle will be filled with whatever html is necessary for our homepage. Notice a few particular things.
 
 - All of our elements are nested with two (2) spaces
@@ -487,30 +487,30 @@ This section differs from `homepage.html` enough that all of it's code is below.
     ================================================== -->
     {% block html_body %}
     <div class="wrapper">
-    
+
       <div class="header">
         {% theme_include "header.html" %}
       </div> <!-- /.header -->
-      
+
       <div class="main-content {% block content_classes %}{% endblock %}">
         {% block content %}{% endblock %}
       </div> <!-- /.main-content -->
-      
+
       {% block sidebar %}
         <div class="sidebar">
           {% theme_include "sidebar.html" %}
         </div> <!-- /.sidebar -->
       {% endblock sidebar %}
-      
+
       <div class="footer">
         {% theme_include "footer.html" %}
       </div> <!-- /.footer -->
-      
+
     </div> <!-- /.wrapper -->
     <!-- End Document
     ================================================== -->
     {% endblock html_body %}
-  
+
 Notice the middle is filled in, where on `homepage.html` it was abbreviated. That has been replaced with a `<div>` for the main content which includes the `content_classes` block.
 
 Below that, we have the sidebar, which is inside the `sidebar` block, and which also includes it's content from the `sidebar.html` template.
@@ -546,7 +546,7 @@ If stories or boxes are included, please load those tags as well.
       <div class="logo">
         <img src="{{ THEME_URL }}media/images/logo.png" />
       </div> <!-- /.logo -->
-      
+
       <div class="search">
         <form method="post" action="/search/" class="search-form">
           <input name="q" id="q" type="text" placeholder="Search" />

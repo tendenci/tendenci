@@ -12,8 +12,8 @@ class VideoForm(TendenciBaseForm):
     release_dt = forms.DateTimeField(label=_('Release Date/Time'),
                                      initial=datetime.now())
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Video._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Video._meta.app_label,
         'storme_model':Video._meta.model_name.lower()}))
 
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
@@ -39,7 +39,7 @@ class VideoForm(TendenciBaseForm):
             'status_detail',
         )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(VideoForm, self).__init__(*args, **kwargs)
         self.embedly_403 = False
         if self.instance.pk:
@@ -47,24 +47,24 @@ class VideoForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
         self.fields['release_dt'].widget = widgets.AdminSplitDateTime()
-    
+
     def clean(self, *args, **kwargs):
         super(VideoForm, self).clean(*args, **kwargs)
         if self.embedly_403:
             if not self.cleaned_data.get('image'):
                 raise forms.ValidationError('Please provide a thumbnail of your video in the image upload field.')
         return self.cleaned_data
-            
+
     def clean_video_url(self):
         video_url = self.cleaned_data.get('video_url')
-        
+
         if not video_url:
             raise forms.ValidationError('You must enter a URL')
-        
+
         if self.instance and self.instance.video_url == video_url:
             # the video_url is not changed, let it go
             return video_url
-        
+
         # Get embedded object from URL
         client = get_embedly_client()
         obj = client.oembed(video_url)

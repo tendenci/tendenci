@@ -31,7 +31,7 @@ class PhotoAdmin(admin.ModelAdmin):
     )
     form = PhotoSetAddForm
     ordering = ['position']
-    
+
     class Media:
         css = {
             "all": ("css/websymbols.css",)

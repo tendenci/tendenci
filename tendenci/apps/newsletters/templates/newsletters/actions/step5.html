@@ -16,7 +16,7 @@
     <div class="page-header">
       <h1>{% trans 'Ready to Send!' %}</h1>
     </div>
-       
+
     {% if form.non_field_errors %}
     <div class="body-copy-alerts">
       <ul>
@@ -50,7 +50,7 @@
       <div class="step-content-item">
       <strong>{{ object.email.subject }}</strong>
     </div>
-      
+
     </div>
     </div>
       <div class='step-section cf'>
@@ -90,7 +90,7 @@
     </div>
     </div> -->
       <div class='step-section cf'>
-        
+
         <div class="step-contents">
           <div class="step-content-item">
             {% blocktrans %}
@@ -103,21 +103,21 @@
             <p>Once submitted the e-mail will be put into the queue for processing within 10 minutes.</p>
             {% endblocktrans %}
           </div>
-          
+
           <div class="form-group">
             {{ form.create_article }} &nbsp; <label>{{ form.create_article.label }}</label>
           </div>
-          
+
           <div class="form-group">
             <div class="form-control">
               <input type="checkbox" name="send_status" value="queued" />&nbsp; &nbsp;<label> *Confirm Send (Check box to Continue) </label>
             </div>
           </div>
-          
-          
+
+
           <input class="btn btn-primary btn-lg pull-right" type="submit" value="{% trans 'Send Newsletter' %}" />
-          
-          
+
+
         </div>
       </div>
     </form>

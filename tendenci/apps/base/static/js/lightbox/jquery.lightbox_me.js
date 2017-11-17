@@ -93,9 +93,9 @@
             $(window).resize(setOverlayHeight)
                      .resize(setSelfPosition)
                      .scroll(setSelfPosition);
-                     
+
             $(window).bind('keyup.lightbox_me', observeKeyPress);
-                     
+
             if (opts.closeClick) {
                 $overlay.click(function(e) { closeLightbox(); e.preventDefault; });
             }
@@ -105,7 +105,7 @@
             $self.bind('close', closeLightbox);
             $self.bind('reposition', setSelfPosition);
 
-            
+
 
             /*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
               -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
@@ -130,7 +130,7 @@
                 }
 
                 $iframe.remove();
-                
+
 				// clean up events.
                 $self.undelegate(opts.closeSelector, "click");
 
@@ -157,7 +157,7 @@
             function setOverlayHeight() {
                 if ($(window).height() < $(document).height()) {
                     $overlay.css({height: $(document).height() + 'px'});
-                     $iframe.css({height: $(document).height() + 'px'}); 
+                     $iframe.css({height: $(document).height() + 'px'});
                 } else {
                     $overlay.css({height: '100%'});
                     if (ie6) {

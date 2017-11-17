@@ -22,7 +22,7 @@
   <div class="col-md-6">
     <div id="chart_bystatus_div" ></div>
   </div>
-  
+
   <div class="col-md-6">
     <div id="chart_bytype_div"></div>
   </div>
@@ -114,23 +114,23 @@
 <script type="text/javascript">
   google.charts.load('current', {'packages':['corechart']});
   google.charts.setOnLoadCallback(drawChart);
-  
+
   function drawChart() {
   var options = {
   title: 'By Status',
   colors: ['#1c91c0', '#e49307', '#DC3912']
   };
-  
+
   var status_data = google.visualization.arrayToDataTable([
   ['{% trans 'Status' %}', '{% trans 'Count' %}'],
   ['{% trans 'Active' %}',  {{ total.total_active  }}],
   ['{% trans 'Pending' %}',  {{ total.total_pending }}],
   ['{% trans 'Expired' %}',  {{ total.total_expired}}]
   ]);
-  
+
   var chart = new google.visualization.PieChart(document.getElementById('chart_bystatus_div'));
   chart.draw(status_data, options);
-  
+
   options = {
   title: 'By Membership Type'
   };
@@ -140,11 +140,11 @@
   ['{{ type.type.name }}',  {{ type.total }}],
   {% endfor %}
   ]);
-  
+
   var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
   chart.draw(type_data, options);
-  
-  
+
+
   var data = google.visualization.arrayToDataTable([
   ['{% trans 'Membership Type' %}',
   '{% trans 'Active' %}', '{% trans 'Pending' %}',
@@ -156,7 +156,7 @@
   ['', 0, 0, 0],
   {% endfor %}
   ]);
-  
+
   options = {
   title: 'By Membership Type and Status',
   legend: { position: 'top', maxLines: 3 },
@@ -166,12 +166,12 @@
   colors: ['#1c91c0', '#e49307', '#DC3912'],
   hAxis: {title: '{% trans 'Membership Type' %}', titleTextStyle: {color: 'black'}}
   };
-  
+
   chart = new google.visualization.ColumnChart(document.getElementById('chart_summary_div'));
   chart.draw(data, options);
-  
+
   }
-  
-</script>  
+
+</script>
 
 {% endblock extra_body %}

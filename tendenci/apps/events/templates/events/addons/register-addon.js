@@ -9,7 +9,7 @@ function deleteAddon(ele, prefix) {
     $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
     var reg_id = attr_id.split('_')[1];
     removeSummaryEntry(prefix, reg_id);
-    
+
     for(i=0;i<forms.length;i++){
         var replacement = prefix + '_' + i
         $(forms[i]).attr('id',replacement);
@@ -61,15 +61,15 @@ function addAddon(prefix, addon, container){
     var row = $('#addon-hidden').clone(true).get(0);
     // place proper class
     $(row).addClass('addon-form');
-    
+
     // update id attr
     var replacement = prefix + '_' + formCount;
     $(row).attr('id',replacement);
-    
+
     $(row).find(".form-field").children().each(function() {
         updateFormIndex($(this), prefix, formCount);
     });
-    
+
     $(row).find(".form-field").children().children().children().each(function() {
         updateFormIndex($(this), prefix, formCount);
         var field_name = $(this).attr("name");
@@ -88,11 +88,11 @@ function addAddon(prefix, addon, container){
 	addon_input.hide();
     // insert as last element into form list
     $(container).append(row);
-    
+
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-    
+
     updateSummaryEntry(prefix, formCount, addon['price']);
-    
+
     return false;
 }
 
@@ -113,7 +113,7 @@ $(document).ready(function(){
             }
         });
     });
-    
+
     $("#add-addons-button").click(function(){
         var addons = $('input:checkbox[name=add-addons]:checked');
         if (addons.length > 0){
@@ -140,7 +140,7 @@ $(document).ready(function(){
             alert("Please select some addons first.");
         }
     });
-    
+
     var addon_inputs = $(".addon-input");
     var addon_choices = $("#addon-choices");
     for(i=0;i<addon_inputs.length-1;i++){
@@ -151,7 +151,7 @@ $(document).ready(function(){
         addon.parent().parent().find('label').html(choice.attr('title') + ': ' + addon_option.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
         addon.hide();
     }
-    
+
      $('.delete-addon').click(function(){
         var delete_confirm = confirm('Are you sure you want to delete this addon?');   // confirm
         if(delete_confirm) {

@@ -76,7 +76,7 @@ def search(request, release_year=None, template_name="news/search.html"):
             news = news.order_by('-release_dt')
         if news_group:
             news = news.filter(groups__in=[news_group])
-    
+
         if not has_perm(request.user, 'news.view_news'):
             news = news.filter(release_dt_local__lte=datetime.now())
 
@@ -90,7 +90,7 @@ def search(request, release_year=None, template_name="news/search.html"):
         if release_year < 1900:
             raise Http404
         news = news.filter(release_dt_local__year=release_year)
-        
+
 
     return render_to_response(template_name, {'search_news': news,
                                               'form': form,

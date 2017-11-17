@@ -90,12 +90,12 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     form = StudyGroupAdminForm
     inlines = (OfficerAdminInline,)
-    
+
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
-        
+
     def get_form(self, request, obj=None, **kwargs):
         """
         inject the user in the form.
@@ -119,7 +119,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
         instance = form.save(commit=False)
         perms = update_perms_and_save(request, form, instance)
         return instance
-        
+
     def save_formset(self, request, form, formset, change):
         """
         Associate the user to each instance saved.
@@ -131,7 +131,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
             instance.creator = request.user
             instance.owner = request.user
             instance.save(log=False)
-        
+
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
@@ -139,7 +139,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
             obj.slug
         )
     link.allow_tags = True
-    
+
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:studygroups_studygroup_change', args=[obj.pk])
         return link

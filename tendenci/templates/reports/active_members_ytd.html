@@ -7,8 +7,8 @@
 </div>
 
 <div class="mems-wrap stat-table">
-  
-  
+
+
   <div id="chart_div">
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -33,14 +33,14 @@
       hAxis: {title: 'Month'},
       vAxis: {title: '# Members'}
       };
-      
+
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
       chart.draw(data, options);
       }
     </script>
   </div>
-  
-  
+
+
   <form class="search-form pull-right form-inline" action="{% url "reports-active-members-ytd" %}" method="get">
     <div class="form-group">
       <label class="control-label" for="id_year">{% trans "Select a Year" %}:</label>
@@ -52,7 +52,7 @@
       </select>
     </div>
   </form>
-  
+
   <div>
     {% if not exclude_total %}
     <a class="btn btn-default" href="{% url "reports-active-members-ytd" %}?exclude_total=on">{% trans 'Exclude Total Active from Chart' %}</a>
@@ -60,8 +60,8 @@
     <a class="btn btn-default" href="{% url "reports-active-members-ytd" %}">{% trans 'Include Total Active to Chart' %}</a>
     {% endif %}
   </div>
-  
-  
+
+
   <div style="clear: right;">&nbsp;</div>
   <table class="table table-tendenci-reports">
     <tr>
@@ -102,7 +102,7 @@
             <br />
             <br />
           </div>
-            
-            
-            
+
+
+
             {% endblock content %}

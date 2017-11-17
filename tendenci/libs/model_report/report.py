@@ -561,7 +561,7 @@ class ReportAdmin(object):
             return None
 
         GroupByForm.groupby_fields = groupby_fields
-        
+
         form = GroupByForm(data=request.GET or None)
         if hasattr(self, 'hide_show_only_totals') and self.hide_show_only_totals:
             del form.fields['onlytotals']

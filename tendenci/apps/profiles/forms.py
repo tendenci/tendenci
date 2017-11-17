@@ -572,21 +572,21 @@ class UserGroupsForm(forms.Form):
         self.editor = editor
         self.request = request
         super(UserGroupsForm, self).__init__(*args, **kwargs)
-        
+
         self.fields['groups'].initial = self.fields['groups'].queryset.filter(members__in=[self.user])
 
         if not self.editor.is_superuser:
             queryset = self.fields['groups'].queryset
             queryset = queryset.filter(show_as_option=True, allow_self_add=True)
             if self.editor.profile.is_member:
-                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                queryset = queryset.filter(Q(allow_anonymous_view=True)
                                            | Q(allow_user_view=True)
                                            | Q(allow_member_view=True))
             else:
-                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                queryset = queryset.filter(Q(allow_anonymous_view=True)
                                            | Q(allow_user_view=True))
             self.fields['groups'].queryset = queryset
-        
+
 
     def save(self):
         data = self.cleaned_data
@@ -598,13 +598,13 @@ class UserGroupsForm(forms.Form):
             old_memberships = old_memberships.filter(group__show_as_option=True,
                                                      group__allow_self_remove=True)
             if self.editor.profile.is_member:
-                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True)
                                            | Q(group__allow_user_view=True)
                                            | Q(group__allow_member_view=True))
             else:
-                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True)
                                            | Q(group__allow_user_view=True))
-                                
+
 
         for old_m in old_memberships:
             if old_m.group not in data['groups']:
@@ -757,7 +757,7 @@ class UserUploadForm(forms.ModelForm):
                ('first_name,last_name,phone', _('First Name and Last Name and Phone')),
                ('first_name,last_name,company', _('First Name and Last Name and Company')),
                ('username', 'Username'),)
-    
+
     interactive = forms.BooleanField(widget=forms.RadioSelect(
                                     choices=UserImport.INTERACTIVE_CHOICES),
                                     initial=False, required=False)
@@ -781,7 +781,7 @@ class UserUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserUploadForm, self).__init__(*args, **kwargs)
         self.fields['key'].initial = 'email'
-        # move the choices down here to fix the error 
+        # move the choices down here to fix the error
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
         GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
                      Group.objects.filter(status=True, status_detail='active'

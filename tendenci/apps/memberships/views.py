@@ -2357,7 +2357,7 @@ def report_members_donated(request, template_name='reports/members_donated.html'
     return render_to_response(template_name,
                               {'memberships': memberships,},
                               context_instance=RequestContext(request))
-    
+
 @is_enabled('memberships')
 @staff_member_required
 def memberships_overview(request,

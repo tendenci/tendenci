@@ -14,19 +14,19 @@
 
 {% block content %}
 <div class="t">
-  
+
   <div class="page-header">
     <h1>Similar Users List</h1>
   </div>
-  
+
   <form class="form-inline pull-right" style="margin-top:1.5px;" action="" method="get">
     <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" />
     <input class="btn btn-default" type="submit" value="{% trans 'Search' %}" />
   </form>
-  
-  <p><a class="btn btn-default" href="#name">By Name</a>  
+
+  <p><a class="btn btn-default" href="#name">By Name</a>
     <a class="btn btn-primary" href="#email">By Email</a></p>
-  
+
 
     {% if users_with_duplicate_name %}
   <a id="name"></a>

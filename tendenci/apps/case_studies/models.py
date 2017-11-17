@@ -20,7 +20,7 @@ class CaseStudy(TendenciBaseModel):
     execution = models.TextField(blank=True, null=True)
     results = models.TextField(blank=True, null=True)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
-    
+
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -44,25 +44,25 @@ class CaseStudy(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.view", [self.slug])
-        
+
     def featured_screenshots(self):
         try:
             return self.image_set.filter(file_type='featured')
         except:
             return False
-    
+
     def screenshots(self):
         try:
             return self.image_set.filter(file_type='screenshot')
         except:
             return False
-            
+
     def other_images(self):
         try:
             return self.image_set.filter(file_type='other')
         except:
             return False
-            
+
     def homepage_images(self):
         try:
             return self.image_set.filter(file_type='homepage')

@@ -101,7 +101,7 @@ class MembershipReport(ReportAdmin):
     list_serie_ops = ('len',)   # count
     # hide the show only totals field
     hide_show_only_totals = True
-    
+
     override_group_value = {
         'membership_type': membership_type_format,
     }
@@ -112,10 +112,10 @@ class MembershipReport(ReportAdmin):
         'expire_dt': us_date_format,
         'id': id_format,
     }
-    
+
     base_template_name = ''
 
-   
+
 
 # register your report with the slug and name
 reports.register('memberships', MembershipReport)

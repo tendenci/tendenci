@@ -11,6 +11,6 @@ jQuery.fn.inputFieldText = function(string, hintClass) {
         if ($(this).val() == '' ){
           $(this).addClass(hintClass).val(string);
         }
-      }); 
+      });
   });
 }

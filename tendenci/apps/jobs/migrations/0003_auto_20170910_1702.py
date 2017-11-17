@@ -10,102 +10,102 @@ from django.conf import settings
 def migrate_customized_jobs_templates():
     """
     Update those jobs templates that are pulled to sites
-    
+
     jobs/add.html, jobs/edit.html:
     =============================
-    
+
     Remove:
-    <fieldset class="boxy-grey" >           
+    <fieldset class="boxy-grey" >
      <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans 'Category' %}</legend>
            <div id="category-form">
                   {{ categoryform|styled_form }}
               </div>
      </fieldset>
-    
+
     Replace:
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
-    
+
     With:
     <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
     <script type="text/javascript">{% include 'jobs/include/get_subcategories.js' %} </script>
-    
-    
+
+
     jobs/meta.html:
     ===============
-    
+
     Replace:
     {% with job.category_set as job_cat %}
-    
+
     With:
     {% with job.cat as job_cat %}
-    
+
     Replace:
     {% if job_cat.category %}
-    
+
     With:
     {% if job_cat %}
-    
+
     Replace:
     categories={{ job_cat.category.pk }}">{{ job_cat.category }}
-    
+
     With:
     cat={{ job_cat.pk }}">{{ job_cat.name }}
-    
+
     Replace:
     {% if job_cat.sub_category %}
-    
+
     With:
     {% if job.sub_cat %}
-    
-    
+
+
     Replace:
     subcategories={{ job_cat.sub_category.pk }}">{{ job_cat.sub_category }}
-    
+
     With:
     cat={{ job_cat.pk }}&sub_cat={{ job.sub_cat.pk }}">{{ job.sub_cat.name }}
-    
-    
+
+
     Remove:
    <li>
         <a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>
     </li>
-    
+
     jobs/search-form.html:
     ======================
-    
+
     Replace:
     form.categories
-    
+
     With:
     form.cat
-    
+
     Replace:
     form.subcategories
-    
+
     With:
     form.sub_cat
-    
-    
+
+
     jobs/search.html:
     =================
-    
+
     Replace:
     var $catAndSubcatSelect = $('#id_categories, #id_subcategories')
-    
+
     With:
     var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')
-    
-    
+
+
     jobs/top_nav_items.html:
     ========================
-    
+
     Replace:
     <li class="content-item">
     <span class="app-name">
            <a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
      </span>
    </li>
-   
+
    With:
    {% if request.user.is_superuser %}
         <li class="content-item">
@@ -114,8 +114,8 @@ def migrate_customized_jobs_templates():
             </span>
         </li>
     {% endif %}
-     
-    
+
+
     """
     import re
     from tendenci.apps.site_settings.utils import get_setting
@@ -128,13 +128,13 @@ def migrate_customized_jobs_templates():
         if os.path.isfile(file_path):
             with open(file_path, 'r') as f:
                 content = f.read()
-                
+
                 # remove categoryform
-                p = r'{0}([\d\D\s\S\w\W]*?){1}([\d\D\s\S\w\W]*?){2}'.format(re.escape('<fieldset class="boxy-grey" >'), 
-                                                                            re.escape('{{ categoryform|styled_form }}'), 
+                p = r'{0}([\d\D\s\S\w\W]*?){1}([\d\D\s\S\w\W]*?){2}'.format(re.escape('<fieldset class="boxy-grey" >'),
+                                                                            re.escape('{{ categoryform|styled_form }}'),
                                                                             re.escape('</fieldset>'))
                 content = re.sub(p, '', content)
-                
+
                 # add js link
                 p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js">'),
                                         re.escape('</script>'))
@@ -144,8 +144,8 @@ def migrate_customized_jobs_templates():
             with open(file_path, 'w') as f:
                 # save the updated content back to file
                 f.write(content)
-    
-    
+
+
     # jobs/meta.html
     file_path = '{}/templates/jobs/meta.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -159,16 +159,16 @@ def migrate_customized_jobs_templates():
             content = f.read()
             for (string_to_find, string_to_replace) in find_replace_list:
                 content = content.replace(string_to_find, string_to_replace)
-                
-            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'), 
-                                        re.escape("""<a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>"""), 
+
+            p = r'{0}\s+{1}\s+{2}'.format(re.escape('<li>'),
+                                        re.escape("""<a href="{% url 'category.update' job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</li>'))
             content = re.sub(p, '', content)
 
         with open(file_path, 'w') as f:
             f.write(content)
-            
-    
+
+
     # jobs/search-form.html
     file_path = '{}/templates/jobs/search-form.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -182,7 +182,7 @@ def migrate_customized_jobs_templates():
 
         with open(file_path, 'w') as f:
             f.write(content)
-    
+
     # jobs/search.html
     file_path = '{}/templates/jobs/search.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -192,8 +192,8 @@ def migrate_customized_jobs_templates():
                                       "var $catAndSubcatSelect = $('#id_cat, #id_sub_cat')")
         with open(file_path, 'w') as f:
             f.write(content)
-    
-    
+
+
     #jobs/top_nav_items.html
     file_path = '{}/templates/jobs/top_nav_items.html'.format(dir_path)
     if os.path.isfile(file_path):
@@ -201,8 +201,8 @@ def migrate_customized_jobs_templates():
             content = f.read()
             p = r'{0}\s+{1}\s+{2}\s+{3}\s+{4}'.format(
                                         re.escape('<li class="content-item">'),
-                                        re.escape('<span class="app-name">'),  
-                                        re.escape("""<a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""), 
+                                        re.escape('<span class="app-name">'),
+                                        re.escape("""<a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>"""),
                                         re.escape('</span>'),
                                         re.escape('</li>'))
             manage_cat = """
@@ -216,9 +216,9 @@ def migrate_customized_jobs_templates():
             """
             content = re.sub(p, manage_cat, content)
 
-        with open(file_path, 'w') as f:  
+        with open(file_path, 'w') as f:
             f.write(content)
-    
+
 
 def migrate_categories_data(apps, schema_editor):
     from tendenci.apps.jobs.models import Job
@@ -253,7 +253,7 @@ def migrate_categories_data(apps, schema_editor):
             if job_sub_cat:
                 job.sub_cat = job_sub_cat
             job.save(log=False)
-            
+
     migrate_customized_jobs_templates()
 
 

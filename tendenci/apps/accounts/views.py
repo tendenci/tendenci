@@ -44,7 +44,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
 #                 request, messages.INFO,
 #                 _(u"The password entered for account %(uname)s is invalid." % {
 #                     'uname' : form.user_exists.username }))
-# 
+#
 #             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()

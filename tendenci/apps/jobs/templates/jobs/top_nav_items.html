@@ -48,7 +48,7 @@
                                 <a href="{% url 'job.add' %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
                             </span>
                         </li>
-                        
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'myjobs' %}">{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
@@ -83,7 +83,7 @@
                             </span>
                         </li>
                     {% endif %}
-                    
+
                     {% if request.user.is_superuser %}
                         <li class="content-item">
                             <span class="app-name">
@@ -91,7 +91,7 @@
                             </span>
                         </li>
                     {% endif %}
-                    
+
                 </ul>
 
                 {% if app_object %}
@@ -121,7 +121,7 @@
                                         <a href="{% url 'job.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
                                     </span>
                                 </li>
-                               
+
                             {% endif %}
 
                             {% if can_delete_job %}

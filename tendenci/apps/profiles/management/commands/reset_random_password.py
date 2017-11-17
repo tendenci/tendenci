@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 class Command(BaseCommand):
     """
-    Reset random password for the specified users 
-    
+    Reset random password for the specified users
+
     Usage: manage.py reset_random_password username1 username2 ...
     """
 
@@ -21,4 +21,3 @@ class Command(BaseCommand):
             if u:
                 u.set_password(User.objects.make_random_password())
                 u.save()
-                

@@ -20,7 +20,7 @@ class Email(TendenciBaseModel):
     CONTENT_TYPE_CHOICES = (
         (CONTENT_TYPE_HTML, 'text/html'),
         (CONTENT_TYPE_TEXT, 'text'),
-    )   
+    )
 
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
@@ -51,17 +51,17 @@ class Email(TendenciBaseModel):
 
     def __unicode__(self):
         return self.subject
-    
+
     @staticmethod
     def is_blocked(email_to_test):
         if not email_to_test or '@' not in email_to_test:
             return False
-        
+
         email_to_test = email_to_test.lower()
         email_domain = email_to_test.split('@')[1]
         return EmailBlock.objects.filter(Q(email=email_to_test) | Q(email_domain=email_domain)
                                          ).exists()
-        
+
 
     def send(self, fail_silently=False, **kwargs):
         recipient_list = []

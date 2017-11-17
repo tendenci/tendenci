@@ -315,7 +315,7 @@ class FormEntry(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
-    
+
     @property
     def owner(self):
         return self.creator

@@ -126,7 +126,7 @@ class FormAdmin(TendenciBaseModelAdmin):
             #check if the form has file fields
             extra_context = extra_context or {}
             extra_context['has_files'] = obj.has_files()
-    
+
             for inline_class in self.inlines:
                 if inline_class.model == Field:
                     if obj.fields_name:

@@ -49,7 +49,7 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
     url(r"^%s/import/download_recap/(?P<uimport_id>\d+)/$" % urlpath,
         "user_import_download_recap",
         name="profiles.user_import_download_recap"),
-                       
+
     # activate inactive user account
     url(r'^%s/activate-email/$' % urlpath, 'activate_email', name="profile.activate_email"),
 

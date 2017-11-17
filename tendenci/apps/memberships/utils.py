@@ -79,12 +79,12 @@ def get_default_membership_corp_fields():
 def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
     from tendenci.apps.corporate_memberships.models import CorpMembership
-     
+
     corp_membs = CorpMembership.objects.exclude(status_detail='archive')
     if active_only:
         corp_membs = corp_membs.filter(status_detail='active')
     corp_membs = corp_membs.order_by('corp_profile__name')
-     
+
     for corp_memb in corp_membs:
         if corp_memb.status_detail == 'active':
             cm_list.append((corp_memb.id, corp_memb.corp_profile.name))
@@ -394,7 +394,7 @@ def process_export(
         'degree4',
         'graduation_dt4',
     ]
-    
+
     profile_field_list.extend(['profile_status', 'profile_status_detail'])
 
     title_list = (
@@ -840,7 +840,7 @@ def get_notice_token_help_text(notice=None):
                                 $('#notice_token_list').toggle();
                             });
                         });
-                    }(jQuery));                  
+                    }(jQuery));
                 </script>
                 """
 
@@ -1277,7 +1277,7 @@ class ImportMembDefault(object):
                 return True
 
         return False
-    
+
     def has_education_fields(self, field_names):
         """
         Check if import has education fields.
@@ -1494,8 +1494,8 @@ class ImportMembDefault(object):
             profile.status_detail = 'active'
         else:
             profile.status_detail = profile.status_detail.lower()
-        
-        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile   
+
+        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile
         if profile.status_detail == 'expired':
             profile.status_detail = 'active'
 
@@ -1518,7 +1518,7 @@ class ImportMembDefault(object):
             self.assign_import_values_from_dict(demographic,
                                                 action_info['user_action'])
             demographic.save()
-            
+
         if self.should_handle_education:
             educations = user.educations.all().order_by('pk')[0:4]
             for x in xrange(1, 5):
@@ -1559,7 +1559,7 @@ class ImportMembDefault(object):
             memb.entity_id = 1
         if not memb.lang:
             memb.lang = 'eng'
-        
+
         # Set status to True
         # The False status means DELETED - It would defeat the purpose of import
         memb.status = True
@@ -1853,7 +1853,7 @@ def get_membership_app(membership):
             mt_ids = app.membership_types.all().values_list('id', flat=True)
             if membership.membership_type_id in mt_ids:
                 return app
-                
+
     return None
 
 

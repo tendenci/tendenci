@@ -719,7 +719,7 @@ def get_registrants_prices(*args):
     # Get the list of final prices for registrants
     (request, event, reg_form, registrant_formset, addon_formset,
     price, event_price) = args
-    
+
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
@@ -727,7 +727,7 @@ def get_registrants_prices(*args):
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
         if override_price_table is None:
             override_price_table = 0
-        
+
     amount_list = []
     if event.is_table:
         if override_table:
@@ -941,7 +941,7 @@ def create_registrant_from_form(*args, **kwargs):
     impementation of events in the registration module.
     """
     from tendenci.apps.events.forms import FormForCustomRegForm
-                                            
+
     # arguments were getting kinda long
     # moved them to an unpacked version
     form, event, reg8n, \

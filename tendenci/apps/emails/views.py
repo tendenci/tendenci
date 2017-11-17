@@ -80,7 +80,7 @@ def delete(request, id, template_name="emails/delete.html"):
     if request.method == "POST":
         msg_string = 'Successfully deleted %s' % unicode(email)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
-            
+
         email.delete()
         return HttpResponseRedirect(reverse('email.search'))
 

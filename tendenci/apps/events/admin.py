@@ -30,7 +30,7 @@ class EventAdmin(TendenciBaseModelAdmin):
     search_fields = ("title",)
     list_filter = ('enable_private_slug',)
     ordering = ['-start_dt']
-    
+
     def __init__(self, *args, **kwargs):
         super(EventAdmin, self).__init__(*args, **kwargs)
         if 'edit_link' in self.list_display:

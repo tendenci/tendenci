@@ -94,7 +94,7 @@ class Directory(TendenciBaseModel):
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
+
     cat = models.ForeignKey(Category, verbose_name=_("Category"),
                                  related_name="directory_cat", null=True, on_delete=models.SET_NULL)
     sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),

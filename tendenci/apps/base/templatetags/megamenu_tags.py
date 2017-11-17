@@ -15,7 +15,7 @@ def get_profile_dropdown_column_size(context):
     col_count = PROFILE_DROPDOWN_MIN_COL_COUNT
     is_superuser = context['USER_IS_SUPERUSER']
     is_superuser_or_member = is_superuser or context['USER_IS_MEMBER']
-    
+
     col_count += int(is_superuser_or_member) + int(is_superuser)
 
     return BOOTSTRAP_GRID_COL_COUNT / col_count

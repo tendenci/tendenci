@@ -8,7 +8,7 @@ class Acct(models.Model):
     account_number = models.IntegerField(unique=True)
     description = models.TextField()
     type = models.CharField(max_length=5)
-    
+
     class Meta:
         app_label = 'accountings'
 

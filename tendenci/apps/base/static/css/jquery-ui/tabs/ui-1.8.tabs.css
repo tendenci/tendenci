@@ -46,7 +46,7 @@
     line-height: 1.2;
     text-align: center;
     text-decoration: none;
-    white-space: nowrap; /* required in IE 6 */    
+    white-space: nowrap; /* required in IE 6 */
     outline: 0; /* prevent dotted border in Firefox */
     border: solid 1px #99A6AF;
     border-bottom: 0;

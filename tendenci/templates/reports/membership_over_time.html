@@ -7,7 +7,7 @@
   <h1>{% trans "New and Renewing Members Over Time" %}</h1>
 </div>
 <div>
-  
+
   <div id="chart_div">
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -32,13 +32,13 @@
       //hAxis: {title: 'Since x Months'},
       vAxis: {title: 'Members'}
       };
-      
+
       var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
       chart.draw(data, options);
       }
     </script>
   </div>
-  
+
   <table class="table table-tendenci-reports">
     <thead>
       <tr>
@@ -60,7 +60,7 @@
     {% endfor %}
   </table>
   <br />
-  
+
 </div>
 
 

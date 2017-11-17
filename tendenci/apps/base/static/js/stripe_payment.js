@@ -1,12 +1,12 @@
 function stripeResponseHandler(status, response) {
     if (response.error) {
-       
+
         //show the errors on the form
         $("#card-errors").addClass('errors');
         $("#card-errors").html(response.error.message);
         $('.submit-button').removeAttr('disabled');
         $('#submit-loader').hide();
-        
+
     } else {
         var form$ = $("#payment-form");
         // token contains id, last4, and card type
@@ -19,7 +19,7 @@ function stripeResponseHandler(status, response) {
 }
 
 function PopupLink(oLink) {
-	if (null != oLink) { 
+	if (null != oLink) {
  		window.open(oLink.href, null, "height=350, width=450, scrollbars=1, resizable=1");
 		return false;
 	}

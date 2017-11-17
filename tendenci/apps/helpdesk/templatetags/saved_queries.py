@@ -1,7 +1,7 @@
 """
 django-helpdesk - A Django powered ticket tracker for small enterprise.
 
-templatetags/saved_queries.py - This template tag returns previously saved 
+templatetags/saved_queries.py - This template tag returns previously saved
                                 queries. Therefore you don't need to modify
                                 any views.
 """

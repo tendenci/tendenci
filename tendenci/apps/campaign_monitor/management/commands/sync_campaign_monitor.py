@@ -4,11 +4,11 @@ from django.conf import settings
 
 class Command(BaseCommand):
     """
-    This script is to sync the groups and group subscribers with the campaign monitor 
-    
+    This script is to sync the groups and group subscribers with the campaign monitor
+
     To run the command: python manage.py sync_campaign_monitor --verbosity 2
     """
-    
+
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
         from tendenci.apps.profiles.models import Profile
@@ -16,7 +16,7 @@ class Command(BaseCommand):
         from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import (CreateSend, Client, List, Subscriber,
             BadRequest, Unauthorized)
-        
+
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']

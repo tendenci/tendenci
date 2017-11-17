@@ -32,7 +32,7 @@ def generate_colors():
                     color = app['event_logs'][model][event][1]
                     d[log_id] = color
     return d
-    
+
 def generate_base_colors():
     """Crete the event id to color dict for event logs that
     are not associated with any model or registry.

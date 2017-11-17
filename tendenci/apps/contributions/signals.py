@@ -40,7 +40,7 @@ def save_contribution(sender, **kwargs):
             if hasattr(instance, attr):
                 contrib.title = getattr(instance, attr, '')
                 break
-            
+
         if not contrib.title:
             contrib.title = instance
 

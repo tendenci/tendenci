@@ -195,7 +195,7 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   });
   CodeMirror.defineMIME("text/x-java", {
     name: "clike",
-    keywords: words("abstract assert boolean break byte case catch char class const continue default " + 
+    keywords: words("abstract assert boolean break byte case catch char class const continue default " +
                     "do double else enum extends final finally float for goto if implements import " +
                     "instanceof int interface long native new package private protected public " +
                     "return short static strictfp super switch synchronized this throw throws transient " +
@@ -211,12 +211,12 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
   });
   CodeMirror.defineMIME("text/x-csharp", {
     name: "clike",
-    keywords: words("abstract as base bool break byte case catch char checked class const continue decimal" + 
-                    " default delegate do double else enum event explicit extern finally fixed float for" + 
-                    " foreach goto if implicit in int interface internal is lock long namespace new object" + 
-                    " operator out override params private protected public readonly ref return sbyte sealed short" + 
-                    " sizeof stackalloc static string struct switch this throw try typeof uint ulong unchecked" + 
-                    " unsafe ushort using virtual void volatile while add alias ascending descending dynamic from get" + 
+    keywords: words("abstract as base bool break byte case catch char checked class const continue decimal" +
+                    " default delegate do double else enum event explicit extern finally fixed float for" +
+                    " foreach goto if implicit in int interface internal is lock long namespace new object" +
+                    " operator out override params private protected public readonly ref return sbyte sealed short" +
+                    " sizeof stackalloc static string struct switch this throw try typeof uint ulong unchecked" +
+                    " unsafe ushort using virtual void volatile while add alias ascending descending dynamic from get" +
                     " global group into join let orderby partial remove select set value var yield"),
     blockKeywords: words("catch class do else finally for foreach if struct switch try while"),
     atoms: words("true false null"),

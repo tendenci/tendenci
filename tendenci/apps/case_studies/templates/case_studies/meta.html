@@ -13,18 +13,18 @@
             {% endfor %}
         </div>
         {% endif %}
-        
+
         {% if user.is_authenticated %}
              {% if user.profile.is_superuser or user == case_study.creator or user == case_study.owner %}
                 {% meta_creator_owner case_study %}
-            {% endif %}       
+            {% endif %}
         {% endif %}
     </div>
-    
+
     <div class="meta-right">
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
-    
+
 </div>
 {% if user.profile.is_superuser %}
 <div class="editor-bar">
@@ -50,5 +50,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

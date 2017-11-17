@@ -130,7 +130,7 @@ def expire_selected(modeladmin, request, queryset):
     )
 
     for membership in memberships:
-        # Since we're selecting memberships with 'active' status_detail, 
+        # Since we're selecting memberships with 'active' status_detail,
         # this `membership` is either active membership or expired
         # but not being marked as expired yet (maybe due to a failed cron job).
         membership.expire(request_user=request.user)
@@ -348,7 +348,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return u''
     get_approve_dt.short_description = u'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
-    
+
     def get_expire_dt(self, instance):
         dt = instance.expire_dt
 
@@ -627,7 +627,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
-        
+
     def show_group(self, instance):
         if instance.group:
             return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(

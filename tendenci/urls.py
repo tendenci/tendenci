@@ -7,7 +7,7 @@ from tendenci.libs.model_report import report
 from tendenci.apps.registry.register import autodiscover as registry_autodiscover
 
 registry_autodiscover()
-        
+
 # django model report
 report.autodiscover()
 

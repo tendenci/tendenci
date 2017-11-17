@@ -79,7 +79,7 @@
             "permissions": []
         }
     },
-    
+
     {
         "pk": 1,
         "model": "user_groups.group",
@@ -403,7 +403,7 @@
             "allow_member_view": false,
             "allow_member_edit": false
         }
-    }, 
+    },
     {
         "pk": 10,
         "model": "user_groups.group",
@@ -439,5 +439,5 @@
             "allow_member_view": false,
             "allow_member_edit": false
         }
-    } 
+    }
 ]

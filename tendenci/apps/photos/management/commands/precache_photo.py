@@ -5,7 +5,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('photo_id', type=int)
-        
+
 
     def handle(self, photo_id, **options):
         from tendenci.apps.photos.utils.caching import cache_photo_size

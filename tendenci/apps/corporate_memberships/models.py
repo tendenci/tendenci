@@ -134,7 +134,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                           blank=True,
                                           null=True,
                                           help_text=_('Price for members who join above cap.'))
-                                
+
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
@@ -243,8 +243,8 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
-    
-    
+
+
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
             self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
@@ -308,7 +308,7 @@ class CorpProfile(TendenciBaseModel):
             if rep.user.id == this_user.id:
                 return True
         return False
-    
+
     def get_logo_url(self):
         if not self.logo:
             return u''
@@ -868,7 +868,7 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.save()
                 # archive old memberships
                 new_membership.archive_old_memberships()
-                
+
                 # show member_number on profile
                 new_membership.profile_refresh_member_number()
 
@@ -1136,7 +1136,7 @@ class CorpMembership(TendenciBaseModel):
     @property
     def is_archive(self):
         return self.status_detail.lower() in ('archive',)
-    
+
     def get_latest_renewed(self):
         """
         Get the latest renewed corpMembership.
@@ -1148,7 +1148,7 @@ class CorpMembership(TendenciBaseModel):
                                     status_detail='active'
                                     ).order_by('-expiration_dt')[:1] or [None]
             return latest_renewed
-            
+
         return None
 
     @property
@@ -1207,7 +1207,7 @@ class CorpMembership(TendenciBaseModel):
         apply_cap, cap,  = self.get_cap_info()[:2]
 
         return apply_cap and self.members_count - num_exclude >= cap
-    
+
     def get_above_cap_price(self, num_exclude=0):
         """
         get the above cap price for individual memberships.
@@ -1238,7 +1238,7 @@ class CorpMembership(TendenciBaseModel):
                          'roster_link': "%s?cm_id=%s" % (reverse('corpmembership.roster_search'), self.id),
                          'upgrade_link': reverse('corpmembership.upgrade', args=[self.id])}
         membership_recipients = get_setting('module', 'memberships', 'membershiprecipients')
-        
+
         if reps:
             email_context['to_reps'] =  True
             subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
@@ -1252,7 +1252,7 @@ class CorpMembership(TendenciBaseModel):
             email.content_type = 'html'
             email.send()
             email_sent_to_reps = True
-        
+
         # email to site admins
         if membership_recipients:
             email_context['to_reps'] =  False
@@ -1265,7 +1265,7 @@ class CorpMembership(TendenciBaseModel):
             email.recipient = membership_recipients
             email.content_type = 'html'
             email.send()
-        
+
         return email_sent_to_reps
 
 
@@ -1278,7 +1278,7 @@ class FreePassesStat(TendenciBaseModel):
 
     class Meta:
         app_label = 'corporate_memberships'
- 
+
     def set_creator_owner(self, request_user):
         if request_user and not request_user.is_anonymous():
             self.creator = request_user

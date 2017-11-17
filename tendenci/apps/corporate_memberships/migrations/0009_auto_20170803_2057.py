@@ -14,10 +14,10 @@ def add_logo_to_existing_apps(apps, schema_editor):
                          corp_app=corp_app,
                          label="Logo",
                          field_name='logo_file',
-                         field_type='FileField', 
+                         field_type='FileField',
                          display=False,)
             app_field.save()
-    
+
 
 class Migration(migrations.Migration):
 

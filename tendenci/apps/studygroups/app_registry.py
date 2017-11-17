@@ -8,7 +8,7 @@ class StudyGroupRegistry(AppRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create studygroups type of content'
-    
+
     url = {
         'add': lazy_reverse('studygroups.add'),
         'search': lazy_reverse('studygroups.search'),

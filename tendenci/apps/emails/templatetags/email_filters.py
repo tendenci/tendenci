@@ -19,5 +19,5 @@ def relative_to_absolute_urls(value):
     value = value.replace('href="/', 'href="%s/' % GLOBAL_SITE_URL)
     value = value.replace("href='/", "<href='%s/" % GLOBAL_SITE_URL)
     return mark_safe(value)
-    
+
 register.filter('relative_to_absolute_urls', relative_to_absolute_urls)

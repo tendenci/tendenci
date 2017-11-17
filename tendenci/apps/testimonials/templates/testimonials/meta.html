@@ -10,7 +10,7 @@
 
 <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
     <div class="meta-left">
-        
+
         {% if user.is_authenticated %}
             <div class="submitted">{% blocktrans with testimonial.create_dt|date:"long" as create_date %}Created on {{ create_date }}
             by:{% endblocktrans %} <a href="{{ testimonial.creator.get_absolute_url }}">
@@ -28,11 +28,11 @@
             </div>
         {% endif %}
     </div>
-    
+
     <div class="meta-right">
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
-    
+
 </div>
 {% if can_edit %}
 <div class="editor-bar">
@@ -60,5 +60,5 @@
         </li>
     </ul>
     </div>
-</div> 
+</div>
 {% endif %}

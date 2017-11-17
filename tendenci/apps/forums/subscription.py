@@ -59,14 +59,14 @@ def notify_topic_subscribers(post):
     else:
         subject_template = 'pybb/mail_templates/subscription_email_subject.html'
         users = topic.subscribers.exclude(pk=post.user.pk)
-        
+
     subject = render_to_string(subject_template,
                                    {'site_url': context_vars['site_url'],
                                     'post': post,
                                     'topic': topic})
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
-    
+
     for user in users:
         message = get_email_message(user, **context_vars)
         if message:

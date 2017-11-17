@@ -117,7 +117,7 @@ class PostForm(forms.ModelForm):
 
         self.available_smiles = defaults.PYBB_SMILES
         self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
-        
+
         # add form-control class
         for k in self.fields.keys():
             self.fields[k].widget.attrs['class'] = 'form-control'

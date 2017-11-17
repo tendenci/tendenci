@@ -2,7 +2,7 @@
 {% load static from staticfiles %}
 <table class="table table-hover table-bordered table-striped">
 <thead>
-    <tr class='row_tablehead'><td colspan='2'><h3>{{ ticket.id }}. {{ ticket.title }} [{{ ticket.get_status }}]</h3> 
+    <tr class='row_tablehead'><td colspan='2'><h3>{{ ticket.id }}. {{ ticket.title }} [{{ ticket.get_status }}]</h3>
     	{% if request.user.is_staff %}
     	<span class='ticket_toolbar'>
         <a href='{% url 'helpdesk_edit' ticket.id %}' class="ticket-edit"><span class="glyphicon glyphicon-pencil"></span> Edit</a>

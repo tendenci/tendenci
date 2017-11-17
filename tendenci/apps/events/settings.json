@@ -406,7 +406,7 @@
         "scope_category": "events",
         "store": false,
         "updated_by": ""
-    }, 
+    },
     {
         "default_value": "true",
         "description": "Show the 'Email' field in the Standard Registration Form",

@@ -17,7 +17,7 @@ class Command(BaseCommand):
         example:
         python manage.py import_corp_memberships 10 1
     """
- 
+
     def add_arguments(self, parser):
         parser.add_argument('import_id', type=int)
         parser.add_argument('user_id', type=int)

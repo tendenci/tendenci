@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}jqueryupload/css/jquery.fileupload-ui.css">
     <!-- CSS adjustments for browsers with JavaScript disabled -->
     <noscript><link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.fileupload-ui-noscript.css"></noscript>
-    
+
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 	<style>
@@ -31,8 +31,8 @@
 
 <div class="container">
     <h3><a href="{% url 'file.tinymce_fb' %}?{{ request.META.QUERY_STRING }}">{{ upload_type|capfirst }} Gallery</a> > {{ upload_type|capfirst }} Upload</h3>
-    
-   
+
+
     <!-- The file upload form used as target for the file upload widget -->
     <form id="fileupload" method="post" action="{% url 'file.tinymce_upload' %}?{{ request.META.QUERY_STRING }}" enctype="multipart/form-data">{% csrf_token %}
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
@@ -50,7 +50,7 @@
                 <input type="hidden" name="model" value="{{ model }}">
                 <input type="hidden" name="object_id" value="{{ object_id }}">
                 <input type="hidden" name="upload_type" value="{{ upload_type }}">
-                
+
                 <!-- The loading indicator is shown during file processing -->
                 <span class="fileupload-loading"></span>
             </div>
@@ -73,17 +73,17 @@
 	                <i class="glyphicon glyphicon-ban-circle"></i>
 	                <span>Clear Queue</span>
 	            </button>
-	            
+	
 	            <button type="submit" class="btn btn-primary start pull-right">
 	                <i class="glyphicon glyphicon-upload"></i>
 	                <span>Upload</span>
 	            </button>
             </div>
    		</div>
-   
+
     </form>
     <br>
-   
+
 </div>
 
 
@@ -219,6 +219,6 @@
 <script type="text/javascript" language="javascript">
 	{% include 'files/include/tinymce/insert_file.js' %}
 </script>
-</body> 
+</body>
 </html>
 

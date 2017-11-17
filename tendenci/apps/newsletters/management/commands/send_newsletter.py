@@ -22,7 +22,7 @@ class Command(BaseCommand):
     """
     def add_arguments(self, parser):
         parser.add_argument('newsletter_id', type=int)
-        
+
     def send_newsletter(self, newsletter_id, **kwargs):
         from tendenci.apps.emails.models import Email
         from tendenci.apps.newsletters.models import Newsletter
@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
 
         print("Started sending newsletter...")
-        
+
         if newsletter_id == 0:
             raise CommandError('Newsletter ID is required. Usage: ./manage.py send_newsletter <newsletter_id>')
 
@@ -75,7 +75,7 @@ class Command(BaseCommand):
             # skip if not a valid email address
             if not validate_email(recipient.member.email):
                 continue
-            
+
             subject = email.subject
             body = email.body
 
@@ -94,7 +94,7 @@ class Command(BaseCommand):
             if '[unsubscribe_url]' in body:
                 #body = body.replace('[unsubscribe_url]', recipient.noninteractive_unsubscribe_url)
                 # The unsubscribe_url link should be something like <a href="[unsubscribe_url]">Unsubscribe</a>.
-                # But it can be messed up sometimes. Let's prevent that from happening. 
+                # But it can be messed up sometimes. Let's prevent that from happening.
                 p = r'(href=\")([^\"]*)(\[unsubscribe_url\])(\")'
                 body = re.sub(p, r'\1' + recipient.noninteractive_unsubscribe_url + r'\4', body)
 
@@ -156,21 +156,21 @@ class Command(BaseCommand):
             body=body)
 
         email.send(connection=connection)
-        
+
         print("Confirmation email sent.")
 
         # add cache clear to resolve issue
         # TODO: cache clear only to specifies
         cache.clear()
         print('Cache cleared!')
-        
+
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting
         logger = getLogger('send_newsletter')
-        
+
         newsletter_id = options['newsletter_id']
-        
+
         try:
             self.send_newsletter(newsletter_id)
         except:

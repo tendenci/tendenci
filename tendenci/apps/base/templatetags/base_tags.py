@@ -391,17 +391,17 @@ def get_rss(parser, token):
                 <a href="{{entry.link}}">read more...</a>
             </p>
         {% endfor %}
-        
-        
-    Example 2::   
+
+
+    Example 2::
 
         {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
         {% if rss.feed.image %}
             <img src="{{ rss.feed.image.href }}" alt="" />
         {% endif %}
-        {% for entry in rss.entries %}        
+        {% for entry in rss.entries %}
         <div class="row entry-item">
-              
+
              <div class="col-xs-4 col-md-3">
              {# media image #}
               {% if entry.media_content %}
@@ -412,14 +412,14 @@ def get_rss(parser, token):
                   {% endfor %}
               {% endif %}
                </div>
-               
+
               <div class="col-xs-8 col-md-9">
                   {# title #}
                   <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
-                  
+
                   {# pubdate #}
                   <div class="small">Published on: {{entry.published}}</div>
-                  
+
                   {# authors #}
                   {% if entry.authors %}
                       <div class="small">Author{{ entry.authors|pluralize }}:
@@ -428,7 +428,7 @@ def get_rss(parser, token):
                     {% endfor %}
                       </div>
                 {% endif %}
-                
+
                 {# categories #}
                 {% if entry.tags %}
                       <div class="small">Categories:
@@ -450,7 +450,7 @@ def get_rss(parser, token):
                 {% elif entry.summary %}
                   <div>{{ entry.summary|safe }}</div>
                 {% endif %}
-                
+
                 {# enclosure #}
                 {% if entry.links %}
                   {% for link in entry.links %}
@@ -458,21 +458,21 @@ def get_rss(parser, token):
                       <div>
                        <audio controls>
                           <source src="{{ link.href }}" type="{{ link.type }}">
-                        </audio> 
+                        </audio>
                         {{ link.length|filesizeformat }}
                         </div>
                       {% endif %}
                   {% endfor %}
                 {% endif %}
-              
+
               <a href="{{entry.link}}">read more...</a>
            </div>
-            
+
         </div>
         {% endfor %}
-        
-        
-        
+
+
+
     """
     args, kwargs = [], {}
     bits = token.split_contents()

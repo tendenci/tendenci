@@ -137,7 +137,7 @@ jQuery(function($) {
         extra_hide_triggers = ['description', 'horizontal-rule', 'header']
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-    	// toggle help text field 
+    	// toggle help text field
         if (in_list(selected_value, extra_hide_triggers)){
             fieldset.find(".help_text").hide("fast");
     	}
@@ -166,7 +166,7 @@ jQuery(function($) {
     	}
 
     }
-    
+
     var manage_special_functionality = function(){
 
         var $dd = $(this); // drop-down

@@ -158,7 +158,7 @@ class SocialAuthBackend(ModelBackend):
                                     group.save()
                                 except:
                                     group = None
-                                
+
                             if group:
                                 gm = GroupMembership()
                                 gm.group = group

@@ -7,7 +7,7 @@
 {% block extra_head %}
     {{ block.super }}
     <link href="{{ STATIC_URL }}model_report/css/datepicker.css" type="text/css" media="screen" rel="stylesheet" />
-    
+
   <style type="text/css">
       .row-hidden {
         display: none;
@@ -84,10 +84,10 @@
         var result = Math.round(val*Math.pow(10,dec))/Math.pow(10,dec);
         return result;
     }
-    
+
     // restore the jquery variables to the first version loaded
     jq162 = jQuery.noConflict( true );
-    
+
     jq162(document).ready(function($) {
         $('.vDatepicker').datepicker({
             {% include "model_report/includes/datepicker_options.html" %}
@@ -115,8 +115,8 @@
             }
         })
     });
-    
-    
+
+
   </script>
 
 {% endblock %}

@@ -246,7 +246,7 @@ class Invoice(models.Model):
         if _object and hasattr(_object, 'status') and (not _object.status):
             _object = None
         return _object
-    
+
     def get_donation_amount(self):
         obj = self.get_object()
         if obj and hasattr(obj, 'donation_amount'):

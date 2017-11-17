@@ -16,7 +16,7 @@
     <div class="page-header">
       <h1>{% trans 'Edit Your Newsletter' %}</h1>
     </div>
-    
+
     <form action='' method="POST">{% csrf_token %}
       <div class='step-section cf'>
         <div class="step-contents">
@@ -30,7 +30,7 @@
       <div class='step-section cf'>
         <div class="step-contents">
           <div class="step-content-item">
-            
+
             <p><strong>{% trans 'Newsletter Subject' %}:</strong> {{ form.subject }}</p>
             <p><strong>{% trans 'Current Sender E-mail' %}:</strong> {{ object.email.sender }} </p>
             <p>
@@ -42,13 +42,13 @@
               </a>
             </p>
           </div>
-          
+
         </div>
       </div>
       <div class='step-section cf'>
         <div class="step-contents">
-          
-          
+
+
           <div class="form-group">
             <p class="capitalize">
               <label>
@@ -58,7 +58,7 @@
                 {% trans 'Newsletter Recipients: ' %}
                 {% endif %}
               </label>
-              
+
              <!-- {% if object.member_only %}
               {% trans 'Members Only' %}
               <a href="{% url 'groups' %}">{% trans 'Specify User Group' %}</a>
@@ -66,9 +66,9 @@
               {{ object.group }}&nbsp;&nbsp;&nbsp;&nbsp;
               <a href="{% url 'groups' %}">{% trans 'Edit User Group' %}</a>
               {% endif %} -->
-              
+
               <!-- test user group add -->
-              <div class='step-section cf'>            
+              <div class='step-section cf'>
                 <div class="step-contents">
                   <div class="step-content-item">
                     <strong>{% trans "Send to members only?" %}</strong>
@@ -82,19 +82,19 @@
                   <div class="step-content-item">
                     {% trans "Usergroup" %} {{ form.group }}
                   </div>
-                  
+
                 </div>
-              </div>              
+              </div>
               <!-- end test -->
-              
+
             </p>
           </div>
-          
+
         </div>
       </div>
       <div class='step-section cf'>
         <div class="step-contents">
-          
+
           <h3>{% trans 'Confirm acceptance of site policies and common sense.' %}</h3>
           <hr />
           <div class="step-content-item body-copy-alerts">

@@ -2,7 +2,7 @@
 
 def get_privacy_settings(instance):
     """
-    Returns a dictionary of all Tendenci 
+    Returns a dictionary of all Tendenci
     privacy settings
     """
     return {
