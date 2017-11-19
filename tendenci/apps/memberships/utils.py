@@ -701,7 +701,7 @@ def get_over_time_stats():
     ]
 
     stats = []
-    for time_range in time_rangess:
+    for time_range in time_ranges:
         start_dt = time_range[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
