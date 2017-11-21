@@ -54,24 +54,25 @@
                                 </a>
                             </li>
 
+
+							<li class="content-item">
+                                <a href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user.id }}&search_method=exact"><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span></a>
+                            </li>
+                            
                             {% if MODULE_MEMBERSHIPS_ENABLED %}
-                            {% with profile.membership as membership %}
+                            {% with user.profile.membership as membership %}
                             {% if membership %}
                             <li class="content-item">
-                                <a href="{% url 'membership.details' membership.id %}"><img class="nav-icon " src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Membership' %}</span></a>
+                                <a href="{% url 'membership.details' membership.id %}"><img class="nav-icon " src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'My Membership' %}</span></a>
                             </li>
                             {% endif %}
                             {% endwith %}
                             {% endif %}
 
-							 <li class="content-item">
-                                <a href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user.id }}&search_method=exact"><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span></a>
-                            </li>
-
                             {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                             {% if user.corpmembershiprep_set.count > 0 %}
                             <li class="content-item">
-                                <a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'Corp. Memb.' %}</span></a>
+                                <a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'My Corp. Membership' %}</span></a>
                             </li>
                             {% endif %}
                              {% endif %}
