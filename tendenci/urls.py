@@ -159,8 +159,8 @@ if settings.DEBUG:
 
 # Local url patterns for development
 try:
-    from local_urls import extra_patterns
-    urlpatterns += extra_patterns
+    from conf.local_urls import extrapatterns
+    urlpatterns += extrapatterns
 except ImportError:
     pass
 
