@@ -13,6 +13,7 @@ from timezones.fields import TimeZoneField
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -26,7 +27,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    filename = correct_filename(filename)
     return 'directories/%d/%s' % (instance.id, filename)
 
 class Category(models.Model):

@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.resumes.managers import ResumeManager
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -16,7 +17,7 @@ from tendenci.apps.resumes.module_meta import ResumeMeta
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    filename = correct_filename(filename)
     return 'resumes/%d/%s' % (instance.id, filename)
 
 

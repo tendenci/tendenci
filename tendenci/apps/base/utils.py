@@ -917,3 +917,13 @@ def add_tendenci_footer(email_content, content_type='html'):
     if email_content.find('</body>') != -1:
         return email_content.replace("</body>", footer + "\n</body>")
     return email_content + footer
+
+
+def correct_filename(filename):
+    """
+    Renames filename if needed -  replaces dots, underscores, and spaces with dashes.
+    And changes filename to lowercase.
+    """
+    root, ext = os.path.splitext(filename)
+    root = (re.sub(r'[^a-zA-Z0-9]+', '-', root)).lower()
+    return root + ext
