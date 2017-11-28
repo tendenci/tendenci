@@ -113,9 +113,9 @@
 		//}
 
 		if (AuthorizeNetPopup.options.useTestEnvironment) {
-			form.action = "https://test.authorize.net/profile/" + opt.action;
+			form.action = "https://test.authorize.net/customer/" + opt.action;
 		} else {
-			form.action = "https://secure.authorize.net/profile/" + opt.action;
+			form.action = "https://accept.authorize.net/customer/" + opt.action;
 		}
 		if (form.elements["PaymentProfileId"]) form.elements["PaymentProfileId"].value = opt.paymentProfileId ? opt.paymentProfileId : "";
 		if (form.elements["ShippingAddressId"]) form.elements["ShippingAddressId"].value = opt.shippingAddressId ? opt.shippingAddressId : "";
