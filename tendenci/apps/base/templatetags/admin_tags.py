@@ -7,9 +7,7 @@ register = Library()
 def check_enabled(value):
     # Only check if it's false since other packages and
     # Django apps (like auth_user) may not use our settings
-    if not get_setting('module', value.lower(), 'enabled'):
-        return False
-    return True
+    return not get_setting('module', value.lower(), 'enabled') is False
 
 
 # admin tags derived from django_admin_bootstrapped
