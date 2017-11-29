@@ -67,6 +67,7 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
     subject = render_to_string('make_payments/email_user_subject.txt',
                                {'make_payment':make_payment},
                                context_instance=RequestContext(request))
+    subject = subject.replace('\n', ' ')
     body = render_to_string('make_payments/email_user.txt', {'make_payment':make_payment,
                                                              'invoice':invoice},
                                                              context_instance=RequestContext(request))
