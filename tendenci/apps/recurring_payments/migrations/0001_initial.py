@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='recurring_payment_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('object_content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
                 ('owner', models.ForeignKey(related_name='recurring_payment_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('user', models.ForeignKey(related_name='recurring_payment_user', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Customer', to=settings.AUTH_USER_MODEL, null=True)),
+                ('user', models.ForeignKey(related_name='recurring_payments', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Customer', to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
         migrations.CreateModel(

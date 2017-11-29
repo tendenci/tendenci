@@ -67,7 +67,8 @@ def direct_response_dict(direct_response_str):
     response_dict = {}
     max_length = len(direct_response_fields)
     # the x_delim_char we specified is || (in cim.py)
-    direct_response_list = direct_response_str.split('||')
+    # the actual delimiter in the response_code is comma now
+    direct_response_list = direct_response_str.split(',')
     for i, value in enumerate(direct_response_list):
         if i < max_length:
             response_dict[direct_response_fields[i]] = value
@@ -139,9 +140,12 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
             return token, gateway_error
 
     hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
+    hosted_profile_validation_mode = 'liveMode'
 
     d = {'hosted_profile_settings':
          {'hosted_profile_heading_bg_color': '#e0e0e0',     # the bg color of sections can be customized
+          'hosted_profile_card_code_required': 'true',
+          'hosted_profile_validation_mode': hosted_profile_validation_mode,
          'hosted_profile_iFrame_communicator_url': '%s' % iframe_communicator_url}}
     success, response_d = hosted_profile_page.get(**d)
     #print success, response_d

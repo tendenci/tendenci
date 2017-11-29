@@ -39,6 +39,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.site_settings.utils import get_setting
 
 
 THIS_YEAR = datetime.today().year
@@ -415,6 +416,16 @@ class MembershipAppForm(TendenciBaseForm):
             self.fields['confirmation_text'].widget.mce_attrs[
                                     'app_instance_id'] = 0
 
+
+class AutoRenewSetupForm(forms.Form):
+    selected_m = forms.MultipleChoiceField(choices=[], error_messages={'required':_('Please select one')})
+
+    def __init__(self, *args, **kwargs):
+        memberships = kwargs.pop('memberships')
+        super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
+        self.fields['selected_m'].choices = [(m.id, m.id) for m in memberships]
+        
+        
 
 class MembershipAppFieldAdminForm(forms.ModelForm):
     class Meta:
@@ -1138,6 +1149,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
 
+        if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+            if not 'corporate_membership_id' in self.fields:
+                self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
+
         self.add_form_control_class()
 
         if self.membership_app.donation_enabled:
@@ -1169,6 +1184,15 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
+    
+    def clean_auto_renew(self):
+        value = self.cleaned_data['auto_renew']
+        if value:
+            payment_method = self.cleaned_data['payment_method']
+            if payment_method and not payment_method.is_online:
+                raise forms.ValidationError(_("Please either de-select it or change to an online payment method."))
+        return value
+
 
     def save(self, *args, **kwargs):
         """

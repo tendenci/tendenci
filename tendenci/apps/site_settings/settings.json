@@ -272,6 +272,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "",
+        "description": "A relative or absolute URL pointing to a square image of your brand. The recommended minimum size is 128x128px. The supported image types are: .gif, .jpeg, and .png. If not provided, the default value is: https://stripe.com/img/documentation/checkout/marketplace.png",
+        "data_type": "string",
+        "update_dt": "2017-07-25 11:33:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "stripedataimage",
+        "value": "",
+        "label": "Stripe Data Image URL",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "false",
         "description": "Merchant Authorize Only is a true/false variable indicating whether to just authorize payment or to authorize and process payment.  If true, then merchant only authorizes the order, but holds off on processing until a later time.",
         "data_type": "boolean",

@@ -456,7 +456,7 @@ FIRSTDATA_RESPONSE_KEY = ''
 FIRSTDATA_USE_RELAY_RESPONSE = False
 
 AUTHNET_CIM_API_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
-AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"
+AUTHNET_CIM_API_URL = "https://api2.authorize.net/xml/v1/request.api"
 
 # PAYPAL PAYFLOW LINK
 PAYFLOWLINK_PARTNER = ''

@@ -135,7 +135,7 @@ button#btn-pm:active {
     line-height: 1.5em;
 }
 .active{
-    color: #0066CC;
+    /*color: #0066CC;*/
 }
 .disabled, .deleted{
     color: red;

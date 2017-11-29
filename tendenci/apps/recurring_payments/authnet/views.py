@@ -31,10 +31,10 @@ def manage_payment_info(request, recurring_payment_id,
 
     if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
         test_mode = 'true'
-        form_post_url = "https://test.authorize.net/profile/manage"
+        form_post_url = "https://test.authorize.net/customer/manage"
     else:
         test_mode = 'false'
-        form_post_url = "https://secure.authorize.net/profile/manage"
+        form_post_url = "https://accept.authorize.net/customer/manage"
 
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now

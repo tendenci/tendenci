@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.conf import settings
 import simplejson
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
@@ -84,7 +85,7 @@ def view_account(request, recurring_payment_id, guid=None,
     test_mode = get_test_mode()
     is_active = (rp.status_detail == 'active')
     if is_active:
-        rp.populate_payment_profile()
+        #rp.populate_payment_profile()
         payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id,
                             status=True, status_detail='active')
@@ -96,8 +97,7 @@ def view_account(request, recurring_payment_id, guid=None,
     else:
         payment_profile = None
 
-    is_owner = False
-    if request.user.id == rp.user.id: is_owner = True
+    is_owner = request.user.id == rp.user.id
 
     num_accounts = RecurringPayment.objects.filter(user=rp.user).count()
 
@@ -112,7 +112,9 @@ def view_account(request, recurring_payment_id, guid=None,
                                               'test_mode': test_mode,
                                               'is_active': is_active,
                                               'is_owner': is_owner,
-                                              'num_accounts': num_accounts
+                                              'num_accounts': num_accounts,
+                                              'memberships': rp.memberships,
+                                              'STRIPE_PUBLISHABLE_KEY': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
                                               },
         context_instance=RequestContext(request))
 
@@ -260,8 +262,11 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
     payment_transaction = get_object_or_404(PaymentTransaction,
                                             pk=payment_transaction_id,
                                             status=True)
-    payment_profile = PaymentProfile.objects.filter(
-                    payment_profile_id=payment_transaction.payment_profile_id)[0]
+    if rp.platform == 'authorizenet':
+        payment_profile = PaymentProfile.objects.filter(
+                        payment_profile_id=payment_transaction.payment_profile_id)[0]
+    else:
+        payment_profile = ''
     invoice = payment_transaction.payment.invoice
 
     return render_to_response(template_name, {
@@ -300,6 +305,12 @@ def disable_account(request, rp_id,
 
                 rp.customer_profile_id = ''
                 rp.save()
+
+            # if it's for membership auto renew, uncheck the auto_renew bit
+            if rp.memberships:
+                for m in rp.memberships:
+                    m.auto_renew = False
+                    m.save()
 
             # send an email to admin
             rp_email_notice = RecurringPaymentEmailNotices()

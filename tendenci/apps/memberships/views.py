@@ -29,6 +29,9 @@ from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
+from django.forms import modelformset_factory
+from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 from geraldo.generators import PDFGenerator
 
@@ -58,13 +61,16 @@ from tendenci.apps.memberships.forms import (
     ReportForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     EducationForm,
     DemographicsForm,
-    MembershipDefault2Form)
+    MembershipDefault2Form,
+    AutoRenewSetupForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data)
 from tendenci.apps.base.forms import CaptchaForm
+from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.perms.decorators import is_enabled
+
 
 
 def membership_index(request):
@@ -1438,6 +1444,81 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'membership_form': membership_form2,
         'is_edit': True,
         'membership' : membership
+    }
+    return render_to_response(template, context, RequestContext(request))
+
+
+
+@login_required
+def memberships_auto_renew_setup(request, user_id, template='memberships/auto_renew_setup.html', **kwargs):
+    u = get_object_or_404(User, pk=user_id)
+    is_owner = request.user == u
+
+    if not has_perm(request.user, 'memberships.change_membership') and not is_owner:
+        raise Http403
+    
+    memberships = MembershipDefault.objects.filter(user=u).filter(status=True
+                    ).filter(status_detail__in=['active', 'expired']
+                             ).exclude(expire_dt__isnull=True).order_by('-expire_dt')
+    # exclude corp individuals
+    memberships = memberships.filter(Q(corporate_membership_id=0) | Q(corporate_membership_id__isnull=True))
+    if not memberships:
+        raise Http404
+    
+    form = AutoRenewSetupForm(request.POST or None, memberships=memberships)
+    
+    ct = ContentType.objects.get_for_model(MembershipDefault)
+    [rp] = u.recurring_payments.filter(object_content_type=ct,
+                                       status=True,
+                                       status_detail__in=['active', 'disabled'])[:1] or [None]
+    if not rp:
+        kwargs = {'platform': 'stripe', }
+        rp = memberships[0].get_or_create_rp(request.user, **kwargs)
+        if not rp:
+            raise Http404
+    
+    if rp.status_detail == 'disabled':
+        rp.status_detail = 'active'
+        rp.save()
+    
+    if request.method == "POST":
+        if form.is_valid():
+            selected_ids = [int(id) for id in form.cleaned_data['selected_m']]
+            if "cancel_auto_renew" in request.POST:
+                # cancel auto renew for the selected memberships
+                for m in memberships:
+                    if m.id in selected_ids:
+                        if m.auto_renew:
+                            m.auto_renew = False
+                            m.save()
+            else:
+                for m in memberships:
+                    if m.id in selected_ids:
+                        if not m.auto_renew:
+                            m.auto_renew = True
+                            m.save()
+            
+            msg_string = 'Updated Successfully'
+            messages.add_message(request, messages.SUCCESS, _(msg_string))
+    
+    auto_renew_all_on = True
+    auto_renew_all_off = True
+    for m in memberships:
+        if not m.auto_renew:
+            auto_renew_all_on = False
+        else:
+            auto_renew_all_off = False
+            
+    context = {
+        'memberships' : memberships,
+        'u': u,
+        'rp': rp,
+        'source_data': rp.get_source_data(),
+        'form': form,
+        'is_owner': is_owner,
+        'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
+        'auto_renew_all_on': auto_renew_all_on,
+        'auto_renew_all_off': auto_renew_all_off
     }
     return render_to_response(template, context, RequestContext(request))
 

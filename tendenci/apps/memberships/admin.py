@@ -47,6 +47,30 @@ class MembershipStatusDetailFilter(SimpleListFilter):
             return queryset.filter(status_detail=self.value())
         else:
             return queryset
+        
+class MembershipAutoRenewFilter(SimpleListFilter):
+    title = 'auto renew'
+    parameter_name = 'auto_renew'
+ 
+    def lookups(self, request, model_admin):
+        return (
+            (1, 'Yes'),
+            (0, 'No'),
+        )
+ 
+    def queryset(self, request, queryset):
+        try:
+            value = int(self.value())
+        except:
+            value = None
+        
+        if value == None:
+            return queryset
+        
+        if value == 1:
+            return queryset.filter(auto_renew=True)
+        
+        return queryset.filter(Q(auto_renew=False) | Q(auto_renew__isnull=True))
 
 
 def approve_selected(modeladmin, request, queryset):
@@ -262,12 +286,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'get_status',
         'get_invoice',
     ]
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+        list_display.append('auto_renew')
     list_display_links = ('name',)
 
     list_filter = [
         MembershipStatusDetailFilter,
         'membership_type',
     ]
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+        list_filter.append(MembershipAutoRenewFilter)
 
     actions = [
         approve_selected,

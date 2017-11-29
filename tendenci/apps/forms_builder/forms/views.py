@@ -563,7 +563,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                              owner_username=rp_user.username,
                          )
                     rp.save()
-                    rp.add_customer_profile()
+                    if rp.platform == 'authorizenet':
+                        rp.add_customer_profile()
 
                     # redirect to recurring payments
                     messages.add_message(request, messages.SUCCESS, _('Successful transaction.'))

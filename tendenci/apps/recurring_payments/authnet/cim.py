@@ -158,6 +158,71 @@ class CIMBase(object):
                 d[name] = self._recurive_parse(sub_e)
         return d
 
+
+class CIMCustomerProfileFromTransaction(CIMBase):
+
+    def create(self, **kwargs):
+        """
+        Create a customer profile, payment profile, and shipping profile from an
+        existing successful transaction.
+        Input fields:
+            trans_id - required
+        
+        Output fields:
+            customer_profile_id
+            customer_payment_profile_id_list
+            customer_shippingaddress_id_list
+            
+        Example call:
+
+        >>> from recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
+        >>> cp = CIMCustomerProfileFromTransaction()
+        >>> success, response_d = cp.create(trans_id='621216786562')
+         
+        Sample request:
+        <?xml version="1.0" encoding="utf-8"?>
+        <createCustomerProfileFromTransactionRequest xmlns="AnetApi/xml/v1/schema/
+        AnetApiSchema.xsd">
+           <merchantAuthentication>
+              <name>API_LOGIN</name>
+              <transactionKey>TRANSACTION_KEY</transactionKey>
+           </merchantAuthentication>
+           <transId>122</transId>
+        </createCustomerProfileFromTransactionRequest>
+        
+        Sample response:
+        <?xml version="1.0" encoding="utf-8"?>
+        <createCustomerProfileFromTransactionResponse xmlns:xsi="http://
+        www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://
+        www.w3.org/2001/XMLSchema" xmlns="AnetApi/xml/v1/schema/
+        AnetApiSchema.xsd">
+           <messages>
+              <resultCode>Ok</resultCode>
+              <message>
+                 <code>I00001</code>
+                 <text>Successful.</text>
+              </message>
+           </messages>
+           <customerProfileId>38</customerProfileId>
+           <customerPaymentProfileIdList>
+              <numericString>38</numericString>
+           </customerPaymentProfileIdList>
+           <customerShippingAddressIdList>
+              <numericString>26</numericString>
+           </customerShippingAddressIdList>
+           <validationDirectResponseList />
+        </createCustomerProfileFromTransactionResponse>
+        
+        """
+        root_name = 'createCustomerProfileFromTransactionRequest'
+        xml_root = self.create_base_xml(root_name)
+        trans_id = kwargs.get('trans_id', '')
+        trans_id_node = ET.SubElement(xml_root, 'transId')
+        trans_id_node.text = trans_id
+
+        return self.process_request(xml_root)
+
+
 class CIMCustomerProfile(CIMBase):
     def __init__(self, customer_profile_id=None):
         super(CIMCustomerProfile, self).__init__()

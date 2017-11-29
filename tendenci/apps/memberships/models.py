@@ -475,6 +475,7 @@ class MembershipDefault(TendenciBaseModel):
     membership_type = models.ForeignKey(MembershipType)
     user = models.ForeignKey(User, editable=False)
     renewal = models.BooleanField(blank=True, default=False)
+    auto_renew = models.BooleanField(blank=True, default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
@@ -559,6 +560,12 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name_plural = _(u'Memberships')
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
         app_label = 'memberships'
+
+
+    def __init__(self, *args, **kwargs):
+        super(MembershipDefault, self).__init__(*args, **kwargs)
+        if not self.auto_renew:
+            self.auto_renew = False
 
     def __unicode__(self):
         """
@@ -919,7 +926,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.is_pending():
             dupe = self
         elif any((self.is_active(), self.is_expired())):
-            dupe = deepcopy(self)
+            dupe = self.copy()
             dupe.pk = None  # disconnect from db record
         else:
             return False
@@ -1190,6 +1197,9 @@ class MembershipDefault(TendenciBaseModel):
             'id',
             'renewal',
             'renew_dt',
+            'renew_from_id',
+            'membership_set',
+            'payment_method',
             'status',
             'status_detail',
             'application_approved',
@@ -1489,7 +1499,7 @@ class MembershipDefault(TendenciBaseModel):
         elif status == 'expired':
             actions.update({
                 approve_link: u'Approve Membership'})
-
+        
         return actions
 
     def get_invoice(self):
@@ -1530,6 +1540,7 @@ class MembershipDefault(TendenciBaseModel):
 
         if not invoice:
             invoice = Invoice()
+            invoice.title = "Membership Invoice"
 
         if status_detail == 'estimate':
             invoice.estimate = True
@@ -1544,9 +1555,15 @@ class MembershipDefault(TendenciBaseModel):
         # Only set for new invoices
         if not invoice.pk:
             price = self.get_price()
+            tax = 0
+            if self.app and self.app.include_tax:
+                invoice.tax_rate = self.app.tax_rate
+                tax = self.app.tax_rate * price
+                invoice.tax = tax
+            
             invoice.subtotal = price
-            invoice.total = price
-            invoice.balance = price
+            invoice.total = price + tax
+            invoice.balance = price + tax
 
             invoice.object_type = content_type
             invoice.object_id = self.pk
@@ -1886,6 +1903,11 @@ class MembershipDefault(TendenciBaseModel):
             if self.corporate_membership_id:
                 # notify corp reps
                 self.email_corp_reps(request)
+                
+        if self.auto_renew:
+            # add recurring payment entry here
+            params = {'trans_id': payment.trans_id}
+            self.get_or_create_rp(request.user, **params)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -1909,6 +1931,79 @@ class MembershipDefault(TendenciBaseModel):
     def get_acct_number(self, discount=False):
         # reference: /accountings/account_numbers/
         return 464700 if discount else 404700
+    
+    def has_rp(self, platform=''):
+        """
+        Check if this membership has a recurring payment account for membership renew
+        """
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            rps = self.user.recurring_payments.filter(status=True, 
+                                                     status_detail='active',
+                                                     object_content_type__model='membershipdefault')
+            if platform:
+                rps = rps.filter(platform=platform)
+            
+            return rps.exists()
+        
+        return False
+    
+    def get_or_create_rp(self, request_user, **kwargs):
+        """
+        Get or create recurring payment entry
+        """ 
+        from tendenci.apps.recurring_payments.models import RecurringPayment
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            ct = ContentType.objects.get_for_model(MembershipDefault)
+            [rp] = self.user.recurring_payments.filter(object_content_type=ct,
+                                       status=True,
+                                       status_detail__in=['active', 'disabled'])[:1] or [None]
+            if not rp:
+                if not request_user or request_user.is_anonymous():
+                    request_user = self.user
+                rp = RecurringPayment(user=self.user,
+                                     object_content_type=ct,
+                                     platform= kwargs.get('platform', 'authorizenet'),
+                                     description='Membership Auto Renew',
+                                     billing_start_dt=datetime.now(),
+                                     payment_amount=0,
+                                     creator=request_user,
+                                     creator_username=request_user.username,
+                                     owner=self.user,
+                                     owner_username=self.user.username,
+                                     status=True,
+                                     status_detail='active')
+                # bypass the signal on save so that we can create customer profile from trans_id
+                rp.customer_profile_id = kwargs.get('customer_profile_id', '')
+                rp.save()
+            if rp.platform == 'authorizenet':
+                if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
+                    trans_id = kwargs.get('trans_id', None)
+                    if trans_id:
+                        rp.create_customer_profile_from_trans_id(trans_id)
+            return rp
+        return None
+    
+
+    def next_auto_renew_date(self):
+        if self.status_detail != 'archive' and self.expire_dt and self.auto_renew:
+            if self.expire_dt > datetime.now():
+                return self.expire_dt
+            else:
+                return datetime.now() + timedelta(days=1)
+        return None
+ 
+    
+    def can_auto_renew(self):
+        """
+        Check if membership auto renew can be set up for this membership.
+        """
+        if self.status_detail in ['active', 'expired']:
+            if not self.corporate_membership_id:
+                if get_setting('module', 'recurring_payments', 'enabled') \
+                    and get_setting('module', 'memberships', 'autorenew'):
+                    return True
+        return False
+
 
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')
@@ -2161,6 +2256,7 @@ class Notice(models.Model):
             'view_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
         })
 

@@ -4,12 +4,15 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin import widgets
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
+from django.http import HttpResponseRedirect
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign
@@ -89,21 +92,24 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             return '<a href="%s">Add payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
 
-    def view_on_site(self, obj):
-        link = reverse('recurring_payment.view_account', args=[obj.id])
-        return '<a href="%s">View on site</a>' % (link)
-    view_on_site.allow_tags = True
-
     def how_much_to_pay(self):
+        if self.object_content_type and self.object_content_type.name == 'Membership':
+            return '--'
         if self.billing_frequency == 1:
             return '%s/%s' % (tcurrency(self.payment_amount), self.billing_period)
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
-    list_display = ['user', edit_payment_info_link, 'view_on_site',
-                    'description', 'billing_start_dt',
+    list_display = ['id', 'user', 'view_on_site'] 
+                   
+    if get_setting("site", "global", "merchantaccount").lower() == 'authorizenet':
+        list_display.append(edit_payment_info_link)
+        
+    list_display += ['description', 'create_dt',
                      how_much_to_pay,
                      'status_detail']
+        
+    
     list_filter = ['status_detail']
 
     fieldsets = (
@@ -120,6 +126,27 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     form = RecurringPaymentForm
 
+    def view_on_site(self, obj):
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        return '<a href="%s"><img src="%s" /></a>' % (
+            reverse('recurring_payment.view_account', args=[obj.id]),
+            link_icon)
+    view_on_site.allow_tags = True
+    view_on_site.short_description = _('view')
+    
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        obj = RecurringPayment.objects.get(id=object_id)
+        # if it's for membership auto-renew, redirect to list page
+        if obj.object_content_type and obj.object_content_type.name == 'Membership':
+            opts = self.model._meta
+            url = reverse('admin:{app}_{model}_changelist'.format(
+                app=opts.app_label,
+                model=opts.model_name,
+            ))
+            return HttpResponseRedirect(url)
+         
+        return super(RecurringPaymentAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+    
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 
@@ -141,6 +168,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             instance.owner = request.user
             instance.owner_username = request.user.username
 
+        instance.platform  = get_setting("site", "global", "merchantaccount")
         # save the object
         instance.save()
 

@@ -110,6 +110,11 @@ urlpatterns = patterns(
     url(r"^%s/applications/(?P<id>\d+)/edit/$" % urlpath,
         "membership_default_edit",
         name="membership_default.edit"),
+                       
+    # auto-renew set up
+    url(r"^%s/auto_renew_setup/(?P<user_id>\d+)/$" % urlpath,
+        "memberships_auto_renew_setup",
+        name="memberships.auto_renew_setup"),
 
     url(r"^%s/applications/$" % urlpath, "membership_applications", name="membership-applications"),
     url(r"^%s/referer-url/$" % urlpath, "referer_url", name="membership-referer-url"),

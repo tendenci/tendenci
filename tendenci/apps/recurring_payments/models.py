@@ -1,13 +1,17 @@
 from __future__ import print_function
 import uuid
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+import math
+import stripe
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
+from django.conf import settings
+
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
@@ -18,6 +22,8 @@ from tendenci.apps.recurring_payments.authnet.cim import (CIMCustomerProfile,
 from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
+from tendenci.apps.site_settings.utils import get_setting
+
 
 BILLING_PERIOD_CHOICES = (
                         ('month', _('Month(s)')),
@@ -39,10 +45,13 @@ DUE_SORE_CHOICES = (
 
 
 class RecurringPayment(models.Model):
+    PLATFORM_CHOICES = (('authorizenet', 'authorizenet'),
+                        ('stripe', 'stripe'))
     guid = models.CharField(max_length=50)
+    platform = models.CharField(max_length=50, blank=True, default='authorizenet')
     # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
-    user = models.ForeignKey(User, related_name="recurring_payment_user",
+    user = models.ForeignKey(User, related_name="recurring_payments",
                              verbose_name=_('Customer'),  null=True, on_delete=models.SET_NULL)
     url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
     description = models.CharField(_('Description'), max_length=100, help_text=_("Use a short term, example: web hosting"))
@@ -109,7 +118,8 @@ class RecurringPayment(models.Model):
         self.guid = self.guid or str(uuid.uuid1())
         if self.taxable and self.tax_rate:
             self.tax_exempt = 0
-
+        if not self.id:
+            self.platform = get_setting("site", "global", "merchantaccount").lower()
         super(RecurringPayment, self).save(*args, **kwargs)
 
     @property
@@ -125,6 +135,59 @@ class RecurringPayment(models.Model):
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
         return profile
+
+    @property
+    def memberships(self):
+        if self.object_content_type and self.object_content_type.name == 'Membership':
+            return self.object_content_type.model_class().objects.filter(user=self.user,
+                                                    auto_renew=True,
+                                                    status=True,
+                                                    status_detail__in=['active', 'expired']
+                                             ).order_by('-expire_dt')
+        return None
+
+
+    def get_source_data(self):
+        # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
+        if self.platform == 'stripe':
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            card = None
+            if self.customer_profile_id:
+                customer = stripe.Customer.retrieve(self.customer_profile_id)
+                default_card_id = customer.get('default_card', None)
+                if default_card_id:
+                    card = customer.sources.retrieve(default_card_id)
+                else:
+                    default_source = customer.get('default_source', None)
+                    if default_source:
+                        sources = customer.get('sources', None)
+                        if sources:
+                            data = sources.get('data', None)
+                            for c in data:
+                                if c['id'] == default_source:
+                                    card = c
+                                    break
+                if card:       
+                    return {'last4': card['last4'], 'exp_year': card['exp_year'], 'exp_month': card['exp_month']}
+        return None
+        
+
+    def create_customer_profile_from_trans_id(self, trans_id):
+        from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
+        cpt = CIMCustomerProfileFromTransaction()
+        success, response_d = cpt.create(trans_id=trans_id)
+        if success:
+            self.customer_profile_id = response_d['customer_profile_id']
+            self.save()
+            customer_payment_profile_id = response_d['customer_payment_profile_id_list']['numeric_string']
+            payment_profile = PaymentProfile(customer_profile_id=self.customer_profile_id,
+                                             payment_profile_id=customer_payment_profile_id,
+                                             creator=self.user,
+                                             owner=self.user,
+                                             creator_username= self.user.username,
+                                             owner_username = self.user.username)
+            payment_profile.save()
+                
 
     def add_customer_profile(self):
         """Add the customer profile on payment gateway
@@ -345,24 +408,43 @@ class RecurringPayment(models.Model):
         Check and generate invoices if needed.
         """
         now = datetime.now()
-        if not last_billing_cycle:
-            last_billing_cycle = self.billing_cycle_t2d(self.get_last_billing_cycle())
-
-        next_billing_cycle = self.billing_cycle_t2d(self.get_next_billing_cycle(last_billing_cycle))
-        billing_dt = self.get_payment_due_date(next_billing_cycle)
-
-        # determine when to create the invoice -
-        # on the billing cycle start or end date
-        if self.due_sore == 'start':
-            invoice_create_dt = next_billing_cycle['start']
+        
+        if self.object_content_type and self.object_content_type.name == 'Membership':
+            # check and renew for memberships with auto-renew enabled 
+            # that are expired or to be expired within 24 hours.
+            memberships = self.memberships
+            if memberships:
+                for m in self.memberships:
+                    if m.expire_dt < datetime(now.year, now.month, now.day, 0, 0, 0) + timedelta(days=1):
+                        renewed_m = m.renew(m.user)
+                        renewed_m.status_detail = 'pending'
+                        renewed_m.save()
+                        invoice = renewed_m.get_invoice()
+                        rp_invoice = RecurringPaymentInvoice(
+                                 recurring_payment=self,
+                                 invoice=invoice,
+                                 billing_dt=now)
+                        rp_invoice.save()
+            
         else:
-            invoice_create_dt = next_billing_cycle['end']
-
-        if invoice_create_dt <= now:
-            self.create_invoice(next_billing_cycle, billing_dt)
-            # might need to notify admin and/or user that an invoice has been created.
-
-            self.check_and_generate_invoices(next_billing_cycle)
+            if not last_billing_cycle:
+                last_billing_cycle = self.billing_cycle_t2d(self.get_last_billing_cycle())
+    
+            next_billing_cycle = self.billing_cycle_t2d(self.get_next_billing_cycle(last_billing_cycle))
+            billing_dt = self.get_payment_due_date(next_billing_cycle)
+    
+            # determine when to create the invoice -
+            # on the billing cycle start or end date
+            if self.due_sore == 'start':
+                invoice_create_dt = next_billing_cycle['start']
+            else:
+                invoice_create_dt = next_billing_cycle['end']
+    
+            if invoice_create_dt <= now:
+                self.create_invoice(next_billing_cycle, billing_dt)
+                # might need to notify admin and/or user that an invoice has been created.
+    
+                self.check_and_generate_invoices(next_billing_cycle)
 
     def create_invoice(self, billing_cycle, billing_dt):
         """
@@ -531,7 +613,7 @@ class RecurringPaymentInvoice(models.Model):
     class Meta:
         app_label = 'recurring_payments'
 
-    def make_payment_transaction(self, payment_profile_id):
+    def make_payment_transaction(self, payment_profile_id, membership=None):
         """
         Make a payment transaction. This includes:
         1) Make an API call createCustomerProfileTransactionRequest
@@ -549,23 +631,102 @@ class RecurringPaymentInvoice(models.Model):
         payment.payments_pop_by_invoice_user(self.recurring_payment.user,
                                              self.invoice,
                                              self.invoice.guid)
-        # make a transaction using CIM
-        d = {'amount': amount,
-             'order': {
-                       'invoice_number': str(payment.invoice_num),
-                       'description': '%s (billing cycle from %s to %s)' % (
-                                            self.recurring_payment.description,
-                                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
-                                            self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
-                       'recurring_billing': 'true'
-                       }
-             }
 
-        cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
-                                            payment_profile_id)
+        if self.billing_cycle_start_dt and self.billing_cycle_end_dt:
+            description = self.recurring_payment.description
+            description += '(billing cycle from {0} to {1})'.format(
+                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
+                            self.billing_cycle_end_dt.strftime('%m/%d/%Y'))
+        else:
+            description = payment.description
 
-        success, response_d = cpt.create(**d)
+        # charge user
+        if  self.recurring_payment.platform == "stripe":
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            params = {
+                       'amount': math.trunc(amount * 100), # amount in cents, again
+                       'currency': get_setting('site', 'global', 'currency'),
+                       'description': description,
+                       'customer': self.recurring_payment.customer_profile_id
+                      }
+            
+            success = False
+            response_d = {
+                          'status_detail': 'not approved',
+                          'response_code': '0',
+                          'response_reason_code': '0',
+                          'result_code': 'Error',  # Error, Ok
+                          'message_code': '',    # I00001, E00027
+                          }
+            try:
+                charge_response = stripe.Charge.create(**params)
+                success = True
+                response_d['status_detail'] = 'approved'
+                response_d['response_code'] = '1'
+                response_d['response_subcode'] = '1'
+                response_d['response_reason_code'] = '1'
+                response_d['response_reason_text'] = 'This transaction has been approved. (Created# %s)' % charge_response.created
+                response_d['trans_id'] = charge_response.id
+                response_d['result_code'] = 'Ok'
+                response_d['message_text'] = 'Successful.'
+            except stripe.error.CardError as e:
+                # it's a decline
+                json_body = e.json_body
+                err  = json_body and json_body['error']
+                code = err and err['code']
+                message = err and err['message']
+                charge_response = '{message} status={status}, code={code}'.format(
+                            message=message, status=e.http_status, code=code)
+                
+                response_d['response_reason_text'] = charge_response
+                response_d['message_code'] = code
+                response_d['message_text'] = charge_response
+            except Exception as e:
+                charge_response = e.message
+                response_d['response_reason_text'] = charge_response
+                response_d['message_text'] = charge_response[:200]
 
+            # update payment
+            for key in response_d:
+                if hasattr(payment, key):
+                    setattr(payment, key, response_d[key])                   
+            
+        else:                  
+            # make a transaction using CIM
+            d = {'amount': amount,
+                 'order': {
+                           'invoice_number': str(payment.invoice_num),
+                           'description': description,
+                           'recurring_billing': 'true'
+                           }
+                 }
+    
+            cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
+                                                payment_profile_id)
+    
+            success, response_d = cpt.create(**d)
+            
+            # update the payment entry with the direct response returned from payment gateway
+            payment = payment_update_from_response(payment, response_d['direct_response'])     
+                
+        if success:
+            payment.mark_as_paid()
+            payment.save()
+            payment.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
+            # approve membership
+            if membership:
+                membership.approve()
+                # send notification to user
+
+            self.payment_received_dt = datetime.now()
+        else:
+            if payment.status_detail == '':
+                payment.status_detail = 'not approved'
+            payment.save()
+            self.last_payment_failed_dt = datetime.now()
+
+        self.save()
+            
         # create a payment transaction record
         payment_transaction = PaymentTransaction(
                                     recurring_payment = self.recurring_payment,
@@ -574,24 +735,6 @@ class RecurringPaymentInvoice(models.Model):
                                     trans_type='auth_capture',
                                     amount=amount,
                                     status=success)
-
-        # update the payment entry with the direct response returned from payment gateway
-        #print success, response_d
-        payment = payment_update_from_response(payment, response_d['direct_response'])
-
-        if success:
-            payment.mark_as_paid()
-            payment.save()
-            self.invoice.make_payment(self.recurring_payment.user, Decimal(payment.amount))
-            self.invoice.save()
-
-            self.payment_received_dt = datetime.now()
-        else:
-            if payment.status_detail == '':
-                payment.status_detail = 'not approved'
-                payment.save()
-            self.last_payment_failed_dt = datetime.now()
-            self.save()
 
         payment_transaction.payment = payment
         payment_transaction.result_code = response_d['result_code']
@@ -641,7 +784,7 @@ def create_customer_profile(sender, instance=None, created=False, **kwargs):
     """ A post_save signal of RecurringPayment to create a customer profile
         on payment gateway.
     """
-    if instance.id and (not instance.customer_profile_id):
+    if instance.id and instance.platform == 'authorizenet' and (not instance.customer_profile_id):
         # create a customer profile on payment gateway
         instance.add_customer_profile()
 
@@ -651,7 +794,7 @@ def delete_customer_profile(sender, instance=None, user=None, **kwargs):
     """ A post_delete signal of RecurringPayment to delete a customer profile
         on payment gateway.
     """
-    if instance.id and instance.customer_profile_id:
+    if instance.id and instance.platform == 'authorizenet' and instance.customer_profile_id:
         # create a customer profile on payment gateway
         instance.delete_customer_profile()
 
