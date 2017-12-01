@@ -153,6 +153,7 @@ class MembershipTypeForm(TendenciBaseForm):
         fields = (
                   #'app',
                   'name',
+                  'entity',
                   'price',
                   'admin_fee',
                   'description',

@@ -626,7 +626,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     exclude = ('status',)
 
     fieldsets = (
-        (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
+        (None, {'fields': ('name', 'entity', 'price', 'admin_fee', 'description')}),
         (_('Expiration Method'), {'fields': ('never_expires', 'type_exp_method',)}),
         (_('Renewal Options'), {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
                                         'renewal_price',
