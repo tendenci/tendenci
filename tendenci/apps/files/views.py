@@ -582,6 +582,7 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     return render_to_response(
         template_name, {
             "files": files,
+            'q': query,
             'page_num': page_num,
             'page_range': paginator.page_range,
             'csrf_token': csrf_get_token(request),

@@ -23,7 +23,7 @@
     		{% endif %}
     		<form class="form-inline pull-right">
     			<div class="form-group">
-    			<input type="text" name='q' class="form-control" value="" placeholder="Search" />
+    			<input type="text" name='q' class="form-control" value="{{ q }}" placeholder="Search" />
     			<button type="submit" class="btn btn-default">
 			      <span class="glyphicon glyphicon-search"></span>
 			    </button>
@@ -84,13 +84,13 @@
 			    </li>
 			    {% else %}
 			    <li>
-			      <a href="?page={{ page_num|add:'-1' }}&&pop=2" aria-label="Previous">
+			      <a href="?page={{ page_num|add:'-1' }}&&q={{ q }}&&pop=2" aria-label="Previous">
 			        <span aria-hidden="true">&laquo;</span>
 			      </a>
 			    </li>
 			    {% endif %}
 			    {% for n in page_range %}
-			    <li {% if n == page_num %}class="active"{% endif %}><a href="?page={{ n }}&&pop=2">{{ n }}</a></li>
+			    <li {% if n == page_num %}class="active"{% endif %}><a href="?page={{ n }}&&q={{ q }}&&pop=2">{{ n }}</a></li>
 			    {% endfor %}
 			    {% if page_num == page_range|last %}
 			    <li class="disabled">
@@ -98,7 +98,7 @@
 			    </li>
 			    {% else %}
 			    <li>
-			      <a href="?page={{ page_num|add:'1' }}&&pop=2" aria-label="Next">
+			      <a href="?page={{ page_num|add:'1' }}&&q={{ q }}&&pop=2" aria-label="Next">
 			        <span aria-hidden="true">&raquo;</span>
 			      </a>
 			    </li>
