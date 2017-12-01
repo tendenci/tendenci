@@ -268,6 +268,7 @@ def assign_fields(form, app_field_objs, instance=None):
                                     'corporate_membership_type',
                                     'status',
                                     'status_detail',
+                                    'parent_entity',
                                     'industry',
                                     'region']:
                 # create form field with customized behavior

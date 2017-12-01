@@ -23,6 +23,7 @@ from tendenci.libs.tinymce import models as tinymce_models
 #from completion import AutocompleteProvider, site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipApp,
@@ -192,6 +193,7 @@ class CorpProfile(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True,
                                    default='')
 
+    parent_entity = models.ForeignKey(Entity, blank=True, null=True)
     industry = models.ForeignKey(Industry, blank=True, null=True)
     region = models.ForeignKey(Region, blank=True, null=True)
     number_employees = models.IntegerField(default=0)

@@ -14,6 +14,13 @@
     "admin_only": "false"
     },
     {
+    "label": "Parent Entity",
+    "field_name": "parent_entity",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
     "label": "Company Name",
     "field_name": "name",
     "display": "true",
