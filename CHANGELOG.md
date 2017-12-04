@@ -1,3 +1,12 @@
+### 7.4.1 [2017-12-04]
+
+* Membership auto renew (Works with Stripe and Authorize.net)
+* Renamed filename to replace dots, underscores, and spaces with dashes for file uploader
+* Replaced the CIM forms addresses with the new “Accept Customer” forms (Authorize.net issued an EOF for the old “Hosted CIM” forms)
+* Fixed search term not stick in tinymce file browser
+* Fixes for flake8 warnings
+* More bug fixes
+
 ### 7.4.0 [2017-11-15]
 
 #### Notable changes:
