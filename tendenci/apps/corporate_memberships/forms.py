@@ -126,6 +126,7 @@ class CorpMembershipAppForm(TendenciBaseForm):
                   'description',
                   'confirmation_text',
                   'notes',
+                  'parent_entities',
                   'allow_anonymous_view',
                   'user_perms',
                   'member_perms',
@@ -351,6 +352,13 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
             del self.fields['status']
         if 'status_detail' in self.fields:
             del self.fields['status_detail']
+        
+        # assign the selected parent_entities to the drop down   
+        f = self.fields.get('parent_entity', None)
+        if f is not None:
+            selected_parent_entities = self.corpmembership_app.parent_entities.all()
+            if selected_parent_entities.exists():
+                f.queryset = self.corpmembership_app.parent_entities.all()
 
         self.field_names = [name for name in self.fields.keys()]
 

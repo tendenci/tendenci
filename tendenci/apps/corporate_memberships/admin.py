@@ -99,6 +99,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'include_tax', 'tax_rate',
                            'memb_app'
                            )},),
+        (_('Parent Entities'), {'fields': ('parent_entities',)}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -109,7 +110,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
             'status_detail',
         )}),
     )
-
+    filter_vertical = ('parent_entities',)
     form = CorpMembershipAppForm
 
     class Media:

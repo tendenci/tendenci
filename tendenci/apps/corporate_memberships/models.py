@@ -1293,6 +1293,10 @@ class CorpMembershipApp(TendenciBaseModel):
     slug = models.SlugField(_("URL Path"), max_length=155, unique=True)
     corp_memb_type = models.ManyToManyField("CorporateMembershipType",
                                             verbose_name=_("Corp. Memb. Type"))
+    parent_entities = models.ManyToManyField(Entity,
+            verbose_name=_("Parent Entities"),
+            blank=True,
+            help_text=_('Specify a list of parent entities to select.'),)
     authentication_method = models.CharField(_("Authentication Method"),
                                              choices=AUTH_METHOD_CHOICES,
                                     default='admin', max_length=50,
