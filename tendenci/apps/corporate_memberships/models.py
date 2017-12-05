@@ -240,7 +240,18 @@ class CorpProfile(TendenciBaseModel):
         if not self.guid:
             self.guid = str(uuid.uuid1())
         if not self.entity:
-                self.entity_id = 1
+            # create an entity
+            entity = Entity.objects.create(
+                    entity_name=self.name,
+                    entity_parent = self.parent_entity,
+                    email=self.email,
+                    allow_anonymous_view=False)
+            self.entity = entity
+        else:
+            if self.name != self.entity.entity_name:
+                self.entity.entity_name = self.name
+                self.entity.save()
+
         super(CorpProfile, self).save(*args, **kwargs)
 
     def __unicode__(self):
