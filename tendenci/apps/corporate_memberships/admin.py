@@ -20,6 +20,7 @@ from tendenci.apps.corporate_memberships.forms import (
     CorpMembershipAppForm,
     NoticeForm,
     CorpMembershipAppFieldAdminForm)
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.base.utils import tcurrency
 
@@ -27,7 +28,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 
 
-class CorporateMembershipTypeAdmin(admin.ModelAdmin):
+class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
     list_display = ['name', 'id', 'price', 'renewal_price', 'membership_type', 'apply_cap',
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
@@ -43,6 +44,7 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     )
 
     form = CorporateMembershipTypeForm
+    ordering = ['-position']
 
     class Media:
         js = (
