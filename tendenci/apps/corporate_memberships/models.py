@@ -251,6 +251,9 @@ class CorpProfile(TendenciBaseModel):
             if self.name != self.entity.entity_name:
                 self.entity.entity_name = self.name
                 self.entity.save()
+                
+        if not self.parent_entity:
+            self.parent_entity = Entity.objects.first()
 
         super(CorpProfile, self).save(*args, **kwargs)
 
