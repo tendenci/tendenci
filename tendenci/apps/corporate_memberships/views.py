@@ -1734,9 +1734,12 @@ def delete_corp_rep(request, id,
 def index(request,
           template_name="corporate_memberships/applications/index.html"):
     corp_app = CorpMembershipApp.objects.current_app()
+    corp_membership_types = corp_app.corp_memb_type.all().order_by('position')
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'corp_app': corp_app},
+    return render_to_response(template_name,
+                              {'corp_app': corp_app,
+                               'corp_membership_types': corp_membership_types},
         context_instance=RequestContext(request))
 
 
