@@ -151,6 +151,14 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+
+            # assign position
+            [last] = CorporateMembershipType.objects.all().order_by('-position')[:1] or [None]
+            if last and last.position:
+                self.position = int(last.position) + 1
+            else:
+                self.position = 1
+                
         super(CorporateMembershipType, self).save(*args, **kwargs)
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
