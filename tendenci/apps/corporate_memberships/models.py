@@ -143,6 +143,8 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     objects = CorpMembershipTypeManager()
 
     class Meta:
+        verbose_name = _("Corporate Membership Type")
+        verbose_name_plural = _("Corporate Membership Types")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
@@ -242,6 +244,8 @@ class CorpProfile(TendenciBaseModel):
     objects = CorpProfileManager()
 
     class Meta:
+        verbose_name = _("Corporate Member Profile")
+        verbose_name_plural = _("Corporate Member Profiles")
         app_label = 'corporate_memberships'
 
     def save(self, *args, **kwargs):
@@ -394,8 +398,8 @@ class CorpMembership(TendenciBaseModel):
                                               'corporate_memberships',
                                               'label_plural')
         else:
-            verbose_name = _("Corporate Member")
-            verbose_name_plural = _("Corporate Members")
+            verbose_name = _("Corporate Membership")
+            verbose_name_plural = _("Corporate Memberships")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
@@ -1350,7 +1354,7 @@ class CorpMembershipApp(TendenciBaseModel):
 
     class Meta:
         verbose_name = _("Corporate Membership Application")
-        verbose_name_plural = _("Corporate Membership Applications")
+        verbose_name_plural = _("Corporate Membership Application")
         ordering = ('name',)
         app_label = 'corporate_memberships'
 
@@ -1447,8 +1451,8 @@ class CorpMembershipAppField(OrderingBaseModel):
                                    default='')
 
     class Meta:
-        verbose_name = _("Field")
-        verbose_name_plural = _("Fields")
+        verbose_name = _("Membership Application Field")
+        verbose_name_plural = _("Membership Application Fields")
         ordering = ('position',)
         app_label = 'corporate_memberships'
 
@@ -1768,6 +1772,8 @@ class Notice(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
+        verbose_name = _("Member Notice")
+        verbose_name_plural = _("Member Notices")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
