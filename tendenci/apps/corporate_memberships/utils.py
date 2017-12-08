@@ -163,7 +163,7 @@ def get_indiv_memberships_choices(corp_membership):
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
                                     reverse('profile',
                                             args=[membership.user.username]),
-                                        membership.user.get_full_name())
+                                        membership.user.get_full_name() or membership.user.username)
         indiv_memb_display = mark_safe(indiv_memb_display)
         im_list.append((membership.id, indiv_memb_display))
 
