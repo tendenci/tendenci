@@ -355,8 +355,9 @@ class Profile(Person):
 
         max_length = 8
         # the first argument is the class, exclude it
-        un = ' '.join(args[1:])             # concat args into one string
-        un = re.sub('\s+', '_', un)       # replace spaces w/ underscores
+        un = ''.join(args[1:])             # concat args into one string
+        un =  un.lower()
+        un = re.sub('\s+', '', un)       # remove spaces
         un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
@@ -372,7 +373,7 @@ class Profile(Person):
             # to kill the database username max field length
             un = '%s%s' % (un, str(max(others) + 1))
 
-        return un.lower()
+        return un
 
     @classmethod
     def get_or_create_user(cls, **kwargs):
