@@ -79,9 +79,10 @@
             <div class="group-member-list">
             <p>Group members in sets of 100</p>
             {% for gm in groupmemberships %}
+            	 {%  with gm.member.profile as profile %}
                 <div class="group-member {% cycle 'gray' '' %}">
 
-                 <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
+                 <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if profile.company %}- {{ profile.company }}{% endif %} {% if gm.role %}- {{ gm.role }}{% endif %}</a>
 
                  {% if can_delete %}
                     &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
@@ -97,6 +98,7 @@
                     <span class="unsubscribe-status">{% trans "This User Has Unsubscribed" %}</span>
                 {% endif %}
                 </div>
+                {% endwith %}
             {% endfor %}
         </div>
         {% paginate %}
