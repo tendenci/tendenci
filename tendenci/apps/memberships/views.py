@@ -1030,12 +1030,27 @@ def membership_default_add(request, slug='', membership_id=None,
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
+        
+    if join_under_corporate and not is_renewal:
+        corp_profile = corp_membership.corp_profile
+        profile_initial = {
+            'company': corp_profile.name,
+            'address': corp_profile.address,
+            'address2': corp_profile.address2,
+            'city': corp_profile.city,
+            'state': corp_profile.state,
+            'zipcode': corp_profile.zip,
+            'country': corp_profile.country,
+            'work_phone': corp_profile.phone,}
+    else:
+        profile_initial = None
 
     profile = user.profile if user else None
     profile_form = ProfileForm(
         app_fields,
         request.POST or None,
-        instance=profile
+        instance=profile,
+        initial=profile_initial
     )
 
     params = {
