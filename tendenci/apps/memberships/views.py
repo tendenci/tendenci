@@ -1161,6 +1161,7 @@ def membership_default_add(request, slug='', membership_id=None,
 
             membership_set = MembershipSet()
             invoice = membership_set.save_invoice(memberships, app)
+            invoice.entity = memberships[0].entity
 
             discount_code = membership_form2.cleaned_data.get('discount_code', None)
             discount_amount = Decimal(0)

@@ -204,6 +204,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
     renewal_total = kwargs.get('renewal_total', 0)
     if not corp_memb.invoice or renewal:
         inv = Invoice()
+        inv.entity = corp_profile.entity
         inv.object_type = ContentType.objects.get(
                                       app_label=corp_memb._meta.app_label,
                                       model=corp_memb._meta.model_name)
