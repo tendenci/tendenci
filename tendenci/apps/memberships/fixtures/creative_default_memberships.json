@@ -122,7 +122,7 @@
         "rolling_renew_option2_day": 1,
         "admin_fee": null,
         "create_dt": "2015-09-30T09:05:52.153",
-        "group": 16,
+        "group": 13,
         "update_dt": "2015-10-19T11:23:56.100",
         "fixed_option2_can_rollover": false,
         "fixed_option2_day": 1,

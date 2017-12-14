@@ -557,43 +557,6 @@
 {
     "fields": {
         "auto_respond": false,
-        "allow_self_add": false,
-        "creator": 1,
-        "allow_user_view": false,
-        "sync_newsletters": true,
-        "entity": 22,
-        "owner": 1,
-        "guid": "5bf64cf0-677c-11e5-aebb-0242ac110085",
-        "create_dt": "2015-09-30T09:05:52.116",
-        "auto_respond_priority": 0.0,
-        "group": 16,
-        "update_dt": "2015-10-12T11:28:56.088",
-        "dashboard_url": "",
-        "label": "Member of an Affiliated Organization",
-        "type": "system_generated",
-        "owner_username": "system_generated",
-        "allow_anonymous_view": true,
-        "status": true,
-        "show_as_option": false,
-        "description": "Auto-generated with the membership type. Used for membership only",
-        "status_detail": "active",
-        "email_recipient": "bleven@tendenci.com",
-        "allow_self_remove": false,
-        "creator_username": "system_generated",
-        "slug": "membership-employee-of-a-member-organization",
-        "permissions": [],
-        "name": "Membership: Member of an Affiliate Org",
-        "allow_user_edit": false,
-        "notes": "Auto-generated with the membership type. Used for membership only",
-        "allow_member_view": false,
-        "allow_member_edit": false
-    },
-    "model": "user_groups.group",
-    "pk": 16
-},
-{
-    "fields": {
-        "auto_respond": false,
         "allow_self_add": true,
         "creator": null,
         "allow_user_view": true,
@@ -603,7 +566,7 @@
         "guid": "51207346-7104-11e5-aebb-0242ac1100b2",
         "create_dt": "2015-10-12T12:11:45.956",
         "auto_respond_priority": 0.0,
-        "group": 17,
+        "group": 16,
         "update_dt": "2015-10-12T12:11:45.975",
         "dashboard_url": "",
         "label": "",
@@ -626,7 +589,7 @@
         "allow_member_edit": false
     },
     "model": "user_groups.group",
-    "pk": 17
+    "pk": 16
 },
 {
     "fields": {
@@ -640,7 +603,7 @@
         "guid": "af668866-bae0-11e5-aebb-0242ac1100bd",
         "create_dt": "2016-01-14T11:03:08.294",
         "auto_respond_priority": 0.0,
-        "group": 18,
+        "group": 17,
         "update_dt": "2016-01-14T11:03:08.408",
         "dashboard_url": "",
         "label": "newsletter",
@@ -663,7 +626,7 @@
         "allow_member_edit": false
     },
     "model": "user_groups.group",
-    "pk": 18
+    "pk": 17
 },
 {
     "fields": {
