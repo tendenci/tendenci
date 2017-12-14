@@ -214,3 +214,6 @@
 .dashboard-customize-form .row2 {
     background: white;
 }
+.dashboard-customize-form .position-icon{
+	cursor: move;
+}
