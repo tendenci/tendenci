@@ -152,24 +152,125 @@ class StatusDetailFilter(SimpleListFilter):
         return queryset
 
 
-class CorpMembershipAdmin(admin.ModelAdmin):
-    list_display = ['id', 'corp_profile',
-                    'expiration_dt',
-                    'approved', 'status_detail',
+class CorpMembershipAdmin(TendenciBaseModelAdmin):
+    list_display = ['profile',
+                    'statusdetail',
+                    'parent_entity',
+                    'cm_type',
+                    'join_date',
+                    'renew_date',
+                    'expire_date',
+                    'dues_reps',
+                    'member_reps',
+                    'roster_link', 
                     'invoice_url']
-    list_display_links = ('corp_profile',)
-    list_filter = [StatusDetailFilter, 'join_dt', 'expiration_dt']
+    list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
 
     fieldsets = (
         (None, {'fields': ()}),
     )
-
-    def queryset(self, request):
-        return super(CorpMembershipAdmin, self).queryset(request
+    
+    def get_queryset(self, request):
+        """
+        Excludes archive
+        """
+        return super(CorpMembershipAdmin, self).get_queryset(request
                     ).exclude(status_detail='archive'
                               ).order_by('status_detail',
                                          'corp_profile__name')
+    
+    def profile(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('admin:corporate_memberships_corpprofile_change',
+                      args=[instance.corp_profile.id]),
+              instance.corp_profile.name,)
+    profile.allow_tags = True
+    profile.short_description = _('Corp Profile')
+    profile.admin_order_field = 'corp_profile__name'
+    
+    def statusdetail(self, instance):
+        return instance.status_detail
+    statusdetail.short_description = _('Status')
+    statusdetail.admin_order_field = 'status_detail'
+    
+    def parent_entity(self, instance):
+        return instance.corp_profile.parent_entity
+    parent_entity.short_description = _('Parent Entity')
+    parent_entity.admin_order_field = 'corp_profile__parent_entity'
+    
+    def cm_type(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('admin:corporate_memberships_corporatemembershiptype_change',
+                      args=[instance.corporate_membership_type.id]),
+              instance.corporate_membership_type.name,)
+    cm_type.allow_tags = True
+    cm_type.short_description = _('Membership Type')
+    cm_type.admin_order_field = 'corporate_membership_type'
+    
+    def join_date(self, instance):
+        if not instance.join_dt:
+            return ''
+        return instance.join_dt.strftime('%m-%d-%Y')
+    join_date.short_description = _('Join Date')
+    join_date.admin_order_field = 'join_dt'
+    
+    def renew_date(self, instance):
+        if not instance.renew_dt:
+            return ''
+        return instance.renew_dt.strftime('%m-%d-%Y')
+    renew_date.short_description = _('Renew Date')
+    renew_date.admin_order_field = 'renew_dt'
+    
+    def expire_date(self, instance):
+        if not instance.expiration_dt:
+            return ''
+        return instance.expiration_dt.strftime('%m-%d-%Y')
+    expire_date.short_description = _('Expiration Date')
+    expire_date.admin_order_field = 'expiration_dt'
+    
+    def edit_link(self, instance):
+        return '<a href="%s">%s</a>' % (
+                    reverse('corpmembership.edit',args=[instance.id]),
+                    _('Edit'),)
+    edit_link.allow_tags = True
+    edit_link.short_description = _('edit')
+    
+    
+    def roster_link(self, instance):
+        return '<a href="%s?cm_id=%d">%s</a>' % (
+                    reverse('corpmembership.roster_search'),
+                    instance.id,
+                    _('Roster'),)
+    roster_link.allow_tags = True
+    roster_link.short_description = _('Roster')
+    
+    def display_reps(self, reps):
+        reps_display = ''
+        for i, rep in enumerate(reps):
+            if i > 0:
+                reps_display += '<br />'
+            reps_display += '<a href="%s">%s</a> ' % (
+                        reverse('profile',args=[rep.user.username]),
+                        rep.user.get_full_name() or rep.user.username)
+            
+            if rep.user.email:
+                reps_display += rep.user.email                
+        return reps_display
+        
+    
+    def dues_reps(self, instance):
+        reps = instance.corp_profile.reps.filter(is_dues_rep=True)
+        return self.display_reps(reps)
+    dues_reps.allow_tags = True
+    dues_reps.short_description = _('Dues Reps')
+    
+    def member_reps(self, instance):
+        reps = instance.corp_profile.reps.filter(is_member_rep=True)
+        return self.display_reps(reps)
+    member_reps.allow_tags = True
+    member_reps.short_description = _('Member Reps')
+
     def invoice_url(self, instance):
         invoice = instance.invoice
         if invoice:
