@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load page_tags %}
 
+{% if request.user.is_authenticated %}
 <div id="t-admin-megamenu" class="navbar-inverse navbar-fixed-top yamm t-megamenu" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -57,3 +58,4 @@
         </div>
     </div>
 </div>
+{% endif %}
