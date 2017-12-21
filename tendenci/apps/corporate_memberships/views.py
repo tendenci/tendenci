@@ -1745,8 +1745,8 @@ def index(request,
 
 @is_enabled('corporate_memberships')
 @staff_member_required
-def summary_report(request,
-                template_name='corporate_memberships/reports/summary.html'):
+def overview(request,
+                template_name='corporate_memberships/reports/overview.html'):
     """
     Shows a report of corporate memberships per corporate membership type.
     """

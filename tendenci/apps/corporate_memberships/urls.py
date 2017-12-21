@@ -101,7 +101,7 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     (r'^%s/notices/' % urlpath, include('tendenci.apps.corporate_memberships.notices.urls')),
 
     # report
-    url(r"^%s/reports/summary/$" % urlpath, "summary_report", name="corp_membership.summary_report"),
+    url(r"^%s/reports/overview/$" % urlpath, "overview", name="corp_membership.overview"),
 
 
     # reports
