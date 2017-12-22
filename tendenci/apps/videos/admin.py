@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.videos.models import Video, Category, VideoType
 from tendenci.apps.videos.forms import VideoForm
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class VideoInline(admin.TabularInline):
@@ -43,9 +44,11 @@ class VideoAdmin(TendenciBaseModelAdmin):
             return dt.strftime('%x')
         return u''
     get_release_dt.short_description = _('Release Date')
-
-    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'position']
-    list_editable = ['category', 'video_type', 'position']
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt']
+    list_editable = ['category', 'video_type']
+    if not get_setting('module', 'videos', 'order_by_release_dt'):
+        list_display.append('position')
+        list_editable.append('position')
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
@@ -61,7 +64,10 @@ class VideoAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = VideoForm
-    ordering = ['-position']
+    if not get_setting('module', 'videos', 'order_by_release_dt'):
+        ordering = ['-position']
+    else:
+        ordering = ['-release_dt']
 
     class Media:
         js = (
