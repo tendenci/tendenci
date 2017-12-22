@@ -13,6 +13,7 @@ from tendenci.apps.corporate_memberships.models import (
     CorpMembershipApp,
     CorpMembershipAppField,
     CorpMembership,
+    CorpMembershipRep,
     CorpProfile,
     Notice)
 from tendenci.apps.corporate_memberships.forms import (
@@ -160,8 +161,8 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     'join_date',
                     'renew_date',
                     'expire_date',
-                    'dues_reps',
-                    'member_reps',
+#                     'dues_reps',
+#                     'member_reps',
                     'roster_link', 
                     'invoice_url']
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
@@ -504,6 +505,39 @@ class CorpProfileAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+    
+    
+class CorpMembershipRepAdmin(admin.ModelAdmin):
+    model = CorpMembershipRep
+    list_display = ['id', 'profile', 'rep_name', 'rep_email',
+                    'is_dues_rep', 'is_member_rep']
+    list_filter = ['is_dues_rep', 'is_member_rep']
+    
+    ordering = ['corp_profile']
+    
+    def profile(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('admin:corporate_memberships_corpprofile_change',
+                      args=[instance.corp_profile.id]),
+              instance.corp_profile.name,)
+    profile.allow_tags = True
+    profile.short_description = _('Corp Profile')
+    profile.admin_order_field = 'corp_profile__name'
+    
+    def rep_name(self, instance):
+        return '<a href="{0}">{1}</a>'.format(
+                reverse('profile', args=[instance.user.username]),
+                instance.user.get_full_name() or instance.user.username,
+                
+            )
+    rep_name.short_description = u'Rep Name'
+    rep_name.allow_tags = True
+    rep_name.admin_order_field = 'user__first_name'
+    
+    def rep_email(self, instance):
+        return instance.user.email
+    rep_email.short_description = u'Rep Email'
+    rep_email.admin_order_field = 'user__email'
 
 
 admin.site.register(CorpMembership, CorpMembershipAdmin)
@@ -512,3 +546,4 @@ admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
 admin.site.register(CorpMembershipAppField, CorpMembershipAppField2Admin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(CorpProfile, CorpProfileAdmin)
+admin.site.register(CorpMembershipRep, CorpMembershipRepAdmin)

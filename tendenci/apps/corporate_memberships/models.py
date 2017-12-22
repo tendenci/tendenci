@@ -1570,6 +1570,8 @@ class CorpMembershipRep(models.Model):
                                     default=True, blank=True)
 
     class Meta:
+        verbose_name = _("Corporate Membership Representative")
+        verbose_name_plural = _("Corporate Membership Representatives")
         unique_together = (("corp_profile", "user"),)
         app_label = 'corporate_memberships'
 
