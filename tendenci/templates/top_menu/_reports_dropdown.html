@@ -85,7 +85,26 @@
                                                     <a href="{% url "memberships.default_export" %}"><span class="nav-label">{% trans "Membership Export" %}</span></a>
                                                 </li>
                                             </ul>
+                                          </div>
+                                          {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                                          <hr>
+                                          <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url "corp_membership.overview" %}"><span class="nav-label">{% trans "Corporate Memberships Overview" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "admin:corporate_memberships_corpmembership_changelist" %}"><span class="nav-label">{% trans "Corporate Memberships List" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "admin:corporate_memberships_corpmembershiprep_changelist" %}"><span class="nav-label">{% trans "Corporate Membership Representatives" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.cap_status" %}"><span class="nav-label">{% trans "Memberhip Cap Status" %}</span></a>
+                                                </li>
+                                            </ul>
                                         </div>
+                                        {% endif %}
                                     </div>
                                  </div>
                             </div>
