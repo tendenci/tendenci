@@ -14,6 +14,7 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.template.defaultfilters import filesizeformat
 from django.contrib.contenttypes.models import ContentType
+from form_utils.forms import BetterModelForm
 
 from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
@@ -307,11 +308,114 @@ def assign_fields(form, app_field_objs, instance=None):
             obj.label_type = ' '.join(label_type)
 
 
-class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
+class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
     logo_file = forms.FileField(
       required=False,
       help_text=_('Company logo. Only jpg, gif, or png images.'))
+    
+    
+    def clean_logo_file(self):
+        ALLOWED_LOGO_EXT = (
+            '.jpg',
+            '.jpeg',
+            '.gif',
+            '.png'
+        )
 
+        logo_file = self.cleaned_data['logo_file']
+        if logo_file:
+            try:
+                extension = splitext(logo_file.name)[1]
+
+                # check the extension
+                if extension.lower() not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
+
+                # check the image header
+                image_type = '.%s' % imghdr.what('', logo_file.read())
+                if image_type not in ALLOWED_LOGO_EXT:
+                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
+
+                max_upload_size = get_max_file_upload_size()
+                if logo_file.size > max_upload_size:
+                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
+                                                    'max_upload_size': filesizeformat(max_upload_size),
+                                                    'logo_size': filesizeformat(logo_file.size)})
+            except IOError:
+                logo_file = None
+
+        return logo_file
+
+
+class CorpProfileAdminForm(CorpProfileBaseForm):
+    class Meta:
+        model = CorpProfile
+        fields = ('logo_file',
+                'name',
+                'url',
+                'number_employees',
+                 'phone',
+                 'email',
+                 'parent_entity',
+                 'address',
+                 'address2',
+                 'city',
+                 'state',
+                 'zip',
+                 'country',
+                 'description',
+                 'notes',)      
+
+    def __init__(self, *args, **kwargs):
+        super(CorpProfileAdminForm, self).__init__(*args, **kwargs)
+
+        if self.instance.logo:
+            self.initial['logo_file'] = self.instance.logo.file
+        
+        # assign the selected parent_entities to the drop down   
+        f = self.fields.get('parent_entity', None)
+        if f is not None:
+            corpmembership_app = CorpMembershipApp.objects.current_app()
+            selected_parent_entities = corpmembership_app.parent_entities.all()
+            if selected_parent_entities.exists():
+                f.queryset = corpmembership_app.parent_entities.all()
+
+    def clean_number_employees(self):
+        number_employees = self.cleaned_data['number_employees']
+        if not number_employees:
+            number_employees = 0
+
+        return number_employees
+
+    def save(self, *args, **kwargs):
+        super(CorpProfileAdminForm, self).save(*args, **kwargs)
+        from tendenci.apps.files.models import File
+        content_type = ContentType.objects.get(
+            app_label=self.instance._meta.app_label,
+            model=self.instance._meta.model_name)
+        logo_file = self.cleaned_data.get('logo_file', None)
+        if logo_file:
+            file_object, created = File.objects.get_or_create(
+                file=logo_file,
+                defaults={
+                    'name': logo_file.name,
+                    'content_type': content_type,
+                    'object_id': self.instance.pk,
+                    'is_public': True,
+                })
+            self.instance.logo = file_object
+            self.instance.save(log=False)
+        else:
+            self.instance.logo = None
+            self.instance.save(log=False)
+            File.objects.filter(
+                        content_type=content_type,
+                        object_id=self.instance.pk).delete()
+
+        return self.instance
+
+
+class CorpProfileForm(CorpProfileBaseForm):
     class Meta:
         model = CorpProfile
         fields = "__all__"
@@ -382,38 +486,6 @@ class CorpProfileForm(FormControlWidgetMixin, forms.ModelForm):
             number_employees = 0
 
         return number_employees
-
-    def clean_logo_file(self):
-        ALLOWED_LOGO_EXT = (
-            '.jpg',
-            '.jpeg',
-            '.gif',
-            '.png'
-        )
-
-        logo_file = self.cleaned_data['logo_file']
-        if logo_file:
-            try:
-                extension = splitext(logo_file.name)[1]
-
-                # check the extension
-                if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
-
-                # check the image header
-                image_type = '.%s' % imghdr.what('', logo_file.read())
-                if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
-
-                max_upload_size = get_max_file_upload_size()
-                if logo_file.size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(logo_size)s') % {
-                                                    'max_upload_size': filesizeformat(max_upload_size),
-                                                    'logo_size': filesizeformat(logo_file.size)})
-            except IOError:
-                logo_file = None
-
-        return logo_file
 
     def save(self, *args, **kwargs):
         from tendenci.apps.files.models import File

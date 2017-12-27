@@ -20,7 +20,8 @@ from tendenci.apps.corporate_memberships.forms import (
     CorporateMembershipTypeForm,
     CorpMembershipAppForm,
     NoticeForm,
-    CorpMembershipAppFieldAdminForm)
+    CorpMembershipAppFieldAdminForm,
+    CorpProfileAdminForm)
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 from tendenci.apps.base.utils import tcurrency
@@ -500,8 +501,63 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
             return super(CorpMembershipAppField2Admin, self).response_change(request, obj)
 
 
+class CorpMembershipRepInlineAdmin(admin.TabularInline):
+    model = CorpMembershipRep
+    fields = ('user', 'is_dues_rep', 'is_member_rep')
+    extra = 0
+    raw_id_fields = ("user",)
+    verbose_name = _('Representative')
+    verbose_name_plural = _('Representatives')
+    ordering = ("user",)
+
+
+class CorpMembershipInlineAdmin(admin.TabularInline):
+    model = CorpMembership
+    fields = ('corporate_membership_type',
+              'join_dt', 
+              'renewal', 'renew_dt',
+              'expiration_dt',
+              'status_detail')
+    readonly_fields=('corporate_membership_type',
+                     'join_dt', 
+                      'renewal', 'renew_dt',
+                      'expiration_dt',
+                      'status_detail')
+    extra = 0
+    can_delete = False
+    ordering = ("-create_dt", '-expiration_dt')
+    
+    def has_add_permission(self, request):
+        return False
+    
+
 class CorpProfileAdmin(admin.ModelAdmin):
-    model = CorpProfile
+    model = CorpProfile 
+    inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
+    fieldsets = [(_('Company Details'), {
+                      'fields': ('name',
+                                 'logo_file',
+                                 'url',
+                                 'number_employees',
+                                 'phone',
+                                 'email',
+                                 'address',
+                                 'address2',
+                                 'city',
+                                 'state',
+                                 'zip',
+                                 'country',),
+                      }),
+                      (_('Parent Entity'), {
+                       'fields': ('parent_entity',),
+                       'classes': ('boxy-grey',),
+                      }),
+                     (_('Other Info'), {'fields': (
+                            'description',
+                            'notes',
+                        )}),]
+    
+    form = CorpProfileAdminForm
 
     def has_add_permission(self, request):
         return False
