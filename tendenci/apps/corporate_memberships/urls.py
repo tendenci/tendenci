@@ -11,6 +11,8 @@ if not urlpath:
 urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     url(r'^%s/$' % urlpath, 'search', name="corp_memb"),
     url(r'^%s/$' % urlpath, 'search', name="corp_memb.search"),
+    url(r"^%s/profiles/(?P<id>\d+)/$" % urlpath,
+        "corpprofile_view", name="corpmembership.view_profile"),
     url(r"^%s/get_app_fields/$" % urlpath,
         "get_app_fields_json",
         name="corpmemberships.get_app_fields"),

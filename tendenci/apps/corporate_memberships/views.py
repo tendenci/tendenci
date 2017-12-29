@@ -10,7 +10,7 @@ import mimetypes
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -516,6 +516,43 @@ def corpmembership_edit(request, id,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
     return render_to_response(template, context, RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@staff_member_required
+def corpprofile_view(request, id, template="corporate_memberships/profiles/view.html"):
+    """
+        view a corp profile - superuser only
+    """
+    if not request.user.is_superuser:
+        raise Http403
+    
+    corp_profile = get_object_or_404(CorpProfile, id=id)
+    corp_membership = corp_profile.corp_membership
+    reps = corp_profile.reps.all()
+    memberships = MembershipDefault.objects.filter(
+                        corp_profile_id=corp_profile.id
+                        ).exclude(
+                        status_detail__in=('archive', 'pending'))
+    members_count = memberships.count()
+    members_first10 = memberships.order_by('user__first_name', 'user__last_name')[:10]
+    all_records = corp_profile.corp_memberships.all().order_by('-create_dt')
+    invoices = [corp_mem.invoice for corp_mem in all_records if corp_mem.invoice]
+    address_list = [a for a in [corp_profile.address, corp_profile.address2, corp_profile.city,
+                    corp_profile.state, corp_profile.zip] if a.strip()]
+    address_str = ', '.join(address_list)
+    
+
+    return render(request, template,
+                  {'corp_profile': corp_profile,
+                   'address_str': address_str,
+                   'corp_membership': corp_membership,
+                   'members_count': members_count,
+                   'members_first10': members_first10,
+                   'reps': reps,
+                   'all_records': all_records,
+                   'invoices': invoices
+                   })
 
 
 @is_enabled('corporate_memberships')

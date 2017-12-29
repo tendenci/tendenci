@@ -271,6 +271,13 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.view_profile', [self.pk])
 
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
