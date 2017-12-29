@@ -531,8 +531,9 @@ class CorpMembershipInlineAdmin(admin.TabularInline):
         return False
     
 
-class CorpProfileAdmin(admin.ModelAdmin):
+class CorpProfileAdmin(TendenciBaseModelAdmin):
     model = CorpProfile 
+    list_display = ['name',]
     inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
     fieldsets = [(_('Company Details'), {
                       'fields': ('name',
