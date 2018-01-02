@@ -85,7 +85,7 @@
                  <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if profile.company %}- {{ profile.company }}{% endif %} {% if gm.role %}- {{ gm.role }}{% endif %}</a>
 
                  {% if can_delete %}
-                    &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
+                    &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">({% trans "Remove" %})</a></span>
                  <!-- delete-member form -->
                     <form class="delete-member-form" name="member-delete" method="POST" action="{% url "group.deleteuser" group.slug gm.member.id %}">{% csrf_token %}
                         <input type="hidden" name="action" value="delete">
