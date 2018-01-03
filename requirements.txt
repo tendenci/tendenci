@@ -28,7 +28,7 @@ xlwt>=0.7.2
 beautifulsoup4==4.4.1
 oauth2>=1.5.167
 python_openid>=2.2
-createsend==4.1.1
+createsend==4.2.7
 celery==3.1.23
 django-celery==3.1.17
 django-kombu>=0.9.4
