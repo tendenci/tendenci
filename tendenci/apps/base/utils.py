@@ -911,7 +911,7 @@ def add_tendenci_footer(email_content, content_type='html'):
     <div>
     <div style="margin:5px auto;">
     <a href="https://www.tendenci.com" style="text-decoration: none;">
-    <img src="https://www.tendenci.com/media/tendenci-open.png" width="100" height="35" alt="tendenci logo" />
+    <img src="https://www.tendenci.com/media/tendenci-os-ams.jpg" width="100" height="29" alt="tendenci logo" />
     </a>
     </div>'''.format(_('This Association is Powered by'), _('Tendenci&reg; &ndash; The Open Source AMS'))
     if email_content.find('</body>') != -1:
