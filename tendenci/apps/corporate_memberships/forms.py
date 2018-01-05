@@ -797,6 +797,35 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
         self.fields['search_criteria'].choices = search_choices
 
 
+class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
+    DAYS_CHOICES = (
+                 ('0', 'ALL'),
+                 ('30', _('Last 30 days')),
+                 ('60', _('Last 60 days')),
+                 ('90', _('Last 90 days')),
+                 ('180', _('Last 180 days')),
+                 ('365', _('Last 365 days')),
+                 ('1826', _('Last 5 years')),
+                 )
+    days = forms.ChoiceField(label=_('Join Date'),
+                             required=False,
+                            choices=DAYS_CHOICES,)
+    corp_membership_type = forms.ChoiceField(label=_('Type'),
+                            required=False,
+                            choices= [(0, 'ALL')] + 
+                            [(t.id, t.name) for t in CorporateMembershipType.objects.filter(
+                                status=True,
+                                status_detail='active'
+                                ).order_by('name')])
+    
+    def __init__(self, *args, **kwargs):
+        super(ReportByTypeForm, self).__init__(*args, **kwargs)
+    
+        self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
+        self.fields['corp_membership_type'].widget.attrs.update({'onchange': 'this.form.submit();'})
+    
+
+
 class CorpMembershipUploadForm(forms.ModelForm):
     KEY_CHOICES = (
         ('company_name', _('Company Name')),

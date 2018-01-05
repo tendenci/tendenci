@@ -348,6 +348,10 @@ class CorpProfile(TendenciBaseModel):
             return u''
 
         return reverse('file', args=[self.logo.pk])
+    
+    def get_member_rep(self):
+        [rep] = self.reps.filter(is_member_rep=True)[:1] or [None]
+        return rep
 
 
 class CorpMembership(TendenciBaseModel):
