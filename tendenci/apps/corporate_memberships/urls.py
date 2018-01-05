@@ -107,7 +107,8 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
 
 
     # reports
-    url(r"^%s/reports/active_members/$" % urlpath, "report_active_corp_members_by_type", name="reports-active-corp-mems-by-type"),
+    url(r"^%s/reports/active_members_by_type/$" % urlpath, "report_active_corp_members_by_type", name="reports-active-corp-mems-by-type"),
+    url(r"^%s/reports/corp_members_by_status/$" % urlpath, "report_corp_members_by_status", name="reports-corp-mems-by-status"),
     url(r"^%s/reports/corp_mems_over_time/$" % urlpath, "new_over_time_report", name="reports-corp-mems-over-time"),
     url(r"^%s/reports/corp_mems_summary/$" % urlpath, "corp_mems_summary", name="reports-corp-mems-summary"),
     url(r"^%s/reports/free_passes_list/$" % urlpath, "free_passes_list", name="corp_memb.reports.free_passes_list"),

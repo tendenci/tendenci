@@ -14,7 +14,7 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>{% trans "Active Corporate Memberships by Type Report" %}</h1>
+  <h1>{% trans "Corporate Memberships by Status Report" %}</h1>
 </div>
 
 <form class="search-form form-inline pull-right" action="" method="get">
@@ -24,8 +24,8 @@
     {{ form.days }}
   </div>
   <div class="form-group">
-    <label for="id_days" class="control-label">{{ form.corp_membership_type.label }}</label>
-    {{ form.corp_membership_type }}
+    <label for="id_days" class="control-label">{{ form.status_detail.label }}</label>
+    {{ form.status_detail }}
   </div>
 </div>
 </form>
@@ -34,13 +34,12 @@
 {% autopaginate corp_mems 50 %}
 
 
-<p><a class="btn btn-default" href="{% url "reports-active-corp-mems-by-type" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}{% if request.GET.corp_membership_type %}&corp_membership_type={{ request.GET.corp_membership_type }}{% endif %}">
+<p><a class="btn btn-default" href="{% url "reports-corp-mems-by-status" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}{% if request.GET.status_detail %}&status_detail={{ request.GET.status_detail }}{% endif %}">
   {% trans 'Download CSV File' %}</a></p>
 
 <div>
   <table class="table table-tendenci-reports">
     <tr>
-      {% if active %}
       <th></th>
       <th>
         {% trans "Company Name" %}&nbsp;
@@ -50,17 +49,10 @@
         </span>
       </th>
       <th>
-        {% trans "Parent Entity" %}&nbsp;
+        {% trans "Status" %}&nbsp;
         <span class="sort-arrows">
-        <a href="?sort=parent_entity" ><i class="fa fa-arrow-up"></i></a>&nbsp;
-        <a href="?sort=-parent_entity" ><i class="fa fa-arrow-down"></i></a>
-        </span>
-      </th>
-      <th>
-        {% trans "Type" %}&nbsp;
-        <span class="sort-arrows">
-        <a href="?sort=corporate_membership_type" ><i class="fa fa-arrow-up"></i></a>&nbsp;
-        <a href="?sort=-corporate_membership_type" ><i class="fa fa-arrow-down"></i></a>
+        <a href="?sort=status_detail" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-status_detail" ><i class="fa fa-arrow-down"></i></a>
         </span>
       </th>
       <th>
@@ -71,43 +63,40 @@
         </span>
       </th>
       <th>
-        {% trans "Member Rep Name" %}
+        {% trans "Expiration" %}&nbsp;
+        <span class="sort-arrows">
+        <a href="?sort=expiration_dt" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-expiration_dt" ><i class="fa fa-arrow-down"></i></a>
+        </span>
       </th>
       <th>
-        {% trans "Member Rep Email" %}
+        {% trans "Dues Rep Name" %}
+      </th>
+      <th>
+        {% trans "Dues Rep Email" %}
       </th>
       <th>
         {% trans "Roster" %}
       </th>
-      <th>
-        {% trans "Invoice" %}
-      </th>
-      {% endif %}
     </tr>
     {% for corp_mem in corp_mems %}
     {% with corp_mem.corp_profile as corp_profile  %}
     <tr>
       <td>{{ forloop.counter }}</td>
       <td><a href="{% url 'corpmembership.view_profile' corp_profile.id %}">{{ corp_profile.name }}</a></td>
-      <td>{{ corp_profile.parent_entity.entity_name }}</td>
-      <td>{{ corp_mem.corporate_membership_type.name }}</td>
+      <td>{{ corp_mem.status_detail }}</td>
       <td>{{ corp_mem.join_dt|date:"N j, Y" }}</td>
-      {% with corp_profile.get_member_rep as member_rep  %}
-      {% if member_rep %}
-      <td><a href="{% url 'profile' member_rep.user.username %}">{% if member_rep.user.get_fullname %}{{ member_rep.user.get_fullname }}{% else %}{{ member_rep.user.username }}{% endif %}</a></td>
-      <td>{{ member_rep.user.email }}</td>
+      <td>{{ corp_mem.expiration_dt|date:"N j, Y" }}</td>
+      {% with corp_profile.get_dues_rep as dues_rep  %}
+      {% if dues_rep %}
+      <td><a href="{% url 'profile' dues_rep.user.username %}">{% if dues_rep.user.get_fullname %}{{ dues_rep.user.get_fullname }}{% else %}{{ dues_rep.user.username }}{% endif %}</a></td>
+      <td>{{ dues_rep.user.email }}</td>
       {% else %}
       <td></td>
       <td></td>
       {% endif %}
       {% endwith %}
       <td><a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corp_mem.id }}" target="_blank">{% trans "View Roster" %}</a></td>
-      <td>
-          {% if corp_mem.invoice %}
-          <a href="{% url "invoice.view" corp_mem.invoice.pk %}">
-            {{ corp_mem.invoice.pk }}</a>
-          {% endif %}
-      </td>
     </tr>
     {% endwith %}
     {% endfor %}

@@ -353,6 +353,10 @@ class CorpProfile(TendenciBaseModel):
         [rep] = self.reps.filter(is_member_rep=True)[:1] or [None]
         return rep
 
+    def get_dues_rep(self):
+        [rep] = self.reps.filter(is_dues_rep=True)[:1] or [None]
+        return rep
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)

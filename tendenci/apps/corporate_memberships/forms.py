@@ -823,7 +823,28 @@ class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
     
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['corp_membership_type'].widget.attrs.update({'onchange': 'this.form.submit();'})
+
+
+class ReportByStatusForm(FormControlWidgetMixin, forms.Form):
+    STATUS_CHOICES = (
+                 ('', 'ALL'),
+                 ('active', _('Active')),
+                 ('pending', _('Pending')),
+                 ('paid - pending approval', _('Paid - Pending Approval')),
+                 ('expired', _('Expired')),
+                 )
+    days = forms.ChoiceField(label=_('Join Date'),
+                             required=False,
+                            choices=ReportByTypeForm.DAYS_CHOICES,)
+    status_detail = forms.ChoiceField(label=_('Status'),
+                            required=False,
+                            choices=STATUS_CHOICES)
     
+    def __init__(self, *args, **kwargs):
+        super(ReportByStatusForm, self).__init__(*args, **kwargs)
+    
+        self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
+        self.fields['status_detail'].widget.attrs.update({'onchange': 'this.form.submit();'})
 
 
 class CorpMembershipUploadForm(forms.ModelForm):

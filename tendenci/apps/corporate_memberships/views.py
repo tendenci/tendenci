@@ -63,7 +63,8 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipRepForm,
                                          CreatorForm,
                                          CorpApproveForm,
-                                         ReportByTypeForm
+                                         ReportByTypeForm,
+                                         ReportByStatusForm
                                          )
 from tendenci.apps.corporate_memberships.utils import (
                                          get_corporate_membership_type_choices,
@@ -1847,7 +1848,7 @@ def report_active_corp_members_by_type(request,
     template='corporate_memberships/reports/report_by_type.html'):
     corp_mems = CorpMembership.objects.filter(
                             status=True,
-                            status_detail='active').order_by('corp_profile__name')
+                            status_detail='active')
     form = ReportByTypeForm(request.GET)
     if form.is_valid():
         days = int(form.cleaned_data.get('days') or 0)
@@ -1929,6 +1930,93 @@ def report_active_corp_members_by_type(request,
     return render(request, template,
                   {'corp_mems': corp_mems,
                    'active': True,
+                   'days': days,
+                   'form': form,
+                   })
+
+
+@is_enabled('corporate_memberships')
+@staff_member_required
+def report_corp_members_by_status(request,
+    template='corporate_memberships/reports/report_by_status.html'):
+    corp_mems = CorpMembership.objects.filter(
+                            status=True,).exclude(
+                            status_detail='archive')
+    form = ReportByStatusForm(request.GET)
+    if form.is_valid():
+        days = int(form.cleaned_data.get('days') or 0)
+        status_detail = form.cleaned_data.get('status_detail')
+    else:
+        days = 0
+        status_detail = ''
+
+    if days:
+        compare_dt = datetime.now() - timedelta(days=days)
+        corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
+    if status_detail:
+        corp_mems = corp_mems.filter(status_detail=status_detail)
+
+    allowed_sort_fields = {'corp_profile': 'corp_profile__name',
+                            'status_detail': 'status_detail',
+                            'join_dt': 'join_dt',
+                            'expiration_dt': 'expiration_dt',}
+    
+    sort = request.GET.get('sort', 'corp_profile__name')
+    decending = False
+    if sort[0] == '-':
+        sort = sort[1:]
+        decending = True
+    
+    if sort not in allowed_sort_fields:
+        sort = 'corp_profile'
+     
+    if decending:
+        order_by_field = '-' + allowed_sort_fields[sort]
+    else:
+        order_by_field =  allowed_sort_fields[sort]
+    corp_mems = corp_mems.order_by(order_by_field)
+    
+    EventLog.objects.log()
+    
+    # process csv download
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'company name',
+            'status',
+            'join',
+            'expiration',
+            'dues rep name',
+            'dues rep email',]
+
+        table_data = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            dues_rep = corp_profile.get_dues_rep()
+            if dues_rep:
+                dues_rep_name = dues_rep.user.get_full_name()
+                dues_rep_email = dues_rep.user.email
+            else:
+                dues_rep_name = ''
+                dues_rep_email = ''
+            table_data.append([
+                corp_profile.name,
+                corp_mem.status_detail,
+                corp_mem.join_dt,
+                corp_mem.expiration_dt,
+                dues_rep_name,
+                dues_rep_email,
+            ])
+
+        return render_csv(
+            'corporate-memberships-by-status.csv',
+            table_header,
+            table_data,
+        )
+
+    return render(request, template,
+                  {'corp_mems': corp_mems,
                    'days': days,
                    'form': form,
                    })
