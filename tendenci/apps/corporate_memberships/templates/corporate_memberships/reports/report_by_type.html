@@ -94,7 +94,7 @@
       <td>{{ corp_mem.join_dt|date:"N j, Y" }}</td>
       {% with corp_profile.get_member_rep as member_rep  %}
       {% if member_rep %}
-      <td><a href="{% url 'profile' member_rep.user.username %}">{% if member_rep.user.get_fullname %}{{ member_rep.user.get_fullname }}{% else %}{{ member_rep.user.username }}{% endif %}</a></td>
+      <td><a href="{% url 'profile' member_rep.user.username %}">{% if member_rep.user.get_full_name %}{{ member_rep.user.get_full_name }}{% else %}{{ member_rep.user.username }}{% endif %}</a></td>
       <td>{{ member_rep.user.email }}</td>
       {% else %}
       <td></td>

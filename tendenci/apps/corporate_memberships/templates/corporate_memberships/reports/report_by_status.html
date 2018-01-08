@@ -89,7 +89,7 @@
       <td>{{ corp_mem.expiration_dt|date:"N j, Y" }}</td>
       {% with corp_profile.get_dues_rep as dues_rep  %}
       {% if dues_rep %}
-      <td><a href="{% url 'profile' dues_rep.user.username %}">{% if dues_rep.user.get_fullname %}{{ dues_rep.user.get_fullname }}{% else %}{{ dues_rep.user.username }}{% endif %}</a></td>
+      <td><a href="{% url 'profile' dues_rep.user.username %}">{% if dues_rep.user.get_full_name %}{{ dues_rep.user.get_full_name }}{% else %}{{ dues_rep.user.username }}{% endif %}</a></td>
       <td>{{ dues_rep.user.email }}</td>
       {% else %}
       <td></td>
