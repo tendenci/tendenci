@@ -30,7 +30,7 @@ from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, assign_files_perms, get_query_filters, has_view_perm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key
+from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_image_from_path
 from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
@@ -216,9 +216,17 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     if not photo.image or not default_storage.exists(photo.image.name):
         raise Http404
-
-    # gets resized image from cache or rebuild
-    image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
+    
+    # At this point, we didn't get the image from the cache.
+    # Check if this particular thumbnail already exists on file system.
+    # If it's there, no need to rebuild it from the original image!
+    file_name = photo.image_filename()
+    file_path = 'cached%s%s' % (request.path, file_name)
+    if default_storage.exists(file_path):
+        image = get_image_from_path(os.path.join(settings.MEDIA_ROOT, file_path))
+    else:
+        # gets resized image from cache or rebuild
+        image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
 
     # if image not rendered; quit
     if not image:
@@ -229,10 +237,8 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     image.convert('RGB').save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():
-        file_name = photo.image_filename()
-        file_path = 'cached%s%s' % (request.path, file_name)
-        default_storage.delete(file_path)
-        default_storage.save(file_path, ContentFile(response.content))
+        if not default_storage.exists(file_path):
+            default_storage.save(file_path, ContentFile(response.content))
         full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
         cache.set(cache_key, full_file_path)
         cache_group_key = "photos_cache_set.%s" % photo.pk
