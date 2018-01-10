@@ -1,7 +1,7 @@
 from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from django.db.models.loading import get_models
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -80,7 +80,7 @@ class Command(BaseCommand):
 
         # loop through all the tables and populate
         # the entity field only if it's null.
-        models = get_models()
+        models = apps.get_models()
         # exclude legacy tables
         tables_excluded = ['corporate_memberships_corporatemembership',
                            'corporate_memberships_corporatemembershiparchive']
