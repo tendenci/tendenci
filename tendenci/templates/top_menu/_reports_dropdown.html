@@ -100,7 +100,13 @@
                                                     <a href="{% url "admin:corporate_memberships_corpmembershiprep_changelist" %}"><span class="nav-label">{% trans "Corporate Membership Representatives" %}</span></a>
                                                 </li>
                                                 <li class="content-item">
-                                                    <a href="{% url "corpmembership.cap_status" %}"><span class="nav-label">{% trans "Memberhip Cap Status" %}</span></a>
+                                                    <a href="{% url "corpmembership.cap_status" %}"><span class="nav-label">{% trans "Memberhips Cap Status" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.import" %}"><span class="nav-label">{% trans "Corporate Membership Import" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.export" %}"><span class="nav-label">{% trans "Corporate Membership Export" %}</span></a>
                                                 </li>
                                             </ul>
                                         </div>
