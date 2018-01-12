@@ -56,6 +56,10 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         return ''
 
 
+def get_image_from_path(path):
+    return Image.open(path)
+
+
 def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
     Builds a resized image based off of the original image.
