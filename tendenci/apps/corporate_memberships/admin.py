@@ -93,7 +93,9 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'id', 'application_form_link', 'status_detail')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail',
+                    'dues_reps_group_with_link', 'member_reps_group_with_link')
+    list_display_links = ('name',)
     search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'authentication_method',
@@ -132,6 +134,26 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
         qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
         # filter out soft-deleted items
         return qs.filter(status=True)
+
+    def dues_reps_group_with_link(self, instance):
+        if instance.dues_reps_group:
+            return '<a href="%s">%s</a>' % (
+                  reverse('group.detail',
+                          args=[instance.dues_reps_group.slug]),
+                instance.dues_reps_group.name)
+        return ''
+    dues_reps_group_with_link.allow_tags = True
+    dues_reps_group_with_link.short_description = _('Dues Reps Group')
+
+    def member_reps_group_with_link(self, instance):
+        if instance.member_reps_group:
+            return '<a href="%s">%s</a>' % (
+                  reverse('group.detail',
+                          args=[instance.member_reps_group.slug]),
+                instance.member_reps_group.name)
+        return ''
+    member_reps_group_with_link.allow_tags = True
+    member_reps_group_with_link.short_description = _('Member Reps Group')
 
 
 class StatusDetailFilter(SimpleListFilter):
