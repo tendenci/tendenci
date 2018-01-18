@@ -44,18 +44,18 @@ class GoogleCMapsURL(Node):
         else:
             origin = None
         
-        url = '{base_url}?center={lat},{lng}&size={size}&markers={markers}|{lat},{lng}'.format(
+        url = '{base_url}?center={lat}%2C{lng}&size={size}&markers={markers}%7C{lat}%2C{lng}'.format(
                                                     base_url=GOOGLE_SMAPS_BASE_URL,
                                                     lat=location.latitude,
                                                     lng=location.longitude,
                                                     size=self.size,
-                                                    markers=self.markers)
+                                                    markers=self.markers.replace(':', '%3A').replace('|', '%7C'))
         if self.zoom:
             url = url + '&zoom=' + self.zoom
             
         if origin:
-            url = url + '&markers={markers_origin}|{origin_lat},{origin_lng}'.format(
-                            markers_origin=self.markers_origin,
+            url = url + '&markers={markers_origin}%7C{origin_lat}%2C{origin_lng}'.format(
+                            markers_origin=self.markers_origin.replace(':', '%3A').replace('|', '%7C'),
                             origin_lat=origin['lat'],
                             origin_lng=origin['lng'])
 
