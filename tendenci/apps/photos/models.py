@@ -848,7 +848,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         Get location via lat and lng.
         """
         if lat and lng:
-            url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
+            url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
             r = requests.get(url)
             if r.status_code == 200:
                 data = simplejson.loads(r.content)

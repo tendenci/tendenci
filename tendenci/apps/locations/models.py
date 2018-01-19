@@ -66,7 +66,7 @@ class Location(TendenciBaseModel):
 
     def distance_api(self, **kwargs):
         import simplejson, urllib
-        DISTANCE_BASE_URL = 'http://maps.googleapis.com/maps/api/distancematrix/json?'
+        DISTANCE_BASE_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
         kwargs.update({
             'origins':kwargs.get('origin',''),
             'destinations':self.get_address(),

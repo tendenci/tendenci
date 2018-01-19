@@ -51,6 +51,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "",
+        "description": "To get your API key, log in to your Google API console: https://console.developers.google.com/apis.",
+        "data_type": "string",
+        "update_dt": "2018-01-16 10:10:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "google_maps_api_key",
+        "value": "",
+        "label": "Google Maps API Key",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "locations",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "locations",
         "description": "The root url for the locations app. Use letters and dashes only.",
         "data_type": "string",

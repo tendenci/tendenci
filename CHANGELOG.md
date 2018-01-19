@@ -1,3 +1,17 @@
+### 7.4.2 [2018-01-19]
+
+* Added a code of conduct.
+* Included company name to the user list display on group view.
+* Added the option to roder by release date for videos.
+* Added theme editor link to the admin section of top menu.
+* Fixed the global search to prevent memberships from being searched by unauthorized users.
+* Changed tendenci logo for emails.
+* Fixed the invoice error due to the blank string feeded to the "permalink" decorator in get_discount_url.
+* Fixed the release date initial for article add.
+* Avoid rebuilding thumbnails if they exist to improve the photos performance.
+* Added the option to specify an API key and URL signing secret for Google maps.
+* More bugfixes
+
 ### 7.4.1 [2017-12-04]
 
 * Membership auto renew (Works with Stripe and Authorize.net)
