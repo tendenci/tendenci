@@ -270,7 +270,7 @@
     <div class="group info">
 
         <h2>{% trans 'Groups' %}
-        {% if request.user = user_this or admin %}
+        {% if request.user == user_this or admin %}
         <a title="{% trans 'Join or leave group' %}" href="{% url "profile.edit_groups" user_this.username %}" class="glyph gears">S</a>
         {% endif %}
         </h2>
