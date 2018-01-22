@@ -176,6 +176,24 @@ class StatusDetailFilter(SimpleListFilter):
         return queryset
 
 
+def approve_selected(modeladmin, request, queryset):
+    """
+    Approves selected corp memberships.
+    """
+    # process only pending corp. memberships
+    corp_memberships = queryset.filter(
+        status=True, status_detail__in=['pending', 'paid - pending approval'])
+
+    for corp_membership in corp_memberships:
+        if corp_membership.renewal:
+            corp_membership.approve_renewal(request)
+        else:
+            corp_membership.approve_join(request,
+                                **{'create_new': True,
+                              'assign_to_user': None})
+
+approve_selected.short_description = u'Approve selected'
+
 class CorpMembershipAdmin(TendenciBaseModelAdmin):
     list_display = ['profile',
                     'statusdetail',
@@ -190,6 +208,8 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     'invoice_url']
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
+    
+    actions = [approve_selected,]
 
     fieldsets = (
         (None, {'fields': ()}),
