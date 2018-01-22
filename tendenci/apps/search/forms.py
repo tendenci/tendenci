@@ -234,7 +234,7 @@ class ModelSearchForm(SearchForm):
                     registered_apps_names.append(app['model']._meta.model_name)
         else:
             for app in registered_apps:
-                if app['verbose_name'].lower() == 'user':
+                if app['verbose_name'].lower() in ['user', 'membership']:
                     try:
                         models_index = registered_apps_models.index(app['model'])
                         registered_apps_models.pop(models_index)

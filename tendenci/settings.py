@@ -513,6 +513,11 @@ SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
 SOCIAL_AUTH_CREATE_USERS = True
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
+# -------------------------------------------------------------------------- #
+# Google Static Maps URL signing secret used to generate a digital signature
+# ------------------------------------------------------------------------- #
+GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
+
 # ------------------------------------ #
 # CAMPAIGN MONITOR URL
 # ------------------------------------ #

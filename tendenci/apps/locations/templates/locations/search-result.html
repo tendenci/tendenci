@@ -12,12 +12,12 @@
         {% endif %}
         <div class="image">
             {% if origin %}
-                <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:B|{{ location.latitude }},{{ location.longitude }}&markers=color:green|label:A|{{ origin.lat }},{{ origin.lng }}&sensor=false" alt="Google Maps view" title="Google Maps view">
+                <a title="{% trans 'Google Directions' %}" href="https://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
+                <img src="{% google_cmaps_url location origin size=200x200 markers=color:red|label:B markers_origin=color:green|label:A %}" alt="Google Maps view" title="Google Maps view">
                 <br />Directions</a>
             {% else %}
-                <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?q={{ location.get_address }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false" alt="Google Maps view" title="Google Maps view">
+                <a title="{% trans 'Google Directions' %}" href="https://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=8 %}" alt="Google Maps view" title="Google Maps view">
                 <br />Directions</a>
             {% endif %}
         </div>

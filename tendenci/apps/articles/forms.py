@@ -115,8 +115,7 @@ class ArticleForm(TendenciBaseForm):
         mce_attrs={'storme_app_label': Article._meta.app_label,
         'storme_model': Article._meta.model_name.lower()}))
 
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'),
-        initial=datetime.now())
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'),)
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Article.CONTRIBUTOR_AUTHOR,
@@ -224,6 +223,8 @@ class ArticleForm(TendenciBaseForm):
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
+        
+        self.fields['release_dt'].initial = datetime.now()
 
     def clean_group(self):
         group_id = self.cleaned_data['group']

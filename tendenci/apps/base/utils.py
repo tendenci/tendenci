@@ -9,6 +9,9 @@ import codecs
 import cStringIO
 import csv
 from urlparse import urlparse
+import hashlib
+import hmac
+import base64
 import urllib2
 import socket
 from PIL import Image
@@ -66,6 +69,43 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
+
+def google_cmap_sign_url(url):
+    """ Signs a URL and returns the URL with digital signature for Google static maps API.
+    
+    For the detailed guides to generating a digital signature, go to:
+    https://developers.google.com/maps/documentation/static-maps/get-api-key#digital-signature
+    """
+    if not url:
+        raise Exception('A url is required.')
+
+    signing_secret = settings.GOOGLE_SMAPS_URL_SIGNING_SECRET
+    if not signing_secret:
+        return url
+    
+    url_parts = urlparse(url)
+    if not url_parts.query:
+        return url
+    
+    # don't sign if api key is not provided
+    if 'key' not in dict(map(lambda x:x.split('='), url_parts.query.split('&'))):
+        return url
+    
+    # strip off the domain portion of the request, leaving only the path and the query
+    url_parts_to_sign = url_parts.path + "?" + url_parts.query
+    
+    # retrieve the URL signing secret by decoding it - it is encoded in a modified Base64
+    decoded_signing_secret = base64.urlsafe_b64decode(signing_secret)
+    
+    # sign it  using the HMAC-SHA1 algorithm
+    signature = hmac.new(decoded_signing_secret, url_parts_to_sign, hashlib.sha1)
+    
+    # encode the resulting binary signature using the modified Base64 for URLs 
+    # to convert this signature into something that can be passed within a URL
+    encoded_signature = base64.urlsafe_b64encode(signature.digest())
+    
+    # append digital signature
+    return url + "&signature=" + encoded_signature
 
 
 class LazyEncoder(DjangoJSONEncoder):
@@ -911,9 +951,9 @@ def add_tendenci_footer(email_content, content_type='html'):
     <div>
     <div style="margin:5px auto;">
     <a href="https://www.tendenci.com" style="text-decoration: none;">
-    <img src="https://www.tendenci.com/media/tendenci-open.png" width="100" height="35" alt="tendenci logo" />
+    <img src="https://www.tendenci.com/media/tendenci-os-ams.jpg" width="100" height="29" alt="tendenci logo" />
     </a>
-    </div>'''.format(_('This Association is Powered by'), _('Tendenci&reg; &ndash; The Open Source AMS'))
+    </div>'''.format(_('This Association is Powered by'), _('Tendenci &ndash; The Open Source AMS'))
     if email_content.find('</body>') != -1:
         return email_content.replace("</body>", footer + "\n</body>")
     return email_content + footer

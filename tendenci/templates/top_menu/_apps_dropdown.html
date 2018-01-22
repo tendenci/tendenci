@@ -70,6 +70,12 @@
                                                     <li class="content-item">
 					                                    <a href="/explorer/"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Database Export' %}</span></a>
 					                                </li>
+					                                
+					                                <li class="content-item">
+                                                        <a href="{% url 'theme_editor.editor' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme Editor' %}</span>
+                                                        </a>
+                                                    </li>
                                             {% endif %}
                                             </ul>
                                         </div>
@@ -404,7 +410,7 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     <li class="content-item">
                                                         <a href="{% url 'theme_editor.editor' %}"
-                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme' %}</span>
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme Editor' %}</span>
                                                         </a>
                                                     </li>
                                                     <li class="content-item">
