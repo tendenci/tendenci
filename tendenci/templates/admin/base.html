@@ -80,30 +80,7 @@
                         <li class="divider-vertical"></li>
                         {% language_selector %}
                         {% endblock languages %}
-                        {% block logs %}
-                        <li class="dropdown" id="recent-actions-module">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Recent Actions' %} <b class="caret"></b></a>
-                            {% load log %}
-                            {% get_admin_log 10 as admin_log for_user user %}
-                            <ul class="dropdown-menu">
-                                {% for entry in admin_log %}
-                                <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
-                                    <a href="{% if entry.is_deletion or not entry.get_admin_url %}#{% else %}{{ entry.get_admin_url }}{% endif %}">
-                                        <i class="icon-{% if entry.is_addition %}plus{% endif %}{% if entry.is_change %}edit{% endif %}{% if entry.is_deletion %}remove{% endif %}"></i>
-                                        {{ entry.object_repr }}
-                                        {% if entry.content_type %}
-                                        <span class="mini quiet">({% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %})</span>
-                                        {% else %}
-                                        <span class="mini quiet">({% trans 'Unknown content' %})</span>
-                                        {% endif %}
-                                    </a>
-                                </li>
-                                {% empty %}
-                                <li class="disabled"><a href="#">{% trans 'None available' %}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        {% endblock %}
+                        
                         {% block userlinks %}
                         {% url 'django-admindocs-docroot' as docsroot %}
                         {% if docsroot %}

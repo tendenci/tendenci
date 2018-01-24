@@ -49,7 +49,7 @@
 
 {% block content %}
 <div class="row">
-    <div id="content-main" class="col-sm-12">
+    <div id="content-main" class="col-sm-8">
 
         <div class="tabbable">
             {% for app in app_list %}
@@ -87,6 +87,40 @@
                 <p>{% trans "You don't have permission to edit anything." %}</p>
             {% endfor %}
         </div>
+    </div>
+    
+    <div id="content-related" class="col-sm-4">
+	    <div class="module" id="recent-actions-module">
+	       <div class="panel panel-info">
+	        <div class="panel-heading">{% trans 'Recent Actions' %}</div>
+	        <div class="panel-body">
+	            <h4>{% trans 'My Actions' %}</h4>
+	            {% load log %}
+	            {% get_admin_log 10 as admin_log for_user user %}
+	            {% if not admin_log %}
+	            <p>{% trans 'None available' %}</p>
+	            {% else %}
+	            <div class="actionlist">
+	            {% for entry in admin_log %}
+	            <div class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+	                {% if entry.is_deletion or not entry.get_admin_url %}
+	                    {{ entry.object_repr }}
+	                {% else %}
+	                     <a href="{{ entry.get_admin_url }}"><span class="glyphicon glyphicon-edit btn-xs"></span> {{ entry.object_repr }}</a>
+	                {% endif %}
+	                &nbsp;&nbsp;
+	                {% if entry.content_type %}
+	                    <small class="text-muted">{% filter capfirst %}{{ entry.content_type }}{% endfilter %}</small>
+	                {% else %}
+	                    <small class="text-muted">{% trans 'Unknown content' %}</small>
+	                {% endif %}
+	            </div>
+	            {% endfor %}
+	            </div>
+	            {% endif %}
+	        </div>
+	    </div>
+	    </div>
     </div>
 </div>
 {% endblock %}
