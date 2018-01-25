@@ -9,15 +9,15 @@ a:active,
 a:focus {
     outline: none;
 }
-.dashboard h3{
-	font-size: 21px;
+.panel {
+    margin-bottom: 5px;
+}
+.panel-body, .panel-heading {
+    padding: 0px 5px;
 }
 .h1, .h2, .h3, h1, h2, h3 {
     margin-top: 10px;
     margin-bottom: 5px;
-}
-.table {
-    margin-bottom: 15px;
 }
 .sidebar-nav {
     padding: 9px 0;
