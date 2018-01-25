@@ -29,7 +29,7 @@
                 {% if app.name|check_enabled %}
                 <div class="panel panel-info">
   					<div id="{% render_app_label app %}" class="panel-heading app-name">
-                     <strong><a href="{{ app.app_url }}">{% render_app_name app %}</a></strong>
+                     <strong><a href="{{ app.app_url }}">{{ forloop.counter }}. {% render_app_name app %}</a></strong>
                     {% render_app_description app %}
 					</div>
 					<div class="panel-body">
