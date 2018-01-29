@@ -10,5 +10,5 @@ class TemplateAdmin(admin.ModelAdmin):
 class CampaignAdmin(admin.ModelAdmin):
     form = CampaignForm
 
-admin.site.register(Template, TemplateAdmin)
+# admin.site.register(Template, TemplateAdmin)
 # admin.site.register(Campaign, CampaignAdmin)
