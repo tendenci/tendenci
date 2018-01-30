@@ -236,7 +236,7 @@ def search(request, template_name="profiles/search.html"):
 
     show_member_option = mts
 
-    form = ProfileSearchForm(request.GET, mts=mts)
+    form = ProfileSearchForm(request.GET, mts=mts, user=request.user)
     if form.is_valid():
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
@@ -246,6 +246,9 @@ def search(request, template_name="profiles/search.html"):
         search_method = form.cleaned_data['search_method']
         membership_type = form.cleaned_data.get('membership_type', None)
         member_only = form.cleaned_data.get('member_only', False)
+        group = form.cleaned_data.get('group', False)
+        if group:
+            group = int(group)
     else:
         first_name = None
         last_name = None
@@ -255,6 +258,7 @@ def search(request, template_name="profiles/search.html"):
         search_method = None
         membership_type = None
         member_only = False
+        group = False
 
     profiles = Profile.objects.filter(Q(status=True))
     if not request.user.profile.is_superuser:
@@ -288,6 +292,11 @@ def search(request, template_name="profiles/search.html"):
             if membership_view_perms != 'public':
                 # show non-members only
                 profiles = profiles.filter(member_number='')
+                
+    # group
+    if group:
+        profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
+                                    group__id=group).values_list('member', flat=True))
 
     profiles = profiles.distinct()
 
