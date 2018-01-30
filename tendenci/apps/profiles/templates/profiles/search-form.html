@@ -24,6 +24,7 @@
 {% if show_member_option %}
 <div class="form-field">{{ search_form.membership_type.label }}: {{ search_form.membership_type }}</div>
 {% endif %}
+<div class="form-field">{{ search_form.group.label }}: {{ search_form.group }}</div>
 <div class="form-field">
     {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
     <input type="submit" name="search" value="{% trans 'Search' %}" />

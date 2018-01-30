@@ -20,6 +20,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import update_user
 from tendenci.apps.base.utils import get_languages_with_local_name
+from tendenci.apps.perms.utils import get_query_filters
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -61,6 +62,7 @@ class ProfileSearchForm(forms.Form):
                                      widget=forms.CheckboxInput(),
                                      initial=True, required=False)
     membership_type = forms.IntegerField(required=False)
+    group = forms.IntegerField(required=False)
     search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
                                         required=False)
     search_text = forms.CharField(max_length=100, required=False)
@@ -69,6 +71,7 @@ class ProfileSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
+        self.user = kwargs.pop('user')
         super(ProfileSearchForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
         self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
@@ -82,6 +85,16 @@ class ProfileSearchForm(forms.Form):
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
+            
+        # group choices
+        filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+        group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
+                            status=True, status_detail="active"
+                             ).filter(filters).distinct().order_by('name'
+                            ).values_list('pk', 'name'))
+        self.fields['group'].widget = forms.widgets.Select(
+                                    choices=group_choices)
+        
 
 
 class ProfileForm(TendenciBaseForm):
