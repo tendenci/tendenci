@@ -1,18 +1,61 @@
 from datetime import datetime, date, time
 import time as ttime
 import csv
+import cStringIO as StringIO
+from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
+from django.template.loader import get_template
+from django.template import RequestContext
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 
+def invoice_pdf(request, invoice):
+    obj = invoice.get_object()
+    if obj:
+        obj_name = obj._meta.verbose_name
+    else:
+        obj_name = ''
+
+    payment_method = ""
+    if invoice.balance <= 0:
+        if invoice.payment_set:
+            payment_set = invoice.payment_set.order_by('-id')
+            if payment_set:
+                payment = payment_set[0]
+                payment_method = payment.method
+    tmp_total = 0
+    if invoice.variance and invoice.variance != 0:
+        tmp_total = invoice.subtotal
+        if invoice.tax:
+            tmp_total += invoice.tax
+        if invoice.shipping:
+            tmp_total += invoice.shipping
+        if invoice.shipping_surcharge:
+            tmp_total += invoice.shipping_surcharge
+        if invoice.box_and_packing:
+            tmp_total += invoice.box_and_packing
+    
+    template_name="invoices/pdf.html"
+    template = get_template(template_name)
+    html  = template.render(RequestContext(request, {
+                           'invoice': invoice,
+                           'obj_name': obj_name,
+                           'payment_method': payment_method,
+                           'tmp_total': tmp_total,
+                           'pdf_version': True,         
+                                     }))
+    result = StringIO.StringIO()
+    pisa.pisaDocument(StringIO.StringIO(html.encode("utf-8")), result,
+                      path=get_setting('site', 'global', 'siteurl'))
+    return result
 
 def process_invoice_export(start_dt=None, end_dt=None,
                            identifier=u'', user_id=0):

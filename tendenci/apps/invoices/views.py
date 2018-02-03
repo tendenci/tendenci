@@ -29,6 +29,7 @@ from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
+from tendenci.apps.invoices.utils import invoice_pdf
 
 
 @is_enabled('invoices')
@@ -454,6 +455,18 @@ def detail(request, id, template_name="invoices/detail.html"):
         'total_debit': total_debit,
         'total_credit': total_credit},
         context_instance=RequestContext(request))
+
+
+@is_enabled('invoices')
+def download_pdf(request, id):
+    invoice = get_object_or_404(Invoice, pk=id)
+    if not has_perm(request.user, 'invoices.change_invoice'):
+        raise Http403
+    
+    result = invoice_pdf(request, invoice)
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice_{}.pdf"'.format(invoice.id)
+    return response
 
 
 @staff_member_required
