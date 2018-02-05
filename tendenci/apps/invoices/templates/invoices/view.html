@@ -79,6 +79,13 @@
       <li><a href="{% url "invoice.download" invoice.id %}">{% trans 'Download PDF' %}</a></li>
     </ul>
   </div>
+ {% if request.user.is_superuser %}
+  <div class="invoice-options">
+    <ul>
+      <li><a href="{% url "invoice.email" invoice.id %}">{% trans 'Email Invoice' %}</a></li>
+    </ul>
+  </div>
+  {% endif %}
 
   {% if request.user.is_superuser or can_edit_invoice %}
   <div class="invoice-admin-notes">

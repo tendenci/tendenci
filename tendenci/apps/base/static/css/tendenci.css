@@ -328,9 +328,10 @@ div.invoice-admin-notes {
   border-radius: 4px;
   margin-left: 5px;
 }
-.form-horizontal .control-label {
+/* commenting it out ... it contradicts to line 224.  */
+/*.form-horizontal .control-label {
   text-align: left !important;
-}
+}*/
 
 /* INPUT NO WIDTH */
 #id_group,
