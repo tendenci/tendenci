@@ -566,8 +566,12 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     form = FileSearchMinForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data.get('q', '')
-    filters = get_query_filters(request.user, 'files.view_file')
-    files = File.objects.filter(filters).distinct().order_by('-create_dt')
+    #filters = get_query_filters(request.user, 'files.view_file')
+    files = File.objects.all()
+    if not request.user.is_superuser:
+        #  non-admin: show only those images uploaded by this user
+        files = files.filter(Q(creator=request.user) | Q(owner=request.user))
+    files = files.order_by('-create_dt')
     type = request.GET.get('type', '')
     if type == 'image':
         files = files.filter(f_type='image')
