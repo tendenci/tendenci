@@ -34,14 +34,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "false",
+        "default_value": "true",
         "description": "Event minimal add form is enabled or not.",
         "data_type": "boolean",
         "update_dt": "2010-08-12 17:19:11",
         "input_type": "select",
         "client_editable": true,
         "name": "minimaladdform",
-        "value": "false",
+        "value": "true",
         "label": "Minimal Event Add Enabled",
         "input_value": "true,false",
         "parent_id": 0,
