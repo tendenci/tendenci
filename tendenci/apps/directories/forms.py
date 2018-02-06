@@ -384,6 +384,8 @@ class DirectoryForm(TendenciBaseForm):
                     'object_id': directory.pk,
                     'is_public': directory.allow_anonymous_view,
                     'tags': directory.tags,
+                    'creator': self.user,
+                    'owner': self.user,
                 })
 
             directory.logo_file = file_object
