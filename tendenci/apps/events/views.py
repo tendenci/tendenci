@@ -1314,8 +1314,8 @@ def add(request, year=None, month=None, day=None,
                 event.save(log=False)
 
                 if form_event.cleaned_data['is_recurring_event']:
-                    init_date = datetime.strptime(form_event.cleaned_data['start_dt'], '%Y-%m-%d %H:%M')
-                    init_end = datetime.strptime(form_event.cleaned_data['end_dt'], '%Y-%m-%d %H:%M')
+                    init_date = event.start_dt
+                    init_end = event.end_dt
                     event_length = init_end - init_date
                     freq = int(form_event.cleaned_data['frequency'])
                     r_type = int(form_event.cleaned_data['repeat_type'])
