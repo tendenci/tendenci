@@ -32,6 +32,7 @@ from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf
+from tendenci.apps.emails.models import Email
 
 
 @is_enabled('invoices')
@@ -474,7 +475,9 @@ def download_pdf(request, id):
 @staff_member_required
 def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
                   template_name='invoices/email_invoice.html'):
-    from tendenci.apps.emails.models import Email
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     invoice = get_object_or_404(Invoice, pk=invoice_id)
 
     if request.method == "POST":
