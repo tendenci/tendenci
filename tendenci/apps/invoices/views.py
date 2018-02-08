@@ -17,6 +17,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
+from django.template.loader import get_template
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -28,7 +30,8 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
+from tendenci.apps.invoices.utils import invoice_pdf
 
 
 @is_enabled('invoices')
@@ -455,6 +458,64 @@ def detail(request, id, template_name="invoices/detail.html"):
         'total_credit': total_credit},
         context_instance=RequestContext(request))
 
+
+@is_enabled('invoices')
+def download_pdf(request, id):
+    invoice = get_object_or_404(Invoice, pk=id)
+    if not has_perm(request.user, 'invoices.change_invoice'):
+        raise Http403
+    
+    result = invoice_pdf(request, invoice)
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice_{}.pdf"'.format(invoice.id)
+    return response
+
+
+@staff_member_required
+def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
+                  template_name='invoices/email_invoice.html'):
+    from tendenci.apps.emails.models import Email
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+
+    if request.method == "POST":
+        email = Email()
+        form = form_class(request.POST, instance=email)
+
+        if form.is_valid():
+            email = form.save(request.user)
+            email.sender_display = request.user.get_full_name()
+            email.reply_to = request.user.email
+            email.recipient = form.cleaned_data['recipient']
+            email.content_type = "html"
+            email.recipient_cc = form.cleaned_data['cc']
+
+            attachment = form.cleaned_data['attachment']
+            kwargs = {}
+            if attachment:
+                result = invoice_pdf(request, invoice)
+                kwargs['attachments'] = [("invoice_{}.pdf".format(invoice.id),
+                                      result.getvalue(),
+                                      'application/pdf')]
+            email.send(**kwargs)
+
+            EventLog.objects.log(instance=email)
+            msg_string = 'Successfully sent email invoice to {}.'.format(email.recipient)
+            messages.add_message(request, messages.SUCCESS, msg_string)
+
+            return HttpResponseRedirect(reverse('invoice.view', args=([invoice_id])))
+
+    else:
+        template = get_template("invoices/email_invoice_template.html")
+        body_initial  = template.render(RequestContext(request, {
+                                       'invoice': invoice,}))
+        form = form_class(initial={'subject': 'Invoice for {}'.format(invoice.title),
+                                   'recipient': invoice.bill_to_email,
+                                   'body': body_initial})
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'form': form
+        },context_instance=RequestContext(request))
 
 @staff_member_required
 def report_top_spenders(request, template_name="reports/top_spenders.html"):
