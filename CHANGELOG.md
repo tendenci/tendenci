@@ -1,3 +1,13 @@
+### 7.4.3 [2018-02-09]
+
+* Updated admin index page to have smaller font and numbered list
+* Removed campaign monitor from admin backend (it was disabled)
+* Made slug field unique for the staff model
+* Added the search by group functionality to the profiles search
+* Added functionality to email invoices for admin
+* Fixed the issue about the total balance of the registrants export caculated on spreadsheet is inaccureate
+* More fixes
+
 ### 7.4.2 [2018-01-19]
 
 * Added a code of conduct.
