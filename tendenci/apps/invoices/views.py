@@ -485,7 +485,7 @@ def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
         form = form_class(request.POST, instance=email)
 
         if form.is_valid():
-            email = form.save(request.user)
+            email = form.save(commit=False)
             email.sender_display = request.user.get_full_name()
             email.reply_to = request.user.email
             email.recipient = form.cleaned_data['recipient']
