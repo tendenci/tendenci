@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, url, include
 from tendenci.apps.site_settings.utils import get_setting
 
+from tendenci.apps.profiles.views import search as profiles_search
+
 urlpath = get_setting('module', 'memberships', 'url')
 if not urlpath:
     urlpath = "memberships"
@@ -10,7 +12,7 @@ urlpatterns = patterns(
 
     # memberships
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
-    url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
+#     url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
     url(r"^%s/(?P<id>\d+)/$" % urlpath, "membership_details", name="membership.details"),
     url(r"^%s/delete/(?P<id>\d+)/$" % urlpath, "delete", name="membership.delete"),
     url(r"^%s/expire/(?P<id>\d+)/$" % urlpath, "expire", name="membership.expire"),
@@ -151,3 +153,5 @@ urlpatterns = patterns(
      url(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, "application_detail_default", name="membership.application_detail_default"),
 
 )
+
+urlpatterns += [url(r'^%s/search/$' % urlpath, profiles_search, {'memberships_search': True }, name="membership.search",),]

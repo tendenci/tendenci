@@ -1314,8 +1314,8 @@ def add(request, year=None, month=None, day=None,
                 event.save(log=False)
 
                 if form_event.cleaned_data['is_recurring_event']:
-                    init_date = datetime.strptime(form_event.cleaned_data['start_dt'], '%Y-%m-%d %H:%M')
-                    init_end = datetime.strptime(form_event.cleaned_data['end_dt'], '%Y-%m-%d %H:%M')
+                    init_date = event.start_dt
+                    init_end = event.end_dt
                     event_length = init_end - init_date
                     freq = int(form_event.cleaned_data['frequency'])
                     r_type = int(form_event.cleaned_data['repeat_type'])
@@ -3843,6 +3843,8 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
         registrant_lookups = registrant_mappings.values()
         registrant_lookups.append('custom_reg_form_entry')
+        
+        CustomRegistrantTuple = namedtuple('CustomRegistrant', registrant_mappings.values())
 
         # loop through all custom registration forms
         for form_id in form_ids:
@@ -3865,9 +3867,17 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
             # get the registrants for this form
             custom_registrants = registrants.filter(custom_reg_form_entry__form=custom_reg_form)
-            custom_registrants = custom_registrants.values_list(*registrant_lookups)
+            custom_registrants = custom_registrants.values(*registrant_lookups)
             for registrant in custom_registrants:
-                entry_id = registrant[-1]
+                entry_id = registrant.pop('custom_reg_form_entry')
+
+                if not registrant['is_primary']:
+                    registrant['registration__invoice__total'] = 0
+                    registrant['registration__invoice__balance'] = 0
+                
+                # keep the order of the values in the registrant dict   
+                registrant_tuple = CustomRegistrantTuple(**registrant)    
+                
                 sql = """
                         SELECT field_id, value
                         FROM events_customregfieldentry
@@ -3881,7 +3891,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 custom_values_list = []
                 for field_id in field_ids:
                     custom_values_list.append(values_dict.get(field_id, ''))
-                custom_values_list.extend(list(registrant[:-1]))
+                custom_values_list.extend(registrant_tuple)
 
                 rows_list.append(custom_values_list)
             rows_list.append(['\n'])

@@ -823,8 +823,14 @@ class EventForm(TendenciBaseForm):
 
         # Reset time if All Day is selected
         if event.all_day:
-            event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
-            event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
+            if self.cleaned_data.get('start_event_date'):
+                event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
+            else:
+                event.start_dt = datetime.combine(event.start_dt, datetime.min.time())
+            if self.cleaned_data.get('end_event_date'):
+                event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
+            else:
+                event.end_dt = datetime.combine(event.end_dt, datetime.max.time())
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None

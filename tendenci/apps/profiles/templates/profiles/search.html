@@ -62,7 +62,7 @@
 
 {% block content %}
     <div class="t">
-        <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "People Search" %}{% else %}{% trans "People List" %}{% endif %}</h1>
+        <h1>{% if memberships_search  %}{% trans "Members Search" %}{% else %}{% trans "People Search" %}{% endif %}</h1>
 
         {{ MODULE_USERS_USERSEARCHSTATEMENT }}
 

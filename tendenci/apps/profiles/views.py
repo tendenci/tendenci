@@ -182,7 +182,7 @@ def index(request, username='', template_name="profiles/index.html"):
         }, context_instance=RequestContext(request))
 
 
-def search(request, template_name="profiles/search.html"):
+def search(request, memberships_search=False, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
@@ -261,6 +261,9 @@ def search(request, template_name="profiles/search.html"):
         group = False
 
     profiles = Profile.objects.filter(Q(status=True))
+    if memberships_search:
+        # this is memberships search, so only show those with member number
+        profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
         if request.user.is_authenticated() and request.user.profile.is_member:
@@ -340,7 +343,8 @@ def search(request, template_name="profiles/search.html"):
             'profiles': profiles,
             'user_this': None,
             'search_form': form,
-            'show_member_option': show_member_option},
+            'show_member_option': show_member_option,
+            'memberships_search': memberships_search},
         context_instance=RequestContext(request))
 
 

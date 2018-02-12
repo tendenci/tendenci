@@ -954,21 +954,21 @@ def create_registrant_from_form(*args, **kwargs):
             entry.set_group_subscribers(user)
         registrant.initialize_fields()
     else:
-        registrant.salutation = form.cleaned_data.get('salutation', '')
-        registrant.first_name = form.cleaned_data.get('first_name', '')
-        registrant.last_name = form.cleaned_data.get('last_name', '')
-        registrant.mail_name = form.cleaned_data.get('mail_name', '')
-        registrant.email = form.cleaned_data.get('email', '')
-        registrant.position_title = form.cleaned_data.get('position_title', '')
-        registrant.company_name = form.cleaned_data.get('company_name', '')
-        registrant.phone = form.cleaned_data.get('phone', '')
-        registrant.address = form.cleaned_data.get('address', '')
-        registrant.city = form.cleaned_data.get('city', '')
-        registrant.state = form.cleaned_data.get('state', '')
-        registrant.zip = form.cleaned_data.get('zip_code', '')
-        registrant.country = form.cleaned_data.get('country', '')
-        registrant.meal_option = form.cleaned_data.get('meal_option', '')
-        registrant.comments = form.cleaned_data.get('comments', '')
+        registrant.salutation = form.cleaned_data.get('salutation', '') or ''
+        registrant.first_name = form.cleaned_data.get('first_name', '') or ''
+        registrant.last_name = form.cleaned_data.get('last_name', '') or ''
+        registrant.mail_name = form.cleaned_data.get('mail_name', '') or ''
+        registrant.email = form.cleaned_data.get('email', '') or ''
+        registrant.position_title = form.cleaned_data.get('position_title', '') or ''
+        registrant.company_name = form.cleaned_data.get('company_name', '') or ''
+        registrant.phone = form.cleaned_data.get('phone', '') or ''
+        registrant.address = form.cleaned_data.get('address', '') or ''
+        registrant.city = form.cleaned_data.get('city', '') or ''
+        registrant.state = form.cleaned_data.get('state', '') or ''
+        registrant.zip = form.cleaned_data.get('zip_code', '') or ''
+        registrant.country = form.cleaned_data.get('country', '') or ''
+        registrant.meal_option = form.cleaned_data.get('meal_option', '') or ''
+        registrant.comments = form.cleaned_data.get('comments', '') or ''
 
         if registrant.email:
             users = User.objects.filter(email=registrant.email)

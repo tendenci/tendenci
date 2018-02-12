@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<form class="profile-search-form" action="{% url "profile.search" %}" method="get">
+<form class="profile-search-form" action="." method="get">
 
 <div class="float-left">
     <div class="form-field">
@@ -14,10 +14,12 @@
       <div class="form-field" style="margin-left: 3em;">
         {{ search_form.email.label }}: {{ search_form.email }}
     </div>
+    {% if not memberships_search %}
     {% if show_member_option %}
      <div class="form-field" style="margin-left: 3em;">
     {{ search_form.member_only }} <label for="id_member_only" style="display: inline;">{{ search_form.member_only.label }}</label>
     </div>
+    {% endif %}
     {% endif %}
 </div>
 <div class="clear-left"></div>
