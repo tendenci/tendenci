@@ -51,6 +51,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "news",
+        "description": "The root url for the news app. Use letters and dashes only.",
+        "data_type": "string",
+        "update_dt": "2018-02-12 13:30:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "url",
+        "value": "news",
+        "label": "Root URL",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "news",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "true",
         "description": "Show Article Tab defines whether or not to display the Article tab in pages related to the News module",
         "data_type": "boolean",
