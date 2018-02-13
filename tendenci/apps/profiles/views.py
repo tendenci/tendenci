@@ -186,6 +186,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
+    allow_member_search = get_setting('module', 'users', 'allowmembersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if not request.user.profile.is_superuser:
@@ -201,7 +202,8 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             if request.user.profile.is_member:  # if member
                 if membership_view_perms == 'private':
                     if not allow_user_search:
-                        raise Http403
+                        if not allow_member_search:
+                            raise Http403
             else:  # if just user
                 if not allow_user_search:
                     raise Http403
@@ -267,7 +269,10 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
         if request.user.is_authenticated() and request.user.profile.is_member:
-            filters = get_query_filters(request.user, 'profiles.view_profile')
+            if allow_member_search:
+                filters = (Q(status=True) & Q(status_detail='active'))
+            else:
+                filters = get_query_filters(request.user, 'profiles.view_profile')
 
             if membership_view_perms == 'private':
                 # show non-members only
@@ -287,7 +292,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
                                                 ).values_list('user_id'))
                 profiles = profiles.filter(filters)
 
-            if not allow_user_search:
+            if not allow_user_search and not allow_member_search:
                 # exclude non-members
                 profiles = profiles.exclude(member_number='')
 
