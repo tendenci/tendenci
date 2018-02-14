@@ -577,9 +577,9 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('id', 'name', 'application_form_link', 'status', 'status_detail')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail')
     list_display_links = ('name',)
-    search_fields = ('name', 'status', 'status_detail')
+    search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
                            'confirmation_text', 'notes', 'allow_multiple_membership',
@@ -596,7 +596,6 @@ class MembershipAppAdmin(admin.ModelAdmin):
             'group_perms',
         )}),
         (_('Status'), {'fields': (
-            'status',
             'status_detail',
         )}),
     )
