@@ -361,7 +361,8 @@ class MembershipAppForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(
             ('draft', _('Draft')),
-            ('published', _('Published'))
+            ('published', _('Published')),
+            ('inactive', _('Inactive'))
         ),
         initial='published'
     )
