@@ -8,14 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.entities.models import Entity
 
 
-OBJECT_TYPE_DICT = dict((ct.id, '%s: %s' % (ct.app_label, ct.model))
-                        for ct in ContentType.objects.all().order_by('app_label', 'model'))
 DEFAULT_OBJ_TYPES = ('registration', 'membershipdefault',
                      'membershipset', 'makepayment',
                      'corpmembership', 'job',
                      'donation')
-ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
-
 def base_label(report, field):
     """
     Basic label
@@ -97,11 +93,14 @@ def date_label(report, field):
 
 
 def obj_type_format(value, instance=None):
-    return OBJECT_TYPE_DICT.get(value)
+    object_types = dict((ct.id, '%s: %s' % (ct.app_label, ct.model))
+                        for ct in ContentType.objects.all().order_by('app_label', 'model'))
+    return object_types.get(value)
 
 
 def entity_format(value):
-    return '%s (Entity ID: %s)' % (ENTITY_DICT.get(value), value)
+    entities = dict((e.id, e.entity_name) for e in Entity.objects.all())
+    return '%s (Entity ID: %s)' % (entities.get(value), value)
 
 
 def date_from_datetime(value):
