@@ -106,7 +106,8 @@ class CorpMembershipImportProcessor(object):
         """
         self.cmemb_data = cmemb_data
         if 'id' not in self.cmemb_data:
-            del self.corp_membership_fields['id']
+            if 'id' in self.corp_membership_fields:
+                del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
         self.field_names = cmemb_data.keys()  # csv field names
@@ -310,7 +311,7 @@ class CorpMembershipImportProcessor(object):
     def bind_members_to_corp_membership(self, corp_memb):
         corp_profile = corp_memb.corp_profile
         company_name = corp_profile.name
-        user_ids = Profile.objects.filter(company=company_name
+        user_ids = Profile.objects.filter(company__iexact=company_name
                                     ).values_list('user__id', flat=True)
         if user_ids:
             memberships = MembershipDefault.objects.filter(
@@ -318,9 +319,10 @@ class CorpMembershipImportProcessor(object):
                                     ).filter(status=True
                                     ).exclude(status_detail='archive')
             for membership in memberships:
-                if not membership.corp_profile:
+                if not membership.corp_profile_id:
                     membership.corp_profile_id = corp_profile.id
                     membership.corporate_membership_id = corp_memb.id
+                    membership.expire_dt = corp_memb.expiration_dt
                     membership.save()
 
     def is_active(self, corp_memb):
@@ -369,11 +371,21 @@ class CorpMembershipImportProcessor(object):
                                         assign_to_fields[field_name])
                         if value is None:
                             setattr(instance, field_name, value)
+        
+        # for fields not in spreadsheet, assign default value                   
+        for field_name in assign_to_fields:
+            if field_name not in self.field_names:
+                value = self.get_default_value(assign_to_fields[field_name])
+                if value is not None:
+                    setattr(instance, field_name, value)
 
     def get_default_value(self, field):
         # if allows null or has default, return None
-        if field.null or field.has_default():
+        if field.null:
             return None
+        
+        if field.has_default():
+            return field.default
 
         field_type = field.get_internal_type()
 
