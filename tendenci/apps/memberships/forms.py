@@ -361,7 +361,8 @@ class MembershipAppForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(
             ('draft', _('Draft')),
-            ('published', _('Published'))
+            ('published', _('Published')),
+            ('inactive', _('Inactive'))
         ),
         initial='published'
     )
@@ -394,7 +395,6 @@ class MembershipAppForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
             'discount_eligible',
             'allow_multiple_membership',

@@ -118,6 +118,23 @@
         "store": true,
         "updated_by": ""
     },
+     {
+        "default_value": "false",
+        "description": "Member Searching User is a true/false value defining whether a member can search registered site users.",
+        "data_type": "boolean",
+        "update_dt": "2010-08-12 17:19:12",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "allowmembersearch",
+        "value": "false",
+        "label": "Member Searching User",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
+    },
     {
         "default_value": "true",
         "description": "Hide Remember Me defines whether or not to even display the Remember Me checkbox on login pages.",

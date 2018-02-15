@@ -2238,8 +2238,12 @@ class Notice(models.Model):
         inv = membership.get_invoice()
         if inv:
             invoice_link = inv.get_absolute_url()
+            donation_amount = inv.get_donation_amount()
+            total_amount = inv.total
         else:
             invoice_link = ''
+            donation_amount = ''
+            total_amount = ''
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2248,8 +2252,8 @@ class Notice(models.Model):
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
             'membership_price': membership.get_price(),
-            'donation_amount': inv.get_donation_amount(),
-            'total_amount': inv.total,
+            'donation_amount': donation_amount,
+            'total_amount': total_amount,
             'payment_method': payment_method_name,
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
