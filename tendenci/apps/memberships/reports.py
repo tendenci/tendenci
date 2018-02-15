@@ -10,6 +10,7 @@ from django.utils.translation import ugettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
 from tendenci.libs.model_report.utils import count_column, us_date_format, yesno_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
+MEMBERSHIPTYPE_DICT = None
 
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):
@@ -60,8 +61,10 @@ def id_format(value, instance):
 
 
 def membership_type_format(value, instance=None):
-    membership_types = dict((m.id, m.name) for m in MembershipType.objects.all())
-    return membership_types.get(value, value)
+    global MEMBERSHIPTYPE_DICT
+    if not MEMBERSHIPTYPE_DICT:
+        MEMBERSHIPTYPE_DICT = dict((m.id, m.name) for m in MembershipType.objects.all())
+    return MEMBERSHIPTYPE_DICT.get(value, value)
 
 class MembershipReport(ReportAdmin):
     # choose a title for your report for h1, title tag and report list
