@@ -972,8 +972,10 @@ def membership_default_add(request, slug='', membership_id=None,
                                    'is_admin': request.user.profile.is_superuser})
 
     else:  # regular membership
-
-        app = get_object_or_404(MembershipApp, slug=slug)
+        if not request.user.profile.is_superuser:
+            app = get_object_or_404(MembershipApp, slug=slug, status_detail__in=['active', 'published'])
+        else:
+            app = get_object_or_404(MembershipApp, slug=slug)
 
         if not has_perm(request.user, 'memberships.view_app', app):
             raise Http403

@@ -910,6 +910,13 @@ class MembershipDefault(TendenciBaseModel):
             self.user.is_active = True
             self.user.save()
             send_welcome_email(self.user)
+            
+            # add new member to the default group
+            default_group_name = get_setting('module', 'users', 'defaultusergroup')
+            [group] = Group.objects.filter(Q(name=default_group_name)
+                                           | Q(label=default_group_name))[:1] or [None]
+            if group:
+                group.add_user(self.user)
 
         return self
 
