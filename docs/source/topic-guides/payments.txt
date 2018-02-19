@@ -23,6 +23,9 @@ Setting up the payment gateway is covered in help file `Setting Up Online Paymen
 .. _`Setting Up Online Payment and your Merchant Provider on a Tendenci Site`: https://www.tendenci.com/help-files/configure-online-payments-merchant-provider-tendenci/
 .. _`a separate page`: https://www.tendenci.com/help-files/how-enable-memberships-auto-renew-stripe/
 
+.. TIP::
+  If you create a recurring payment but your system is incorrectly configured you will need to delete the recurring payment and create a new entry.
+
 
 Testing
 --------
