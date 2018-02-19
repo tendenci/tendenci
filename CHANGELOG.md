@@ -12,7 +12,7 @@
 
 * Added a code of conduct.
 * Included company name to the user list display on group view.
-* Added the option to roder by release date for videos.
+* Added the option to order by release date for videos.
 * Added theme editor link to the admin section of top menu.
 * Fixed the global search to prevent memberships from being searched by unauthorized users.
 * Changed tendenci logo for emails.
