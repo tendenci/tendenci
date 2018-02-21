@@ -487,6 +487,18 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_IMAGE_SIZE = (172,80)
 CAPTCHA_OUTPUT_FORMAT = u'%(image)s <br />%(hidden_field)s %(text_field)s'
 
+# --------------------------------------#
+# Google reCAPTCHA SETTINGS
+# --------------------------------------#
+# Google reCAPTCHA site key
+NORECAPTCHA_SITE_KEY = ''
+# Google reCAPTCHA secret key
+NORECAPTCHA_SECRET_KEY = ''
+# Google reCAPTCHA  verify url
+NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
+
+
 # ------------------------------------ #
 # Django Messaging
 # ------------------------------------ #

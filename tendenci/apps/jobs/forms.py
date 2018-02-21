@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.categories.models import Category
@@ -18,6 +18,7 @@ from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.jobs.models import Category as JobCategory
 from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 request_duration_defaults = {
@@ -58,7 +59,7 @@ class JobForm(TendenciBaseForm):
         )
     )
 
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
 
     start_dt = SplitDateTimeField(
         required=False,
