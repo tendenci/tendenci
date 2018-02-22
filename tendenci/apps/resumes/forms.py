@@ -6,12 +6,13 @@ from os.path import splitext
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.resumes.models import Resume
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.apps.base.forms import CustomCatpchaField
 
 ALLOWED_FILE_EXT = (
     '.doc',
@@ -46,7 +47,7 @@ class ResumeForm(TendenciBaseForm):
         required=False
     )
 
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
 
     contact_email = EmailVerificationField(label=_("Contact email"), required=False)
     contact_country = CountrySelectField(label=_("Contact country"), required=False)

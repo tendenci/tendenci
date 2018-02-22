@@ -4,12 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.help_files.models import Request, HelpFile, Topic
 from tendenci.libs.tinymce.widgets import TinyMCE
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.base.forms import CustomCatpchaField
 
 class RequestForm(forms.ModelForm):
-    captcha = CaptchaField()
+    captcha = CustomCatpchaField()
     class Meta:
         model = Request
         fields = "__all__"

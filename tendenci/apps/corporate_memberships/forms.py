@@ -16,7 +16,7 @@ from django.template.defaultfilters import filesizeformat
 from django.contrib.contenttypes.models import ContentType
 from form_utils.forms import BetterModelForm
 
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField
 from tendenci.libs.tinymce.widgets import TinyMCE
 
@@ -45,6 +45,7 @@ from tendenci.apps.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.base.forms import CustomCatpchaField
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -905,7 +906,7 @@ class CreatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
-        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+        self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
         for k in self.fields.keys():
             self.fields[k].widget.attrs['class'] = 'form-control'
 

@@ -14,7 +14,7 @@ from django.utils.http import int_to_base36
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from captcha.fields import CaptchaField, CaptchaTextInput
+from captcha.fields import CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
@@ -22,6 +22,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -52,7 +53,7 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10', 'class': 'form-control'}), required=False)
     country = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     zipcode = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    captcha = CaptchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
+    captcha = CustomCatpchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     allow_same_email = None
     similar_email_found = False

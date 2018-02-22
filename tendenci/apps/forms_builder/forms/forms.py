@@ -14,7 +14,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
 from tendenci.apps.base.fields import EmailVerificationField, PriceField
@@ -27,6 +27,7 @@ from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Fiel
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import CountrySelectField
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -177,7 +178,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_pricing_fields(self, self.form)
 
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
-            self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+            self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
 

@@ -5,12 +5,13 @@ from django_countries import countries as COUNTRIES
 
 from tendenci.apps.make_payments.models import MakePayment
 from tendenci.apps.base.fields import EmailVerificationField, PriceField
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 class MakePaymentForm(forms.ModelForm):
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
     # TODO: Make check-paid an admin only option
     payment_amount = PriceField(max_digits=10, decimal_places=2)
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', _('Make Online Payment')),)), initial='cc',)

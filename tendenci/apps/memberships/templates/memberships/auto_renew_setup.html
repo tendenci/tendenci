@@ -74,7 +74,7 @@
 	{% endif %}
 	
 	{% else %}
-	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% trans "Update Payment Method" %}</a>
+	<a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% if rp and rp.customer_profile_id %}{% trans "Update Payment Method" %}{% else %}{% trans "Add Payment Method" %}{% endif %}</a>
 	{% endif %}
 	</div>
 	{% endif %}

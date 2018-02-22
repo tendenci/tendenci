@@ -1,0 +1,37 @@
+Recurring Payments
+==================
+
+Tendenci supports recurring payments when using `Stripe`_ or `Authorize.net`_ as the payment gateway.
+
+.. _`Stripe`: https://stripe.com
+.. _`Authorize.net`: https://www.authorize.net
+
+The steps for configuring recurring payments are covered on other pages, but there are some things to note before you can proceed.
+
+Tendenci 7.4.1 or greater is required. See the `upgrade documentation`_ for more details on updating.
+
+.. _`upgrade documentation`: http://tendenci.readthedocs.io/en/latest/upgrade/point-update.html
+
+.. NOTE::
+  If you want to know how to configure your tendenci.com payments see https://www.tendenci.com/help-files/recurring-payment-help/
+
+
+Setting up
+----------
+Setting up the payment gateway is covered in help file `Setting Up Online Payment and your Merchant Provider on a Tendenci Site`_ and auto renew with Stripe is detailed on `a separate page`_.
+
+.. _`Setting Up Online Payment and your Merchant Provider on a Tendenci Site`: https://www.tendenci.com/help-files/configure-online-payments-merchant-provider-tendenci/
+.. _`a separate page`: https://www.tendenci.com/help-files/how-enable-memberships-auto-renew-stripe/
+
+.. TIP::
+  If you create a recurring payment but your system is incorrectly configured you will need to delete the recurring payment and create a new entry.
+
+
+Testing
+--------
+
+Stripe and Authorize.net manage their test systems differently. For Stripe, the procedure is to use a special `test only access key`_ while Authorize.net use `different API endpoints`_. Be sure you adjust your settings appropriately for the endpoint you have chosen!
+
+.. _`test only access key`: https://stripe.com/docs/testing
+.. _`different API endpoints`: https://developer.authorize.net/hello_world/testing_guide/
+

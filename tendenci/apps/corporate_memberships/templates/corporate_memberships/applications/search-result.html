@@ -98,7 +98,7 @@
                         </li>
                     {% endif %}
 
-                    {% if corporate_memberhsip.can_renew %}
+                    {% if corporate_membership.can_renew %}
                         {% if allow_edit %}
                             <li>
                                 <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Renew" %}</a>
