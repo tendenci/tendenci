@@ -6,7 +6,6 @@ find_template = engine.find_template
 find_template_loader = engine.find_template_loader
 get_template_from_string = engine.from_string
 select_template = engine.select_template
-make_origin = engine.make_origin
 from django.http import HttpResponse
 from django.conf import settings
 from tendenci.apps.theme.utils import get_theme_template, get_theme_root
@@ -36,7 +35,7 @@ def find_default_template(name, dirs=None):
     for loader in non_theme_source_loaders[-1:]:
         try:
             source, display_name = loader(name, dirs)
-            return (source, make_origin(display_name, loader, name, dirs))
+            return source
         except TemplateDoesNotExist:
             pass
     raise TemplateDoesNotExist(name)
@@ -47,11 +46,11 @@ def get_default_template(template_name):
     Returns a compiled Template object for the given template name,
     handling template inheritance recursively.
     """
-    template, origin = find_default_template(template_name)
+    template = find_default_template(template_name)
 
     if not hasattr(template, 'render'):
         # template needs to be compiled
-        template = get_template_from_string(template, origin, template_name)
+        template = get_template_from_string(template, template.origin, template_name)
     return template
 
 

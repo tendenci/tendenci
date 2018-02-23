@@ -81,9 +81,8 @@ class DictField(models.TextField):
     """
     A dictionary field
     """
-    __metaclass__ = models.SubfieldBase
 
-    def to_python(self, value):
+    def from_db_value(self, value):
         if not value:
             return {}
 

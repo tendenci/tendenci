@@ -12,7 +12,7 @@ class PybbMiddleware(object):
         if request.user.is_authenticated():
             try:
                 # Here we try to load profile, but can get error
-                # if user created during syncdb but profile model
+                # if user created during migrate but profile model
                 # under south control. (Like pybb.Profile).
                 profile = util.get_pybb_profile(request.user)
             except ObjectDoesNotExist:

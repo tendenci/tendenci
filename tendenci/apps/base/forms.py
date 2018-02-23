@@ -63,7 +63,7 @@ class SlugField(CharField):
         super(SlugField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
-        value = self.to_python(value)
+        value = self.from_db_value(value)
         value = value.replace('//','')
         value = value.strip('/')
 

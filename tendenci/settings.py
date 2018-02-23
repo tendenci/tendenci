@@ -323,10 +323,10 @@ LANG_INFO = dict(django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
 django.conf.locale.LANG_INFO = LANG_INFO
 
 # Languages using BiDi (right-to-left) layout
-LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + tuple(EXTRA_LANG_INFO.keys())
-LANGUAGES = sorted(global_settings.LANGUAGES + tuple([
+LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + EXTRA_LANG_INFO.keys()
+LANGUAGES = sorted(global_settings.LANGUAGES + [
     (k, v['name']) for k, v in EXTRA_LANG_INFO.items()
-    ]), key=lambda x: x[0])
+    ], key=lambda x: x[0])
 
 #--------------------------------------------------
 # DEBUG TOOLBAR
