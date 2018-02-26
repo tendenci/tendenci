@@ -372,8 +372,6 @@ class PublicTicketForm(CustomFieldMixin, forms.Form):
         help_text=_('You can attach a file such as a document or screenshot to this ticket.'),
         max_length=1000,
         )
-    
-    captcha = CustomCatpchaField(label=_('Type the code below'))
 
     def __init__(self, *args, **kwargs):
         """
@@ -388,6 +386,8 @@ class PublicTicketForm(CustomFieldMixin, forms.Form):
                     }
 
             self.customfield_to_field(field, instanceargs)
+        # add the captcha field here because it has to be the last field  
+        self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
     def save(self):
         """
