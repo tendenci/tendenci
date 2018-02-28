@@ -1,3 +1,13 @@
+### 7.4.4 [2018-02-28]
+
+* Integrated Google reCaptcha. To turn on Google reCaptcha, visit the help file: [How to Google reCaptcha on Tendenci Site](https://www.tendenci.com/help-files/how-use-google-recaptcha-tendenci-site/)
+* Added a members search page.
+* Added the setting "Member Searching User" to define whether a member can search registered site users.
+* Fixed some issues in corp memberships import
+* Added new members to the default group specified by the setting "defaultusergroup".
+* Corrected some labeling issues in news.
+* More fixes
+
 ### 7.4.3 [2018-02-09]
 
 * Updated admin index page to have smaller font and numbered list
