@@ -221,6 +221,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             'industry',
             'company_size',
             'promotion_code',
+            'app',
         )}
     )
 

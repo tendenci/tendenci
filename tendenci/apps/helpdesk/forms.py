@@ -29,6 +29,7 @@ except ImportError:
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp, Attachment, IgnoreEmail, TicketCC, CustomField, TicketCustomFieldValue, TicketDependency
 from tendenci.apps.helpdesk import settings as helpdesk_settings
+from tendenci.apps.base.forms import CustomCatpchaField
 
 class CustomFieldMixin(object):
     """
@@ -385,6 +386,8 @@ class PublicTicketForm(CustomFieldMixin, forms.Form):
                     }
 
             self.customfield_to_field(field, instanceargs)
+        # add the captcha field here because it has to be the last field  
+        self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
     def save(self):
         """

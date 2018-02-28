@@ -108,7 +108,7 @@ class PasswordForm(forms.Form):
 
 def CustomCatpchaField(**kwargs):
     if settings.NORECAPTCHA_SITE_KEY and settings.NORECAPTCHA_SECRET_KEY:
-        return NoReCaptchaField(label='')
+        return NoReCaptchaField(label='', gtag_attrs={'data-size':'normal'})
     return CaptchaField(**kwargs)
 
 
