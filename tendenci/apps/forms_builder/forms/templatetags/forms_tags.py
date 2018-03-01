@@ -106,10 +106,18 @@ def embed_form(context, pk, *args, **kwargs):
     else:
         template_name = 'forms/embed_form_new.html'
 
+    [form] = Form.objects.filter(pk=pk)[:1] or [None]
+    if not form:
+        return ""
+    
+    if hasattr(form, 'object'):
+        form_obj = form.object
+    else:
+        form_obj = form
+        
     try:
-        form = Form.objects.get(pk=pk)
-        context['embed_form'] = form.object
-        context['embed_form_for_form'] = FormForForm(form.object, AnonymousUser())
+        context['embed_form'] = form_obj
+        context['embed_form_for_form'] = FormForForm(form_obj, AnonymousUser())
         if 'captcha' in context['embed_form_for_form'].fields and 'gsize' in kwargs:
             if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
                 context['embed_form_for_form'].fields['captcha'].widget.gtag_attrs.update(
@@ -118,20 +126,7 @@ def embed_form(context, pk, *args, **kwargs):
         output = '<div class="embed-form">%s</div>' % template.render(context)
         return output
     except:
-        try:
-            form = Form.objects.get(pk=pk)
-            context['embed_form'] = form
-            context['embed_form_for_form'] = FormForForm(form, AnonymousUser())
-            if 'captcha' in context['embed_form_for_form'].fields and 'gsize' in kwargs:
-                if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
-                    context['embed_form_for_form'].fields['captcha'].widget.gtag_attrs.update(
-                                    {'data-size': kwargs['gsize']})
-            template = get_template(template_name)
-            output = '<div class="embed-form">%s</div>' % template.render(context)
-            return output
-        except:
-            raise
-            return ""
+        return ""
 
 
 @register.filter
