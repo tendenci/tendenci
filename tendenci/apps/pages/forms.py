@@ -133,9 +133,7 @@ class PageForm(TendenciBaseForm):
 
     tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">%s</a>' % _('Open All Tags list in a new window')))
 
-    template_choices = [('default.html',_('Default'))]
-    template_choices += get_template_list()
-    template = forms.ChoiceField(choices=template_choices)
+    template = forms.ChoiceField(choices=[])
 
     class Meta:
         model = Page
@@ -185,6 +183,26 @@ class PageForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+    def __init__(self, *args, **kwargs):
+        super(PageForm, self).__init__(*args, **kwargs)
+        if self.instance.header_image:
+            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
+        else:
+            self.fields.pop('remove_photo')
+
+        if self.instance.pk:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
+
+        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+
+        if not self.user.profile.is_superuser:
+            if 'syndicate' in self.fields: self.fields.pop('syndicate')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+        self.fields['template'].choices = [('default.html',_('Default'))] + get_template_list()
 
     def clean_syndicate(self):
         """
@@ -240,24 +258,6 @@ class PageForm(TendenciBaseForm):
                                             'header_image': filesizeformat(header_image.size)})
 
         return header_image
-
-    def __init__(self, *args, **kwargs):
-        super(PageForm, self).__init__(*args, **kwargs)
-        if self.instance.header_image:
-            self.fields['header_image'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> %s: <a target="_blank" href="/files/%s/">%s</a>' % (_('Remove current image'), self.instance.header_image.pk, basename(self.instance.header_image.file.name))
-        else:
-            self.fields.pop('remove_photo')
-
-        if self.instance.pk:
-            self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-        else:
-            self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-
-        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
-
-        if not self.user.profile.is_superuser:
-            if 'syndicate' in self.fields: self.fields.pop('syndicate')
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
     def save(self, *args, **kwargs):
         page = super(PageForm, self).save(*args, **kwargs)
