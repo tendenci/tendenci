@@ -178,27 +178,29 @@ def allow_edit_corp(parser, token):
     return AllowEditCorpNode(corp_memb, user, context_var=context_var)
 
 
-class ListCorpMembershipNode(ListNode):
+class ListCorpMembershipNode(Node):
     model = CorpMembership
 
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
         self.kwargs = kwargs
-
-        if not self.model:
-            raise AttributeError(_('Model attribute must be set'))
-        if not issubclass(self.model, models.Model):
-            raise AttributeError(_('Model attribute must derive from Model'))
-        if not hasattr(self.model.objects, 'search'):
-            raise AttributeError(_('Model.objects does not have a search method'))
+        
+    def custom_model_filter(self, items, user):
+        """
+        Filters out articles that aren't yet released.
+        """
+        if 'corporate_membership_type' in self.kwargs:
+            try:
+                m_type = int(self.kwargs['corporate_membership_type'])
+                return items.filter(corporate_membership_type_id=m_type)
+            except:
+                return items
 
     def render(self, context):
-        tags = u''
         query = u''
         user = AnonymousUser()
-        limit = 3
+        limit = None
         order = '-join_dt'
-
         randomize = False
 
         allow_anonymous_search = get_setting('module',
@@ -230,11 +232,9 @@ class ListCorpMembershipNode(ListNode):
         if 'limit' in self.kwargs:
             try:
                 limit = Variable(self.kwargs['limit'])
-                limit = limit.resolve(context)
+                limit = int(limit.resolve(context))
             except:
-                limit = self.kwargs['limit']
-
-        limit = int(limit)
+                limit = None
 
         if 'query' in self.kwargs:
             try:
@@ -260,6 +260,8 @@ class ListCorpMembershipNode(ListNode):
         else:
             if not allow_anonymous_search:
                 items = items.none()
+                
+        items = self.custom_model_filter(items, user)
 
         objects = []
 
@@ -268,9 +270,12 @@ class ListCorpMembershipNode(ListNode):
             items = items.order_by(order)
 
         if randomize:
-            objects = [item for item in random.sample(items, items.count())][:limit]
+            objects = [item for item in random.sample(items, items.count())]
         else:
-            objects = [item for item in items[:limit]]
+            objects = items
+            
+        if limit:
+            objects = objects[:limit]
 
         context[self.context_var] = objects
         return ""
@@ -302,7 +307,7 @@ def list_corporate_memberships(parser, token):
 
     Example::
 
-        {% list_corporate_memberships as corpmembership_list limit=5 %}
+        {% list_corporate_memberships as corpmembership_list limit=5 corporate_membership_type=1 %}
         {% for corpmembership in corpmembership_list %}
             {{ corpmembership.corp_profile.name }}
         {% endfor %}
