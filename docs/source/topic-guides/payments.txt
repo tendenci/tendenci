@@ -26,6 +26,22 @@ Setting up the payment gateway is covered in help file `Setting Up Online Paymen
 .. TIP::
   If you create a recurring payment but your system is incorrectly configured you will need to delete the recurring payment and create a new entry.
 
+Updating Payment Methods
+------------------------
+
+The point of recurring payments is to allow members to opt in when performing payments, but this requires one more step be performed.
+
+Depending on if there is already an 'online' Payment Method listed at https://example.com/admin/payments/paymentmethod/ ('online' means using your merchant account) you will either need to add a new entry, or potentially rename the existing 'Is online' payment entry (for example a rename might be required if you changed your merchant from PayPal to Stripe). Membership Applications will update to the new names automatically.
+
+.. WARNING::
+    Do not delete your existing 'Is online' method and create a new 'Is online' method of payment. Deleting the existing method will remove all memberships that were paid using that method.
+
+Help on changing your Payment Methods can be done using `help for the memberships app`_ already available on the Tendenci site, including `a video for a more visual guide`_ if you prefer.
+
+.. _`help for the memberships app`: https://www.tendenci.com/help-files/t5-memberships/ 
+.. _`a video for a more visual guide`: https://www.tendenci.com/help-files/create-and-customize-membership-applications/
+
+
 
 Testing
 --------
