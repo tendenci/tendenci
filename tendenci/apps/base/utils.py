@@ -30,7 +30,7 @@ from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
@@ -943,20 +943,14 @@ def get_latest_version():
 
 def add_tendenci_footer(email_content, content_type='html'):
     if content_type == 'text':
-        footer = _("This Association is Powered by Tendenci - The Open Source AMS https://www.tendenci.com")
+        footer = render_to_string('email_footer.txt')
         return email_content + '\n\n' + footer
-    # Sorry but have to put html code here instead of in a template
-    footer = '''<br /><div style="text-align:center; font-size:90%;">
-    {0} <a href="https://www.tendenci.com" style="text-decoration: none;">{1}</a>
-    <div>
-    <div style="margin:5px auto;">
-    <a href="https://www.tendenci.com" style="text-decoration: none;">
-    <img src="https://www.tendenci.com/media/tendenci-os-ams.jpg" width="100" height="29" alt="tendenci logo" />
-    </a>
-    </div>'''.format(_('This Association is Powered by'), _('Tendenci &ndash; The Open Source AMS'))
-    if email_content.find('</body>') != -1:
-        return email_content.replace("</body>", footer + "\n</body>")
-    return email_content + footer
+    else:
+        footer = render_to_string('email_footer.html')
+        if email_content.find('</body>') != -1:
+            return email_content.replace("</body>", footer + "\n</body>")
+        else:
+            return email_content + footer
 
 
 def correct_filename(filename):
