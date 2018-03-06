@@ -1580,6 +1580,9 @@ class RegistrationForm(forms.Form):
                 payment_methods = reg_conf.payment_method.exclude(
                     machine_name='credit card').order_by('pk')
 
+            if not self.user or self.user.is_anonymous() or not self.user.is_superuser:
+                payment_methods = payment_methods.exclude(admin_only=True)
+
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
 
