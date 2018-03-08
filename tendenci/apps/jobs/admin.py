@@ -1,3 +1,4 @@
+import copy
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
@@ -86,8 +87,8 @@ admin.site.register(Job, JobAdmin)
 class JobPricingAdmin(admin.ModelAdmin):
     list_display = [
         'id',
-        'duration',
         'title',
+        'duration',
         'regular_price',
         'premium_price',
         'regular_price_member',
@@ -100,7 +101,7 @@ class JobPricingAdmin(admin.ModelAdmin):
     list_filter = ['status', 'include_tax']
     search_fields = ['title']
     ordering = ['-update_dt']
-    fields = list_display
+    fields = copy.copy(list_display).remove('id')
 
     form = JobPricingForm
 

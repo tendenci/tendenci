@@ -15,10 +15,10 @@ def migrate_customized_directories_templates():
     ============================================
 
     Replace:
-    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
 
     With:
-    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
     <script type="text/javascript">{% include 'directories/include/get_subcategories.js' %} </script>
 
 
@@ -128,9 +128,9 @@ def migrate_customized_directories_templates():
                 content = f.read()
 
                 # add js link
-                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js">'),
+                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js">'),
                                         re.escape('</script>'))
-                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>',
+                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>',
                                                       '<script type="text/javascript">\n{% include \'directories/include/get_subcategories.js\' %} \n</script>'),
                                  content)
             with open(file_path, 'w') as f:

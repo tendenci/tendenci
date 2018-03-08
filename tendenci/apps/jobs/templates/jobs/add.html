@@ -46,9 +46,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 
-    <script type="text/javascript" src="/admin/jsi18n/"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
 	<script type="text/javascript">
     {% include 'jobs/include/get_subcategories.js' %}
     </script>
@@ -70,12 +67,6 @@
     {% if request.user.is_superuser %}
     <script type="text/javascript">
     {% include 'categories/include/add_categories.js' %}
-
-    $(document).ready(function(){
-        $('#add_id_pricing').click(function(){
-            return showAddAnotherPopup(this);
-        });
-    });
     </script>
     {% endif %}
     <script type="text/javascript">
