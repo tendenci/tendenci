@@ -266,7 +266,10 @@ class CorpProfile(TendenciBaseModel):
                 self.entity.save()
                 
         if not self.parent_entity:
-            self.parent_entity = Entity.objects.first()
+            if self.entity.parent_entity:
+                self.parent_entity = self.entity.parent_entity
+            else:
+                self.parent_entity = Entity.objects.first()
 
         super(CorpProfile, self).save(*args, **kwargs)
 
@@ -447,7 +450,7 @@ class CorpMembership(TendenciBaseModel):
         if not self.guid:
             self.guid = str(uuid.uuid1())
         if not self.entity:
-                self.entity_id = 1
+            self.entity = self.corp_profile.entity
         self.allow_anonymous_view = False
         super(CorpMembership, self).save(*args, **kwargs)
 
