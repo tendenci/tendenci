@@ -590,7 +590,8 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
                                  'city',
                                  'state',
                                  'zip',
-                                 'country',),
+                                 'country',
+                                 'entity'),
                       }),
                       (_('Parent Entity'), {
                        'fields': ('parent_entity',),
