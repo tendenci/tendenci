@@ -266,8 +266,8 @@ class CorpProfile(TendenciBaseModel):
                 self.entity.save()
                 
         if not self.parent_entity:
-            if self.entity.parent_entity:
-                self.parent_entity = self.entity.parent_entity
+            if self.entity.entity_parent:
+                self.parent_entity = self.entity.entity_parent
             else:
                 self.parent_entity = Entity.objects.first()
 
