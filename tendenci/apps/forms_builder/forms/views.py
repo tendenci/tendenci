@@ -2,7 +2,9 @@
 # non-ascii characters.
 # from __future__ import must occur at the beginning of the file
 from __future__ import unicode_literals
-import datetime, random, string
+import datetime
+import random
+import string
 import time
 import csv
 

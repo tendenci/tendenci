@@ -91,6 +91,7 @@ class Command(BaseCommand):
                     pass # model has no tag field
                 except Exception:
                     print("Error in deleting %s -- %s" % (m.__module__, m.__name__))
-                    import sys, traceback
+                    import sys
+                    import traceback
                     traceback.print_exc(file=sys.stdout)
                     pass

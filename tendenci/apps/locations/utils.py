@@ -8,7 +8,8 @@ from tendenci.apps.base.utils import normalize_newline
 from tendenci.apps.site_settings.utils import get_setting
 
 def geocode_api(**kwargs):
-    import simplejson, urllib
+    import simplejson
+    import urllib
     GEOCODE_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
     kwargs['sensor'] = kwargs.get('sensor', 'false')
     api_key = get_setting('module', 'locations', 'google_maps_api_key')
@@ -34,7 +35,8 @@ def get_coordinates(address):
     return (None, None)
 
 def distance_api(*args, **kwargs):
-    import simplejson, urllib
+    import simplejson
+    import urllib
 
     output = kwargs.get('output', 'json')
     distance_base_url = 'https://maps.googleapis.com/maps/api/distancematrix/%s' & output

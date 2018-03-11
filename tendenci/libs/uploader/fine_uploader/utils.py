@@ -1,4 +1,6 @@
-import os, os.path, shutil
+import os
+import os.path
+import shutil
 
 def combine_chunks(total_parts, total_size, source_folder, dest):
     """ Combine a chunked file into a whole file again. Goes through each part

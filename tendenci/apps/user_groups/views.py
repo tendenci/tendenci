@@ -1,5 +1,6 @@
 from __future__ import print_function
-import subprocess, os
+import subprocess
+import os
 from datetime import datetime
 from datetime import date
 import time as ttime

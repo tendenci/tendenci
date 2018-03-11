@@ -1,5 +1,9 @@
 from __future__ import print_function
-import random, time, md5, sys, datetime
+import random
+import time
+import md5
+import sys
+import datetime
 
 from django.core.management.base import BaseCommand
 from optparse import make_option

@@ -55,7 +55,8 @@ Usage example::
 """
 
 
-import os, sys
+import os
+import sys
 from urllib import urlencode
 
 import socket

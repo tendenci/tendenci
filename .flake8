@@ -6,7 +6,7 @@ ignore =
   # Unused variables
   F841,
   # Import issues
-  E401,E402,F401,
+  E402,F401,
 
   # Inline statement after colon
   E701,

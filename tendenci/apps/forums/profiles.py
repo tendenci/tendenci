@@ -1,5 +1,6 @@
 # coding=utf-8
-import urllib, hashlib
+import urllib
+import hashlib
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models

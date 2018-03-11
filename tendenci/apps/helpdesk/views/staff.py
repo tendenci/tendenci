@@ -449,7 +449,8 @@ def update_ticket(request, ticket_id, public=False):
 
     files = []
     if request.FILES:
-        import mimetypes, os
+        import mimetypes
+        import os
         for file in request.FILES.getlist('attachment'):
             filename = file.name.encode('ascii', 'ignore')
             a = Attachment(
