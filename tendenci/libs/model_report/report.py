@@ -574,7 +574,7 @@ class ReportAdmin(object):
 
     def check_for_widget(self, widget, field):
         if widget:
-            for field_to_set_widget, widget in widget.iteritems():
+            for field_to_set_widget, widget in widget.items():
                 if field_to_set_widget == field:
                     return (True, widget, MultipleChoiceField().__class__)
 
@@ -620,9 +620,9 @@ class ReportAdmin(object):
                                 field.label_from_instance = self.get_user_label
 
                             if self.list_filter_queryset:
-                                for query_field, query in self.list_filter_queryset.iteritems():
+                                for query_field, query in self.list_filter_queryset.items():
                                     if query_field == k:
-                                        for variable, value in query.iteritems():
+                                        for variable, value in query.items():
                                             field.queryset = field.queryset.filter(**{variable: value})
 
                         else:

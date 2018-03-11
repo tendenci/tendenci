@@ -98,7 +98,7 @@ class SkillSetForm(BetterModelForm):
             edit = False
         super(SkillSetForm, self).__init__(*args, **kwargs)
         if not edit:
-            for name, field in self.fields.iteritems():
+            for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
 
 
@@ -210,7 +210,7 @@ class ReliefAssessmentForm(BetterModelForm):
             edit = True
         super(ReliefAssessmentForm, self).__init__(*args, **kwargs)
         if not edit:
-            for name, field in self.fields.iteritems():
+            for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
 
         if self.instance.pk:

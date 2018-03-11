@@ -1841,7 +1841,7 @@ class MembershipDefault(TendenciBaseModel):
                 elif hasattr(self, field_name):
                     items[field_name] = getattr(self, field_name)
 
-            for name, value in items.iteritems():
+            for name, value in items.items():
                 if hasattr(value, 'all'):
                     items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])

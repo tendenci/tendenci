@@ -3234,7 +3234,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     # registration to list of registrants mapping
     reg8n_to_reg7n_dict = {}
-    for k, v in reg7n_to_reg8n_dict.iteritems():
+    for k, v in reg7n_to_reg8n_dict.items():
         reg8n_to_reg7n_dict.setdefault(v, []).append(k)
 
     if sort_field in ('first_name', 'last_name'):

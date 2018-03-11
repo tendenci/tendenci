@@ -1178,7 +1178,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                             if getattr(master, field) == '':
                                 setattr(master, field, getattr(profile, field))
 
-                        for model, fields in valnames.iteritems():
+                        for model, fields in valnames.items():
                             # skip auth_user
                             if model is User:
                                 continue

@@ -384,7 +384,7 @@ class AppRetrieveFiles(object):
         # find and replace urls
         if self.replace_dict:
             updated = True
-            for url_find, url_repl in self.replace_dict.iteritems():
+            for url_find, url_repl in self.replace_dict.items():
                 content = content.replace(url_find, url_repl)
             count = self.replace_dict.__len__()
             print('...', count, 'link(s) replaced.')

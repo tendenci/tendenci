@@ -147,7 +147,7 @@ def group_choices(user):
 
 
 def update_user(user, **kwargs):
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         if hasattr(user, k):
             setattr(user, k, v)
     user.save()
