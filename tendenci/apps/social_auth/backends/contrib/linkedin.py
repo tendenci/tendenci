@@ -3,7 +3,7 @@ Linkedin OAuth support
 
 No extra configurations are needed to make this work.
 """
-import urlparse
+from six.moves.urllib.parse import parse_qs
 from xml.etree import ElementTree
 
 from tendenci.apps.social_auth.backends import ConsumerBasedOAuth, OAuthBackend
@@ -51,7 +51,7 @@ class LinkedinAuth(ConsumerBasedOAuth):
             data = _xml_to_dict(xml)
             url = data['site-standard-profile-request']['url']
             url = url.replace('&amp;', '&')
-            data['id'] = urlparse.parse_qs(url)['key'][0]
+            data['id'] = parse_qs(url)['key'][0]
 
             return data
         except (xml.parsers.expat.ExpatError, KeyError, IndexError):

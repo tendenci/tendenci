@@ -1,7 +1,7 @@
 # python
 import os
 import codecs
-import urllib
+from six.moves.urllib.request import urlopen
 
 # django
 from django import forms
@@ -83,7 +83,7 @@ class FileForm(forms.Form):
                 cache.delete(cache_key)
 
                 if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
-                    urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+                    urlopen(settings.REMOTE_DEPLOY_URL)
 
             return True
         else:

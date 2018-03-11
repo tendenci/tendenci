@@ -12,8 +12,8 @@ enabled.
 from os import walk
 from os.path import basename
 from uuid import uuid4
-from urllib2 import Request, urlopen
-from urllib import urlencode
+from six.moves.urllib.request import Request, urlopen
+from six.moves.urllib.parse import urlencode
 from httplib import HTTPSConnection
 
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL, FAILURE

@@ -1,6 +1,6 @@
 # coding=utf-8
 from builtins import str
-import urllib
+from six.moves.urllib.parse import urlencode
 import hashlib
 from django.conf import settings
 from django.db import models
@@ -76,5 +76,5 @@ class PybbProfile(models.Model):
         size = defaults.PYBB_AVATAR_WIDTH
         default = get_setting('site', 'global', 'siteurl') +  defaults.PYBB_DEFAULT_AVATAR_URL
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
-        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url

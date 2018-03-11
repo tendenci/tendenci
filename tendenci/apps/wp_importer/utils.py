@@ -1,9 +1,9 @@
 from builtins import str
 import os
-import urllib2
 import uuid
 import re
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
+from six.moves.urllib.request import urlopen
 
 from tendenci.apps.pages.models import Page
 from tendenci.apps.articles.models import Article
@@ -185,7 +185,7 @@ def get_media(item, user):
             break
 
     if not alreadyThere:
-        source = urllib2.urlopen(media_url_in_attachment).read()
+        source = urlopen(media_url_in_attachment).read()
 
         with open(media_url, 'wb') as f:
             f.write(source)

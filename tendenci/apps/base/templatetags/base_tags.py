@@ -1,5 +1,5 @@
 import re
-import urllib2
+from six.moves.urllib.request import urlopen
 from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode
@@ -148,7 +148,7 @@ class FanCountNode(Node):
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
-                    xml = urllib2.urlopen(xml_path)
+                    xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
                     nodes = soup.findAll('page')
@@ -165,7 +165,7 @@ class FanCountNode(Node):
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
-                    xml = urllib2.urlopen(xml_path)
+                    xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
                     nodes = soup.findAll('user')

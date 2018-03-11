@@ -160,7 +160,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     import os
     import posixpath
     import stat
-    import urllib
+    from six.moves.urllib.request import unquote
 
     from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
     from django.utils.http import http_date
@@ -171,7 +171,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     document_root = os.path.join(settings.PROJECT_ROOT,'plugins',plugin,'media')
 
     # Clean up given path to only allow serving files below document_root.
-    path = posixpath.normpath(urllib.unquote(path))
+    path = posixpath.normpath(unquote(path))
     path = path.lstrip('/')
     newpath = ''
     for part in path.split('/'):

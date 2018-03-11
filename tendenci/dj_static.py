@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import static
+from six.moves.urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.contrib.staticfiles.handlers import StaticFilesHandler as DebugHandler
-
-try:
-    from urllib.parse import urlparse
-except ImportError:     # Python 2
-    from urlparse import urlparse
 from django.contrib.staticfiles import utils
 
 """

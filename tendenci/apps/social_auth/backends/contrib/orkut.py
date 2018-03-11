@@ -10,7 +10,7 @@ can be specified by defining ORKUT_EXTRA_DATA setting.
 OAuth settings ORKUT_CONSUMER_KEY and ORKUT_CONSUMER_SECRET are needed
 to enable this service support.
 """
-import urllib
+from six.moves.urllib.request import urlopen
 
 from django.conf import settings
 import simplejson
@@ -59,7 +59,7 @@ class OrkutAuth(BaseGoogleOAuth):
                   'fields': fields,
                   'scope': ' '.join(scope)}
         request = self.oauth_request(access_token, ORKUT_REST_ENDPOINT, params)
-        response = urllib.urlopen(request.to_url()).read()
+        response = urlopen(request.to_url()).read()
         try:
             return simplejson.loads(response)['data']
         except (ValueError, KeyError):

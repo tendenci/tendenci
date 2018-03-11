@@ -9,11 +9,11 @@ from decimal import Decimal
 import codecs
 import cStringIO
 import csv
-from urlparse import urlparse
 import hashlib
 import hmac
 import base64
-import urllib2
+from six.moves.urllib.request import Request, build_opener
+from six.moves.urllib.parse import urlparse
 import socket
 from PIL import Image
 from StringIO import StringIO
@@ -537,9 +537,9 @@ def make_image_object_from_url(image_url):
     if not parsed_url.scheme:
         image_url = '%s%s' %  (get_setting('site', 'global', 'siteurl'), image_url)
 
-    request = urllib2.Request(image_url)
+    request = Request(image_url)
     request.add_header('User-Agent', settings.TENDENCI_USER_AGENT)
-    opener = urllib2.build_opener()
+    opener = build_opener()
 
     # make image object
     try:

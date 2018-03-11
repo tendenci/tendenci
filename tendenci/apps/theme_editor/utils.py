@@ -2,7 +2,7 @@ import os
 import shutil
 import sys
 import boto
-import urllib
+from six.moves.urllib.request import urlopen
 from datetime import datetime
 from dateutil.parser import parse
 from operator import itemgetter
@@ -326,4 +326,4 @@ def handle_uploaded_file(file_path, file_dir):
         cache.delete(cache_key)
 
         if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
-            urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+            urlopen(settings.REMOTE_DEPLOY_URL)

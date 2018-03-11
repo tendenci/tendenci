@@ -1,7 +1,7 @@
 from builtins import str
 import os
 import simplejson as json
-import urllib2
+from six.moves.urllib.request import urlopen
 import mimetypes
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
@@ -673,7 +673,7 @@ def display_less(request, path):
     content = ''
     if path:
         full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
-        url_obj = urllib2.urlopen(full_path)
+        url_obj = urlopen(full_path)
         content = url_obj.read()
     return HttpResponse(content, content_type="text/css")
 

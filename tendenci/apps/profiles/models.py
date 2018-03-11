@@ -1,7 +1,7 @@
 import os
 import uuid
 import hashlib
-import urllib
+from six.moves.urllib.parse import urlencode
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -484,7 +484,7 @@ class Profile(Person):
                                    settings.GAVATAR_DEFAULT_URL)
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
-        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url
 
 

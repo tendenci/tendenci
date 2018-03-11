@@ -1,14 +1,9 @@
+from six.moves.urllib.parse import urlparse
 from django.test import TestCase
 from django.core import mail
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 from tendenci.apps.helpdesk.models import Queue, CustomField, Ticket
-
-try:  # python 3
-    from urllib.parse import urlparse
-except ImportError:  # python 2
-    from urlparse import urlparse
-
 
 class TicketBasicsTestCase(TestCase):
     fixtures = ['emailtemplate.json']

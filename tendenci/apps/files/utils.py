@@ -4,10 +4,9 @@ from os.path import exists
 from cStringIO import StringIO
 import os
 import httplib
-import urllib
-import urllib2
+from six.moves.urllib.request import urlopen, Request
+from six.moves.urllib.parse import urlparse, quote, unquote
 import socket
-from urlparse import urlparse
 import mimetypes
 from django.db import connection
 from django.core.files.base import ContentFile
@@ -264,9 +263,9 @@ class AppRetrieveFiles(object):
     """
     def __init__(self, **kwargs):
         self.site_url = kwargs.get('site_url')
-        self.site_domain = urllib2.Request(self.site_url).get_host()
+        self.site_domain = Request(self.site_url).get_host()
         self.src_url = kwargs.get('src_url')
-        self.src_domain = urllib2.Request(self.src_url).get_host()
+        self.src_domain = Request(self.src_url).get_host()
         self.p = kwargs.get('p')
         self.replace_dict = {}
         self.total_count = 0
@@ -422,7 +421,7 @@ class AppRetrieveFiles(object):
                     if self.link_exists(t4_relative_url, self.src_domain):
                         tfile.file.save(file_path,
                                         ContentFile(
-                                    urllib2.urlopen(t4_url).read()))
+                                    urlopen(t4_url).read()))
                         print(tfile.get_absolute_url(), 'file downloaded.')
                     else:
                         # t4_url not exist
@@ -445,7 +444,7 @@ class AppRetrieveFiles(object):
         # handle absolute url
         cleaned_link = link.replace('&amp;', '&')
         o = urlparse(cleaned_link)
-        relative_url = urllib.quote(urllib.unquote(o.path))
+        relative_url = quote(unquote(o.path))
         hostname = o.hostname
 
         # skip if link is external other than the src site.
@@ -497,7 +496,7 @@ class AppRetrieveFiles(object):
             self.broken_links[key].append(broken_link)
 
     def save_file_from_url(self, url, instance):
-        file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
+        file_name = os.path.basename(unquote(url).replace(' ', '_'))
         tfile = TFile()
         tfile.name = file_name
         tfile.content_type = ContentType.objects.get_for_model(instance)
@@ -512,7 +511,7 @@ class AppRetrieveFiles(object):
             tfile.owner_username = instance.owner_username
 
         #file_path = file_directory(tfile, tfile.name)
-        tfile.file.save(file_name, ContentFile(urllib2.urlopen(url).read()))
+        tfile.file.save(file_name, ContentFile(urlopen(url).read()))
         tfile.save()
         return tfile
 

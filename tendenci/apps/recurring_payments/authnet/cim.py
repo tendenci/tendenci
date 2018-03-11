@@ -1,5 +1,5 @@
 import re
-import urllib2
+from six.moves.urllib.request import urlopen, Request
 from xml.etree import ElementTree as ET
 
 from django.conf import settings
@@ -76,11 +76,11 @@ class CIMBase(object):
     def process_request(self, xml_root):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
         #print request_xml_str
-        request = urllib2.Request(self.cim_url,
+        request = Request(self.cim_url,
                                 request_xml_str,
                                 {'Content-Type': 'text/xml',
                                 'encoding': 'utf-8'})
-        response = urllib2.urlopen(request)
+        response = urlopen(request)
         data = response.read()
 
         return self.process_response(data)

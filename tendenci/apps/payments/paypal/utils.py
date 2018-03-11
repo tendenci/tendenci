@@ -1,5 +1,5 @@
-import urllib
-import urllib2
+from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import urlopen, Request
 import cgi
 from decimal import Decimal
 
@@ -77,7 +77,7 @@ def validate_with_paypal(request, validate_type):
                   'tx': request.GET.get('tx', ''),
                   'at': settings.MERCHANT_TXN_KEY
                   }
-        data = urllib.urlencode(params)
+        data = urlencode(params)
 
         # Sample response:
         # SUCCESS
@@ -100,10 +100,10 @@ def validate_with_paypal(request, validate_type):
     headers = {"Content-type": "application/x-www-form-urlencoded",
                'encoding': 'utf-8',
                "Accept": "text/plain"}
-    request = urllib2.Request(settings.PAYPAL_POST_URL,
+    request = Request(settings.PAYPAL_POST_URL,
                               data,
                               headers)
-    response = urllib2.urlopen(request)
+    response = urlopen(request)
     data = response.read()
 
     if validate_type == 'PDT':

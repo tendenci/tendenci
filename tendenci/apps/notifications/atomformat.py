@@ -30,7 +30,7 @@
 
 from xml.sax.saxutils import XMLGenerator
 from datetime import datetime
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 
 GENERATOR_TEXT = 'django-atompub'
@@ -59,7 +59,7 @@ def rfc3339_date(date):
 ## based on django.utils.feedgenerator.get_tag_uri
 def get_tag_uri(url, date):
     "Creates a TagURI. See http://diveintomark.org/archives/2004/05/28/howto-atom-id"
-    parts = urlparse.urlparse(url)
+    parts = urlparse(url)
     date_part = ""
     if date is not None:
         date_part = ",%s:" % date.strftime("%Y-%m-%d")

@@ -1,6 +1,6 @@
 import os
 import zipfile
-import urllib
+from six.moves.urllib.request import urlopen
 from shutil import rmtree, move
 from optparse import make_option
 
@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 raise CommandError('The theme %s is already installed.' % theme_name)
 
         # Copy the theme files down
-        theme_download = urllib.urlopen(theme_url)
+        theme_download = urlopen(theme_url)
         theme_zip_path = os.path.join(themes_dir_path, "themes.zip")
         theme_zip = open(theme_zip_path, 'wb')
         theme_zip.write(theme_download.read())

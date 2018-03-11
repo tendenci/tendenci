@@ -1,4 +1,4 @@
-import urlparse
+from six.moves.urllib.parse import urlparse
 
 
 def sanitize_redirect(host, redirect_to):
@@ -28,7 +28,7 @@ def sanitize_redirect(host, redirect_to):
 
     # Heavier security check, don't allow redirection to a different host.
     try:
-        netloc = urlparse.urlparse(redirect_to)[1]
+        netloc = urlparse(redirect_to)[1]
     except TypeError:  # not valid redirect_to value
         return None
 

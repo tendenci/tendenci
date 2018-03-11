@@ -21,7 +21,7 @@
 
 from builtins import str
 import httplib
-import urllib
+from six.moves.urllib.parse import urlencode
 import hashlib
 import hmac
 import logging
@@ -57,7 +57,7 @@ class AmazonSES:
         params['Action'] = actionName
         #https://email.us-east-1.amazonaws.com/
         conn = httplib.HTTPSConnection('email.us-east-1.amazonaws.com')
-        params = urllib.urlencode(params)
+        params = urlencode(params)
         conn.request('POST', '/', params, self._getHeaders())
         response = conn.getresponse()
         responseResult = response.read()
