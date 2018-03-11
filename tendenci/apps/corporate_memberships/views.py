@@ -5,7 +5,6 @@ from datetime import datetime, date, time, timedelta
 import csv
 import operator
 from hashlib import md5
-from sets import Set
 import subprocess
 import mimetypes
 from functools import reduce
@@ -1346,8 +1345,7 @@ def import_upload(request,
     corp_memb_fks = [field.name for field in CorpMembership._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
 
-    fks = Set(corp_profile_fks + corp_memb_fks)
-    fks = [field for field in fks]
+    fks = corp_profile_fks + corp_memb_fks
     if 'corp_profile' in fks:
         fks.remove('corp_profile')
     fks.sort()
@@ -1633,8 +1631,7 @@ def corpmembership_export(request,
             corp_memb_fks = [field.name for field in CorpMembership._meta.fields
                         if isinstance(field, (ForeignKey, OneToOneField))]
 
-            fks = Set(corp_profile_fks + corp_memb_fks)
-            #fks = [field for field in fks]
+            fks = corp_profile_fks + corp_memb_fks
 
             filename = 'corporate_memberships_export.csv'
             response = HttpResponse(content_type='text/csv')

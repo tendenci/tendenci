@@ -6,7 +6,6 @@ from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
 import subprocess
-from sets import Set
 import calendar
 from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
@@ -319,8 +318,7 @@ def membership_default_import_upload(request,
     memb_fks = [field.name for field in MembershipDefault._meta.fields
                 if isinstance(field, (ForeignKey, OneToOneField))]
 
-    fks = Set(user_fks + profile_fks + memb_fks)
-    fks = [field for field in fks]
+    fks = user_fks + profile_fks + memb_fks
     if 'user' in fks:
         fks.remove('user')
     fks.sort()
