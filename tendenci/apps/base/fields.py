@@ -1,3 +1,4 @@
+from six import with_metaclass
 import re
 from time import strptime, strftime
 #from south.modelsinspector import add_introspection_rules
@@ -77,11 +78,10 @@ class SplitDateTimeField(fields.MultiValueField):
         return None
 
 
-class DictField(models.TextField):
+class DictField(with_metaclass(models.SubfieldBase, models.TextField)):
     """
     A dictionary field
     """
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         if not value:

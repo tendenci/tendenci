@@ -1,3 +1,5 @@
+from six import with_metaclass
+
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
@@ -54,7 +56,7 @@ class DeclarativeMetaclass(type):
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-class Registry(object):
+class Registry(with_metaclass(DeclarativeMetaclass, object)):
     """
     Base registry class for core and plugin applications
 
@@ -77,7 +79,6 @@ class Registry(object):
 
     site.register(ExampleModel, ExampleRegistry)
     """
-    __metaclass__ = DeclarativeMetaclass
 
     def __init__(self, model):
         self.model = model

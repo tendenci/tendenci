@@ -1,3 +1,4 @@
+from six import with_metaclass
 from django.core.exceptions import ValidationError
 from django.db import models
 import simplejson
@@ -8,12 +9,10 @@ from django.utils.encoding import smart_unicode
 # add_introspection_rules([], ['^tendenci\.apps\.social_auth\.fields\.JSONField'])
 
 
-class JSONField(models.TextField):
+class JSONField(with_metaclass(models.SubfieldBase, models.TextField)):
     """Simple JSON field that stores python structures as JSON strings
     on database.
     """
-
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         """

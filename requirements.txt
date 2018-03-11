@@ -1,4 +1,5 @@
 future
+six
 Django>=1.8,<1.9
 django-formtools>=1.0
 pisa
