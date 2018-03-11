@@ -65,7 +65,7 @@ def get_posts(item, user):
         #post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
         post_dt = post_date
 
-        tags_raw = item.findAll('category', domain="post_tag")
+        tags_raw = item.find_all('category', domain="post_tag")
         tags_list = []
 
         if tags_raw:

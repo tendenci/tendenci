@@ -5,10 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
 
-try:
-    from BeautifulSoup import BeautifulStoneSoup
-except ImportError:
-    from bs4 import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 
 import cgi
 
@@ -25,7 +22,7 @@ def HTMLEntitiesToUnicode(text):
     """
     Converts HTML entities to unicode.  For example '&amp;' becomes '&'.
     """
-    text = str(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+    text = str(BeautifulStoneSoup(text, convert_entities=BeautifulStoneSoup.ALL_ENTITIES))
     return text
 
 

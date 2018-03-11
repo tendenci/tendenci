@@ -4,7 +4,7 @@ from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode
 from tagging.models import Tag
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 
 from django.utils.safestring import mark_safe
 from django.template import Library, Node, Variable, TemplateSyntaxError
@@ -151,7 +151,7 @@ class FanCountNode(Node):
                     xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
-                    nodes = soup.findAll('page')
+                    nodes = soup.find_all('page')
                     for node in nodes:
                         fancount = node.fan_count.string
                     cache.set(cache_key, fancount, cache_time)
@@ -168,7 +168,7 @@ class FanCountNode(Node):
                     xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
-                    nodes = soup.findAll('user')
+                    nodes = soup.find_all('user')
                     for node in nodes:
                         fancount = node.followers_count.string
                     cache.set(cache_key, fancount, cache_time)

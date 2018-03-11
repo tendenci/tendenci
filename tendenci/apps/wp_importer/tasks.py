@@ -1,6 +1,6 @@
 from celery.task import Task
 from celery.registry import tasks
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 from tendenci.apps.wp_importer.utils import get_media, get_posts, get_pages
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -18,7 +18,7 @@ class WPImportTask(Task):
         f.close()
 
         soup = BeautifulStoneSoup(xml)
-        items = soup.findAll('item')
+        items = soup.find_all('item')
 
         for item in items:
             post_type = item.find('wp:post_type').string

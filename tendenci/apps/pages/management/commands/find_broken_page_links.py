@@ -2,7 +2,7 @@ from __future__ import print_function
 import requests
 from requests.exceptions import (
     MissingSchema, InvalidSchema, InvalidURL, ConnectionError)
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import LocationParseError
 from django.core.management.base import BaseCommand
 
@@ -73,8 +73,8 @@ class Command(BaseCommand):
 
             soup = BeautifulSoup(page.content)
 
-            links = soup.findAll('a')
-            # images = soup.findAll('img')
+            links = soup.find_all('a')
+            # images = soup.find_all('img')
 
             broken_links = self.get_broken_links(links)
             # broken_images = self.get_broken_images(images)

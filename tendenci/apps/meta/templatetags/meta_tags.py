@@ -2,7 +2,7 @@ from django.db.models import ForeignKey, TextField
 from django.core.cache import cache
 from django.template import Library
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from tendenci.libs.tinymce.models import HTMLField
 
 from tendenci.apps.files.models import File
@@ -29,7 +29,7 @@ def meta_og_image(obj, field_name):
         if isinstance(field, HTMLField) or isinstance(field, TextField):
             content = getattr(obj, field_name)
             soup = BeautifulSoup(content)
-            for image in soup.findAll("img"):
+            for image in soup.find_all("img"):
                 image_url = base_url + image["src"]
                 image_list.append(image_url)
 
