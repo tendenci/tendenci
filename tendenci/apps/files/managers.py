@@ -1,3 +1,4 @@
+from builtins import int
 import os
 import re
 from datetime import datetime
@@ -23,7 +24,7 @@ def save_to_disk(f, instance):
     )
 
     # make directory with pk
-    if isinstance(instance.pk, (int, long)):
+    if isinstance(instance.pk, int):
         relative_directory = os.path.join(
             relative_directory,
             unicode(instance.pk))
@@ -80,7 +81,7 @@ class FileManager(TendenciBaseManager):
             # ----------------------------------------------
 
             instance_pk = None
-            if isinstance(instance.pk, long):
+            if isinstance(instance.pk, int):
                 instance_pk = instance.pk
 
             try:
@@ -128,7 +129,7 @@ class FileManager(TendenciBaseManager):
             # update file record; or create new file record
             # ----------------------------------------------
             instance_pk = None
-            if isinstance(instance.pk, long) or isinstance(instance.pk, int):
+            if isinstance(instance.pk, int):
                 instance_pk = instance.pk
 
             try:
