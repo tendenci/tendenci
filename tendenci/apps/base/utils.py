@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import object
 import os
 import re
 from datetime import datetime
@@ -733,7 +734,7 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     return page_range
 
 
-class UTF8Recoder:
+class UTF8Recoder(object):
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
@@ -743,11 +744,11 @@ class UTF8Recoder:
     def __iter__(self):
         return self
 
-    def next(self):
-        return self.reader.next().encode("utf-8")
+    def __next__(self):
+        return next(self.reader).encode("utf-8")
 
 
-class UnicodeReader:
+class UnicodeReader(object):
     """
     A CSV reader which will iterate over lines in the CSV file "f",
     which is encoded in the given encoding.
@@ -757,8 +758,8 @@ class UnicodeReader:
         f = UTF8Recoder(f, encoding)
         self.reader = csv.reader(f, dialect=dialect, **kwds)
 
-    def next(self):
-        row = self.reader.next()
+    def __next__(self):
+        row = next(self.reader)
         return [unicode(s, "utf-8") for s in row]
 
     def __iter__(self):

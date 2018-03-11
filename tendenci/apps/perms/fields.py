@@ -142,8 +142,8 @@ class UserPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (user_label, user_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(user_perm.next()[0])
-            change_input_value = force_unicode(user_perm.next()[0])
+            view_input_value = force_unicode(next(user_perm)[0])
+            change_input_value = force_unicode(next(user_perm)[0])
 
             if has_id:
                 final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
@@ -226,8 +226,8 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (member_label, member_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(member_perm.next()[0])
-            change_input_value = force_unicode(member_perm.next()[0])
+            view_input_value = force_unicode(next(member_perm)[0])
+            change_input_value = force_unicode(next(member_perm)[0])
 
             if has_id:
                 final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
@@ -310,8 +310,8 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (group_name, group) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(group.next()[0])
-            change_input_value = force_unicode(group.next()[0])
+            view_input_value = force_unicode(next(group)[0])
+            change_input_value = force_unicode(next(group)[0])
 
             if has_id:
                 final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))

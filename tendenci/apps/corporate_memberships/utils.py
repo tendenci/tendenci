@@ -462,7 +462,7 @@ def csv_to_dict(file_path):
     data_list = []
 
     data = csv.reader(default_storage.open(file_path, 'rU'))
-    fields = data.next()
+    fields = next(data)
 
     fields = [smart_str(field) for field in fields]
 
@@ -478,7 +478,7 @@ def validate_import_file(file_path):
     """
     normalize_newline(file_path)
     data = csv.reader(default_storage.open(file_path, mode='rU'))
-    fields = data.next()
+    fields = next(data)
     fields = [smart_str(field) for field in fields]
 
     corp_memb_keys = [slugify(cm) for cm in fields]
