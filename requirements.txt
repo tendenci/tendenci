@@ -42,7 +42,7 @@ boto==2.40.0
 django-timezone-field==2.1
 django-ses==0.7.1
 Geraldo==0.4.17
-django-tastypie==0.13.3
+django-tastypie==0.14.0
 docutils==0.12
 chardet==3.0.3
 psycopg2==2.7.4

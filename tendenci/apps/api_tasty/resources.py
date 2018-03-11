@@ -11,6 +11,8 @@ class TendenciResource(ModelResource):
     creator = fields.ForeignKey(UserResource, 'creator')
 
     class Meta:
+        abstract = True
+        object_class = None  # Replaced by abstract=True in tastypie 0.14.1
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
