@@ -66,7 +66,7 @@ class Command(BaseCommand):
         #while related_tables:
         while n > 1:
             # remove tables from related_tables if already in the sorted_list
-            for key in related_tables.keys():
+            for key in related_tables:
                 for rel_table in related_tables[key]:
                     if rel_table in sorted_list:
                         related_tables[key].remove(rel_table)
@@ -78,7 +78,7 @@ class Command(BaseCommand):
             for table in tables_list:
                 # if the related_tables is gone
                 if table not in sorted_list and (
-                       table not in related_tables.keys()):
+                       table not in related_tables):
                     sorted_list.append(table)
 
             # continue until all the related tables are gone

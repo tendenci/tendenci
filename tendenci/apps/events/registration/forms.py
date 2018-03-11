@@ -99,7 +99,7 @@ class RegistrantForm(forms.Form):
 
         # make the fields in the subsequent forms as not required
         if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
+            for key in self.fields:
                 self.fields[key].required = False
 
         # initialize pricing options and reg_set field

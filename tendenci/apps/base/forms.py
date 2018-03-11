@@ -31,7 +31,7 @@ class FormControlWidgetMixin(object):
     def add_form_control_class(self):
 
         # Add .'form-control' class to all field widgets
-        for field_name in self.fields.keys():
+        for field_name in self.fields:
 
             #print('%s: %s' % (field_name, self.fields[field_name].widget.__class__.__name__.lower()))
             non_form_control_widgets = [
@@ -42,7 +42,7 @@ class FormControlWidgetMixin(object):
                 widget_attrs = self.fields[field_name].widget.attrs
 
                 class_attr = 'form-control'
-                if 'class' in widget_attrs.keys():
+                if 'class' in widget_attrs:
                     class_attr = widget_attrs['class']
 
                     if 'form-control' not in class_attr:

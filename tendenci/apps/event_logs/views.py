@@ -298,10 +298,10 @@ def info(request):
     logged_models = []
     for app in apps:
         if 'event_logs' in app:
-            for model in app['event_logs'].keys():
+            for model in app['event_logs']:
                 logs = app['event_logs'][model]
                 log_list = []
-                for log in logs.keys():
+                for log in logs:
                     log_list.append({
                         'label': log.replace('_', ' '),
                         'id': logs[log][0],
@@ -311,10 +311,10 @@ def info(request):
                     'label': model.replace('_', ' '),
                     'event_logs':sorted(log_list, key=lambda x: x['label']),
                 })
-    for model in non_model_event_logs.keys():
+    for model in non_model_event_logs:
         logs = non_model_event_logs[model]
         log_list = []
-        for log in logs.keys():
+        for log in logs:
             log_list.append({
                 'label': log.replace('_', ' '),
                 'id': logs[log][0],

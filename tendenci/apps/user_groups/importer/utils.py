@@ -51,7 +51,7 @@ def user_groups_import_process(import_i, preview=True):
             group_object_dict = {}
             data_dict = data_dict_list[r]
 
-            for key in data_dict.keys():
+            for key in data_dict:
                 group_object_dict[key] = data_dict[key]
 
             group_object_dict['ROW_NUM'] = data_dict['ROW_NUM']

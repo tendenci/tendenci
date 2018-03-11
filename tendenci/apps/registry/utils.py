@@ -49,7 +49,7 @@ class RegisteredApps(object):
                     registry.fields['enabled'] = True
                     registry.fields['has_settings'] = False
 
-                if 'settings' not in registry.fields['url'].keys():
+                if 'settings' not in registry.fields['url']:
                     registry.fields['url'].update({
                         'settings': lazy_reverse('settings.index', args=[
                             'module',
@@ -93,7 +93,7 @@ class RegisteredApps(object):
                         app['enabled'] = True
                         app['has_settings'] = False
 
-                    if 'settings' not in app['url'].keys():
+                    if 'settings' not in app['url']:
                         app['url'].update({
                             'settings': lazy_reverse('settings.index', args=[
                                 'module',

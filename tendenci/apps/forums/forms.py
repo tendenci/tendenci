@@ -119,7 +119,7 @@ class PostForm(forms.ModelForm):
         self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
 
         # add form-control class
-        for k in self.fields.keys():
+        for k in self.fields:
             self.fields[k].widget.attrs['class'] = 'form-control'
 
     def clean_body(self):

@@ -24,7 +24,7 @@ class ImportMapForm(forms.Form):
         csv = csv_to_dict(file_path)
 
         # choices list
-        choices = csv[0].keys()
+        choices = csv[0]
         machine_choices = [slugify(c).replace('-','') for c in choices]
         choice_tuples = zip(machine_choices, choices)
 

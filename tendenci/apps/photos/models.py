@@ -198,7 +198,7 @@ class ImageModel(models.Model):
         models.Model.save(self)
 
     def add_accessor_methods(self, *args, **kwargs):
-        for size in PhotoSizeCache().sizes.keys():
+        for size in PhotoSizeCache().sizes:
             setattr(self, 'get_%s_size' % size,
                     curry(self._get_SIZE_size, size=size))
             setattr(self, 'get_%s_photosize' % size,

@@ -301,7 +301,7 @@ class FormForCustomRegForm(forms.ModelForm):
             # make the fields in the subsequent forms as not required
             if not reg_conf.require_guests_info:
                 if self.form_index and self.form_index > 0:
-                    for key in self.fields.keys():
+                    for key in self.fields:
                         self.fields[key].required = False
             else:
                 # this attr is required for form validation
@@ -706,13 +706,13 @@ class EventForm(TendenciBaseForm):
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            if 'private_slug' in self.fields.keys():
+            if 'private_slug' in self.fields:
                 self.fields['enable_private_slug'].help_text = self.instance.get_private_slug(absolute_url=True)
             self.fields['start_event_date'].initial = self.instance.start_dt.date()
             self.fields['end_event_date'].initial = self.instance.end_dt.date()
         else:
             # kwargs['instance'] always trumps initial
-            if 'private_slug' in self.fields.keys():
+            if 'private_slug' in self.fields:
                 self.fields['private_slug'].initial = self.instance.get_private_slug()
                 self.fields['enable_private_slug'].widget = forms.HiddenInput()
 
@@ -1687,7 +1687,7 @@ class RegistrantForm(forms.Form):
         # make the fields in the subsequent forms as not required
         if not reg_conf.require_guests_info:
             if self.form_index and self.form_index > 0:
-                for key in self.fields.keys():
+                for key in self.fields:
                     self.fields[key].required = False
             if not self.event.is_table:
                 self.empty_permitted = False

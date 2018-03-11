@@ -1207,10 +1207,10 @@ def run_report(request, report):
     table = []
 
     if report == 'daysuntilticketclosedbymonth':
-        for key in summarytable2.keys():
+        for key in summarytable2:
             summarytable[key] = summarytable2[key] / summarytable[key]
 
-    header1 = sorted(set(list(i for i, _ in summarytable.keys())))
+    header1 = sorted(set(list(i for i, _ in summarytable)))
 
     column_headings = [col1heading] + possible_options
 

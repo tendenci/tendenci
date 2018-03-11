@@ -17,7 +17,7 @@ class XML():
             txt += "    "
         self.content += txt
         self.content += "<%s" % name
-        for key in attrs.keys():
+        for key in attrs:
             self.content += ' %s = "%s"' % (key, attrs[key])
         self.content += ">\n"
 

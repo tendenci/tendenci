@@ -171,7 +171,7 @@ def apply_query(queryset, params):
             set of Q() objects.
         sorting: The name of the column to sort by
     """
-    for key in params['filtering'].keys():
+    for key in params['filtering']:
         filter = {key: params['filtering'][key]}
         queryset = queryset.filter(**filter)
 

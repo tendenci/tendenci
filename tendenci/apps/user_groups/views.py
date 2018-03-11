@@ -733,7 +733,7 @@ def group_subscriber_export(request, group_slug):
             row = row_index[entry.entry.pk]
         else:
             # assign the row if it is not yet available
-            row = len(row_index.keys()) + 1
+            row = len(row_index) + 1
             row_index[entry.entry.pk] = row
 
         if entry.field.label in col_index:
@@ -742,7 +742,7 @@ def group_subscriber_export(request, group_slug):
         else:
             # assign the col if it is not yet available
             # and label the new column
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[entry.field.label] = col
             sheet.write(0, col, entry.field.label, style=default_style)
 
@@ -831,9 +831,9 @@ def group_all_export(request, group_slug):
     values_list = list(cursor.fetchall())
 
     # index the group key mappings and insert them into the sheet.
-    for key in group_mappings.keys():
+    for key in group_mappings:
         if key not in col_index:
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[key] = col
             sheet.write(0, col, key, style=default_style)
 
@@ -870,7 +870,7 @@ def group_all_export(request, group_slug):
             row = row_index["subscriber %s" % str(entry.entry.pk)]
         else:
             # assign the row if it is not yet available
-            row = len(row_index.keys()) + 1
+            row = len(row_index) + 1
             row_index["subscriber %s" % str(entry.entry.pk)] = row
 
         if field in col_index:
@@ -879,7 +879,7 @@ def group_all_export(request, group_slug):
         else:
             # assign the col if it is not yet available
             # and label the new column
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[field] = col
             sheet.write(0, col, field, style=default_style)
 

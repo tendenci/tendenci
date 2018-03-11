@@ -172,7 +172,7 @@ class Registry(with_metaclass(DeclarativeMetaclass, object)):
         """
         Tests for django admin site registration
         """
-        for model in admin_site._registry.keys():
+        for model in admin_site._registry:
             if self.model is model:
                 return True
         return False

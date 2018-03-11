@@ -20,7 +20,7 @@ class SafeApi(Api):
         if api_name is None:
             api_name = self.api_name
 
-        for name in sorted(self._registry.keys()):
+        for name in sorted(self._registry):
             available_resources[name] = {
                 'list_endpoint': self._build_reverse_url("api_dispatch_list", kwargs={
                     'api_name': api_name,

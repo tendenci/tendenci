@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
         if retriever.broken_links:
             print('\nBROKEN LINKS:\n', '-' * 30)
-            for key in retriever.broken_links.keys():
+            for key in retriever.broken_links:
                 print()
                 print(key)
                 for link in retriever.broken_links[key]:

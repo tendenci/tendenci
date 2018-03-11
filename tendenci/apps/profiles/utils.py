@@ -538,7 +538,6 @@ class ImportUsers(object):
                              'PST': 'US/Pacific',
                              'GMT': 'UTC'
                              }
-        self.t4_timezone_map_keys = self.t4_timezone_map.keys()
         if self.uimport.group_id:
             [self.uimport.group] = Group.objects.filter(id=self.uimport.group_id)[:1] or [None]
         else:
@@ -738,10 +737,9 @@ class ImportUsers(object):
             assign_to_fields = self.user_fields
         elif instance.__class__ == Profile:
             assign_to_fields = self.profile_fields
-        assign_to_fields_names = assign_to_fields.keys()
 
         for field_name in self.field_names:
-            if field_name in assign_to_fields_names:
+            if field_name in assign_to_fields:
                 if any([
                         action == 'insert',
                         self.uimport.override,
@@ -755,9 +753,9 @@ class ImportUsers(object):
                     setattr(instance, field_name, value)
 
         # if insert, set defaults for the fields not in csv.
-        for field_name in assign_to_fields_names:
+        for field_name in assign_to_fields:
             if field_name not in self.field_names and action == 'insert':
-                if field_name not in self.private_settings.keys():
+                if field_name not in self.private_settings:
                     value = self.get_default_value(assign_to_fields[field_name])
 
                     if value is not None:
@@ -812,7 +810,7 @@ class ImportUsers(object):
                 value = value[:field.max_length]
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
-                    if value in self.t4_timezone_map_keys:
+                    if value in self.t4_timezone_map:
                         value = self.t4_timezone_map[value]
             try:
                 value = field.to_python(value)

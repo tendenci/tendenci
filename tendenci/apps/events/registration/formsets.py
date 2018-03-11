@@ -37,7 +37,7 @@ class RegistrantBaseFormSet(BaseFormSet):
             'form_index': i,
         }
 
-        for key in self.extra_params.keys():
+        for key in self.extra_params:
             defaults[key] = self.extra_params[key]
 
         if self.data or self.files:
@@ -74,7 +74,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         """
         Group each form to their corresponding set
         """
-        for pricing in self.pricings.keys():
+        for pricing in self.pricings:
             for i in range(0, len(self.pricings[pricing])):
                 form = self.pricings[pricing][i]
                 if i % pricing.quantity == 0:
@@ -117,7 +117,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         self.set_pricing_groups()
 
         # validate the reg quantity for each pricing
-        for pricing in self.pricings.keys():
+        for pricing in self.pricings:
             # the registrant length must be divisible by the pricing's quantity
             if len(self.pricings[pricing]) % pricing.quantity != 0:
                 raise forms.ValidationError(_("Please enter a valid number of registrants."))
@@ -128,7 +128,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         # mark all validated prices is shared pricing
         shared_pricing = get_setting('module', 'events', 'sharedpricing')
         if shared_pricing:
-            for pricing in self.pricings.keys():
+            for pricing in self.pricings:
                 for i in range(0, len(self.pricings[pricing])):
                     form = self.pricings[pricing][i]
                     if i % pricing.quantity == 0:
@@ -137,7 +137,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                             self.enabled_pricings.append(pricing)
 
         # if all quantities are valid, update each form's corresponding price
-        for pricing in self.pricings.keys():
+        for pricing in self.pricings:
             for i in range(0, len(self.pricings[pricing])):
                 form = self.pricings[pricing][i]
                 if i % pricing.quantity == 0:

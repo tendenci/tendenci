@@ -195,7 +195,7 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     charset = response_d.get('charset', '')
     # make sure data is encoded in utf-8 before processing
     if charset and charset not in ('ascii', 'utf8', 'utf-8'):
-        for k in response_d.keys():
+        for k in response_d:
             response_d[k] = response_d[k].decode(charset).encode('utf-8')
 
     paymentid = response_d.get('invoice', 0)

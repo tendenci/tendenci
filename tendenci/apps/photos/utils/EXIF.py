@@ -32,7 +32,7 @@
 # Returned tags will be a dictionary mapping names of EXIF tags to their
 # values in the file named by path_name.  You can process the tags
 # as you wish.  In particular, you can iterate through all the tags with:
-#     for tag in tags.keys():
+#     for tag in tags:
 #         if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename',
 #                        'EXIF MakerNote'):
 #             print("Key: %s, value %s" % (tag, tags[tag]))

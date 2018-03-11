@@ -198,11 +198,11 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
         data_dict = data_dict_list[r]
 
-        missing_keys = [key for key in data_dict.keys()
+        missing_keys = [key for key in data_dict
                         if key in key_list
                         and data_dict[key] == '']
 
-        for key in data_dict.keys():
+        for key in data_dict:
             user_object_dict[key] = data_dict[key]
 
             if key in key_list and data_dict[key] != '':
@@ -523,7 +523,7 @@ def extract_from_excel(file_path):
         r = 1
         for row in data:
             item = dict(zip(fields, row))
-            for key in item.keys():
+            for key in item:
                 if key in field_type_dict and \
                 field_type_dict[key] == 'DateTimeField':
                     item[key] = dparser.parse(item[key])

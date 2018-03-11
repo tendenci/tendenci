@@ -1507,7 +1507,7 @@ def event_import_process(import_i, preview=True):
             event_object_dict = {}
             data_dict = data_dict_list[r]
 
-            for key in data_dict.keys():
+            for key in data_dict:
                 if isinstance(data_dict[key], str):
                     event_object_dict[key] = data_dict[key].strip()
                 else:

@@ -427,8 +427,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         When the change page is submitted we can redirect
         to a URL specified in the next parameter.
         """
-        POST_KEYS = request.POST.keys()
-        GET_KEYS = request.GET.keys()
+        POST_KEYS = request.POST
+        GET_KEYS = request.GET
         NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
 
         do_next_url = (

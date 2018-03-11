@@ -234,12 +234,11 @@ def get_field_size(app_field_obj):
 
 
 def assign_fields(form, app_field_objs, instance=None):
-    form_field_keys = form.fields.keys()
     # a list of names of app fields
     field_names = [field.field_name for field in app_field_objs
                    if field.field_name != '' and
-                   field.field_name in form_field_keys]
-    for name in form_field_keys:
+                   field.field_name in form.fields]
+    for name in form.fields:
         if name not in field_names:
             del form.fields[name]
     # update the field attrs - label, required...
@@ -464,7 +463,7 @@ class CorpProfileForm(CorpProfileBaseForm):
             if selected_parent_entities.exists():
                 f.queryset = self.corpmembership_app.parent_entities.all()
 
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
     def clean_secret_code(self):
         secret_code = self.cleaned_data['secret_code']
@@ -498,7 +497,7 @@ class CorpProfileForm(CorpProfileBaseForm):
         if not self.request_user.is_anonymous():
             self.instance.owner = self.request_user
             self.instance.owner_username = self.request_user.username
-        for field_key in self.fields.keys():
+        for field_key in self.fields:
             if self.fields[field_key].widget.needs_multipart_form:
                 value = self.cleaned_data[field_key]
                 if value and hasattr(value, 'name'):
@@ -600,17 +599,16 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
                         choices=get_payment_method_choices(
                                     self.request_user,
                                     self.corpmembership_app))
-        self_fields_keys = self.fields.keys()
-        if 'status_detail' in self_fields_keys:
+        if 'status_detail' in self.fields:
             self.fields['status_detail'].widget = forms.widgets.Select(
                         choices=self.STATUS_DETAIL_CHOICES)
-        if 'status' in self_fields_keys:
+        if 'status' in self.fields:
             self.fields['status'].widget = forms.widgets.Select(
                         choices=self.STATUS_CHOICES)
 
         assign_fields(self, app_field_objs, instance=self.instance)
         self.add_form_control_class()
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
     def save(self, **kwargs):
         super(CorpMembershipForm, self).save(commit=False)
@@ -867,7 +865,7 @@ class CorpMembershipUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CorpMembershipUploadForm, self).__init__(*args, **kwargs)
         self.fields['key'].initial = 'name'
-        for k in self.fields.keys():
+        for k in self.fields:
             if k in ['key', 'override']:
                 self.fields[k].widget.attrs['class'] = 'form-control'
 
@@ -907,7 +905,7 @@ class CreatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
         self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
-        for k in self.fields.keys():
+        for k in self.fields:
             self.fields[k].widget.attrs['class'] = 'form-control'
 
 
@@ -1063,10 +1061,10 @@ class CSVForm(forms.Form):
             csv = csv_to_dict(file_path)
 
             # choices list
-            choices = csv[0].keys()
+            choices = csv[0]
 
             # make tuples; sort tuples (case-insensitive)
-            choice_tuples = [(c, c) for c in csv[0].keys()]
+            choice_tuples = [(c, c) for c in csv[0]]
 
             # insert blank option
             choice_tuples.insert(0, ('', ''))
@@ -1104,7 +1102,7 @@ class CSVForm(forms.Form):
             # corp_memb_field_names = [smart_str(field.name)
             # for field in CorporateMembership._meta.fields]
             for key, label in extra_fields:
-                if key not in self.fields.keys():
+                if key not in self.fields:
                     self.fields[key] = ChoiceField(**{
                                             'label': label,
                                             'choices': choice_tuples,

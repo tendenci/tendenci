@@ -367,7 +367,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     )  # TODO make formats configurable
 
     # test for request in the extra_context
-    if 'request' in extra_context.keys():
+    if 'request' in extra_context:
         context = RequestContext(extra_context['request'])
         extra_context.update({
             "notice": ugettext(notice_type.display),
@@ -402,7 +402,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             {'message': mark_safe(messages['full'])},
             context)
 
-    if 'reply_to' in extra_context.keys():
+    if 'reply_to' in extra_context:
         reply_to = extra_context['reply_to']
         headers['Reply-To'] = reply_to
     else:
@@ -523,7 +523,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
                 activate(language)
 
             # test for request in the extra_context
-            if 'request' in extra_context.keys():
+            if 'request' in extra_context:
                 context = RequestContext(extra_context['request'])
                 extra_context.update({
                     "user": user,

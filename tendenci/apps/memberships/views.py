@@ -102,7 +102,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         raise Http403
 
     if request.user.profile.is_superuser:
-        GET_KEYS = request.GET.keys()
+        GET_KEYS = request.GET
 
         if 'approve' in GET_KEYS:
             is_renewal = membership.is_renewal()

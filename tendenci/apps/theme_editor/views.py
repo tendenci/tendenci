@@ -223,7 +223,7 @@ def get_version(request, id):
 @permission_required('theme_editor.change_themefileversion')
 def app_list(request, template_name="theme_editor/app_list.html"):
     app_list = []
-    for app in app_templates.keys():
+    for app in app_templates:
         app_list.append((app, app_templates[app]))
     return render_to_response(template_name, {
         'apps': sorted(app_list, key=lambda app: app[0]),

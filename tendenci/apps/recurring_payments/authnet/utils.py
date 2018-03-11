@@ -80,7 +80,7 @@ def payment_update_from_response(payment, direct_response_str):
     Update the payment entry with the direct response from payment gateway.
     """
     response_dict = direct_response_dict(direct_response_str)
-    for key in response_dict.keys():
+    for key in response_dict:
         if hasattr(payment, key):
             setattr(payment, key, response_dict[key])
 

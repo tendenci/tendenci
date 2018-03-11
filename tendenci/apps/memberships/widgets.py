@@ -579,7 +579,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                 self.all_fields[key]['options'].append((i,
                                                         option_value,
                                                         option_label))
-        for key in self.all_fields.keys():
+        for key in self.all_fields:
             output.append(u'<div style="clear: both;"></div>')
             output.append(u'<h3>')
             output.append(self.all_fields[key]['title'])

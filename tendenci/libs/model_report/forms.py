@@ -116,7 +116,7 @@ class FilterForm(forms.BaseForm):
         try:
             data_filters = {}
             vals = args[0]
-            for k in vals.keys():
+            for k in vals:
                 if k in self.fields:
                     data_filters[k] = vals[k]
             for name in self.fields:

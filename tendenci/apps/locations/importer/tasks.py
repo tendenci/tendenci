@@ -19,7 +19,7 @@ class ImportLocationsTask(Task):
             if not m['skipped']:
                 # Create Location object
                 obj_dict = {}
-                for key in m.keys():
+                for key in m:
                     if key in location_fields:
                         if isinstance(m[key], str):
                             m[key] = m[key].strip()

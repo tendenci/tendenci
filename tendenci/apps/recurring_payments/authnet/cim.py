@@ -66,7 +66,7 @@ class CIMBase(object):
         return payment_profiles_node
 
     def build_node_from_dict(self, parent_node, d, field_scope=None):
-        for key in d.keys():
+        for key in d:
             if not field_scope or key in field_scope:
                 value = d.get(key)
                 node = ET.SubElement(parent_node, key)
@@ -846,7 +846,7 @@ class CIMHostedProfilePage(CIMBase):
         if hosted_profile_settings and type(hosted_profile_settings) is dict:
             hosted_profile_settings_node = ET.SubElement(xml_root, 'hostedProfileSettings')
             hosted_profile_settings = to_camel_case(hosted_profile_settings)
-            for key in hosted_profile_settings.keys():
+            for key in hosted_profile_settings:
                 setting_node = ET.SubElement(hosted_profile_settings_node, 'setting')
                 hosted_profile_setting = {'settingName': key}
                 setting_node = self.build_node_from_dict(setting_node,

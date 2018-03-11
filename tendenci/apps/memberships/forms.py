@@ -511,13 +511,12 @@ def get_field_size(app_field_obj):
 
 
 def assign_fields(form, app_field_objs):
-    form_field_keys = form.fields.keys()
     # a list of names of app fields
     field_names = [field.field_name for field in app_field_objs
                    if field.field_name != '' and
-                   field.field_name in form_field_keys]
+                   field.field_name in form.fields]
 
-    for name in form_field_keys:
+    for name in form.fields:
         if name not in field_names and name != 'discount_code':
             del form.fields[name]
     # update the field attrs - label, required...
@@ -626,7 +625,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
 
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
         self.add_form_control_class()
 
     def clean(self):
@@ -790,7 +789,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         del self.fields['referral_source']
 
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
         self.add_form_control_class()
 
@@ -849,8 +848,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
             self.user = None
         if app_field_objs:
             assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
-        self.keys = self.fields.keys()
+        self.field_names = [name for name in self.fields]
 
         if self.user:
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -858,16 +856,16 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                 cnt = 1
                 for education in education_list:
                     field_key = 'school%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.school
                     field_key = 'major%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.major
                     field_key = 'degree%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.degree
                     field_key = 'graduation_dt%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.graduation_year
                     cnt += 1
 
@@ -929,7 +927,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         self.membership = kwargs.pop('membership', None)
         super(DemographicsForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
         self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
         for key, field in self.fields.items():
@@ -970,7 +968,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         pks ={}
         if self.file_upload_fields:
-            for key in self.file_upload_fields.keys():
+            for key in self.file_upload_fields:
                 new_file = self.cleaned_data.get(key, None)
 
                 if self.request:
@@ -1054,15 +1052,15 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         self.is_renewal = kwargs.pop('is_renewal', False)
         self.renew_from_id = kwargs.pop('renew_from_id', None)
 
-        if 'join_under_corporate' in kwargs.keys():
+        if 'join_under_corporate' in kwargs:
             self.join_under_corporate = kwargs.pop('join_under_corporate')
         else:
             self.join_under_corporate = False
-        if 'corp_membership' in kwargs.keys():
+        if 'corp_membership' in kwargs:
             self.corp_membership = kwargs.pop('corp_membership')
         else:
             self.corp_membership = None
-        if 'authentication_method' in kwargs.keys():
+        if 'authentication_method' in kwargs:
             self.corp_app_authentication_method = kwargs.pop('authentication_method')
         else:
             self.corp_app_authentication_method = ''
@@ -1109,15 +1107,13 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             require_payment = self.membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
 
-        self_fields_keys = self.fields.keys()
-
-        if 'status_detail' in self_fields_keys:
+        if 'status_detail' in self.fields:
             self.fields['status_detail'].widget = forms.widgets.Select(
                         choices=self.STATUS_DETAIL_CHOICES)
-        if 'status' in self_fields_keys:
+        if 'status' in self.fields:
             self.fields['status'].widget = forms.widgets.Select(
                         choices=self.STATUS_CHOICES)
-        if 'groups' in self_fields_keys:
+        if 'groups' in self.fields:
             self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
             self.fields['groups'].queryset = Group.objects.filter(
                                                 allow_self_add=True,
@@ -1125,7 +1121,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                                                 status_detail='active')
             self.fields['groups'].help_text = ''
 
-        if 'corporate_membership_id' in self_fields_keys:
+        if 'corporate_membership_id' in self.fields:
             if self.join_under_corporate and self.corp_membership:
                 self.fields['corporate_membership_id'].widget = forms.widgets.Select(
                                         choices=((self.corp_membership.id, self.corp_membership),))
@@ -1137,7 +1133,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                                                 status_detail__in=['archive', 'inactive'])
 
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
         if self.instance and self.instance.pk:
             self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'

@@ -2446,7 +2446,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
     # required fields only stay on the first form
     for i, form in enumerate(formset.forms):
-        for key in form.fields.keys():
+        for key in form.fields:
             if i > 0:
                 form.fields[key].required = False
             else:
@@ -3859,7 +3859,6 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 form=custom_reg_form).order_by('position').values_list('id', 'label')
 
             fields_dict = OrderedDict(fields)
-            field_ids = fields_dict.keys()
             # field header row - all the field labels in the form + registrant_mappings.keys
             labels = fields_dict.values()
             labels.extend(registrant_mappings.keys())
@@ -3885,20 +3884,20 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                         FROM events_customregfieldentry
                         WHERE field_id IN (%s)
                         AND entry_id=%d
-                    """ % (','.join([str(id) for id in field_ids]), entry_id)
+                    """ % (','.join([str(id) for id in fields_dict]), entry_id)
                 cursor.execute(sql)
                 entry_rows = cursor.fetchall()
                 values_dict = dict(entry_rows)
 
                 custom_values_list = []
-                for field_id in field_ids:
+                for field_id in fields_dict:
                     custom_values_list.append(values_dict.get(field_id, ''))
                 custom_values_list.extend(registrant_tuple)
 
                 rows_list.append(custom_values_list)
             rows_list.append(['\n'])
 
-            balance_index = len(field_ids) + len(registrant_lookups) - 1
+            balance_index = len(fields_dict) + len(registrant_lookups) - 1
 
             # write to spread sheet
             render_registrant_excel(sheet, rows_list, balance_index, styles, start=start_row)

@@ -102,7 +102,7 @@ class File(TendenciBaseModel):
         Loop through key fields and return True
         if a key field has changed.
         """
-        for field_name in self._originaldict.keys():
+        for field_name in self._originaldict:
             if getattr(self, field_name) != self._originaldict[field_name]:
                 return True
 
