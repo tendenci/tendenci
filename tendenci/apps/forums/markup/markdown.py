@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from markdown import Markdown
+import bleach
 from django.forms import Textarea
 from django.template import Context
 from django.template.loader import get_template
@@ -33,10 +34,10 @@ class MarkdownParser(BaseParser):
     widget_class = MarkdownWidget
 
     def __init__(self):
-        self._parser = Markdown(safe_mode='escape')
+        self._parser = Markdown()
 
     def format(self, text):
-        return smile_it(self._parser.convert(text))
+        return smile_it(self._parser.convert(bleach.clean(text)))
 
     def quote(self, text, username=''):
         return '>' + text.replace('\n', '\n>').replace('\r', '\n>') + '\n'
