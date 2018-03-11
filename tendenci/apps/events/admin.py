@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib import admin, messages
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.encoding import iri_to_uri
@@ -246,11 +246,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(CustomRegFormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^export/(?P<regform_id>\d+)/$",
                 self.admin_site.admin_view(self.export_view),
                 name="customregform_export"),
-        )
+        ]
         return extra_urls + urls
 
 admin.site.register(CustomRegForm, CustomRegFormAdmin)
@@ -263,11 +263,11 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(StandardRegFormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^edit",
                 self.admin_site.admin_view(self.edit_regform_view),
                 name="standardregform_edit"),
-        )
+        ]
         return extra_urls + urls
 
     def edit_regform_view(self, request):

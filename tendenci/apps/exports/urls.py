@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.exports.views',
-    url(r'^(?P<export_id>\d+)/$', 'status', name="export.status"),
-    url(r'^(?P<export_id>\d+)/download/$', 'download', name="export.download"),
-)
+urlpatterns = [
+    url(r'^(?P<export_id>\d+)/$', views.status, name="export.status"),
+    url(r'^(?P<export_id>\d+)/download/$', views.download, name="export.download"),
+]

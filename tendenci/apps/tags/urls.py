@@ -1,7 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.tags.views',
-    url(r'^$', 'tags_list', name="tags_list"),
-    url(r'^(?P<id>\d+)/$', 'detail', name="tag.detail"),
-    url(r'^autocomplete/$', 'autocomplete', name="tag.autocomplete"),
-)
+urlpatterns = [
+    url(r'^$', views.tags_list, name="tags_list"),
+    url(r'^(?P<id>\d+)/$', views.detail, name="tag.detail"),
+    url(r'^autocomplete/$', views.autocomplete, name="tag.autocomplete"),
+]

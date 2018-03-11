@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect, render
@@ -93,11 +93,11 @@ class MultipleFileAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(MultipleFileAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^add",
                 self.admin_site.admin_view(self.add_multiple_file_view),
                 name="multiplefile_add"),
-        )
+        ]
         return extra_urls + urls
 
     def add_multiple_file_view(self, request):

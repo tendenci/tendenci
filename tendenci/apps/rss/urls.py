@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
-from tendenci.apps.rss.feeds import GlobalFeed
+from django.conf.urls import url
+#from . import views
+from .feeds import GlobalFeed
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', GlobalFeed(), name="rss.mainrssfeed"),
-)
+]

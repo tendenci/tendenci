@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
@@ -451,8 +451,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
-        extra_urls = patterns(
-            u'',
+        extra_urls = [
             url("^approve/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
@@ -465,7 +464,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             url("^expire/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
-        )
+        ]
         return extra_urls + urls
 
     # django-admin custom views ----------------------------------------
@@ -780,11 +779,11 @@ class NoticeAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
-        extra_urls = patterns('',
+        extra_urls = [
             url("^clone/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
-        )
+        ]
         return extra_urls + urls
 
     def clone(self, request, pk):

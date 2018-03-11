@@ -1,5 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.mobile.views',
-    url(r'^toggle_mobile_mode/$', 'toggle_mobile_mode', name="toggle_mobile_mode"),
-)
+urlpatterns = [
+    url(r'^toggle_mobile_mode/$', views.toggle_mobile_mode, name="toggle_mobile_mode"),
+]

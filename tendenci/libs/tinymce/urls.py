@@ -1,8 +1,7 @@
 # Copyright (c) 2008 Joost Cassee
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 from django.conf.urls import url
-
-from tendenci.libs.tinymce import views
+from . import views
 
 urlpatterns = [
     url(r'^js/textareas/(?P<name>.+)/$', views.textareas_js,

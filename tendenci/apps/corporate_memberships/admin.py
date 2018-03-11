@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.shortcuts import get_object_or_404, redirect
 
 from tendenci.apps.corporate_memberships.models import (
@@ -397,11 +397,11 @@ class NoticeAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
-        extra_urls = patterns('',
+        extra_urls = [
             url("^clone/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.clone),
                 name='corporate_membership_notice.admin_clone'),
-        )
+        ]
         return extra_urls + urls
 
     def clone(self, request, pk):

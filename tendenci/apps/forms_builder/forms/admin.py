@@ -3,7 +3,7 @@ from csv import writer
 from datetime import datetime
 
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
@@ -140,14 +140,14 @@ class FormAdmin(TendenciBaseModelAdmin):
         Add the export view to urls.
         """
         urls = super(FormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^export/(?P<form_id>\d+)/$",
                 self.admin_site.admin_view(self.export_view),
                 name="forms_form_export"),
             url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="forms_form_file"),
-        )
+        ]
         return extra_urls + urls
 
     def export_view(self, request, form_id):
