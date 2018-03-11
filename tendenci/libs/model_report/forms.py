@@ -86,7 +86,7 @@ class FilterForm(forms.BaseForm):
         if not self.is_valid():
             return {}
         filter_kwargs = dict(self.cleaned_data)
-        for k, v in dict(filter_kwargs).items():
+        for k, v in filter_kwargs.copy().items():
             if not v:
                 filter_kwargs.pop(k)
                 continue
