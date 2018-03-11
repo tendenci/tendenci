@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import os
 import pytz
@@ -467,7 +468,7 @@ def timezone_label(value):
 
 @register.filter
 def field_to_string(value):
-    if isinstance(value, str) or isinstance(value, unicode):
+    if isinstance(value, str):
         return value
     if isinstance(value, list):
         if len(value) == 0:

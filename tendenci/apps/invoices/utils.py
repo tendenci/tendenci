@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime, date, time
 import time as ttime
 import cStringIO as StringIO
@@ -152,7 +153,7 @@ def process_invoice_export(start_dt=None, end_dt=None,
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)

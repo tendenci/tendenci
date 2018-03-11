@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import math
 from datetime import datetime, date, time, timedelta
@@ -1655,7 +1656,7 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                         elif isinstance(row_item_list[i], time):
                             row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
-                        elif isinstance(row_item_list[i], basestring):
+                        elif isinstance(row_item_list[i], str):
                             row_item_list[i] = row_item_list[i].encode("utf-8")
                 csv_writer.writerow(row_item_list)
 

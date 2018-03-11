@@ -80,7 +80,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             raise Http403
 
     # if string and digit convert to integer
-    if isinstance(quality, basestring) and quality.isdigit():
+    if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
 
     # get image binary

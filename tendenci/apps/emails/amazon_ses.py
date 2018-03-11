@@ -19,6 +19,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
+from builtins import str
 import httplib
 import urllib
 import hashlib
@@ -84,7 +85,7 @@ class AmazonSES:
         params = { 'Source': source }
         for objName, addresses in zip(["ToAddresses", "CcAddresses", "BccAddresses"], [toAddresses, ccAddresses, bccAddresses]):
             if addresses:
-                if not isinstance(addresses, basestring) and getattr(addresses, '__iter__', False):
+                if not isinstance(addresses, str) and getattr(addresses, '__iter__', False):
                     for i, address in enumerate(addresses, 1):
                         params['Destination.%s.member.%d' % (objName, i)] = address
                 else:

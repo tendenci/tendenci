@@ -1,4 +1,5 @@
 from six import with_metaclass
+from builtins import str
 import re
 from time import strptime, strftime
 #from south.modelsinspector import add_introspection_rules
@@ -87,7 +88,7 @@ class DictField(with_metaclass(models.SubfieldBase, models.TextField)):
         if not value:
             return {}
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
                 return simplejson.loads(value)
             except (ValueError, TypeError):
@@ -103,7 +104,7 @@ class DictField(with_metaclass(models.SubfieldBase, models.TextField)):
         if isinstance(value, dict):
             return simplejson.dumps(value)
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
 
         return ''

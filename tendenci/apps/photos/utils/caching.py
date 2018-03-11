@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.cache import cache
@@ -14,7 +16,7 @@ from tendenci.apps.photos.models import Image
 def cache_photo_size(id, size, crop=False, quality=90, download=False, constrain=False):
     """
     """
-    if isinstance(quality, unicode) and quality.isdigit():
+    if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
 
     cache_key = generate_image_cache_key(file=str(id), size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=str(id), quality=quality, constrain=constrain)

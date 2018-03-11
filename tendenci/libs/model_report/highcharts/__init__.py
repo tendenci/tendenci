@@ -35,7 +35,7 @@ def unicodeToHTMLEntities(text):
     """
     if text is None:
         text = force_unicode(_('None'))
-    if isinstance(text, unicode) or isinstance(text, str):
+    if isinstance(text, str):
         text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text
 

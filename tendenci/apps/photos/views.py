@@ -199,7 +199,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     Returns 404 if if image rendering fails
     """
 
-    if isinstance(quality, unicode) and quality.isdigit():
+    if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
 
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)

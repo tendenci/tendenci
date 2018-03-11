@@ -806,7 +806,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         for k, v in self.cleaned_data.items():
 
             if v:
-                if hasattr(profile, k) and isinstance(v, basestring):
+                if hasattr(profile, k) and isinstance(v, str):
                     v = v.strip() or getattr(profile, k)
                 setattr(profile, k, v)
 

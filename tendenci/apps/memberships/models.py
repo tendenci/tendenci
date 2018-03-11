@@ -2357,7 +2357,7 @@ class Notice(models.Model):
         if not isinstance(membership, MembershipDefault):
             return False
 
-        if isinstance(emails, basestring):
+        if isinstance(emails, str):
             emails = [emails]  # expecting list of emails
 
         # allowed notice types

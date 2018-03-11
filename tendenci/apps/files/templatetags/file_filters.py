@@ -1,3 +1,4 @@
+from builtins import str
 from django.template import Library
 register = Library()
 
@@ -19,7 +20,7 @@ def file_exists(obj):
     if isinstance(obj, FileField):
         return default_storage.exists(obj.path)
 
-    if isinstance(obj, basestring) and obj:
+    if isinstance(obj, str) and obj:
         return default_storage.exists(obj)
 
     return False

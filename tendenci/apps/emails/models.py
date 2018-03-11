@@ -1,3 +1,4 @@
+from builtins import str
 import uuid
 import copy
 from django.db import models
@@ -67,20 +68,20 @@ class Email(TendenciBaseModel):
         headers = kwargs.get('headers', {})
         attachments = kwargs.get('attachments', [])
 
-        if isinstance(self.recipient, basestring):
+        if isinstance(self.recipient, str):
             recipient_list = self.recipient.split(',')
             recipient_list = [recipient.strip() for recipient in recipient_list
                               if recipient.strip() != '']
         else:
             recipient_list = list(self.recipient)
-        if isinstance(self.recipient_cc, basestring):
+        if isinstance(self.recipient_cc, str):
             recipient_cc_list = self.recipient_cc.split(',')
             recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if
                                   recipient_cc.strip() != '']
             recipient_list += recipient_cc_list
         else:
             recipient_list += list(self.recipient_cc)
-        if isinstance(self.recipient_bcc, basestring):
+        if isinstance(self.recipient_bcc, str):
             recipient_bcc_list = self.recipient_bcc.split(',')
             recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if
                                    recipient_bcc.strip() != '']

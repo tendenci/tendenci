@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime, timedelta
 from os.path import join, isdir
 from os import mkdir
@@ -55,14 +56,14 @@ def search(request, template_name="event_logs/search.html"):
 
             # if they set the dates lets update the range
             start_dt = search_form.cleaned_data['start_dt']
-            if isinstance(start_dt, unicode):
+            if isinstance(start_dt, str):
                 start_dt = datetime.strptime(
                     start_dt,
                     '%Y-%m-%d %H:%M'
                 )
 
             end_dt = search_form.cleaned_data['end_dt']
-            if isinstance(end_dt, unicode):
+            if isinstance(end_dt, str):
                 end_dt = datetime.strptime(
                     end_dt,
                     '%Y-%m-%d %H:%M'

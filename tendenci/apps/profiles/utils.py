@@ -364,7 +364,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)

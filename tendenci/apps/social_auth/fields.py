@@ -1,4 +1,5 @@
 from six import with_metaclass
+from builtins import str
 from django.core.exceptions import ValidationError
 from django.db import models
 import simplejson
@@ -21,7 +22,7 @@ class JSONField(with_metaclass(models.SubfieldBase, models.TextField)):
         """
         if self.blank and not value:
             return None
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
                 return simplejson.loads(value)
             except Exception as e:

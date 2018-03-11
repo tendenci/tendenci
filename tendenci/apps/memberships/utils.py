@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import csv
 import re
@@ -468,7 +469,7 @@ def process_export(
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                     elif field_name == 'membership_type':
                         # display membership type name instead of id
@@ -1826,7 +1827,7 @@ def get_membership_type_by_value(value):
         value = int(value)
     if isinstance(value, int):
         return get_membership_type_by_id(value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, str):
         return get_membership_type_by_name(value)
 
 

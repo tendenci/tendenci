@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from __future__ import print_function
+from builtins import str
 from datetime import datetime, time, timedelta
 import time as ttime
 import subprocess
@@ -255,17 +256,17 @@ def search(request, template_name="invoices/search.html"):
                 search_text = 0
 
         if search_method == 'starts_with':
-            if isinstance(search_text, basestring):
+            if isinstance(search_text, str):
                 search_type = '__istartswith'
             else:
                 search_type = '__startswith'
         elif search_method == 'contains':
-            if isinstance(search_text, basestring):
+            if isinstance(search_text, str):
                 search_type = '__icontains'
             else:
                 search_type = '__contains'
         else:
-            if isinstance(search_text, basestring):
+            if isinstance(search_text, str):
                 search_type = '__iexact'
             else:
                 search_type = '__exact'

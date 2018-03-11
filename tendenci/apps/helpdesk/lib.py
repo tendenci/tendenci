@@ -6,6 +6,7 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 lib.py - Common functions (eg multipart e-mail)
 """
 
+from builtins import str
 from django.utils.encoding import smart_str
 
 import logging

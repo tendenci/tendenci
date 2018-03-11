@@ -221,7 +221,7 @@ def tcurrency(mymoney):
     if not currency_symbol:
         currency_symbol = "$"
 
-    if not isinstance(mymoney, basestring):
+    if not isinstance(mymoney, str):
         if mymoney >= 0:
             fmt = '%s%s'
         else:
@@ -680,7 +680,7 @@ def is_blank(item):
         l = item.values()
     elif isinstance(item, list):
         l = item
-    elif isinstance(item, basestring):
+    elif isinstance(item, str):
         l = list(item)
 
     item = []

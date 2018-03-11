@@ -1,6 +1,8 @@
+from builtins import str
 from collections import OrderedDict
 import time
 from datetime import datetime, date
+
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
@@ -118,7 +120,7 @@ def process_export(
                     if hasattr(profile, field_name):
                         row_dict[field_name] = getattr(profile, field_name)
                 for k, v in row_dict.items():
-                    if not isinstance(v, basestring):
+                    if not isinstance(v, str):
                         if isinstance(v, datetime):
                             row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
                         elif isinstance(v, date):

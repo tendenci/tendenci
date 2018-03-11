@@ -1,3 +1,4 @@
+from builtins import str
 import time as ttime
 from datetime import datetime, date, time
 
@@ -59,7 +60,7 @@ def process_export(identifier, user_id):
                     item = item.strftime('%Y-%m-%d')
                 elif isinstance(item, time):
                     item = item.strftime('%H:%M:%S')
-                elif isinstance(item, basestring):
+                elif isinstance(item, str):
                     item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)

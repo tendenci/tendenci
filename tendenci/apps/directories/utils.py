@@ -1,4 +1,5 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
+from builtins import str
 from datetime import datetime, date, time
 from cStringIO import StringIO
 from PIL import Image
@@ -248,7 +249,7 @@ def process_export(export_fields='all_fields', export_status_detail='',
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                     elif field_name == 'invoice':
                         # display total vs balance

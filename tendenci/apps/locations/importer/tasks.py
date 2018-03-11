@@ -1,3 +1,4 @@
+from builtins import str
 from celery.task import Task
 
 from tendenci.apps.locations.models import Location
@@ -20,7 +21,7 @@ class ImportLocationsTask(Task):
                 obj_dict = {}
                 for key in m.keys():
                     if key in location_fields:
-                        if isinstance(m[key], basestring):
+                        if isinstance(m[key], str):
                             m[key] = m[key].strip()
                         obj_dict[key] = m[key]
 

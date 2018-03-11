@@ -1,3 +1,4 @@
+from builtins import str
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -116,7 +117,7 @@ class ObjectPermissionManager(models.Manager):
         if group_with_perms:
             from tendenci.apps.user_groups.models import Group
             for group, perm in group_or_groups:
-                if isinstance(group, unicode):
+                if isinstance(group, str):
                     if group.isdigit():
                         try:
                             group = Group.objects.get(pk=group)

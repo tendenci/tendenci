@@ -2048,7 +2048,7 @@ class Notice(models.Model):
         if not isinstance(corporate_membership, CorpMembership):
             return False
 
-        if isinstance(recipients, basestring):
+        if isinstance(recipients, str):
             recipients = [recipients]  # expecting list of emails
 
         # allowed notice types
