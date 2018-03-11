@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('blog_import_date', models.DateTimeField(auto_now_add=True)),
-                ('blog', models.FileField(upload_to=b'blogimport')),
+                ('blog', models.FileField(upload_to='blogimport')),
                 ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),

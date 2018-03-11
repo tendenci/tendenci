@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('tender_date', models.DateTimeField(null=True)),
                 ('arrival_date_time', models.DateTimeField(null=True, blank=True)),
                 ('is_void', models.BooleanField(default=False)),
-                ('status_detail', models.CharField(default=b'estimate', max_length=50, choices=[(b'estimate', 'Estimate'), (b'tendered', 'Tendered')])),
+                ('status_detail', models.CharField(default='estimate', max_length=50, choices=[('estimate', 'Estimate'), ('tendered', 'Tendered')])),
                 ('status', models.BooleanField(default=True)),
                 ('payments_credits', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),
                 ('balance', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),

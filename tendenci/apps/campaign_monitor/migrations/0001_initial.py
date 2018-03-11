@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('campaign_id', models.CharField(unique=True, max_length=100)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(default=b'D', max_length=1, choices=[(b'S', 'Sent'), (b'C', 'Scheduled'), (b'D', 'Draft')])),
+                ('status', models.CharField(default='D', max_length=1, choices=[('S', 'Sent'), ('C', 'Scheduled'), ('D', 'Draft')])),
                 ('name', models.CharField(max_length=100)),
                 ('subject', models.CharField(max_length=500)),
                 ('sent_date', models.DateTimeField(null=True, blank=True)),

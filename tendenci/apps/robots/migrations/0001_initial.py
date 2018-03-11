@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('url', models.URLField()),
                 ('version', models.CharField(max_length=50)),
                 ('status', models.BooleanField(default=True)),
-                ('status_detail', models.CharField(default=b'active', max_length=50, choices=[(b'active', 'Active'), (b'inactive', 'Inactive')])),
+                ('status_detail', models.CharField(default='active', max_length=50, choices=[('active', 'Active'), ('inactive', 'Inactive')])),
             ],
         ),
     ]

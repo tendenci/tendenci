@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recurringpayment',
             name='platform',
-            field=models.CharField(default=b'authorizenet', max_length=50, blank=True),
+            field=models.CharField(default='authorizenet', max_length=50, blank=True),
         ),
     ]

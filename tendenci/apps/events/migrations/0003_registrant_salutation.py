@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registrant',
             name='salutation',
-            field=models.CharField(default=b'', max_length=15, verbose_name='salutation', blank=True),
+            field=models.CharField(default='', max_length=15, verbose_name='salutation', blank=True),
         ),
     ]

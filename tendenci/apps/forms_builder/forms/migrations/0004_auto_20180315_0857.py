@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='field',
             name='field_function',
-            field=models.CharField(blank=True, max_length=64, null=True, verbose_name='Special Functionality', choices=[(b'GroupSubscription', 'Subscribe to Group'), (b'GroupSubscriptionAuto', 'Subscribe to Group (Auto)'), (b'EmailFirstName', 'First Name'), (b'EmailLastName', 'Last Name'), (b'EmailFullName', 'Full Name'), (b'EmailPhoneNumber', 'Phone Number'), (b'Recipients', 'Email to Recipients')]),
+            field=models.CharField(blank=True, max_length=64, null=True, verbose_name='Special Functionality', choices=[('GroupSubscription', 'Subscribe to Group'), ('GroupSubscriptionAuto', 'Subscribe to Group (Auto)'), ('EmailFirstName', 'First Name'), ('EmailLastName', 'Last Name'), ('EmailFullName', 'Full Name'), ('EmailPhoneNumber', 'Phone Number'), ('Recipients', 'Email to Recipients')]),
         ),
         migrations.AlterField(
             model_name='formentry',

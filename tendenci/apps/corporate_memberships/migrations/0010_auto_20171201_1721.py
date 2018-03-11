@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='notice',
             name='notice_type',
-            field=models.CharField(max_length=20, verbose_name='For Notice Type', choices=[(b'approve_join', 'Join Approval Date'), (b'disapprove_join', 'Join Disapproval Date'), (b'approve_renewal', 'Renewal Approval Date'), (b'disapprove_renewal', 'Renewal Disapproval Date'), (b'expiration', 'Expiration Date')]),
+            field=models.CharField(max_length=20, verbose_name='For Notice Type', choices=[('approve_join', 'Join Approval Date'), ('disapprove_join', 'Join Disapproval Date'), ('approve_renewal', 'Renewal Approval Date'), ('disapprove_renewal', 'Renewal Disapproval Date'), ('expiration', 'Expiration Date')]),
         ),
     ]

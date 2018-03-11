@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             name='NoticeSetting',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('medium', models.CharField(max_length=1, verbose_name='medium', choices=[(b'1', 'Email')])),
+                ('medium', models.CharField(max_length=1, verbose_name='medium', choices=[('1', 'Email')])),
                 ('send', models.BooleanField(default=False, verbose_name='send')),
             ],
             options={

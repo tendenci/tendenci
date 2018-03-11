@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='membershipimport',
             name='recap_file',
-            field=models.FileField(max_length=260, null=True, verbose_name='Recap File', upload_to=b''),
+            field=models.FileField(max_length=260, null=True, verbose_name='Recap File', upload_to=''),
         ),
         migrations.AlterField(
             model_name='membershipimport',

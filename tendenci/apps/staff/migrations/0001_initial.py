@@ -43,8 +43,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
                 ('name', models.CharField(max_length=50)),
                 ('slug', models.SlugField(max_length=75)),
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254, null=True, blank=True)),
                 ('phone', models.CharField(max_length=25, null=True, blank=True)),
                 ('cv', models.TextField()),
-                ('personal_sites', models.TextField(help_text=b'List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
+                ('personal_sites', models.TextField(help_text='List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
                 ('tags', tagging.fields.TagField(help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255, blank=True)),
                 ('creator', models.ForeignKey(related_name='staff_staff_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('department', models.ForeignKey(blank=True, to='staff.Department', null=True)),
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
-                ('photo_type', models.CharField(max_length=50, choices=[(b'featured', b'Featured'), (b'other', b'Other')])),
+                ('photo_type', models.CharField(max_length=50, choices=[('featured', 'Featured'), ('other', 'Other')])),
                 ('staff', models.ForeignKey(to='staff.Staff')),
             ],
             options={
