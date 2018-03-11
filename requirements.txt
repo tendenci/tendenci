@@ -19,7 +19,7 @@ django-nocaptcha-recaptcha==0.0.20
 django-tagging==0.4.3
 django-haystack==2.4.1
 django-debug-toolbar>=1.2.2
-django-sql-explorer==0.9.2
+django-sql-explorer==1.1.1
 feedparser>=4.1
 pytz==2018.3
 simplejson>=2.0.9
