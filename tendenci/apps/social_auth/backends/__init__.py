@@ -750,7 +750,7 @@ def get_backends():
             continue
 
         for directory, subdir, files in walk(mod.__path__[0]):
-            for name in filter(lambda name: name.endswith('.py'), files):
+            for name in [name for name in files if name.endswith('.py')]:
                 try:
                     name = basename(name).replace('.py', '')
                     sub = import_module(mod_name + '.' + name)

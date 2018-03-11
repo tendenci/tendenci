@@ -90,7 +90,7 @@ def google_cmap_sign_url(url):
         return url
 
     # don't sign if api key is not provided
-    if 'key' not in dict(map(lambda x:x.split('='), url_parts.query.split('&'))):
+    if 'key' not in dict([x.split('=') for x in url_parts.query.split('&')]):
         return url
 
     # strip off the domain portion of the request, leaving only the path and the query

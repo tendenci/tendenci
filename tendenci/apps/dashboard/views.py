@@ -71,8 +71,8 @@ def new(request, template_name="dashboard/new.html"):
         return redirect(profile_redirect)
 
     if get_setting('site', 'global', 'groupdashboard'):
-        group_dashboard_urls = filter(None, request.user.group_member
-                                                    .values_list('group__dashboard_url', flat=True))
+        group_dashboard_urls = [m for m in request.user.group_member
+                                                    .values_list('group__dashboard_url', flat=True) if m]
         if group_dashboard_urls:
             url = group_dashboard_urls[0]
             return redirect(url)

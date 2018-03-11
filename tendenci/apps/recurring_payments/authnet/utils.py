@@ -100,7 +100,7 @@ def to_camel_case(d):
         def to_camel(x):
             return re.sub("_([a-z])", to_upper, x)
 
-        return dict(map(lambda x: (to_camel(x[0]), x[1]), list(d.items())))
+        return dict([(to_camel(x[0]), x[1]) for x in d.items()])
     return d
 
 
