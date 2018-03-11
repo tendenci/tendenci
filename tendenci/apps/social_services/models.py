@@ -76,10 +76,9 @@ class SkillSet(models.Model):
 
     @property
     def is_first_responder(self):
-        for field_name in self._meta.get_all_field_names():
-            field = self._meta.get_field_by_name(field_name)[0]
+        for field in self._meta.get_fields():
             if isinstance(field, models.BooleanField):
-                if getattr(self, field_name):
+                if getattr(self, field.name):
                     return True
         return False
 

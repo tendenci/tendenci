@@ -67,7 +67,8 @@ def add_arguments(self, parser):
                     for instance in instances:
                         if instance.owner == instance.creator:
                             print("%s -- %s" % (m.__name__, instance))
-                            links = [rel.get_accessor_name() for rel in instance._meta.get_all_related_objects()]
+                            links = [f.get_accessor_name() for f in instance._meta.get_fields()
+                                     if (f.one_to_many or f.one_to_one) and f.auto_created and not f.concrete]
                             print("looking at related objects...")
                             for link in links:
                                 try:

@@ -122,7 +122,7 @@ def do_group_import(group_object_dict):
     # assure the correct fields get the right value types
     for field in GROUP_FIELDS:
         if field in group_object_dict:
-            field_type = Group._meta.get_field_by_name(field)[0]
+            field_type = Group._meta.get_field(field)
             if isinstance(field_type, FloatField):
                 setattr(group, field, group_object_dict[field])
             else:

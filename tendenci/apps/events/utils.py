@@ -1585,7 +1585,7 @@ def do_event_import(event_object_dict):
                                     color_set=color_set
                                     )
             else:
-                field_type = Event._meta.get_field_by_name(field)[0]
+                field_type = Event._meta.get_field(field)
                 if isinstance(field_type, models.DateTimeField):
                     setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
                 elif isinstance(field_type, models.NullBooleanField):
@@ -1602,7 +1602,7 @@ def do_event_import(event_object_dict):
     for field in PLACE_FIELDS:
         if field in event_object_dict:
             p_field = field.replace('place__', '')
-            field_type = Place._meta.get_field_by_name(p_field)[0]
+            field_type = Place._meta.get_field(p_field)
             if isinstance(field_type, models.DateTimeField):
                 setattr(place, p_field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
             elif isinstance(field_type, models.NullBooleanField):

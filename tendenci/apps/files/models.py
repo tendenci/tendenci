@@ -17,7 +17,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.related import ManyToOneRel
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -86,16 +85,16 @@ class File(TendenciBaseModel):
         super(File, self).__init__(*args, **kwargs)
 
         self._originaldict = {}
-        for field_name in self._meta.get_all_field_names():
+        for field in self._meta.get_fields():
 
-            if isinstance(self._meta.get_field_by_name(field_name)[0], ManyToOneRel):
+            if field.auto_created or field.many_to_one:
                 continue  # preventing circular reference
 
-            if hasattr(self, field_name):
-                value = getattr(self, field_name)
+            if hasattr(self, field.name):
+                value = getattr(self, field.name)
                 # skip Manager type objects
                 if not isinstance(value, models.Manager):
-                    self._originaldict[field_name] = value
+                    self._originaldict[field.name] = value
 
     def has_changed(self):
         """
@@ -356,7 +355,10 @@ class File(TendenciBaseModel):
             except:
                 return None
         else:
-            for r_object in self._meta.get_all_related_objects():
+            r_objects = [f for f in self._meta.get_fields()
+                         if (f.one_to_many or f.one_to_one)
+                         and f.auto_created and not f.concrete]
+            for r_object in r_objects:
                 if hasattr(self, r_object.name):
                     return getattr(self, r_object.name)
             return None

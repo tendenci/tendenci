@@ -353,7 +353,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     for key, value in user.__dict__.items():
         max_length = 90
         try:
-            max_length = User._meta.get_field_by_name(key)[0].max_length
+            max_length = User._meta.get_field(key).max_length
         except FieldDoesNotExist:
             max_length = None
         if max_length:  # truncate per max_length field attribute

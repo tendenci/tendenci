@@ -242,24 +242,24 @@ class ReportAdmin(object):
                     base_model = self.model
                     for field_lookup in field.split("__"):
                         if not pre_field:
-                            pre_field, _, _, is_m2m = base_model._meta.get_field_by_name(field_lookup)
+                            is_m2m = base_model._meta.get_field(field_lookup).many_to_many
                             if is_m2m:
                                 m2mfields.append(pre_field)
                         elif isinstance(pre_field, ForeignObjectRel):
                             base_model = pre_field.model
-                            pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                            pre_field = base_model._meta.get_field(field_lookup)
                         else:
                             if is_date_field(pre_field):
                                 pre_field = pre_field
                             else:
                                 base_model = pre_field.rel.to
-                                pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                                pre_field = base_model._meta.get_field(field_lookup)
                     model_field = pre_field
                 else:
                     if field in self.extra_fields:
                         model_field = self.extra_fields[field]
                     elif 'self.' not in field:
-                        model_field = self.model._meta.get_field_by_name(field)[0]
+                        model_field = self.model._meta.get_field(field)
                     else:
                         def get_attr(s):
                             return getattr(s, field.split(".")[1])
@@ -273,7 +273,7 @@ class ReportAdmin(object):
         self.model_fields = model_fields
         self.model_m2m_fields = model_m2m_fields
         if parent_report:
-            self.related_inline_field = [f for f, x in self.model._meta.get_fields_with_model() if f.rel and hasattr(f.rel, 'to') and f.rel.to is self.parent_report.model][0]
+            self.related_inline_field = [f for f in self.model._meta.get_fields() if f.rel and hasattr(f.rel, 'to') and f.rel.to is self.parent_report.model][0]
             self.related_inline_accessor = self.related_inline_field.related.get_accessor_name()
             self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.rel.to]
             self.related_inline_filters = []
@@ -598,12 +598,12 @@ class ReportAdmin(object):
                                     base_model = pre_field.model
                                 else:
                                     base_model = pre_field.rel.to
-                            pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                            pre_field = base_model._meta.get_field(field_lookup)
 
                         model_field = pre_field
                     else:
                         field_name = k.split("__")[0]
-                        model_field = opts.get_field_by_name(field_name)[0]
+                        model_field = opts.get_field(field_name)
 
                     if isinstance(model_field, (DateField, DateTimeField)):
                         form_fields.pop(k)
@@ -652,7 +652,7 @@ class ReportAdmin(object):
                         setattr(field, 'as_boolean', True)
                     elif isinstance(v, (forms.DateField, forms.DateTimeField)):
                         field_name = k.split("__")[0]
-                        model_field = opts.get_field_by_name(field_name)[0]
+                        model_field = opts.get_field(field_name)
                         form_fields.pop(k)
                         field = RangeField(model_field.formfield)
                     # Change filter form fields specific to invoice reports

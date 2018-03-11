@@ -23,7 +23,7 @@ def meta_og_image(obj, field_name):
         return cached_value
 
     try:
-        field = obj._meta.get_field_by_name(field_name)[0]
+        field = obj._meta.get_field(field_name)
         image_list = []
 
         if isinstance(field, HTMLField) or isinstance(field, TextField):

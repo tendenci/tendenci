@@ -25,10 +25,10 @@ RECOMMENDED_METHODS = ('is_authenticated',)
 
 if getattr(settings, 'SOCIAL_AUTH_USER_MODEL', None):
     User = apps.get_model(*settings.SOCIAL_AUTH_USER_MODEL.split('.'))
-    missing = list(set(RECOMMENDED_FIELDS) -
-                   set(User._meta.get_all_field_names())) + \
-              [name for name in RECOMMENDED_METHODS
-                      if not callable(getattr(User, name, None))]
+    missing = (list(set(RECOMMENDED_FIELDS)) -
+               [f.name for f in User._meta.get_fields()] +
+               [name for name in RECOMMENDED_METHODS
+                if not callable(getattr(User, name, None))])
     if missing:
         warnings.warn('Missing recommended attributes or methods '
                       'in custom User model: "%s"' % ', '.join(missing))

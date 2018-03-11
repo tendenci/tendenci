@@ -713,7 +713,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             if g not in groups:
                 groups.append(g)
 
-    tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
+    tag_help_text = Image._meta.get_field('tags').help_text
 
     default_group_id = Group.objects.get_initial_group_id()
 

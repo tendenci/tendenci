@@ -655,7 +655,8 @@ class MembershipDefault(TendenciBaseModel):
 
         demographic = self.demographics
 
-        field_names = demographic._meta.get_all_field_names()
+        field_names = [f.name for f in demographic._meta.get_fields()
+                       if not (f.many_to_one and f.related_model is None)]
         field_names.sort(key=self.demographic_sort_key)  # sort by ud number
 
         field_dict = {}
