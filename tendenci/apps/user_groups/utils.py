@@ -21,11 +21,14 @@ def member_choices(group, member_label):
     """
     members = User.objects.all().order_by('username')
     if member_label == 'email':
-        label = lambda x: x.email
+        def label(x):
+            return x.email
     elif member_label == 'full_name':
-        label = lambda x: x.get_full_name()
+        def label(x):
+            return x.get_full_name()
     else:
-        label = lambda x: x.username
+        def label(x):
+            return x.username
     choices = []
     for member in members:
         choices.append((member.pk, label(member)))

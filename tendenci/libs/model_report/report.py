@@ -262,7 +262,8 @@ class ReportAdmin(object):
                     elif 'self.' not in field:
                         model_field = self.model._meta.get_field_by_name(field)[0]
                     else:
-                        get_attr = lambda s: getattr(s, field.split(".")[1])
+                        def get_attr(s):
+                            return getattr(s, field.split(".")[1])
                         get_attr.verbose_name = field
                         model_field = field
             except IndexError:
@@ -891,11 +892,15 @@ class ReportAdmin(object):
             groupby_field = groupby_data['groupby']
             if groupby_field in self.override_group_value:
                 transform_fn = self.override_group_value.get(groupby_field)
-                groupby_fn = lambda x: transform_fn(x[ffields.index(groupby_field)])
+
+                def groupby_fn(x):
+                    return transform_fn(x[ffields.index(groupby_field)])
             else:
-                groupby_fn = lambda x: x[ffields.index(groupby_field)]
+                def groupby_fn(x):
+                    return x[ffields.index(groupby_field)]
         else:
-            groupby_fn = lambda x: None
+            def groupby_fn(x):
+                return None
 
         qs_list.sort(key=groupby_fn)
         g = groupby(qs_list, key=groupby_fn)

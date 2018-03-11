@@ -182,7 +182,10 @@ def apply_template_media(template):
     """
     content = unicode(template.html_file.file.read(), "utf-8")
     pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
-    repl = lambda x: '"%s/%s"' % (template.get_media_url(), x.group(0).replace('"', ''))
+
+    def repl(x):
+        return '"%s/%s"' % (template.get_media_url(), x.group(0).replace('"', ''))
+
     new_content = re.sub(pattern, repl, content)
     return new_content
 

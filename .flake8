@@ -7,8 +7,6 @@ ignore =
   F841,
   # Import issues
   E401,E402,F401,
-  # Unnecessary lambdas
-  E731,
 
   # Inline statement after colon
   E701,

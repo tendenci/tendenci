@@ -11,7 +11,8 @@ Solid = 'Solid'
 outside = 'outside'
 
 
-_ = lambda s: force_unicode(ugettext_lazy(s))
+def _(s):
+    return force_unicode(ugettext_lazy(s))
 
 
 class CollectionObject(object):

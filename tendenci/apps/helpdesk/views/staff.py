@@ -1085,7 +1085,8 @@ def run_report(request, report):
     # a second table for more complex queries
     summarytable2 = defaultdict(int)
 
-    month_name = lambda m: MONTHS_3[m].title()
+    def month_name(m):
+        return MONTHS_3[m].title()
 
     first_ticket = Ticket.objects.all().order_by('created')[0]
     first_month = first_ticket.created.month

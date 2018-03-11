@@ -103,7 +103,9 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
         url_pattern = r'http:\/\/www\.youtube\.com\/watch\?v=(\w+)'
         share_pattern = r'http:\/\/youtu\.be\/(\w+)'
-        repl = lambda x: 'http://www.youtube.com/embed/%s' % x.group(1)
+
+        def repl(x):
+            return 'http://www.youtube.com/embed/%s' % x.group(1)
 
         if re.match(url_pattern, self.video_url):
             return re.sub(url_pattern, repl, self.video_url)

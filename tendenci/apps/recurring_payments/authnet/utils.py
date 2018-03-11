@@ -93,8 +93,12 @@ def to_camel_case(d):
     camelCaseFormat and return the new dict
     """
     if type(d) is dict:
-        to_upper = lambda match: match.group(1).upper()
-        to_camel = lambda x: re.sub("_([a-z])", to_upper, x)
+
+        def to_upper(match):
+            return match.group(1).upper()
+
+        def to_camel(x):
+            return re.sub("_([a-z])", to_upper, x)
 
         return dict(map(lambda x: (to_camel(x[0]), x[1]), d.items()))
     return d

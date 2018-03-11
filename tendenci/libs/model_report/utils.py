@@ -22,9 +22,11 @@ def base_label(report, field):
         return "%s" % capwords(field.verbose_name)
     return field
 
-base_lookup_label = lambda report, field: "[%s] %s" % (field.model._meta.verbose_name.title(), field.verbose_name.title())
+def base_lookup_label(report, field):
+    return "[%s] %s" % (field.model._meta.verbose_name.title(), field.verbose_name.title())
 
-model_lookup_label = lambda report, field: "[%s] %s" % (report.model._meta.verbose_name.title(), field.verbose_name.title())
+def model_lookup_label(report, field):
+    return "[%s] %s" % (report.model._meta.verbose_name.title(), field.verbose_name.title())
 
 
 def sum_column(values):

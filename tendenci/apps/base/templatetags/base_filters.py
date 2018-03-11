@@ -255,7 +255,8 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     if autoescape:
         esc = conditional_escape
     else:
-        esc = lambda x: x
+        def esc(x):
+            return x
 
     email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056',
         esc(email))).encode('rot13')
