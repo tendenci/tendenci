@@ -20,9 +20,6 @@ from .templatetags.pybb_tags import pybb_is_topic_unread, pybb_topic_unread, pyb
 
 from . import compat, util
 
-User = compat.get_user_model()
-username_field = compat.get_username_field()
-
 try:
     from lxml import html
 except ImportError:
@@ -31,6 +28,9 @@ except ImportError:
 from . import defaults
 from .models import Topic, TopicReadTracker, Forum, ForumReadTracker, Post, Category, PollAnswer
 
+
+User = compat.get_user_model()
+username_field = compat.get_username_field()
 
 Profile = util.get_pybb_profile_model()
 

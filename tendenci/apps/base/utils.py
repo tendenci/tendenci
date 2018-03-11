@@ -22,7 +22,6 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from PIL import Image as pil
 from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from django.conf import settings
 from django.utils import translation
@@ -50,6 +49,8 @@ from simple_salesforce import Salesforce
 from tendenci.apps.base.models import ChecklistItem
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_root
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',

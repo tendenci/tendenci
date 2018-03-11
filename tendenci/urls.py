@@ -5,6 +5,7 @@ from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
 from tendenci.libs.model_report import report
 from tendenci.apps.registry.register import autodiscover as registry_autodiscover
+from tendenci.apps.registry.utils import get_url_patterns
 
 registry_autodiscover()
 
@@ -165,7 +166,6 @@ except ImportError:
     pass
 
 #PLUGINS:
-from tendenci.apps.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
 
 urlpatterns += patterns('', url(r'^en/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),)

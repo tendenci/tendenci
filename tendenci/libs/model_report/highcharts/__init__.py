@@ -4,6 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
 
+try:
+    from BeautifulSoup import BeautifulStoneSoup
+except ImportError:
+    from bs4 import BeautifulStoneSoup
+
+import cgi
+
 
 def is_numeric(value):
     try:
@@ -11,13 +18,6 @@ def is_numeric(value):
     except (ValueError, TypeError):
         return False
     return True
-
-try:
-    from BeautifulSoup import BeautifulStoneSoup
-except ImportError:
-    from bs4 import BeautifulStoneSoup
-
-import cgi
 
 
 def HTMLEntitiesToUnicode(text):

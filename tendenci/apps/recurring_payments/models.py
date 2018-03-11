@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
+from django.db.models.signals import post_save, post_delete
 from django.conf import settings
 
 from dateutil.relativedelta import relativedelta
@@ -773,8 +774,6 @@ class PaymentTransaction(models.Model):
     class Meta:
         app_label = 'recurring_payments'
 
-
-from django.db.models.signals import post_save, post_delete
 
 def create_customer_profile(sender, instance=None, created=False, **kwargs):
     """ A post_save signal of RecurringPayment to create a customer profile

@@ -7,10 +7,6 @@ from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.loader import BaseLoader
 from django.template import engines
-engine = engines['django'].engine
-find_template_loader = engine.find_template_loader
-get_template_from_string = engine.from_string
-make_origin = engine.make_origin
 
 from django.utils._os import safe_join
 from django.core.cache import cache
@@ -20,6 +16,11 @@ from django.core.exceptions import SuspiciousFileOperation
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 from tendenci.apps.theme.utils import get_theme_root
 from tendenci.apps.theme.middleware import get_current_request
+
+engine = engines['django'].engine
+find_template_loader = engine.find_template_loader
+get_template_from_string = engine.from_string
+make_origin = engine.make_origin
 
 non_theme_source_loaders = None
 

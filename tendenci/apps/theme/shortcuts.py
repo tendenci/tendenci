@@ -1,16 +1,17 @@
 import re
 from django.template import TemplateDoesNotExist, Context
 from django.template import Engine
+from django.http import HttpResponse
+from django.conf import settings
+from tendenci.apps.theme.utils import get_theme_template, get_theme_root
+from tendenci.apps.site_settings.utils import get_setting
+
 engine = Engine.get_default()
 find_template = engine.find_template
 find_template_loader = engine.find_template_loader
 get_template_from_string = engine.from_string
 select_template = engine.select_template
 make_origin = engine.make_origin
-from django.http import HttpResponse
-from django.conf import settings
-from tendenci.apps.theme.utils import get_theme_template, get_theme_root
-from tendenci.apps.site_settings.utils import get_setting
 
 non_theme_source_loaders = None
 

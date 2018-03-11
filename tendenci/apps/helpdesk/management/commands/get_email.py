@@ -33,7 +33,6 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import striptags
 from django.utils.encoding import DjangoUnicodeDecodeError
 from HTMLParser import HTMLParser
-unescape = HTMLParser().unescape
 from tendenci.apps.helpdesk import settings
 
 try:
@@ -43,6 +42,8 @@ except ImportError:
 
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Queue, Ticket, FollowUp, Attachment, IgnoreEmail
+
+unescape = HTMLParser().unescape
 
 
 class Command(BaseCommand):

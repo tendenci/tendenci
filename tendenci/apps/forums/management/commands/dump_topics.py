@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # vim:fileencoding=utf-8
 from __future__ import unicode_literals
-__author__ = 'zeus'
 
 from django.core.management.base import BaseCommand
 from tendenci.apps.forums.models import Topic, Post

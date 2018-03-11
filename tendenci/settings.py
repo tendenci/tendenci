@@ -2,6 +2,7 @@ import os.path
 
 from django.conf import global_settings
 import django.conf.locale
+from django.contrib import messages
 
 # Paths
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -401,7 +402,7 @@ CACHE_PRE_KEY = "TENDENCI"
 # --------------------------------------#
 # CELERY
 # --------------------------------------#
-import djcelery
+import djcelery  # noqa: E402
 djcelery.setup_loader()
 BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
 BROKER_HOST = "localhost"
@@ -556,8 +557,6 @@ INDEX_UPDATE_NOTE = 'updated hourly'
 # Django Admin Bootstrap
 # ------------------------------------#
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-
-from django.contrib import messages
 
 MESSAGE_TAGS = {
             messages.SUCCESS: 'alert-success success',
