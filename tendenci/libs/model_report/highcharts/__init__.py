@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from builtins import str
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
@@ -34,7 +34,7 @@ def unicodeToHTMLEntities(text):
     Converts unicode to HTML entities.  For example '&' becomes '&amp;'.
     """
     if text is None:
-        text = force_unicode(_('None'))
+        text = force_text(_('None'))
     if isinstance(text, str):
         text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text

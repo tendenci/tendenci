@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from builtins import str
 from django.utils.translation import ugettext_lazy
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 
 true = 'true'
@@ -13,7 +13,7 @@ outside = 'outside'
 
 
 def _(s):
-    return force_unicode(ugettext_lazy(s))
+    return force_text(ugettext_lazy(s))
 
 
 class CollectionObject(object):

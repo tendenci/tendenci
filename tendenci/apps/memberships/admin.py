@@ -10,7 +10,7 @@ from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
@@ -912,8 +912,8 @@ class MembershipAppField2Admin(admin.ModelAdmin):
                 module_name = opts_.model_name
 
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
-                        'name': force_unicode(verbose_name),
-                        'obj': force_unicode(obj)}
+                        'name': force_text(verbose_name),
+                        'obj': force_text(obj)}
             self.message_user(request, msg)
             post_url = '%s?membership_app_id=%d' % (
                             reverse('admin:%s_%s_changelist' %

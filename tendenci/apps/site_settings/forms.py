@@ -6,7 +6,7 @@ from django import forms
 from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
+from django.utils.encoding import force_text, DjangoUnicodeDecodeError
 from timezones import zones
 from django_countries import countries as COUNTRIES
 from django.utils.safestring import mark_safe
@@ -121,7 +121,7 @@ def build_settings_form(user, settings):
             continue
 
         try:
-            setting_value = force_unicode(setting.get_value())
+            setting_value = force_text(setting.get_value())
         except DjangoUnicodeDecodeError:
             setting_value = ''
 

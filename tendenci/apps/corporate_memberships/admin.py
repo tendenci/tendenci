@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import patterns, url
 from django.shortcuts import get_object_or_404, redirect
@@ -528,8 +528,8 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
                 model_name = opts_.model_name
 
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
-                        'name': force_unicode(verbose_name),
-                        'obj': force_unicode(obj)}
+                        'name': force_text(verbose_name),
+                        'obj': force_text(obj)}
             self.message_user(request, msg)
             post_url = '%s?corp_app_id=%d' % (
                             reverse('admin:%s_%s_changelist' %

@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter, helpers
 from django.contrib.admin.utils import get_deleted_objects, model_ngettext
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import iri_to_uri, force_unicode
+from django.utils.encoding import iri_to_uri, force_text
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
@@ -154,7 +154,7 @@ def soft_delete_selected(modeladmin, request, queryset):
         n = queryset.count()
         if n:
             for obj in queryset:
-                obj_display = force_unicode(obj)
+                obj_display = force_text(obj)
                 modeladmin.log_deletion(request, obj, obj_display)
 
                 # Delete the object with it's own method in case the
@@ -167,9 +167,9 @@ def soft_delete_selected(modeladmin, request, queryset):
         return None
 
     if len(queryset) == 1:
-        objects_name = force_unicode(opts.verbose_name)
+        objects_name = force_text(opts.verbose_name)
     else:
-        objects_name = force_unicode(opts.verbose_name_plural)
+        objects_name = force_text(opts.verbose_name_plural)
 
     if perms_needed or protected:
         title = _("Cannot delete %(name)s") % {"name": objects_name}

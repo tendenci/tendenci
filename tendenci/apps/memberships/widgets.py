@@ -8,7 +8,7 @@ from django.forms.widgets import RadioFieldRenderer, RadioChoiceInput
 from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 
@@ -406,7 +406,7 @@ class CustomRadioInput(RadioChoiceInput):
         #    label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
         #else:
         #    label_for = ''
-        choice_label = conditional_escape(force_unicode(self.choice_label))
+        choice_label = conditional_escape(force_text(self.choice_label))
         return mark_safe(u'<div class="form-inline"><label>%s %s</label></div>' % (self.tag(), choice_label))
 
 
@@ -431,7 +431,7 @@ class Output(forms.Widget):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
-        return force_unicode(self._format_value(value))
+        return force_text(self._format_value(value))
 
 class Header(Output):
     """
@@ -554,7 +554,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
         final_attrs = self.build_attrs(attrs, name=name)
         output = [u'<div>']
         # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
+        str_values = set([force_text(v) for v in value])
 
         key = ''
         for i, (option_value, option_label) in enumerate(chain(self.choices,
@@ -599,9 +599,9 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
 
                 cb = CheckboxInput(final_attrs,
                                    check_test=lambda value: value in str_values)
-                option_value = force_unicode(option_value)
+                option_value = force_text(option_value)
                 rendered_cb = cb.render(name, option_value)
-                option_label = conditional_escape(force_unicode(option_label))
+                option_label = conditional_escape(force_text(option_label))
                 output.append(u'<div class="field-box select-field"><label%s>%s %s</label></div>' % (label_for,
                                                                     rendered_cb,
                                                                     option_label))

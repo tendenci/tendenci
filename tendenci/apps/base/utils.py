@@ -34,7 +34,6 @@ from django.template import TemplateDoesNotExist
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
 from django.utils.text import capfirst, Truncator
-from django.utils.encoding import force_unicode
 from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
@@ -115,7 +114,7 @@ class LazyEncoder(DjangoJSONEncoder):
     """
     def default(self, obj):
         if isinstance(obj, Promise):
-            return force_unicode(obj)
+            return force_text(obj)
         return super(LazyEncoder, self).default(obj)
 
 def get_languages_with_local_name():

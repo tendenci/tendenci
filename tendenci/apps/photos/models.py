@@ -22,7 +22,7 @@ from django.core.files.storage import default_storage
 from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.encoding import smart_str, force_unicode
+from django.utils.encoding import smart_str, force_text
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
 import simplejson
@@ -156,7 +156,7 @@ class ImageModel(models.Model):
         return os.path.join(settings.MEDIA_URL, self.cache_path())
 
     def image_filename(self):
-        return os.path.basename(force_unicode(self.image))
+        return os.path.basename(force_text(self.image))
 
     def _get_filename_for_size(self, size):
         size = getattr(size, 'name', size)

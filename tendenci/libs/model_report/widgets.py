@@ -2,7 +2,7 @@
 from django import forms
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 
 class RangeWidget(forms.MultiWidget):
@@ -42,7 +42,7 @@ class RangeField(forms.MultiValueField):
                 widget=RangeWidget(widget),
                 *args, **kwargs
                 )
-        self.label = force_unicode(field_class().label)
+        self.label = force_text(field_class().label)
 
     def compress(self, data_list):
         if data_list:
