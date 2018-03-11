@@ -22,7 +22,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         import datetime
         import uuid
-        from StringIO import StringIO
+        from io import BytesIO
         from django.core.management import call_command
         from django.core.files import File
         from django.contrib.auth.models import User
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
         print("Creating database dump...")
 
-        content = StringIO()
+        content = BytesIO()
         call_command('dumpdata', format=fmt, stdout=content, exclude=['captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
 
         dump_obj.dbfile.save(str(uuid.uuid1()), File(content))

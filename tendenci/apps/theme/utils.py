@@ -1,5 +1,5 @@
 import os
-import ConfigParser
+import configparser
 from django.conf import settings
 from django.core.cache import cache
 from tendenci.apps.site_settings.utils import get_setting
@@ -89,10 +89,10 @@ def get_theme_info(theme=None):
     if cached is None:
         # Get a dict of the fields, not the object itself.
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         try:
             config.read(os.path.join(theme_root, 'theme.info'))
-        except ConfigParser.MissingSectionHeaderError:
+        except configparser.MissingSectionHeaderError:
             prepend_file(os.path.join(theme_root, 'theme.info'))
             config.read(os.path.join(theme_root, 'theme.info'))
 

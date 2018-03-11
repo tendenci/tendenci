@@ -1,9 +1,9 @@
 from __future__ import print_function
 from PIL import Image
 from os.path import exists
-from cStringIO import StringIO
+from io import BytesIO
 import os
-import httplib
+from six.moves import http_client
 from six.moves.urllib.request import urlopen, Request
 from six.moves.urllib.parse import urlparse, quote, unquote
 import socket
@@ -49,7 +49,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         binary = build_image(file, size, pre_key, **kwargs)
 
     try:
-        return Image.open(StringIO(binary))
+        return Image.open(BytesIO(binary))
     except:
         return ''
 
@@ -69,7 +69,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     if settings.USE_S3_STORAGE:
         content = read_media_file_from_s3(file)
-        image = Image.open(StringIO(content))
+        image = Image.open(BytesIO(content))
     else:
         if hasattr(file, 'path') and exists(file.path):
             image = Image.open(file.path)  # get image
@@ -114,7 +114,7 @@ def get_image_binary(image, **options):
     """
     image.format = image.format or 'JPEG'
 
-    output = StringIO()
+    output = BytesIO()
     image.save(output, image.format, **options)
     binary = output.getvalue()
     output.close()
@@ -475,7 +475,7 @@ class AppRetrieveFiles(object):
         example of a relative_link:
         /images/newsletter/young.gif
         """
-        conn = httplib.HTTPConnection(domain)
+        conn = http_client.HTTPConnection(domain)
         try:
             conn.request('HEAD', relative_link)
             res = conn.getresponse()

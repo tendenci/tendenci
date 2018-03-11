@@ -1,7 +1,7 @@
 from builtins import str
 from datetime import datetime, date, time
 import time as ttime
-import cStringIO as StringIO
+from io import BytesIO
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
@@ -52,8 +52,8 @@ def invoice_pdf(request, invoice):
                            'tmp_total': tmp_total,
                            'pdf_version': True,
                                      }))
-    result = StringIO.StringIO()
-    pisa.pisaDocument(StringIO.StringIO(html.encode("utf-8")), result,
+    result = BytesIO()
+    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
                       path=get_setting('site', 'global', 'siteurl'))
     return result
 

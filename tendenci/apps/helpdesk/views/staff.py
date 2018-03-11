@@ -759,9 +759,9 @@ def ticket_list(request):
             return HttpResponseRedirect(reverse('helpdesk_list'))
 
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query)))
     elif not (  'queue' in request.GET
@@ -874,9 +874,9 @@ def ticket_list(request):
         search_message = _('<p><strong>Note:</strong> Your keyword search is case sensitive because of your database. This means the search will <strong>not</strong> be accurate. By switching to a different database system you will gain better searching! For more information, read the <a href="http://docs.djangoproject.com/en/dev/ref/databases/#sqlite-string-matching">Django Documentation on string matching in SQLite</a>.')
 
     try:
-        import pickle
+        import six.moves.cPickle as pickle
     except ImportError:
-        import cPickle as pickle
+        import pickle
     from tendenci.apps.helpdesk.lib import b64encode
     urlsafe_query = b64encode(pickle.dumps(query_params))
 
@@ -1070,9 +1070,9 @@ def run_report(request, report):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
 
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query)))
         report_queryset = apply_query(report_queryset, query_params)

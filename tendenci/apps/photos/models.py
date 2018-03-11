@@ -10,7 +10,7 @@ from PIL import ImageEnhance
 
 from datetime import datetime
 from inspect import isclass
-from cStringIO import StringIO
+from io import BytesIO
 
 from django.db import models
 from django.db.models.signals import post_init
@@ -120,7 +120,7 @@ class ImageModel(models.Model):
     def EXIF(self):
         try:
             content = default_storage.open(str(self.image)).read()
-            im = PILImage.open(StringIO(content))
+            im = PILImage.open(BytesIO(content))
         except IOError:
             return
 
@@ -267,7 +267,7 @@ class ImageModel(models.Model):
 
         try:
             content = default_storage.open(str(self.image)).read()
-            im = PILImage.open(StringIO(content))
+            im = PILImage.open(BytesIO(content))
         except IOError as e:
             print(e)
             return
@@ -292,8 +292,7 @@ class ImageModel(models.Model):
         im_filename = getattr(self, "get_%s_filename" % photosize.name)()
 
         try:
-            import StringIO as StringIO2
-            buffer = StringIO2.StringIO()
+            buffer = BytesIO()
             im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
@@ -478,7 +477,7 @@ class Watermark(BaseEffect):
     def post_process(self, im):
         try:
             content = default_storage.open(str(self.image)).read()
-            mark = PILImage.open(StringIO(content))
+            mark = PILImage.open(BytesIO(content))
         except IOError as e:
             raise e
 
@@ -962,7 +961,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
 
     def get_file_from_remote_storage(self):
-        return StringIO(default_storage.open(self.image.file.name).read())
+        return BytesIO(default_storage.open(self.image.file.name).read())
 
     def image_dimensions(self):
         try:

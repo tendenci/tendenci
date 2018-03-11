@@ -33,7 +33,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import striptags
 from django.utils.encoding import DjangoUnicodeDecodeError
-from HTMLParser import HTMLParser
+from six.moves.html_parser import HTMLParser
 from tendenci.apps.helpdesk import settings
 
 try:

@@ -1,5 +1,5 @@
 import os
-import cPickle
+from six.moves import cPickle
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -188,7 +188,7 @@ def user_upload_recap(request, sid):
     recap_path = os.path.join(IMPORT_FOLDER_NAME, recap_file_name)
 
     if default_storage.exists(recap_path):
-        import StringIO
+        from io import BytesIO
         from django.template.defaultfilters import slugify
         from xlwt import Workbook
 
@@ -199,7 +199,7 @@ def user_upload_recap(request, sid):
 
         recap_dict = cPickle.loads(content)
 
-        output = StringIO.StringIO()
+        output = BytesIO()
         export_wb = Workbook()
         sheet1 = export_wb.add_sheet('Recap')
         # title

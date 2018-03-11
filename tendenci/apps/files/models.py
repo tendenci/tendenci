@@ -6,7 +6,7 @@ import uuid
 from PIL import Image
 import re
 #from slate import PDF
-import cStringIO
+from io import BytesIO
 from base64 import b64encode
 
 from django.db import models
@@ -288,7 +288,7 @@ class File(TendenciBaseModel):
         return icons_dir + '/' + icons[self.type()]
 
     def get_file_from_remote_storage(self):
-        return cStringIO.StringIO(default_storage.open(self.file.name).read())
+        return BytesIO(default_storage.open(self.file.name).read())
 
     def image_dimensions(self):
         try:

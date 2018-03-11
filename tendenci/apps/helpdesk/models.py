@@ -1042,18 +1042,18 @@ class UserSettings(models.Model):
     def _set_settings(self, data):
         # data should always be a Python dictionary.
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64encode
         self.settings_pickled = b64encode(pickle.dumps(data))
 
     def _get_settings(self):
         # return a python dictionary representing the pickled data.
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64decode
         try:
             return pickle.loads(b64decode(str(self.settings_pickled)))
@@ -1322,7 +1322,7 @@ class CustomField(models.Model):
         )
 
     def _choices_as_array(self):
-        from StringIO import StringIO
+        from io import StringIO
         valuebuffer = StringIO(self.list_values)
         choices = [[item.strip(), item.strip()] for item in valuebuffer.readlines()]
         valuebuffer.close()

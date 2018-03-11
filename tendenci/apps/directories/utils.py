@@ -1,7 +1,7 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
 from builtins import str
 from datetime import datetime, date, time
-from cStringIO import StringIO
+from io import BytesIO
 from PIL import Image
 import time as ttime
 
@@ -32,7 +32,7 @@ def resize_s3_image(image_path, width=200, height=200):
     f = storage.open(image_path)
     content = f.read()
     f.close()
-    img = Image.open(StringIO(content))
+    img = Image.open(BytesIO(content))
     img.thumbnail((width,height),Image.ANTIALIAS)
     f = storage.open(image_path, 'w')
     img.save(f)

@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
 import subprocess
-import xmlrpclib
+from six.moves import xmlrpc_client
 from optparse import make_option
 
 from django.conf import settings
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         uwsgi_error_msg = None
         errors_list = []
 
-        pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+        pypi = xmlrpc_client.ServerProxy('http://pypi.python.org/pypi')
         latest_version = pypi.package_releases('tendenci')[0]
         error_message = ""
         email_context = {'site_url':get_setting('site', 'global', 'siteurl'),

@@ -10,9 +10,9 @@ from tendenci.apps.helpdesk.settings import DEFAULT_USER_SETTINGS
 def picke_settings(data):
     """Pickling as defined at migration's creation time"""
     try:
-        import pickle
+        import six.moves.cPickle as pickle
     except ImportError:
-        import cPickle as pickle
+        import pickle
     from tendenci.apps.helpdesk.lib import b64encode
     return b64encode(pickle.dumps(data))
 

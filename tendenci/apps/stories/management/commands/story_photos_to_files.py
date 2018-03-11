@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
 import shutil
-import commands
+import subprocess
 from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
@@ -13,9 +13,11 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from tendenci.apps.stories.models import Story, StoryPhoto
 
-        status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
-        if status > 0:
-            print(output)
+        try:
+            subprocess.check_output('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT,
+                                    stderr=subprocess.STDOUT, shell=True)
+        except subprocess.CalledProcessError as e:
+            print(e.output)
             return
 
         stories = Story.objects.all()

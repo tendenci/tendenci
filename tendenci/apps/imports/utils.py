@@ -105,8 +105,8 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
 
             csv_writer.writerow(row_item_list)
     else:
-        import StringIO
-        output = StringIO.StringIO()
+        from io import BytesIO
+        output = BytesIO()
         export_wb = Workbook()
         export_sheet = export_wb.add_sheet('Sheet1')
         col_idx = 0

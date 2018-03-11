@@ -1,5 +1,5 @@
 import re
-import HTMLParser
+from six.moves import html_parser
 from django.core.management.base import BaseCommand
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         from tendenci.apps.pages.models import Page
 
         pages = Page.objects.all()
-        self.h = HTMLParser.HTMLParser()
+        self.h = html_parser.HTMLParser()
         pattern = re.compile('(&#\d+;)', re.IGNORECASE)
 
         for page in pages:

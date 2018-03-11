@@ -4,7 +4,7 @@ import os
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connections, transaction, DEFAULT_DB_ALIAS
-from StringIO import StringIO
+from io import BytesIO
 from django.conf import settings
 
 # Remove Django color output handler
@@ -59,12 +59,12 @@ class Command(BaseCommand):
         Drop application tables
         """
         # get sql --------------
-        sql = StringIO()
+        sql = BytesIO()
         call_command('sqlclear', app_name, stdout=sql)
         sql.seek(0)
 
         # run sql ---------------
-        statements = self.run_sql(sql.read(), **options)
+        statements = self.run_sql(sql.read().decode(), **options)
         sql.close()
 
         return statements

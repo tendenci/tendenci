@@ -6,7 +6,7 @@ import logging
 import uuid
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except ImportError:
     import pickle
 

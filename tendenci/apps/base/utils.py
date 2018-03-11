@@ -7,7 +7,6 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 import codecs
-import cStringIO
 import csv
 import hashlib
 import hmac
@@ -16,7 +15,7 @@ from six.moves.urllib.request import Request, build_opener
 from six.moves.urllib.parse import urlparse
 import socket
 from PIL import Image
-from StringIO import StringIO
+from io import BytesIO
 import requests
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
@@ -545,7 +544,7 @@ def make_image_object_from_url(image_url):
     try:
         socket.setdefaulttimeout(1.5)
         data = opener.open(request).read() # get data
-        im = Image.open(StringIO(data))
+        im = Image.open(BytesIO(data))
     except:
         im = None
     return im
@@ -774,7 +773,7 @@ class UnicodeWriter:
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = BytesIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -900,7 +899,7 @@ def extract_pdf(fp):
     Extract text from PDF file.
     """
     rsrcmgr = PDFResourceManager()
-    retstr = cStringIO.StringIO()
+    retstr = BytesIO()
     codec = 'utf-8'
     laparams = LAParams()
     device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
@@ -938,8 +937,8 @@ def validate_email(s, quiet=True):
 
 
 def get_latest_version():
-    import xmlrpclib
-    proxy = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    from six.moves import xmlrpc_client
+    proxy = xmlrpc_client.ServerProxy('http://pypi.python.org/pypi')
     return proxy.package_releases('tendenci')[0]
 
 

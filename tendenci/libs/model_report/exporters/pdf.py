@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cStringIO as StringIO
+from io import BytesIO
 from cgi import escape
 from xhtml2pdf import pisa
 
@@ -26,10 +26,10 @@ class PdfExporter(Exporter):
         template = get_template('model_report/export_pdf.html')
         context = Context(context_dict)
         html = template.render(context)
-        result = StringIO.StringIO()
+        result = BytesIO()
         pdf_encoding='UTF-8'
 
-        pdf = pisa.CreatePDF(StringIO.StringIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
+        pdf = pisa.CreatePDF(BytesIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
 
         if not pdf.err:
             response = HttpResponse(result.getvalue(), content_type='application/pdf')
