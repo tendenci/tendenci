@@ -198,6 +198,7 @@ INSTALLED_APPS = (
     'captcha',
     'haystack',
     'tastypie',
+    'timezone_field',
 
     'tendenci',
     'tendenci.libs.model_report',

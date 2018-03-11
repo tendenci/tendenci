@@ -5,11 +5,11 @@ from datetime import datetime
 import mimetypes
 import boto
 from boto.s3.key import Key
-from timezones.utils import adjust_datetime_to_timezone
 from django.conf import settings
 import dateutil.parser as dparser
 from django.core.files.storage import default_storage
 from storages.backends.s3boto import S3BotoStorage, S3BotoStorageFile
+from tendenci.apps.base.utils import adjust_datetime_to_timezone
 
 
 class StaticStorage(S3BotoStorage):

@@ -21,7 +21,7 @@ register = Library()
 
 @register.filter(name="localize_date")
 def localize_date(value, to_tz=None):
-    from timezones.utils import adjust_datetime_to_timezone
+    from tendenci.apps.base.utils import adjust_datetime_to_timezone
     try:
         if to_tz is None:
             to_tz = settings.UI_TIME_ZONE

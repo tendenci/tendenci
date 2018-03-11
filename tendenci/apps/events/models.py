@@ -17,7 +17,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
 
 from tagging.fields import TagField
-from timezones.fields import TimeZoneField
+from timezone_field import TimeZoneField
+
 from tendenci.apps.events.managers import EventManager, RegistrantManager, EventTypeManager
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -34,13 +35,14 @@ from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
 
 from tendenci.apps.events.settings import (
     FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, FIELD_TYPE_CHOICES, USER_FIELD_CHOICES, FIELD_FUNCTIONS)
-from tendenci.apps.base.utils import localize_date
+from tendenci.apps.base.utils import (localize_date, get_timezone_choices,
+    format_datetime_range)
 from tendenci.apps.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 # from south.modelsinspector import add_introspection_rules
-# add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
+# add_introspection_rules([], ["^timezone_field.TimeZoneField"])
 
 EMAIL_DEFAULT_ONLY = 'default'
 EMAIL_CUSTOM_ONLY = 'custom'
@@ -1093,7 +1095,7 @@ class Event(TendenciBaseModel):
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
-    timezone = TimeZoneField(_('Time Zone'))
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
@@ -1180,7 +1182,6 @@ class Event(TendenciBaseModel):
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
-        from tendenci.apps.base.utils import format_datetime_range
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
 
     @property

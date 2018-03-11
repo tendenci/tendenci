@@ -39,7 +39,7 @@ pdfminer==20110515
 stripe==1.62.0
 pycrypto==2.6.1
 boto==2.40.0
-django-timezones==0.2
+django-timezone-field==2.1
 django-ses==0.7.1
 Geraldo==0.4.17
 django-tastypie==0.13.3

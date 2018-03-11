@@ -4,9 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import ugettext_lazy as _
 
+from timezone_field import TimeZoneField
+
+from tendenci.apps.base.utils import get_timezone_choices
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from timezones.fields import TimeZoneField
 from tendenci.apps.contacts.managers import ContactManager
 
 
@@ -76,7 +78,7 @@ class Contact(TendenciBaseModel):
     further communication.
     """
     guid = models.CharField(max_length=40)
-    timezone = TimeZoneField()
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     user = models.ForeignKey(User, null=True, related_name='contact_user')
 
     first_name = models.CharField(max_length=100, blank=True)

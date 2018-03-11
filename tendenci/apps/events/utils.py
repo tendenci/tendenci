@@ -33,7 +33,9 @@ from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
-from tendenci.apps.base.utils import format_datetime_range, UnicodeWriter
+from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
+    format_datetime_range, UnicodeWriter, get_salesforce_access,
+    create_salesforce_contact)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 
@@ -208,7 +210,6 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
 
 def get_ievent(request, d, event_id):
     from django.conf import settings
-    from timezones.utils import adjust_datetime_to_timezone
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -269,7 +270,6 @@ def get_ievent(request, d, event_id):
 
 def get_vevents(user, d):
     from django.conf import settings
-    from timezones.utils import adjust_datetime_to_timezone
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -1626,7 +1626,6 @@ def do_event_import(event_object_dict):
 def add_sf_attendance(registrant, event):
 
     from django.conf import settings
-    from tendenci.apps.base.utils import get_salesforce_access, create_salesforce_contact
     from tendenci.apps.profiles.models import Profile
 
     if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:

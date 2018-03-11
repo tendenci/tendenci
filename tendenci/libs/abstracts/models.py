@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
-from timezones.fields import TimeZoneField
 
+from timezone_field import TimeZoneField
+
+from tendenci.apps.base.utils import get_timezone_choices
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.object_perms import ObjectPermission
 
@@ -119,7 +121,7 @@ class Person(TendenciBaseModel):
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 
-    time_zone = TimeZoneField(_('timezone'))
+    time_zone = TimeZoneField(verbose_name=_('timezone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
     perms = GenericRelation(ObjectPermission,

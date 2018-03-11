@@ -2,8 +2,7 @@ from __future__ import print_function
 from builtins import object, str
 import os
 import re
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 import codecs
@@ -13,6 +12,7 @@ import hmac
 import base64
 from six.moves.urllib.request import Request, build_opener
 from six.moves.urllib.parse import urlparse
+import pytz
 import socket
 from PIL import Image
 from io import BytesIO
@@ -34,6 +34,7 @@ from django.template import TemplateDoesNotExist
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
 from django.utils.text import capfirst, Truncator
+from django.utils.encoding import smart_str
 from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
@@ -45,7 +46,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from simple_salesforce import Salesforce
 
-from tendenci.apps.base.models import ChecklistItem
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_root
 
@@ -117,6 +117,7 @@ class LazyEncoder(DjangoJSONEncoder):
             return force_text(obj)
         return super(LazyEncoder, self).default(obj)
 
+
 def get_languages_with_local_name():
     """
     Get a list of tuples of available languages with local name.
@@ -171,21 +172,27 @@ def get_deleted_objects(objs, user):
     return to_delete, collector.model_count, perms_needed, protected
 
 
-# this function is not necessary - datetime.now() *is* localized in django
-def now_localized():
-    from timezones.utils import adjust_datetime_to_timezone
-    from time import strftime, gmtime
+def get_timezone_choices():
+    choices = []
+    for tz in pytz.common_timezones:
+        ofs = datetime.now(pytz.timezone(tz)).strftime("%z")
+        choices.append((int(ofs), tz, "(GMT%s) %s" % (ofs, tz)))
+    choices.sort()
+    return [t[1:] for t in choices]
 
-    os_timezone = strftime('%Z',gmtime())
-    if os_timezone == 'CST': os_timezone = 'US/Central'
-    django_timezone =  settings.TIME_ZONE
 
-    now = adjust_datetime_to_timezone(
-               datetime.now(),
-               from_tz=os_timezone,
-               to_tz=django_timezone)
-    now = now.replace(tzinfo=None)
-    return now
+def adjust_datetime_to_timezone(value, from_tz, to_tz=None):
+    """
+    Given a ``datetime`` object, adjust it according to the from_tz timezone
+    string into the to_tz timezone string.
+    """
+    if to_tz is None:
+        to_tz = settings.TIME_ZONE
+    if value.tzinfo is None:
+        if not hasattr(from_tz, "localize"):
+            from_tz = pytz.timezone(smart_str(from_tz))
+        value = from_tz.localize(value)
+    return value.astimezone(pytz.timezone(smart_str(to_tz)))
 
 
 def localize_date(date, from_tz=None, to_tz=None):
@@ -195,7 +202,6 @@ def localize_date(date, from_tz=None, to_tz=None):
 
         localize_date(date, from_tz, to_tz=None)
     """
-    from timezones.utils import adjust_datetime_to_timezone
 
     # set the defaults
     if from_tz is None:
@@ -439,6 +445,7 @@ def generate_meta_keywords(value):
     except AttributeError:
         return ''
 
+
 def filelog(*args, **kwargs):
     """
         Will generate a file with output to the
@@ -466,6 +473,7 @@ def filelog(*args, **kwargs):
     for arg in args:
         f.write(arg)
     f.close()
+
 
 class FormDateTimes(object):
     """
@@ -496,12 +504,13 @@ class FormDateTimes(object):
 
         # set the end time to an hour ahead
         self.end_dt = self.start_dt + timedelta(hours=1)
-
 date_times = FormDateTimes()
+
 
 def enc_pass(password):
     from base64 import urlsafe_b64encode
     return ''.join(list(reversed(urlsafe_b64encode(password))))
+
 
 def dec_pass(password):
     from base64 import urlsafe_b64decode
@@ -510,6 +519,7 @@ def dec_pass(password):
     pw_list.reverse()
 
     return urlsafe_b64decode(''.join(pw_list))
+
 
 def url_exists(url):
     o = urlparse(url)
@@ -526,6 +536,7 @@ def parse_image_sources(string):
     p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
+
 
 def make_image_object_from_url(image_url):
     # parse url
@@ -577,6 +588,7 @@ def image_rescale(img, size, force=True):
 
     img.format = format  # add format back
     return img
+
 
 def in_group(user, group):
     """
@@ -635,6 +647,7 @@ def check_template(filename):
     current_file = os.path.join(settings.ORIGINAL_THEMES_DIR, THEME_ROOT, template_directory, filename)
     return os.path.isfile(current_file)
 
+
 def template_exists(template):
     """
     Check if the template exists
@@ -644,6 +657,7 @@ def template_exists(template):
     except TemplateDoesNotExist:
         return False
     return True
+
 
 def fieldify(s):
     """Convert the fields in the square brackets to the django field type.
@@ -655,6 +669,7 @@ def fieldify(s):
     #p = re.compile('(\[([\w\d\s_-]+)\])')
     p = re.compile('(\[(.*?)\])')
     return p.sub(slugify_fields, s)
+
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
@@ -883,6 +898,7 @@ def directory_cleanup(dir_path, ndays):
 
 
 def checklist_update(key):
+    from tendenci.apps.base.models import ChecklistItem
     try:
         item = ChecklistItem.objects.get(key=key)
     except ChecklistItem.DoesNotExist:

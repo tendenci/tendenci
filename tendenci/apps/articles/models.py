@@ -5,12 +5,13 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
-from timezones.utils import adjust_datetime_to_timezone
 from django.conf import settings
 
 from tagging.fields import TagField
+from timezone_field import TimeZoneField
+
 from tendenci.apps.base.fields import SlugField
-from timezones.fields import TimeZoneField
+from tendenci.apps.base.utils import adjust_datetime_to_timezone, get_timezone_choices
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -28,7 +29,7 @@ class Article(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
-    timezone = TimeZoneField(_('Time Zone'))
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField()

@@ -8,11 +8,12 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
-from timezones.fields import TimeZoneField
+from timezone_field import TimeZoneField
+
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.base.fields import SlugField
-from tendenci.apps.base.utils import correct_filename
+from tendenci.apps.base.utils import correct_filename, get_timezone_choices
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -47,7 +48,7 @@ class Directory(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
-    timezone = TimeZoneField(_('Time Zone'))
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(_('Name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField(_('Description'))
