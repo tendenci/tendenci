@@ -32,7 +32,7 @@ class Email(TendenciBaseModel):
     sender_display = models.CharField(max_length=255)
     reply_to = models.CharField(max_length=255)
     recipient = models.CharField(max_length=255, blank=True, default='')
-    recipient_dispaly = models.CharField(max_length=255, blank=True, default='')
+    recipient_display = models.CharField(max_length=255, blank=True, default='')
     recipient_cc = models.CharField(max_length=255, blank=True, default='')
     recipient_cc_display = models.CharField(max_length=255, blank=True, default='')
     recipient_bcc = models.CharField(max_length=255, blank=True, default='')
