@@ -43,7 +43,7 @@ class DeclarativeMetaclass(type):
 
         if 'app_registry' in attrs['__module__']:
             for field_name, item in attrs.copy().items():
-                if field_name not in ['fields', '__module__']:
+                if field_name not in ['fields', '__module__', '__qualname__']:
                     if field_name not in allowed_fields:
                         exception = 'Registry field %s not allowed. '\
                                     'The following fields are allowed: %s'
