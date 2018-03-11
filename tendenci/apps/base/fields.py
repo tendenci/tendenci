@@ -1,4 +1,3 @@
-from six import with_metaclass
 from builtins import str
 import re
 from time import strptime, strftime
@@ -43,6 +42,7 @@ class SlugField(CharField):
         defaults.update(kwargs)
         return super(SlugField, self).formfield(**defaults)
 
+
 class SplitDateTimeField(fields.MultiValueField):
     """
         Custom split date time widget
@@ -79,7 +79,7 @@ class SplitDateTimeField(fields.MultiValueField):
         return None
 
 
-class DictField(with_metaclass(models.SubfieldBase, models.TextField)):
+class DictField(models.TextField):
     """
     A dictionary field
     """
@@ -99,6 +99,9 @@ class DictField(with_metaclass(models.SubfieldBase, models.TextField)):
             return value
 
         return {}
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def get_prep_value(self, value):
         if isinstance(value, dict):

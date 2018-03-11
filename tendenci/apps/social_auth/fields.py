@@ -1,4 +1,3 @@
-from six import with_metaclass
 from builtins import str
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -10,7 +9,7 @@ from django.utils.encoding import smart_text
 # add_introspection_rules([], ['^tendenci\.apps\.social_auth\.fields\.JSONField'])
 
 
-class JSONField(with_metaclass(models.SubfieldBase, models.TextField)):
+class JSONField(models.TextField):
     """Simple JSON field that stores python structures as JSON strings
     on database.
     """
@@ -29,6 +28,9 @@ class JSONField(with_metaclass(models.SubfieldBase, models.TextField)):
                 raise ValidationError(str(e))
         else:
             return value
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def validate(self, value, model_instance):
         """Check value is a valid JSON string, raise ValidationError on
