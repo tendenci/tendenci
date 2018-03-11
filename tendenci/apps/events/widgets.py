@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import RadioFieldRenderer
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 import chardet
 
 
@@ -27,7 +27,7 @@ class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
         ret_value = '\n'.join(output)
         encoding = chardet.detect(ret_value)['encoding']
         if encoding not in ['ascii', 'utf-8']:
-            ret_value = smart_unicode(ret_value)
+            ret_value = smart_text(ret_value)
         return ret_value
 
 

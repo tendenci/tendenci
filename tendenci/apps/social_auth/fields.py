@@ -3,7 +3,7 @@ from builtins import str
 from django.core.exceptions import ValidationError
 from django.db import models
 import simplejson
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 # from south.modelsinspector import add_introspection_rules
 #
 # # introspection rules for south migration for the JSONField
@@ -48,4 +48,4 @@ class JSONField(with_metaclass(models.SubfieldBase, models.TextField)):
 
     def value_to_string(self, obj):
         """Return value from object converted to string properly"""
-        return smart_unicode(self.get_prep_value(self._get_val_from_obj(obj)))
+        return smart_text(self.get_prep_value(self._get_val_from_obj(obj)))
