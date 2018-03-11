@@ -17,9 +17,12 @@ import socket
 from PIL import Image
 from io import BytesIO
 import requests
-from pdfminer.pdfinterp import PDFResourceManager, process_pdf
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.converter import PDFPageAggregator
+from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from PIL import Image as pil
 from PIL import ImageFile
 
@@ -914,16 +917,21 @@ def extract_pdf(fp):
     Extract text from PDF file.
     """
     rsrcmgr = PDFResourceManager()
-    retstr = BytesIO()
-    codec = 'utf-8'
     laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-    process_pdf(rsrcmgr, device, fp)
+    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    text_content = [] # a list of strings, each representing text collected from each page of the pdf
+    for page in PDFPage.create_pages(PDFDocument(PDFParser(fp))):
+        interpreter.process_page(page) # LTPage object for this page
+        layout = device.get_result() # layout is an LTPage object which may contain child objects
+        for lt_obj in layout: # extract text from text objects
+            if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
+                if isinstance(lt_obj.get_text(), str):
+                    text_content.append(lt_obj.get_text())
+                else:
+                    text_content.append(lt_obj.get_text().encode('utf-8'))
     device.close()
-    mystr = retstr.getvalue()
-    retstr.close()
-
-    return mystr
+    return '\n\n'.join(text_content)
 
 
 def normalize_field_names(fieldnames):
