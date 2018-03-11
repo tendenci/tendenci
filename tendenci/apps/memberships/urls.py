@@ -124,7 +124,8 @@ urlpatterns = [
     url(r'^%s/reports/$' % urlpath, views.report_list, name='reports-memberships'),
     url(r'^%s/reports/overview/$' % urlpath, views.memberships_overview, name='reports-memberships_overview'),
     url(r'^%s/reports/join_summary$' % urlpath, views.membership_join_report, name='reports-memberships-joins'),
-    url(r'^%s/reports/pdf/$' % urlpath, views.membership_join_report_pdf, name='reports-memberships-joins-pdf'),
+    # See the comments in reports.py
+    #url(r'^%s/reports/pdf/$' % urlpath, views.membership_join_report_pdf, name='reports-memberships-joins-pdf'),
     url(r'^%s/reports/active_members/$' % urlpath, views.report_active_members, name='reports-active-members'),
     url(r'^%s/reports/expired_members/$' % urlpath, views.report_expired_members, name='reports-expired-members'),
     url(r'^%s/reports/members_summary/$' % urlpath, views.report_members_summary, name='reports-members-summary'),

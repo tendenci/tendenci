@@ -1,3 +1,23 @@
+# This file is no longer used.
+#
+# This was originally called by membership_join_report_pdf() in views.py, which
+# was used by the "Memberships by Join Date" report to generate a downloadable
+# PDF version of the report.
+#
+# Unfortunately, the generated PDF was ugly and unreadable (text in adjacent
+# columns within a single row overlap each other).  All of the information in
+# this report is also available via the "Active Memberships Report", which
+# supports a downloadable CSV version.
+#
+# In addition, Geraldo is abandoned and does not support Python 3.  reportlab
+# can technically implement the same functionality under Python 3, but its API
+# for handling this use case is much more complex than Geraldo, so converting
+# would involve significant effort.
+#
+# Therefore, this file has been abandoned, and is kept only for historical
+# reference.
+
+
 from geraldo import Report, ReportBand, ObjectValue,\
      Label, landscape
 from reportlab.lib.units import cm

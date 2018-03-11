@@ -15,8 +15,10 @@
   <button type="submit" class="btn btn-primary">{% trans 'Filter Memberships' %}</button>
 </form>
 
+{% comment %}
 <a class="btn btn-default" href="{% url "reports-memberships-joins-pdf" %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
 <br /><br />
+{% endcomment %}
 
 <table class="table table-tendenci-reports">
   <tr>
