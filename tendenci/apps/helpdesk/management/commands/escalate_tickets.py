@@ -11,7 +11,6 @@ from __future__ import print_function
 
 from datetime import timedelta, date
 import getopt
-from optparse import make_option
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
@@ -28,19 +27,16 @@ from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_contex
 
 
 class Command(BaseCommand):
-    def __init__(self):
-        BaseCommand.__init__(self)
 
-        self.option_list += (
-            make_option(
+    def add_arguments(self, parser):
+            parser.add_argument(
                 '--queues',
-                help='Queues to include (default: all). Use queue slugs'),
-            make_option(
+                help='Queues to include (default: all). Use queue slugs')
+            parser.add_argument(
                 '--verboseescalation',
                 action='store_true',
                 default=False,
-                help='Display a list of dates excluded'),
-            )
+                help='Display a list of dates excluded')
 
     def handle(self, *args, **options):
         verbose = False

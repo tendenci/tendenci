@@ -1,6 +1,5 @@
 from __future__ import print_function
 import time
-from optparse import make_option
 from django.core.management.base import BaseCommand
 
 
@@ -18,35 +17,31 @@ class Command(BaseCommand):
                                               --group_id 1
                                               --user_id 1
     """
-    option_list = BaseCommand.option_list + (
 
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--group_id',
             action='store',
             dest='group_id',
-            help='Group id to export'),
-
-        make_option(
+            help='Group id to export')
+        parser.add_argument(
             '--export_target',
             action='store',
             dest='export_target',
             default='all',
-            help='Export group members or subscribers'),
-
-        make_option(
+            help='Export group members or subscribers')
+        parser.add_argument(
             '--identifier',
             action='store',
             dest='identifier',
             default='',
-            help='Export file identifier'),
-
-        make_option(
+            help='Export file identifier')
+        parser.add_argument(
             '--user_id',
             action='store',
             dest='user_id',
             default='1',
-            help='Request user id'),
-    )
+            help='Request user id')
 
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.utils import process_export

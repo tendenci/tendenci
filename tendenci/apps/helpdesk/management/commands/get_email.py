@@ -23,7 +23,6 @@ import chardet
 from datetime import timedelta
 from email.header import decode_header
 from email.Utils import parseaddr, collapse_rfc2231_value
-from optparse import make_option
 
 from email_reply_parser import EmailReplyParser
 
@@ -48,18 +47,14 @@ unescape = HTMLParser().unescape
 
 
 class Command(BaseCommand):
-    def __init__(self):
-        BaseCommand.__init__(self)
+    help = 'Process Jutda Helpdesk queues and process e-mails via POP3/IMAP as required, feeding them into the helpdesk.'
 
-        self.option_list += (
-            make_option(
+    def add_arguments(self, parser):
+            parser.add_argument(
                 '--quiet', '-q',
                 default=False,
                 action='store_true',
-                help='Hide details about each queue/message as they are processed'),
-            )
-
-    help = 'Process Jutda Helpdesk queues and process e-mails via POP3/IMAP as required, feeding them into the helpdesk.'
+                help='Hide details about each queue/message as they are processed')
 
     def handle(self, *args, **options):
         quiet = options.get('quiet', False)

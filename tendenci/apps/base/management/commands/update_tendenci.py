@@ -2,7 +2,6 @@ from __future__ import print_function
 import os
 import subprocess
 from six.moves import xmlrpc_client
-from optparse import make_option
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -19,14 +18,13 @@ class Command(BaseCommand):
     Update tendenci via pip and restarts the server
     """
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--user',
             action='store',
             dest='user',
             default='',
-            help='Request user'),
-    )
+            help='Request user')
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting

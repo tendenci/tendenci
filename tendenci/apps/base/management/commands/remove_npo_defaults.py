@@ -23,7 +23,7 @@ cores_list = [
 class Command(BaseCommand):
     help = "Remove non-profit-organization default data"
 
-    option_list = BaseCommand.option_list
+def add_arguments(self, parser):
 
     def handle(self, *args, **options):
         module = None

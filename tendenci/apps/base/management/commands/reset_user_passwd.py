@@ -1,5 +1,4 @@
 from __future__ import print_function
-from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
@@ -12,19 +11,18 @@ class Command(BaseCommand):
 
     Usage: manage.py reset_user_passwd --username username --password password
     """
-    option_list = BaseCommand.option_list + (
-        make_option('--username',
+
+    def add_arguments(self, parser):
+        parser.add_argument('--username',
             action='store',
             dest='username',
             default=None,
-            help='Username whose password being reset'),
-        ) + (
-        make_option('--password',
+            help='Username whose password being reset')
+        parser.add_argument('--password',
             action='store',
             dest='password',
             default=None,
-            help='New password being reset for the user'),
-        )
+            help='New password being reset for the user')
 
     def handle(self, *args, **options):
         verbosity = options['verbosity']

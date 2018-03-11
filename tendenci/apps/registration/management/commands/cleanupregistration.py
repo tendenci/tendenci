@@ -7,12 +7,12 @@ contains the actual logic for determining which accounts are deleted.
 
 """
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 from tendenci.apps.registration.models import RegistrationProfile
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Delete expired user registrations from the database"
 
     def handle_noargs(self, **options):

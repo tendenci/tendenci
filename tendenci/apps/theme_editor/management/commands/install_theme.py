@@ -2,7 +2,6 @@ import os
 import zipfile
 from six.moves.urllib.request import urlopen
 from shutil import rmtree, move
-from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
@@ -13,12 +12,11 @@ class Command(BaseCommand):
     Example: python manage.py install_theme prfirm [theme_url]
     """
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--all', action='store_true',
             dest='all', default=False,
-            help='Install all themes'),
-    )
+            help='Install all themes')
 
     def handle(self, theme_name=None, theme_url=None, **options):
         """

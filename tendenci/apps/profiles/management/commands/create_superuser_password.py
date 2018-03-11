@@ -1,5 +1,3 @@
-from optparse import make_option
-
 from django.core.management.base import BaseCommand, CommandError
 
 
@@ -8,14 +6,14 @@ class Command(BaseCommand):
     This command creates a superuser and a profile by allowing you to
     include a password.
     """
-    option_list = BaseCommand.option_list + (
-        make_option('--username', dest='username', default=None,
-        help='Specifies the username for the superuser.'),
-        make_option('--email', dest='email', default=None,
-            help='Specifies the email address for the superuser.'),
-        make_option('--password', dest='password', default=None,
-            help=('Specifies the password for the superuser.')),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--username', dest='username', default=None,
+            help='Specifies the username for the superuser.')
+        parser.add_argument('--email', dest='email', default=None,
+            help='Specifies the email address for the superuser.')
+        parser.add_argument('--password', dest='password', default=None,
+            help='Specifies the password for the superuser.')
 
     def handle(self, *args, **options):
         username = options.get('username', None)

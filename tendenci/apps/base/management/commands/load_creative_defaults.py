@@ -1,5 +1,4 @@
 from __future__ import print_function
-from optparse import make_option
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
@@ -9,11 +8,10 @@ from django.conf import settings
 class Command(BaseCommand):
     help = "Insert default data"
 
-    option_list = BaseCommand.option_list + (
-        make_option('--reset-nav',
+    def add_arguments(self, parser):
+        parser.add_argument('--reset-nav',
             action="store_true", dest='reset_nav', default=False,
-            help='Reset the navigation'),
-    )
+            help='Reset the navigation')
 
     def handle(self, **options):
         """

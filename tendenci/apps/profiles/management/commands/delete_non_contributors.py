@@ -1,5 +1,4 @@
 from __future__ import print_function
-from optparse import make_option
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -7,12 +6,11 @@ class Command(BaseCommand):
     Get/Delete list of contributors, non-contributors and total users
     """
 
-    option_list = BaseCommand.option_list + (
-        make_option('-d', '--delete',
+    def add_arguments(self, parser):
+        parser.add_argument('-d', '--delete',
         action='store_true',
         default=False,
-        help='Delete non contributing users'),
-    )
+        help='Delete non contributing users')
 
     def handle(self, *args, **options):
         from django.contrib.auth.models import User

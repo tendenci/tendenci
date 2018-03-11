@@ -5,8 +5,6 @@ import md5
 import sys
 
 from django.core.management.base import BaseCommand
-from optparse import make_option
-
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.auth.models import User
 from django.contrib.auth import login
@@ -17,22 +15,22 @@ class Command(BaseCommand):
     example: python manage.py event_register 4
     """
     user_count = User.objects.count()
-    option_list = BaseCommand.option_list + (
-        make_option('-e', '--event',
+
+    def add_arguments(self, parser):
+        parser.add_argument('-e', '--event',
             action='store',
             dest='event',
             default=None,
             type='int',
             help='The event-id of the event where you wish to add registrants'
-        ),
-        make_option('-l', '--limit',
+        )
+        parser.add_argument('-l', '--limit',
             action='store',
             dest='limit',
             default=1,
             type='int',
             help='The number of registrants you would like to make'
-        ),
-    )
+        )
 
     def handle(self, *event_ids, **options):
         from tendenci.apps.events.models import Event, PaymentMethod
