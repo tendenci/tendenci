@@ -64,7 +64,7 @@ class MembershipAutoRenewFilter(SimpleListFilter):
         except:
             value = None
 
-        if value == None:
+        if value is None:
             return queryset
 
         if value == 1:

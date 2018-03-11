@@ -292,13 +292,13 @@ def run_a_recurring_payment(rp, verbosity=0):
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
                         if rp_invoice.billing_cycle_start_dt and rp_invoice.billing_cycle_end_dt:
-                            print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                            print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
                                     % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
                                        rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
                         else:
-                            print('...Making payment transaction for invoice (id=%d) - amount: %s%.2f ...' \
+                            print('...Making payment transaction for invoice (id=%d) - amount: %s%.2f ...'
                                     % (rp_invoice.invoice.id,
                                        currency_symbol,
                                        rp_invoice.invoice.balance))

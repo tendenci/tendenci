@@ -88,7 +88,7 @@ def google_cmaps_url(parser, token):
 
     location = bits[1]
 
-    if not '=' in bits[2]:
+    if '=' not in bits[2]:
         origin = bits[2]
     else:
         origin = None
