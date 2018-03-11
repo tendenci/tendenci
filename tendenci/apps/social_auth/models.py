@@ -4,6 +4,7 @@ import warnings
 from datetime import timedelta
 
 from django.db import models
+from django.apps import apps
 from django.conf import settings
 
 from tendenci.apps.social_auth.fields import JSONField
@@ -23,7 +24,7 @@ RECOMMENDED_FIELDS = ('username', 'last_login', 'is_active')
 RECOMMENDED_METHODS = ('is_authenticated',)
 
 if getattr(settings, 'SOCIAL_AUTH_USER_MODEL', None):
-    User = models.get_model(*settings.SOCIAL_AUTH_USER_MODEL.split('.'))
+    User = apps.get_model(*settings.SOCIAL_AUTH_USER_MODEL.split('.'))
     missing = list(set(RECOMMENDED_FIELDS) -
                    set(User._meta.get_all_field_names())) + \
               [name for name in RECOMMENDED_METHODS

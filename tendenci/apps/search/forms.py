@@ -3,7 +3,7 @@ import operator
 from functools import reduce
 
 from django import forms
-from django.db import models
+from django.apps import apps
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -253,7 +253,7 @@ class ModelSearchForm(SearchForm):
         if self.cleaned_data.get('models', []):
             search_models = []
             for model in self.cleaned_data['models']:
-                class_model = models.get_model(*model.split('.'))
+                class_model = apps.get_model(*model.split('.'))
                 #if class_model._meta.model_name in INCLUDED_APPS:
                 search_models.append(class_model)
         return search_models

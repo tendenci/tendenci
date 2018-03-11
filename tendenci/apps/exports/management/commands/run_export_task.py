@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models.loading import get_model
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -46,7 +46,7 @@ class Command(BaseCommand):
                 result = ExportProfilesTask()
                 response = result.run()
             else:
-                model = get_model(export.app_label, export.model_name)
+                model = apps.get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()
                 file_name = export.model_name + '.csv'
                 response = result.run(model, args[1:], file_name)

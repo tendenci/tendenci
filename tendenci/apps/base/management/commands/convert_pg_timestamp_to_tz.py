@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil import tz
 
 from django.core.management.base import BaseCommand
-from django.db.models.loading import get_models
+from django.apps import apps
 from django.db import connection
 from django.conf import settings
 
@@ -36,7 +36,7 @@ class Command(BaseCommand):
             start_dt = datetime.now()
             print("START: %s" % start_dt)
 
-            models = get_models()
+            models = apps.get_models()
             for model in models:
                 # Disable auto_now for this model so we don't affect these
                 # fields with this update
