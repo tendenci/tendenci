@@ -276,7 +276,7 @@ INSTALLED_APPS = (
     'tendenci.apps.announcements',
     'tendenci.apps.forums',
     # celery task system, must stay at the bottom of installed apps
-    'djkombu',
+    'kombu.transport.django',
     'djcelery',
 )
 
@@ -404,12 +404,7 @@ CACHE_PRE_KEY = "TENDENCI"
 # --------------------------------------#
 import djcelery  # noqa: E402
 djcelery.setup_loader()
-BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
+BROKER_URL = "django://"
 CELERY_IS_ACTIVE = False
 
 # USE_SUBPROCESS - in places like exports and long-running
