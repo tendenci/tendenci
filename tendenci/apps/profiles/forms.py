@@ -85,7 +85,7 @@ class ProfileSearchForm(forms.Form):
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
-            
+
         # group choices
         filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
         group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
@@ -94,7 +94,6 @@ class ProfileSearchForm(forms.Form):
                             ).values_list('pk', 'name'))
         self.fields['group'].widget = forms.widgets.Select(
                                     choices=group_choices)
-        
 
 
 class ProfileForm(TendenciBaseForm):

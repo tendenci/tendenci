@@ -22,11 +22,11 @@
 <p>in the amount of </p>
 <p><strong>{{ donation.donation_amount }}</strong></p>
 <p>&nbsp; </p>
-	{% if donation.allocation %}
-		<p>to be allocated to </p>
-		<p><strong>{{ donation.allocation }}</strong></p>
-		<p>&nbsp; </p>
-	{% endif %}
+    {% if donation.allocation %}
+        <p>to be allocated to </p>
+        <p><strong>{{ donation.allocation }}</strong></p>
+        <p>&nbsp; </p>
+    {% endif %}
 <p>Received on {{ donation.create_dt|date:"D d M Y P" }} </p>
 <p>&nbsp; </p>
 <p>{# DonationsReceiptStatement here #}</p>

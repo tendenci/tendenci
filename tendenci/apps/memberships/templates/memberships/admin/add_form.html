@@ -34,9 +34,9 @@
 
 {% block after_related_objects %}{% endblock %}
 
-	<div class="submit-row">
-	<input type="submit" value="{% trans 'Save and continue editing' %}" name="_continue" {{ onclick_attrib }}/>
-	</div>
+    <div class="submit-row">
+    <input type="submit" value="{% trans 'Save and continue editing' %}" name="_continue" {{ onclick_attrib }}/>
+    </div>
 
 {% if adminform and add %}
    <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>

@@ -372,9 +372,9 @@ class CorpMembershipImportProcessor(object):
                                         assign_to_fields[field_name])
                         if value is None:
                             setattr(instance, field_name, value)
-        
-        # for fields not in spreadsheet, assign default value 
-        if action == 'insert':                  
+
+        # for fields not in spreadsheet, assign default value
+        if action == 'insert':
             for field_name in assign_to_fields:
                 if field_name not in self.field_names:
                     value = self.get_default_value(assign_to_fields[field_name])
@@ -385,7 +385,7 @@ class CorpMembershipImportProcessor(object):
         # if allows null or has default, return None
         if field.null:
             return None
-        
+
         if field.has_default():
             return field.default
 

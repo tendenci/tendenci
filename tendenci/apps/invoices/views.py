@@ -465,7 +465,7 @@ def download_pdf(request, id):
     invoice = get_object_or_404(Invoice, pk=id)
     if not has_perm(request.user, 'invoices.change_invoice'):
         raise Http403
-    
+
     result = invoice_pdf(request, invoice)
     response = HttpResponse(result.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="invoice_{}.pdf"'.format(invoice.id)

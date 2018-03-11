@@ -204,17 +204,17 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     'expire_date',
 #                     'dues_reps',
 #                     'member_reps',
-                    'roster_link', 
+                    'roster_link',
                     'invoice_url']
     list_filter = ['corporate_membership_type', StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
-    
+
     actions = [approve_selected,]
 
     fieldsets = (
         (None, {'fields': ()}),
     )
-    
+
     def get_queryset(self, request):
         """
         Excludes archive
@@ -223,7 +223,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     ).exclude(status_detail='archive'
                               ).order_by('status_detail',
                                          'corp_profile__name')
-    
+
     def profile(self, instance):
         return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
@@ -232,17 +232,17 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     profile.allow_tags = True
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
-    
+
     def statusdetail(self, instance):
         return instance.status_detail
     statusdetail.short_description = _('Status')
     statusdetail.admin_order_field = 'status_detail'
-    
+
     def parent_entity(self, instance):
         return instance.corp_profile.parent_entity
     parent_entity.short_description = _('Parent Entity')
     parent_entity.admin_order_field = 'corp_profile__parent_entity'
-    
+
     def cm_type(self, instance):
         return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corporatemembershiptype_change',
@@ -251,36 +251,35 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     cm_type.allow_tags = True
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
-    
+
     def join_date(self, instance):
         if not instance.join_dt:
             return ''
         return instance.join_dt.strftime('%m-%d-%Y')
     join_date.short_description = _('Join Date')
     join_date.admin_order_field = 'join_dt'
-    
+
     def renew_date(self, instance):
         if not instance.renew_dt:
             return ''
         return instance.renew_dt.strftime('%m-%d-%Y')
     renew_date.short_description = _('Renew Date')
     renew_date.admin_order_field = 'renew_dt'
-    
+
     def expire_date(self, instance):
         if not instance.expiration_dt:
             return ''
         return instance.expiration_dt.strftime('%m-%d-%Y')
     expire_date.short_description = _('Expiration Date')
     expire_date.admin_order_field = 'expiration_dt'
-    
+
     def edit_link(self, instance):
         return '<a href="%s">%s</a>' % (
                     reverse('corpmembership.edit',args=[instance.id]),
                     _('Edit'),)
     edit_link.allow_tags = True
     edit_link.short_description = _('edit')
-    
-    
+
     def roster_link(self, instance):
         return '<a href="%s?cm_id=%d">%s</a>' % (
                     reverse('corpmembership.roster_search'),
@@ -288,7 +287,7 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                     _('Roster'),)
     roster_link.allow_tags = True
     roster_link.short_description = _('Roster')
-    
+
     def display_reps(self, reps):
         reps_display = ''
         for i, rep in enumerate(reps):
@@ -297,18 +296,17 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
             reps_display += '<a href="%s">%s</a> ' % (
                         reverse('profile',args=[rep.user.username]),
                         rep.user.get_full_name() or rep.user.username)
-            
+
             if rep.user.email:
-                reps_display += rep.user.email                
+                reps_display += rep.user.email
         return reps_display
-        
-    
+
     def dues_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_dues_rep=True)
         return self.display_reps(reps)
     dues_reps.allow_tags = True
     dues_reps.short_description = _('Dues Reps')
-    
+
     def member_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_member_rep=True)
         return self.display_reps(reps)
@@ -556,25 +554,25 @@ class CorpMembershipRepInlineAdmin(admin.TabularInline):
 class CorpMembershipInlineAdmin(admin.TabularInline):
     model = CorpMembership
     fields = ('corporate_membership_type',
-              'join_dt', 
+              'join_dt',
               'renewal', 'renew_dt',
               'expiration_dt',
               'status_detail')
     readonly_fields=('corporate_membership_type',
-                     'join_dt', 
+                     'join_dt',
                       'renewal', 'renew_dt',
                       'expiration_dt',
                       'status_detail')
     extra = 0
     can_delete = False
     ordering = ("-create_dt", '-expiration_dt')
-    
+
     def has_add_permission(self, request):
         return False
-    
+
 
 class CorpProfileAdmin(TendenciBaseModelAdmin):
-    model = CorpProfile 
+    model = CorpProfile
     list_display = ['name',]
     search_fields = ('name',)
     inlines = (CorpMembershipRepInlineAdmin, CorpMembershipInlineAdmin)
@@ -601,21 +599,21 @@ class CorpProfileAdmin(TendenciBaseModelAdmin):
                             'description',
                             'notes',
                         )}),]
-    
+
     form = CorpProfileAdminForm
 
     def has_add_permission(self, request):
         return False
-    
-    
+
+
 class CorpMembershipRepAdmin(admin.ModelAdmin):
     model = CorpMembershipRep
     list_display = ['id', 'profile', 'rep_name', 'rep_email',
                     'is_dues_rep', 'is_member_rep']
     list_filter = ['is_dues_rep', 'is_member_rep']
-    
+
     ordering = ['corp_profile']
-    
+
     def profile(self, instance):
         return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
@@ -624,17 +622,17 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     profile.allow_tags = True
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
-    
+
     def rep_name(self, instance):
         return '<a href="{0}">{1}</a>'.format(
                 reverse('profile', args=[instance.user.username]),
                 instance.user.get_full_name() or instance.user.username,
-                
+
             )
     rep_name.short_description = u'Rep Name'
     rep_name.allow_tags = True
     rep_name.admin_order_field = 'user__first_name'
-    
+
     def rep_email(self, instance):
         return instance.user.email
     rep_email.short_description = u'Rep Email'

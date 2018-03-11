@@ -6,7 +6,7 @@
 
 <div class="wrap-search-item">
    <div class="search-item projects-search-item">
-   		<h2><a href="{{ project.get_absolute_url }}">{{ project.project_name }}</a></h2>
+           <h2><a href="{{ project.get_absolute_url }}">{{ project.project_name }}</a></h2>
         <div class="project-inline">
             {% for picture in project.projects_photo_related.all|slice:"1" %}
                 <div class="search-project-picture">
@@ -15,13 +15,13 @@
             {% endfor %}
         </div>
 
-		{% if project.end_dt %}
-   		<div>{% trans 'Year Completed:' %} {{ project.end_dt }}</div>
-   		{% endif %}
-   		
-   		{% if project.project_description %}
+        {% if project.end_dt %}
+           <div>{% trans 'Year Completed:' %} {{ project.end_dt }}</div>
+           {% endif %}
+
+           {% if project.project_description %}
         <div class="project-description">{{ project.project_description|safe|truncatewords:18|safe }}</div>
-		{% endif %}
+        {% endif %}
     </div>
    {% include "projects/meta.html" %}
 </div>

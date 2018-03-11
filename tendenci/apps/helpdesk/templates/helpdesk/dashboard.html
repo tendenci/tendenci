@@ -5,11 +5,11 @@
 
 <div class="alert alert-warning">
 <p>
-	{% if request.user.is_staff %}
-	{% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, tickets you are working on, and those tickets that have no owner." %}
-	{% else %}
-	{% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, and tickets you are working on." %}
-	{% endif %}
+    {% if request.user.is_staff %}
+    {% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, tickets you are working on, and those tickets that have no owner." %}
+    {% else %}
+    {% trans "Welcome to your Helpdesk Dashboard! From here you can quickly see tickets submitted by you, and tickets you are working on." %}
+    {% endif %}
 </p>
 </div>
 

@@ -43,7 +43,7 @@ class GoogleCMapsURL(Node):
             origin = self.origin.resolve(context)
         else:
             origin = None
-        
+
         url = '{base_url}?center={lat}%2C{lng}&size={size}&markers={markers}%7C{lat}%2C{lng}'.format(
                                                     base_url=GOOGLE_SMAPS_BASE_URL,
                                                     lat=location.latitude,
@@ -52,7 +52,7 @@ class GoogleCMapsURL(Node):
                                                     markers=self.markers.replace(':', '%3A').replace('|', '%7C'))
         if self.zoom:
             url = url + '&zoom=' + self.zoom
-            
+
         if origin:
             url = url + '&markers={markers_origin}%7C{origin_lat}%2C{origin_lng}'.format(
                             markers_origin=self.markers_origin.replace(':', '%3A').replace('|', '%7C'),
@@ -62,7 +62,7 @@ class GoogleCMapsURL(Node):
         api_key = get_setting('module', 'locations', 'google_maps_api_key')
         if api_key:
             url = url + '&key=' + api_key
- 
+
             if settings.GOOGLE_SMAPS_URL_SIGNING_SECRET:
                 # sign url with signing secret
                 url = google_cmap_sign_url(url)
@@ -85,7 +85,7 @@ def google_cmaps_url(parser, token):
     if len(bits) < 2:
         message = "'%s' tag requires more than 1 argument" % bits[0]
         raise TemplateSyntaxError(_(message))
-    
+
     location = bits[1]
 
     if not '=' in bits[2]:

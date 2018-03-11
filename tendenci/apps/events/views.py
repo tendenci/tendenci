@@ -3843,7 +3843,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
         registrant_lookups = registrant_mappings.values()
         registrant_lookups.append('custom_reg_form_entry')
-        
+
         CustomRegistrantTuple = namedtuple('CustomRegistrant', registrant_mappings.values())
 
         # loop through all custom registration forms
@@ -3874,10 +3874,10 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 if not registrant['is_primary']:
                     registrant['registration__invoice__total'] = 0
                     registrant['registration__invoice__balance'] = 0
-                
-                # keep the order of the values in the registrant dict   
-                registrant_tuple = CustomRegistrantTuple(**registrant)    
-                
+
+                # keep the order of the values in the registrant dict
+                registrant_tuple = CustomRegistrantTuple(**registrant)
+
                 sql = """
                         SELECT field_id, value
                         FROM events_customregfieldentry

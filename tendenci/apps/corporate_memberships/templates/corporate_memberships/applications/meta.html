@@ -47,7 +47,7 @@
                                     <a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}{{corporate_memberhsip.status_detail }}</a>
                                 </li>
 
-								{% if user.profile.is_superuser %}
+                                {% if user.profile.is_superuser %}
                                 <li>
                                     <a class="t-meta-delete-link" href="{% url 'corpmembership.delete' corporate_membership.pk %}">{% trans "Delete" %}</a>
                                 </li>

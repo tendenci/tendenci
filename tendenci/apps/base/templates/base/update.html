@@ -19,13 +19,13 @@
     <p>Latest Version: {{ latest_version }}</p>
     <form method='post' action="{% url 'update_tendenci' %}" >{% csrf_token %}
     <div class="form-group">
-    	<input type="checkbox" name="tos" value="1"/>
-    	<label for="tos">
-    		I accept the <a class="text-capitalize" href="https://www.tendenci.com/tendenci-terms-of-use" target="_blank">terms of service.</a>
-    	</label>
+        <input type="checkbox" name="tos" value="1"/>
+        <label for="tos">
+            I accept the <a class="text-capitalize" href="https://www.tendenci.com/tendenci-terms-of-use" target="_blank">terms of service.</a>
+        </label>
     </div>
     <div>
-    	 <input type='submit' value='Update'>
+         <input type='submit' value='Update'>
     </div>
     </form>
 {% endif %}

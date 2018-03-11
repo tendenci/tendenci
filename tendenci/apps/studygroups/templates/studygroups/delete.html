@@ -16,7 +16,7 @@
         <h2>{{ study_group.title }} - <a href="{{ study_group.get_absolute_url }}">{{ study_group.get_absolute_url }}</a></h2>
         <div class="content">{{ study_group.content|safe|truncatewords_html:"60" }}</div>
         <div class="delete-prompt">
-        	{% trans "Are you sure you want to permanently delete this study group?" %}
+            {% trans "Are you sure you want to permanently delete this study group?" %}
         </div>
         <div class="delete-form">
             <form name="studygroup-delete" method="POST" action="{% url 'studygroups.delete' study_group.pk %}">{% csrf_token %}

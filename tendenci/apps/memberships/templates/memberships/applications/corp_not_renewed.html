@@ -5,7 +5,7 @@
 {{ block.super }}
 <style>
 .padding15 p{
-	padding: 15px;
+    padding: 15px;
 }
 </style>
 {% endblock %}
@@ -13,10 +13,10 @@
 {% block content %}
 <div class="t">
     <h2>{{ app.name }} - {% trans "Renewal" %}</h2>
-	
-	<div class="padding15">
+
+    <div class="padding15">
     <p class="bg-warning">
-    {% trans "Sorry, we can't process your membership renewal at the moment." %}	
+    {% trans "Sorry, we can't process your membership renewal at the moment." %}
     </p>
 
     {% if is_admin or is_rep %}

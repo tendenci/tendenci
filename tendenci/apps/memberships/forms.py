@@ -424,8 +424,7 @@ class AutoRenewSetupForm(forms.Form):
         memberships = kwargs.pop('memberships')
         super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
         self.fields['selected_m'].choices = [(m.id, m.id) for m in memberships]
-        
-        
+
 
 class MembershipAppFieldAdminForm(forms.ModelForm):
     class Meta:
@@ -1184,7 +1183,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
-    
+
     def clean_auto_renew(self):
         value = self.cleaned_data['auto_renew']
         if value:
@@ -1192,7 +1191,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             if payment_method and not payment_method.is_online:
                 raise forms.ValidationError(_("Please either de-select it or change to an online payment method."))
         return value
-
 
     def save(self, *args, **kwargs):
         """

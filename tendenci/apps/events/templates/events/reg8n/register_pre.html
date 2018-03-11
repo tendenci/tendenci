@@ -27,7 +27,7 @@
 
    {% if not table_only %}
    <div class="well">
-   	{% trans "The event you have chosen allows individual and table/team registrations. Please choose one below to proceed." %}
+       {% trans "The event you have chosen allows individual and table/team registrations. Please choose one below to proceed." %}
    </div>
    {% endif %}
 
@@ -52,41 +52,41 @@
         <form action="" method="post">{% csrf_token %}
         <div class="forms regpre-form-wrap">
 
-			{% if not table_only %}
-			<div class="form-field is-table-choice">
-				<div class="error">{{ form.is_table.errors }}</div>
-				<div class="field">{{ form.is_table }}</div>
-				{% if form.is_table.help_text %}
-	            <div class="help-text">{{ form.is_table.help_text }}</div>
-	            {% endif %}
-			</div>
-			{% endif %}
+            {% if not table_only %}
+            <div class="form-field is-table-choice">
+                <div class="error">{{ form.is_table.errors }}</div>
+                <div class="field">{{ form.is_table }}</div>
+                {% if form.is_table.help_text %}
+                <div class="help-text">{{ form.is_table.help_text }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
 
-			<div class="form-field table-pricing-choice">
-				{% if table_only %}
-				<div class="required">{% trans "Please select a price:" %}</div>
-				{% endif %}
-				<div class="field">{{ form.pricing }}</div>
-				{% if form.pricing.help_text %}
-	            <div class="help-text">{{ form.pricing.help_text }}</div>
-	            {% endif %}
-			</div>
+            <div class="form-field table-pricing-choice">
+                {% if table_only %}
+                <div class="required">{% trans "Please select a price:" %}</div>
+                {% endif %}
+                <div class="field">{{ form.pricing }}</div>
+                {% if form.pricing.help_text %}
+                <div class="help-text">{{ form.pricing.help_text }}</div>
+                {% endif %}
+            </div>
 
 
 
-			<input type="submit" value="Continue" />
-		</div>
+            <input type="submit" value="Continue" />
+        </div>
         </form>
     </div>
 
     <div id="individual-pricings" >
-    	<ul style="list-style: square;">
-    		{% for pricing in individual_pricings %}
-    		<li>
-    			{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}
-    		</li>
-    		{% endfor %}
-    	</ul>
+        <ul style="list-style: square;">
+            {% for pricing in individual_pricings %}
+            <li>
+                {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 
 </div>
@@ -96,22 +96,22 @@
 
 {% block extra_body %}
 <script>
-	$(document).ready(function(){
-		{% if not table_only %}
-		var individual_list = $('div#individual-pricings');
-		$('div.is-table-choice li:first').append(individual_list);
-		$(individual_list).show();
-		$(individual_list).css({'margin-left': '2em'});
+    $(document).ready(function(){
+        {% if not table_only %}
+        var individual_list = $('div#individual-pricings');
+        $('div.is-table-choice li:first').append(individual_list);
+        $(individual_list).show();
+        $(individual_list).css({'margin-left': '2em'});
 
-		// make sure the Table registration is checked when selecting a table option
-		var table_reg_radio = $('div.is-table-choice input[type=radio]:last');
-		$('.table-pricing-choice input[type=radio]').click(function(){
-			if ($(table_reg_radio).attr('checked') !== true){
-				$(table_reg_radio).attr('checked', true);
-			}
-		})
-		{% endif %}
-	});
+        // make sure the Table registration is checked when selecting a table option
+        var table_reg_radio = $('div.is-table-choice input[type=radio]:last');
+        $('.table-pricing-choice input[type=radio]').click(function(){
+            if ($(table_reg_radio).attr('checked') !== true){
+                $(table_reg_radio).attr('checked', true);
+            }
+        })
+        {% endif %}
+    });
 
 </script>
 

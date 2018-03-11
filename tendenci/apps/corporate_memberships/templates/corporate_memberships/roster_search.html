@@ -35,10 +35,10 @@
         margin: 3px 0;
     }
     .roster-search-wrap .wrap-search-item{
-    	border: 1px solid #ccc;
+        border: 1px solid #ccc;
     }
     .roster-search-wrap .editor-bar, .roster-search-wrap .options-list{
-    	background-color: #EFFBFB;
+        background-color: #EFFBFB;
     }
 
 </style>
@@ -168,10 +168,10 @@
                             {% endif %}
                         {% endif %}
 
-						{% if request.user.profile.is_superuser or is_rep or request.user == profile.user %}
-	                        {% if profile.member_number %}
-	                            <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
-	                        {% endif %}
+                        {% if request.user.profile.is_superuser or is_rep or request.user == profile.user %}
+                            {% if profile.member_number %}
+                                <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
+                            {% endif %}
                         {% endif %}
 
                         {% if membership.status_detail %}
@@ -192,18 +192,18 @@
                             {% endif %}
                         {% endif %}
 
-						{% if request.user.profile.is_superuser or request.user == profile.user %}
-	                        {% if membership.create_dt %}
-	                            <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
-	                        {% endif %}
-	
-	                        {% if membership.join_dt %}
-	                            <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
-	                        {% endif %}
-	
-	                        {% if membership.expire_dt %}
-	                            <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
-	                        {% endif %}
+                        {% if request.user.profile.is_superuser or request.user == profile.user %}
+                            {% if membership.create_dt %}
+                                <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
+                            {% endif %}
+
+                            {% if membership.join_dt %}
+                                <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
+                            {% endif %}
+
+                            {% if membership.expire_dt %}
+                                <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -212,19 +212,19 @@
         {% include 'corporate_memberships/roster_meta.html' %}
 
         <!-- delete membership form -->
-	    <form name="membership-delete" method="POST" action="{% url "membership.delete" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
-	        <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
-	        <input type="hidden" name="action" value="delete">
-	    </form>
-	
-	    <!-- expire membership form -->
-	    <form name="membership-expire" method="POST" action="{% url "membership.expire" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
-	        <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
-	    </form>
+        <form name="membership-delete" method="POST" action="{% url "membership.delete" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
+            <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
+            <input type="hidden" name="action" value="delete">
+        </form>
+
+        <!-- expire membership form -->
+        <form name="membership-expire" method="POST" action="{% url "membership.expire" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
+            <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
+        </form>
 
         </div>
         {% endwith %}
-		{% endwith %}
+        {% endwith %}
         {% endwith %}
     {% empty %}
         <div>{% trans "0 Results Found" %}</div>
@@ -243,24 +243,24 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function(){
-        	// delete confirmation
+            // delete confirmation
             $('.delete').click(function(){
-            	var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-delete"]');
-            	var membership_name = $(this_form).find('input[name="membership_name"]').val();
+                var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-delete"]');
+                var membership_name = $(this_form).find('input[name="membership_name"]').val();
                 var delete_membership = confirm('{% trans "Permenantly delete membership:" %} ' + membership_name + '?');  // confirm
                 if(delete_membership) $(this_form).submit() // delete: if OK
                 return false;   // cancel
             });
-        	
-         	// expire confirmation
+
+             // expire confirmation
             $('.expire').click(function(){
-            	var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-expire"]');
-            	var membership_name = $(this_form).find('input[name="membership_name"]').val();
+                var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-expire"]');
+                var membership_name = $(this_form).find('input[name="membership_name"]').val();
                 var expire_membership = confirm('{% trans "Are you sure you want to expire this membership?" %} ' + membership_name);  // confirm
                 if(expire_membership) $(this_form).submit() // delete: if OK
                 return false;   // cancel
             });
-        	
+
         });
     </script>
 {% endblock %}

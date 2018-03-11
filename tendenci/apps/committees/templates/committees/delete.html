@@ -16,7 +16,7 @@
         <h2>{{ committee.title }} - <a href="{{ committee.get_absolute_url }}">{{ committee.get_absolute_url }}</a></h2>
         <div class="content">{{ committee.content|safe|truncatewords_html:"60" }}</div>
         <div class="delete-prompt">
-        	{% trans "Are you sure you want to permanently delete this committee?" %}
+            {% trans "Are you sure you want to permanently delete this committee?" %}
         </div>
         <div class="delete-form">
             <form name="committee-delete" method="POST" action="{% url "committees.delete" committee.pk %}">{% csrf_token %}

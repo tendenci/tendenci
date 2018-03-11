@@ -19,13 +19,13 @@
 
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<style>
-		#fileupload{
-			border: 1px solid #c0c0c0;
-			padding: 15px;
-			border-radius: 10px;
-		}
-	</style>
+    <style>
+        #fileupload{
+            border: 1px solid #c0c0c0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -66,20 +66,20 @@
         </div>
         <!-- The table listing the files available for upload/download -->
         <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-   		<hr />
-   		<div class="row fileupload-buttonbar">
-   			<div class="col-lg-7">
-	   			<button type="reset" class="btn btn-warning cancel">
-	                <i class="glyphicon glyphicon-ban-circle"></i>
-	                <span>Clear Queue</span>
-	            </button>
-	
-	            <button type="submit" class="btn btn-primary start pull-right">
-	                <i class="glyphicon glyphicon-upload"></i>
-	                <span>Upload</span>
-	            </button>
+           <hr />
+           <div class="row fileupload-buttonbar">
+               <div class="col-lg-7">
+                   <button type="reset" class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Clear Queue</span>
+                </button>
+
+                <button type="submit" class="btn btn-primary start pull-right">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Upload</span>
+                </button>
             </div>
-   		</div>
+           </div>
 
     </form>
     <br>
@@ -108,7 +108,7 @@
             {% } %}
         </td>
         <td>
-        	{% if (!o.files.error && !i && !o.options.autoUpload) { %}
+            {% if (!o.files.error && !i && !o.options.autoUpload) { %}
                 <button class="btn btn-primary start hidden">
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>{%=locale.fileupload.start%}</span>
@@ -128,20 +128,20 @@
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-download fade">
-		{% if (file.errors) { %}
-		<td colspan="5">
-			<div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.errors%}</div>
-			 {% if (file.error) { %}
+        {% if (file.errors) { %}
+        <td colspan="5">
+            <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.errors%}</div>
+             {% if (file.error) { %}
                 <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.error%}</div>
             {% } %}
-		</td>
-		{% }else { %}
-    	<td>
-			<button type="button" class="insert-file btn btn-info" data-src="{%=file.url%}">
-	    		<i class="glyphicon glyphicon-arrow-down"></i>
-	    		<span>Insert</span>
-	    	</button>
-	    </td>
+        </td>
+        {% }else { %}
+        <td>
+            <button type="button" class="insert-file btn btn-info" data-src="{%=file.url%}">
+                <i class="glyphicon glyphicon-arrow-down"></i>
+                <span>Insert</span>
+            </button>
+        </td>
         <td>
             <span class="preview">
                 {% if (file.thumbnailUrl) { %}
@@ -151,11 +151,11 @@
         </td>
         <td>
             <p class="name">
-				{% if (!file.error) { %}
+                {% if (!file.error) { %}
                 <a href="{%=file.url%}" title="{%=file.name%}"  {%=file.thumbnailUrl?'data-gallery':''%} target="_blank">{%=file.name%}</a>
-				{% }else { %}
-				{%=file.name%}
-				{% } %}
+                {% }else { %}
+                {%=file.name%}
+                {% } %}
             </p>
             {% if (file.error) { %}
                 <div><span class="label label-important">{%=locale.fileupload.error%}</span> {%=file.error%}</div>
@@ -171,7 +171,7 @@
             </button>
             <input type="checkbox" name="delete" value="1" class="hidden">
         </td>
-	{% } %}
+    {% } %}
     </tr>
 {% } %}
 </script>
@@ -217,7 +217,7 @@
 <![endif]-->
 
 <script type="text/javascript" language="javascript">
-	{% include 'files/include/tinymce/insert_file.js' %}
+    {% include 'files/include/tinymce/insert_file.js' %}
 </script>
 </body>
 </html>

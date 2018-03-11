@@ -43,7 +43,7 @@
                     </li>
 
                     {% if user.is_authenticated %}
-                    	<li class="content-item">
+                        <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'job.add' %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
                             </span>

@@ -167,18 +167,18 @@ class CIMCustomerProfileFromTransaction(CIMBase):
         existing successful transaction.
         Input fields:
             trans_id - required
-        
+
         Output fields:
             customer_profile_id
             customer_payment_profile_id_list
             customer_shippingaddress_id_list
-            
+
         Example call:
 
         >>> from recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
         >>> cp = CIMCustomerProfileFromTransaction()
         >>> success, response_d = cp.create(trans_id='621216786562')
-         
+
         Sample request:
         <?xml version="1.0" encoding="utf-8"?>
         <createCustomerProfileFromTransactionRequest xmlns="AnetApi/xml/v1/schema/
@@ -189,7 +189,7 @@ class CIMCustomerProfileFromTransaction(CIMBase):
            </merchantAuthentication>
            <transId>122</transId>
         </createCustomerProfileFromTransactionRequest>
-        
+
         Sample response:
         <?xml version="1.0" encoding="utf-8"?>
         <createCustomerProfileFromTransactionResponse xmlns:xsi="http://
@@ -212,7 +212,7 @@ class CIMCustomerProfileFromTransaction(CIMBase):
            </customerShippingAddressIdList>
            <validationDirectResponseList />
         </createCustomerProfileFromTransactionResponse>
-        
+
         """
         root_name = 'createCustomerProfileFromTransactionRequest'
         xml_root = self.create_base_xml(root_name)

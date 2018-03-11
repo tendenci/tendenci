@@ -11,47 +11,47 @@ There were some problems in the form. Please review. Thanks!
     <p><a href="#">{{ error }}</a></p>
 {% endfor %}
 {% if form.fieldsets.fieldsets %}
-	{% for fieldset in form.fieldsets %}
-		{% for field in fieldset %}
-			{% if field.errors %}
+    {% for fieldset in form.fieldsets %}
+        {% for field in fieldset %}
+            {% if field.errors %}
             {% for error in field.errors %}
-            	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
             {% endfor %}
-			{% endif %}
-		{% endfor %}
-	{% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
 {% else %}
-	{% for field in form %}
-		{% if field.errors %}
-	          {% for error in field.errors %}
-	          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
-	          {% endfor %}
-		{% endif %}
-	{% endfor %}
+    {% for field in form %}
+        {% if field.errors %}
+              {% for error in field.errors %}
+                  <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+              {% endfor %}
+        {% endif %}
+    {% endfor %}
 {% endif %}
 </div>
 {% endif %}
 
 {% if form.fieldsets.fieldsets %}
-	{% for fieldset in form.fieldsets %}
-	  {% if fieldset.boundfields %}
-	  <fieldset class="{{ fieldset.classes }}">
-		{% if fieldset.legend %}
-		  <legend>{{ fieldset.legend }}</legend>
-		{% endif %}
-		{% if fieldset.description %}
-		  <p class="section-description">{{ fieldset.description }}</p>
-		{% endif %}
-		{% for field in fieldset %}
-		{% if field.is_hidden %}
-		    {{ field }}
-		{% else %}
-		    {# Insert officer-formset before Notes #}
-		    {% if not fieldset.legend and field.auto_id == 'id_notes' and formset %}
-		        {% committee_officer_formset formset %}
-		    {% endif %}
+    {% for fieldset in form.fieldsets %}
+      {% if fieldset.boundfields %}
+      <fieldset class="{{ fieldset.classes }}">
+        {% if fieldset.legend %}
+          <legend>{{ fieldset.legend }}</legend>
+        {% endif %}
+        {% if fieldset.description %}
+          <p class="section-description">{{ fieldset.description }}</p>
+        {% endif %}
+        {% for field in fieldset %}
+        {% if field.is_hidden %}
+            {{ field }}
+        {% else %}
+            {# Insert officer-formset before Notes #}
+            {% if not fieldset.legend and field.auto_id == 'id_notes' and formset %}
+                {% committee_officer_formset formset %}
+            {% endif %}
 
-		    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
+            <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
              <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
 
              <div class="col-sm-9">
@@ -90,17 +90,17 @@ There were some problems in the form. Please review. Thanks!
                  {% endif %}
              </div>
          </div>
-		{% endif %}
-		{% endfor %}
-	  </fieldset>
-	  {% endif %}
-	{% endfor %}
+        {% endif %}
+        {% endfor %}
+      </fieldset>
+      {% endif %}
+    {% endfor %}
 {% else %}
-	{% for field in form %}
-	{% if field.is_hidden %}
-	    {{ field }}
-	{% else %}
-	    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
+    {% for field in form %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% else %}
+        <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
                 <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
 
                 <div class="col-sm-9">
@@ -139,6 +139,6 @@ There were some problems in the form. Please review. Thanks!
                     {% endif %}
                 </div>
             </div>
-	{% endif %}
-	{% endfor %}
+    {% endif %}
+    {% endfor %}
 {% endif %}

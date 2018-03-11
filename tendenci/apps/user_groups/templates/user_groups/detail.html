@@ -30,7 +30,7 @@
         <div id="group-options">
 
             <ul>
-            	{% if request.user.profile.is_superuser and count_members > 0 %}
+                {% if request.user.profile.is_superuser and count_members > 0 %}
                 <li><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
 
                 <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
@@ -70,7 +70,7 @@
         {% endif %}
 
         {% if not groupmemberships %}
-        	{% if membership_view_perms != 'private' %}
+            {% if membership_view_perms != 'private' %}
             <p>{% trans "This group has no members" %}</p>
             {% endif %}
         {% else %}
@@ -79,7 +79,7 @@
             <div class="group-member-list">
             <p>Group members in sets of 100</p>
             {% for gm in groupmemberships %}
-            	 {%  with gm.member.profile as profile %}
+                 {%  with gm.member.profile as profile %}
                 <div class="group-member {% cycle 'gray' '' %}">
 
                  <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if profile.company %}- {{ profile.company }}{% endif %} {% if gm.role %}- {{ gm.role }}{% endif %}</a>
@@ -105,7 +105,7 @@
 
         {% endif %}
 
-		<div class="clearfix">&nbsp; </div>
+        <div class="clearfix">&nbsp; </div>
         {% include "user_groups/meta.html" %}
     </div>
 </div>

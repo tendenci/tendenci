@@ -21,27 +21,27 @@
     {% endif %}
 
     {% if user.is_authenticated %}
-   		{% if project.creator %}
+           {% if project.creator %}
         <li><strong>{% trans "Created" %}</strong> {{ project.create_dt|date:"long" }} {% trans "by" %}
-        	<a href="{{ project.creator.get_absolute_url }}">
-			{% if project.creator.first_name %}{{ project.creator.first_name }} {{ project.creator.last_name }}
-			{% else %}
-			{{ project.creator }}
-			{% endif %}</a>
-		 </li>
-		 {% endif %}
-		
-		 {% if project.owner %}
-		 <li><strong>{% trans "Last updated" %}</strong> {{ project.update_dt|date:"long" }} {% trans "by" %}
-        	<a href="{{ project.owner.get_absolute_url }}">
-			{% if project.owner.first_name %}{{ project.owner.first_name }} {{ project.owner.last_name }}
-			{% else %}
-			{{ project.owner }}
-			{% endif %}</a>
-		 </li>
-		 {% endif %}
-		
-		 {% if project.project_status %}
+            <a href="{{ project.creator.get_absolute_url }}">
+            {% if project.creator.first_name %}{{ project.creator.first_name }} {{ project.creator.last_name }}
+            {% else %}
+            {{ project.creator }}
+            {% endif %}</a>
+         </li>
+         {% endif %}
+
+         {% if project.owner %}
+         <li><strong>{% trans "Last updated" %}</strong> {{ project.update_dt|date:"long" }} {% trans "by" %}
+            <a href="{{ project.owner.get_absolute_url }}">
+            {% if project.owner.first_name %}{{ project.owner.first_name }} {{ project.owner.last_name }}
+            {% else %}
+            {{ project.owner }}
+            {% endif %}</a>
+         </li>
+         {% endif %}
+
+         {% if project.project_status %}
             <li><strong>{% trans "Project Status:" %}</strong> <span>{{ project.project_status }}</span></li>
          {% endif %}
     {% endif %}

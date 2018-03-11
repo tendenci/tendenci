@@ -530,7 +530,7 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
     """
     if not request.user.is_superuser:
         raise Http403
-    
+
     corp_profile = get_object_or_404(CorpProfile, id=id)
     corp_membership = corp_profile.corp_membership
     reps = corp_profile.reps.all()
@@ -545,7 +545,6 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
     address_list = [a for a in [corp_profile.address, corp_profile.address2, corp_profile.city,
                     corp_profile.state, corp_profile.zip] if a.strip()]
     address_str = ', '.join(address_list)
-    
 
     return render(request, template,
                   {'corp_profile': corp_profile,
@@ -1868,24 +1867,24 @@ def report_active_corp_members_by_type(request,
                             'corporate_membership_type': 'corporate_membership_type__name',
                             'parent_entity': 'corp_profile__parent_entity__entity_name',
                             'join_dt': 'join_dt',}
-    
+
     sort = request.GET.get('sort', 'corp_profile__name')
     decending = False
     if sort[0] == '-':
         sort = sort[1:]
         decending = True
-    
+
     if sort not in allowed_sort_fields:
         sort = 'corp_profile'
-     
+
     if decending:
         order_by_field = '-' + allowed_sort_fields[sort]
     else:
         order_by_field =  allowed_sort_fields[sort]
     corp_mems = corp_mems.order_by(order_by_field)
-    
+
     EventLog.objects.log()
-    
+
     # process csv download
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
@@ -1961,24 +1960,24 @@ def report_corp_members_by_status(request,
                             'status_detail': 'status_detail',
                             'join_dt': 'join_dt',
                             'expiration_dt': 'expiration_dt',}
-    
+
     sort = request.GET.get('sort', 'corp_profile__name')
     decending = False
     if sort[0] == '-':
         sort = sort[1:]
         decending = True
-    
+
     if sort not in allowed_sort_fields:
         sort = 'corp_profile'
-     
+
     if decending:
         order_by_field = '-' + allowed_sort_fields[sort]
     else:
         order_by_field =  allowed_sort_fields[sort]
     corp_mems = corp_mems.order_by(order_by_field)
-    
+
     EventLog.objects.log()
-    
+
     # process csv download
     ouput = request.GET.get('output', '')
     if ouput == 'csv':

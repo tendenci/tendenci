@@ -29,7 +29,7 @@ class EmailInvoiceForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
-            
+
         self.fields['recipient'].widget.attrs['placeholder'] = _('Email Address')
         self.fields['cc'].widget.attrs['placeholder'] = _('Email Address')
 

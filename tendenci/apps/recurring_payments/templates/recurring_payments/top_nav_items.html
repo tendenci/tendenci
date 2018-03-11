@@ -65,11 +65,11 @@
                                         <a href="{% url 'recurring_payment.disable_account' app_object.id %}" class="disable">{% trans "Disable Account" %}</a>
                                     </span>
                                       <!-- disable recurring payment account form -->
-									    <form name="rp-disable" method="POST" action="{% url 'recurring_payment.disable_account' app_object.id  %}">{% csrf_token %}
-									        <input type="hidden" name="action" value="Disable Account">
-									    </form>
+                                        <form name="rp-disable" method="POST" action="{% url 'recurring_payment.disable_account' app_object.id  %}">{% csrf_token %}
+                                            <input type="hidden" name="action" value="Disable Account">
+                                        </form>
                                 </li>
-								{% if SITE_GLOBAL_MERCHANTACCOUNT == "authorizenet" %}
+                                {% if SITE_GLOBAL_MERCHANTACCOUNT == "authorizenet" %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'recurring_payment.authnet.update_payment_info' app_object.id %}">{% trans "Payment Method" %}</a>

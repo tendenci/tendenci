@@ -47,29 +47,29 @@ class MembershipStatusDetailFilter(SimpleListFilter):
             return queryset.filter(status_detail=self.value())
         else:
             return queryset
-        
+
 class MembershipAutoRenewFilter(SimpleListFilter):
     title = 'auto renew'
     parameter_name = 'auto_renew'
- 
+
     def lookups(self, request, model_admin):
         return (
             (1, 'Yes'),
             (0, 'No'),
         )
- 
+
     def queryset(self, request, queryset):
         try:
             value = int(self.value())
         except:
             value = None
-        
+
         if value == None:
             return queryset
-        
+
         if value == 1:
             return queryset.filter(auto_renew=True)
-        
+
         return queryset.filter(Q(auto_renew=False) | Q(auto_renew__isnull=True))
 
 

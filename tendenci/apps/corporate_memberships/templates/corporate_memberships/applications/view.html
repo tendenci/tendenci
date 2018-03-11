@@ -134,7 +134,7 @@
                                 {% endif %}
                             {% else %}
                                 {% if field_obj.field_name != "" and field_obj.value != "" %}
-                                	<dl class="dl-horizontal">
+                                    <dl class="dl-horizontal">
                                     <dt class="t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
                                                   {% if field_obj.short_label %} t-short-label{% endif %}
                                                   {% if field_obj.required %} t-required{% endif %}
@@ -149,7 +149,7 @@
                                             {% if field_obj.field_name == "url" %}
                                                 {{ field_obj.value|safe|urlize }}
                                             {% elif field_obj.field_name == "tax_exempt" %}
-                                            	{{ field_obj.value|yesno:"Yes,No" }}
+                                                {{ field_obj.value|yesno:"Yes,No" }}
                                             {% else %}
                                                 {% if field_obj.field_type == "FileField" %}
                                                     <a href="{% url 'corpmembership.download_file' corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
@@ -180,7 +180,7 @@
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
                         <div>
-                        	<strong>{% trans "Total Allowed:" %}</strong>
+                            <strong>{% trans "Total Allowed:" %}</strong>
                             <span>{{ corporate_membership.free_pass_total }}</span>
                             {% if request.user.is_superuser %}
                                  &nbsp;&nbsp;&nbsp;<a href="{% url 'corpmembership.free_passes_edit' corporate_membership.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Edit" %}</a>

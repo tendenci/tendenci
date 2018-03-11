@@ -100,16 +100,15 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
-    list_display = ['id', 'user', 'view_on_site'] 
-                   
+    list_display = ['id', 'user', 'view_on_site']
+
     if get_setting("site", "global", "merchantaccount").lower() == 'authorizenet':
         list_display.append(edit_payment_info_link)
-        
+
     list_display += ['description', 'create_dt',
                      how_much_to_pay,
                      'status_detail']
-        
-    
+
     list_filter = ['status_detail']
 
     fieldsets = (
@@ -133,7 +132,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             link_icon)
     view_on_site.allow_tags = True
     view_on_site.short_description = _('view')
-    
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = RecurringPayment.objects.get(id=object_id)
         # if it's for membership auto-renew, redirect to list page
@@ -144,9 +143,9 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
                 model=opts.model_name,
             ))
             return HttpResponseRedirect(url)
-         
+
         return super(RecurringPaymentAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
-    
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 

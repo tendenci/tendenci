@@ -10,19 +10,19 @@
 <html lang="en-US">
     <head>
 
-	{% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
-	    <!-- Global site tag (gtag.js) - Google Analytics -->
-	    <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
-	    <script>
-	      window.dataLayer = window.dataLayer || [];
-	      function gtag(){dataLayer.push(arguments);}
-	      gtag('js', new Date());
+    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
 
-	      gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
-	    </script>
-	 <!-- End Google Analytics -->
-	 {% endif %}
-	    
+          gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
+        </script>
+     <!-- End Google Analytics -->
+     {% endif %}
+
         {% block full_title %}<title>{% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}</title>{% endblock %}
 
         <meta charset="UTF-8">
@@ -33,7 +33,7 @@
 
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
         <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
-	
+
         {% block includebootstrap3css %}
             {# Let's try using Bootstrap 3 in all sites #}
             <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
@@ -85,8 +85,8 @@
             {% else %}
                 {% include "top_menu/user_top-new.html" %}
             {% endif %}
-		{% endif %}
-		
+        {% endif %}
+
             {% emergency_announcement request.user %}
         {% endblock %}
 

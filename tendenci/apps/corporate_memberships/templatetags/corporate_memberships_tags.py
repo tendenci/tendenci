@@ -185,7 +185,7 @@ class ListCorpMembershipNode(Node):
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
         self.kwargs = kwargs
-        
+
     def custom_model_filter(self, items, user):
         """
         Filters out articles that aren't yet released.
@@ -261,7 +261,7 @@ class ListCorpMembershipNode(Node):
                         items = items.none()
             else:
                 items = items.none()
-                
+
         items = self.custom_model_filter(items, user)
 
         objects = []
@@ -277,7 +277,7 @@ class ListCorpMembershipNode(Node):
             objects = [item for item in random.sample(items, items.count())]
         else:
             objects = items
-            
+
         if limit:
             objects = objects[:limit]
 

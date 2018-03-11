@@ -125,7 +125,7 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_transaction.html"
             membership = kwargs.get('membership', None)
-            
+
             try:
                 email_content = render_to_string(template_name,
                                                {'pt':payment_transaction,
@@ -133,7 +133,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_url': self.site_url,
                                                 'membership': membership,
                                                 })
-                
+
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if payment_transaction.status:
@@ -227,7 +227,7 @@ def run_a_recurring_payment(rp, verbosity=0):
     num_processed = 0
     if rp.status_detail == 'active':
         rp_email_notice = RecurringPaymentEmailNotices()
-        
+
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
         # check and store payment profiles in local db
@@ -254,7 +254,7 @@ def run_a_recurring_payment(rp, verbosity=0):
             require_payment_profile = True
             if rp.platform == 'stripe':
                 require_payment_profile = False
-                
+
             if require_payment_profile:
                 payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id,
@@ -270,7 +270,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                         membership = inv.object_type.get_object_for_this_type(id=inv.object_id)
                     else:
                         membership = None
-                        
+
                     # wait for 3 minutes (duplicate transaction window is 2 minutes) if this is not the first invoice,
                     # otherwise, the payment gateway would through the "duplicate transaction" error.
                     if i > 0: time.sleep(3*60)
@@ -302,7 +302,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                                     % (rp_invoice.invoice.id,
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
-                            
+
                     success = False
 
                     if payment_profile:

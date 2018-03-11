@@ -43,7 +43,7 @@
 
             {% if opt_object.status and opt_object.status_detail != "archive" %}
                 <ul class="nav navbar-nav navbar-right t-meta-options-links t-meta-quick-links">
-                	{% if allow_edit %}
+                    {% if allow_edit %}
                         <li>
                             <a href="{% url 'corpmembership.edit' opt_object.pk %}">{% trans "Edit" %}</a>
                         </li>
@@ -57,11 +57,11 @@
                         <ul class="dropdown-menu" role="menu">
 
 
-	                        {% if request.user.is_superuser and opt_object.is_active %}
-	                        	<li>
-	                                <a href="{% url 'corpmembership.upgrade' opt_object.pk %}">{% trans "Upgrade" %}</a>
-	                            </li>
-	                        {% endif %}
+                            {% if request.user.is_superuser and opt_object.is_active %}
+                                <li>
+                                    <a href="{% url 'corpmembership.upgrade' opt_object.pk %}">{% trans "Upgrade" %}</a>
+                                </li>
+                            {% endif %}
 
                             {% if opt_object.is_active %}
                                 <li>

@@ -249,31 +249,31 @@
     google.charts.load('current', {'packages':['corechart']});
 
     $(function() {
-    	
-	    google.charts.setOnLoadCallback(drawChart);
-	    function drawChart() {
-	  		var options = {
-	  	          title: '{% trans "Last 30 days" %}',
-	  	          legend: { position: "none" }
-	  	        };
-	  	
-	  		var $membersInfo = $('#t-dashboard-js-statistics-members-info');
-	        var member_data = google.visualization.arrayToDataTable([
+
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+              var options = {
+                    title: '{% trans "Last 30 days" %}',
+                    legend: { position: "none" }
+                  };
+
+              var $membersInfo = $('#t-dashboard-js-statistics-members-info');
+            var member_data = google.visualization.arrayToDataTable([
               ['Membership', 'number'],
-	          ['{% trans "New" %}', $membersInfo.data('new')],
-	          ['{% trans "Pending" %}', $membersInfo.data('pending')],
-	          ['{% trans "Expired" %}', $membersInfo.data('expired')]
-	        ]);
-	
-	        var chart = new google.visualization.ColumnChart(document.getElementById("t-dashboard-js-statistics-members-graph"));
-	        chart.draw(member_data, options);
-	    }
-	
-	    $('#t-dashboard-js-icons-toggle').click(function (e) {
-	        e.preventDefault();
-	
-	       $('#t-dashboard-js-modules-list').toggleClass('hidden');
-	    });
+              ['{% trans "New" %}', $membersInfo.data('new')],
+              ['{% trans "Pending" %}', $membersInfo.data('pending')],
+              ['{% trans "Expired" %}', $membersInfo.data('expired')]
+            ]);
+
+            var chart = new google.visualization.ColumnChart(document.getElementById("t-dashboard-js-statistics-members-graph"));
+            chart.draw(member_data, options);
+        }
+
+        $('#t-dashboard-js-icons-toggle').click(function (e) {
+            e.preventDefault();
+
+           $('#t-dashboard-js-modules-list').toggleClass('hidden');
+        });
 
    });
     </script>

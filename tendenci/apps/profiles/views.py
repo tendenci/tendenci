@@ -126,11 +126,11 @@ def index(request, username='', template_name="profiles/index.html"):
             can_auto_renew = True
             break
     if can_auto_renew:
-        if user_this.recurring_payments.filter(status=True, 
+        if user_this.recurring_payments.filter(status=True,
                                                  status_detail='active',
                                                  object_content_type__model='membershipdefault').exists():
             auto_renew_is_set = True
-        
+
     registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
 
     EventLog.objects.log(instance=profile)
@@ -300,7 +300,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             if membership_view_perms != 'public':
                 # show non-members only
                 profiles = profiles.filter(member_number='')
-                
+
     # group
     if group:
         profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(

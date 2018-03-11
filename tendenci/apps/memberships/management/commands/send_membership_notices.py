@@ -202,7 +202,7 @@ class Command(BaseCommand):
                     if notice.notice_type == 'expiration' and membership.auto_renew and membership.has_rp():
                         # skip if auto renew is set up for this membership
                         continue
-                    
+
                     try:
                         email_member(notice, membership, global_context)
                         if memberships_count <= 50:

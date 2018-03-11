@@ -51,7 +51,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     Return an image response after paramters have been applied.
     """
     file = get_object_or_404(File, pk=id)
-    
+
     cache_key = generate_image_cache_key(
         file=id,
         size=size,

@@ -21,8 +21,8 @@
         /* hide google translate tooltips (generated for every translated item) */
         .goog-tooltip {display: none !important; }
         .helpdesk-body .form-control{
-        	font-size: inherit !important;
-        	height: inherit !important;
+            font-size: inherit !important;
+            height: inherit !important;
         }
         </style>
 
@@ -35,7 +35,7 @@
 {% with request|load_helpdesk_settings as helpdesk_settings %}
 {% with user|saved_queries as user_saved_queries_ %}
     {% if request.user.is_authenticated %}
-    	{% include "helpdesk/top_nav.html" %}
+        {% include "helpdesk/top_nav.html" %}
         {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
             {% if request.session.theme %}
                 {% include "themes/theme_top.html" %}
@@ -53,7 +53,7 @@
 </div>
 
 <div id='body' class="row">
-	{% include "helpdesk/navigation.html" %}
+    {% include "helpdesk/navigation.html" %}
     {% block helpdesk_body %}{% endblock %}
 </div>
 

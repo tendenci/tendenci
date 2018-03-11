@@ -3,10 +3,10 @@
 <div id="registrant_summary_{{ forloop.counter0 }}">
     <p><b>#{{ forloop.counter }}</b></p>
     <ul>
-    	{% trans "Email" as email_label %}
+        {% trans "Email" as email_label %}
         {% trans "Price" as price_label %}
         {% for field in registrant %}
-        	
+
             {% if field.name == "email" %}
                 <li>{{ email_label }}:  {{ field.value.0 }}</li>
             {% elif field.name in flat_ignore_fields %}

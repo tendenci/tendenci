@@ -34,7 +34,7 @@
                             {% endif %}
 
                             {% if USER_IS_SUPERUSER %}
-                            	<li class="content-item">
+                                <li class="content-item">
                                     <a href="{% url 'admin:memberships_membershipdefault_changelist' %}">
                                         <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members (Admin)' %}</span>
                                     </a>

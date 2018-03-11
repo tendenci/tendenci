@@ -42,7 +42,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
 
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
-                
+
             # determine if we need to create a stripe customer (for membership auto renew)
             customer = False
             obj_user = None
@@ -54,7 +54,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                     obj_user = membership.user
                 else:
                     membership = None
-                    
+
             if obj_user:
                 try:
                     # Create a Customer:
@@ -91,8 +91,8 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                             message=message, status=e.http_status, code=code)
             except Exception as e:
                 charge_response = e.message
-               
-            # add a rp entry now 
+
+            # add a rp entry now
             if hasattr(charge_response,'paid') and charge_response.paid:
                 if customer and membership:
                     kwargs = {'platform': 'stripe',
@@ -127,7 +127,7 @@ def update_card(request, rp_id):
     if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
         and not (rp.owner is request.user):
         raise Http403
-    
+
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
     token = request.POST.get('stripeToken')
     try:
@@ -158,14 +158,14 @@ def update_card(request, rp_id):
         # Something else happened, completely unrelated to Stripe
         message_status = messages.ERROR
         msg_string = 'Error updating payment method: {}'.format(e)
-    
+
     messages.add_message(request, message_status, _(msg_string))
     next_page = request.GET.get('next')
     if next_page:
         return HttpResponseRedirect(next_page)
     else:
         return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
-    
+
 
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))

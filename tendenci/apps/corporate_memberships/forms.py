@@ -313,8 +313,7 @@ class CorpProfileBaseForm(FormControlWidgetMixin, forms.ModelForm):
     logo_file = forms.FileField(
       required=False,
       help_text=_('Company logo. Only jpg, gif, or png images.'))
-    
-    
+
     def clean_logo_file(self):
         ALLOWED_LOGO_EXT = (
             '.jpg',
@@ -365,15 +364,15 @@ class CorpProfileAdminForm(CorpProfileBaseForm):
                  'zip',
                  'country',
                  'description',
-                 'notes',)      
+                 'notes',)
 
     def __init__(self, *args, **kwargs):
         super(CorpProfileAdminForm, self).__init__(*args, **kwargs)
 
         if self.instance.logo:
             self.initial['logo_file'] = self.instance.logo.file
-        
-        # assign the selected parent_entities to the drop down   
+
+        # assign the selected parent_entities to the drop down
         f = self.fields.get('parent_entity', None)
         if f is not None:
             corpmembership_app = CorpMembershipApp.objects.current_app()
@@ -457,8 +456,8 @@ class CorpProfileForm(CorpProfileBaseForm):
             del self.fields['status']
         if 'status_detail' in self.fields:
             del self.fields['status_detail']
-        
-        # assign the selected parent_entities to the drop down   
+
+        # assign the selected parent_entities to the drop down
         f = self.fields.get('parent_entity', None)
         if f is not None:
             selected_parent_entities = self.corpmembership_app.parent_entities.all()
@@ -817,7 +816,7 @@ class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ReportByTypeForm, self).__init__(*args, **kwargs)
-    
+
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['corp_membership_type'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['corp_membership_type'].choices = ([(0, 'ALL')] +
@@ -841,10 +840,10 @@ class ReportByStatusForm(FormControlWidgetMixin, forms.Form):
     status_detail = forms.ChoiceField(label=_('Status'),
                             required=False,
                             choices=STATUS_CHOICES)
-    
+
     def __init__(self, *args, **kwargs):
         super(ReportByStatusForm, self).__init__(*args, **kwargs)
-    
+
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['status_detail'].widget.attrs.update({'onchange': 'this.form.submit();'})
 

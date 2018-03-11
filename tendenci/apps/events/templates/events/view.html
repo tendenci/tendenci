@@ -125,7 +125,7 @@
                     </div>
                     {% else %}
                         <div class="organizer-desc-short">
-                        	{{ organizer.description|safe|urlize|linebreaks }}
+                            {{ organizer.description|safe|urlize|linebreaks }}
                         </div>
                     {% endif %}
                     {% if organizer.description|striptags|wordcount > 50 %}

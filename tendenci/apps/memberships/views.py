@@ -72,7 +72,6 @@ from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.perms.decorators import is_enabled
 
 
-
 def membership_index(request):
     if request.user.profile:
         if request.user.profile.is_superuser or request.user.profile.is_staff:
@@ -1032,7 +1031,7 @@ def membership_default_add(request, slug='', membership_id=None,
         # set username as readonly field for regular logged-in users
         # we don't want them to change their username, but they can change it through profile
         user_form.fields['username'].widget.attrs['readonly'] = 'readonly'
-        
+
     if join_under_corporate and not is_renewal:
         corp_profile = corp_membership.corp_profile
         profile_initial = {
@@ -1466,7 +1465,6 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     return render_to_response(template, context, RequestContext(request))
 
 
-
 @login_required
 def memberships_auto_renew_setup(request, user_id, template='memberships/auto_renew_setup.html', **kwargs):
     u = get_object_or_404(User, pk=user_id)
@@ -1474,7 +1472,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
 
     if not has_perm(request.user, 'memberships.change_membership') and not is_owner:
         raise Http403
-    
+
     memberships = MembershipDefault.objects.filter(user=u).filter(status=True
                     ).filter(status_detail__in=['active', 'expired']
                              ).exclude(expire_dt__isnull=True).order_by('-expire_dt')
@@ -1482,9 +1480,9 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
     memberships = memberships.filter(Q(corporate_membership_id=0) | Q(corporate_membership_id__isnull=True))
     if not memberships:
         raise Http404
-    
+
     form = AutoRenewSetupForm(request.POST or None, memberships=memberships)
-    
+
     ct = ContentType.objects.get_for_model(MembershipDefault)
     [rp] = u.recurring_payments.filter(object_content_type=ct,
                                        status=True,
@@ -1494,11 +1492,11 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
         rp = memberships[0].get_or_create_rp(request.user, **kwargs)
         if not rp:
             raise Http404
-    
+
     if rp.status_detail == 'disabled':
         rp.status_detail = 'active'
         rp.save()
-    
+
     if request.method == "POST":
         if form.is_valid():
             selected_ids = [int(id) for id in form.cleaned_data['selected_m']]
@@ -1515,10 +1513,10 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
                         if not m.auto_renew:
                             m.auto_renew = True
                             m.save()
-            
+
             msg_string = 'Updated Successfully'
             messages.add_message(request, messages.SUCCESS, _(msg_string))
-    
+
     auto_renew_all_on = True
     auto_renew_all_off = True
     for m in memberships:
@@ -1526,7 +1524,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
             auto_renew_all_on = False
         else:
             auto_renew_all_off = False
-            
+
     context = {
         'memberships' : memberships,
         'u': u,

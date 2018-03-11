@@ -11,20 +11,20 @@
 {% endblock %}
 
 {% block content %}
-	{% autopaginate projects 10 %}
-	
-	<div class="t">
-		<h1>{% trans 'Key Projects' %}</h1>
-		{% project_search %}
-		
-		<div class="projects-wrap clearfix">
-		{% for project in projects %}
-		{% search_result project %}
-		{% empty %}
-		<p>{% trans '0 projects found' %}</p>
-		{% endfor %}
-		</div>
-		
-		{% paginate %}
-	</div>
+    {% autopaginate projects 10 %}
+
+    <div class="t">
+        <h1>{% trans 'Key Projects' %}</h1>
+        {% project_search %}
+
+        <div class="projects-wrap clearfix">
+        {% for project in projects %}
+        {% search_result project %}
+        {% empty %}
+        <p>{% trans '0 projects found' %}</p>
+        {% endfor %}
+        </div>
+
+        {% paginate %}
+    </div>
 {% endblock %}

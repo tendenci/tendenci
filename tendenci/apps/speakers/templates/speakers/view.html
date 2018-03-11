@@ -89,30 +89,30 @@
         {% endif %}
 
          <div class="speaker-media">
-         	{% if speaker.facebook %}
-	            <a href="{{ speaker.facebook }}"><img src="{{ STATIC_URL }}images/icons/facebook-24x24.png" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
+             {% if speaker.facebook %}
+                <a href="{{ speaker.facebook }}"><img src="{{ STATIC_URL }}images/icons/facebook-24x24.png" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
             {% endif %}
             {% if speaker.twitter %}
-            	<a href="{{ speaker.twitter }}"><img src="{{ STATIC_URL }}images/icons/twitter-24x24.png" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
+                <a href="{{ speaker.twitter }}"><img src="{{ STATIC_URL }}images/icons/twitter-24x24.png" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
             {% endif %}
             {% if speaker.linkedin %}
-            	<a href="{{ speaker.linkedin }}"><img src="{{ STATIC_URL }}images/icons/linkedin-24x24.png" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
+                <a href="{{ speaker.linkedin }}"><img src="{{ STATIC_URL }}images/icons/linkedin-24x24.png" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
             {% endif %}
 
             {% if speaker.get_satisfaction %}
-	         	<div>
-	            {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>
-	            </div>
+                 <div>
+                {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>
+                </div>
             {% endif %}
             {% if speaker.flickr %}
-	         	<div>
-	            {% trans 'Flickr:' %} <a href="{{ speaker.flickr }}">{{ speaker.flickr }}</a>
-	            </div>
+                 <div>
+                {% trans 'Flickr:' %} <a href="{{ speaker.flickr }}">{{ speaker.flickr }}</a>
+                </div>
             {% endif %}
             {% if speaker.slideshare %}
-	         	<div>
-	            {% trans 'SlideShare:' %} <a href="{{ speaker.slideshare }}">{{ speaker.slideshare }}</a>
-	            </div>
+                 <div>
+                {% trans 'SlideShare:' %} <a href="{{ speaker.slideshare }}">{{ speaker.slideshare }}</a>
+                </div>
             {% endif %}
         </div>
         <div>&nbsp;</div>

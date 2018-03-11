@@ -32,17 +32,17 @@
         {% endfor %}
 
         {% if form.custom_payment %}
-        	{% if entry.pricing %}
-        		<p>
-	                <strong>{{ entry.form.pricing_name }}{% if entry.pricing.label %} - {{ entry.pricing.label }}{% endif %}</strong><br />
-	                {% if entry.pricing.price %}
-	                <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.pricing.price }}</em>
-	                {% else %}
-	                <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.custom_price }}</em>
-	                {% endif %}
-	            </p>
-        	
-        	{% endif %}
+            {% if entry.pricing %}
+                <p>
+                    <strong>{{ entry.form.pricing_name }}{% if entry.pricing.label %} - {{ entry.pricing.label }}{% endif %}</strong><br />
+                    {% if entry.pricing.price %}
+                    <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.pricing.price }}</em>
+                    {% else %}
+                    <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.custom_price }}</em>
+                    {% endif %}
+                </p>
+
+            {% endif %}
         {% endif %}
 
         <p>

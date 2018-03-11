@@ -51,30 +51,30 @@ def forms_entry_options(context, user, entry):
 
 
 # class GetFormNode(Node):
-# 
+#
 #     def __init__(self, **kwargs):
 #         self.kwargs = kwargs
-# 
+#
 #     def render(self, context):
 #         pk = 0
 #         template_name = 'forms/embed_form_new.html'
-# 
+#
 #         if 'pk' in self.kwargs:
 #             try:
 #                 pk = Variable(self.kwargs['pk'])
 #                 pk = pk.resolve(context)
 #             except:
 #                 pk = self.kwargs['pk']  # context string
-# 
+#
 #         if 'template_name' in self.kwargs:
 #             try:
 #                 template_name = Variable(self.kwargs['template_name'])
 #                 template_name = pk.resolve(context)
 #             except:
 #                 template_name = self.kwargs['template_name']  # context string
-# 
+#
 #             template_name = template_name.replace('"', '')
-# 
+#
 #         try:
 #             form = Form.objects.get(pk=pk)
 #             context['embed_form'] = form.object
@@ -109,12 +109,12 @@ def embed_form(context, pk, *args, **kwargs):
     [form] = Form.objects.filter(pk=pk)[:1] or [None]
     if not form:
         return ""
-    
+
     if hasattr(form, 'object'):
         form_obj = form.object
     else:
         form_obj = form
-        
+
     try:
         context['embed_form'] = form_obj
         context['embed_form_for_form'] = FormForForm(form_obj, AnonymousUser())

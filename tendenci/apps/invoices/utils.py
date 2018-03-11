@@ -42,7 +42,7 @@ def invoice_pdf(request, invoice):
             tmp_total += invoice.shipping_surcharge
         if invoice.box_and_packing:
             tmp_total += invoice.box_and_packing
-    
+
     template_name="invoices/pdf.html"
     template = get_template(template_name)
     html  = template.render(RequestContext(request, {
@@ -50,7 +50,7 @@ def invoice_pdf(request, invoice):
                            'obj_name': obj_name,
                            'payment_method': payment_method,
                            'tmp_total': tmp_total,
-                           'pdf_version': True,         
+                           'pdf_version': True,
                                      }))
     result = StringIO.StringIO()
     pisa.pisaDocument(StringIO.StringIO(html.encode("utf-8")), result,

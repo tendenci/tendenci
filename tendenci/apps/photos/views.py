@@ -220,7 +220,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     if not photo.image or not default_storage.exists(photo.image.name):
         raise Http404
-    
+
     # At this point, we didn't get the image from the cache.
     # Check if this particular thumbnail already exists on file system.
     # If it's there, no need to rebuild it from the original image!
