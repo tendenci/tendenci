@@ -117,7 +117,7 @@ class Loader(Loader):
                 try:
                     file = open(filepath)
                     try:
-                        return (file.read().decode(settings.FILE_CHARSET), filepath)
+                        return (file.read(), filepath)
                     finally:
                         file.close()
                 except IOError:

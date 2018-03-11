@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 import boto
 from six.moves.urllib.request import urlopen
 from datetime import datetime
@@ -79,7 +78,6 @@ class ThemeInfo(object):
                     setattr(self, label, value)
 
 # At compile time, cache the directories to search.
-fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
 app_templates = {}
 for app in settings.INSTALLED_APPS:
     try:
@@ -88,7 +86,7 @@ for app in settings.INSTALLED_APPS:
         raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
     template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
     if os.path.isdir(template_dir):
-        app_templates[app] = template_dir.decode(fs_encoding)
+        app_templates[app] = template_dir
 
 
 def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
