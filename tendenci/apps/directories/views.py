@@ -100,7 +100,7 @@ def search(request, template_name="directories/search.html"):
     return render_to_response(template_name,
         {'directories': directories,
         'form' : form,
-        'a_to_z': string.lowercase[:26]},
+        'a_to_z': string.ascii_lowercase},
         context_instance=RequestContext(request))
 
 
