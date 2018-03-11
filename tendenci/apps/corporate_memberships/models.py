@@ -2,7 +2,7 @@ import operator
 import time
 import uuid
 from datetime import datetime, timedelta
-from functools import partial
+from functools import partial, reduce
 
 from django import forms
 from importlib import import_module

@@ -1,6 +1,7 @@
 import operator
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from functools import reduce
 
 from django.db.models import Q
 from django.contrib.auth.models import User

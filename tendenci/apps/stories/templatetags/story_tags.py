@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 from operator import or_, and_
+from functools import reduce
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.db import models

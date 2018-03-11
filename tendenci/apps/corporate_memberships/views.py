@@ -7,6 +7,7 @@ from hashlib import md5
 from sets import Set
 import subprocess
 import mimetypes
+from functools import reduce
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext

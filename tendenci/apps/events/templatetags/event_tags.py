@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, timedelta
 from operator import or_
+from functools import reduce
 
 from django.db import models
 from django.db.models import Q

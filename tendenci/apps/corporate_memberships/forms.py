@@ -4,6 +4,7 @@ import operator
 from uuid import uuid4
 from os.path import join
 from datetime import datetime
+from functools import reduce
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage

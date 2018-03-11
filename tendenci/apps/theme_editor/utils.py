@@ -6,6 +6,7 @@ import urllib
 from datetime import datetime
 from dateutil.parser import parse
 from operator import itemgetter
+from functools import reduce
 
 from django.conf import settings
 from django.core.cache import cache

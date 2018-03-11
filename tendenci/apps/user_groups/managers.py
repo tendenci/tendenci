@@ -1,5 +1,6 @@
 import operator
 from haystack.query import SearchQuerySet
+from functools import reduce
 
 from django.db.models import Manager
 from django.db.models import Q

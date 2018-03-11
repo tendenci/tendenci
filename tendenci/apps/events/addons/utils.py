@@ -1,4 +1,5 @@
 import operator
+from functools import reduce
 from django.db.models import Q
 
 from django.contrib.auth.models import AnonymousUser

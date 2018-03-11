@@ -2,6 +2,7 @@ import uuid
 from hashlib import md5
 import operator
 from datetime import datetime, timedelta
+from functools import reduce
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models

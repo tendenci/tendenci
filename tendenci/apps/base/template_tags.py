@@ -1,5 +1,6 @@
 import random
 from operator import or_
+from functools import reduce
 
 from django.template import Node, Variable, Context, loader
 from django.db import models

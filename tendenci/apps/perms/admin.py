@@ -1,4 +1,5 @@
 from operator import or_
+from functools import reduce
 
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter, helpers

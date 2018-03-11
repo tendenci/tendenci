@@ -2,6 +2,7 @@ import inspect
 from datetime import datetime, timedelta
 from operator import and_
 from socket import gethostbyname, gethostname
+from functools import reduce
 
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
