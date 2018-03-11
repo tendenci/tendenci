@@ -75,7 +75,7 @@ urlpatterns += [
     url(r'^discounts/', include('tendenci.apps.discounts.urls')),
     url(r'^versions/', include('tendenci.apps.versions.urls')),
     url(r'^reports/', include('tendenci.apps.reports.urls')),
-    url(r'social_auth/', include('tendenci.apps.social_auth.urls')),
+    #url(r'social_auth/', include('tendenci.apps.social_auth.urls')),  # Does not support Python 3
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
     url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),

@@ -258,7 +258,7 @@ INSTALLED_APPS = (
     'tendenci.apps.resumes',
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
-    'tendenci.apps.social_auth',
+    #'tendenci.apps.social_auth',  # Does not support Python 3
     'tendenci.apps.campaign_monitor',
     'tendenci.apps.wp_importer',
     'tendenci.apps.wp_exporter',
@@ -291,7 +291,7 @@ LOGIN_REDIRECT_URL = '/dashboard'
 
 AUTHENTICATION_BACKENDS = (
     'tendenci.apps.perms.backend.ObjectPermBackend',
-    'tendenci.apps.social_auth.backends.facebook.FacebookBackend',
+    #'tendenci.apps.social_auth.backends.facebook.FacebookBackend',  # Does not support Python 3
     'django.contrib.auth.backends.ModelBackend',
 )
 

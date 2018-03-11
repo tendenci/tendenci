@@ -7,7 +7,6 @@ pisa
 Pillow==4.2.1
 anyjson>=0.2.4
 django-authority>=0.4
-# temp fix - the latest version of django-avatar-3.0.0 breaks profile
 django-countries==3.4.1
 django-form-utils>=0.1.8
 django-localflavor==1.4.1
@@ -27,7 +26,7 @@ xlrd>=0.9.4
 xlwt>=0.7.2
 beautifulsoup4==4.6.0
 oauth2>=1.5.167
-python_openid>=2.2
+#python_openid>=2.2  # Used by the social_auth app, but does not support Python 3
 createsend==4.2.7
 celery==3.1.23
 django-celery==3.1.17
