@@ -1,11 +1,8 @@
-import os.path
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.conf import settings
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 

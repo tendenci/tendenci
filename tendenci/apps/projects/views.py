@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.base.http import Http403
-from tendenci.apps.projects.models import Project, Photo, Category
-from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters
+from tendenci.apps.projects.models import Project, Category
+from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 

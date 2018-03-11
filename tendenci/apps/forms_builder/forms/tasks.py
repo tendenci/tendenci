@@ -7,15 +7,12 @@ from time import time
 from tempfile import NamedTemporaryFile
 
 from django.conf import settings
-from django.db.models import Avg, Max, Min, Count
-from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import Max, Count
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from celery.task import Task
-from celery.registry import tasks
 
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form

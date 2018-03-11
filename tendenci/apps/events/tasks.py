@@ -2,7 +2,6 @@ import os
 from django.db.models import Max, Count
 from django.http import HttpResponse
 from celery.task import Task
-from celery.registry import tasks
 from tendenci.apps.events.ics.utils import create_ics
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.events.models import Event

@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from django.utils import translation
-from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
 

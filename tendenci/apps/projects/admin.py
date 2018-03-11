@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.projects.models import (
     Project,
     ProjectManager,

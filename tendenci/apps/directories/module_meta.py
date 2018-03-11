@@ -4,8 +4,6 @@ from tendenci.apps.meta.utils import generate_meta_keywords
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import truncate_words
 
-from tendenci.apps.categories.models import Category
-
 class DirectoryMeta():
     """
     SEO specific tags carefully constructed follow.  These must *NOT* be perfect

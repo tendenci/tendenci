@@ -1,6 +1,4 @@
-from django.contrib.auth.models import User
 from django.template import Library
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import six

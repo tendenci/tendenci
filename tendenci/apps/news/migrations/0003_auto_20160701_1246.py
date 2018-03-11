@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import timezones.fields
 import tendenci.apps.user_groups.utils
 
 

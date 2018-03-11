@@ -6,14 +6,8 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 forms.py - Definitions of newforms-based forms for creating and maintaining
            tickets.
 """
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
 from django import forms
 from django.forms import extras
-from django.core.files.storage import default_storage
 from django.conf import settings
 from django.utils.translation import ugettext as _
 try:

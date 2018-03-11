@@ -5,7 +5,7 @@ from django.db.models import Q
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import has_perm, get_query_filters, has_view_perm
+from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.videos.models import Video, Category, VideoType
 
 

@@ -20,7 +20,6 @@ from tendenci.apps.base.utils import image_rescale
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.apps.files.models import File as TFile
-from tendenci.apps.files.models import file_directory
 from tendenci.apps.site_settings.utils import get_setting
 
 

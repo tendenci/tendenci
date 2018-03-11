@@ -1,7 +1,6 @@
 import subprocess
 import datetime
 import csv
-from StringIO import StringIO
 from django.http import HttpResponse
 from django.conf import settings
 from tendenci.libs.utils import python_executable

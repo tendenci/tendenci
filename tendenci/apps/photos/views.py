@@ -12,7 +12,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core import serializers
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -36,7 +35,7 @@ from djcelery.models import TaskMeta
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex
-from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
+from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License
 from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask

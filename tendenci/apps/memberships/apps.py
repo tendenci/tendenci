@@ -6,4 +6,4 @@ class MembershipsConfig(AppConfig):
 
     def ready(self):
         super(MembershipsConfig, self).ready()
-        import tendenci.apps.memberships.signals
+        import tendenci.apps.memberships.signals  # noqa:F401

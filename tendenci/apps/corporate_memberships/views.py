@@ -68,8 +68,6 @@ from tendenci.apps.corporate_memberships.forms import (
                                          ReportByStatusForm
                                          )
 from tendenci.apps.corporate_memberships.utils import (
-                                         get_corporate_membership_type_choices,
-                                         get_payment_method_choices,
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
                                          corp_membership_update_perms,

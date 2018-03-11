@@ -6,7 +6,6 @@ from __future__ import print_function
 import getpass
 import re
 import sys
-from optparse import make_option
 
 from django.contrib.auth.models import User
 from django.contrib.auth.management import get_default_username

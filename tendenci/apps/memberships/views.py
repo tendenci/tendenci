@@ -29,7 +29,6 @@ from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
-from django.forms import modelformset_factory
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
@@ -68,7 +67,6 @@ from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_membership_stats, ImportMembDefault,
     get_membership_app, get_membership_summary_data)
 from tendenci.apps.base.forms import CaptchaForm
-from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.perms.decorators import is_enabled
 
 
@@ -246,8 +244,6 @@ def application_confirmation_default(request, hash):
     """
     Responds with default confirmation
     """
-    from django.contrib.auth import login
-
     template_name = 'memberships/applications/confirmation_default2.html'
     membership = get_object_or_404(MembershipDefault, guid=hash)
     if membership.corporate_membership_id:

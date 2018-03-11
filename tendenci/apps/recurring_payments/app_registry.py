@@ -1,5 +1,5 @@
 from tendenci.apps.registry.sites import site
-from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.registry.base import LogRegistry
 from tendenci.apps.recurring_payments.models import RecurringPayment
 
 class RecurringPaymentRegistry(LogRegistry):

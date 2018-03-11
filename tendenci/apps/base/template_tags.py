@@ -3,12 +3,10 @@ from operator import or_
 
 from django.template import Node, Variable, Context, loader
 from django.db import models
-from django.core.exceptions import FieldError
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 
-from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.utils import get_query_filters
 
 

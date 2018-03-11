@@ -1,8 +1,5 @@
 from __future__ import print_function
-import os
-import re
 import requests
-from urlparse import urlparse
 from requests.exceptions import (
     MissingSchema, InvalidSchema, InvalidURL, ConnectionError)
 from BeautifulSoup import BeautifulSoup

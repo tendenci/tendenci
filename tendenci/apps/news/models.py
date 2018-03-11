@@ -10,7 +10,6 @@ from django.conf import settings
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
 from timezones.fields import TimeZoneField
-from timezones.utils import localtime_for_timezone
 from timezones.utils import adjust_datetime_to_timezone
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission

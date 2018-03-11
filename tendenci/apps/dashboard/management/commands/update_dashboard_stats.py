@@ -7,7 +7,7 @@ from django.db import connection
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Q
 
 
 class Command(BaseCommand):

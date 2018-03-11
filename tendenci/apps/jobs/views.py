@@ -27,8 +27,6 @@ from tendenci.apps.perms.utils import (
     has_perm,
     get_query_filters,
     has_view_perm)
-from tendenci.apps.categories.forms import CategoryForm, CategoryForm2
-from tendenci.apps.categories.models import Category
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.jobs.models import Job, JobPricing

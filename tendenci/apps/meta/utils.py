@@ -1,4 +1,4 @@
-from re import compile, search
+from re import compile
 from operator import itemgetter
 
 from django.utils.html import strip_tags

@@ -1,11 +1,6 @@
-from datetime import datetime
-import itertools
 from . import feedsmanager
-from haystack.query import SearchQuerySet
 
 from django.contrib.syndication.views import Feed
-from django.contrib.syndication.views import FeedDoesNotExist
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.template.loader import render_to_string

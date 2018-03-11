@@ -5,8 +5,6 @@
 ignore =
   # Import issues
   E402,
-  # Unused imports
-  F401,
 
   # Inline statement after colon
   E701,

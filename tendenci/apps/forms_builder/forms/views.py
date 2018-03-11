@@ -29,7 +29,6 @@ from tendenci.apps.base.utils import template_exists
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment

@@ -12,7 +12,7 @@ from tendenci.apps.discounts.models import Discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.memberships.models import Membership
 
-from tendenci.apps.events.models import RegConfPricing, PaymentMethod, Registrant
+from tendenci.apps.events.models import PaymentMethod, Registrant
 from tendenci.apps.base.forms import CustomCatpchaField
 
 class RegistrationForm(forms.Form):

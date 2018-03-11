@@ -1,12 +1,12 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import has_perm, has_view_perm, get_query_filters
+from tendenci.apps.perms.utils import has_perm, get_query_filters
 
 from tendenci.apps.testimonials.models import Testimonial
 

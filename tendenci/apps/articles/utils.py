@@ -4,12 +4,11 @@ from datetime import datetime, date, time
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
-from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 
 from tendenci.apps.articles.models import Article
-from tendenci.apps.base.utils import normalize_newline, UnicodeWriter
+from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 

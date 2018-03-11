@@ -1,14 +1,13 @@
 from django.conf import settings
 from django.conf.urls import patterns, url
-from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.files.models import File, MultipleFile, FilesCategory
-from tendenci.apps.files.forms import FileForm, MultiFileForm, FilewithCategoryForm, FileCategoryForm
+from tendenci.apps.files.forms import MultiFileForm, FilewithCategoryForm, FileCategoryForm
 
 
 class FileAdmin(TendenciBaseModelAdmin):

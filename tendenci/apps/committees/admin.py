@@ -3,12 +3,10 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.conf import settings
-from django import forms
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
-from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.committees.models import Committee, Position, Officer
 from tendenci.apps.committees.forms import CommitteeAdminForm, CommitteeAdminChangelistForm, UserModelChoiceField
 

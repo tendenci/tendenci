@@ -1,8 +1,5 @@
 import re
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from datetime import datetime
 
 
 class Command(BaseCommand):

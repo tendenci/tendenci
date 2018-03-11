@@ -1,6 +1,4 @@
 from django.db import models
-from django.conf import settings
-from django.core.cache import cache
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
@@ -99,7 +97,6 @@ class Setting(models.Model):
         if orig and self.value != orig.value:
             from tendenci.apps.site_settings.utils import (delete_setting_cache,
                 cache_setting, delete_all_settings_cache)
-            from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
             # delete the cache for all the settings to reset the context
             delete_all_settings_cache()

@@ -1,7 +1,6 @@
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tendenci.apps.api_tasty.resources import TendenciResource
-from tendenci.apps.api_tasty.validation import TendenciValidation
 from tendenci.apps.api_tasty.entities.resources import EntityResource
 from tendenci.apps.events.models import Event, Place, Type
 

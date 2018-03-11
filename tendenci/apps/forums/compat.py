@@ -19,7 +19,7 @@ def get_image_field_full_name():
         from sorl.thumbnail import ImageField
         name = 'sorl.thumbnail.fields.ImageField'
     except ImportError:
-        from django.db.models import ImageField
+        from django.db.models import ImageField  # noqa:F401
         name = 'django.db.models.fields.files.ImageField'
     return name
 

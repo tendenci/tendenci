@@ -1,6 +1,5 @@
 from haystack import indexes
 
-from django.db.models import signals
 from django.conf import settings
 
 from tendenci.apps.perms.object_perms import ObjectPermission

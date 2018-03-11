@@ -86,7 +86,6 @@ class Location(TendenciBaseModel):
         Distance in kilometers multiply by 6373
         """
         import math
-        from time import clock, time
 
         # if we don't have latitude or longitude
         # we return a none type object instead of int

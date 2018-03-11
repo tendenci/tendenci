@@ -1,19 +1,13 @@
 import subprocess
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
-from django.conf import settings
+from django.http import HttpResponse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.template import Template
-from djcelery.models import TaskMeta
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.wp_exporter.utils import gen_xml
 from tendenci.apps.wp_exporter.forms import ExportForm
 from tendenci.apps.wp_exporter.tasks import WPExportTask
 from tendenci.apps.wp_exporter.models import XMLExport

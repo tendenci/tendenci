@@ -1,7 +1,6 @@
 
 from csv import writer
 from datetime import datetime
-from mimetypes import guess_type
 
 
 from django.conf import settings

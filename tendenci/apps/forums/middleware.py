@@ -3,9 +3,7 @@
 from __future__ import unicode_literals
 from django.utils import translation
 from django.db.models import ObjectDoesNotExist
-from django.contrib.auth.models import Permission
 from . import util
-from tendenci.apps.site_settings.utils import get_setting
 
 class PybbMiddleware(object):
     def process_request(self, request):

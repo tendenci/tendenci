@@ -6,7 +6,6 @@ from django.conf import settings
 from django.conf.urls import patterns, include
 
 from tendenci.apps.site_settings.utils import check_setting, get_setting
-from tendenci.apps.site_settings.models import Setting
 
 lazy_reverse = lazy(reverse, str)
 

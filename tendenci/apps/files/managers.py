@@ -1,11 +1,8 @@
 import os
 import re
 from datetime import datetime
-from haystack.query import SearchQuerySet
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Manager
-from django.conf import settings
 from django.core.files.storage import default_storage
 
 from tendenci.apps.perms.managers import TendenciBaseManager

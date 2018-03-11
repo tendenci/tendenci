@@ -1,8 +1,4 @@
-import operator
-
 from django.db.models import Manager
-from django.db.models import Q
-from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
 

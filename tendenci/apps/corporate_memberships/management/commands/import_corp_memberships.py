@@ -1,6 +1,5 @@
 from __future__ import print_function
 from datetime import datetime
-import traceback
 
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404

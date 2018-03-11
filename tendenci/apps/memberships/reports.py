@@ -8,7 +8,7 @@ from django.utils.html import mark_safe
 # ReportLab does not support ugettext_lazy() translations, so use ugettext() instead
 from django.utils.translation import ugettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
-from tendenci.libs.model_report.utils import count_column, us_date_format, yesno_format
+from tendenci.libs.model_report.utils import us_date_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
 MEMBERSHIPTYPE_DICT = None
 

@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q, Count
-from django.shortcuts import get_object_or_404, redirect, Http404
+from django.shortcuts import get_object_or_404, Http404
 from django.template import RequestContext
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -28,13 +28,12 @@ from tendenci.apps.versions.models import Version
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.articles.forms import ArticleForm, ArticleSearchForm
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.categories.forms import CategoryForm
-from tendenci.apps.categories.models import Category, CategoryItem
+from tendenci.apps.categories.models import Category
 
 
 @is_enabled('articles')

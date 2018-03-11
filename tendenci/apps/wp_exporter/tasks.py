@@ -1,4 +1,3 @@
-import os
 from celery.task import Task
 from celery.registry import tasks
 from django.core.mail import EmailMessage

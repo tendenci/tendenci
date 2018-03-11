@@ -1,4 +1,3 @@
-from tastypie import fields
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.api_tasty.resources import TendenciResource
 

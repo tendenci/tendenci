@@ -1,7 +1,7 @@
 from __future__ import print_function
 import subprocess
 
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.db.models import Q
 from django.http import HttpResponse, Http404

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.utils.translation import ugettext_lazy as _
 from django.template import Library, TemplateSyntaxError
 

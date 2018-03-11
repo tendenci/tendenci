@@ -7,9 +7,7 @@ views/staff.py - The bulk of the application - provides most business logic and
                  renders all staff-facing views.
 """
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
-import sys
 
 from django import VERSION
 from django.conf import settings
@@ -18,16 +16,15 @@ try:
     User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.files.base import ContentFile
+from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.core import paginator
 from django.db import connection
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import loader, Context, RequestContext
+from django.template import Context, RequestContext
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
@@ -450,7 +447,6 @@ def update_ticket(request, ticket_id, public=False):
     files = []
     if request.FILES:
         import mimetypes
-        import os
         for file in request.FILES.getlist('attachment'):
             filename = file.name.encode('ascii', 'ignore')
             a = Attachment(

@@ -1,5 +1,5 @@
 from tendenci.apps.registry.sites import site
-from tendenci.apps.registry.base import AppRegistry, lazy_reverse
+from tendenci.apps.registry.base import AppRegistry
 from tendenci.apps.projects.models import Project
 
 

@@ -1,12 +1,8 @@
-import os
 import uuid
 import re
-from datetime import datetime
-from picklefield.fields import PickledObjectField
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from tendenci.apps.base.fields import SlugField
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)

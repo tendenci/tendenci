@@ -9,14 +9,14 @@ views/public.py - All public facing views, eg non-staff (no authentication
 
 import requests
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import loader, Context, RequestContext
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.helpdesk.forms import PublicTicketForm
-from tendenci.apps.helpdesk.lib import send_templated_mail, text_is_spam
+from tendenci.apps.helpdesk.lib import text_is_spam
 from tendenci.apps.helpdesk.models import Ticket, Queue, UserSettings, KBCategory
 
 

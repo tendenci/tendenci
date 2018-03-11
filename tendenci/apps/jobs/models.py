@@ -12,7 +12,6 @@ from django.contrib.auth.models import AnonymousUser
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
-from tendenci.apps.base.utils import now_localized
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.jobs.managers import JobManager

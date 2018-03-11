@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter

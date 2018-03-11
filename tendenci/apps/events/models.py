@@ -506,12 +506,10 @@ class Registration(models.Model):
         """
         Update the object after online payment is received.
         """
-        from datetime import datetime
         try:
             from tendenci.apps.notifications import models as notification
         except:
             notification = None
-        from tendenci.apps.perms.utils import get_notice_recipients
         from tendenci.apps.events.utils import email_admins
 
         site_label = get_setting('site', 'global', 'sitedisplayname')

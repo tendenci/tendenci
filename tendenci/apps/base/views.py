@@ -9,7 +9,6 @@ import mimetypes
 import shutil
 import subprocess
 import zipfile
-import xmlrpclib
 
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -33,7 +32,7 @@ from tendenci.libs.utils import python_executable
 from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
-from tendenci.apps.base.models import UpdateTracker, ChecklistItem
+from tendenci.apps.base.models import ChecklistItem
 from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
@@ -92,7 +91,7 @@ def image_preview(request, app_label, model, id,  size):
     response = cache.get(key)
 
     if not response:
-        from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
+        from tendenci.apps.base.utils import make_image_object_from_url, image_rescale
 
         # set sizes
         size_min = (30,30)
@@ -162,7 +161,6 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     import posixpath
     import stat
     import urllib
-    from email.Utils import parsedate_tz, mktime_tz
 
     from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
     from django.utils.http import http_date

@@ -1,11 +1,8 @@
-from django.core.exceptions import AppRegistryNotReady
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
-
-from django.shortcuts import get_object_or_404
 
 from django_countries import countries as COUNTRIES
 from localflavor.us.us_states import STATE_CHOICES
@@ -17,9 +14,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.base.utils import checklist_update
-from tendenci.apps.redirects.models import Redirect
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 

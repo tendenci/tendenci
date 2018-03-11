@@ -1,10 +1,5 @@
-import re
-from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
-from django.core.urlresolvers import reverse
+from django.template import Library
 from django.conf import settings
-
-from tendenci.apps.campaign_monitor.models import Template, Campaign
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 

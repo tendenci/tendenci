@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import copy
-from xlwt import Workbook, easyxf
 from itertools import groupby
 
 import django
@@ -21,7 +20,6 @@ from django.db.models import ForeignKey
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms import MultipleChoiceField
-from django.forms.widgets import SelectMultiple
 
 from tendenci.libs.model_report.exporters.excel import ExcelExporter
 from tendenci.libs.model_report.exporters.pdf import PdfExporter

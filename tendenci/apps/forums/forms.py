@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.forms import TendenciBaseForm
 
 from . import compat, defaults, util
-from .models import Topic, Post, Attachment, PollAnswer, Category
+from .models import Topic, Post, PollAnswer, Category
 
 
 User = compat.get_user_model()

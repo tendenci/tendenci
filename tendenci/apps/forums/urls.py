@@ -2,9 +2,9 @@
 
 from __future__ import unicode_literals
 try:
-    from django.conf.urls import patterns, include, url
+    from django.conf.urls import patterns, url
 except ImportError:
-    from django.conf.urls.defaults import patterns, include, url
+    from django.conf.urls.defaults import patterns, url
 
 from .defaults import PYBB_NICE_URL
 from .feeds import LastPosts, LastTopics

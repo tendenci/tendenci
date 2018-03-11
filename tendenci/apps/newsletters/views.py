@@ -3,13 +3,11 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
-from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.translation import ugettext_lazy as _
@@ -31,7 +29,6 @@ from tendenci.apps.newsletters.forms import (
     )
 from tendenci.apps.newsletters.mixins import (
     NewsletterEditLogMixin,
-    NewsletterStatusMixin,
     NewsletterPermissionMixin,
     NewsletterPermStatMixin,
     NewsletterPassedSLAMixin
@@ -44,7 +41,7 @@ from tendenci.apps.newsletters.utils import (
     newsletter_events_list,
     newsletter_directories_list,
     newsletter_resumes_list)
-from tendenci.apps.perms.utils import has_perm, get_query_filters
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.site_settings.utils import get_setting
 
 

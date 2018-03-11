@@ -1,11 +1,9 @@
-from datetime import datetime
 import operator
 from django.db.models import Q
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.events.models import Event, Addon, RegAddon
+from tendenci.apps.events.models import Addon, RegAddon
 
 def get_active_addons(event):
     """

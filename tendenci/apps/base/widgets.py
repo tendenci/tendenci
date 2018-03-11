@@ -2,7 +2,6 @@ from datetime import datetime
 from django.forms.widgets import MultiWidget, DateInput, TextInput
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from time import strftime
 
 from tendenci.apps.site_settings.utils import get_setting
 

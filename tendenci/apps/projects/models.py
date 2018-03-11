@@ -6,7 +6,7 @@ from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.projects.managers import ProjectManager as NewProjectManager
-from tendenci.apps.files.models import file_directory, File
+from tendenci.apps.files.models import File
 from tendenci.apps.files.managers import FileManager
 
 

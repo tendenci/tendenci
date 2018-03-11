@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset as auth_password_reset
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.registration.forms import RegistrationForm
 from .forms import LoginForm

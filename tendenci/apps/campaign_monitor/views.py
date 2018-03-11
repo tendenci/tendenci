@@ -1,16 +1,14 @@
 import datetime
-import os
 from datetime import timedelta
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext, TemplateDoesNotExist
+from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from createsend import CreateSend
 from createsend import Template as CST
 from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
@@ -398,7 +396,6 @@ def template_update(request, template_id):
     html_url = unicode("%s%s"%(site_url, template.get_html_url()))
     html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
     try:
-        from tendenci.apps.events.models import Event, Type
         html_url += "&events=1"
         html_url += "&events_type="
         html_url += "&event_start_dt=%s" % datetime.date.today()
@@ -525,7 +522,6 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url = unicode("%s%s"%(site_url, template.get_html_url()))
             html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             try:
-                from tendenci.apps.events.models import Event, Type
                 html_url += "&events=%s" % form.cleaned_data.get('events')
                 html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
                 html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')

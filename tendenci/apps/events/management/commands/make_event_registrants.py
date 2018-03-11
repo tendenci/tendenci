@@ -3,7 +3,6 @@ import random
 import time
 import md5
 import sys
-import datetime
 
 from django.core.management.base import BaseCommand
 from optparse import make_option

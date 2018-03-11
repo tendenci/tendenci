@@ -1,13 +1,12 @@
 import random
 
 from django.contrib.auth.models import AnonymousUser, User
-from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.functions import Lower
 
 from tendenci.apps.corporate_memberships.models import CorpMembership
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.base.template_tags import parse_tag_kwargs
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
 

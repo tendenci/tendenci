@@ -1,17 +1,11 @@
 from __future__ import print_function
-import random
-import string
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.core.mail.message import EmailMessage
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import create_salesforce_contact

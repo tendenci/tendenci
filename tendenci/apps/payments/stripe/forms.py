@@ -1,5 +1,4 @@
 from django import forms
-from .widgets import NoNameTextInput
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.base.forms import FormControlWidgetMixin
 #from form_utils.forms import BetterModelForm

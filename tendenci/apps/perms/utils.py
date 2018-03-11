@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from tendenci.apps.perms.object_perms import ObjectPermission

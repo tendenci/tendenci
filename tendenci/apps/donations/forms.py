@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.donations.models import Donation
 from tendenci.apps.donations.utils import get_allocation_choices, get_payment_method_choices, get_preset_amount_choices

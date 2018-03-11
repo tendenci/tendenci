@@ -3,11 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-from tendenci.apps.accountings.utils import (make_acct_entries_initial,
-                                             make_acct_entries_closing,
-                                             make_acct_entries_closing_reversing)
-
 class MakePayment(models.Model):
     guid = models.CharField(max_length=50)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)

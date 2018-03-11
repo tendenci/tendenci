@@ -5,7 +5,7 @@ import time as ttime
 import subprocess
 
 from django.template import RequestContext
-from django.db.models import Sum, Q
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required

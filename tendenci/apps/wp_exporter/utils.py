@@ -1,6 +1,5 @@
 import datetime
 from . import encoder
-from django.conf import settings
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -38,7 +37,6 @@ def gen_xml(data):
     if data["events"]:
         offset = encode_events(xml, offset)
     try:
-        from tendenci.apps.case_studies import CaseStudy
         if data["case_studies"]:
             offset = encode_casestudies(xml, offset)
     except ImportError:

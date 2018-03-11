@@ -1,12 +1,10 @@
 from __future__ import print_function
 import subprocess
-import os
 from datetime import datetime
 from datetime import date
 import time as ttime
 from djcelery.models import TaskMeta
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
 from django.template import RequestContext
@@ -21,7 +19,6 @@ from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import Http404
-from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.utils import python_executable
@@ -31,7 +28,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.apps.imports.forms import ImportForm
 from tendenci.apps.imports.models import Import
-from tendenci.apps.imports.utils import extract_from_excel, render_excel
+from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.event_logs.utils import request_month_range, day_bars
@@ -713,8 +710,6 @@ def group_subscriber_export(request, group_slug):
         raise Http403
 
     import xlwt
-    from ordereddict import OrderedDict
-    from django.db import connection
     from tendenci.apps.forms_builder.forms.models import FieldEntry
 
     # create the excel book and sheet

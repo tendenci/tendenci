@@ -59,7 +59,6 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     return inv
 
 def make_payment_email_user(request, make_payment, invoice, **kwargs):
-    from django.core.mail.message import EmailMessage
     from django.template.loader import render_to_string
     from django.conf import settings
     from django.template import RequestContext

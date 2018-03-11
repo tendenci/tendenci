@@ -1,6 +1,4 @@
-import simplejson
 from datetime import datetime, timedelta
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
 from django.shortcuts import render_to_response, redirect
@@ -13,7 +11,6 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response
 
 @login_required
 def index(request, template_name="dashboard/index.html"):

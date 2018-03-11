@@ -1,5 +1,4 @@
 from django.conf import settings
-from tendenci.apps.site_settings.utils import get_setting
 
 
 # Maximum allowed length for field values.

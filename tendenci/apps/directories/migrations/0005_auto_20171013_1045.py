@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import os
 
-from django.db import migrations, models
+from django.db import migrations
 from django.template.defaultfilters import slugify
 from django.conf import settings
 

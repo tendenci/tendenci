@@ -2,11 +2,10 @@
 import urllib
 import hashlib
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from . import defaults, util
-from .compat import get_image_field_class, get_username_field
+from .compat import get_image_field_class
 from tendenci.apps.site_settings.utils import get_setting
 
 

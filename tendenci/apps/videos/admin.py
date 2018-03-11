@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin

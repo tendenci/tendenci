@@ -1,6 +1,5 @@
 import os
 from django.conf import settings
-from django.contrib.staticfiles import finders
 
 DEFAULT_CONFIG = getattr(settings, 'TINYMCE_DEFAULT_CONFIG',
         {'theme': "simple", 'relative_urls': False})

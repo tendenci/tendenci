@@ -1,7 +1,5 @@
 from __future__ import print_function
-from django.conf import settings as d_settings
 from django.core.management.base import BaseCommand
-from django.core.cache import cache
 
 class Command(BaseCommand):
     """

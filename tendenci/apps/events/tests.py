@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.events.models import RegConfPricing, Event, Addon
-from tendenci.apps.events.views import delete_addon
 
 
 handler = logging.StreamHandler()

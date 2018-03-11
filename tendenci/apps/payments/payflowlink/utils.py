@@ -3,7 +3,6 @@
 from django.conf import settings
 #from django.http import Http404
 from django.db import transaction
-from django.core.urlresolvers import reverse
 from .forms import PayflowLinkPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates

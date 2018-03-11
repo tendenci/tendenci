@@ -2,7 +2,7 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.db.models import Avg, Max, Min, Count, Sum
+from django.db.models import Sum
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403

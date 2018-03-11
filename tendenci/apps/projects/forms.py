@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.projects.models import Project, Photo, TeamMembers, Documents, Category
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
 
 ALLOWED_LOGO_EXT = (
     '.jpg',

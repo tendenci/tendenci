@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 
-from django.contrib.admin import widgets
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings

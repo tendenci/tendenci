@@ -1,6 +1,5 @@
 import datetime
 
-from django.conf import settings
 from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
@@ -9,8 +8,6 @@ from django.template import RequestContext
 
 from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.base.http import Http403
 from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (

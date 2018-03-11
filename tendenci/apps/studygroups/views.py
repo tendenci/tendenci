@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.forms.models import modelformset_factory, inlineformset_factory
+from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
@@ -15,11 +15,9 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
-from tagging.models import Tag, TaggedItem
-from tagging.utils import parse_tag_input
-from tendenci.apps.studygroups.models import StudyGroup, Officer, Position
-from tendenci.apps.studygroups.forms import StudyGroupForm, StudyGroupAdminForm, OfficerForm
-from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
+from tendenci.apps.studygroups.models import StudyGroup, Officer
+from tendenci.apps.studygroups.forms import StudyGroupForm, OfficerForm
+from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
 try:

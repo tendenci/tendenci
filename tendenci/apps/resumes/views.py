@@ -8,11 +8,9 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.object_perms import ObjectPermission
 
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (update_perms_and_save, get_notice_recipients,

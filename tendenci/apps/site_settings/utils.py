@@ -1,6 +1,5 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
-from django.utils.translation import ugettext_lazy as _
 from django import VERSION as django_version
 from django.apps import apps
 

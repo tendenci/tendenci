@@ -1,6 +1,5 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
-from django.utils.safestring import mark_safe
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
 

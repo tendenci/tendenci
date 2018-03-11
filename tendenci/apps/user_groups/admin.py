@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.forms import GroupAdminForm
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 

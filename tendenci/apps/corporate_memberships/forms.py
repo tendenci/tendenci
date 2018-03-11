@@ -14,7 +14,6 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.template.defaultfilters import filesizeformat
 from django.contrib.contenttypes.models import ContentType
-from form_utils.forms import BetterModelForm
 
 # from captcha.fields import CaptchaField
 #from tendenci.apps.base.forms import SimpleMathField

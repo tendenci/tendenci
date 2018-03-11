@@ -1,8 +1,7 @@
 from django.test import TestCase
-from django.core import mail
 from django.test.client import Client
 from django.core.urlresolvers import reverse
-from tendenci.apps.helpdesk.models import Queue, CustomField, Ticket
+from tendenci.apps.helpdesk.models import Queue, Ticket
 
 class PublicActionsTestCase(TestCase):
     """

@@ -22,7 +22,6 @@ from tendenci.apps.recurring_payments.models import (RecurringPayment,
 from tendenci.apps.recurring_payments.authnet.utils import get_test_mode
 from tendenci.apps.recurring_payments.utils import (RecurringPaymentEmailNotices,
                                       run_a_recurring_payment)
-from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog

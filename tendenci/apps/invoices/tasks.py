@@ -1,12 +1,9 @@
-import os
 from datetime import datetime
 
-from django.forms.models import model_to_dict
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
-from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.exports.utils import render_csv
 
 class InvoiceExportTask(Task):

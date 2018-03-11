@@ -1,10 +1,6 @@
 from __future__ import print_function
-import os
 from optparse import make_option
-from random import randint
-from boto.s3.connection import S3Connection
 
-from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -43,8 +39,6 @@ class Command(BaseCommand):
         """
         This calls the loaddata command on all creative fixtures.
         """
-        from tendenci.apps.files.models import File
-
         if reset_nav:
             from tendenci.apps.navs.models import NavItem
             try:

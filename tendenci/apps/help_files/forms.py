@@ -1,8 +1,7 @@
 from django import forms
-from django.forms import widgets
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.help_files.models import Request, HelpFile, Topic
+from tendenci.apps.help_files.models import Request, HelpFile
 from tendenci.libs.tinymce.widgets import TinyMCE
 # from captcha.fields import CaptchaField
 from tendenci.apps.perms.forms import TendenciBaseForm

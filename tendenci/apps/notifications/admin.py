@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.notifications.models import (NoticeType, NoticeSetting, Notice,
-    ObservedItem, NoticeEmail)
+from tendenci.apps.notifications.models import NoticeEmail
 
 
 class NoticeTypeAdmin(admin.ModelAdmin):

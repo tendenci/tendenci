@@ -3,9 +3,8 @@ from django import forms
 from django.conf import settings
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
-from tendenci.apps.campaign_monitor.models import Template, Campaign, ListMap
+from tendenci.apps.campaign_monitor.models import Template
 from createsend import CreateSend
-from createsend import Campaign as CSC
 
 THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),

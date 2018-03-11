@@ -1,6 +1,6 @@
 import re
 
-from django.template import RequestContext, Context, Template
+from django.template import Context, Template
 
 def detect_template_tags(string):
     """

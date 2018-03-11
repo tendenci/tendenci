@@ -1,12 +1,7 @@
 from __future__ import print_function
-import os
-from optparse import make_option
-from boto.s3.connection import S3Connection
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 from django.core.exceptions import FieldError
 
 

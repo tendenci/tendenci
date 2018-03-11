@@ -8,7 +8,7 @@ import re
 import cStringIO
 from base64 import b64encode
 
-from django.db import models, connection
+from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache

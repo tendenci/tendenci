@@ -1,4 +1,3 @@
-import inspect
 from operator import or_
 
 from django.contrib import admin

@@ -10,7 +10,6 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.test import TestCase, skipUnlessDBFeature
 from django.test.client import Client
 from django.test.utils import override_settings

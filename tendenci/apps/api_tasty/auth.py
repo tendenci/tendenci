@@ -1,5 +1,4 @@
 from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import Authorization
 
 class DeveloperApiKeyAuthentication(ApiKeyAuthentication):
     """

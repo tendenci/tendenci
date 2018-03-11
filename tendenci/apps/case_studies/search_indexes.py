@@ -2,7 +2,7 @@ from haystack import indexes
 
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
-from tendenci.apps.case_studies.models import CaseStudy, Image
+from tendenci.apps.case_studies.models import CaseStudy
 
 class CaseStudyIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

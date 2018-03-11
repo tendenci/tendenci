@@ -1,7 +1,6 @@
-from django.template import Node, Library, TemplateSyntaxError, Variable
+from django.template import Library
 from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser
-from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.forms_builder.forms.forms import FormForForm
 from tendenci.apps.forms_builder.forms.models import Form

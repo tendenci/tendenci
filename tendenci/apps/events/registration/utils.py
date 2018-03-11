@@ -1,15 +1,14 @@
 from datetime import datetime
 from decimal import Decimal
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.models import DiscountUse
 
 from tendenci.apps.events.utils import get_event_spots_taken
-from tendenci.apps.events.models import Event, RegConfPricing, Registration, Registrant
-from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from tendenci.apps.events.models import RegConfPricing, Registration, Registrant
 from tendenci.apps.events.forms import FormForCustomRegForm
 
 try:

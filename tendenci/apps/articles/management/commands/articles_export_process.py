@@ -1,6 +1,5 @@
 from __future__ import print_function
 import time
-from optparse import make_option
 from django.core.management.base import BaseCommand
 
 

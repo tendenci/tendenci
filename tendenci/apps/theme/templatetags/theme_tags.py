@@ -1,6 +1,6 @@
 import os
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
-from django.template import Library, Template, Variable
+from django.template import Library, Variable
 from django.conf import settings
 from django.template.base import TextNode
 from django.template.loader import get_template

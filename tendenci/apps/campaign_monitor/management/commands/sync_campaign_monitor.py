@@ -1,5 +1,5 @@
 from __future__ import print_function
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
 
 class Command(BaseCommand):
@@ -12,9 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
         from tendenci.apps.profiles.models import Profile
-        from tendenci.apps.campaign_monitor.models import (ListMap, Campaign, Template, setup_custom_fields)
+        from tendenci.apps.campaign_monitor.models import (ListMap, setup_custom_fields)
         from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
-        from createsend import (CreateSend, Client, List, Subscriber,
+        from createsend import (Client, List, Subscriber,
             BadRequest, Unauthorized)
 
         verbosity = 1

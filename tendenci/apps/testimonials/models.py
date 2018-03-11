@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.files.models import File, file_directory
+from tendenci.apps.files.models import File
 from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.testimonials.managers import TestimonialManager

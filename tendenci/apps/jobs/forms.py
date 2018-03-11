@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse
 # from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE
 
-from tendenci.apps.categories.models import Category
 from tendenci.apps.jobs.models import Job
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField

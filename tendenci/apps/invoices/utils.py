@@ -1,6 +1,5 @@
 from datetime import datetime, date, time
 import time as ttime
-import csv
 import cStringIO as StringIO
 from xhtml2pdf import pisa
 

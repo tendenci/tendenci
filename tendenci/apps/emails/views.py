@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from tendenci.apps.emails.models import Email
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 

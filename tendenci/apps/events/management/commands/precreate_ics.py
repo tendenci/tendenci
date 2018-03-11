@@ -11,7 +11,6 @@ class Command(BaseCommand):
         import os
         from django.conf import settings
         from site_settings.utils import get_setting
-        from events.models import Event
         from events.utils import get_vevents
         from django.contrib.auth.models import User
 

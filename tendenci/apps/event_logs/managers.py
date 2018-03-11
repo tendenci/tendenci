@@ -1,8 +1,6 @@
 import inspect
-from time import strptime
 from datetime import datetime, timedelta
 from operator import and_
-from haystack.query import SearchQuerySet
 from socket import gethostbyname, gethostname
 
 from django.db.models import Manager
