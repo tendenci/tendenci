@@ -55,10 +55,7 @@ class Setting(models.Model):
     def get_value(self):
         try:
             if self.is_secure:
-                try:
-                    return decrypt(self.value).decode('utf-8')
-                except UnicodeDecodeError:
-                    return decrypt(self.value)
+                return decrypt(self.value)
         except AttributeError: #cached setting with no is_secure
             from tendenci.apps.site_settings.utils import (
                 delete_setting_cache,
