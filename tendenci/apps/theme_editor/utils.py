@@ -59,7 +59,7 @@ class ThemeInfo(object):
         # check if theme info file exists
         is_file = qstr_is_file(DEFAULT_THEME_INFO, ROOT_DIR=theme_root)
         if is_file:
-            theme_file = file(os.path.join(theme_root, DEFAULT_THEME_INFO))
+            theme_file = open(os.path.join(theme_root, DEFAULT_THEME_INFO))
             data = theme_file.readlines()
             theme_file.close()
             # set attributes according to data in info file

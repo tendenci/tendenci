@@ -1,6 +1,7 @@
 import os
 import csv
 import zipfile
+from io import open
 from os.path import join
 from os import unlink
 from time import time
@@ -184,7 +185,10 @@ class FormEntriesExportTask(Task):
             temp_zip.close()
 
             # set the response for the zip files
-            response = HttpResponse(file(temp_zip.name).read(), content_type='application/zip')
+            f = open(temp_zip.name, 'rt')
+            body = f.read()
+            f.close()
+            response = HttpResponse(body, content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="export_entries_%d.zip"' % time()
 
             # remove the temporary files
