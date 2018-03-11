@@ -11,7 +11,7 @@ def thank_you(request,
                   template_name='payments/authorizenet/thankyou.html'):
     payment = firstdatae4_thankyou_processing(
                                         request,
-                                        dict(request.POST.items()))
+                                        request.POST.copy())
     if not payment:
         return HttpResponse('Not Valid')
 
@@ -22,7 +22,7 @@ def thank_you(request,
 @csrf_exempt
 def silent_post(request):
     payment = firstdatae4_thankyou_processing(
-        request, dict(request.POST.items()))
+        request, request.POST.copy())
 
     if not payment:
         return HttpResponse('Not Valid')

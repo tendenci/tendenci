@@ -11,7 +11,7 @@ from tendenci.apps.payments.utils import log_silent_post
 def thank_you(request, template_name='payments/receipt.html'):
     validate_type = 'PDT'
     payment, processed = paypal_thankyou_processing(request,
-                                    dict(request.POST.items()),
+                                    request.POST.copy(),
                                     validate_type=validate_type)
 
     return render_to_response(template_name, {'payment': payment},
@@ -22,7 +22,7 @@ def thank_you(request, template_name='payments/receipt.html'):
 def ipn(request):
     validate_type = 'IPN'
     payment, processed = paypal_thankyou_processing(request,
-                                dict(request.POST.items()),
+                                request.POST.copy(),
                                 validate_type=validate_type)
 
     if processed:

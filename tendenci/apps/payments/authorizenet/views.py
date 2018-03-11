@@ -11,7 +11,7 @@ def sim_thank_you(request, payment_id,
                   template_name='payments/authorizenet/thankyou.html'):
     payment = authorizenet_thankyou_processing(
                                         request,
-                                        dict(request.POST.items()))
+                                        request.POST.copy())
 
     return render_to_response(template_name, {'payment': payment},
                               context_instance=RequestContext(request))
@@ -24,7 +24,7 @@ def silent_post(request):
         return HttpResponse('')
 
     payment = authorizenet_thankyou_processing(
-        request, dict(request.POST.items()))
+        request, request.POST.copy())
 
     log_silent_post(request, payment)
 

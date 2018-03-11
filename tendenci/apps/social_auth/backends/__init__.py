@@ -497,7 +497,7 @@ class OpenIdAuth(BaseAuth):
 
     def auth_complete(self, *args, **kwargs):
         """Complete auth process"""
-        response = self.consumer().complete(dict(self.data.items()),
+        response = self.consumer().complete(self.data.copy(),
                                             self.request.build_absolute_uri())
         if not response:
             raise ValueError('This is an OpenID relying party endpoint')

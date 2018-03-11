@@ -8,14 +8,14 @@ from tendenci.apps.payments.utils import log_silent_post
 
 @csrf_exempt
 def thank_you(request, template_name='payments/receipt.html'):
-    payment, processed = payflowlink_thankyou_processing(request, dict(request.POST.items()))
+    payment, processed = payflowlink_thankyou_processing(request, request.POST.copy())
 
     return render_to_response(template_name,{'payment':payment},
                               context_instance=RequestContext(request))
 
 @csrf_exempt
 def silent_post(request):
-    payment, processed = payflowlink_thankyou_processing(request, dict(request.POST.items()))
+    payment, processed = payflowlink_thankyou_processing(request, request.POST.copy())
 
     if processed:
         log_silent_post(request, payment)

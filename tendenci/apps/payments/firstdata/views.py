@@ -10,7 +10,7 @@ from tendenci.apps.payments.firstdata.utils import firstdata_thankyou_processing
 
 @csrf_exempt
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
-    payment = firstdata_thankyou_processing(request, dict(request.POST.items()))
+    payment = firstdata_thankyou_processing(request, request.POST.copy())
 
     if payment:
         if payment.is_approved:
