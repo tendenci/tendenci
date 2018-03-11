@@ -215,9 +215,10 @@ class ListNode(Node):
             items = items.order_by(order)
 
         if randomize:
-            objects = [item for item in random.sample(items, len(items))][:limit]
+            items = list(items)
+            objects = random.sample(items, min(len(items), limit))
         else:
-            objects = [item for item in items[:limit]]
+            objects = items[:limit]
 
         if query:
             objects = [item.object for item in objects]
