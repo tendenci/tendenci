@@ -5,7 +5,7 @@ import os
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
-from django.template.loader import BaseLoader
+from django.template.loaders.base import Loader
 from django.template import engines
 
 from django.utils._os import safe_join
@@ -25,7 +25,7 @@ make_origin = engine.make_origin
 non_theme_source_loaders = None
 
 
-class Loader(BaseLoader):
+class Loader(Loader):
     """Loader that includes a theme's templates files that enables
     template overriding similar to how a project's templates dir overrides
     an app's templates dir. In other words this takes advantage of django's
