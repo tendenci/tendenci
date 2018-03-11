@@ -120,7 +120,6 @@ def export(request, template_name="redirects/export.html"):
 
     if request.method == 'POST':
         # initilize initial values
-        file_name = "redirects.csv"
         fields = [
             'from_url',
             'to_url',

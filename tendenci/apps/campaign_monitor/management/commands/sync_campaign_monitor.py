@@ -31,7 +31,7 @@ class Command(BaseCommand):
             except BadRequest as br:
                 print(br)
                 try:
-                    email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
+                    subscriber_obj.add(list_id, email, name, custom_data, True)  # Returns email_address
                     if verbosity >=2:
                         print("%s (%s)" % (name, email))
                 except BadRequest as br:
@@ -81,7 +81,7 @@ class Command(BaseCommand):
 
             a_list = List(auth, list_id)
             try:
-                list_stats = a_list.stats()
+                #list_stats = a_list.stats()
                 # set up custom fields
                 print("Setting up custom fields...")
                 setup_custom_fields(a_list)

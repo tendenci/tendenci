@@ -159,10 +159,10 @@ class SpaceIncludeNode(IncludeNode):
 
         if setting_value:
             # First try to render this as a box
-            user = AnonymousUser()
-            if 'user' in context:
-                if isinstance(context['user'], User):
-                    user = context['user']
+            #user = AnonymousUser()
+            #if 'user' in context:
+            #    if isinstance(context['user'], User):
+            #        user = context['user']
             try:
                 # for performance reason, pass AnonymousUser() to reduce the joins of objectpermissions
                 # in the meantime, we do want to show public items on homepage
@@ -324,7 +324,7 @@ def theme_setting(parser, token):
     if len(bits) != 2:
         raise TemplateSyntaxError(_("%r tag takes one argument: the setting to be included" % bits[0]))
     path = bits[1]
-    return ThemeSettingNode(bits[1])
+    return ThemeSettingNode(path)
 
 register.tag('theme_extends', theme_extends)
 register.tag('theme_include', theme_include)

@@ -309,7 +309,6 @@ class FilewithCategoryForm(TendenciBaseForm):
             raise forms.ValidationError(_('Invalid group selected.'))
 
     def save(self, *args, **kwargs):
-        data = self.cleaned_data
         file = super(FilewithCategoryForm, self).save(*args, **kwargs)
 
         file.save()

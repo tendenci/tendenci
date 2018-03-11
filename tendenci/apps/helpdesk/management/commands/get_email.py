@@ -125,7 +125,7 @@ def process_queue(q, quiet=False):
 
         for msg in messagesInfo:
             msgNum = msg.split(" ")[0]
-            msgSize = msg.split(" ")[1]
+            #msgSize = msg.split(" ")[1]
 
             full_message = "\n".join(server.retr(msgNum)[1])
             ticket = ticket_from_message(message=full_message, queue=q, quiet=quiet)
@@ -236,7 +236,7 @@ def ticket_from_message(message, queue, quiet):
                 try:
                     # strip html tags
                     body_plain = striptags(body_html)
-                except DjangoUnicodeDecodeError as e:
+                except DjangoUnicodeDecodeError:
                     charset = chardet.detect(body_html)['encoding']
                     body_plain = striptags(unicode(body_html, charset))
 
@@ -299,7 +299,7 @@ def ticket_from_message(message, queue, quiet):
         )
         t.save()
         new = True
-        update = ''
+        #update = ''
 
     elif t.status == Ticket.CLOSED_STATUS:
         t.status = Ticket.REOPENED_STATUS
@@ -371,10 +371,10 @@ def ticket_from_message(message, queue, quiet):
     else:
         context.update(comment=f.comment)
 
-        if t.status == Ticket.REOPENED_STATUS:
-            update = _(' (Reopened)')
-        else:
-            update = _(' (Updated)')
+        #if t.status == Ticket.REOPENED_STATUS:
+        #    update = _(' (Reopened)')
+        #else:
+        #    update = _(' (Updated)')
 
         if t.assigned_to:
             send_templated_mail(

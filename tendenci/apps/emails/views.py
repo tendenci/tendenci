@@ -107,7 +107,7 @@ def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm,
         if form.is_valid():
             email_addr = form.cleaned_data['email_address']
             amazon_ses = AmazonSES()
-            result = amazon_ses.verifyEmailAddress(email_addr)
+            amazon_ses.verifyEmailAddress(email_addr)  # Return value is ignored
 
             messages.add_message(request, messages.INFO,
                                  _('The email address "%(email)s" has been sent to amazon to verify. \

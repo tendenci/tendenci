@@ -872,7 +872,7 @@ def users_not_in_groups(request, template_name='profiles/users_not_in_groups.htm
     # exists for the user. This would be the self healing process.
     for usr in users:
         try:
-            profile = usr.profile
+            usr.profile
         except Profile.DoesNotExist:
             Profile.objects.create_profile(user=usr)
 
@@ -945,9 +945,9 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
     user = get_object_or_404(User, username=username)
 
     try:
-        profile = Profile.objects.get(user=user)
+        Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        profile = Profile.objects.create_profile(user=user)
+        Profile.objects.create_profile(user=user)
 
     if not request.user.profile.is_superuser:
         raise Http403

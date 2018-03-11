@@ -130,7 +130,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             # include pricing options if any
             if (formforform.custom_payment or formforform.recurring_payment) and formforform.pricing_set.all():
 
-                currency_symbol = get_setting('site', 'global', 'currencysymbol')
+                #currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
                 pricing_options = []
                 for pricing in formforform.pricing_set.all():
@@ -458,7 +458,7 @@ class FormForField(forms.ModelForm):
         field_function = cleaned_data.get("field_function")
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
-        required = cleaned_data.get("required")
+        #required = cleaned_data.get("required")
         visible = cleaned_data.get("visible")
 
         if field_function == "GroupSubscription":

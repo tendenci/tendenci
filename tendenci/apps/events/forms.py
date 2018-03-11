@@ -135,7 +135,7 @@ class EventSearchForm(forms.Form):
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
-                x = int(q)
+                int(q)
             except ValueError:
                 self._errors['q'] = ErrorList([_('IDs must be an integer')])
 
@@ -164,7 +164,7 @@ class EventSimpleSearchForm(forms.Form):
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
-                x = int(q)
+                int(q)
             except ValueError:
                 self._errors['q'] = ErrorList([_('IDs must be an integer')])
 
@@ -522,7 +522,7 @@ class FormForCustomRegForm(forms.ModelForm):
 
 
 def _get_price_labels(pricing):
-    currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+    #currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
     if pricing.target_display():
         target_display = ' (%s)' % pricing.target_display()
     else:
@@ -1134,7 +1134,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                                          initial='True')
 
     def __init__(self, *args, **kwargs):
-        reg_form_queryset = kwargs.pop('reg_form_queryset', None)
+        kwargs.pop('reg_form_queryset', None)
         self.user = kwargs.pop('user', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
@@ -1168,7 +1168,7 @@ class Reg8nConfPricingForm(BetterModelForm):
         for group_id in group_list:
             if group_id:
                 try:
-                    group = Group.objects.get(pk=group_id)
+                    Group.objects.get(pk=group_id)
                     groups.append(group_id)
                 except Group.DoesNotExist:
                     raise forms.ValidationError(_('Invalid group selected.'))
@@ -1321,7 +1321,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        kwargs.pop('user', None)
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         self.recurring_edit = kwargs.pop('recurring_edit', False)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)

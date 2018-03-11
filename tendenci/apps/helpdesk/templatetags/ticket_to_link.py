@@ -41,8 +41,6 @@ def num_to_link(text):
         matches.append(match)
 
     for match in ReverseProxy(matches):
-        start = match.start()
-        end = match.end()
         number = match.groups()[0]
         url = reverse('helpdesk_view', args=[number])
         try:

@@ -48,7 +48,7 @@ class TicketBasicsTestCase(TestCase):
         response = self.client.post(reverse('helpdesk_home'), post_data, follow=True)
         last_redirect = response.redirect_chain[-1]
         last_redirect_url = last_redirect[0]
-        last_redirect_status = last_redirect[1]
+        #last_redirect_status = last_redirect[1]
 
         # Ensure we landed on the "View" page.
         # Django 1.9 compatible way of testing this
@@ -92,7 +92,7 @@ class TicketBasicsTestCase(TestCase):
         custom_field_1.delete()
         last_redirect = response.redirect_chain[-1]
         last_redirect_url = last_redirect[0]
-        last_redirect_status = last_redirect[1]
+        #last_redirect_status = last_redirect[1]
 
         # Ensure we landed on the "View" page.
         # Django 1.9 compatible way of testing this

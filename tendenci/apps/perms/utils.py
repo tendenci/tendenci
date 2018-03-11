@@ -218,7 +218,7 @@ def get_query_filters(user, perm, **kwargs):
     user = getattr(user, 'impersonated_user', user)
 
     perms_field = kwargs.get('perms_field', True)
-    super_perm = kwargs.get('super_perm', False)
+    #super_perm = kwargs.get('super_perm', False)
 
     group_perm = Q()
     group_q = Q()

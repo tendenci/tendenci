@@ -240,7 +240,7 @@ class ModelSearchForm(SearchForm):
                         registered_apps_models.pop(models_index)
                         names_index = registered_apps_names.index(app['model']._meta.model_name)
                         registered_apps_names.pop(names_index)
-                    except Exception as e:
+                    except Exception:
                         pass
 
         self.models = registered_apps_models

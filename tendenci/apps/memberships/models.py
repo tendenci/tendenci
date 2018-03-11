@@ -672,7 +672,7 @@ class MembershipDefault(TendenciBaseModel):
                     data = getattr(demographic, field_name)
                     try:
                         is_file = eval(data).get('type') == u'file'
-                    except Exception as e:
+                    except Exception:
                         is_file = False
 
                     if is_file:

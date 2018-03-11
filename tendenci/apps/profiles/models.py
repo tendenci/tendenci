@@ -426,7 +426,7 @@ class Profile(Person):
 
         if created:
             profile = Profile.objects.create_profile(user)
-            sf_id = create_salesforce_contact(profile)
+            create_salesforce_contact(profile)  # Returns sf_id
 
         return user, created
 

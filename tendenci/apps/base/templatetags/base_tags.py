@@ -80,7 +80,7 @@ def google_cmaps_url(parser, token):
         <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=8 %}" />
         <img src="{% google_cmaps_url location origin size=200x200 markers=color:red|label:A markers_origin=color:green|label:B zoom=8 %}" />
     """
-    args, kwargs = [], {}
+    kwargs = {}
     bits = token.split_contents()
     if len(bits) < 2:
         message = "'%s' tag requires more than 1 argument" % bits[0]

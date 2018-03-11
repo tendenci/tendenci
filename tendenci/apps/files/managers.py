@@ -66,7 +66,7 @@ class FileManager(TendenciBaseManager):
 
         try:  # explicit user; default to admin
             user = kwargs.get('user') or User.objects.get(id=1)
-        except User.DoesNotExist as e:
+        except User.DoesNotExist:
             return []
 
         # loop; save file; save file record in db

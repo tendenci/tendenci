@@ -34,7 +34,6 @@ class Command(BaseCommand):
 
         pass_update_tendenci = False
         pass_update_tendenci_site = False
-        pass_restart_server = False
         is_uwsgi = False
         gunicorn_error_msg = None
         uwsgi_error_msg = None

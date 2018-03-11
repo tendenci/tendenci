@@ -26,10 +26,6 @@ class Command(BaseCommand):
 
     def report_output_invoices(self, run):
         from tendenci.apps.corporate_memberships.models import CorpMembership
-        try:
-            from tendenci.apps.donations.models import Donation
-        except:
-            Donation = None
         from tendenci.apps.memberships.models import (MembershipType,
             MembershipSet, MembershipDefault)
         from tendenci.apps.invoices.models import Invoice

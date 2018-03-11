@@ -11,7 +11,7 @@ from tendenci.apps.base.fields import SlugField
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     uuid_hex = uuid.uuid1().get_hex()[:8]
-    app_label = re.sub(r'[^a-zA-Z0-9._]+', '-', instance.app_label)
+    #app_label = re.sub(r'[^a-zA-Z0-9._]+', '-', instance.app_label)
     return 'imports/%s/%s' % (uuid_hex, filename)
 
 

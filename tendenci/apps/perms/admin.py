@@ -115,7 +115,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         return result
 
     def log_deletion(self, request, object, object_repr):
-        application = inspect.getmodule(self).__name__
+        #application = inspect.getmodule(self).__name__
         super(TendenciBaseModelAdmin, self).log_deletion(request, object, object_repr)
 
 

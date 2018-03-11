@@ -2509,7 +2509,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
             event=event,
             pk=registration_id,
         )
-    except Registration.DoesNotExist as e:
+    except Registration.DoesNotExist:
         raise Http404
 
     perms = (

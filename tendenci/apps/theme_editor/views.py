@@ -442,7 +442,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        process = SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
+        SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
         return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404

@@ -135,9 +135,7 @@ def update_payment_profile_local(request):
 
     # just so the owner and update_dt are updated
     try:
-        payment_profile = PaymentProfile.objects.get(
-                                id=payment_profile_id
-                                ).save()
+        PaymentProfile.objects.get(id=payment_profile_id).save()
     except: pass
 
     return HttpResponse(simplejson.dumps(ret_d))

@@ -89,7 +89,7 @@ class Command(BaseCommand):
                 try:
                     print(slacker)
                     slacker.delete()
-                except IntegrityError as e:
+                except IntegrityError:
                     print('Integrity Error deleting', slacker)
 
             cursor.execute('SET FOREIGN_KEY_CHECKS=1;')

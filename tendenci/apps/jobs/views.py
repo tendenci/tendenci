@@ -155,7 +155,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
     can_add_active = has_perm(request.user, 'jobs.add_job')
 
-    content_type = get_object_or_404(
+    get_object_or_404(
         ContentType,
         app_label=object_type._meta.app_label,
         model=object_type._meta.model_name

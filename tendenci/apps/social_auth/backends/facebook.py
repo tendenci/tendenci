@@ -102,8 +102,8 @@ class FacebookAuth(BaseOAuth):
     def enabled(cls):
         """Return backend enabled status by checking Setting Model"""
         try:
-            FACEBOOK_APP_ID = get_setting(scope='module', scope_category='users', name='facebook_app_id')
-            FACEBOOK_API_SECRET = get_setting(scope='module', scope_category='users', name='facebook_api_secret')
+            get_setting(scope='module', scope_category='users', name='facebook_app_id')
+            get_setting(scope='module', scope_category='users', name='facebook_api_secret')
         except Setting.DoesNotExist:
             return False
         return True

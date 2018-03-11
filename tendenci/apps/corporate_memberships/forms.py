@@ -1004,7 +1004,7 @@ class CorpMembershipRepForm(forms.ModelForm):
     def clean_user(self):
         value = self.cleaned_data['user']
         try:
-            rep = CorpMembershipRep.objects.get(
+            CorpMembershipRep.objects.get(
                 corp_profile=self.corp_membership.corp_profile,
                 user=value)
             raise forms.ValidationError(

@@ -16,9 +16,9 @@ class ProfileMiddleware(object):
             request.user.profile = Profile(status=False, status_detail="inactive", user=User(is_staff=False, is_superuser=False, is_active=False))
         else:
             try:
-                profile = request.user.profile
+                request.user.profile
             except Profile.DoesNotExist:
-                profile = Profile.objects.create_profile(user=request.user)
+                Profile.objects.create_profile(user=request.user)
 
 
 class ProfileLanguageMiddleware(object):

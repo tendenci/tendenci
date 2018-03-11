@@ -19,7 +19,7 @@ class DeveloperApiKeyAuthentication(ApiKeyAuthentication):
             return self._unauthorized()
 
         try:
-            key = ApiKey.objects.get(user=user, key=api_key)
+            ApiKey.objects.get(user=user, key=api_key)
         except ApiKey.DoesNotExist:
             return self._unauthorized()
 

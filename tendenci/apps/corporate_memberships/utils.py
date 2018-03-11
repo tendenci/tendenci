@@ -524,7 +524,6 @@ def get_over_time_stats():
 
 def get_summary():
     from tendenci.apps.corporate_memberships.models import CorporateMembershipType, CorpMembership
-    now = datetime.now()
     summary = []
     types = CorporateMembershipType.objects.all()
     total_active = 0

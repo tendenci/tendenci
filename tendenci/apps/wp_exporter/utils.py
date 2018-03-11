@@ -142,16 +142,16 @@ def encode_tags(xml):
         ct_event = ContentType.objects.get_for_model(Event)
     except ImportError:
         ct_event = None
-    try:
-        from tendenci.apps.resumes.models import Resume
-        ct_resume = ContentType.objects.get_for_model(Resume)
-    except ImportError:
-        ct_resume = None
-    try:
-        from tendenci.apps.case_studies.models import CaseStudy
-        ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
-    except ImportError:
-        ct_casestudy = None
+    #try:
+    #    from tendenci.apps.resumes.models import Resume
+    #    ct_resume = ContentType.objects.get_for_model(Resume)
+    #except ImportError:
+    #    ct_resume = None
+    #try:
+    #    from tendenci.apps.case_studies.models import CaseStudy
+    #    ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
+    #except ImportError:
+    #    ct_casestudy = None
     tags = Tag.objects.filter(
         Q(items__content_type__pk=ct_page.pk) or
         Q(items__content_type__pk=ct_article.pk) or

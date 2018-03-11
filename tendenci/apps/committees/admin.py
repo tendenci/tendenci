@@ -28,11 +28,9 @@ class OfficerAdminInline(admin.TabularInline):
     def formfield_for_dbfield(self, field, **kwargs):
         if field.name == 'user':
 
-            group_members = []
             committee = None
             committee = self.get_object(kwargs['request'], Committee)
             if committee:
-                committee_group = committee.group
                 return UserModelChoiceField(queryset=User.objects.filter(group_member__group=committee.group), label="User")
             return UserModelChoiceField(queryset=User.objects.none(), label="User")
         return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
@@ -104,7 +102,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         """
         print('enter save_model')
         instance = form.save(commit=False)
-        perms = update_perms_and_save(request, form, instance)
+        update_perms_and_save(request, form, instance)  # Returns perms
         return instance
 
     def save_formset(self, request, form, formset, change):

@@ -208,7 +208,8 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
             meta = metaform.save()
             committee.meta = meta
 
-            officers = formset.save()
+            #officers = formset.save()
+            formset.save()
 
             ## update the category of the committee
             category_removed = False

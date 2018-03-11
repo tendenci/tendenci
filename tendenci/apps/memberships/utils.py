@@ -177,14 +177,14 @@ def get_ud_file_instance(demographics, field_name):
 
     try:
         pk = eval(data).get('pk')
-    except Exception as e:
+    except Exception:
         pk = 0
 
     file_id = 0
     if pk:
         try:
             file_id = int(pk)
-        except Exception as e:
+        except Exception:
             file_id = 0
 
     try:

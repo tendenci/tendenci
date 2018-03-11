@@ -207,7 +207,6 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             messages.add_message(request, messages.ERROR, _('Registration is closed.'))
             return redirect('event', event.pk)
 
-    user = AnonymousUser()
     # get available pricings
     active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()

@@ -78,7 +78,7 @@ class SettingForm(forms.ModelForm):
                     #if the value is an int use it as pk to get a File
                     from tendenci.apps.files.models import File as TendenciFile
                     try:
-                        tfile = TendenciFile.objects.get(pk=field_value)
+                        TendenciFile.objects.get(pk=field_value)
                     except TendenciFile.DoesNotExist:
                         raise forms.ValidationError(_("File entry does not exist."))
 

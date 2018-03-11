@@ -157,7 +157,7 @@ class OembedlyCache(models.Model):
                 code = result['html']
             except KeyError:
                 return False
-            except Exception as e:
+            except Exception:
                 return False
             obj = OembedlyCache(url=url, width=width, height=height, thumbnail=thumbnail, code=code)
             obj.save()

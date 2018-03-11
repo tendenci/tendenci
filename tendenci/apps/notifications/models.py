@@ -694,7 +694,7 @@ def is_observing(observed, observer, signal='post_save'):
     if isinstance(observer, AnonymousUser):
         return False
     try:
-        observed_items = ObservedItem.objects.get_for(observed, observer, signal)
+        ObservedItem.objects.get_for(observed, observer, signal)
         return True
     except ObservedItem.DoesNotExist:
         return False

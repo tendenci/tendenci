@@ -56,7 +56,7 @@ def user_groups_import_process(import_i, preview=True):
 
             # Validate Group Name
             try:
-                group_exists = Group.objects.get(name=group_object_dict['name'])
+                Group.objects.get(name=group_object_dict['name'])
                 invalid = True
                 invalid_reason = "A GROUP WITH NAME '%s' ALREADY EXISTS" % group_object_dict['name']
             except Group.DoesNotExist:

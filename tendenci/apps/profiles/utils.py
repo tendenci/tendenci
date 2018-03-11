@@ -872,7 +872,6 @@ class ImportUsers(object):
             except:
                 value = 0
         elif field_type == 'ForeignKey':
-            orignal_value = value
             # assume id for foreign key
             try:
                 value = int(value)

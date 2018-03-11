@@ -23,7 +23,7 @@ class ArticleMeta():
         ### Assign variables -----------------------
         primary_keywords = get_setting('site', 'global', 'siteprimarykeywords')
         geo_location = get_setting('site', 'global', 'sitegeographiclocation')
-        site_name = get_setting('site', 'global', 'sitedisplayname')
+        #site_name = get_setting('site', 'global', 'sitedisplayname')  # Not currently used
         category_set = obj.category_set
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')

@@ -273,7 +273,7 @@ class API:
         context = safe_template_context(ticket)
         context['resolution'] = f.comment
 
-        subject = '%s %s (Resolved)' % (ticket.ticket, ticket.title)
+        #subject = '%s %s (Resolved)' % (ticket.ticket, ticket.title)
 
         messages_sent_to = []
 

@@ -201,7 +201,7 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
             meta = metaform.save()
             study_group.meta = meta
 
-            officers = formset.save()
+            formset.save()
 
             ## update the category of the studygroup
             category_removed = False

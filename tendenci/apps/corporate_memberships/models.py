@@ -2042,7 +2042,7 @@ class Notice(models.Model):
         corporate_membership = kwargs.get('corporate_membership')
         recipients = kwargs.get('recipients') or []
         anonymous_join_login_info = kwargs.get('anonymous_join_login_info', '')
-        request = kwargs.get('request')
+        #request = kwargs.get('request')
 
         if not isinstance(corporate_membership, CorpMembership):
             return False

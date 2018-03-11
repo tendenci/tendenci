@@ -117,7 +117,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
         """
         print('enter save_model')
         instance = form.save(commit=False)
-        perms = update_perms_and_save(request, form, instance)
+        update_perms_and_save(request, form, instance)
         return instance
 
     def save_formset(self, request, form, formset, change):

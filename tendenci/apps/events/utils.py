@@ -512,7 +512,7 @@ def get_prev_month(month, year):
 
 def email_registrants(event, email, **kwargs):
     site_url = get_setting('site', 'global', 'siteurl')
-    reg8ns = Registration.objects.filter(event=event)
+    #reg8ns = Registration.objects.filter(event=event)
 
     payment_status = kwargs.get('payment_status', 'all')
 
@@ -1407,7 +1407,7 @@ def copy_event(event, user, reuse_rel=False):
         )
         # copy addon options
         for option in addon.options.all():
-            new_option = AddonOption.objects.create(
+            AddonOption.objects.create(
                 addon = new_addon,
                 title = option.title,
             )
@@ -1732,8 +1732,8 @@ def create_member_registration(user, event, form):
                                     'is_primary': True,
                                     'amount': pricing.price,
                                     'pricing': pricing}
-                registrant = Registrant.objects.create(**registrant_attrs)
-                invoice = registration.save_invoice()
+                Registrant.objects.create(**registrant_attrs)
+                registration.save_invoice()
 
 
 def get_week_days(tgtdate, cal):

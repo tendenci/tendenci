@@ -243,7 +243,8 @@ def template_render(request, template_id):
     return response
 
 def template_text(request, template_id):
-    template = get_object_or_404(Template, template_id=template_id)
+    #template = get_object_or_404(Template, template_id=template_id)
+    get_object_or_404(Template, template_id=template_id)
 
     # return dummy data temporarily
     return HttpResponse("Lorem Ipsum")

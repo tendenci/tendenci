@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 continue
 
             try:
-                current_setting = Setting.objects.get(**{
+                Setting.objects.get(**{
                     'name': setting['name'],
                     'scope': setting['scope'],
                     'scope_category': setting['scope_category']

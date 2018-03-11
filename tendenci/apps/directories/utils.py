@@ -134,11 +134,11 @@ def directory_set_inv_payment(user, directory, pricing):
 
             if user.profile.is_superuser:
                 if directory.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                    boo_inv = inv.tender(user)
+                    inv.tender(user)
 
                     # payment
                     payment = Payment()
-                    boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
+                    payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                     payment.mark_as_paid()
                     payment.method = directory.payment_method
                     payment.save(user)

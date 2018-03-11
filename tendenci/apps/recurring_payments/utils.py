@@ -459,7 +459,7 @@ def api_rp_setup(data):
         u.is_superuser = False
         u.save()
 
-        profile = Profile.objects.create(
+        Profile.objects.create(
            user=u,
            creator=u,
            creator_username=u.username,

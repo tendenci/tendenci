@@ -290,7 +290,7 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
     else:
         group = None
 
-    user = get_object_or_404(User, username=username)
+    get_object_or_404(User, username=username)
 
     photos = Image.objects.filter(
         member__username = username,
@@ -372,7 +372,7 @@ def delete(request, id, set_id=0):
         messages.add_message(request, messages.SUCCESS, _('Photo %(id)s deleted' % {'id' : id}))
 
         try:
-            photo_set = PhotoSet.objects.get(id=set_id)
+            PhotoSet.objects.get(id=set_id)
             return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
         except PhotoSet.DoesNotExist:
             return HttpResponseRedirect(reverse("photos_search"))
@@ -585,9 +585,9 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     ObjectPermission.objects.assign_group(group_perms, photo)
 
     # serialize queryset
-    data = serializers.serialize("json", Image.objects.filter(id=photo.id))
+    #data = serializers.serialize("json", Image.objects.filter(id=photo.id))
 
-    cache_image = Popen([python_executable(), "manage.py", "precache_photo", str(photo.pk)])
+    Popen([python_executable(), "manage.py", "precache_photo", str(photo.pk)])
 
 
 @is_enabled('photos')
@@ -733,7 +733,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
 
-    order = get_setting('module', 'photos', 'photoordering')
+    #order = get_setting('module', 'photos', 'photoordering')
     #if order == 'descending':
     #    photos = photo_set.get_images(user=request.user).order_by('-pk')
     #else:

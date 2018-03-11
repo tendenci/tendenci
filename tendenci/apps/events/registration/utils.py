@@ -245,7 +245,7 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
             event,
             reg8n,
         ]
-        registrant = create_registrant(*registrant_args, custom_reg_form=custom_reg_form)
+        create_registrant(*registrant_args, custom_reg_form=custom_reg_form)
 
     # create each regaddon
     for form in addon_formset.forms:

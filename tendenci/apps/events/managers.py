@@ -45,7 +45,6 @@ class EventManager(TendenciBaseManager):
         groups = []
         if user and user.is_authenticated():
             groups = [g.pk for g in user.group_set.all()]
-        admin = user.profile.is_superuser
 
         # permission filters
         if user:

@@ -60,7 +60,6 @@ def search(request, template_name="help_files/search.html"):
 def topic(request, id, template_name="help_files/topic.html"):
     """ List of topic help files """
     topic = get_object_or_404(Topic, pk=id)
-    query = None
 
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
     help_files = HelpFile.objects.filter(filters).filter(topics__in=[topic.pk]).distinct()
@@ -102,9 +101,9 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
                 msg_string = 'Successfully added %s' % help_file
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                # send notification to administrator(s) and module recipient(s)
-                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-                # if recipients and notification:
+#                # send notification to administrator(s) and module recipient(s)
+#                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+#                # if recipients and notification:
 #                     notification.send_emails(recipients,'help_file_added', {
 #                         'object': help_file,
 #                         'request': request,
@@ -136,9 +135,9 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
                 msg_string = 'Successfully edited %s' % help_file
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                # send notification to administrator(s) and module recipient(s)
-                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-                # if recipients and notification:
+#                # send notification to administrator(s) and module recipient(s)
+#                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+#                # if recipients and notification:
 #                     notification.send_emails(recipients,'help_file_added', {
 #                         'object': help_file,
 #                         'request': request,
@@ -220,7 +219,6 @@ def export(request, template_name="help_files/export.html"):
 
     if request.method == 'POST':
         # initilize initial values
-        file_name = "help_files.csv"
         fields = [
             'slug',
             'topics',

@@ -56,7 +56,7 @@ class Command(BaseCommand):
             queue_set = queue_slugs.split(',')
             for queue in queue_set:
                 try:
-                    q = Queue.objects.get(slug__exact=queue)
+                    Queue.objects.get(slug__exact=queue)
                 except Queue.DoesNotExist:
                     raise CommandError("Queue %s does not exist." % queue)
                 queues.append(queue)

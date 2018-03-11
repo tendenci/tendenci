@@ -928,7 +928,7 @@ def membership_default_add(request, slug='', membership_id=None,
             # check if corp membership has expired or is renewed
             renewed_corp = corp_membership.get_latest_renewed()
             if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
-                display_msg = _("Sorry, we can't process your membership renewal at the moment.")
+                #display_msg = _("Sorry, we can't process your membership renewal at the moment.")
                 return render(request, 'memberships/applications/corp_not_renewed.html',
                     {'app': app,
                        'corp_membership_renew_link': reverse('corpmembership.renew', args=[corp_membership.id]),

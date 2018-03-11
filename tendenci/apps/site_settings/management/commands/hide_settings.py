@@ -20,19 +20,19 @@ class Command(BaseCommand):
         parser.add_argument('scope_category')
 
     def handle(self, scope_category, **options):
-        try:
-            verbosity = int(options['verbosity'])
-        except:
-            verbosity = 1
+        #try:
+        #    verbosity = int(options['verbosity'])
+        #except:
+        #    verbosity = 1
 
         if scope_category:
             settings = Setting.objects.filter(scope_category=scope_category)
 
-            required_keys = [
-                'scope',
-                'scope_category',
-                'name'
-            ]
+            #required_keys = [
+            #    'scope',
+            #    'scope_category',
+            #    'name'
+            #]
             for setting in settings:
                 try:
                     current_setting = Setting.objects.get(

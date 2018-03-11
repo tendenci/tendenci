@@ -290,8 +290,6 @@ if cm_api_key and cm_client_id:
                     subscriber_obj = Subscriber(auth, list_id)
 
                     try:
-                        list_stats = alist.stats()
-
                         # check if this user has already subscribed, if not, subscribe it
                         try:
                             subscriber = subscriber_obj.get(list_id, email)
@@ -325,8 +323,7 @@ if cm_api_key and cm_client_id:
                     list_map.save()
 
                 if add_subscriber:
-                    email_address = subscriber_obj.add(list_id, email, name,
-                                                       custom_data, True)
+                    subscriber_obj.add(list_id, email, name, custom_data, True)  # Returns email_address
             except BadRequest:
                 pass
 

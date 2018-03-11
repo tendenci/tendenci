@@ -285,7 +285,7 @@ class ReportAdmin(object):
                         if pattname in cattname:
                             if pfield.model == cfield.model:
                                 self.related_inline_filters.append([pattname, cattname, self.parent_report.get_fields().index(pattname)])
-                    except Exception as e:
+                    except Exception:
                         pass
 
     def _get_grouper_text(self, groupby_field, value):

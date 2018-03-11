@@ -28,7 +28,7 @@ def post_deleted(instance, **kwargs):
     User = compat.get_user_model()
     try:
         profile = util.get_pybb_profile(instance.user)
-    except (Profile.DoesNotExist, User.DoesNotExist) as e:
+    except (Profile.DoesNotExist, User.DoesNotExist):
         #When we cascade delete an user, profile and posts are also deleted
         pass
     else:

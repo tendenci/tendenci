@@ -177,7 +177,7 @@ def register(request, success_url=None,
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
-            new_user = form.save(profile_callback=profile_callback)
+            form.save(profile_callback=profile_callback)
             # success_url needs to be dynamically generated here; setting a
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which

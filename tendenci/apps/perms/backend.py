@@ -105,7 +105,7 @@ class ObjectPermBackend(object):
         # check codename, return false if its a malformed codename
         try:
             perm_type = perm.split('.')[-1].split('_')[0]
-            codename = perm.split('.')[1]
+            perm.split('.')[1]  # codename
         except IndexError:
             return False
 
@@ -165,7 +165,7 @@ class ObjectPermBackend(object):
                 from haystack import connections
                 site = connections['default'].unified_index()
 
-                index = site.get_index(obj.__class__)
+                site.get_index(obj.__class__)
                 if can_view(user, obj):
                     return True
             except AssertionError:

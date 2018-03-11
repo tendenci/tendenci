@@ -3,10 +3,10 @@
 
 [flake8]
 ignore =
-  # Unused variables
-  F841,
   # Import issues
-  E402,F401,
+  E402,
+  # Unused imports
+  F401,
 
   # Inline statement after colon
   E701,

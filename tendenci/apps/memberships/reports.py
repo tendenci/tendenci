@@ -14,7 +14,7 @@ MEMBERSHIPTYPE_DICT = None
 
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):
-        days_ago = kwargs.pop('days_ago')
+        kwargs.pop('days_ago')
         super(ReportBandNewMems, self).__init__(*args, **kwargs)
 
 class ReportNewMems(Report):

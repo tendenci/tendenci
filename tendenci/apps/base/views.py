@@ -90,7 +90,6 @@ def image_preview(request, app_label, model, id,  size):
     keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
     key = '.'.join(keys)
     response = cache.get(key)
-    original_size = size
 
     if not response:
         from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale

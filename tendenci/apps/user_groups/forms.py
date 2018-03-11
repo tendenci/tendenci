@@ -45,7 +45,7 @@ class GroupSearchForm(forms.Form):
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
-                x = int(q)
+                int(q)
             except ValueError:
                 self._errors['q'] = ErrorList([_('Must be an integer')])
 

@@ -345,7 +345,6 @@ class RecurringPayment(models.Model):
         return False
 
     def get_next_billing_cycle(self, last_billing_cycle=None):
-        now = datetime.now()
         if self.billing_period == 'year':
             timedelta = relativedelta(years=self.billing_frequency)
         elif self.billing_period == 'month':

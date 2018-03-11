@@ -68,7 +68,7 @@ class FileValidator(object):
                     }
 
                     raise ValidationError(message)
-            except AttributeError as e:
+            except AttributeError:
                 raise ValidationError(_('File type is not valid'))
 
             # Check the file size

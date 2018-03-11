@@ -392,11 +392,11 @@ def update_ticket(request, ticket_id, public=False):
     # to be closed with an {% endif %} tag.
 
     # get_template_from_string was removed in Django 1.8 http://django.readthedocs.org/en/1.8.x/ref/templates/upgrading.html
-    try:
-        from django.template import engines
-        template_func = engines['django'].from_string
-    except ImportError:  # occurs in django < 1.8
-        template_func = loader.get_template_from_string
+    #try:
+    #    from django.template import engines
+    #    template_func = engines['django'].from_string
+    #except ImportError:  # occurs in django < 1.8
+    #    template_func = loader.get_template_from_string
 
     # RemovedInDjango110Warning: render() must be called with a dict, not a Context.
     if VERSION < (1, 8):
@@ -1296,7 +1296,7 @@ def email_ignore_add(request):
     if request.method == 'POST':
         form = EmailIgnoreForm(request.POST)
         if form.is_valid():
-            ignore = form.save()
+            form.save()
             return HttpResponseRedirect(reverse('helpdesk_email_ignore'))
     else:
         form = EmailIgnoreForm(request.GET)
@@ -1390,7 +1390,7 @@ def ticket_dependency_del(request, ticket_id, dependency_id):
 ticket_dependency_del = staff_member_required(ticket_dependency_del)
 
 def attachment_del(request, ticket_id, attachment_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)
+    get_object_or_404(Ticket, id=ticket_id)
     attachment = get_object_or_404(Attachment, id=attachment_id)
     attachment.delete()
     return HttpResponseRedirect(reverse('helpdesk_view', args=[ticket_id]))

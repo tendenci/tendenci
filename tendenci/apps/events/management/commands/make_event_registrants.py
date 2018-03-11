@@ -39,18 +39,17 @@ class Command(BaseCommand):
         from tendenci.apps.events.models import Event, PaymentMethod
         from tendenci.apps.events.utils import save_registration
 
-        event_kwargs = {
-            'entity': 1,
-            'type': 1,
-            'title': 'Some Event',
-            'description': 'Some description',
-            'all_day': True,
-            'start_dt': datetime.datetime.now(),
-            'end_dt': datetime.datetime.now(),
-            'timezone': 1,
-            'place': 1,
-
-        }
+        #event_kwargs = {
+        #    'entity': 1,
+        #    'type': 1,
+        #    'title': 'Some Event',
+        #    'description': 'Some description',
+        #    'all_day': True,
+        #    'start_dt': datetime.datetime.now(),
+        #    'end_dt': datetime.datetime.now(),
+        #    'timezone': 1,
+        #    'place': 1,
+        #}
 
         event_id = options['event']
         limit = options['limit']

@@ -242,14 +242,14 @@ class Field(OrderingBaseModel):
         if "/" in self.field_type:
             field_class, field_widget = self.field_type.split("/")
         else:
-            field_class, field_widget = self.field_type, None
+            field_class = self.field_type
         return field_class
 
     def get_field_widget(self):
         if "/" in self.field_type:
             field_class, field_widget = self.field_type.split("/")
         else:
-            field_class, field_widget = self.field_type, None
+            field_widget = None
         return field_widget
 
     def get_choices(self):

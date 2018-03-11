@@ -121,7 +121,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
-        sf_id = create_salesforce_contact(new_profile)
+        create_salesforce_contact(new_profile)  # Returns sf_id
 
         return new_user
 

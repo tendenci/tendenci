@@ -112,11 +112,12 @@ def get_suggestions(entry):
         user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
 
     if entry.first_name and entry.last_name:
-        mentioned_fn = entry.first_name
-        mentioned_ln = entry.last_name
+        #mentioned_fn = entry.first_name
+        #mentioned_ln = entry.last_name
         mentioned_em = entry.email
     else:
-        mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+        #mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+        mentioned_em = None
 
     sqs = SearchQuerySet()
 

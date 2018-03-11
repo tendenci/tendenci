@@ -240,7 +240,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except self.model.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned:
                             pass
 
                 else:  # all default permissions
@@ -255,7 +255,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except self.model.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned:
                             pass
 
         else:  # not muli_user
@@ -274,7 +274,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except self.model.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned:
                         pass
 
             else:  # all default permissions
@@ -289,7 +289,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except self.model.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned:
                         pass
 
     def list_all(self, object):
@@ -353,7 +353,7 @@ class TendenciBaseManager(models.Manager):
 
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
-        member_q = SQ(allow_member_view=True)
+        #member_q = SQ(allow_member_view=True)
         status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)

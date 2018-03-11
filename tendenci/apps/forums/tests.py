@@ -184,7 +184,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         pybb_topic_unread([topic,], user_ann)
 
         #before correction, raised IndexError: list index out of range
-        last_post = topic.last_post
+        topic.last_post
 
         #post creation now.
         Post(topic=topic, user=self.user, body='one').save()
@@ -375,7 +375,7 @@ class FeaturesTest(TestCase, SharedTestModule):
 
         Post(topic=topic_2, user=self.user, body='one').save()
 
-        forum_1 = self.forum
+        #forum_1 = self.forum
         forum_2 = Forum(name='forum_2', description='bar', category=self.category)
         forum_2.save()
 
@@ -585,7 +585,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         post_1_2 = Post.objects.create(topic=topic_1, user=self.user, body='1_2')
         post_2_1 = Post.objects.create(topic=topic_2, user=self.user, body='2_1')
 
-        user_ann = User.objects.create_user('ann', 'ann@localhost', 'ann')
+        User.objects.create_user('ann', 'ann@localhost', 'ann')
         client_ann = Client()
         client_ann.login(username='ann', password='ann')
 
@@ -599,7 +599,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         self.assertRedirects(response, '%s?page=%d#post-%d' % (topic_2.get_absolute_url(), 1, post_2_1.id))
 
         post_1_3 = Post.objects.create(topic=topic_1, user=self.user, body='1_3')
-        post_1_4 = Post.objects.create(topic=topic_1, user=self.user, body='1_4')
+        Post.objects.create(topic=topic_1, user=self.user, body='1_4')
 
         response = client_ann.get(topic_1.get_absolute_url(), data={'first-unread': 1}, follow=True)
         self.assertRedirects(response, '%s?page=%d#post-%d' % (topic_1.get_absolute_url(), 1, post_1_3.id))
@@ -749,8 +749,8 @@ class FeaturesTest(TestCase, SharedTestModule):
     def test_user_blocking(self):
         user = User.objects.create_user('test', 'test@localhost', 'test')
         topic = Topic.objects.create(name='topic', forum=self.forum, user=user)
-        p1 = Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
-        p2 = Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
+        Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
+        Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
         self.user.is_superuser = True
         self.user.save()
         self.login_client()
@@ -933,7 +933,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         orig_conf = defaults.PYBB_DISABLE_SUBSCRIPTIONS
         defaults.PYBB_DISABLE_SUBSCRIPTIONS = True
 
-        user2 = User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
+        User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
         user3 = User.objects.create_user(username='user3', password='user3', email='user3@someserver.com')
         client = Client()
 
@@ -956,7 +956,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         values['body'] = 'test subscribtion юникод'
         response = self.client.post(add_post_url, values, follow=True)
         self.assertEqual(response.status_code, 200)
-        new_post = Post.objects.order_by('-id')[0]
+        Post.objects.order_by('-id')[0]
 
         # there should be one email in the outbox (user3)
         #because already subscribed users will still receive notifications.
@@ -969,7 +969,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         orig_conf = defaults.PYBB_DISABLE_NOTIFICATIONS
         defaults.PYBB_DISABLE_NOTIFICATIONS = True
 
-        user2 = User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
+        User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
         user3 = User.objects.create_user(username='user3', password='user3', email='user3@someserver.com')
         client = Client()
 
@@ -991,7 +991,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         values['body'] = 'test subscribtion юникод'
         response = self.client.post(add_post_url, values, follow=True)
         self.assertEqual(response.status_code, 200)
-        new_post = Post.objects.order_by('-id')[0]
+        Post.objects.order_by('-id')[0]
 
         # there should be no email in the outbox
         self.assertEqual(len(mail.outbox), 0)
@@ -2046,7 +2046,7 @@ class NiceUrlsTest(TestCase, SharedTestModule):
         try:
             for _ in iter(range(200)):
                 Topic.objects.create(name='dolly', forum=self.forum, user=self.user)
-        except ValidationError as e:
+        except ValidationError:
             self.fail('Should be able to create "dolly", "dolly-1", ..., "dolly-199".\n')
         with self.assertRaises(ValidationError):
             Topic.objects.create(name='dolly', forum=self.forum, user=self.user)
