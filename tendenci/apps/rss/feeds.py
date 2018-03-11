@@ -1,6 +1,6 @@
 from datetime import datetime
 import itertools
-import feedsmanager
+from . import feedsmanager
 from haystack.query import SearchQuerySet
 
 from django.contrib.syndication.views import Feed

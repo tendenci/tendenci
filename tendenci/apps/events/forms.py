@@ -47,8 +47,8 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 
-from fields import UseCustomRegField
-from widgets import UseCustomRegWidget
+from .fields import UseCustomRegField
+from .widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
     '.jpg',

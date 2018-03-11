@@ -15,11 +15,11 @@ from django.test import TestCase, skipUnlessDBFeature
 from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils import timezone
-import permissions, views as pybb_views
+from . import permissions, views as pybb_views
 from .templatetags.pybb_tags import pybb_is_topic_unread, pybb_topic_unread, pybb_forum_unread, \
     pybb_get_latest_topics, pybb_get_latest_posts
 
-import compat, util
+from . import compat, util
 
 User = compat.get_user_model()
 username_field = compat.get_username_field()
@@ -29,7 +29,7 @@ try:
 except ImportError:
     raise Exception('PyBB requires lxml for self testing')
 
-import defaults
+from . import defaults
 from .models import Topic, TopicReadTracker, Forum, ForumReadTracker, Post, Category, PollAnswer
 
 

@@ -14,7 +14,7 @@ from django.core.mail import mail_admins
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
-from lockfile import FileLock, AlreadyLocked, LockTimeout
+from .lockfile import FileLock, AlreadyLocked, LockTimeout
 
 from tendenci.apps.notifications.models import NoticeQueueBatch
 from tendenci.apps.notifications import models as notification

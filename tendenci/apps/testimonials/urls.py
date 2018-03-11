@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from feeds import LatestEntriesFeed
+from .feeds import LatestEntriesFeed
 
 urlpatterns = patterns('tendenci.apps.testimonials.views',
     url(r'^testimonials/$', 'search', name="testimonials"),

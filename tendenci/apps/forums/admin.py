@@ -9,7 +9,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from .models import Category, Forum, Topic, Post, Profile, Attachment, PollAnswer
 from .forms import CategoryAdminForm
 
-import compat, util
+from . import compat, util
 username_field = compat.get_username_field()
 
 

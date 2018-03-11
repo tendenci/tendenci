@@ -13,10 +13,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
 
-from compat import get_user_model_path, get_username_field, get_atomic_func, slugify
-import defaults
-from profiles import PybbProfile
-from util import unescape, FilePathGenerator, _get_markup_formatter
+from .compat import get_user_model_path, get_username_field, get_atomic_func, slugify
+from . import defaults
+from .profiles import PybbProfile
+from .util import unescape, FilePathGenerator, _get_markup_formatter
 
 from annoying.fields import AutoOneToOneField
 

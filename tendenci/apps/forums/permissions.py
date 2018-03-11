@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from django.db.models import Q
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
 
-import defaults, util
+from . import defaults, util
 from .models import Category, Forum
 
 

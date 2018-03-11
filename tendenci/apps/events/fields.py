@@ -6,7 +6,7 @@ from django.forms.widgets import Widget
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.base.widgets import SplitDateTimeWidget
-from widgets import UseCustomRegWidget
+from .widgets import UseCustomRegWidget
 
 
 class Reg8nDtWidget(Widget):

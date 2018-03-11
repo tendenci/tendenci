@@ -10,8 +10,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from forms import UploadFileForm
-import utils
+from .forms import UploadFileForm
+from . import utils
 
 logger = logging.getLogger('django')
 

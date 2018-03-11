@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
 
-import defaults, util, compat
+from . import defaults, util, compat
 
 if defaults.PYBB_USE_DJANGO_MAILER:
     try:

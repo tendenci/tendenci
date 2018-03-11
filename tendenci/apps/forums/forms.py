@@ -12,7 +12,7 @@ from django.utils.timezone import now as tznow
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.forms import TendenciBaseForm
 
-import compat, defaults, util
+from . import compat, defaults, util
 from .models import Topic, Post, Attachment, PollAnswer, Category
 
 
