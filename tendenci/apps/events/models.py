@@ -1,3 +1,4 @@
+from builtins import str
 import uuid
 from hashlib import md5
 import operator
@@ -136,7 +137,7 @@ class Place(models.Model):
     def __unicode__(self):
         str_place = '%s %s %s %s %s' % (
             self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
-        return unicode(str_place.strip())
+        return str(str_place.strip())
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]

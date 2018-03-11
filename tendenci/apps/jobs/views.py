@@ -1,5 +1,7 @@
+from builtins import str
 from datetime import timedelta, datetime
 import json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -215,7 +217,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-            msg_string = u'Successfully added %s' % unicode(job)
+            msg_string = u'Successfully added %s' % str(job)
             messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
@@ -304,7 +306,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             job = update_perms_and_save(request, form, job)
 
-            msg_string = u'Successfully updated {}'.format(unicode(job))
+            msg_string = u'Successfully updated {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
@@ -358,7 +360,7 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-            msg_string = u'Successfully updated meta for {}'.format(unicode(job))
+            msg_string = u'Successfully updated meta for {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
@@ -376,7 +378,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            msg_string = u'Successfully deleted {}'.format(unicode(job))
+            msg_string = u'Successfully deleted {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
@@ -556,7 +558,7 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-        msg_string = u'Successfully approved {}'.format(unicode(job))
+        msg_string = u'Successfully approved {}'.format(str(job))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))

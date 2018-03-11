@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser, User
@@ -42,7 +44,7 @@ class GetBoxNode(Node):
             )
             return output
         except:
-            return unicode()
+            return str()
 
 
 @register.tag
@@ -91,7 +93,7 @@ class GetBoxTitleNode(Node):
             box = box[0]
             return box.title
         except:
-            return unicode()
+            return str()
 @register.tag
 def box_title(parser, token):
     """

@@ -1,5 +1,6 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
+from builtins import str
 import ast
 import re
 import os.path
@@ -1486,7 +1487,7 @@ def event_import_process(import_i, preview=True):
     if preview=False.
     """
     #print("START IMPORT PROCESS")
-    data_dict_list = extract_from_excel(unicode(import_i.file))
+    data_dict_list = extract_from_excel(str(import_i.file))
 
     event_obj_list = []
     invalid_list = []
@@ -1557,7 +1558,7 @@ def event_import_process(import_i, preview=True):
             import_i.save()
     except Exception as e:
         import_i.status = "failed"
-        import_i.failure_reason = unicode(e)
+        import_i.failure_reason = str(e)
         import_i.save()
 
     #print("END IMPORT PROCESS")
@@ -1594,9 +1595,9 @@ def do_event_import(event_object_dict):
                         setattr(event, field, True)
                 else:  # assume its a string
                     if field_type.max_length:
-                        setattr(event, field, unicode(event_object_dict[field])[:field_type.max_length])
+                        setattr(event, field, str(event_object_dict[field])[:field_type.max_length])
                     else:
-                        setattr(event, field, unicode(event_object_dict[field]))
+                        setattr(event, field, str(event_object_dict[field]))
 
     for field in PLACE_FIELDS:
         if field in event_object_dict:
@@ -1608,9 +1609,9 @@ def do_event_import(event_object_dict):
                 setattr(place, p_field, bool(ast.literal_eval(event_object_dict[field])))
             else:  # assume its a string
                 if field_type.max_length:
-                    setattr(place, p_field, unicode(event_object_dict[field])[:field_type.max_length])
+                    setattr(place, p_field, str(event_object_dict[field])[:field_type.max_length])
                 else:
-                    setattr(place, p_field, unicode(event_object_dict[field]))
+                    setattr(place, p_field, str(event_object_dict[field]))
 
     event_type.save()
     place.save()
@@ -1853,7 +1854,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = event.type.name
             elif field in event_d:
                 value = event_d[field]
-            value = unicode(value).replace(os.linesep, ' ').rstrip()
+            value = str(value).replace(os.linesep, ' ').rstrip()
             data_row.append(value)
 
         if event.place:
@@ -1861,7 +1862,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             place_d = full_model_to_dict(event.place)
             for field in place_fields:
                 value = place_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
         if event.registration_configuration:
@@ -1873,7 +1874,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = value.values_list('human_name', flat=True)
                 else:
                     value = conf_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
         if event.speaker_set.all():
@@ -1882,7 +1883,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 speaker_d = full_model_to_dict(speaker)
                 for field in speaker_fields:
                     value = speaker_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the speaker columns
@@ -1897,7 +1898,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 organizer_d = full_model_to_dict(organizer)
                 for field in organizer_fields:
                     value = organizer_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the organizer columns
@@ -1916,7 +1917,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                         value = pricing.groups.values_list('name', flat=True)
                     else:
                         value = pricing_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the pricing columns

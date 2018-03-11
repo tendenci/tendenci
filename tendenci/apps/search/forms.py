@@ -1,3 +1,4 @@
+from builtins import str
 import operator
 from functools import reduce
 
@@ -51,7 +52,7 @@ def model_choices(site=None):
         if m._meta.model_name.lower() in registered_apps_names:
             if get_setting("module", m._meta.app_label, "enabled") is not False:
                 choices.append(("%s.%s" % (m._meta.app_label, m._meta.model_name),
-                                capfirst(unicode(m._meta.verbose_name_plural))))
+                                capfirst(str(m._meta.verbose_name_plural))))
 
     return sorted(choices, key=lambda x: x[1])
 

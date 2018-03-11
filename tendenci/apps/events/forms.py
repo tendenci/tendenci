@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import imghdr
 import calendar
@@ -528,8 +529,8 @@ def _get_price_labels(pricing):
     else:
         target_display = ''
 
-    end_dt = '<br/>&nbsp;(ends ' + unicode(pricing.end_dt.date()) + ')'
-    description = '<br/>&nbsp;' + unicode(pricing.description)
+    end_dt = '<br/>&nbsp;(ends ' + str(pricing.end_dt.date()) + ')'
+    description = '<br/>&nbsp;' + str(pricing.description)
 
     return mark_safe('&nbsp;<strong><span data-price="%s">%s %s%s</span>%s</strong>%s' % (
                                       pricing.price,
@@ -937,7 +938,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
 
         choices = [('', '------------------------------')]
         for p in places:
-            choices.append((p.pk, unicode(p)))
+            choices.append((p.pk, str(p)))
         if self.fields.get('place'):
             self.fields.get('place').choices = choices
 

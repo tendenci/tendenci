@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime
 
 from django.db.models.fields import DateTimeField
@@ -116,7 +117,7 @@ class InvoiceExportTask(Task):
             data_row = []
             for field in fields:
                 # clean the derived values into unicode
-                value = unicode(d[field]).rstrip()
+                value = str(d[field]).rstrip()
                 data_row.append(value)
 
             data_row_list.append(data_row)

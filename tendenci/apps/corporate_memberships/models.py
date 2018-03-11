@@ -3,6 +3,7 @@ import time
 import uuid
 from datetime import datetime, timedelta
 from functools import partial, reduce
+from builtins import str
 
 from django import forms
 from importlib import import_module
@@ -2103,7 +2104,7 @@ class Notice(models.Model):
         return True
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(Notice, self).save(*args, **kwargs)
 
 

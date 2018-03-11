@@ -1,3 +1,5 @@
+from builtins import str
+
 class XML():
     def __init__(self, version="1.0", encoding="UTF-8"):
         self.content = '<?xml version="%s" encoding="%s"?>\n' % (version, encoding)
@@ -6,7 +8,7 @@ class XML():
         txt = ""
         for i in range(0, depth):
             txt += "    "
-        txt += unicode(text) + "\n"
+        txt += str(text) + "\n"
         self.content += txt
 
     def open(self, name, attrs={}, depth=0):

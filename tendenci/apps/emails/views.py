@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -5,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
+
 from tendenci.apps.emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.http import Http403
@@ -75,7 +78,7 @@ def delete(request, id, template_name="emails/delete.html"):
     if not has_perm(request.user,'emails.delete_email',email): raise Http403
 
     if request.method == "POST":
-        msg_string = 'Successfully deleted %s' % unicode(email)
+        msg_string = 'Successfully deleted %s' % str(email)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         email.delete()

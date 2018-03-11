@@ -1,4 +1,5 @@
 from six import with_metaclass
+from builtins import str
 
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
@@ -88,8 +89,8 @@ class Registry(with_metaclass(DeclarativeMetaclass, object)):
         self.fields['model'] = self.model
 
         # transfer verbose names for easy access
-        self.fields['verbose_name'] = unicode(self.model._meta.verbose_name)
-        self.fields['verbose_name_plural'] = unicode(self.model._meta.verbose_name_plural)
+        self.fields['verbose_name'] = str(self.model._meta.verbose_name)
+        self.fields['verbose_name_plural'] = str(self.model._meta.verbose_name_plural)
 
         # default url patterns
         if 'url' not in self.fields:
@@ -127,7 +128,7 @@ class Registry(with_metaclass(DeclarativeMetaclass, object)):
         default_plugin_url = 'plugin-media'
         return '/%s/%s/images/icon.png' % (
             default_plugin_url,
-            unicode(self.model._meta.verbose_name_plural.lower())
+            str(self.model._meta.verbose_name_plural.lower())
         )
 
     def _get_url(self):

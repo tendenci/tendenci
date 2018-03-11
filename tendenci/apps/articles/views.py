@@ -1,6 +1,7 @@
 import subprocess
 import time
 
+from builtins import str
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -196,7 +197,7 @@ def edit(request, id, form_class=ArticleForm,
 
                 # update all permissions and save the model
                 update_perms_and_save(request, form, article)
-                msg_string = 'Successfully updated %s' % unicode(article)
+                msg_string = 'Successfully updated %s' % str(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
@@ -244,7 +245,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save()  # save meta
             article.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % unicode(article)
+            msg_string = 'Successfully updated meta for %s' % str(article)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
@@ -277,7 +278,7 @@ def add(request, form_class=ArticleForm,
 
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
-                msg_string = 'Successfully added %s' % unicode(article)
+                msg_string = 'Successfully added %s' % str(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
                 # send notification to administrator(s) and module recipient(s)
@@ -313,7 +314,7 @@ def delete(request, id, template_name="articles/delete.html"):
 
     if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
-            msg_string = 'Successfully deleted %s' % unicode(article)
+            msg_string = 'Successfully deleted %s' % str(article)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators

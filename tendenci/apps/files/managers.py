@@ -1,4 +1,4 @@
-from builtins import int
+from builtins import str, int
 import os
 import re
 from datetime import datetime
@@ -27,7 +27,7 @@ def save_to_disk(f, instance):
     if isinstance(instance.pk, int):
         relative_directory = os.path.join(
             relative_directory,
-            unicode(instance.pk))
+            str(instance.pk))
 
     default_storage.save(os.path.join(relative_directory, file_name), f)
 

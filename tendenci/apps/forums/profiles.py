@@ -1,4 +1,5 @@
 # coding=utf-8
+from builtins import str
 import urllib
 import hashlib
 from django.conf import settings
@@ -64,7 +65,7 @@ class PybbProfile(models.Model):
             if not defaults.PYBB_PROFILE_RELATED_NAME:  # we now in user custom model itself
                 return self.get_username()
         except Exception:
-            return unicode(self)
+            return str(self)
 
     def getMD5(self):
         m = hashlib.md5()

@@ -1,3 +1,5 @@
+from builtins import str
+
 import os
 import re
 
@@ -266,7 +268,7 @@ def photo_original(request, id):
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
-    image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
+    image_data = default_storage.open(str(photo.image.file), 'rb').read()
     try:
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
@@ -333,7 +335,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': unicode(photo)}) )
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': str(photo)}) )
                 if set_id:
                     return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
                 else:
@@ -364,7 +366,7 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': unicode(photo)}))
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': str(photo)}))
 
         photo.delete()
 
@@ -436,7 +438,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
 
                 # photo set group permissions
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')
-                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms ])
+                group_perms = tuple([(str(g), c.split('_')[0]) for g, c in group_perms ])
 
                 photos = Image.objects.filter(photoset=photo_set)
                 for photo in photos:
@@ -528,7 +530,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
 
     # truncate; make unique; append extension
-    filename = filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
+    filename = filename[:70] + '-' + str(uuid.uuid1())[:5] + extension
 
     photo.image.save(filename, File(open(file_path, 'rb')))
 
@@ -580,7 +582,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
 
     # photo group perms = album group perms
     group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
-    group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
+    group_perms = tuple([(str(g), c.split('_')[0]) for g, c in group_perms])
     ObjectPermission.objects.assign_group(group_perms, photo)
 
     # serialize queryset

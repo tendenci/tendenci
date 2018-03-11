@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.db.models import FloatField
 
 from tendenci.apps.imports.utils import extract_from_excel
@@ -106,7 +108,7 @@ def user_groups_import_process(import_i, preview=True):
             import_i.save()
     except Exception as e:
         import_i.status = "failed"
-        import_i.failure_reason = unicode(e)
+        import_i.failure_reason = str(e)
         import_i.save()
 
     #print("END IMPORT PROCESS")
@@ -125,9 +127,9 @@ def do_group_import(group_object_dict):
                 setattr(group, field, group_object_dict[field])
             else:
                 if field_type.max_length:
-                    setattr(group, field, unicode(group_object_dict[field])[:field_type.max_length])
+                    setattr(group, field, str(group_object_dict[field])[:field_type.max_length])
                 else:
-                    setattr(group, field, unicode(group_object_dict[field]))
+                    setattr(group, field, str(group_object_dict[field]))
     # Since the allow_anonymous_view is not included in the GROUP_FIELDS,
     # set it to False
     group.allow_anonymous_view = False

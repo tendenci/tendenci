@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 from os.path import splitext
 import datetime
 import logging
@@ -217,7 +218,7 @@ class NoticeEmail(models.Model):
         return ('notification_email', [self.guid])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(NoticeEmail, self).save(*args, **kwargs)
 
     def resend(self):
@@ -355,7 +356,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     notices_url = u"%s://%s%s" % (
         protocol,
-        unicode(current_site),
+        str(current_site),
         reverse("notification_notices"),
     )
 
@@ -446,7 +447,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
-    reply_to = reply_to or unicode()
+    reply_to = reply_to or str()
 
     NoticeEmail.objects.create(
         emails=to,
@@ -492,7 +493,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
 
         notices_url = u"%s://%s%s" % (
             protocol,
-            unicode(current_site),
+            str(current_site),
             reverse("notification_notices"),
         )
 

@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import time as ttime
 from datetime import datetime, date, time
@@ -165,7 +166,7 @@ def make_username_unique(un):
 
     if others and 0 in others:
         # the appended digit will compromise the username length
-        un = '%s%s' % (un, unicode(max(others) + 1))
+        un = '%s%s' % (un, str(max(others) + 1))
 
     return un
 

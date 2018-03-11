@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from builtins import str
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
@@ -24,7 +25,7 @@ def HTMLEntitiesToUnicode(text):
     """
     Converts HTML entities to unicode.  For example '&amp;' becomes '&'.
     """
-    text = unicode(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+    text = str(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
     return text
 
 
@@ -232,7 +233,7 @@ class HighchartRender(object):
         except ImportError:
             import json as simplejson
 
-        json = unicode(self.model)
+        json = str(self.model)
         json = simplejson.dumps(json)[1:-1]
         json = json.replace("'true'", 'true')
         json = json.replace("'false'", 'false')

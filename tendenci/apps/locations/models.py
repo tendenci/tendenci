@@ -1,4 +1,6 @@
+from builtins import str
 import uuid
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -116,7 +118,7 @@ class Location(TendenciBaseModel):
         return arc * 3960
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         # update latitude and longitude
         if not all((self.latitude, self.longitude)):

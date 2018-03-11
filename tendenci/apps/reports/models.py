@@ -1,3 +1,4 @@
+from builtins import str
 from collections import OrderedDict
 
 from django.db import models
@@ -67,7 +68,7 @@ class Report(TendenciBaseModel):
         verbose_name_plural = _('Reports')
 
     def __unicode__(self):
-        return "%s %s " % (self.pk, unicode(self.type))
+        return "%s %s " % (self.pk, str(self.type))
 
     @models.permalink
     def get_absolute_url(self):
@@ -96,7 +97,7 @@ class Report(TendenciBaseModel):
 
                 elif opt_key == "invoice_object_type":
                     value = ", ".join(sorted([get_ct_nice_name(i) for i in opt_val]))
-                    if sorted(opt_val) == sorted([unicode(i['object_type']) for i in Invoice.objects.values('object_type').distinct()]):
+                    if sorted(opt_val) == sorted([str(i['object_type']) for i in Invoice.objects.values('object_type').distinct()]):
                         value = "All Apps"
                     config_dict = {
                         'label': "Which Apps",

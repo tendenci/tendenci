@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import os
 from datetime import timedelta, datetime
 
@@ -59,7 +60,7 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
 
             EventLog.objects.log(instance=resume)
             response = HttpResponse(resume.resume_file)
-            response['Content-Disposition'] = 'attachment; filename="%s"' % (os.path.basename(unicode(resume.resume_file)))
+            response['Content-Disposition'] = 'attachment; filename="%s"' % (os.path.basename(str(resume.resume_file)))
 
             return response
         else:

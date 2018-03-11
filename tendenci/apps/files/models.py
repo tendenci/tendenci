@@ -1,3 +1,4 @@
+from builtins import str
 import hashlib
 import os
 import mimetypes
@@ -44,7 +45,7 @@ def file_directory(instance, filename):
             content_type = instance.content_type()
         else:
             content_type = instance.content_type
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(content_type))
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(content_type))
         return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
     return 'files/files/%s/%s' % (hex_digest, filename)
@@ -131,7 +132,7 @@ class File(TendenciBaseModel):
     def save(self, *args, **kwargs):
         created = False
         if not self.id:
-            self.guid = unicode(uuid.uuid1())
+            self.guid = str(uuid.uuid1())
             created = True
         self.f_type = self.type()
 
@@ -214,7 +215,7 @@ class File(TendenciBaseModel):
         super(File, self).delete(*args, **kwargs)
 
     def basename(self):
-        return os.path.basename(unicode(self.file.name))
+        return os.path.basename(str(self.file.name))
 
     def ext(self):
         return os.path.splitext(self.basename())[-1]
@@ -313,7 +314,7 @@ class File(TendenciBaseModel):
 
         if not settings.USE_S3_STORAGE:
             if not os.path.exists(self.file.path):
-                return unicode()
+                return str()
 
         if settings.INDEX_FILE_CONTENT:
             if self.type() == 'pdf':
@@ -321,9 +322,9 @@ class File(TendenciBaseModel):
                 try:
                     return extract_pdf(self.file.file)
                 except:
-                    return unicode()
+                    return str()
 
-        return unicode()
+        return str()
 
     def is_public_file(self):
         return all([

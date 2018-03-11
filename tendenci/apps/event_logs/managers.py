@@ -1,3 +1,4 @@
+from builtins import str
 import inspect
 from datetime import datetime, timedelta
 from operator import and_
@@ -129,7 +130,7 @@ class EventLogManager(Manager):
             ct = ContentType.objects.get_for_model(instance)
             event_log.content_type = ct
             event_log.object_id = instance.pk
-            event_log.headline = unicode(instance)[:50]
+            event_log.headline = str(instance)[:50]
             event_log.model_name = ct.name
             event_log.application = instance.__module__
             if hasattr(instance, 'guid'):

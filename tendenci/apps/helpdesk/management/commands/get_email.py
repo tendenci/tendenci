@@ -10,6 +10,7 @@ scripts/get_email.py - Designed to be run from cron, this script checks the
                        adding to existing tickets if needed)
 """
 from __future__ import print_function
+from builtins import str
 
 import email
 import imaplib
@@ -167,11 +168,11 @@ def decodeUnknown(charset, string):
             return string.decode('utf-8','ignore')
         except:
             return string.decode('iso8859-1','ignore')
-    return unicode(string, charset)
+    return str(string, charset)
 
 def decode_mail_headers(string):
     decoded = decode_header(string)
-    return u' '.join([unicode(msg, charset or 'utf-8') for msg, charset in decoded])
+    return u' '.join([str(msg, charset or 'utf-8') for msg, charset in decoded])
 
 def ticket_from_message(message, queue, quiet):
     # 'message' must be an RFC822 formatted message.
@@ -239,7 +240,7 @@ def ticket_from_message(message, queue, quiet):
                     body_plain = striptags(body_html)
                 except DjangoUnicodeDecodeError:
                     charset = chardet.detect(body_html)['encoding']
-                    body_plain = striptags(unicode(body_html, charset))
+                    body_plain = striptags(str(body_html, charset))
 
                 body_plain = unescape(body_plain)
         else:

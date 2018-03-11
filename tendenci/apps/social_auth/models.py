@@ -1,4 +1,5 @@
 """Social auth models"""
+from builtins import str
 import warnings
 from datetime import timedelta
 
@@ -47,7 +48,7 @@ class UserSocialAuth(models.Model):
 
     def __unicode__(self):
         """Return associated user unicode representation"""
-        return unicode(self.user)
+        return str(self.user)
 
     def expiration_delta(self):
         """Return saved session expiration seconds if any. Is retuned in

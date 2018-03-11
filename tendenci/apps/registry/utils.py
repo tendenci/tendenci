@@ -1,3 +1,4 @@
+from builtins import str
 import os
 
 from django.core.urlresolvers import reverse
@@ -118,7 +119,7 @@ class RegisteredApps(object):
         # sort the applications alphabetically by
         # object representation
         def key(x):
-            return unicode(x)
+            return str(x)
         self.all_apps = sorted(self.all_apps, key=key)
         self.core = sorted(self.core, key=key)
         self.addons = sorted(self.addons, key=key)

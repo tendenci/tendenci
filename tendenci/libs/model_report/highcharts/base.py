@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from builtins import str
 from django.utils.translation import ugettext_lazy
 from django.utils.encoding import force_unicode
 
@@ -28,7 +29,7 @@ class CollectionObject(object):
         self._dicts.append(obj)
 
     def __repr__(self):
-        return unicode(self._dicts)
+        return str(self._dicts)
 
 
 class DictObject:
@@ -53,11 +54,11 @@ class DictObject:
                     v = str(v).lower()
                 if v == ('null',):
                     v = 'null'
-                if unicode(v):
+                if str(v):
                     data[k] = v
         if not data:
             data = ""
-        return unicode(data)
+        return str(data)
 
     def create(self, **defaults):
         obj = DictObject(**self.__dict__)

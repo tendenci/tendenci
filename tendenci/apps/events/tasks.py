@@ -1,3 +1,4 @@
+from builtins import str
 import os
 from django.db.models import Max, Count
 from django.http import HttpResponse
@@ -108,7 +109,7 @@ class EventsExportTask(Task):
                         value = event.type.name
                 elif field in event_d:
                     value = event_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
             if event.place:
@@ -116,7 +117,7 @@ class EventsExportTask(Task):
                 place_d = full_model_to_dict(event.place)
                 for field in place_fields:
                     value = place_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
             if event.registration_configuration:
@@ -127,7 +128,7 @@ class EventsExportTask(Task):
                         value = event.registration_configuration.payment_method.all()
                     else:
                         value = conf_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
             if event.speaker_set.all():
@@ -136,7 +137,7 @@ class EventsExportTask(Task):
                     speaker_d = full_model_to_dict(speaker)
                     for field in speaker_fields:
                         value = speaker_d[field]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the speaker columns
@@ -151,7 +152,7 @@ class EventsExportTask(Task):
                     organizer_d = full_model_to_dict(organizer)
                     for field in organizer_fields:
                         value = organizer_d[field]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the organizer columns
@@ -167,7 +168,7 @@ class EventsExportTask(Task):
                     pricing_d = full_model_to_dict(pricing)
                     for field in pricing_fields:
                         value = pricing_d[field]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the pricing columns

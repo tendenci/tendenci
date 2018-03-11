@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import subprocess
 import os
@@ -51,5 +52,5 @@ def run_precreate_ics(app_label, model_name, user):
         model_name=model_name,
         user=user
     )
-    subprocess.Popen([python_executable(), 'manage.py', 'run_precreate_ics', unicode(ics.pk)])
+    subprocess.Popen([python_executable(), 'manage.py', 'run_precreate_ics', str(ics.pk)])
     return ics.pk

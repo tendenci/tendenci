@@ -1,3 +1,4 @@
+from builtins import str
 import datetime
 
 from django.conf import settings
@@ -264,7 +265,7 @@ class NewsletterCloneView(NewsletterPermissionMixin, DetailView):
         cloned_newsletter = newsletter.clone()
 
         EventLog.objects.log(instance=cloned_newsletter)
-        msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(unicode(newsletter))
+        msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(str(newsletter))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return redirect(reverse('newsletter.action.step4', kwargs={'pk': cloned_newsletter.pk}))

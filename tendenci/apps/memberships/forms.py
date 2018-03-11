@@ -1,3 +1,4 @@
+from builtins import str
 import decimal
 from datetime import datetime
 import requests
@@ -995,10 +996,10 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     file_instance.save()
                     data = {
                         'type' : u'file',
-                        'pk' : unicode(file_instance.pk),
+                        'pk' : str(file_instance.pk),
                         'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
-                    data = unicode(data)
+                    data = str(data)
                     pks.update({ key : data })
 
         demographic = super(DemographicsForm, self).save(commit=commit, *args, **kwargs)
@@ -2091,10 +2092,10 @@ class MembershipDefaultForm(TendenciBaseForm):
                         file_instance.save()
                         data = {
                             'type' : u'file',
-                            'pk' : unicode(file_instance.pk),
+                            'pk' : str(file_instance.pk),
                             'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                         }
-                        data = unicode(data)
+                        data = str(data)
                         setattr(demographics, field_name, data)
 
                 else:

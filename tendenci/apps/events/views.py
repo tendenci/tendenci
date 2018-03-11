@@ -2,6 +2,8 @@
 # anonymous registration impementation of events in the registration
 # module.
 
+from builtins import str
+
 import re
 import calendar
 import itertools
@@ -554,7 +556,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -579,7 +581,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                         # update all permissions and save the model
                         cur_event = update_perms_and_save(request, form_event2, cur_event)
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -634,7 +636,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                 place.save()
                 event.place = place
                 event.save(log=False)
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -655,7 +657,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
                 for cur_event in recurring_events:
                     cur_event.place = place
                     cur_event.save(log=False)
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -714,7 +716,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 organizer.save()
                 # Readd event to organizer
                 organizer.event.add(event)
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -739,7 +741,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                         org.event.remove(cur_event)
                     # Add new organizer
                     organizer.event.add(cur_event)
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -807,7 +809,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                     del_speaker.event.remove(event)
                     if not del_speaker.event.count():
                         del_speaker.delete()
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 redirect_url = reverse('event', args=[event.pk])
             else:
@@ -848,7 +850,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                                 pass
                             if not del_speaker.event.count():
                                 del_speaker.delete()
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 redirect_url = reverse('event.recurring', args=[event.pk])
 
@@ -937,7 +939,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
             EventLog.objects.log(instance=event)
 
             if apply_changes_to == 'self':
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -954,7 +956,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     )
                     if form_regconf2.is_valid():
                         regconf = form_regconf2.save()
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
@@ -1031,7 +1033,7 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                         regconf_price.reg_form = None
                     regconf_price.save()
 
-                msg_string = 'Successfully updated %s' % unicode(event)
+                msg_string = 'Successfully updated %s' % str(event)
                 redirect_url = reverse('event', args=[event.pk])
             else:
                 recurring_events = event.recurring_event.event_set.all()
@@ -1054,7 +1056,7 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
                             e_regconf_price.end_dt += time_diff
 
                         e_regconf_price.save()
-                msg_string = 'Successfully updated the recurring events for %s' % unicode(event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
                 redirect_url = reverse('event.recurring', args=[event.pk])
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return HttpResponseRedirect(redirect_url)
@@ -1101,7 +1103,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         if form.is_valid():
             event.meta = form.save() # save meta
             event.save() # save relationship
-            msg_string = 'Successfully updated meta for %s' % unicode(event)
+            msg_string = 'Successfully updated meta for %s' % str(event)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -1355,11 +1357,11 @@ def add(request, year=None, month=None, day=None,
                             pricing.start_dt = new_event.start_dt + start_dt_diff
                             pricing.end_dt = new_event.end_dt + end_dt_diff
                             pricing.save()
-                    msg_string = 'Successfully added the recurring event %s' % unicode(event)
+                    msg_string = 'Successfully added the recurring event %s' % str(event)
                     messages.add_message(request, messages.SUCCESS, _(msg_string))
                     redirect_url = reverse('event.recurring', args=[event.pk])
                 else:
-                    msg_string = 'Successfully added %s' % unicode(event)
+                    msg_string = 'Successfully added %s' % str(event)
                     messages.add_message(request, messages.SUCCESS, _(msg_string))
                     redirect_url = reverse('event', args=[event.pk])
 
@@ -1477,7 +1479,7 @@ def delete(request, id, template_name="events/delete.html"):
                 event.image.delete()
 
             event.delete(log=False)
-            msg_string = 'Successfully deleted %s' % unicode(event)
+            msg_string = 'Successfully deleted %s' % str(event)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('event.search'))
@@ -1535,7 +1537,7 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
                 # end of transaction block"
                 connection._rollback()
         recurring_manager.delete()
-        msg_string = 'Successfully deleted the recurring event for "%s"' % unicode(event)
+        msg_string = 'Successfully deleted the recurring event for "%s"' % str(event)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('event.search'))
@@ -1611,7 +1613,7 @@ def member_register(request, event_id,
     # check if event allows registration
     if not (event.registration_configuration and
             event.registration_configuration.enabled):
-        msg_string = 'Registration is disabled for event %s' % unicode(event)
+        msg_string = 'Registration is disabled for event %s' % str(event)
         messages.add_message(request, messages.INFO, _(msg_string))
         return HttpResponseRedirect(reverse('event', args=[event_id]))
 
@@ -1627,7 +1629,7 @@ def member_register(request, event_id,
     if request.method == "POST":
         if form.is_valid():
             create_member_registration(request.user, event, form)
-            msg_string = 'Successfully registered members for event %s' % unicode(event)
+            msg_string = 'Successfully registered members for event %s' % str(event)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return HttpResponseRedirect(reverse('event', args=[event_id]))
 
@@ -2726,14 +2728,14 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (unicode(current_type[0]))
+                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_month = latest_event.start_dt.month
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%b %Y')
                 latest_date = latest_event.start_dt.strftime('%b %Y')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (unicode(current_type[0]), current_date, unicode(current_type[0]), latest_date)
+                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
 
@@ -2831,7 +2833,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
         if not Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=current_type[0]).exists():
             latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt').first()
             if latest_event is None:
-                msg_string = u'No more %s Events were found.' % (unicode(current_type[0]))
+                msg_string = u'No more %s Events were found.' % (str(current_type[0]))
                 messages.add_message(request, messages.INFO, _(msg_string))
             else:
                 latest_day = latest_event.start_dt.day
@@ -2839,7 +2841,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
                 latest_year = latest_event.start_dt.year
                 current_date = current_date.strftime('%x')
                 latest_date = latest_event.start_dt.strftime('%x')
-                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (unicode(current_type[0]), current_date, unicode(current_type[0]), latest_date)
+                msg_string = u'No %s Events were found for %s. The next %s event is on %s, shown below.' % (str(current_type[0]), current_date, str(current_type[0]), latest_date)
                 messages.add_message(request, messages.INFO, _(msg_string))
                 return HttpResponseRedirect(reverse('event.week', args=[latest_year, latest_month, latest_day, current_type[0].slug]))
 
@@ -3922,7 +3924,7 @@ def delete_speaker(request, id):
 
     speaker = get_object_or_404(Speaker, id = id)
     event = speaker.event.all()[0]
-    msg_string = 'Successfully deleted %s' % unicode(speaker)
+    msg_string = 'Successfully deleted %s' % str(speaker)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     speaker.delete()
@@ -3972,7 +3974,7 @@ def copy(request, id):
     new_event = copy_event(event, request.user)
 
     EventLog.objects.log(instance=new_event)
-    msg_string = 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % unicode(new_event)
+    msg_string = 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % str(new_event)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     return redirect('event.edit', id=new_event.id)
@@ -4027,7 +4029,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             event.save(log=False)
 
             if request.user.is_superuser:
-                msg_string = 'Successfully added %s.\n ' % unicode(event)
+                msg_string = 'Successfully added %s.\n ' % str(event)
                 msg_string += 'Note that this event is in pending. '
                 msg_string += 'You can activate/edit if needed.'
             else:
@@ -4096,7 +4098,7 @@ def approve(request, event_id, template_name="events/approve.html"):
         event.status = True
         event.status_detail = 'active'
         event.save()
-        msg_string = 'Successfully approved %s' % unicode(event)
+        msg_string = 'Successfully approved %s' % str(event)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return redirect('event', id=event_id)
@@ -4149,7 +4151,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
                 option.save()
 
             EventLog.objects.log(instance=addon)
-            msg_string = 'Successfully added %s' % unicode(addon)
+            msg_string = 'Successfully added %s' % str(addon)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event', event.pk)
     else:
@@ -4197,7 +4199,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
                 option.save()
 
             EventLog.objects.log(instance=addon)
-            msg_string = 'Successfully updated %s' % unicode(addon)
+            msg_string = 'Successfully updated %s' % str(addon)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event', event.pk)
     else:

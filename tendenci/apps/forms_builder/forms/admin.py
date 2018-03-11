@@ -1,7 +1,6 @@
-
+from builtins import str
 from csv import writer
 from datetime import datetime
-
 
 from django.conf import settings
 from django.conf.urls import patterns, url
@@ -173,11 +172,11 @@ class FormAdmin(TendenciBaseModelAdmin):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
         entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
-        columns.append(unicode(entry_time_name))
+        columns.append(str(entry_time_name))
         if form.custom_payment:
-            columns.append(unicode("Pricing"))
-            columns.append(unicode("Price"))
-            columns.append(unicode("Payment Method"))
+            columns.append(str("Pricing"))
+            columns.append(str("Price"))
+            columns.append(str("Payment Method"))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each
         # entry as a row.

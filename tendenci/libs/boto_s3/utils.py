@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import os
 from datetime import datetime
 import mimetypes
@@ -48,7 +49,7 @@ def read_media_file_from_s3(file_path):
     file_content = read_media_file_from_s3('/files/99/Earth-and-Moon.gif')
     """
     # the DEFAULT_S3_PATH is where the media files are stored.
-    file_path = '%s/%s' % (settings.DEFAULT_S3_PATH, unicode(file_path).lstrip('/'))
+    file_path = '%s/%s' % (settings.DEFAULT_S3_PATH, str(file_path).lstrip('/'))
     storage = S3BotoStorage()
     f = S3BotoStorageFile(file_path, 'r', storage)
     content = f.read()
@@ -66,7 +67,7 @@ def read_theme_file_from_s3(file_path):
     file_content = read_theme_file_from_s3('themename/templates/default.html')
     """
     # the DEFAULT_S3_PATH is where the media files are stored.
-    file_path = '%s/%s' % (settings.THEME_S3_PATH, unicode(file_path).lstrip('/'))
+    file_path = '%s/%s' % (settings.THEME_S3_PATH, str(file_path).lstrip('/'))
     storage = S3BotoStorage()
     f = S3BotoStorageFile(file_path, 'r', storage)
     content = f.read()
@@ -116,7 +117,7 @@ def set_s3_file_permission(file, public=False):
         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
         k = Key(bucket)
 
-        file_path = unicode(file)
+        file_path = str(file)
 
         k.key = '%s%s' % (settings.MEDIA_ROOT, file)
 

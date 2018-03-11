@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import hashlib
 import uuid
@@ -2421,7 +2422,7 @@ class Notice(models.Model):
         return ('membership.notice_email_content', [self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(Notice, self).save(*args, **kwargs)
 
 

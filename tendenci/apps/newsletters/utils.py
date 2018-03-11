@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import re
 import shutil
@@ -265,7 +266,7 @@ def apply_template_media(template):
     of a given template's zip file contents
     """
     site_url = get_setting('site', 'global', 'siteurl')
-    content = unicode(template.html_file.file.read(), "utf-8")
+    content = str(template.html_file.file.read(), "utf-8")
     pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
 
     def repl(x):

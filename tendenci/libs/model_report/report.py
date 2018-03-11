@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from builtins import str
 import copy
 from itertools import groupby
 
@@ -292,8 +293,8 @@ class ReportAdmin(object):
         except:
             model_field = None
         value = self.get_grouper_text(value, groupby_field, model_field)
-        if value is None or unicode(value) == u'None':
-            if groupby_field is None or unicode(groupby_field) == u'None':
+        if value is None or str(value) == u'None':
+            if groupby_field is None or str(groupby_field) == u'None':
                 value = force_unicode(_('Results'))
             else:
                 value = force_unicode(_('Nothing'))
@@ -306,7 +307,7 @@ class ReportAdmin(object):
             model_field = None
 
         value = self.get_value_text(value, index, model_field)
-        if value is None or unicode(value) == u'None':
+        if value is None or str(value) == u'None':
             value = ''
         if value == [None]:
             value = []

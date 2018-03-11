@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import datetime
 import traceback
 import re
@@ -107,17 +108,17 @@ class Command(BaseCommand):
                     reply_to=email.reply_to,
                     recipient=recipient.member.email
                     )
-            print(u"Sending to {}".format(unicode(recipient.member.email)))
+            print(u"Sending to {}".format(str(recipient.member.email)))
             email_to_send.send(connection=connection)
             counter += 1
-            print(u"Newsletter sent to {}".format(unicode(recipient.member.email)))
+            print(u"Newsletter sent to {}".format(str(recipient.member.email)))
 
             if newsletter.send_to_email2 and hasattr(recipient.member, 'profile') \
                 and validate_email(recipient.member.profile.email2):
                 email_to_send.recipient = recipient.member.profile.email2
                 email_to_send.send(connection=connection)
                 counter += 1
-                print(u"Newsletter sent to {}".format(unicode(recipient.member.profile.email2)))
+                print(u"Newsletter sent to {}".format(str(recipient.member.profile.email2)))
 
         if newsletter.send_status == 'sending':
             newsletter.send_status = 'sent'

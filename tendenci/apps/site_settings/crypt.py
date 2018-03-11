@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import base64
 from Crypto.Cipher import AES
 
@@ -10,7 +11,7 @@ def encrypt(value):
     Uses the character '\0' as padding.
     """
     cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
-    value = unicode(value).encode('utf-8')
+    value = str(value).encode('utf-8')
     padding = cipher.block_size - len(value) % cipher.block_size
     for i in range(padding):
         value += '\0'

@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
@@ -139,7 +140,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
-                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
+                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, str()), pricing.label, pricing.description)))
                         )
                     else:
                         if formforform.recurring_payment:

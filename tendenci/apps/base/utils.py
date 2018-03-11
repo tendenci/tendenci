@@ -1,5 +1,5 @@
 from __future__ import print_function
-from builtins import object
+from builtins import object, str
 import os
 import re
 from datetime import datetime
@@ -760,7 +760,7 @@ class UnicodeReader(object):
 
     def __next__(self):
         row = next(self.reader)
-        return [unicode(s, "utf-8") for s in row]
+        return [str(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -924,7 +924,7 @@ def normalize_field_names(fieldnames):
 def truncate_words(s, num, end_text='...'):
     truncate = end_text and ' %s' % end_text or ''
     return Truncator(s).words(num, truncate=truncate)
-truncate_words = allow_lazy(truncate_words, unicode)
+truncate_words = allow_lazy(truncate_words, str)
 
 
 def validate_email(s, quiet=True):

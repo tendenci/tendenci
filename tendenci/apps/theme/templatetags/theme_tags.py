@@ -1,4 +1,6 @@
+from builtins import str
 import os
+
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template import Library, Variable
 from django.conf import settings
@@ -151,7 +153,7 @@ class ThemeIncludeNode(IncludeNode):
 
 class SpaceIncludeNode(IncludeNode):
     def render(self, context):
-        context['setting_name'] = unicode(self.template).replace('MODULE_THEME_', '').lower()
+        context['setting_name'] = str(self.template).replace('MODULE_THEME_', '').lower()
         try:
             setting_value = Variable(self.template).resolve(context)
         except VariableDoesNotExist:

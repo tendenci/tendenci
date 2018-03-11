@@ -1,4 +1,5 @@
 # models.py
+from builtins import str
 from dateutil.parser import parse
 
 from django.db import models
@@ -45,12 +46,12 @@ class Version(models.Model):
         data = json.loads(self.object_value)['fields']
         obj_data = {'pk': self.object_id}
         for f in self.get_object()._meta.fields:
-            field_name = unicode(f.name)
+            field_name = str(f.name)
             if field_name in data:
                 #print unicode(f.get_internal_type())
-                if unicode(f.get_internal_type()) == 'ForeignKey' or unicode(f.get_internal_type()) == 'OneToOneField':
+                if str(f.get_internal_type()) == 'ForeignKey' or str(f.get_internal_type()) == 'OneToOneField':
                     obj_data[field_name + "_id"] = data[field_name]
-                elif unicode(f.get_internal_type()) == 'DateTimeField':
+                elif str(f.get_internal_type()) == 'DateTimeField':
                     obj_data[field_name] = parse(data[field_name])
                 else:
                     obj_data[field_name] = data[field_name]

@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import os
 import re
 import random
@@ -103,7 +104,7 @@ def sync_templates(request=None):
 
         #set up urls
         site_url = get_setting('site', 'global', 'siteurl')
-        html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+        html_url = str("%s%s"%(site_url, template.get_html_url()))
         html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
         html_url += "&events=1"
         html_url += "&events_type="
@@ -113,16 +114,16 @@ def sync_templates(request=None):
 
         if template.zip_file:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                zip_url = unicode(template.get_zip_url())
+                zip_url = str(template.get_zip_url())
             else:
-                zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+                zip_url = str("%s%s"%(site_url, template.get_zip_url()))
         else:
-            zip_url = unicode()
+            zip_url = str()
 
         #sync with campaign monitor
         try:
             cst = CST(auth, template_id=template.template_id)
-            cst.update(unicode(template.name), html_url, zip_url)
+            cst.update(str(template.name), html_url, zip_url)
             success = True
         except BadRequest as e:
             success = False
@@ -179,7 +180,7 @@ def apply_template_media(template):
     Prepends files in content to the media path
     of a given template's zip file contents
     """
-    content = unicode(template.html_file.file.read(), "utf-8")
+    content = str(template.html_file.file.read(), "utf-8")
     pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
 
     def repl(x):

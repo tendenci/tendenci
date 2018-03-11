@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
@@ -155,7 +156,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 try:
                     User.objects.get(username=username)
                     x = User.objects.filter(first_name=first_name).count()
-                    username = username + '_' + unicode(x)
+                    username = username + '_' + str(x)
                 except User.DoesNotExist:
                     pass
 

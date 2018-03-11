@@ -1,4 +1,6 @@
+from builtins import str
 import uuid
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -60,6 +62,6 @@ class Career(TendenciBaseModel):
 #        return ("career", [self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         super(Career, self).save(*args, **kwargs)

@@ -1,3 +1,4 @@
+from builtins import str
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
@@ -56,7 +57,7 @@ class TendenciExportTask(Task):
             data_row = []
             for field in fields:
                 # clean the derived values into unicode
-                value = unicode(d[field]).rstrip()
+                value = str(d[field]).rstrip()
                 data_row.append(value)
 
             data_row_list.append(data_row)

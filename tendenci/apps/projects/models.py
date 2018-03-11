@@ -1,3 +1,4 @@
+from builtins import str
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -131,7 +132,7 @@ class Project(TendenciBaseModel):
     objects = NewProjectManager()
 
     def __unicode__(self):
-        return unicode(self.id)
+        return str(self.id)
 
     class Meta:
         permissions = (("view_project", "Can view project"),)

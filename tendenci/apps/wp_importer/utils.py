@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import urllib2
 import uuid
@@ -32,11 +33,11 @@ def get_posts(item, user):
     alreadyThere = False
 
     if item.find('link'):
-        link = unicode(item.find('link').contents[0])
+        link = str(item.find('link').contents[0])
         slug = urlparse(link).path.strip('/')
     else:
         # if no slug, grab the post id
-        slug = unicode(item.find('wp:post_id').contents[0])
+        slug = str(item.find('wp:post_id').contents[0])
 
     for article in Article.objects.all():
         if article.slug == slug[:100]:
@@ -44,10 +45,10 @@ def get_posts(item, user):
             break
 
     if not alreadyThere:
-        title = unicode(item.find('title').contents[0])
+        title = str(item.find('title').contents[0])
         post_id = item.find('wp:post_id').string
         post_id = int(post_id)
-        body = unicode(item.find('content:encoded').contents[0])
+        body = str(item.find('content:encoded').contents[0])
         body = replace_short_code(body)
 
         try:
@@ -60,7 +61,7 @@ def get_posts(item, user):
         except:
             pass
 
-        post_date = unicode(item.find('wp:post_date').contents[0])
+        post_date = str(item.find('wp:post_date').contents[0])
         #post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
         post_dt = post_date
 
@@ -112,7 +113,7 @@ def get_pages(item, user):
     If not, create Page object.
     """
     alreadyThere = False
-    link = unicode(item.find('link').contents[0])
+    link = str(item.find('link').contents[0])
     slug = urlparse(link).path.strip('/')
 
     for page in Page.objects.all():
@@ -121,10 +122,10 @@ def get_pages(item, user):
             break
 
     if not alreadyThere:
-        title = unicode(item.find('title').contents[0])
+        title = str(item.find('title').contents[0])
         post_id = item.find('wp:post_id').string
         post_id = int(post_id)
-        body = unicode(item.find('content:encoded').contents[0])
+        body = str(item.find('content:encoded').contents[0])
         body = replace_short_code(body)
         try:
             fgroup = AssociatedFile.objects.filter(post_id=post_id)
@@ -190,7 +191,7 @@ def get_media(item, user):
             f.write(source)
             file_path = f.name
 
-        new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
+        new_media = File(guid=str(uuid.uuid1()), file=file_path, creator=user, owner=user)
         new_media.save()
 
     temporary = AssociatedFile(post_id=post_id, file=new_media)

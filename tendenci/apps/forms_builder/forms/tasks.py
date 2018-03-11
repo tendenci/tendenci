@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import csv
 import zipfile
@@ -83,7 +84,7 @@ class FormsExportTask(Task):
                     value = [m.human_name for m in form.payment_methods.all()]
                 else:
                     value = form_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
             if form.fields.all():
@@ -92,7 +93,7 @@ class FormsExportTask(Task):
                     field_d = full_model_to_dict(field)
                     for f in field_fields:
                         value = field_d[f]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the field columns
@@ -107,7 +108,7 @@ class FormsExportTask(Task):
                     pricing_d = full_model_to_dict(pricing)
                     for f in pricing_fields:
                         value = pricing_d[f]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the field columns

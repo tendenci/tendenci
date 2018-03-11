@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import simplejson as json
 import urllib2
@@ -331,7 +332,7 @@ class FileTinymceCreateView(CreateView):
 
     def form_valid(self, form):
         app_label = self.request.POST['app_label']
-        model = unicode(self.request.POST['model']).lower()
+        model = str(self.request.POST['model']).lower()
         try:
             object_id = int(self.request.POST['object_id'])
         except:

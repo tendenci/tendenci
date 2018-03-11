@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -30,7 +32,7 @@ class StudyGroup(BasePage):
     objects = StudyGroupManager()
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
     class Meta:
         permissions = (("view_studygroup", "Can view studygroup"),)
@@ -60,7 +62,7 @@ class Position(models.Model):
         app_label = 'studygroups'
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
 
 class Officer(models.Model):

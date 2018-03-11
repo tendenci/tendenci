@@ -1,3 +1,4 @@
+from builtins import str
 import random
 from datetime import datetime, timedelta
 from operator import or_
@@ -312,7 +313,7 @@ class ListEventsNode(ListNode):
         if 'tags' in self.kwargs:
             try:
                 tags = Variable(self.kwargs['tags'])
-                tags = unicode(tags.resolve(context))
+                tags = str(tags.resolve(context))
             except:
                 tags = self.kwargs['tags']
 
@@ -367,7 +368,7 @@ class ListEventsNode(ListNode):
         if 'group' in self.kwargs:
             try:
                 group = Variable(self.kwargs['group'])
-                group = unicode(group.resolve(context))
+                group = str(group.resolve(context))
             except:
                 group = self.kwargs['group']
 

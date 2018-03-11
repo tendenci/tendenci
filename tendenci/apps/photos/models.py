@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import uuid
 import os
 from PIL import Image as PILImage
@@ -118,7 +119,7 @@ class ImageModel(models.Model):
 
     def EXIF(self):
         try:
-            content = default_storage.open(unicode(self.image)).read()
+            content = default_storage.open(str(self.image)).read()
             im = PILImage.open(StringIO(content))
         except IOError:
             return
@@ -147,7 +148,7 @@ class ImageModel(models.Model):
 
     def cache_path(self):
         # example 'photos/cache/3949a2d9' or 'photos/cache'
-        l = unicode(self.image).split('/')
+        l = str(self.image).split('/')
         l.insert(1, 'cache')
         return os.path.dirname('/'.join(l))
 
@@ -265,7 +266,7 @@ class ImageModel(models.Model):
             return
 
         try:
-            content = default_storage.open(unicode(self.image)).read()
+            content = default_storage.open(str(self.image)).read()
             im = PILImage.open(StringIO(content))
         except IOError as e:
             print(e)
@@ -476,7 +477,7 @@ class Watermark(BaseEffect):
 
     def post_process(self, im):
         try:
-            content = default_storage.open(unicode(self.image)).read()
+            content = default_storage.open(str(self.image)).read()
             mark = PILImage.open(StringIO(content))
         except IOError as e:
             raise e
@@ -583,7 +584,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         super(PhotoSet, self).save()
 
@@ -955,7 +956,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         return License.objects.get(id=1)
 
     def file_exists(self):
-        return default_storage.exists(unicode(self.image))
+        return default_storage.exists(str(self.image))
 
     def default_thumbnail(self):
         return settings.STATIC_URL + "images/default-photo-album-cover.jpg"

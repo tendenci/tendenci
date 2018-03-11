@@ -1,3 +1,4 @@
+from builtins import str
 import datetime
 from datetime import timedelta
 from django.conf import settings
@@ -393,7 +394,7 @@ def template_update(request, template_id):
 
     #set up urls
     site_url = get_setting('site', 'global', 'siteurl')
-    html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+    html_url = str("%s%s"%(site_url, template.get_html_url()))
     html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
     try:
         html_url += "&events=1"
@@ -406,16 +407,16 @@ def template_update(request, template_id):
 
     if template.zip_file:
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_url = unicode(template.get_zip_url())
+            zip_url = str(template.get_zip_url())
         else:
-            zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+            zip_url = str("%s%s"%(site_url, template.get_zip_url()))
     else:
-        zip_url = unicode()
+        zip_url = str()
 
     #sync with campaign monitor
     try:
         t = CST(auth=auth, template_id = template.template_id)
-        t.update(unicode(template.name), html_url, zip_url)
+        t.update(str(template.name), html_url, zip_url)
     except BadRequest as e:
         msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
         messages.add_message(request, messages.ERROR, _(msg_string))
@@ -519,7 +520,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
 
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+            html_url = str("%s%s"%(site_url, template.get_html_url()))
             html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             try:
                 html_url += "&events=%s" % form.cleaned_data.get('events')
@@ -539,16 +540,16 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
 
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                    zip_url = unicode(template.get_zip_url())
+                    zip_url = str(template.get_zip_url())
                 else:
-                    zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+                    zip_url = str("%s%s"%(site_url, template.get_zip_url()))
             else:
-               zip_url = unicode()
+               zip_url = str()
 
             #sync with campaign monitor
             try:
                 t = CST(auth=auth, template_id = template.template_id)
-                t.update(unicode(template.name), html_url, zip_url)
+                t.update(str(template.name), html_url, zip_url)
             except BadRequest as e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return redirect('campaign_monitor.campaign_generate')

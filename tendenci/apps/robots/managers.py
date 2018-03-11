@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.db.models import Manager
 from django.core.cache import cache
 from django.conf import settings
@@ -20,7 +22,7 @@ class RobotManager(Manager):
         # UnicodeDecodeError: 'ascii' codec can't decode byte 0xf3
         # http://stackoverflow.com/questions/2392732/sqlite-python-unicode-and-non-utf-data
         try:
-            user_agent = unicode(user_agent, errors='ignore')
+            user_agent = str(user_agent, errors='ignore')
         except TypeError:
             pass
 

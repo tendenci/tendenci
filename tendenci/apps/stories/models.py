@@ -1,3 +1,4 @@
+from builtins import str
 import uuid
 
 from urlparse import urlparse
@@ -100,7 +101,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         return url
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         photo_upload = kwargs.pop('photo', None)
 
         if self.pk is None:
