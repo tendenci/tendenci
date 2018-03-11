@@ -414,7 +414,7 @@ def membership_default_import_preview(request, mimport_id,
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)
             if not fieldnames:
-                fieldnames = idata.row_data.keys()
+                fieldnames = list(idata.row_data.keys())
 
         return render_to_response(template_name, {
             'mimport': mimport,

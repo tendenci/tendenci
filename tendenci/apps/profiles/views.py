@@ -1437,7 +1437,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)
             if not fieldnames:
-                fieldnames = idata.row_data.keys()
+                fieldnames = list(idata.row_data.keys())
 
         return render_to_response(template_name, {
             'uimport': uimport,

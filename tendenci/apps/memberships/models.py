@@ -680,7 +680,7 @@ class MembershipDefault(TendenciBaseModel):
                     else:
                         field_list.append((field_label, data))
 
-        if is_blank(dict(field_list).values()):
+        if is_blank(list(dict(field_list).values())):
             return []  # empty list
 
         return field_list
@@ -2621,7 +2621,7 @@ class MembershipAppField(OrderingBaseModel):
             if "choices" in arg_names:
                 if self.field_name not in ['membership_type', 'payment_method']:
                     choices = [s.strip() for s in self.choices.split(",")]
-                    field_args["choices"] = zip(choices, choices)
+                    field_args["choices"] = list(zip(choices, choices))
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)

@@ -29,7 +29,7 @@ def get_coordinates(address):
     result = geocode_api(address=address)
 
     if result['status'] == 'OK':
-        return result['results'][0]['geometry']['location'].values()
+        return list(result['results'][0]['geometry']['location'].values())
 
     return (None, None)
 

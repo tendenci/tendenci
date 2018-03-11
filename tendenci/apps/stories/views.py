@@ -102,7 +102,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
             else:
                 from pprint import pprint
-                pprint(form.errors.items())
+                pprint(list(form.errors.items()))
         else:
             form = form_class(user=request.user)
 

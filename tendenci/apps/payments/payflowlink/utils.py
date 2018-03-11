@@ -46,7 +46,7 @@ def prepare_payflowlink_form(request, payment):
 
 def payflowlink_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
-    response_d = dict(map(lambda x: (x[0].lower(), x[1]), response_d.items()))
+    response_d = dict(map(lambda x: (x[0].lower(), x[1]), list(response_d.items())))
 
     paymentid = response_d.get('custid', 0)
     try:

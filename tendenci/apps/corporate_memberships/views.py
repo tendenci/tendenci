@@ -1433,7 +1433,7 @@ def import_preview(request, mimport_id,
             corp_memb_display['row_num'] = idata.row_num
             corp_membs_list.append(corp_memb_display)
             if not fieldnames:
-                fieldnames = idata.row_data.keys()
+                fieldnames = list(idata.row_data.keys())
 
         return render_to_response(template, {
             'mimport': mimport,

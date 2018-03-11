@@ -89,7 +89,7 @@ class ReportClassManager(object):
 
     def get_reports(self):
         # return clasess
-        return self._register.values()
+        return list(self._register.values())
 
 
 reports = ReportClassManager()

@@ -3632,12 +3632,12 @@ def registrant_export(request, event_id, roster_view=''):
         ('country', 'country'),
         ('date', 'create_dt'),
     ])
-    registrant_lookups = registrant_mappings.values()
+    registrant_lookups = list(registrant_mappings.values())
 
     # Append the heading to the list of values that will
     # go into the excel sheet
     values_list = []
-    values_list.insert(0, registrant_mappings.keys())
+    values_list.insert(0, list(registrant_mappings.keys()))
 
     # excel date styles
     balance_owed_style = xlwt.easyxf('font: color-index red, bold on')
@@ -3761,9 +3761,9 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         # remove meal_option if the field is empty for every registrant
         del registrant_mappings['meal_option']
 
-    RegistrantTuple = namedtuple('Registrant', registrant_mappings.values())
+    RegistrantTuple = namedtuple('Registrant', list(registrant_mappings.values()))
 
-    registrant_lookups = registrant_mappings.values()
+    registrant_lookups = list(registrant_mappings.values())
 
     # Append the heading to the list of values that will
     # go into the excel sheet
@@ -3774,7 +3774,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     non_custom_registrants = non_custom_registrants.values('pk', *registrant_lookups)
 
     if non_custom_registrants:
-        values_list.insert(0, registrant_mappings.keys() + ['is_paid', 'primary_registrant'])
+        values_list.insert(0, list(registrant_mappings.keys()) + ['is_paid', 'primary_registrant'])
 
         for registrant_dict in non_custom_registrants:
 
@@ -3843,10 +3843,10 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         for field in fields_to_remove:
             del registrant_mappings[field]
 
-        registrant_lookups = registrant_mappings.values()
+        registrant_lookups = list(registrant_mappings.values())
         registrant_lookups.append('custom_reg_form_entry')
 
-        CustomRegistrantTuple = namedtuple('CustomRegistrant', registrant_mappings.values())
+        CustomRegistrantTuple = namedtuple('CustomRegistrant', list(registrant_mappings.values()))
 
         # loop through all custom registration forms
         for form_id in form_ids:
@@ -3860,8 +3860,8 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
             fields_dict = OrderedDict(fields)
             # field header row - all the field labels in the form + registrant_mappings.keys
-            labels = fields_dict.values()
-            labels.extend(registrant_mappings.keys())
+            labels = list(fields_dict.values())
+            labels.extend(list(registrant_mappings.keys()))
 
             rows_list.append([custom_reg_form.name])
             rows_list.append(labels)

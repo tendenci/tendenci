@@ -1752,7 +1752,7 @@ if __name__ == '__main__':
             print('No EXIF information found')
             continue
 
-        x=data.keys()
+        x = list(data.keys())
         x.sort()
         for i in x:
             if i in ('JPEGThumbnail', 'TIFFThumbnail'):

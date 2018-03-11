@@ -93,7 +93,7 @@ def process_export(
 
     with default_storage.open(file_path_temp, 'wb') as csvfile:
         csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_dict.keys())
+        csv_writer.writerow(list(field_dict.keys()))
 
         # process regular group members
         count_members = group.members.filter(
@@ -128,7 +128,7 @@ def process_export(
                         else:
                             row_dict[k] = smart_str(v)
 
-                csv_writer.writerow(row_dict.values())
+                csv_writer.writerow(list(row_dict.values()))
 
     # rename the file name
     file_path = '%sgroup_%d_%s_%s.csv' % (file_dir,

@@ -134,7 +134,7 @@ def get_suggestions(entry):
 
     user_set[0] = 'Create new user'
 
-    return user_set.items()
+    return list(user_set.items())
 
 
 class MembershipTypeForm(TendenciBaseForm):
@@ -581,7 +581,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         del self.fields['groups']
 
         assign_fields(self, app_field_objs)
-        self_fields_keys = self.fields.keys()
+        self_fields_keys = list(self.fields.keys())
 
         self.is_renewal = 'username' in self.request.GET
         if (self.request.user.is_superuser and self.is_renewal) or (self.instance and self.instance.pk):

@@ -56,7 +56,7 @@ def sitemap(request, sitemaps, section=None,
             raise Http404(_("No sitemap available for section: %r" % section))
         maps = [sitemaps[section]]
     else:
-        maps = sitemaps.values()
+        maps = list(sitemaps.values())
     page = request.GET.get("p", 1)
 
     urls = []

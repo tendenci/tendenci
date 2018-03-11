@@ -171,7 +171,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         return redirect('group.detail', group_slug=group_slug)
 
     else:
-        print('form errors', form.errors.items())
+        print('form errors', list(form.errors.items()))
 
     return render(request, template_name, {
         'group': group,
@@ -654,7 +654,7 @@ def group_member_export(request, group_slug):
         ('is_active', 'au.is_active'),
         ('date', 'gm.create_dt'),
     ])
-    group_lookups = ','.join(group_mappings.values())
+    group_lookups = ','.join(list(group_mappings.values()))
 
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you
@@ -674,7 +674,7 @@ def group_member_export(request, group_slug):
 
     # Append the heading to the list of values that will
     # go into the excel sheet
-    values_list.insert(0, group_mappings.keys())
+    values_list.insert(0, list(group_mappings.keys()))
 
     # excel date styles
     default_style = xlwt.Style.default_style
@@ -812,7 +812,7 @@ def group_all_export(request, group_slug):
         ('is_active', 'au.is_active'),
         ('date', 'gm.create_dt'),
     ])
-    group_lookups = ','.join(group_mappings.values())
+    group_lookups = ','.join(list(group_mappings.values()))
 
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you

@@ -74,9 +74,9 @@ def get_actions(membership, user):
     """
     profile = getattr(user, 'profile')
     if profile and profile.is_superuser:
-        return membership.get_actions(is_superuser=True).items()
+        return list(membership.get_actions(is_superuser=True).items())
     else:
-        return membership.get_actions().items()
+        return list(membership.get_actions().items())
 
 
 @register.inclusion_tag("memberships/top_nav_items.html", takes_context=True)

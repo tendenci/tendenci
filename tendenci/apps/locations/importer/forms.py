@@ -26,7 +26,7 @@ class ImportMapForm(forms.Form):
         # choices list
         choices = csv[0]
         machine_choices = [slugify(c).replace('-','') for c in choices]
-        choice_tuples = zip(machine_choices, choices)
+        choice_tuples = list(zip(machine_choices, choices))
 
         choice_tuples.insert(0, ('',''))  # insert blank option; top option
         choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())

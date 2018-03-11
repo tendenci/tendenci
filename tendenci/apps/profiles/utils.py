@@ -630,7 +630,7 @@ class ImportUsers(object):
                 else:
                     self.summary_d['update'] += 1
 
-                self.field_names = self.user_data.keys()
+                self.field_names = list(self.user_data.keys())
                 # now do the update or insert
                 self.do_import_user(user, self.user_data, user_display)
                 idata.action_taken = user_display['action']

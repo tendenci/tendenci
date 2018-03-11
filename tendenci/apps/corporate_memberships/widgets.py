@@ -12,7 +12,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
                        }
         self.widgets = ()
         if self.pos_d:
-            items = self.pos_d.values()
+            items = list(self.pos_d.values())
             items.sort()
             self.widgets = [item[1] for item in items]
 

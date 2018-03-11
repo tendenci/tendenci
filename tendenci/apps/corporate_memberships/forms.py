@@ -955,7 +955,7 @@ class CorpApproveForm(forms.Form):
                        u.email == email:
                         exact_match = u.id
 
-        return user_set.items(), exact_match
+        return list(user_set.items()), exact_match
 
     def __init__(self, *args, **kwargs):
         corp_memb = kwargs.pop('corporate_membership')

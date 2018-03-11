@@ -36,7 +36,7 @@ class MembershipStatusDetailFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         memberships = model_admin.model.objects.exclude(status_detail='archive')
         status_detail_list = set([m.status_detail for m in memberships])
-        return zip(status_detail_list, status_detail_list)
+        return list(zip(status_detail_list, status_detail_list))
 
     def queryset(self, request, queryset):
 

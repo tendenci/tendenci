@@ -677,7 +677,7 @@ def is_blank(item):
     Check if values inside dictionary are blank.
     """
     if isinstance(item, dict):
-        l = item.values()
+        l = list(item.values())
     elif isinstance(item, list):
         l = item
     elif isinstance(item, str):

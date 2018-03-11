@@ -270,7 +270,7 @@ class FormForCustomRegForm(forms.ModelForm):
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 choices = field.choices.split(",")
-                field_args["choices"] = zip(choices, choices)
+                field_args["choices"] = list(zip(choices, choices))
             if "initial" in arg_names:
                 default = field.default.lower()
                 if field_class == "BooleanField":
@@ -1673,7 +1673,7 @@ class RegistrantForm(forms.Form):
                 if "choices" in arg_names:
                     choices = get_setting('module', 'events', 'regform_%s_choices' % field_name)
                     choices = choices.split(",")
-                    field_args["choices"] = zip(choices, choices)
+                    field_args["choices"] = list(zip(choices, choices))
                 if field_widget is not None:
                     module, widget = field_widget.rsplit(".", 1)
                     field_args["widget"] = getattr(import_module(module), widget)

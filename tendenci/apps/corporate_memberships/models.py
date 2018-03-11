@@ -1597,7 +1597,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                         field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
                     else:
                         choices = self.choices.split(",")
-                        field_args["choices"] = zip(choices, choices)
+                        field_args["choices"] = list(zip(choices, choices))
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)

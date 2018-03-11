@@ -187,7 +187,7 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     else:
         success = validate_with_paypal(request, validate_type)[0]
         response_d = dict(map(lambda x: (x[0].lower(), x[1]),
-                              response_d.items()))
+                              list(response_d.items())))
 
     if not success:
         raise Http404
