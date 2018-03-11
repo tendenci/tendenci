@@ -1041,7 +1041,7 @@ class CSVForm(forms.Form):
             Basic Form: Application & File Uploader
             """
             self.fields['corp_app'] = forms.ModelChoiceField(
-                label=_('Corp Application'), queryset=CorpApp.objects.all())
+                label=_('Corp Application'), queryset=CorpMembershipApp.objects.all())
 
             self.fields['update_option'] = forms.CharField(
                     widget=forms.RadioSelect(
@@ -1072,7 +1072,7 @@ class CSVForm(forms.Form):
             choice_tuples.insert(0, ('', ''))
             choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
 
-            app_fields = CorpField.objects.filter(corp_app=corp_app)
+            app_fields = CorpMembershipAppField.objects.filter(corp_app=corp_app)
             required_fields = ['name', 'corporate_membership_type']
             for field in app_fields:
                 if field.field_type not in ['section_break', 'page_break']:
