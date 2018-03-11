@@ -72,8 +72,8 @@ class Command(BaseCommand):
     @property
     def random_session_key(self):
         session_key = md5.new(
-            str(random.randint(0, sys.maxint - 1)) + "#" +
-            str(random.randint(0, sys.maxint - 1)) + "#" +
+            str(random.randint(0, sys.maxsize - 1)) + "#" +
+            str(random.randint(0, sys.maxsize - 1)) + "#" +
             str(time.time()) + "#").hexdigest()
         return session_key
 
