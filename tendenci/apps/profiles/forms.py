@@ -173,7 +173,7 @@ class ProfileForm(TendenciBaseForm):
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     language = forms.ChoiceField(initial="en", choices=get_languages_with_local_name())
-    dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(1920, THIS_YEAR)))
+    dob = forms.DateField(required=False, widget=SelectDateWidget(None, list(range(1920, THIS_YEAR))))
 
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))

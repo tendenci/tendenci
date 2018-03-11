@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
         app_id = options['app_id']
         po = 92
-        for i in xrange(6, 31):
+        for i in range(6, 31):
             if not MembershipAppField.objects.filter(
                                 membership_app_id=app_id,
                                 field_name='ud%s' % i).exists():

@@ -1396,7 +1396,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
         max_num_in_group = 10
         if num_pages > start_num:
             # first group
-            page_range = range(1, max_num_in_group + 1)
+            page_range = list(range(1, max_num_in_group + 1))
             # middle group
             i = curr_page - int(max_num_in_group / 2)
             if i <= max_num_in_group:
@@ -1406,14 +1406,14 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
             j = i + max_num_in_group
             if j > num_pages - max_num_in_group:
                 j = num_pages - max_num_in_group
-            page_range.extend(range(i, j + 1))
+            page_range.extend(list(range(i, j + 1)))
             if j < num_pages - max_num_in_group:
                 page_range.extend(['...'])
             # last group
-            page_range.extend(range(num_pages - max_num_in_group,
-                                    num_pages + 1))
+            page_range.extend(list(range(num_pages - max_num_in_group,
+                                         num_pages + 1)))
         else:
-            page_range = range(1, num_pages + 1)
+            page_range = list(range(1, num_pages + 1))
 
         # slice the data_list
         start_index = (curr_page - 1) * num_items_per_page + 2

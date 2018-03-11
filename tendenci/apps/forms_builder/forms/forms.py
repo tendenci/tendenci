@@ -122,7 +122,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     form.fields[field_key].widget.widgets[1].attrs['class'] += ' formforform-field'
                 widget_name = form.fields[field_key].widget.__class__.__name__.lower()
                 if widget_name == 'selectdatewidget':
-                    form.fields[field_key].widget.years = range(1920, THIS_YEAR + 10)
+                    form.fields[field_key].widget.years = list(range(1920, THIS_YEAR + 10))
                 if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
                     form.fields[field_key].initial = datetime.now()
 

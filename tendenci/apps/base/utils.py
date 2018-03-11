@@ -712,7 +712,7 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     """
     if num_pages > start_num:
         # first group
-        page_range = range(1, max_num_in_group + 1)
+        page_range = list(range(1, max_num_in_group + 1))
         # middle group
         i = curr_page - int(max_num_in_group / 2)
         if i <= max_num_in_group:
@@ -722,14 +722,14 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
         j = i + max_num_in_group
         if j > num_pages - max_num_in_group:
             j = num_pages - max_num_in_group
-        page_range.extend(range(i, j))
+        page_range.extend(list(range(i, j)))
         if j < num_pages - max_num_in_group:
             page_range.extend(['...'])
         # last group
-        page_range.extend(range(num_pages - max_num_in_group,
-                                num_pages + 1))
+        page_range.extend(list(range(num_pages - max_num_in_group,
+                                     num_pages + 1)))
     else:
-        page_range = range(1, num_pages + 1)
+        page_range = list(range(1, num_pages + 1))
     return page_range
 
 

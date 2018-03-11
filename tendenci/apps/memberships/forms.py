@@ -550,7 +550,7 @@ def assign_fields(form, app_field_objs):
             elif obj.field_stype == 'datetimeinput':
                 field.widget.attrs.update({'class': 'datepicker'})
             elif 'selectdatewidget' in obj.field_stype:
-                field.widget.years = range(1920, THIS_YEAR + 10)
+                field.widget.years = list(range(1920, THIS_YEAR + 10))
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'membership_type',
@@ -937,7 +937,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
             if 'fileinput' in field.widget.__class__.__name__.lower():
                 self.file_upload_fields.update({key:field})
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
-                field.widget.years = range(1920, THIS_YEAR + 10)
+                field.widget.years = list(range(1920, THIS_YEAR + 10))
 
         self.app = None
         self.demographics = None

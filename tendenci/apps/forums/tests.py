@@ -2043,7 +2043,7 @@ class NiceUrlsTest(TestCase, SharedTestModule):
         defaults.PYBB_NICE_URL_SLUG_DUPLICATE_LIMIT = 200
 
         try:
-            for _ in iter(range(200)):
+            for _ in range(200):
                 Topic.objects.create(name='dolly', forum=self.forum, user=self.user)
         except ValidationError:
             self.fail('Should be able to create "dolly", "dolly-1", ..., "dolly-199".\n')

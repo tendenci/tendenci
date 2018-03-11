@@ -548,7 +548,7 @@ def csv_to_dict(file_path, **kwargs):
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
 
-    cols = xrange(len(colnames))
+    cols = range(len(colnames))
     lst = []
 
     # make sure colnames are unique
@@ -1523,7 +1523,7 @@ class ImportMembDefault(object):
 
         if self.should_handle_education:
             educations = user.educations.all().order_by('pk')[0:4]
-            for x in xrange(1, 5):
+            for x in range(1, 5):
                 school = memb_data.get('school%s' % x, '')
                 major = memb_data.get('major%s' % x, '')
                 degree = memb_data.get('degree%s' % x, '')

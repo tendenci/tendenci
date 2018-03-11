@@ -124,7 +124,7 @@ class NavItem(OrderingBaseModel):
         else:
             #first item
             next = range(0, self.level+1)
-        return next
+        return list(next)
 
     @property
     def prev_range(self):
@@ -133,7 +133,7 @@ class NavItem(OrderingBaseModel):
         else:
             #last item
             prev = range(0, self.level+1)
-        return prev
+        return list(prev)
 
 # Update page nav items when a page is saved
 models.signals.post_save.connect(update_nav_links, sender=Nav)

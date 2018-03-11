@@ -13,7 +13,7 @@ def combine_chunks(total_parts, total_size, source_folder, dest):
         os.makedirs(os.path.dirname(dest))
 
     with open(dest, 'wb+') as destination:
-        for i in xrange(total_parts):
+        for i in range(total_parts):
             part = os.path.join(source_folder, str(i))
             with open(part, 'rb') as source:
                 destination.write(source.read())

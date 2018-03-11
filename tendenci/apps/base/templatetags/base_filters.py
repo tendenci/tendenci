@@ -396,7 +396,7 @@ def make_range(value):
     try:
         value = int(value)
         if value > 0:
-            return range(int(value))
+            return list(range(int(value)))
         return []
     except:
         return []
@@ -448,7 +448,7 @@ def phonenumber(value):
 
         # attach additional text extension
         ext = ''
-        for i in xrange(1, len(x)):
+        for i in range(1, len(x)):
             ext = ''.join((ext, x[i]))
         if ext:
             return ' '.join((number, ext))

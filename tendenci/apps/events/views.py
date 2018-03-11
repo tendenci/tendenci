@@ -1592,7 +1592,7 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
         'event':event,
         'individual_pricings': individual_pricings,
         'table_pricings': table_pricings,
-        'quantity_options': range(31)
+        'quantity_options': list(range(31))
     }, context_instance=RequestContext(request))
 
 

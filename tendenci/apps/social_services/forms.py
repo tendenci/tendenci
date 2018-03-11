@@ -117,7 +117,7 @@ class ReliefAssessmentForm(BetterModelForm):
     email2 = EmailVerificationField(label=_("Alternate Email"), required=False)
 
     dob = forms.DateField(label=_("Date of Birth"), required=False,
-                          widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
+                          widget=SelectDateWidget(None, list(range(THIS_YEAR-100, THIS_YEAR))))
     company = forms.CharField(label=_("Company"), max_length=100, required=False)
     position_title = forms.CharField(label=_("Position Title"), max_length=50, required=False)
     education = forms.CharField(label=_("Education Level"), max_length=100, required=False)

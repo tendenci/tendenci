@@ -210,7 +210,7 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     if em:
         return make_username_unique(em.split('@')[0][:max_length].lower())
 
-    int_string = ''.join([choice(digits) for x in xrange(10)])
+    int_string = ''.join([choice(digits) for x in range(10)])
     return 'user.%s' % int_string
 
 

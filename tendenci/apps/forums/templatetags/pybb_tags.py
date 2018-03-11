@@ -201,7 +201,7 @@ def pybb_forum_unread(forums, user):
 def pybb_topic_inline_pagination(topic):
     page_count = int(math.ceil(topic.post_count / float(defaults.PYBB_TOPIC_PAGE_SIZE)))
     if page_count <= 5:
-        return range(1, page_count+1)
+        return list(range(1, page_count+1))
     return list(range(1, 5)) + ['...', page_count]
 
 

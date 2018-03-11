@@ -190,7 +190,7 @@ class HighchartRender(object):
             if len(serie_values) > max_length:
                 max_length = len(serie_values)
 
-        xAxis_categories = range(1, max_length + 1)
+        xAxis_categories = list(range(1, max_length + 1))
         self.model.chart.renderTo = 'chart-container'
         self.model.chart.type = 'line'
 

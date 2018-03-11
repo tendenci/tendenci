@@ -107,7 +107,7 @@ def csv_to_dict(file_path, **kwargs):
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
 
-    cols = xrange(len(colnames))
+    cols = range(len(colnames))
     lst = []
 
     # make sure colnames are unique
