@@ -261,7 +261,7 @@ class CorpProfile(TendenciBaseModel):
                     allow_anonymous_view=False)
             self.entity = entity
         else:
-            if self.name != self.entity.entity_name:
+            if self.name != self.entity.entity_name and self.entity.id != 1:
                 self.entity.entity_name = self.name
                 self.entity.save()
                 
