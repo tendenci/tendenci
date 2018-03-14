@@ -26,6 +26,7 @@ from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.functions import Lower
 
 from tendenci.libs.utils import python_executable
 
@@ -811,7 +812,7 @@ def corpmembership_search(request, my_corps_only=False,
 
         corp_members = corp_members.filter(**search_filter)
     #corp_members = corp_members.order_by('-expiration_dt')
-    corp_members = corp_members.order_by('corp_profile__name')
+    corp_members = corp_members.order_by(Lower('corp_profile__name'))
 
     EventLog.objects.log()
 
