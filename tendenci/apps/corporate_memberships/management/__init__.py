@@ -1,5 +1,5 @@
 from __future__ import print_function
-from django.db.models.signals import post_syncdb
+from django.db.models.signals import post_migrate
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 
@@ -46,6 +46,6 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
                     _("Corporate Membership Notice Email"),
                     _("Custom Notice for Corporate Memberships"))
 
-    post_syncdb.connect(create_notice_types, sender=notification)
+    post_migrate.connect(create_notice_types, sender=notification)
 else:
     print("Corporate Memberships: Skipping creation of NoticeTypes as notification app not found")

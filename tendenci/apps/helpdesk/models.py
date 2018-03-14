@@ -1074,7 +1074,7 @@ def create_usersettings(sender, instance, created, **kwargs):
     """
     Helper function to create UserSettings instances as
     required, eg when we first create the UserSettings database
-    table via 'syncdb' or when we save a new user.
+    table via 'migrate' or when we save a new user.
 
     If we end up with users with no UserSettings, then we get horrible
     'DoesNotExist: UserSettings matching query does not exist.' errors.

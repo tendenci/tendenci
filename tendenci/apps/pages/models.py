@@ -25,7 +25,6 @@ class BasePage(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'))
-    header_image = models.ForeignKey('HeaderImage', null=True)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField(default=False)
     design_notes = models.TextField(_('Design Notes'), blank=True)

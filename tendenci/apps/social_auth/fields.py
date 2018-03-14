@@ -13,9 +13,7 @@ class JSONField(models.TextField):
     on database.
     """
 
-    __metaclass__ = models.SubfieldBase
-
-    def to_python(self, value):
+    def from_db_value(self, value):
         """
         Convert the input JSON value into python structures, raises
         django.core.exceptions.ValidationError if the data can't be converted.
