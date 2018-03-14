@@ -251,14 +251,14 @@ class ListCorpMembershipNode(Node):
                 order = self.kwargs['order']
 
         items = CorpMembership.objects.all()
-        if user.is_authenticated():
-            if not user.profile.is_superuser:
-                if user.profile.is_member and allow_member_search:
-                    items = items.distinct()
-                else:
-                    items = items.none()
-        else:
-            if not allow_anonymous_search:
+        if not allow_anonymous_search:
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    if user.profile.is_member and allow_member_search:
+                        items = items.distinct()
+                    else:
+                        items = items.none()
+            else:
                 items = items.none()
                 
         items = self.custom_model_filter(items, user)
