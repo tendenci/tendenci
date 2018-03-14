@@ -14,7 +14,20 @@
 {% endblock %}
 
 {% block content %}
-<h1>{% trans "Corporate Membership Summary" %}</h1>
+<h1>{% trans "Corporate Memberships Overview" %}</h1>
+<div class="row corp-mems-wrap">
+	<div class="col-md-6">
+	<div id="chart_bystatus_div" style="width: 450px; height: 350px;"></div>
+	</div>
+	
+	<div class="col-md-6">
+     <div id="chart_bytype_div" style="width: 450px; height: 350px;"></div>
+	</div>
+</div>
+
+<p>&nbsp;</p>
+<div id="chart_summary_div"></div>
+
 <div class="corp-mems-wrap corp-stat-table">
     <table class="table">
         <thead>
@@ -46,23 +59,6 @@
         </tbody>
     </table>
 </div>
-
-<div id="chart_summary_div"></div>
-
-<p>&nbsp;</p>
-
-
-
-<div class="row corp-mems-wrap">
-	<div class="col-md-6">
-	<div id="chart_bystatus_div" style="width: 450px; height: 350px;"></div>
-	</div>
-	
-	<div class="col-md-6">
-     <div id="chart_bytype_div" style="width: 450px; height: 350px;"></div>
-	</div>
-</div>
-
 
 {% endblock %}
 

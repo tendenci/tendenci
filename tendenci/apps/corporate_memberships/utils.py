@@ -163,7 +163,7 @@ def get_indiv_memberships_choices(corp_membership):
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
                                     reverse('profile',
                                             args=[membership.user.username]),
-                                        membership.user.get_full_name())
+                                        membership.user.get_full_name() or membership.user.username)
         indiv_memb_display = mark_safe(indiv_memb_display)
         im_list.append((membership.id, indiv_memb_display))
 
@@ -204,6 +204,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
     renewal_total = kwargs.get('renewal_total', 0)
     if not corp_memb.invoice or renewal:
         inv = Invoice()
+        inv.entity = corp_profile.entity
         inv.object_type = ContentType.objects.get(
                                       app_label=corp_memb._meta.app_label,
                                       model=corp_memb._meta.model_name)

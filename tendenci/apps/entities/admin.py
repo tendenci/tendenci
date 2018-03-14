@@ -31,8 +31,8 @@ class EntityAdminForm(forms.ModelForm):
 
 class EntityAdmin(admin.ModelAdmin):
     form = EntityAdminForm
-    list_display = ['id', 'entity_name', 'entity_type', 'entity_parent', 'status_detail']
-    list_editable = ['entity_name', 'entity_type']
+    list_display = ['id', 'entity_name', 'entity_parent', 'status_detail']
+    list_editable = ['entity_name',]
     list_filter = ['entity_parent', 'status_detail']
     search_fields = ['entity_name']
     fieldsets = (

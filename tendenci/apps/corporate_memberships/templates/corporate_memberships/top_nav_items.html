@@ -104,7 +104,7 @@
 
                         <li class="content-item">
                             <span class="app-name">
-                                <a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a>
+                                <a href="{% url 'corp_membership.overview' %}">{% trans "Overview" %}</a>
                             </span>
                         </li>
 
@@ -151,6 +151,14 @@
                                         <a href="{% url 'corpmembership.edit' app_object.pk %}">{% trans "Edit Corp. Member" %}</a>
                                     </span>
                                 </li>
+                                
+                                {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:corporate_memberships_corpprofile_change' app_object.corp_profile.pk %}">{% trans "Edit Corp. Profile" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
 
                                 <li class="content-item">
                                     <span class="app-name">

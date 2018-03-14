@@ -1,6 +1,6 @@
 import os
 import math
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 import csv
 import operator
 from hashlib import md5
@@ -10,7 +10,7 @@ import mimetypes
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -63,6 +63,8 @@ from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipRepForm,
                                          CreatorForm,
                                          CorpApproveForm,
+                                         ReportByTypeForm,
+                                         ReportByStatusForm
                                          )
 from tendenci.apps.corporate_memberships.utils import (
                                          get_corporate_membership_type_choices,
@@ -85,6 +87,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
+
 
 @is_enabled('corporate_memberships')
 @staff_member_required
@@ -516,6 +519,43 @@ def corpmembership_edit(request, id,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
     return render_to_response(template, context, RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@staff_member_required
+def corpprofile_view(request, id, template="corporate_memberships/profiles/view.html"):
+    """
+        view a corp profile - superuser only
+    """
+    if not request.user.is_superuser:
+        raise Http403
+    
+    corp_profile = get_object_or_404(CorpProfile, id=id)
+    corp_membership = corp_profile.corp_membership
+    reps = corp_profile.reps.all()
+    memberships = MembershipDefault.objects.filter(
+                        corp_profile_id=corp_profile.id
+                        ).exclude(
+                        status_detail__in=('archive', 'pending'))
+    members_count = memberships.count()
+    members_first10 = memberships.order_by('user__first_name', 'user__last_name')[:10]
+    all_records = corp_profile.corp_memberships.all().order_by('-create_dt')
+    invoices = [corp_mem.invoice for corp_mem in all_records if corp_mem.invoice]
+    address_list = [a for a in [corp_profile.address, corp_profile.address2, corp_profile.city,
+                    corp_profile.state, corp_profile.zip] if a.strip()]
+    address_str = ', '.join(address_list)
+    
+
+    return render(request, template,
+                  {'corp_profile': corp_profile,
+                   'address_str': address_str,
+                   'corp_membership': corp_membership,
+                   'members_count': members_count,
+                   'members_first10': members_first10,
+                   'reps': reps,
+                   'all_records': all_records,
+                   'invoices': invoices
+                   })
 
 
 @is_enabled('corporate_memberships')
@@ -1734,16 +1774,19 @@ def delete_corp_rep(request, id,
 def index(request,
           template_name="corporate_memberships/applications/index.html"):
     corp_app = CorpMembershipApp.objects.current_app()
+    corp_membership_types = corp_app.corp_memb_type.all().order_by('position')
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'corp_app': corp_app},
+    return render_to_response(template_name,
+                              {'corp_app': corp_app,
+                               'corp_membership_types': corp_membership_types},
         context_instance=RequestContext(request))
 
 
 @is_enabled('corporate_memberships')
 @staff_member_required
-def summary_report(request,
-                template_name='corporate_memberships/reports/summary.html'):
+def overview(request,
+                template_name='corporate_memberships/reports/overview.html'):
     """
     Shows a report of corporate memberships per corporate membership type.
     """
@@ -1797,3 +1840,183 @@ def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
         'summary':summary,
         'total':total,
         }, context_instance=RequestContext(request))
+
+
+@is_enabled('corporate_memberships')
+@staff_member_required
+def report_active_corp_members_by_type(request,
+    template='corporate_memberships/reports/report_by_type.html'):
+    corp_mems = CorpMembership.objects.filter(
+                            status=True,
+                            status_detail='active')
+    form = ReportByTypeForm(request.GET)
+    if form.is_valid():
+        days = int(form.cleaned_data.get('days') or 0)
+        corp_membership_type = int(form.cleaned_data.get('corp_membership_type') or 0)
+    else:
+        days = 0
+        corp_membership_type = 0
+
+    if days:
+        compare_dt = datetime.now() - timedelta(days=days)
+        corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
+    if corp_membership_type:
+        corp_mems = corp_mems.filter(corporate_membership_type=corp_membership_type)
+
+    allowed_sort_fields = {'corp_profile': 'corp_profile__name',
+                            'corporate_membership_type': 'corporate_membership_type__name',
+                            'parent_entity': 'corp_profile__parent_entity__entity_name',
+                            'join_dt': 'join_dt',}
+    
+    sort = request.GET.get('sort', 'corp_profile__name')
+    decending = False
+    if sort[0] == '-':
+        sort = sort[1:]
+        decending = True
+    
+    if sort not in allowed_sort_fields:
+        sort = 'corp_profile'
+     
+    if decending:
+        order_by_field = '-' + allowed_sort_fields[sort]
+    else:
+        order_by_field =  allowed_sort_fields[sort]
+    corp_mems = corp_mems.order_by(order_by_field)
+    
+    EventLog.objects.log()
+    
+    # process csv download
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'company name',
+            'parent entity',
+            'type',
+            'join',
+            'member rep name',
+            'member rep email',
+            'invoice',]
+
+        table_data = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            invoice_pk = u''
+            if corp_mem.invoice:
+                invoice_pk = u'%i' % corp_mem.invoice.pk
+            member_rep = corp_profile.get_member_rep()
+            if member_rep:
+                member_rep_name = member_rep.user.get_full_name()
+                member_rep_email = member_rep.user.email
+            else:
+                member_rep_name = ''
+                member_rep_email = ''
+            table_data.append([
+                corp_profile.name,
+                corp_profile.parent_entity.entity_name,
+                corp_mem.corporate_membership_type.name,
+                corp_mem.join_dt,
+                member_rep_name,
+                member_rep_email,
+                invoice_pk,
+            ])
+
+        return render_csv(
+            'active-corporate-memberships.csv',
+            table_header,
+            table_data,
+        )
+
+    return render(request, template,
+                  {'corp_mems': corp_mems,
+                   'active': True,
+                   'days': days,
+                   'form': form,
+                   })
+
+
+@is_enabled('corporate_memberships')
+@staff_member_required
+def report_corp_members_by_status(request,
+    template='corporate_memberships/reports/report_by_status.html'):
+    corp_mems = CorpMembership.objects.filter(
+                            status=True,).exclude(
+                            status_detail='archive')
+    form = ReportByStatusForm(request.GET)
+    if form.is_valid():
+        days = int(form.cleaned_data.get('days') or 0)
+        status_detail = form.cleaned_data.get('status_detail')
+    else:
+        days = 0
+        status_detail = ''
+
+    if days:
+        compare_dt = datetime.now() - timedelta(days=days)
+        corp_mems = corp_mems.filter(join_dt__gte=compare_dt)
+    if status_detail:
+        corp_mems = corp_mems.filter(status_detail=status_detail)
+
+    allowed_sort_fields = {'corp_profile': 'corp_profile__name',
+                            'status_detail': 'status_detail',
+                            'join_dt': 'join_dt',
+                            'expiration_dt': 'expiration_dt',}
+    
+    sort = request.GET.get('sort', 'corp_profile__name')
+    decending = False
+    if sort[0] == '-':
+        sort = sort[1:]
+        decending = True
+    
+    if sort not in allowed_sort_fields:
+        sort = 'corp_profile'
+     
+    if decending:
+        order_by_field = '-' + allowed_sort_fields[sort]
+    else:
+        order_by_field =  allowed_sort_fields[sort]
+    corp_mems = corp_mems.order_by(order_by_field)
+    
+    EventLog.objects.log()
+    
+    # process csv download
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'company name',
+            'status',
+            'join',
+            'expiration',
+            'dues rep name',
+            'dues rep email',]
+
+        table_data = []
+        for corp_mem in corp_mems:
+            corp_profile = corp_mem.corp_profile
+            dues_rep = corp_profile.get_dues_rep()
+            if dues_rep:
+                dues_rep_name = dues_rep.user.get_full_name()
+                dues_rep_email = dues_rep.user.email
+            else:
+                dues_rep_name = ''
+                dues_rep_email = ''
+            table_data.append([
+                corp_profile.name,
+                corp_mem.status_detail,
+                corp_mem.join_dt,
+                corp_mem.expiration_dt,
+                dues_rep_name,
+                dues_rep_email,
+            ])
+
+        return render_csv(
+            'corporate-memberships-by-status.csv',
+            table_header,
+            table_data,
+        )
+
+    return render(request, template,
+                  {'corp_mems': corp_mems,
+                   'days': days,
+                   'form': form,
+                   })

@@ -1228,6 +1228,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 pk=membership.corporate_membership_id
             )
             membership.corp_profile_id = corp_membership.corp_profile.id
+            membership.entity = corp_membership.corp_profile.entity
 
         # set owner & creator
         if request_user:
@@ -1239,7 +1240,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if 'membership-referer-url' in request.session:
             membership.referer_url = request.session['membership-referer-url']
 
-        membership.entity = Entity.objects.first()
+        if not membership.entity:
+            membership.entity = Entity.objects.first()
         membership.user = user
 
         # adding membership record
