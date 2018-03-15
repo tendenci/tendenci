@@ -25,14 +25,14 @@ class BasePage(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'))
-    header_image = models.ForeignKey('HeaderImage', null=True)
+    header_image = models.ForeignKey('HeaderImage', null=True, on_delete=models.SET_NULL)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField(default=False)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=False)
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
     categories = GenericRelation(CategoryItem,
         object_id_field="object_id", content_type_field="content_type")
 
@@ -92,7 +92,7 @@ class Page(BasePage):
     CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
                            (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
-    group = models.ForeignKey(Group, null=True, default=get_default_group)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
     google_profile = models.URLField(_('Google+ URL'), blank=True)

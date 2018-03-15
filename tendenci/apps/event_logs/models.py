@@ -14,7 +14,7 @@ class EventLog(models.Model):
     content_type = models.ForeignKey(ContentType, null=True, on_delete=models.SET_NULL)
     object_id = models.IntegerField(null=True)
     source = models.CharField(max_length=50, null=True)
-    entity = models.ForeignKey(Entity, null=True)
+    entity = models.ForeignKey(Entity, null=True, on_delete=models.SET_NULL)
     event_id = models.IntegerField()
     event_name = models.CharField(max_length=50)
     event_type = models.CharField(max_length=50)

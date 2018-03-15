@@ -12,7 +12,8 @@ class Entity(models.Model):
     entity_name = models.CharField(_('Name'), max_length=200, blank=True)
     entity_type = models.CharField(_('Type'), max_length=200, blank=True)
     #entity_parent_id = models.IntegerField(_('Parent ID'), default=0)
-    entity_parent = models.ForeignKey('self', related_name='entity_children', null=True, blank=True)
+    entity_parent = models.ForeignKey('self', related_name='entity_children', null=True, blank=True,
+                                      on_delete=models.SET_NULL)
     # contact info
     contact_name = models.CharField(_('Contact Name'), max_length=200, blank=True)
     phone = models.CharField(max_length=50, blank=True)

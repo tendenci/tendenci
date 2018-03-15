@@ -108,7 +108,9 @@ class ImageModel(models.Model):
     date_taken = models.DateTimeField(_('date taken'), null=True, blank=True, editable=False)
     view_count = models.PositiveIntegerField(default=0, editable=False)
     crop_from = models.CharField(_('crop from'), blank=True, max_length=10, default='center', choices=CROP_ANCHOR_CHOICES)
-    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name="%(class)s_related", verbose_name=_('effect'))
+    effect = models.ForeignKey('PhotoEffect', null=True, blank=True,
+                               on_delete=models.SET_NULL,
+                               related_name="%(class)s_related", verbose_name=_('effect'))
 
     class Meta:
         abstract = True
@@ -708,7 +710,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text=_("Comma delimited (eg. mickey, donald, goofy)"))
-    license = models.ForeignKey('License', null=True, blank=True)
+    license = models.ForeignKey('License', null=True, blank=True, on_delete=models.SET_NULL)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
     photographer = models.CharField(_('Photographer'),
@@ -716,7 +718,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                                     max_length=100)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, blank=True, null=True)
+    meta = models.OneToOneField(MetaTags, blank=True, null=True, on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

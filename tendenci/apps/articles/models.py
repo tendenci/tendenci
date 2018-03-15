@@ -59,7 +59,7 @@ class Article(TendenciBaseModel):
     not_official_content = models.BooleanField(_('Official Content'), blank=True, default=True)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",

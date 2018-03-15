@@ -30,7 +30,7 @@ class Speaker(TendenciBaseModel):
     slug = models.SlugField(max_length=75)
     company = models.CharField(blank=True, max_length=150)
     position = models.CharField(blank=True, max_length=150)
-    track = models.ForeignKey(Track, null=True)
+    track = models.ForeignKey(Track, null=True, on_delete=models.SET_NULL)
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     ordering = models.IntegerField(_('order'))

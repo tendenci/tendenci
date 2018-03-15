@@ -44,7 +44,9 @@ class News(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    thumbnail = models.ForeignKey('NewsImage', default=None, null=True, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
+    thumbnail = models.ForeignKey('NewsImage', default=None, null=True,
+                                  on_delete=models.SET_NULL,
+                                  help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released news
     release_dt_local = models.DateTimeField(null=True, blank=True)
@@ -61,7 +63,7 @@ class News(TendenciBaseModel):
     use_auto_timestamp = models.BooleanField(_('Auto Timestamp'), default=False)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     categories = GenericRelation(CategoryItem,
                                   object_id_field="object_id",

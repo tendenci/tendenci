@@ -22,6 +22,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     website = models.URLField(max_length=255, blank=True, null=True)
     testimonial = models.TextField(help_text=_('Supports &lt;strong&gt;, &lt;em&gt;, and &lt;a&gt; HTML tags.'))
     image = models.ForeignKey('TestimonialPhoto',
+        on_delete=models.SET_NULL,
         help_text=_('Photo for this testimonial.'), null=True, default=None)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 

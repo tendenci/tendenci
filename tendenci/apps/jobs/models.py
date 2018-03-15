@@ -69,7 +69,7 @@ class BaseJob(TendenciBaseModel):
 
     # date related fields
     requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
-    pricing = models.ForeignKey('JobPricing', null=True)  # selected pricing based on requested_duration
+    pricing = models.ForeignKey('JobPricing', null=True, on_delete=models.SET_NULL)  # selected pricing based on requested_duration
     activation_dt = models.DateTimeField(null=True, blank=True)  # date job listing was activated
     post_dt = models.DateTimeField(null=True, blank=True)  # date job was posted (same as create date?)
     expiration_dt = models.DateTimeField(null=True, blank=True)  # date job expires based on activation date and duration
@@ -97,7 +97,7 @@ class BaseJob(TendenciBaseModel):
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     payment_method = models.CharField(max_length=50, blank=True, default='')
     member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     member_count = models.IntegerField(blank=True, null=True)

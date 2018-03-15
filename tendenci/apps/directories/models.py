@@ -94,7 +94,7 @@ class Directory(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     cat = models.ForeignKey(Category, verbose_name=_("Category"),
                                  related_name="directory_cat", null=True, on_delete=models.SET_NULL)

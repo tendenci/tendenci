@@ -182,7 +182,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    logo = models.ForeignKey(File, null=True)
+    logo = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,
                                blank=True, default='')
@@ -204,9 +204,9 @@ class CorpProfile(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True,
                                    default='')
 
-    parent_entity = models.ForeignKey(Entity, blank=True, null=True)
-    industry = models.ForeignKey(Industry, blank=True, null=True)
-    region = models.ForeignKey(Region, blank=True, null=True)
+    parent_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     number_employees = models.IntegerField(default=0)
     chapter = models.CharField(_('Chapter'), max_length=150,
                                blank=True, default='')
@@ -367,11 +367,13 @@ class CorpMembership(TendenciBaseModel):
     corp_profile = models.ForeignKey("CorpProfile",
                                      related_name='corp_memberships')
     corporate_membership_type = models.ForeignKey("CorporateMembershipType",
-                                    verbose_name=_("MembershipType"))
+                                    verbose_name=_("MembershipType"),
+                                    null=True,
+                                    on_delete=models.SET_NULL)
     renewal = models.BooleanField(default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     join_dt = models.DateTimeField(_("Join Date Time"))
     expiration_dt = models.DateTimeField(_("Expiration Date Time"),
                                          blank=True, null=True)
@@ -381,14 +383,16 @@ class CorpMembership(TendenciBaseModel):
                                               null=True)
     approved_denied_user = models.ForeignKey(User,
                                      verbose_name=_("Approved or Denied User"),
-                                     null=True)
+                                     null=True,
+                                     on_delete=models.SET_NULL)
     payment_method = models.ForeignKey(PaymentMethod,
                                        verbose_name=_("Payment Method"),
-                                       null=True, default=None)
+                                       null=True, default=None,
+                                       on_delete=models.SET_NULL)
 
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
 
-    anonymous_creator = models.ForeignKey('Creator', null=True)
+    anonymous_creator = models.ForeignKey('Creator', null=True, on_delete=models.SET_NULL)
     admin_notes = models.TextField(_('Admin notes'),
                                blank=True, null=True)
     total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
@@ -1865,6 +1869,7 @@ class Notice(models.Model):
         "CorporateMembershipType",
         blank=True,
         null=True,
+        on_delete=models.SET_NULL,
         help_text=_("Note that if you \
             don't select a corporate membership type, \
             the notice will go out to all members."
