@@ -5,6 +5,7 @@ from PIL import Image as PILImage
 from PIL.ExifTags import TAGS as PILTAGS
 from PIL import ImageFile
 from PIL import ImageFilter
+from PIL import ImageEnhance
 
 from datetime import datetime
 from inspect import isclass

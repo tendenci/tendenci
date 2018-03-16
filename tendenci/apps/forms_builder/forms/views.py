@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
@@ -31,6 +31,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
@@ -87,6 +88,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         raise Http403
 
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
+    RecurringPaymentFormSet = inlineformset_factory(Form, RecurringPayment, form=RecurringPaymentForm, extra=2)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)

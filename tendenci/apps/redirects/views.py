@@ -60,6 +60,7 @@ def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
             messages.add_message(request, messages.SUCCESS, _('Successfully added %(r)s' % {'r':redirect}))
 
             # reload the urls
+            from imp import reload
             reload(dynamic_urls)
 
             return HttpResponseRedirect(reverse('redirects'))
@@ -87,6 +88,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
             messages.add_message(request, messages.SUCCESS, _('Successfully edited %(r)s' % {'r':redirect}))
 
             # reload the urls
+            from imp import reload
             reload(dynamic_urls)
 
             return HttpResponseRedirect(reverse('redirects'))

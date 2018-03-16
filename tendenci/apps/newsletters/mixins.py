@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
 
 from .models import Newsletter
 
