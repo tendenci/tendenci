@@ -6,8 +6,8 @@ from django.db.models.signals import post_migrate
 if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
     from tendenci.apps.notifications import models as notification
 
-    def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("payment_added", _("Payment Generated"), _("A payment has been generated."))
+    def create_notice_types(app, verbosity, **kwargs):
+        notification.create_notice_type("payment_added", _("Payment Generated"), _("A payment has been generated."), verbosity=verbosity)
 
     post_migrate.connect(create_notice_types, sender=notification)
 else:

@@ -6,9 +6,9 @@ from django.db.models.signals import post_migrate
 if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
     from tendenci.apps.notifications import models as notification
 
-    def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("group_added", _("Group Added"), _("A group has been added."))
-        notification.create_notice_type("group_deleted", _("Group Deleted"), _("A group has been deleted"))
+    def create_notice_types(app, verbosity, **kwargs):
+        notification.create_notice_type("group_added", _("Group Added"), _("A group has been added."), verbosity=verbosity)
+        notification.create_notice_type("group_deleted", _("Group Deleted"), _("A group has been deleted"), verbosity=verbosity)
 
     post_migrate.connect(create_notice_types, sender=notification)
 else:

@@ -9,13 +9,15 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         from django.db.models.signals import post_migrate
+        from django.db import DEFAULT_DB_ALIAS
         from tendenci.apps.notifications import models as notifications
 
         tuples = post_migrate.send(
             sender=notifications,
-            app=None,
-            created_models=False,
+            app_config=notifications,
             verbosity=0,
+            interactive=True,
+            using=DEFAULT_DB_ALIAS,
         )
 
         for t in tuples:

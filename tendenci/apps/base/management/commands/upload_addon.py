@@ -35,7 +35,6 @@ class Command(BaseCommand):
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
         print('Updating tendenci site')
-        os.system('"%s" manage.py syncdb --noinput' % (python_executable()))
         os.system('"%s" manage.py migrate %s --noinput' % (python_executable(), addon_name))
         os.system('"%s" manage.py update_settings %s' % (python_executable(), addon_name))
         os.system('"%s" manage.py collectstatic --noinput' % (python_executable()))

@@ -32,65 +32,76 @@ def switch_memberships_app_id(app_from):
         MembershipDefault.objects.filter(app_id=app_from.id).update(app=app)
 
 
-def create_notice_types(app, created_models, verbosity, **kwargs):
+def create_notice_types(app, verbosity, **kwargs):
     notification.create_notice_type(
         "user_welcome",
         _("User Welcome"),
-        _("User Account Created, Welcome Message"))
+        _("User Account Created, Welcome Message"),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_joined_to_member',
         _('Membership Entry Submission'),
-        _('Membership Entry Submission'))
+        _('Membership Entry Submission'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_joined_to_admin',
         _('Membership Entry Submission'),
-        _('Membership Entry Submission'))
+        _('Membership Entry Submission'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_renewed_to_member',
         _('Membership Entry Renewal'),
-        _('Membership Entry Renewal'))
+        _('Membership Entry Renewal'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_renewed_to_admin',
         _('Membership Entry Renewal'),
-        _('Membership Entry Renewal'))
+        _('Membership Entry Renewal'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_approved_to_admin',
         _('Membership Application Approved'),
-        _('Membership Application Approved'))
+        _('Membership Application Approved'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_disapproved_to_admin',
         _('Membership Application Disapproved'),
-        _('Membership Application Disapproved'))
+        _('Membership Application Disapproved'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_approved_to_member',
         _('Membership Application Approved'),
-        _('Membership Application Approved'))
+        _('Membership Application Approved'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_disapproved_to_member',
         _('Membership Application Disapproved'),
-        _('Membership Application Disapproved'))
+        _('Membership Application Disapproved'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_notice_email',
         _('Membership Notice Email'),
-        _('Membership Notice Custom Email'))
+        _('Membership Notice Custom Email'),
+        verbosity=verbosity)
 
     notification.create_notice_type(
         'membership_corp_indiv_verify_email',
         _('Membership Corp Indiv Verify Email'),
-        _('Membership Corp Indiv Email To Be Verified'))
+        _('Membership Corp Indiv Email To Be Verified'),
+        verbosity=verbosity)
 
 
 # assign models permissions to the admin auth group
-def assign_permissions(app, created_models, verbosity, **kwargs):
+def assign_permissions(app, **kwargs):
     update_admin_group_perms()
 
 
