@@ -423,7 +423,7 @@ class Output(forms.Widget):
     These are fake-fields; they do not take input.
     """
 
-    def _format_value(self, value):
+    def format_value(self, value):
         if self.is_localized:
             return formats.localize_input(value)
         return value
@@ -431,7 +431,7 @@ class Output(forms.Widget):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
-        return force_text(self._format_value(value))
+        return force_text(self.format_value(value))
 
 class Header(Output):
     """
