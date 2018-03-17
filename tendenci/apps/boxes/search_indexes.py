@@ -1,10 +1,8 @@
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.boxes.models import Box
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
 
 
 class BoxIndex(TendenciBaseSearchIndex, indexes.Indexable):
@@ -19,10 +17,7 @@ class BoxIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Box
 
     def prepare_content(self, obj):
-        content = obj.content
-        content = strip_tags(content)
-        content = strip_entities(content)
-        return content
+        return strip_html(obj.content)
 
     def prepare_order(self, obj):
         return obj.update_dt

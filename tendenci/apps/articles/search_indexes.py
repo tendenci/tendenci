@@ -1,12 +1,10 @@
 from datetime import datetime
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
+from tendenci.apps.base.utils import strip_html
 
 
 class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
@@ -32,10 +30,7 @@ class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return 'update_dt'
 
     def prepare_body(self, obj):
-        body = obj.body
-        body = strip_tags(body)
-        body = strip_entities(body)
-        return body
+        return strip_html(obj.body)
 
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')

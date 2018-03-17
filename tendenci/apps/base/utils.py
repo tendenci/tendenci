@@ -41,7 +41,7 @@ from django.utils.encoding import smart_str
 from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
-from django.utils.html import format_html
+from django.utils.html import format_html, strip_tags
 from django.utils.translation import ugettext as _
 
 from django.utils.functional import Promise
@@ -348,7 +348,6 @@ def generate_meta_keywords(value):
         from re import compile
         from operator import itemgetter
 
-        from django.utils.html import strip_tags
         from django.utils.text import unescape_entities
         from django.utils.translation import ugettext_lazy as _
 
@@ -676,6 +675,19 @@ def fieldify(s):
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
+
+
+entities_re = re.compile(r'&(?:\w+|#\d+);')
+def strip_entities(value):
+    """Returns the given HTML with all entities (&something;) stripped."""
+    # This was copied from Django 1.9 since it is removed in Django 1.10
+    return entities_re.sub('', force_text(value))
+strip_entities = allow_lazy(strip_entities, str)
+
+
+def strip_html(value):
+    """Returns the given HTML with all tags and entities stripped."""
+    return strip_entities(strip_tags(value))
 
 
 def convert_absolute_urls(content, base_url):

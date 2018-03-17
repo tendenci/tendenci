@@ -1,7 +1,6 @@
-from django.utils.html import strip_tags
+from tendenci.apps.base.utils import strip_html, truncate_words
 from tendenci.apps.meta.utils import generate_meta_keywords
-from tendenci.apps.base.utils import truncate_words
-from django.utils.html import strip_entities
+
 
 class EventMeta():
     """
@@ -21,8 +20,7 @@ class EventMeta():
         # TODO: Optimize this SEM algorithm
         description = self.object.description
 
-        description = strip_tags(description)
-        description = strip_entities(description)
+        description = strip_html(description)
         description = truncate_words(description, 40, '')
         return description
 

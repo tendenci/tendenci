@@ -1,11 +1,10 @@
 from datetime import datetime
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.help_files.models import HelpFile
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
+
 
 class HelpFileIndex(TendenciBaseSearchIndex, indexes.Indexable):
     question = indexes.CharField(model_attr='question')
@@ -22,10 +21,7 @@ class HelpFileIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return HelpFile
 
     def prepare_answer(self, obj):
-        answer = obj.answer
-        answer = strip_tags(answer)
-        answer = strip_entities(answer)
-        return answer
+        return strip_html(obj.answer)
 
     def prepare_topic(self, obj):
         return [topic.pk for topic in obj.topics.all()]

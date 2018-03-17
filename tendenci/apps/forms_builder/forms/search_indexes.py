@@ -1,9 +1,9 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 
 from tendenci.apps.forms_builder.forms.models import Form
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
+
 
 class FormsIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
@@ -15,13 +15,7 @@ class FormsIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Form
 
     def prepare_intro(self, obj):
-        intro = obj.intro
-        intro = strip_tags(intro)
-        intro = strip_entities(intro)
-        return intro
+        return strip_html(obj.intro)
 
     def prepare_response(self, obj):
-        response = obj.response
-        response = strip_tags(response)
-        response = strip_entities(response)
-        return response
+        return strip_html(obj.response)

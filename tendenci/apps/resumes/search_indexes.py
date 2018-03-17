@@ -1,10 +1,8 @@
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.resumes.models import Resume
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
 
 
 class ResumeIndex(TendenciBaseSearchIndex, indexes.Indexable):
@@ -19,7 +17,4 @@ class ResumeIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Resume
 
     def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
+        return strip_html(obj.description)

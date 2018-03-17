@@ -2,9 +2,9 @@
 {% load base_filters %}
 
 {{ object.client }}
-{{ object.overview|striptags|stripentities }}
-{{ object.execution|striptags|stripentities }}
-{{ object.results|striptags|stripentities }}
+{{ object.overview|striphtml }}
+{{ object.execution|striphtml }}
+{{ object.results|striphtml }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}

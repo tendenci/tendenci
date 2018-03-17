@@ -16,6 +16,8 @@ from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.storage import default_storage
 
+from tendenci.apps.base.utils import strip_entities, strip_html
+
 register = Library()
 
 
@@ -149,10 +151,16 @@ def strip_template_tags(string):
 @register.filter
 @stringfilter
 def stripentities(value):
-    """Strips all [X]HTML tags."""
-    from django.utils.html import strip_entities
+    """Strips all [X]HTML entities."""
     return strip_entities(value)
 stripentities.is_safe = True
+
+@register.filter
+@stringfilter
+def striphtml(value):
+    """Strips all [X]HTML tags and entities."""
+    return strip_html(value)
+striphtml.is_safe = True
 
 @register.filter
 def format_currency(value):

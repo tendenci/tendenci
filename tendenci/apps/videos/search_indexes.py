@@ -1,9 +1,9 @@
 from haystack import indexes
-from django.utils.html import strip_tags, strip_entities
-
-from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 from tendenci.apps.videos.models import Video
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
+
 
 class VideoIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
@@ -19,10 +19,7 @@ class VideoIndex(TendenciBaseSearchIndex):
         return Video
 
     def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
+        return strip_html(obj.description)
 
     def prepare_order(self, obj):
         return obj.create_dt
