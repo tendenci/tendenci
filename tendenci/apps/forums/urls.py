@@ -5,6 +5,8 @@ from .feeds import LastPosts, LastTopics
 from . import views
 from .defaults import PYBB_NICE_URL
 
+app_name = 'pybb'
+
 urlpatterns = [
                        # Syndication feeds
                        url(r'^feeds/posts/$', LastPosts(), name='feed_posts'),

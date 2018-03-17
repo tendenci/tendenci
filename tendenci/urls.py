@@ -21,7 +21,7 @@ report.autodiscover()
 # Admin Patterns
 urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 ]
 
 #report patterns
@@ -79,7 +79,7 @@ urlpatterns += [
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
     url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
-    url(r'^forums/', include('tendenci.apps.forums.urls', namespace="pybb")),
+    url(r'^forums/', include('tendenci.apps.forums.urls')),
 
     # third party (inside environment)
     url(r'^tinymce/', include('tendenci.libs.tinymce.urls')),
