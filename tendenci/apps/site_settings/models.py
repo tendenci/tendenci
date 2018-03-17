@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
@@ -41,9 +42,8 @@ class Setting(models.Model):
         app_label = 'site_settings'
 
     def get_absolute_url(self):
-        return ("setting.permalink",
-                [self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse("setting.permalink",
+                args=[self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
 
     def __unicode__(self):
         return "(%s) %s" %(self.name, self.label)

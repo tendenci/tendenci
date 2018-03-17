@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
@@ -119,9 +120,8 @@ class Payment(models.Model):
                                        self.trans_id,
                                        self.amount)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('payment.view', [self.id, self.guid])
+        return reverse('payment.view', args=[self.id, self.guid])
 
     def allow_view_by(self, user2_compare, guid=''):
         boo = False
@@ -140,7 +140,6 @@ class Payment(models.Model):
         return boo
 
     def payments_pop_by_invoice_user(self, user, inv, session_id='', **kwargs):
-        from django.urls import reverse
         boo = False
         if inv.allow_payment_by(user, session_id):
             boo = True

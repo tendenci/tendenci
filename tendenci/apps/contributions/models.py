@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
@@ -28,9 +29,8 @@ class Contribution(TendenciBaseModel):
         permissions = (("view_contribution",_("Can view contribution")),)
         app_label = 'contributions'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("contribution", [self.pk])
+        return reverse('contribution', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.id:

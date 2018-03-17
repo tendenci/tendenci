@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -65,9 +66,8 @@ class Speaker(TendenciBaseModel):
         get_latest_by = "-start_date"
         app_label = 'speakers'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("speaker.view", [self.slug])
+        return reverse('speaker.view', args=[self.slug])
 
     def professional_photo(self):
         try:

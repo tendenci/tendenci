@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -57,8 +58,7 @@ class EventLog(models.Model):
         return get_color(str(self.event_id))
 
     def get_absolute_url(self):
-        return ('event_log', [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('event_log', args=[self.pk])
 
     def __unicode__(self):
         return str(self.event_id)

@@ -8,6 +8,7 @@ from builtins import str
 from django import forms
 from importlib import import_module
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template import engines
@@ -15,7 +16,6 @@ from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.db.models import Q
-from django.urls import reverse
 from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
@@ -278,12 +278,11 @@ class CorpProfile(TendenciBaseModel):
     def __unicode__(self):
         return "%s" % (self.name)
 
-    @models.permalink
     def get_absolute_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.view_profile', [self.pk])
+        return reverse('corpmembership.view_profile', args=[self.pk])
 
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
@@ -431,12 +430,11 @@ class CorpMembership(TendenciBaseModel):
     def __unicode__(self):
         return "%s" % (self.corp_profile.name)
 
-    @models.permalink
     def get_absolute_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.view', [self.pk])
+        return reverse('corpmembership.view', args=[self.pk])
 
     @property
     def group(self):
@@ -446,12 +444,11 @@ class CorpMembership(TendenciBaseModel):
     def membership_type(self):
         return self.corporate_membership_type.membership_type
 
-    @models.permalink
     def get_renewal_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.renew', [self.pk])
+        return reverse('corpmembership.renew', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.guid:
@@ -1398,9 +1395,8 @@ class CorpMembershipApp(TendenciBaseModel):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("corpmembership_app.preview", [self.slug])
+        return reverse('corpmembership_app.preview', args=[self.slug])
 
     def is_current(self):
         """

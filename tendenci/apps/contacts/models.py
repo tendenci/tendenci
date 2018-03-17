@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import ugettext_lazy as _
@@ -105,9 +106,8 @@ class Contact(TendenciBaseModel):
         permissions = (("view_contact", _("Can view contact")),)
         app_label = 'contacts'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("contact", [self.pk])
+        return reverse('contact', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.id:

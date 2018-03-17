@@ -2,6 +2,7 @@ from builtins import str
 from collections import OrderedDict
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 import simplejson as json
@@ -70,9 +71,8 @@ class Report(TendenciBaseModel):
     def __unicode__(self):
         return "%s %s " % (self.pk, str(self.type))
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('report_detail', [self.pk])
+        return reverse('report_detail', args=[self.pk])
 
     def runs(self):
         return Run.objects.filter(report=self).order_by('-create_dt')
@@ -166,10 +166,8 @@ class Run(models.Model):
     def __unicode__(self):
         return "Run %s for report %s" % (self.pk, self.report.pk)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('report_run_detail', [self.report.pk, self.pk])
+        return reverse('report_run_detail', args=[self.report.pk, self.pk])
 
-    @models.permalink
     def get_output_url(self):
-        return ('report_run_output', [self.report.pk, self.pk])
+        return reverse('report_run_output', args=[self.report.pk, self.pk])

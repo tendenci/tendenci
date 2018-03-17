@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -20,9 +21,7 @@ class CaseStudy(TendenciBaseModel):
     results = models.TextField(blank=True, null=True)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 
-    perms = GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    perms = GenericRelation(ObjectPermission, object_id_field="object_id", content_type_field="content_type")
 
     objects = CaseStudyManager()
 
@@ -40,9 +39,8 @@ class CaseStudy(TendenciBaseModel):
             img.delete()
         return super(CaseStudy, self).delete(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("case_study.view", [self.slug])
+        return reverse('case_study.view', args=[self.slug])
 
     def featured_screenshots(self):
         try:
@@ -79,9 +77,8 @@ class Service(models.Model):
         ordering = ['title']
         app_label = 'case_studies'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("case_study.service", [self.pk])
+        return reverse('case_study.service', args=[self.pk])
 
 
 class Technology(models.Model):
@@ -97,9 +94,8 @@ class Technology(models.Model):
         verbose_name_plural = "Technologies"
         app_label = 'case_studies'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("case_study.technology", [self.pk])
+        return reverse('case_study.technology', args=[self.pk])
 
 
 class Image(File):

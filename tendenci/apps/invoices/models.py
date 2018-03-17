@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -11,8 +12,7 @@ from django.db.models.signals import post_save
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
-from tendenci.apps.accountings.utils import (make_acct_entries,
-                                    make_acct_entries_reversing)
+from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing)
 from tendenci.apps.entities.models import Entity
 
 STATUS_DETAIL_CHOICES = (
@@ -169,13 +169,11 @@ class Invoice(models.Model):
             return u'%s' % split_title
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('invoice.view', [self.id])
+        return reverse('invoice.view', args=[self.id])
 
-    @models.permalink
     def get_absolute_url_with_guid(self):
-        return ('invoice.view', [self.id, self.guid])
+        return reverse('invoice.view', args=[self.id, self.guid])
 
     def get_discount_url(self):
         from tendenci.apps.discounts.models import Discount

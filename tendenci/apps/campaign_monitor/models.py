@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
@@ -57,25 +58,20 @@ class Template(models.Model):
     def content_type(self):
         return 'template'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("campaign_monitor.template_view", [self.template_id])
+        return reverse('campaign_monitor.template_view', args=[self.template_id])
 
-    @models.permalink
     def get_html_url(self):
-        return ("campaign_monitor.template_html", [self.template_id])
+        return reverse('campaign_monitor.template_html', args=[self.template_id])
 
-    @models.permalink
     def get_html_original_url(self):
-        return ("campaign_monitor.template_html_original", [self.template_id])
+        return reverse('campaign_monitor.template_html_original', args=[self.template_id])
 
-    @models.permalink
     def get_render_url(self):
-        return ("campaign_monitor.template_render", [self.template_id])
+        return reverse('campaign_monitor.template_render', args=[self.template_id])
 
-    @models.permalink
     def get_text_url(self):
-        return ("campaign_monitor.template_text", [self.template_id])
+        return reverse('campaign_monitor.template_text', args=[self.template_id])
 
     def get_zip_url(self):
         if self.zip_file:
@@ -139,9 +135,8 @@ class Campaign(models.Model):
     reply_to = models.EmailField(null=True, blank=True)
     template = models.ForeignKey(Template, null=True, blank=True, on_delete=models.CASCADE)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("campaign_monitor.campaign_view", [self.campaign_id])
+        return reverse('campaign_monitor.campaign_view', args=[self.campaign_id])
 
     def __unicode__(self):
         return self.name

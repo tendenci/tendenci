@@ -4,6 +4,7 @@ import hashlib
 from six.moves.urllib.parse import urlencode
 
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
@@ -107,14 +108,13 @@ class Profile(Person):
         else:
             return u''
 
-    @models.permalink
     def get_absolute_url(self):
         from tendenci.apps.profiles.utils import clean_username
         cleaned_username = clean_username(self.user.username)
         if cleaned_username != self.user.username:
             self.user.username = cleaned_username
             self.user.save()
-        return ('profile', [self.user.username])
+        return reverse('profile', args=[self.user.username])
 
     def _can_login(self):
         """

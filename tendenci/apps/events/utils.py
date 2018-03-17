@@ -12,6 +12,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
+from django.conf import settings
 from django.urls import reverse
 from django.db import connection
 from django.db import models
@@ -207,7 +208,6 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
 
 
 def get_ievent(request, d, event_id):
-    from django.conf import settings
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -267,7 +267,6 @@ def get_ievent(request, d, event_id):
 
 
 def get_vevents(user, d):
-    from django.conf import settings
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -1622,8 +1621,6 @@ def do_event_import(event_object_dict):
 
 
 def add_sf_attendance(registrant, event):
-
-    from django.conf import settings
     from tendenci.apps.profiles.models import Profile
 
     if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:

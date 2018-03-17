@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -42,9 +43,8 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     def __unicode__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("testimonial.view", [self.pk])
+        return reverse('testimonial.view', args=[self.pk])
 
     def first_last_name(self):
         return '%s %s' % (self.first_name, self.last_name)

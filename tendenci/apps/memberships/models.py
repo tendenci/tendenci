@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.db import models
+from django.urls import reverse
 from django.db.models.query_utils import Q
 from django.template import engines
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +19,6 @@ from importlib import import_module
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
-from django.urls import reverse
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 
@@ -582,22 +582,19 @@ class MembershipDefault(TendenciBaseModel):
 
         return u
 
-    @models.permalink
     def get_absolute_url(self):
         """
         Returns admin change_form page.
         """
-        return ('membership.details', [self.pk])
-        # return ('admin:memberships_membershipdefault_change', [self.pk])
+        return reverse('membership.details', args=[self.pk])
+        #return reverse('admin:memberships_membershipdefault_change', args=[self.pk])
 
-    @models.permalink
     def get_current_membership_url(self):
         """
         Returns link to url of the most current membership.
         """
         memberships = self.user.membershipdefault_set.filter(membership_type=self.membership_type).order_by('-id')
-
-        return ('membership.details', [memberships[0].pk])
+        return reverse('membership.details', args=[memberships[0].pk])
 
     @property
     def group(self):
@@ -2412,9 +2409,8 @@ class Notice(models.Model):
 
         return True
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('membership.notice_email_content', [self.pk])
+        return reverse('membership.notice_email_content', args=[self.pk])
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid1())
@@ -2483,9 +2479,8 @@ class MembershipApp(TendenciBaseModel):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('membership_default.add', [self.slug])
+        return reverse('membership_default.add', args=[self.slug])
 
     def save(self, *args, **kwargs):
         if not self.id:

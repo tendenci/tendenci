@@ -2,6 +2,7 @@ import uuid
 
 from datetime import timedelta, datetime
 from django.db import models
+from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
@@ -208,13 +209,11 @@ class Job(BaseJob):
         """
         return JobMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("job", [self.slug])
+        return reverse('job', args=[self.slug])
 
-    @models.permalink
     def get_approve_url(self):
-        return ("job.approve", [self.id])
+        return reverse('job.approve', args=[self.id])
 
 
 class JobPricing(models.Model):

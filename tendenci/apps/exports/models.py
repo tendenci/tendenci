@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from picklefield.fields import PickledObjectField
 #from tendenci.apps.memberships.models import App
@@ -21,9 +22,8 @@ class Export(models.Model):
     class Meta:
         app_label = 'exports'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("export.status", [self.app_label, self.model_name])
+        return reverse('export.status', args=[self.app_label, self.model_name])
 
     def __unicode__(self):
         return "Export for %s %s" % (self.app_label, self.model_name)

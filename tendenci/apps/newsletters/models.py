@@ -4,10 +4,10 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
-from django.urls import reverse
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
@@ -97,9 +97,8 @@ class NewsletterTemplate(models.Model):
     def content_type(self):
         return 'newslettertemplate'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("newsletter.template_render", [self.template_id])
+        return reverse('newsletter.template_render', args=[self.template_id])
 
     @classmethod
     def get_content_type(cls):
@@ -108,9 +107,8 @@ class NewsletterTemplate(models.Model):
             app_label=cls._meta.app_label,
             model=cls._meta.model_name)
 
-    @models.permalink
     def get_content_url(self):
-        return ("newsletter.template_content", [self.template_id])
+        return reverse('newsletter.template_content', args=[self.template_id])
 
     def get_zip_url(self):
         if self.zip_file:
@@ -208,9 +206,8 @@ class Newsletter(models.Model):
     def __unicode__(self):
         return self.actionname or u"No Action Name"
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("newsletter.detail.view", [self.pk])
+        return reverse('newsletter.detail.view', args=[self.pk])
 
     def generate_newsletter(self, request, template):
         if self.default_template:

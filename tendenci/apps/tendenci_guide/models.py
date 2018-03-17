@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.libs.abstracts.models import OrderingBaseModel
@@ -21,6 +22,5 @@ class Guide(OrderingBaseModel):
     def __unicode__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("tendenci_guide.guide_page", [self.slug])
+        return reverse('tendenci_guide.guide_page', args=[self.slug])

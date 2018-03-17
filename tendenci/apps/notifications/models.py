@@ -176,8 +176,7 @@ class Notice(models.Model):
         return unseen
 
     def get_absolute_url(self):
-        return ("notification_notice", [str(self.pk)])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse("notification_notice", args=[self.pk])
 
 
 class NoticeQueueBatch(models.Model):
@@ -212,9 +211,8 @@ class NoticeEmail(models.Model):
     def __unicode__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('notification_email', [self.guid])
+        return reverse('notification_email', args=[self.guid])
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid1())

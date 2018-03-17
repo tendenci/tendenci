@@ -1,11 +1,11 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.db.utils import IntegrityError
-from django.urls import reverse
 
 from tendenci.apps.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -61,9 +61,8 @@ class Group(TendenciBaseModel):
     def __unicode__(self):
         return self.label or self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('group.detail', [self.slug])
+        return reverse('group.detail', args=[self.slug])
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self.guid:

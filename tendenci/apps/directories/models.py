@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime, timedelta
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
-from django.urls import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
@@ -124,13 +124,11 @@ class Directory(TendenciBaseModel):
         """
         return DirectoryMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("directory", [self.slug])
+        return reverse('directory', args=[self.slug])
 
-    @models.permalink
     def get_renew_url(self):
-        return ("directory.renew", [self.id])
+        return reverse('directory.renew', args=[self.id])
 
     def __unicode__(self):
         return self.headline

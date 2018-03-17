@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -108,9 +109,8 @@ class Resume(TendenciBaseModel):
         """
         return ResumeMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("resume", [self.slug])
+        return reverse('resume', args=[self.slug])
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or uuid.uuid1()

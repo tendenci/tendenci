@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from django.db import models
+from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
@@ -88,9 +89,8 @@ class News(TendenciBaseModel):
         """
         return NewsMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("news.detail", [self.slug])
+        return reverse('news.detail', args=[self.slug])
 
     def __unicode__(self):
         return self.headline

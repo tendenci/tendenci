@@ -7,6 +7,7 @@ from functools import reduce
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
 from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -831,13 +832,11 @@ class Registrant(models.Model):
     def hash(self):
         return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
 
-    @models.permalink
     def hash_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
+        return reverse('event.registration_confirmation', args=[self.registration.event.pk, self.hash])
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.registration.pk])
+        return reverse('event.registration_confirmation', args=[self.registration.event.pk, self.registration.pk])
 
     def reg8n_status(self):
         """
@@ -1152,17 +1151,15 @@ class Event(TendenciBaseModel):
     def is_registrant(self, user):
         return Registration.objects.filter(event=self, registrant=user).exists()
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("event", [self.pk])
+        return reverse('event', args=[self.pk])
 
-    @models.permalink
     def get_registration_url(self):
         """ This is used to include a sign up url in the event.
         Sample usage in template:
         <a href="{{ event.get_registration_url }}">Sign up now!</a>
         """
-        return ("registration_event_register", [self.pk])
+        return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid1())

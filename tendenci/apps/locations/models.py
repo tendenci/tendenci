@@ -2,6 +2,7 @@ from builtins import str
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -54,9 +55,8 @@ class Location(TendenciBaseModel):
     def __unicode__(self):
         return self.location_name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("location", [self.slug])
+        return reverse('location', args=[self.slug])
 
     def get_address(self):
         return "%s %s %s, %s %s" % (

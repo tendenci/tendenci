@@ -1,5 +1,5 @@
-from django.urls import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
@@ -152,9 +152,8 @@ class Form(TendenciBaseModel):
             checklist_update('update-contact')
         super(Form, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("form_detail", (), {"slug": self.slug})
+        return reverse('form_detail', kwargs={"slug": self.slug})
 
     def get_payment_type(self):
         if self.recurring_payment and self.custom_payment:
@@ -306,9 +305,8 @@ class FormEntry(models.Model):
     def __unicode__(self):
         return ('%s submission' % (self.form.title,))
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("form_entry_detail", (), {"id": self.pk})
+        return reverse('form_entry_detail', kwargs={"id": self.pk})
 
     @property
     def owner(self):

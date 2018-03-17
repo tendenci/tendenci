@@ -10,6 +10,7 @@ from io import BytesIO
 from base64 import b64encode
 
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -107,13 +108,11 @@ class File(TendenciBaseModel):
 
         return False
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("file", [self.pk])
+        return reverse('file', args=[self.pk])
 
-    @models.permalink
     def get_absolute_download_url(self):
-        return ("file", [self.pk, 'download'])
+        return reverse('file', args=[self.pk, 'download'])
 
     def __unicode__(self):
         return self.get_name()

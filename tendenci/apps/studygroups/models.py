@@ -1,6 +1,7 @@
 from builtins import str
 
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -38,9 +39,8 @@ class StudyGroup(BasePage):
         permissions = (("view_studygroup", "Can view studygroup"),)
         app_label = 'studygroups'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("studygroups.detail", [self.slug])
+        return reverse('studygroups.detail', args=[self.slug])
 
     def get_meta(self, name):
         """

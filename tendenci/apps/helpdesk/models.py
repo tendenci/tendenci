@@ -9,6 +9,8 @@ models.py - Model (and hence database) definitions. This is the core of the
 
 from __future__ import unicode_literals
 from django.db import models
+from django.urls import reverse
+from django.contrib.sites.models import Site
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils.encoding import python_2_unicode_compatible
@@ -461,8 +463,6 @@ class Ticket(models.Model):
         Returns a publicly-viewable URL for this ticket, used when giving
         a URL to the submitter of a ticket.
         """
-        from django.contrib.sites.models import Site
-        from django.urls import reverse
         try:
             site = Site.objects.get_current()
         except:
@@ -480,8 +480,6 @@ class Ticket(models.Model):
         Returns a staff-only URL for this ticket, used when giving a URL to
         a staff member (in emails etc)
         """
-        from django.contrib.sites.models import Site
-        from django.urls import reverse
         try:
             site = Site.objects.get_current()
         except:
@@ -513,8 +511,7 @@ class Ticket(models.Model):
         return '%s %s' % (self.id, self.title)
 
     def get_absolute_url(self):
-        return ('helpdesk_view', (self.id,))
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_view', args=[self.id])
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -906,8 +903,7 @@ class KBCategory(models.Model):
         verbose_name_plural = _('Knowledge base categories')
 
     def get_absolute_url(self):
-        return ('helpdesk_kb_category', (), {'slug': self.slug})
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_kb_category', kwargs={'slug': self.slug})
 
 
 @python_2_unicode_compatible
@@ -975,8 +971,7 @@ class KBItem(models.Model):
         verbose_name_plural = _('Knowledge base items')
 
     def get_absolute_url(self):
-        return ('helpdesk_kb_item', (self.id,))
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_kb_item', args=[self.id])
 
 
 @python_2_unicode_compatible

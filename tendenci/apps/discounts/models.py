@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Q
@@ -56,9 +57,8 @@ class Discount(TendenciBaseModel):
     def __unicode__(self):
         return self.discount_code
 
-    @models.permalink
     def get_absolute_url(self):
-        return('discount.detail', [self.pk])
+        return reverse('discount.detail', args=[self.pk])
 
     @staticmethod
     def has_valid_discount(**kwargs):

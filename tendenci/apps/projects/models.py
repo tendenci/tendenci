@@ -1,5 +1,6 @@
 from builtins import str
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
@@ -137,9 +138,8 @@ class Project(TendenciBaseModel):
     class Meta:
         permissions = (("view_project", "Can view project"),)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("projects.detail", [self.slug])
+        return reverse('projects.detail', args=[self.slug])
 
     @property
     def content_type(self):

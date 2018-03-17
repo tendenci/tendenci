@@ -13,6 +13,7 @@ from inspect import isclass
 from io import BytesIO
 
 from django.db import models
+from django.urls import reverse
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
@@ -633,9 +634,8 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
             return True
         return False
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("photoset_details", [self.pk])
+        return reverse('photoset_details', args=[self.pk])
 
     def get_images(self, user=None, status=True, status_detail='active'):
         """
@@ -790,13 +790,12 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
 
-    @models.permalink
     def get_absolute_url(self):
         try:
             photo_set = self.photoset.all()[0]
         except IndexError:
             return ("photo", [self.pk])
-        return ("photo", [self.pk, photo_set.pk])
+        return reverse('photo', args=[self.pk, photo_set.pk])
 
     def get_exif_data(self):
         """

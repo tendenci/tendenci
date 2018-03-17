@@ -2,6 +2,7 @@ import requests
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.tinymce import models as tinymce_models
 
@@ -150,9 +151,8 @@ class ReliefAssessment(models.Model):
 
     loc = models.PointField(blank=True, null=True)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('social-services.relief_area', [self.pk])
+        return reverse('social-services.relief_area', args=[self.pk])
 
     def get_ethnicity(self):
         if self.ethnicity == 'other':

@@ -2,6 +2,7 @@ from builtins import str
 import uuid
 import copy
 from django.db import models
+from django.urls import reverse
 from django.db.models import Q
 
 from django.core.mail.message import EmailMessage
@@ -45,9 +46,8 @@ class Email(TendenciBaseModel):
     class Meta:
         app_label = 'emails'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("email.view", [self.pk])
+        return reverse('email.view', args=[self.pk])
 
     def __unicode__(self):
         return self.subject
