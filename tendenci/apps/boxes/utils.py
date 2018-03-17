@@ -1,6 +1,6 @@
 import re
 
-from django.template import Context, Template
+from django.template import engines
 
 def detect_template_tags(string):
     """
@@ -26,8 +26,7 @@ def render_content(content, arg=None, limit=None, image_preview=True):
         if tags:
             for tag in tags:
                 tag = "{%"+tag+"%}"
-                context = Context({'user':None})
-                t = Template(''.join(TEMPLATE_TAGS) + tag)
-                rendered_tag = t.render(context)
+                t = engines['django'].from_string(''.join(TEMPLATE_TAGS) + tag)
+                rendered_tag = t.render(context={'user': None})
                 content = content.replace(tag, rendered_tag)
     return content

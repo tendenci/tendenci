@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.template.loader import render_to_string
-from django.template import Context, Template, TemplateDoesNotExist
+from django.template import engines, TemplateDoesNotExist
 from django.conf import settings
 
 
@@ -267,15 +267,14 @@ class Command(BaseCommand):
 
                 body = body + ' <br /><br />{% include "email_footer.html" %}'
 
-                context = Context(context)
-                template = Template(body)
-                body = template.render(context)
+                template = engines['django'].from_string(body)
+                body = template.render(context=context)
 
                 email_recipient = recipient.user.email
                 subject = notice.subject.replace('(name)',
                                             corp_profile.name)
-                template = Template(subject)
-                subject = template.render(context)
+                template = engines['django'].from_string(subject)
+                subject = template.render(context=context)
 
                 email_context.update({
                     'subject':subject,

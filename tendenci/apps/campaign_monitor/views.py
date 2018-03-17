@@ -5,8 +5,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
-from django.template import Template as DTemplate
+from django.template import engines
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
@@ -134,9 +133,8 @@ def template_html(request, template_id):
         events_list = []
         events_type = None
 
-    text = DTemplate(apply_template_media(template))
-    context = RequestContext(request,
-            {
+    text = engines['django'].from_string(apply_template_media(template))
+    context = {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
                 "art_content":articles_content, # legacy usage in templates
@@ -151,9 +149,9 @@ def template_html(request, template_id):
                 "events":events_list, # legacy usage in templates
                 "events_list":events_list,
                 "events_type":events_type
-            })
+              }
 
-    response = HttpResponse(text.render(context))
+    response = HttpResponse(text.render(context=context, request=request))
     response['Content-Disposition'] = 'attachment; file=page.html'
 
     return response
@@ -224,9 +222,8 @@ def template_render(request, template_id):
         events_list = []
         events_type = None
 
-    text = DTemplate(apply_template_media(template))
-    context = RequestContext(request,
-            {
+    text = engines['django'].from_string(apply_template_media(template))
+    context = {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
                 "art_content":articles_content, # legacy usage in templates
@@ -241,9 +238,9 @@ def template_render(request, template_id):
                 "events":events_list, # legacy usage in templates
                 "events_list":events_list,
                 "events_type":events_type
-            })
+              }
 
-    response = HttpResponse(text.render(context))
+    response = HttpResponse(text.render(context=context, request=request))
 
     return response
 

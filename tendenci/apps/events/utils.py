@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
 from django.db.models import Max, Count
-from django.template import Context, Template
+from django.template import engines
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 import simplejson
@@ -93,15 +93,13 @@ def render_event_email(event, email):
                             reverse('event', args=[event.id]),
                             event.title
                                                      )
-    context = Context(context)
-
-    template = Template(email.subject)
-    email.subject = template.render(context)
+    template = engines['django'].from_string(email.subject)
+    email.subject = template.render(context=context)
 
     email.body = email.body.replace('event_location', 'event_location|safe')
     email.body = email.body.replace('event_link', 'event_link|safe')
-    template = Template(email.body)
-    email.body = template.render(context)
+    template = engines['django'].from_string(email.body)
+    email.body = template.render(context=context)
 
     return email
 

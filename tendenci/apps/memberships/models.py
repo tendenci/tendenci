@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.db import models
 from django.db.models.query_utils import Q
-from django.template import Context, Template
+from django.template import engines
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
@@ -2300,12 +2300,11 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         content = fieldify(content)
-        template = Template(content)
+        template = engines['django'].from_string(content)
 
         context = kwargs.get('context') or {}
-        context = Context(context)
 
-        return template.render(context)
+        return template.render(context=context)
 
     @classmethod
     def log_notices(cls, memberships, **kwargs):

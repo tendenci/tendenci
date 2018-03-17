@@ -10,7 +10,7 @@ from importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.template import Context, Template
+from django.template import engines
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
@@ -2019,12 +2019,11 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         content = fieldify(content)
-        template = Template(content)
+        template = engines['django'].from_string(content)
 
         context = kwargs.get('context') or {}
-        context = Context(context)
 
-        return template.render(context)
+        return template.render(context=context)
 
     @classmethod
     def send_notice(cls, **kwargs):
