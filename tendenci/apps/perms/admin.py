@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import router
 from django.db.models import Q
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 
 from tagging.models import TaggedItem
 from tendenci.apps.event_logs.models import EventLog
@@ -63,8 +64,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return link
-    view_on_site.allow_tags = True
+        return mark_safe(link)
     view_on_site.short_description = _('view')
 
     def owner_link(self, obj):
@@ -75,18 +75,15 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
                 obj.owner_username,
                 obj.owner_username,
             )
-        return link
-    owner_link.allow_tags = True
+        return mark_safe(link)
     owner_link.short_description = _('owner')
 
     def admin_status(self, obj):
-        return obj.obj_status
-    admin_status.allow_tags = True
+        return mark_safe(obj.obj_status)
     admin_status.short_description = _('status')
 
     def admin_perms(self, obj):
-        return obj.obj_perms
-    admin_perms.allow_tags = True
+        return mark_safe(obj.obj_perms)
     admin_perms.short_description = _('permission')
 
     def save_model(self, request, object, form, change):

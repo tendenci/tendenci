@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from haystack.query import SearchQuerySet

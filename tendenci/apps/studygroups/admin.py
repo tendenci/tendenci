@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django import forms
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
@@ -133,17 +134,15 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
             instance.save(log=False)
 
     def link(self, obj):
-        return '<a href="%s" title="%s">%s</a>' % (
+        return mark_safe('<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
             obj.title,
             obj.slug
-        )
-    link.allow_tags = True
+        ))
 
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:studygroups_studygroup_change', args=[obj.pk])
-        return link
-    edit_link.allow_tags = True
+        return mark_safe(link)
     edit_link.short_description = 'edit'
 
     def view_on_site(self, obj):
@@ -153,8 +152,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
             obj.title,
             link_icon,
         )
-        return link
-    view_on_site.allow_tags = True
+        return mark_safe(link)
     view_on_site.short_description = 'view'
 
 

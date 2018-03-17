@@ -25,6 +25,7 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_text
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 import simplejson
 import requests
 
@@ -138,13 +139,12 @@ class ImageModel(models.Model):
             return _('An "admin_thumbnail" photo size has not been defined.')
         else:
             if hasattr(self, 'get_absolute_url'):
-                return u'<a href="%s"><img src="%s"></a>' % \
-                    (self.get_absolute_url(), func())
+                return mark_safe(u'<a href="%s"><img src="%s"></a>' %
+                    (self.get_absolute_url(), func()))
             else:
-                return u'<a href="%s"><img src="%s"></a>' % \
-                    (self.image.url, func())
+                return mark_safe(u'<a href="%s"><img src="%s"></a>' %
+                    (self.image.url, func()))
     admin_thumbnail.short_description = _('Thumbnail')
-    admin_thumbnail.allow_tags = True
 
     def cache_path(self):
         # example 'photos/cache/3949a2d9' or 'photos/cache'
@@ -378,9 +378,8 @@ class BaseEffect(models.Model):
         im.save(self.sample_filename(), 'JPEG', quality=90, optimize=True)
 
     def admin_sample(self):
-        return u'<img src="%s">' % self.sample_url()
+        return mark_safe(u'<img src="%s">' % self.sample_url())
     admin_sample.short_description = 'Sample'
-    admin_sample.allow_tags = True
 
     def pre_process(self, im):
         return im

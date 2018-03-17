@@ -10,6 +10,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
@@ -56,9 +57,8 @@ class EventTypeAdmin(admin.ModelAdmin):
 
     def reassign(self, obj):
 
-        return """<a href="%s">Reassign all events from this type</a>
-            """ % (reverse('event.reassign_type', args=[obj.id]))
-    reassign.allow_tags = True
+        return mark_safe("""<a href="%s">Reassign all events from this type</a>
+            """ % (reverse('event.reassign_type', args=[obj.id])))
     reassign.short_description = _('Reassign Link')
 
     class Media:
@@ -130,20 +130,17 @@ class CustomRegFormAdmin(admin.ModelAdmin):
 
     def preview_link(self, obj):
 
-        return """<a href="%s">preview</a>
-            """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
-    preview_link.allow_tags = True
+        return mark_safe("""<a href="%s">preview</a>
+            """ % (reverse('event.custom_reg_form_preview', args=[obj.id])))
     preview_link.short_description = _('Preview Link')
 
     def for_event(self, obj):
         [regconf] = obj.regconfs.all()[:1] or [None]
         if regconf:
             event = regconf.event
-            return """<a href="%s">%s(ID:%d)</a>
-            """ % (reverse('event', args=[event.id]), event.title, event.id)
+            return mark_safe("""<a href="%s">%s(ID:%d)</a>
+            """ % (reverse('event', args=[event.id]), event.title, event.id))
         return ''
-
-    for_event.allow_tags = True
     for_event.short_description = _('For Event')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

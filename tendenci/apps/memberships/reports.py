@@ -23,7 +23,7 @@ from geraldo import Report, ReportBand, ObjectValue,\
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
 from django.core.urlresolvers import reverse
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 
 # ReportLab does not support ugettext_lazy() translations, so use ugettext() instead
 from django.utils.translation import ugettext as _

@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -55,14 +56,13 @@ class FileAdmin(TendenciBaseModelAdmin):
                 args = [obj.pk]
                 args.append("100x50")
                 args.append("crop")
-                return '<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args))
+                return mark_safe('<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args)))
             else:
                 return ""
         elif obj.icon():
-            return '<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon())
+            return mark_safe('<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon()))
         else:
-            return obj.type()
-    file_preview.allow_tags = True
+            return mark_safe(obj.type())
     file_preview.short_description = _('Preview')
 
     def file_path(self, obj):

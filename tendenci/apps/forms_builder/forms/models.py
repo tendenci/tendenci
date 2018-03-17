@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.safestring import mark_safe
 
 from django_countries import countries as COUNTRIES
 from localflavor.us.us_states import STATE_CHOICES
@@ -165,14 +166,12 @@ class Form(TendenciBaseModel):
 
     def admin_link_view(self):
         url = self.get_absolute_url()
-        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
-    admin_link_view.allow_tags = True
+        return mark_safe("<a href='%s'>%s</a>" % (url, ugettext("View on site")))
     admin_link_view.short_description = ""
 
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
-        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
-    admin_link_export.allow_tags = True
+        return mark_safe("<a href='%s'>%s</a>" % (url, ugettext("Export entries")))
     admin_link_export.short_description = ""
 
     def has_files(self):

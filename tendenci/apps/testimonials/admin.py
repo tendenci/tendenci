@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.template.defaultfilters import truncatewords as truncate_words
 from django.utils.html import strip_tags
+from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.event_logs.models import EventLog
@@ -89,10 +90,9 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return '<img src="%s" />' % reverse('file', args=args)
+            return mark_safe('<img src="%s" />' % reverse('file', args=args))
         else:
             return "No image"
-    image_preview.allow_tags = True
     image_preview.short_description = 'Image'
 
 admin.site.register(Testimonial, TestimonialAdmin)

@@ -2,6 +2,7 @@ from __future__ import print_function
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.notifications.models import NoticeEmail
 
@@ -39,9 +40,8 @@ class NoticeEmailAdmin(admin.ModelAdmin):
         return False
 
     def preview_email(self, obj):
-        return '<a href="%s">%s</a>' % \
-            (reverse('notification_email', args=[obj.guid]), obj.title)
-    preview_email.allow_tags = True
+        return mark_safe('<a href="%s">%s</a>' %
+            (reverse('notification_email', args=[obj.guid]), obj.title))
     preview_email.short_description = _('Preview Email')
 
     def resend(self, request, queryset):

@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 
 class EventLogAdmin(admin.ModelAdmin):
     list_display = ['pk', 'create_dt', 'content_type', 'object_id', 'event_id',
@@ -13,8 +15,7 @@ class EventLogColorAdmin(admin.ModelAdmin):
     list_display = ['event_id', 'color']
 
     def color(self, obj):
-        return '<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color)
-    color.allow_tags = True
+        return mark_safe('<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color))
 
 
 class EventLogBaseColorAdmin(EventLogColorAdmin):

@@ -1870,8 +1870,7 @@ class MembershipDefault(TendenciBaseModel):
                     reverse('corpmembership.view',
                             args=[self.corporate_membership_id]),
                     corp_member.status_detail)
-        return link
-    membership_type_link.allow_tags = True
+        return mark_safe(link)
     membership_type_link.short_description = u'Membership Type'
 
     def auto_update_paid_object(self, request, payment):
@@ -2512,10 +2511,9 @@ class MembershipApp(TendenciBaseModel):
         return app_cloned
 
     def application_form_link(self):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
             self.get_absolute_url(), self.slug
-        )
-    application_form_link.allow_tags = True
+        ))
 
 
 class MembershipAppField(OrderingBaseModel):

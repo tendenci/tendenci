@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.projects.models import (
@@ -45,10 +46,9 @@ class CategoryAdmin(admin.ModelAdmin):
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return '<img src="%s" />' % reverse('file', args=args)
+            return mark_safe('<img src="%s" />' % reverse('file', args=args))
         else:
             return "No image"
-    image_preview.allow_tags = True
     image_preview.short_description = 'Image'
 
     def save_model(self, request, object, form, change):
@@ -174,8 +174,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:projects_project_change', args=[obj.pk])
-        return link
-    edit_link.allow_tags = True
+        return mark_safe(link)
     edit_link.short_description = 'edit'
 
     def view_on_site(self, obj):
@@ -185,8 +184,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             obj,
             link_icon,
         )
-        return link
-    view_on_site.allow_tags = True
+        return mark_safe(link)
     view_on_site.short_description = 'view'
 
     # def log_deletion(self, request, object, object_repr):

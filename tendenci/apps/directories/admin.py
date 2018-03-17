@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.directories.models import DirectoryPricing
 from tendenci.apps.directories.forms import DirectoryPricingForm
@@ -46,8 +47,7 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
 
     def sub_categories(self, instance):
-        return ', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True))
-    sub_categories.allow_tags = True
+        return mark_safe(', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True)))
 
     def get_queryset(self, request):
         qs = super(DirectoryCategoryAdmin, self).get_queryset(request)

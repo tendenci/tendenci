@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
@@ -351,19 +352,18 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         inv = instance.get_invoice()
         if inv:
             if inv.balance > 0:
-                return '<a href="%s" title="Invoice">#%s (%s)</a>' % (
+                return mark_safe('<a href="%s" title="Invoice">#%s (%s)</a>' % (
                     inv.get_absolute_url(),
                     inv.pk,
                     tcurrency(inv.balance)
-                )
+                ))
             else:
-                return '<a href="%s" title="Invoice">#%s</a>' % (
+                return mark_safe('<a href="%s" title="Invoice">#%s</a>' % (
                     inv.get_absolute_url(),
                     inv.pk
-                )
+                ))
         return ""
     get_invoice.short_description = u'Invoice'
-    get_invoice.allow_tags = True
 
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
@@ -657,14 +657,13 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
     def show_group(self, instance):
         if instance.group:
-            return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
+            return mark_safe('<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
                     reverse('group.detail', args=[instance.group.slug]),
                     instance.group,
                     instance.group.id
-                )
+                ))
         return ""
     show_group.short_description = u'Group'
-    show_group.allow_tags = True
     show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):
@@ -733,9 +732,8 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
 class NoticeAdmin(admin.ModelAdmin):
     def notice_log(self):
-        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('membership.notice.log.search'), self.id)
-    notice_log.allow_tags = True
+        return mark_safe('<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
+                         reverse('membership.notice.log.search'), self.id))
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'membership_type', 'status', 'status_detail']

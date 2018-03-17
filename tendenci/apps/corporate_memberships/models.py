@@ -1428,11 +1428,9 @@ class CorpMembershipApp(TendenciBaseModel):
 
     def application_form_link(self):
         if self.is_current():
-            return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
-                                            self.slug)
+            return mark_safe('<a href="%s">%s</a>' % (reverse('corpmembership.add'),
+                                            self.slug))
         return '--'
-
-    application_form_link.allow_tags = True
 
     def _add_reps_group(self, **kwargs):
         return Group.objects.create(
@@ -1557,12 +1555,10 @@ class CorpMembershipAppField(OrderingBaseModel):
         return '%s' % self.label
 
     def app_link(self):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
                 reverse('admin:corporate_memberships_corpmembershipapp_change',
                         args=[self.corp_app.id]),
-                self.corp_app.id)
-
-    app_link.allow_tags = True
+                self.corp_app.id))
 
     def get_field_class(self, initial=None):
         """

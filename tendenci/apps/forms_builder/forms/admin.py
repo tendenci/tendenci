@@ -13,6 +13,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
@@ -113,8 +114,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         link = '-----'
         if obj.has_files():
             link = '<a href="%s" title="Export all">Export entries (including uploaded files)</a>' % reverse('form_entries_export_full', args=[obj.pk])
-        return link
-    export_all_link.allow_tags = True
+        return mark_safe(link)
     export_all_link.short_description = ''
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

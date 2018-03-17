@@ -7,6 +7,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -137,22 +138,20 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
 
     def dues_reps_group_with_link(self, instance):
         if instance.dues_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return mark_safe('<a href="%s">%s</a>' % (
                   reverse('group.detail',
                           args=[instance.dues_reps_group.slug]),
-                instance.dues_reps_group.name)
+                instance.dues_reps_group.name))
         return ''
-    dues_reps_group_with_link.allow_tags = True
     dues_reps_group_with_link.short_description = _('Dues Reps Group')
 
     def member_reps_group_with_link(self, instance):
         if instance.member_reps_group:
-            return '<a href="%s">%s</a>' % (
+            return mark_safe('<a href="%s">%s</a>' % (
                   reverse('group.detail',
                           args=[instance.member_reps_group.slug]),
-                instance.member_reps_group.name)
+                instance.member_reps_group.name))
         return ''
-    member_reps_group_with_link.allow_tags = True
     member_reps_group_with_link.short_description = _('Member Reps Group')
 
 
@@ -225,11 +224,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                                          'corp_profile__name')
 
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
-    profile.allow_tags = True
+              instance.corp_profile.name,))
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
@@ -244,11 +242,10 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     parent_entity.admin_order_field = 'corp_profile__parent_entity'
 
     def cm_type(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corporatemembershiptype_change',
                       args=[instance.corporate_membership_type.id]),
-              instance.corporate_membership_type.name,)
-    cm_type.allow_tags = True
+              instance.corporate_membership_type.name,))
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
 
@@ -274,18 +271,16 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     expire_date.admin_order_field = 'expiration_dt'
 
     def edit_link(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
                     reverse('corpmembership.edit',args=[instance.id]),
-                    _('Edit'),)
-    edit_link.allow_tags = True
+                    _('Edit'),))
     edit_link.short_description = _('edit')
 
     def roster_link(self, instance):
-        return '<a href="%s?cm_id=%d">%s</a>' % (
+        return mark_safe('<a href="%s?cm_id=%d">%s</a>' % (
                     reverse('corpmembership.roster_search'),
                     instance.id,
-                    _('Roster'),)
-    roster_link.allow_tags = True
+                    _('Roster'),))
     roster_link.short_description = _('Roster')
 
     def display_reps(self, reps):
@@ -303,33 +298,30 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
     def dues_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_dues_rep=True)
-        return self.display_reps(reps)
-    dues_reps.allow_tags = True
+        return mark_safe(self.display_reps(reps))
     dues_reps.short_description = _('Dues Reps')
 
     def member_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_member_rep=True)
-        return self.display_reps(reps)
-    member_reps.allow_tags = True
+        return mark_safe(self.display_reps(reps))
     member_reps.short_description = _('Member Reps')
 
     def invoice_url(self, instance):
         invoice = instance.invoice
         if invoice:
             if invoice.balance > 0:
-                return '<a href="%s">Invoice %s (%s)</a>' % (
+                return mark_safe('<a href="%s">Invoice %s (%s)</a>' % (
                     invoice.get_absolute_url(),
                     invoice.pk,
                     tcurrency(invoice.balance)
-                )
+                ))
             else:
-                return '<a href="%s">Invoice %s</a>' % (
+                return mark_safe('<a href="%s">Invoice %s</a>' % (
                     invoice.get_absolute_url(),
                     invoice.pk
-                )
+                ))
         return ""
     invoice_url.short_description = u'Invoice'
-    invoice_url.allow_tags = True
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.add'))
@@ -352,9 +344,8 @@ class NoticeAdmin(admin.ModelAdmin):
     def notice_log(self):
         if self.notice_time == 'attimeof':
             return '--'
-        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('corporate_membership.notice.log.search'), self.id)
-    notice_log.allow_tags = True
+        return mark_safe('<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
+                         reverse('corporate_membership.notice.log.search'), self.id))
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status_detail']
@@ -615,22 +606,19 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     ordering = ['corp_profile']
 
     def profile(self, instance):
-        return '<a href="%s">%s</a>' % (
+        return mark_safe('<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,)
-    profile.allow_tags = True
+              instance.corp_profile.name,))
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
     def rep_name(self, instance):
-        return '<a href="{0}">{1}</a>'.format(
+        return mark_safe('<a href="{0}">{1}</a>'.format(
                 reverse('profile', args=[instance.user.username]),
                 instance.user.get_full_name() or instance.user.username,
-
-            )
+            ))
     rep_name.short_description = u'Rep Name'
-    rep_name.allow_tags = True
     rep_name.admin_order_field = 'user__first_name'
 
     def rep_email(self, instance):

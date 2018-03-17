@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -16,8 +17,7 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return link
-    rendered_view.allow_tags = True
+        return mark_safe(link)
     rendered_view.short_description = _('view rendered template')
 
     def content_view(self, obj):
@@ -27,8 +27,7 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return link
-    content_view.allow_tags = True
+        return mark_safe(link)
     content_view.short_description = _('view template content')
 
 

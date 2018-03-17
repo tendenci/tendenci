@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
-
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
@@ -83,13 +83,12 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
         if pp:
             pp = pp[0]
-            return '<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
+            return mark_safe('<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
                                                                         link,
                                                                         pp.owner,
-                                                                        pp.update_dt.strftime('%Y-%m-%d'))
+                                                                        pp.update_dt.strftime('%Y-%m-%d')))
         else:
-            return '<a href="%s">Add payment info</a>' % (link)
-    edit_payment_info_link.allow_tags = True
+            return mark_safe('<a href="%s">Add payment info</a>' % (link))
 
     def how_much_to_pay(self):
         if self.object_content_type and self.object_content_type.name == 'Membership':
@@ -126,10 +125,9 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
-        return '<a href="%s"><img src="%s" /></a>' % (
+        return mark_safe('<a href="%s"><img src="%s" /></a>' % (
             reverse('recurring_payment.view_account', args=[obj.id]),
-            link_icon)
-    view_on_site.allow_tags = True
+            link_icon))
     view_on_site.short_description = _('view')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

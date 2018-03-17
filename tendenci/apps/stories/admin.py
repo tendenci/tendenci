@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story, Rotator
@@ -85,10 +86,9 @@ class StoryAdmin(TendenciBaseModelAdmin):
             alt = "%s" % obj.image
             if len(alt) > 123:
                 alt = alt[:123]
-            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
+            return mark_safe('<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt))
         else:
             return _("No image")
-    image_preview.allow_tags = True
     image_preview.short_description = _('Image')
 
     def clone_story(self, request, queryset):
@@ -113,10 +113,9 @@ class StoryInline(admin.TabularInline):
             alt = "%s" % obj.image
             if len(alt) > 123:
                 alt = alt[:123]
-            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
+            return mark_safe('<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt))
         else:
             return _("No image")
-    image_preview.allow_tags = True
     image_preview.short_description = _('Image')
 
 

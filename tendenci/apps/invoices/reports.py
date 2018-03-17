@@ -1,5 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from tendenci.libs.model_report.report import reports, ReportAdmin
