@@ -152,6 +152,6 @@ def get_language_config(content_language=None):
         config['directionality'] = 'ltr'
 
     if tinymce_settings.USE_SPELLCHECKER:
-        config['spellchecker_rpc_url'] = reverse('tinymce.views.spell_check')
+        config['spellchecker_rpc_url'] = reverse('tinymce-spellcheck')
 
     return config

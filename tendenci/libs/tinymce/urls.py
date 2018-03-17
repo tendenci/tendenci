@@ -8,7 +8,7 @@ urlpatterns = [
         name='tinymce-js'),
     url(r'^js/textareas/(?P<name>.+)/(?P<lang>.*)$', views.textareas_js,
         name='tinymce-js-lang'),
-    url(r'^spellchecker/$', views.spell_check),
+    url(r'^spellchecker/$', views.spell_check, name='tinymce-spellcheck'),
     url(r'^flatpages_link_list/$', views.flatpages_link_list),
     url(r'^compressor/$', views.compressor, name='tinymce-compressor'),
     url(r'^filebrowser/$', views.filebrowser, name='tinymce-filebrowser'),
