@@ -1,18 +1,20 @@
 #import os
 import math
 #from datetime import datetime
-from django.shortcuts import render as render_to_resp, get_object_or_404
+
+from django.shortcuts import get_object_or_404
 #from django.http import HttpResponse
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-# from django.views.decorators.csrf import csrf_exempt
+#from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
-# import simplejson
+#import simplejson
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.payments.models import Payment

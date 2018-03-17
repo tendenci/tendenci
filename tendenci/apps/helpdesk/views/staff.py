@@ -22,7 +22,7 @@ from django.core import paginator
 from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
@@ -33,6 +33,7 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk.forms import TicketForm, UserSettingsForm, EmailIgnoreForm, EditTicketForm, TicketCCForm, EditFollowUpForm, TicketDependencyForm
 from tendenci.apps.helpdesk.lib import send_templated_mail, query_to_dict, apply_query, safe_template_context
 from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch, IgnoreEmail, TicketCC, TicketDependency, QueueMembership

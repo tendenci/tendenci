@@ -1,4 +1,4 @@
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 #from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -7,13 +7,15 @@ from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
 import simplejson
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.base.http import Http403
+#from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.decorators import ssl_required
+
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
 
-from tendenci.apps.base.http import Http403
-#from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.decorators import ssl_required
 
 @login_required
 def manage_payment_info(request, recurring_payment_id,

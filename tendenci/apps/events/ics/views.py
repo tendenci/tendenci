@@ -1,6 +1,8 @@
 from datetime import datetime
-from django.shortcuts import render as render_to_resp, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.events.ics.models import ICS
 

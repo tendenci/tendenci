@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
@@ -23,6 +24,7 @@ try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
+
 
 def detail(request, slug, template_name="studygroups/detail.html"):
     study_group = get_object_or_404(StudyGroup, slug=slug)

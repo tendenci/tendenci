@@ -18,7 +18,6 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render as render_to_resp
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
@@ -27,6 +26,7 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk.forms import TicketForm
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp

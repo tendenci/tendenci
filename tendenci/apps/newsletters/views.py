@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
@@ -13,6 +13,7 @@ from django.views.generic import TemplateView, FormView, UpdateView, DetailView,
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.emails.models import Email
 from tendenci.apps.event_logs.models import EventLog

@@ -1,11 +1,13 @@
 from datetime import datetime
 import time
-from django.shortcuts import render as render_to_resp, get_object_or_404
+
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.corporate_memberships.models import Notice, NoticeLog
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
-
 from tendenci.apps.corporate_memberships.notices.forms import NoticeLogSearchForm
 
 

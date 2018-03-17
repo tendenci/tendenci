@@ -1,5 +1,4 @@
-from django.shortcuts import render as render_to_resp
-
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.handler404.models import Report404
 from tendenci.apps.event_logs.models import EventLog

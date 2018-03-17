@@ -2,17 +2,21 @@
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import logging
+
 from django.http import HttpResponse
-from django.shortcuts import render as render_to_resp
 from django.template import loader
 from django.utils.translation import ugettext as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.tinymce.compressor import gzip_compressor
 from tendenci.libs.tinymce.widgets import get_language_config
+
 import json
 try:
     from django.views.decorators.csrf import csrf_exempt
 except ImportError:
     pass
+
 
 def textareas_js(request, name, lang=None):
     """

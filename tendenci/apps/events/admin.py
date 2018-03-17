@@ -6,11 +6,12 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.http import HttpResponse, Http404
-from django.shortcuts import redirect, render as render_to_resp, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
     CustomRegFormEntry, CustomRegFieldEntry, Event)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm

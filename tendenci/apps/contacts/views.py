@@ -2,11 +2,12 @@ from __future__ import print_function
 from builtins import str
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.site_settings.utils import get_setting
@@ -18,9 +19,9 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
 from tendenci.apps.event_logs.models import EventLog
 
-
 try: from tendenci.apps.notifications import models as notification
 except: notification = None
+
 
 @login_required
 def details(request, id=None, template_name="contacts/view.html"):

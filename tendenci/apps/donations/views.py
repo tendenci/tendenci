@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.donations.forms import DonationForm
 from tendenci.apps.donations.utils import donation_inv_add, donation_email_user
 from tendenci.apps.donations.models import Donation

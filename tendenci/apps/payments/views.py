@@ -1,16 +1,16 @@
 from django.conf import settings
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.authorizenet.utils import prepare_authorizenet_sim_form
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
-
 from tendenci.apps.site_settings.utils import get_setting
 
 

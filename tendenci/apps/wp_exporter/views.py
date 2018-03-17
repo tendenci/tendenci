@@ -1,15 +1,18 @@
 import subprocess
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, redirect
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.wp_exporter.forms import ExportForm
 from tendenci.apps.wp_exporter.tasks import WPExportTask
 from tendenci.apps.wp_exporter.models import XMLExport
+
 
 def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"):
     if not request.user.profile.is_superuser:

@@ -2,15 +2,13 @@
 Views which allow users to create and activate accounts.
 
 """
-
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render as render_to_resp
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ImproperlyConfigured
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -19,6 +17,7 @@ try:
     from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
+
 
 def activate(request, activation_key,
              template_name='registration/activate.html',

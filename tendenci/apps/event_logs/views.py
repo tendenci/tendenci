@@ -5,12 +5,13 @@ from os import mkdir
 from PIL import Image
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Count
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.perms.decorators import superuser_required

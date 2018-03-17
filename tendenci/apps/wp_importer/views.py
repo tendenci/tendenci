@@ -1,14 +1,18 @@
 import os.path
 import subprocess
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, redirect
+from django.shortcuts import redirect
 from django.conf import settings
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.wp_importer.forms import BlogImportForm
 from tendenci.apps.wp_importer.tasks import WPImportTask
 from tendenci.apps.base.http import MissingApp
-from django.contrib import messages
-from django.utils.translation import ugettext as _
+
 from djcelery.models import TaskMeta
 
 

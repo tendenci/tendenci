@@ -1,8 +1,9 @@
 from builtins import str
 import datetime
 from datetime import timedelta
+
 from django.conf import settings
-from django.shortcuts import render as render_to_resp, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.template import Template as DTemplate
@@ -10,9 +11,12 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
+
 from createsend import Template as CST
 from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.campaign_monitor.models import Template, Campaign
 from tendenci.apps.campaign_monitor.forms import TemplateForm, CampaignForm
@@ -24,10 +28,12 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list
 
+
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 #CreateSend.api_key = api_key
 auth = {'api_key': api_key}
+
 
 @login_required
 def template_index(request, template_name='campaign_monitor/templates/index.html'):

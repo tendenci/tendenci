@@ -6,7 +6,7 @@ import time as ttime
 from djcelery.models import TaskMeta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -20,6 +20,7 @@ from django.core.files.base import ContentFile
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting

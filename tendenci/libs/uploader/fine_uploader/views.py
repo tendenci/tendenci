@@ -6,14 +6,16 @@ import shutil
 
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render as render_to_resp
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from .forms import UploadFileForm
 from . import utils
 
 logger = logging.getLogger('django')
+
 
 ##
 # Utils

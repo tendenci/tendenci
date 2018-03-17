@@ -5,7 +5,6 @@ from itertools import groupby
 
 import django
 from django.http import HttpResponse
-from django.shortcuts import render as render_to_resp
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
 from django.utils.encoding import force_text
@@ -21,6 +20,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms import MultipleChoiceField
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.model_report.exporters.excel import ExcelExporter
 from tendenci.libs.model_report.exporters.pdf import PdfExporter
 from tendenci.libs.model_report.forms import ConfigForm, GroupByForm, FilterForm

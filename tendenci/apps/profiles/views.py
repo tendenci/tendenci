@@ -4,9 +4,10 @@ import math
 import time
 import subprocess
 from datetime import datetime, timedelta
+
 from django.db import models
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, get_object_or_404, redirect, Http404
+from django.shortcuts import get_object_or_404, redirect, Http404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
@@ -22,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 import simplejson
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.libs.utils import python_executable
 

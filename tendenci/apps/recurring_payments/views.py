@@ -1,5 +1,6 @@
 from datetime import datetime
-from django.shortcuts import render as render_to_resp, get_object_or_404
+
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 #from django.conf import settings
@@ -14,6 +15,13 @@ import simplejson
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.decorators import ssl_required
+from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.site_settings.utils import get_setting
+
 from tendenci.apps.recurring_payments.models import (RecurringPayment,
                                        PaymentProfile,
                                        PaymentTransaction,
@@ -22,11 +30,6 @@ from tendenci.apps.recurring_payments.authnet.utils import get_test_mode
 from tendenci.apps.recurring_payments.utils import (RecurringPaymentEmailNotices,
                                       run_a_recurring_payment)
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.decorators import ssl_required
-from tendenci.apps.base.utils import tcurrency
-from tendenci.apps.site_settings.utils import get_setting
 
 @ssl_required
 def view_account(request, recurring_payment_id, guid=None,

@@ -1,15 +1,18 @@
 from datetime import datetime, timedelta
-from django.contrib.auth.decorators import login_required
-from django.forms.models import modelformset_factory
-from django.shortcuts import render as render_to_resp, redirect
-from django.contrib.auth.models import User
 from dateutil import parser
 
+from django.contrib.auth.decorators import login_required
+from django.forms.models import modelformset_factory
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.dashboard.models import DashboardStatType
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.utils import get_setting
+
 
 @login_required
 def index(request, template_name="dashboard/index.html"):

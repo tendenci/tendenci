@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.shortcuts import render as render_to_resp
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -7,6 +6,8 @@ from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 from django.contrib.auth.views import password_reset as auth_password_reset
 from django.utils.translation import ugettext_lazy as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
 from .forms import LoginForm
 from tendenci.apps.event_logs.models import EventLog

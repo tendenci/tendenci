@@ -1,9 +1,10 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.utils.html import strip_entities, strip_tags
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.make_payments.forms import MakePaymentForm
 from tendenci.apps.make_payments.utils import make_payment_inv_add, make_payment_email_user
 from tendenci.apps.make_payments.models import MakePayment

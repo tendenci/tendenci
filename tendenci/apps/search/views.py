@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.shortcuts import render as render_to_resp
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.search.forms import ModelSearchForm
 from tendenci.apps.event_logs.models import EventLog
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
+
 
 def open_search(request, template_name="search/open_search_xml.html"):
     return render_to_resp(request=request, template_name=template_name,

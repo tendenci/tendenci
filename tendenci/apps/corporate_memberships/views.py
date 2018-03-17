@@ -10,7 +10,7 @@ import mimetypes
 from functools import reduce
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -27,6 +27,8 @@ from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.functions import Lower
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.libs.utils import python_executable
 

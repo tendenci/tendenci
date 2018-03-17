@@ -9,8 +9,9 @@ views/kb.py - Public-facing knowledgebase views. The knowledgebase is a
 """
 
 from django.http import HttpResponseRedirect
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.helpdesk.models import KBCategory, KBItem
 

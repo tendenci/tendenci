@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render as render_to_resp
 from django.http import Http404
 from django.contrib.admin.views.decorators import staff_member_required
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.model_report.report import reports
 
 

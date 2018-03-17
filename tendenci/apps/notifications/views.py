@@ -1,14 +1,16 @@
 from django.core.urlresolvers import reverse
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.syndication.views import Feed
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.base.http import Http403
 
 from tendenci.apps.notifications.models import Notice, NoticeType, NoticeEmail, NOTICE_MEDIA, get_notification_setting
 from tendenci.apps.notifications.decorators import basic_auth_required, simple_basic_auth_callback
 from tendenci.apps.notifications.feeds import NoticeUserFeed
 
-from tendenci.apps.base.http import Http403
 
 @basic_auth_required(realm='Notices Feed', callback_func=simple_basic_auth_callback)
 def feed_for_user(request):

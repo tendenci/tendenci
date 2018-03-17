@@ -1,5 +1,4 @@
-from django.shortcuts import render as render_to_resp
-
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.accountings.models import Acct
 
 

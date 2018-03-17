@@ -1,12 +1,14 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.contributions.models import Contribution
 from tendenci.apps.perms.utils import has_perm
+
 
 @login_required
 def index(request, id=None, template_name="contributions/view.html"):

@@ -1,11 +1,11 @@
 import os
 from six.moves import cPickle
-from django.shortcuts import render as render_to_resp
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.imports.utils import (render_excel,

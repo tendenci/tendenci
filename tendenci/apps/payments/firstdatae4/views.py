@@ -1,6 +1,7 @@
-from django.shortcuts import render as render_to_resp
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.firstdatae4.utils import firstdatae4_thankyou_processing
 from tendenci.apps.payments.utils import log_silent_post
 

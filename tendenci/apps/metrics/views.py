@@ -1,8 +1,8 @@
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render as render_to_resp
 from django.db.models import Sum
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.http import Http403
 from tendenci.apps.metrics.models import Metric

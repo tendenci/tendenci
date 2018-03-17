@@ -1,7 +1,7 @@
 from builtins import str
 import os
 
-from django.shortcuts import render as render_to_resp, redirect
+from django.shortcuts import redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.managers import SubProcessManager

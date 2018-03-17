@@ -12,13 +12,15 @@ from django.db.models import F, Q
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
     HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render as render_to_resp
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin
 from django.views.decorators.csrf import csrf_protect
 from django.views import generic
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from . import compat, defaults, util
 from .compat import get_atomic_func
