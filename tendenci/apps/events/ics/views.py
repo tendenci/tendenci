@@ -1,7 +1,6 @@
 from datetime import datetime
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import render as render_to_resp, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 from tendenci.apps.base.http import Http403
 from tendenci.apps.events.ics.models import ICS
 
@@ -16,10 +15,10 @@ def status(request, ics_id, template_name='ics/ics_status.html'):
 
     ics = get_object_or_404(ICS, pk=ics_id)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'ics': ics,
         'datetime': datetime,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required

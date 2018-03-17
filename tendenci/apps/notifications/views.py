@@ -1,7 +1,6 @@
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.syndication.views import Feed
 
@@ -45,19 +44,19 @@ def notices(request):
         "rows": settings_table,
     }
 
-    return render_to_response("notification/notices.html", {
+    return render_to_resp(request=request, template_name="notification/notices.html", context={
         "notices": notices,
         "notice_types": notice_types,
         "notice_settings": notice_settings,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def single(request, id):
     notice = get_object_or_404(Notice, id=id)
     if request.user == notice.user:
-        return render_to_response("notification/single.html", {
+        return render_to_resp(request=request, template_name="notification/single.html", context={
             "notice": notice,
-        }, context_instance=RequestContext(request))
+        })
     raise Http404
 
 @login_required
@@ -98,7 +97,7 @@ def mark_all_seen(request):
 def email(request, guid):
     email = get_object_or_404(NoticeEmail, guid=guid)
     only_content = 'only-content' in request.GET
-    return render_to_response("notification/email.html", {
+    return render_to_resp(request=request, template_name="notification/email.html", context={
         'email':email,
         'only_content': only_content,
-    }, context_instance=RequestContext(request))
+    })

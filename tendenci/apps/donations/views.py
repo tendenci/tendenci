@@ -1,8 +1,7 @@
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.contrib.auth.models import User
 from tendenci.apps.donations.forms import DonationForm
 from tendenci.apps.donations.utils import donation_inv_add, donation_email_user
@@ -129,18 +128,18 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'form':form,
         'captcha_form' : captcha_form,
         'use_captcha' : use_captcha,
-        'currency_symbol': currency_symbol},
-        context_instance=RequestContext(request))
+        'currency_symbol': currency_symbol})
 
 
 def add_confirm(request, id, template_name="donations/add_confirm.html"):
     donation = get_object_or_404(Donation, pk=id)
     EventLog.objects.log(instance=donation)
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @login_required
@@ -151,8 +150,8 @@ def detail(request, id=None, template_name="donations/view.html"):
     EventLog.objects.log(instance=donation)
 
     donation.donation_amount = tcurrency(donation.donation_amount)
-    return render_to_response(template_name, {'donation':donation},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donation':donation})
 
 
 def receipt(request, id, guid, template_name="donations/receipt.html"):
@@ -164,8 +163,8 @@ def receipt(request, id, guid, template_name="donations/receipt.html"):
 
     if (not donation.invoice) or donation.invoice.balance > 0 or (not donation.invoice.is_tendered):
         template_name="donations/view.html"
-    return render_to_response(template_name, {'donation':donation},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donation':donation})
 
 
 @login_required
@@ -178,5 +177,5 @@ def search(request, template_name="donations/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'donations':donations},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donations':donations})

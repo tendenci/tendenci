@@ -1,7 +1,6 @@
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.contrib.auth.models import User
 from django.utils.html import strip_entities, strip_tags
 
@@ -95,12 +94,12 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
 
-    return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form, 'currency_symbol': currency_symbol})
 
 
 def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def view(request, id=None, template_name="make_payments/view.html"):
@@ -110,5 +109,5 @@ def view(request, id=None, template_name="make_payments/view.html"):
     EventLog.objects.log(instance=mp)
 
     mp.payment_amount = tcurrency(mp.payment_amount)
-    return render_to_response(template_name, {'mp':mp},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'mp':mp})

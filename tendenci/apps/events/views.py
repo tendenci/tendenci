@@ -54,7 +54,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.files.models import File
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.imports.forms import ImportForm
 from tendenci.apps.imports.models import Import
 from tendenci.apps.base.utils import convert_absolute_urls, checklist_update
@@ -167,7 +167,7 @@ def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_p
             pass
 
     context = {"form": form, "form_for_form": form_for_form}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @login_required
@@ -196,7 +196,7 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
         'regconfpricings': regconfpricings
     }
 
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('events')
@@ -263,7 +263,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         pricing = pricing.order_by('position', '-price')
         free_event = not bool([p for p in pricing if p.price > 0])
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
         'event': event,
         'speakers': speakers,
@@ -276,7 +276,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'organizer_files': organizer_files,
         'place_files': place_files,
         'free_event': free_event
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -285,10 +285,10 @@ def speaker_list(request, event_id, template_name='events/speakers.html'):
 
     speakers = event.speaker_set.order_by('pk')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
         'speakers': speakers,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -319,7 +319,7 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
     if hasattr(request.user, 'registrant_set'):
         is_registrant = request.user.registrant_set.filter(registration__event=event).exists()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
         'registration': registration,
         'limit': limit,
@@ -329,7 +329,7 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
         'reg_ended': reg_ended,
         'earliest_time': earliest_time,
         'is_registrant': is_registrant,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def month_redirect(request):
@@ -404,7 +404,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'events': events,
         'form': form,
         'now': datetime.now(),
@@ -412,7 +412,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         'event_type': event_type,
         'start_dt': start_dt,
         'with_registration': with_registration,
-        }, context_instance=RequestContext(request))
+        })
 
 
 def icalendar(request):
@@ -501,8 +501,8 @@ def print_view(request, id, template_name="events/print-view.html"):
     if has_view_perm(request.user,'events.view_event',event):
         EventLog.objects.log(instance=event)
 
-        return render_to_response(template_name, {'event': event},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'event': event})
     else:
         raise Http403
 
@@ -602,9 +602,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "overview"})
 
 
 @is_enabled('events')
@@ -671,9 +670,8 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "location"})
 
 
 @is_enabled('events')
@@ -755,9 +753,8 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "organizer"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "organizer"})
 
 
 @is_enabled('events')
@@ -897,9 +894,8 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "speakers"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "speakers"})
 
 
 @is_enabled('events')
@@ -974,9 +970,8 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "regconf"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "regconf"})
 
 
 @is_enabled('events')
@@ -1077,9 +1072,8 @@ def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="ev
         multi_event_forms = multi_event_forms + [form_apply_recurring]
 
     # response
-    return render_to_response(template_name,
-        {'event': event, 'multi_event_forms': multi_event_forms, 'label': "pricing"},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "pricing"})
 
 
 @is_enabled('events')
@@ -1110,8 +1104,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
     else:
         form = form_class(instance=event.meta)
 
-    return render_to_response(template_name, {'event': event, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'form':form})
 
 
 @csrf_exempt
@@ -1436,7 +1430,8 @@ def add(request, year=None, month=None, day=None,
             form_regconfpricing.label = _("Pricing(s)")
 
         # response
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name,
+            context={
             'multi_event_forms':[
                 form_event,
                 form_place,
@@ -1446,8 +1441,7 @@ def add(request, year=None, month=None, day=None,
                 form_attendees,
                 form_regconfpricing
                 ],
-            },
-            context_instance=RequestContext(request))
+            })
     else:
         raise Http403
 
@@ -1484,8 +1478,8 @@ def delete(request, id, template_name="events/delete.html"):
 
             return HttpResponseRedirect(reverse('event.search'))
 
-        return render_to_response(template_name, {'event': event},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'event': event})
     else:
         raise Http403
 
@@ -1542,8 +1536,8 @@ def delete_recurring(request, id, template_name="events/delete_recurring.html"):
 
         return HttpResponseRedirect(reverse('event.search'))
 
-    return render_to_response(template_name, {'event': event, 'events': event_list},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'event': event, 'events': event_list})
 
 
 @is_enabled('events')
@@ -1557,9 +1551,8 @@ def recurring_details(request, id, template_name="events/recurring_view.html"):
     recurring_detail = event.recurring_event
     event_list = recurring_detail.event_set.order_by('start_dt')
 
-    return render_to_response(template_name,
-            {'event':event, 'recurring_event':recurring_detail, 'events':event_list},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'event':event, 'recurring_event':recurring_detail, 'events':event_list})
 
 
 @is_enabled('events')
@@ -1590,12 +1583,12 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
     if not (individual_pricings or table_pricings):
         raise Http404
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'individual_pricings': individual_pricings,
         'table_pricings': table_pricings,
         'quantity_options': list(range(31))
-    }, context_instance=RequestContext(request))
+    })
 
 
 def multi_register_redirect(request, event, msg):
@@ -1633,10 +1626,10 @@ def member_register(request, event_id,
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return HttpResponseRedirect(reverse('event', args=[event_id]))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'form': form
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -2009,7 +2002,7 @@ def register(request, event_id=0,
         if has_registrant_form_errors:
             break
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'event_price': event_price,
         'free_event': event.free_event,
@@ -2030,7 +2023,7 @@ def register(request, event_id=0,
         'add_more_registrants' : add_more_registrants,
         'flat_ignore_fields' : flat_ignore_fields,
         'currency_symbol' : get_setting("site", "global", "currencysymbol") or '$'
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -2364,7 +2357,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 break
         if has_registrant_form_errors:
             break
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'event_price': event_price,
         'free_event': free_event,
@@ -2378,7 +2371,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         'addon_formset': addon_formset,
         'total_regt_forms': total_regt_forms,
         'has_registrant_form_errors': has_registrant_form_errors,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -2494,12 +2487,12 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         if formset_errors:
             break
 
-    return render_to_response(template_name, {'formset': formset,
+    return render_to_resp(request=request, template_name=template_name,
+                    context={'formset': formset,
                                               'formset_errors':formset_errors,
                                               'total_regt_forms':total_regt_forms,
                                               'reg8n': reg8n,
-                                               },
-                    context_instance=RequestContext(request))
+                                               })
 
 
 @is_enabled('events')
@@ -2587,14 +2580,14 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
             if not c_regt.name:
                 c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'event': event,
         'registration': registration,
         'registrants': registrants,
         'cancelled_registrants': cancelled_registrants,
         'hash': hash,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -2689,12 +2682,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         if not registrant.name:
             registrant.last_name = registrant.name = registrant.custom_reg_form_entry.__unicode__()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'event': event,
         'registrant':registrant,
         'hash': hash,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -2783,7 +2776,8 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'cal':cal,
         'month':month,
         'prev_month_url':prev_month_url,
@@ -2794,8 +2788,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         'today':date.today(),
         'types':types,
         'type':type,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -2879,7 +2872,8 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'week':week_dates,
         'weekdays':weekdays,
         'next_week_url':next_week_url,
@@ -2888,8 +2882,7 @@ def week_view(request, year=None, month=None, day=None, type=None, template_name
         'today':date.today(),
         'types':types,
         'type':type,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -2953,7 +2946,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'date': day_date,
         'now': datetime.now(),
         'type': None,
@@ -2962,7 +2955,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         'yesterday_url': yesterday_url,
         'tomorrow_url': tomorrow_url,
         'form': form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -3001,8 +2994,8 @@ def types(request, template_name='events/types/index.html'):
 
     formset = TypeFormSet()
 
-    return render_to_response(template_name, {'formset': formset},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'formset': formset})
 
 
 @login_required
@@ -3018,8 +3011,8 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
             messages.add_message(request, messages.SUCCESS, _(msg_string))
             return redirect('event.search')
 
-    return render_to_response(template_name, {'type': type, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'type': type, 'form': form})
 
 
 @is_enabled('events')
@@ -3056,10 +3049,10 @@ def global_registrant_search(request, template_name='events/registrants/global-s
                               .filter(last_name__icontains=last_name)
                               .filter(email__icontains=email))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'registrants': registrants,
         'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -3110,13 +3103,13 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     EventLog.objects.log(instance=event)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'registrants':registrants,
         'active_registrants':active_registrants,
         'canceled_registrants':canceled_registrants,
         'form':form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -3324,7 +3317,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     EventLog.objects.log(instance=event)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
         'registrants': registrants,
         'balance_sum': balance_sum,
@@ -3337,7 +3330,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'has_addons': has_addons,
         'discount_available': discount_available,
         'addon_total_sum': addon_total_sum,
-        'total_checked_in': total_checked_in}, context_instance=RequestContext(request))
+        'total_checked_in': total_checked_in})
 
 
 @csrf_exempt
@@ -3379,8 +3372,8 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
     if has_perm(request.user,'registrants.view_registrant',registrant):
         EventLog.objects.log(instance=registrant)
 
-        return render_to_response(template_name, {'registrant': registrant},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'registrant': registrant})
     else:
         raise Http403
 
@@ -3446,7 +3439,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
     EventLog.objects.log(instance=registration)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'event':event,
         'registrant':registrant,
         'registration':registration,
@@ -3454,8 +3448,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'registrants_count': registrants_count,
         'addons': addons,
         'hash': registrant_hash,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -3516,10 +3509,10 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             context_instance=RequestContext(request))
         form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'event':event,
         'form': form
-        },context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -3571,10 +3564,10 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
         else:
             form = form_class(instance=email)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'event':event,
         'form': form
-        },context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -4058,10 +4051,10 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
         form = form_class(user=request.user, prefix="event")
         form_place = PlaceForm(prefix="place")
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'form_place': form_place,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('events')
@@ -4077,9 +4070,9 @@ def pending(request, template_name="events/pending.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'events': events,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -4102,9 +4095,9 @@ def approve(request, event_id, template_name="events/approve.html"):
 
         return redirect('event', id=event_id)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event': event,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -4116,10 +4109,10 @@ def list_addons(request, event_id, template_name="events/addons/list.html"):
     if not has_view_perm(request.user,'events.view_event', event):
         raise Http404
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'event':event,
         'addons':event.addon_set.all(),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -4159,11 +4152,11 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
 
     multi_event_forms = [formset]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'event':event,
         'formset': multi_event_forms,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -4207,11 +4200,11 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
 
     multi_event_forms = [formset]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'formset':multi_event_forms,
         'form':form,
         'event':event,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -4282,9 +4275,9 @@ def create_ics(request, template_name="events/ics.html"):
     else:
         form = EventICSForm()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -4305,10 +4298,9 @@ def myevents(request, template_name='events/myevents.html'):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'events': events, 'show': show},
-        context_instance=RequestContext(request))
+    return render_to_resp(
+        request=request, template_name=template_name,
+        context={'events': events, 'show': show})
 
 
 @login_required
@@ -4368,8 +4360,8 @@ def import_add(request, form_class=ImportForm,
                 reverse('event.import_preview', args=[import_i.id]))
     else:
         form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 @login_required
@@ -4385,11 +4377,11 @@ def import_preview(request, import_id,
     event_list, invalid_list = event_import_process(import_i,
                                                         preview=True)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         'event_list': event_list,
         'import_i': import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -4404,10 +4396,10 @@ def import_process(request, import_id,
 
     subprocess.Popen([python_executable(), 'manage.py', 'import_events', str(import_id)])
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('events')
@@ -4444,7 +4436,7 @@ def export(request, template_name="events/export.html"):
         return HttpResponseRedirect(reverse('event.export_status', args=[identifier]))
 
     context = {'form': form}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('events')
@@ -4467,7 +4459,7 @@ def export_status(request, identifier, template_name="events/export_status.html"
 
     context = {'identifier': identifier,
                'download_ready': download_ready}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('events')
@@ -4502,4 +4494,4 @@ def reports_financial(request, template_name="events/financial_reports.html"):
     context = {'events' : events,
                 'form' : form}
 
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)

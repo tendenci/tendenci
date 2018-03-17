@@ -5,7 +5,6 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse
 
@@ -13,7 +12,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.events.models import Registration
@@ -37,10 +36,9 @@ def search(request, template_name="discounts/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'discounts':discounts},
-        context_instance=RequestContext(request)
+    return render_to_resp(
+        request=request, template_name=template_name,
+        context={'discounts':discounts}
     )
 
 
@@ -65,12 +63,11 @@ def detail(request, id, template_name="discounts/view.html"):
 
     EventLog.objects.log(instance=discount)
 
-    return render_to_response(
-        template_name,
-        {'discount':discount,
+    return render_to_resp(
+        request=request, template_name=template_name,
+        context={'discount':discount,
          'registrant_list':registrant_list,
-         'membership_list':membership_list},
-        context_instance=RequestContext(request)
+         'membership_list':membership_list}
     )
 
 
@@ -91,10 +88,8 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(
-        template_name,
-        {'form':form},
-        context_instance=RequestContext(request),
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form}
     )
 
 
@@ -116,13 +111,11 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
     else:
         form = form_class(instance=discount, user=request.user)
 
-    return render_to_response(
-        template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'form': form,
             'discount': discount,
-        },
-        context_instance=RequestContext(request),
+        }
     )
 
 
@@ -140,8 +133,8 @@ def delete(request, id, template_name="discounts/delete.html"):
 
         return redirect('discounts')
 
-    return render_to_response(template_name, {'discount': discount},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'discount': discount})
 
 
 @is_enabled('discounts')
@@ -232,5 +225,5 @@ def export(request, template_name="discounts/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

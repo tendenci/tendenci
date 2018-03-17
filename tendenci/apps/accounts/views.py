@@ -1,7 +1,6 @@
 from django.conf import settings
-from django.shortcuts import render_to_response
+from django.shortcuts import render as render_to_resp
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -51,9 +50,9 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         if request.user.is_authenticated() and redirect_to:
                 return HttpResponseRedirect(redirect_to)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "form": form
-    }, context_instance=RequestContext(request))
+    })
 
 @ssl_required
 def register(request, success_url=None,
@@ -207,12 +206,10 @@ def register(request, success_url=None,
 
     if extra_context is None:
         extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-    return render_to_response(template_name,
-                              { 'form': form },
-                              context_instance=context)
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['form'] = form
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)
 
 def password_reset(request):
     from_registration = request.GET.get('registration', False)

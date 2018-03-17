@@ -2,8 +2,7 @@ from __future__ import print_function
 from builtins import str
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -29,8 +28,8 @@ def details(request, id=None, template_name="contacts/view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
@@ -51,8 +50,8 @@ def search(request, template_name="contacts/search.html"):
 
     contacts = contacts.order_by('-create_dt')
 
-    return render_to_response(template_name, {'contacts':contacts},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'contacts':contacts})
 
 
 def search_redirect(request):
@@ -63,8 +62,8 @@ def print_view(request, id, template_name="contacts/print-view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
@@ -91,8 +90,8 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
             form = form_class()
             print(form_class())
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -105,8 +104,8 @@ def delete(request, id, template_name="contacts/delete.html"):
             contact.delete()
             return HttpResponseRedirect(reverse('contact.search'))
 
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
@@ -275,13 +274,13 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
             return HttpResponseRedirect(reverse('form.confirmation'))
         else:
-            return render_to_response(template_name, {'form': form},
-                context_instance=RequestContext(request))
+            return render_to_resp(request=request, template_name=template_name,
+                context={'form': form})
 
     form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 def confirmation(request, form_class=SubmitContactForm, template_name="form-confirmation.html"):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)

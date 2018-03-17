@@ -5,7 +5,6 @@ from datetime import datetime, time, timedelta
 import time as ttime
 import subprocess
 
-from django.template import RequestContext
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -24,7 +23,7 @@ from django.template.loader import get_template
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.decorators import is_enabled, superuser_required
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 from tendenci.apps.event_logs.models import EventLog
@@ -73,7 +72,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     if obj:
         obj_name = obj._meta.verbose_name
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'invoice': invoice,
         'obj': obj,
         'obj_name': obj_name,
@@ -81,8 +81,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         'notify': notify,
         'form': form,
         'can_pay': invoice.allow_payment_by(request.user, guid),
-        'merchant_login': merchant_login},
-        context_instance=RequestContext(request))
+        'merchant_login': merchant_login})
 
 
 def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
@@ -124,11 +123,11 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
         form = MarkAsPaidForm(initial={
             'amount': invoice.balance, 'submit_dt': datetime.now()})
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'invoice': invoice,
             'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 def mark_as_paid_old(request, id):
@@ -302,8 +301,8 @@ def search(request, template_name="invoices/search.html"):
                                    Q(bill_to_email__iexact=request.user.email)
                                    ).order_by('-create_dt')
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'form':form,},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'invoices': invoices, 'form':form,})
 
 
 @login_required
@@ -350,8 +349,8 @@ def search_report(request, template_name="invoices/search.html"):
         else:
             raise Http403
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'query': query},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'invoices': invoices, 'query': query})
 
 
 @is_enabled('invoices')
@@ -407,9 +406,9 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     else:
         form = form_class(initial={'variance':0.00, 'variance_notes':invoice.variance_notes})
 
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'invoice': invoice,
+                                              'form':form})
 
 
 @is_enabled('invoices')
@@ -452,13 +451,13 @@ def detail(request, id, template_name="invoices/detail.html"):
 
     print('here')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'invoice': invoice,
         'account_numbers': account_numbers,
         'acct_entries': acct_entries,
         'total_debit': total_debit,
-        'total_credit': total_credit},
-        context_instance=RequestContext(request))
+        'total_credit': total_credit})
 
 
 @is_enabled('invoices')
@@ -515,10 +514,10 @@ def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
                                    'recipient': invoice.bill_to_email,
                                    'body': body_initial})
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'invoice': invoice,
         'form': form
-        },context_instance=RequestContext(request))
+        })
 
 @staff_member_required
 def report_top_spenders(request, template_name="reports/top_spenders.html"):
@@ -528,9 +527,9 @@ def report_top_spenders(request, template_name="reports/top_spenders.html"):
 
     entry_list = User.objects.order_by('-profile__total_spend')[:10]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'entry_list': entry_list,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('invoices')
@@ -581,7 +580,7 @@ def export(request, template_name="invoices/export.html"):
         start_dt = end_dt - timedelta(days=30)
 
     context = {'start_dt': start_dt, 'end_dt': end_dt}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('invoices')
@@ -604,7 +603,7 @@ def export_status(request, identifier, template_name="invoices/export_status.htm
 
     context = {'identifier': identifier,
                'download_ready': download_ready}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('invoices')

@@ -6,8 +6,7 @@ import time as ttime
 from djcelery.models import TaskMeta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -70,8 +69,8 @@ def search(request, template_name="user_groups/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'groups':groups, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'groups':groups, 'form': form})
 
 def search_redirect(request):
     """
@@ -106,10 +105,8 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
         groupmemberships = GroupMembership.objects.none()
 
     count_members = len(groupmemberships)
-    return render_to_response(
-        template_name,
-        locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())
 
 @superuser_required
 def message(request, group_slug, template_name='user_groups/message.html'):
@@ -173,7 +170,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
     else:
         print('form errors', list(form.errors.items()))
 
-    return render(request, template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'group': group,
         'num_members': num_members,
         'form': form})
@@ -234,7 +231,7 @@ def group_add_edit(request, group_slug=None,
         else:
             form = form_class(user=request.user)
 
-    return render_to_response(template_name, {'form':form, 'titie':title, 'group':group}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form':form, 'titie':title, 'group':group})
 
 
 @login_required
@@ -251,8 +248,8 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
         group_edit.save()
         return HttpResponseRedirect(group_edit.get_absolute_url())
 
-    return render_to_response(template_name, {'group':group_edit, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'group':group_edit, 'form':form})
 
 def group_delete(request, id, template_name="user_groups/delete.html"):
     group = get_object_or_404(Group, pk=id)
@@ -284,16 +281,15 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
     else:
         title = _("Are you sure?")
 
-    return render_to_response(template_name,
-            {'group':group,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'group':group,
              "title": title,
              "object_name": object_name,
              "deleted_objects": deleted_objects,
              "perms_lacking": perms_needed,
              "protected": protected,
              "opts": group._meta,
-             },
-        context_instance=RequestContext(request))
+             })
 
 def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
@@ -400,7 +396,7 @@ def groupmembership_bulk_add(request, group_slug,
         member_label = request.GET.get('member_label', 'username')
         form = form_class(group, member_label=member_label)
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 def groupmembership_add_edit(request, group_slug, user_id=None,
                              form_class=GroupMembershipForm,
@@ -439,7 +435,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     else:
         form = form_class(group, user_id, instance=group_membership)
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 
 def groupmembership_delete(request, group_slug, user_id, template_name="user_groups/member_delete.html"):
@@ -462,7 +458,7 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         )
         return HttpResponseRedirect(group.get_absolute_url())
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 
 def _events_chart(from_date, to_date, event_ids):
@@ -504,13 +500,12 @@ def users_added_report(request, kind):
             .annotate(count=Count('pk'))\
             .order_by('-count')
 
-    return render_to_response('reports/users_added.html',
-                              {'data': data, 'chart_data': chart_data,
+    return render_to_resp(request=request, template_name='reports/users_added.html',
+                              context={'data': data, 'chart_data': chart_data,
                                'report_title': title,
                                'entities': Entity.objects.all().order_by('entity_name'),
                                'site': Site.objects.get_current(),
-                               'date_range': (from_date, to_date)},
-                              context_instance=RequestContext(request))
+                               'date_range': (from_date, to_date)})
 
 
 @login_required
@@ -592,7 +587,7 @@ def group_members_export_status(request, group_slug,
                'export_target': export_target,
                'download_ready': download_ready,
                'email_recipient': email_recipient}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -927,20 +922,20 @@ def group_subscriber_import(request, group_slug, template="user_groups/import_su
     #             # evaluate the result and render the results page
     #             result = ImportSubscribersTask()
     #             subs = result.run(group, csv.file.path)
-    #             return render_to_response('user_groups/import_subscribers_result.html', {
+    #             return render_to_resp(request=request, template_name='user_groups/import_subscribers_result.html', context={
     #                 'group':group,
     #                 'subs':subs,
-    #             }, context_instance=RequestContext(request))
+    #             })
     #         else:
     #             result = ImportSubscribersTask.delay(group, csv.file.path)
     #             return redirect('subscribers_import_status', group.slug, result.task_id)
     # else:
     #     form = form_class()
 
-    # return render_to_response(template, {
+    # return render_to_resp(request=request, template_name=template, context={
     #     'group':group,
     #     'form':form,
-    # }, context_instance=RequestContext(request))
+    # })
 
 @login_required
 def subscribers_import_status(request, group_slug, task_id, template_name='user_groups/import_status.html'):
@@ -960,21 +955,21 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
 
     if task and task.status == "SUCCESS":
         subs = task.result
-        return render_to_response('user_groups/import_subscribers_result.html', {
+        return render_to_resp(request=request, template_name='user_groups/import_subscribers_result.html', context={
             'group':group,
             'subs':subs,
-        }, context_instance=RequestContext(request))
+        })
     else:
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name, context={
             'group':group,
             'task':task,
-        }, context_instance=RequestContext(request))
+        })
 
 @login_required
 def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_add_redirect.html'):
     EventLog.objects.log()
 
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @login_required
@@ -1001,8 +996,8 @@ def import_add(request, form_class=ImportForm,
                 reverse('group.import_preview', args=[import_i.id]))
     else:
         form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 @login_required
 def import_preview(request, import_id,
@@ -1015,11 +1010,11 @@ def import_preview(request, import_id,
     user_groups_list, invalid_list = user_groups_import_process(import_i,
                                                         preview=True)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         'user_groups_list': user_groups_list,
         'import_i': import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def import_process(request, import_id,
@@ -1033,10 +1028,10 @@ def import_process(request, import_id,
 
     subprocess.Popen([python_executable(), 'manage.py', 'import_groups', str(import_id)])
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def import_download_template(request, file_ext='.csv'):
@@ -1108,4 +1103,4 @@ def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key
     if not groupmembership.unsubscribe_to_newsletter():
         raise Http404
 
-    return render(request, 'user_groups/newsletter_unsubscribe.html')
+    return render_to_resp(request=request, template_name='user_groups/newsletter_unsubscribe.html')

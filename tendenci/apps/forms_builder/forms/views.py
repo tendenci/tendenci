@@ -11,7 +11,6 @@ import csv
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
@@ -23,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from djcelery.models import TaskMeta
 
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import template_exists
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
@@ -75,10 +74,10 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form':form,
         'formset': formset,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('forms')
@@ -116,11 +115,11 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             formset = RecurringPaymentFormSet(instance=form_instance)
         else:
             formset = PricingFormSet(instance=form_instance)
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'form':form,
         'formset':formset,
         'form_instance':form_instance,
-        },context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('forms')
@@ -144,8 +143,8 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
 
-    return render_to_response(template_name, {'form':form, 'form_instance':form_instance},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form, 'form_instance':form_instance})
 
 
 @is_enabled('forms')
@@ -163,8 +162,8 @@ def delete(request, id, template_name="forms/delete.html"):
         form_instance.delete()
         return HttpResponseRedirect(reverse('forms'))
 
-    return render_to_response(template_name, {'form': form_instance},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form_instance})
 
 
 @is_enabled('forms')
@@ -252,8 +251,8 @@ def entries(request, id, template_name="forms/entries.html"):
 
     EventLog.objects.log(instance=form)
 
-    return render_to_response(template_name, {'form':form,'entries': entries},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form,'entries': entries})
 
 
 @is_enabled('forms')
@@ -270,8 +269,8 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
         entry.delete()
         return HttpResponseRedirect(reverse('forms'))
 
-    return render_to_response(template_name, {'entry': entry},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'entry': entry})
 
 
 @is_enabled('forms')
@@ -287,10 +286,10 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     if not form_template or not template_exists(form_template):
         form_template = "forms/base.html"
 
-    return render_to_response(template_name, {'entry':entry,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'entry':entry,
                                               'form': entry.form,
-                                              'form_template': form_template},
-        context_instance=RequestContext(request))
+                                              'form_template': form_template})
 
 
 @is_enabled('forms')
@@ -333,11 +332,11 @@ def entries_export_status(request, task_id, template_name="forms/entry_export_st
     except TaskMeta.DoesNotExist:
         task = None
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'task':task,
         'task_id':task_id,
         'user_this':None,
-    }, context_instance=RequestContext(request))
+    })
 
 def entries_export_check(request, task_id):
     try:
@@ -377,8 +376,8 @@ def search(request, template_name="forms/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'forms':forms},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'forms':forms})
 
 
 @is_enabled('forms')
@@ -603,7 +602,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         "form_for_form": form_for_form,
         'form_template': form.template,
     }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 def form_sent(request, slug, template="forms/form_sent.html"):
@@ -616,7 +615,7 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     if not form.template or not template_exists(form.template):
         form.template = "default.html"
     context = {"form": form, "form_template": form.template}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('forms')
@@ -653,11 +652,11 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     if not form_template or not template_exists(form_template):
         form_template = "default.html"
     EventLog.objects.log(instance=entry)
-    return render_to_response(template, {
+    return render_to_resp(request=request, template_name=template, context={
             'payment_form':form,
             'form':entry.form,
             'form_template': form_template,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('forms')
@@ -672,8 +671,8 @@ def export(request, template_name="forms/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })
 
 
 @is_enabled('forms')

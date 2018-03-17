@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
@@ -24,8 +23,8 @@ def detail(request, slug=None, template_name="case_studies/view.html"):
     if has_view_perm(request.user, 'case_studies.view_casestudy', case_study):
         EventLog.objects.log(instance=case_study)
 
-        return render_to_response(template_name, {'case_study': case_study, 'services': services, 'technologies': technologies},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'case_study': case_study, 'services': services, 'technologies': technologies})
     else:
         raise Http403
 
@@ -46,8 +45,8 @@ def search(request, template_name="case_studies/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'case_studies': case_studies, 'services': services, 'technologies': technologies},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'case_studies': case_studies, 'services': services, 'technologies': technologies})
 
 
 def search_redirect(request):
@@ -64,8 +63,8 @@ def service(request, id, template_name="case_studies/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'service':service, 'services':services, 'case_studies': case_studies},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'service':service, 'services':services, 'case_studies': case_studies})
 
 def technology(request, id, template_name="case_studies/search.html"):
     "List of case studies by technology"
@@ -76,13 +75,13 @@ def technology(request, id, template_name="case_studies/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'technology':technology, 'case_studies': case_studies})
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'technology':technology, 'case_studies': case_studies})
 
 def print_view(request, id, template_name="case_studies/print-view.html"):
     case_study = get_object_or_404(CaseStudy, id=id)
@@ -97,5 +96,5 @@ def print_view(request, id, template_name="case_studies/print-view.html"):
 
     EventLog.objects.log(instance=case_study)
 
-    return render_to_response(template_name, {'case_study': case_study, 'services': services, 'technologies': technologies},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'case_study': case_study, 'services': services, 'technologies': technologies})

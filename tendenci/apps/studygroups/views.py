@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
@@ -48,14 +47,13 @@ def detail(request, slug, template_name="studygroups/detail.html"):
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=study_group.group).distinct()
 
-        return render_to_response(template_name,
-            {
+        return render_to_resp(request=request, template_name=template_name,
+            context={
                 'study_group': study_group,
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
-            },
-            context_instance=RequestContext(request))
+            })
     else:
         raise Http403
 
@@ -72,8 +70,8 @@ def search(request, template_name="studygroups/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'studygroups': studygroups},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'studygroups': studygroups})
 
 @login_required
 def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/add.html"):
@@ -150,13 +148,12 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 
-    return render_to_response(template_name,
-            {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                 'form':form,
                 'metaform':metaform,
                 'categoryform':categoryform,
-            },
-            context_instance=RequestContext(request))
+            })
 
 @login_required
 def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/edit.html"):
@@ -245,15 +242,14 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         formset = OfficerFormSet(instance=study_group, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, study_group_group=study_group.group))
 
-    return render_to_response(template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'study_group': study_group,
             'form': form,
             'metaform': metaform,
             'categoryform': categoryform,
             'formset': formset,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -289,8 +285,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="studygroups/edit-
     else:
         form = form_class(instance=study_group.meta)
 
-    return render_to_response(template_name, {'study_group': study_group, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'study_group': study_group, 'form': form})
 
 
 @login_required
@@ -317,5 +313,5 @@ def delete(request, id, template_name="studygroups/delete.html"):
         study_group.delete()
         return HttpResponseRedirect(reverse('studygroups.search'))
 
-    return render_to_response(template_name, {'study_group': study_group},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'study_group': study_group})

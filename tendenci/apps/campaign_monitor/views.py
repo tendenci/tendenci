@@ -2,7 +2,7 @@ from builtins import str
 import datetime
 from datetime import timedelta
 from django.conf import settings
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import render as render_to_resp, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.template import Template as DTemplate
@@ -36,8 +36,8 @@ def template_index(request, template_name='campaign_monitor/templates/index.html
 
     templates = Template.objects.all().order_by('name')
 
-    return render_to_response(template_name, {'templates':templates},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'templates':templates})
 
 @login_required
 def template_view(request, template_id, template_name='campaign_monitor/templates/view.html'):
@@ -46,8 +46,8 @@ def template_view(request, template_id, template_name='campaign_monitor/template
     if not has_perm(request.user,'campaign_monitor.view_template', template):
         raise Http403
 
-    return render_to_response(template_name, {'template':template},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'template':template})
 
 def template_html_original(request, template_id):
     template = get_object_or_404(Template, template_id=template_id)
@@ -284,14 +284,14 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
             except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
 
             #get campaign monitor details
             t = CST(auth=auth, template_id=t_id).details()
@@ -311,8 +311,8 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
     else:
         form = form_class()
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 @login_required
 def template_edit(request, template_id, form_class=TemplateForm, template_name='campaign_monitor/templates/edit.html'):
@@ -352,13 +352,13 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             except BadRequest as e:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
             except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
 
             #get campaign monitor details
             t = t.details()
@@ -377,8 +377,8 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
     else:
         form = form_class(instance=template)
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 @login_required
 def template_update(request, template_id):
@@ -485,8 +485,8 @@ def campaign_index(request, template_name='campaign_monitor/campaigns/index.html
 
     campaigns = Campaign.objects.all().order_by('name')
 
-    return render_to_response(template_name, {'campaigns':campaigns},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'campaigns':campaigns})
 
 @login_required
 def campaign_view(request, campaign_id, template_name='campaign_monitor/campaigns/view.html'):
@@ -495,8 +495,8 @@ def campaign_view(request, campaign_id, template_name='campaign_monitor/campaign
     if not has_perm(request.user,'campaign_monitor.view_campaign', campaign):
         raise Http403
 
-    return render_to_response(template_name, {'campaign':campaign},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'campaign':campaign})
 
 @login_required
 def campaign_sync(request):
@@ -561,9 +561,8 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
     else:
         form = form_class()
 
-    return render_to_response(template_name,
-        {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 
 @login_required
@@ -590,5 +589,5 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
         messages.add_message(request, messages.SUCCESS, _('Successfully deleted campaign.'))
         return redirect("campaign_monitor.campaign_index")
 
-    return render_to_response(template_name, {'campaign': campaign},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'campaign': campaign})

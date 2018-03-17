@@ -10,8 +10,7 @@ import mimetypes
 from functools import reduce
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response, redirect, render
+from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -102,7 +101,7 @@ def free_passes_list(request,
                             ).order_by('corp_profile__name')
 
     context = {'corp_memberships': corp_memberships}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -127,7 +126,7 @@ def free_passes_edit(request, id,
 
     context = {'corp_membership': corp_membership,
                'form': form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -172,7 +171,7 @@ def app_preview(request, slug,
                "app_fields": app_fields,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -200,7 +199,7 @@ def corpmembership_add_pre(request,
 
     context = {"form": form,
                'corp_app': app}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -353,7 +352,7 @@ def corpmembership_add(request, slug='',
                "app_fields": app_fields,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -370,7 +369,7 @@ def corpmembership_add_conf(request, id,
 
     context = {"corporate_membership": corp_membership,
                'app': app}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -432,7 +431,7 @@ def corpmembership_upgrade(request, id,
                'corp_profile': corp_profile,
                'corpmembership_form': corpmembership_form,
                'types_count': types_count}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -518,7 +517,7 @@ def corpmembership_edit(request, id,
                'corp_membership': corp_membership,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -545,8 +544,9 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                     corp_profile.state, corp_profile.zip] if a.strip()]
     address_str = ', '.join(address_list)
 
-    return render(request, template,
-                  {'corp_profile': corp_profile,
+    return render_to_resp(request=request, template_name=template,
+                  context={
+                   'corp_profile': corp_profile,
                    'address_str': address_str,
                    'corp_membership': corp_membership,
                    'members_count': members_count,
@@ -668,7 +668,7 @@ def corpmembership_view(request, id,
                'app_fields': app_fields,
                'app': app,
                'user_can_edit': can_edit}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -814,11 +814,11 @@ def corpmembership_search(request, my_corps_only=False,
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'pending_only': pending_only,
         'corp_members': corp_members,
-        'search_form': search_form},
-        context_instance=RequestContext(request))
+        'search_form': search_form})
 
 
 @is_enabled('corporate_memberships')
@@ -828,9 +828,9 @@ def corpmembership_cap_status(request, template_name="corporate_memberships/appl
     corp_memberships = CorpMembership.objects.exclude(status_detail='archive'
                                     ).order_by('corp_profile__name')
 
-    return render_to_response(template_name, {
-        'corp_memberships': corp_memberships},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+        'corp_memberships': corp_memberships})
 
 
 @is_enabled('corporate_memberships')
@@ -868,8 +868,8 @@ def corpmembership_delete(request, id,
 
             return HttpResponseRedirect(reverse('corpmembership.search'))
 
-        return render_to_response(template_name, {'corp_memb': corp_memb},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'corp_memb': corp_memb})
     else:
         raise Http403
 
@@ -962,7 +962,7 @@ def corpmembership_approve(request, id,
                'new_expiration_dt': new_expiration_dt,
                'approve_form': approve_form,
                }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -1164,7 +1164,7 @@ def corp_renew(request, id,
                'summary_data': summary_data,
                'cap_enabled': cap_enabled
                }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -1185,7 +1185,7 @@ def corp_renew_conf(request, id,
                'corp_profile': corp_membership.corp_profile,
                'corp_app': corpmembership_app,
                }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -1302,14 +1302,14 @@ def roster_search(request,
     if corp_profile:
         is_rep = corp_profile.is_rep(request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                                   'corp_membership': corp_membership,
                                   'corp_profile': corp_profile,
                                   'memberships': memberships,
                                   'active_only': active_only,
                                   'is_rep': is_rep,
-                                  'form': form},
-            context_instance=RequestContext(request))
+                                  'form': form})
 
 
 @is_enabled('corporate_memberships')
@@ -1351,11 +1351,11 @@ def import_upload(request,
     fks.sort()
     foreign_keys = ', '.join(fks)
 
-    return render_to_response(template, {
+    return render_to_resp(request=request, template_name=template, context={
         'form': form,
         'corp_memb_type_exists': corp_memb_type_exists,
         'foreign_keys': foreign_keys
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('corporate_memberships')
@@ -1433,7 +1433,7 @@ def import_preview(request, mimport_id,
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
 
-        return render_to_response(template, {
+        return render_to_resp(request=request, template_name=template, context={
             'mimport': mimport,
             'corp_membs_list': corp_membs_list,
             'curr_page': curr_page,
@@ -1443,7 +1443,7 @@ def import_preview(request, mimport_id,
             'num_pages': num_pages,
             'page_range': page_range,
             'fieldnames': fieldnames,
-            }, context_instance=RequestContext(request))
+            })
     else:
         if mimport.status in ('processing', 'completed'):
             pass
@@ -1455,9 +1455,9 @@ def import_preview(request, mimport_id,
                               "corp_membership_import_preprocess",
                               str(mimport.pk)])
 
-            return render_to_response(template, {
+            return render_to_resp(request=request, template_name=template, context={
                 'mimport': mimport,
-                }, context_instance=RequestContext(request))
+                })
 
 
 @is_enabled('corporate_memberships')
@@ -1518,9 +1518,9 @@ def import_status(request, mimport_id,
     if mimport.status not in ('processing', 'completed'):
         return redirect(reverse('corpmembership.import'))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'mimport': mimport,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('corporate_memberships')
@@ -1662,7 +1662,7 @@ def corpmembership_export(request,
             # switch to StreamingHttpResponse once we're on 1.5
             return response
     context = {"form": form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('corporate_memberships')
@@ -1694,10 +1694,10 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                 return HttpResponseRedirect(reverse('corpmembership.view',
                                                     args=[corp_memb.id]))
 
-    return render_to_response(template_name, {'corp_membership': corp_memb,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'corp_membership': corp_memb,
                                               'form': form,
-                                              'reps': reps},
-        context_instance=RequestContext(request))
+                                              'reps': reps})
 
 
 @is_enabled('corporate_memberships')
@@ -1761,8 +1761,8 @@ def delete_corp_rep(request, id,
                                         'corpmembership.edit_corp_reps',
                                         args=[corp_memb.pk]))
 
-        return render_to_response(template_name, {'corp_membership': corp_memb},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'corp_membership': corp_memb})
     else:
         raise Http403
 
@@ -1774,10 +1774,9 @@ def index(request,
     corp_membership_types = corp_app.corp_memb_type.all().order_by('position')
     EventLog.objects.log()
 
-    return render_to_response(template_name,
-                              {'corp_app': corp_app,
-                               'corp_membership_types': corp_membership_types},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'corp_app': corp_app,
+                               'corp_membership_types': corp_membership_types})
 
 
 @is_enabled('corporate_memberships')
@@ -1795,10 +1794,10 @@ def overview(request,
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'summary': summary,
         'total': total,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('corporate_memberships')
@@ -1818,9 +1817,9 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'stats':stats,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('corporate_memberships')
@@ -1833,10 +1832,10 @@ def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'summary':summary,
         'total':total,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('corporate_memberships')
@@ -1924,8 +1923,9 @@ def report_active_corp_members_by_type(request,
             table_data,
         )
 
-    return render(request, template,
-                  {'corp_mems': corp_mems,
+    return render_to_resp(request=request, template_name=template,
+                  context={
+                   'corp_mems': corp_mems,
                    'active': True,
                    'days': days,
                    'form': form,
@@ -2012,8 +2012,9 @@ def report_corp_members_by_status(request,
             table_data,
         )
 
-    return render(request, template,
-                  {'corp_mems': corp_mems,
+    return render_to_resp(request=request, template_name=template,
+                  context={
+                   'corp_mems': corp_mems,
                    'days': days,
                    'form': form,
                    })

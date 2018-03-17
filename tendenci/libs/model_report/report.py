@@ -5,8 +5,7 @@ from itertools import groupby
 
 import django
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
 from django.utils.encoding import force_text
@@ -522,8 +521,8 @@ class ReportAdmin(object):
 
         if isinstance(context_or_response, HttpResponse):
             return context_or_response
-        return render_to_response(self.template_name, context_or_response,
-                                  context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=self.template_name,
+                              context=context_or_response)
 
     def has_report_totals(self):
         return not (not self.report_totals)

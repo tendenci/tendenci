@@ -5,7 +5,6 @@ from datetime import timedelta, datetime
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -20,7 +19,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
 
@@ -45,8 +44,8 @@ def index(request, slug=None, template_name="resumes/view.html"):
     if has_view_perm(request.user,'resumes.view_resume',resume):
 
         EventLog.objects.log()
-        return render_to_response(template_name, {'resume': resume},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'resume': resume})
     else:
         raise Http403
 
@@ -97,8 +96,8 @@ def search(request, template_name="resumes/search.html"):
         'source': 'resumes'
     })
 
-    return render_to_response(template_name, {'resumes':resumes},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'resumes':resumes})
 
 def search_redirect(request):
     """
@@ -115,8 +114,8 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     EventLog.objects.log(instance=resume)
 
     if has_view_perm(request.user,'resumes.view_resume',resume):
-        return render_to_response(template_name, {'resume': resume},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'resume': resume})
     else:
         raise Http403
 
@@ -167,8 +166,8 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
     else:
         form = form_class(user=request.user)
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 
 @is_enabled('resumes')
@@ -192,8 +191,8 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
 
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
 
-        return render_to_response(template_name, {'resume': resume, 'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'resume': resume, 'form':form})
     else:
         raise Http403
 
@@ -226,8 +225,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
     else:
         form = form_class(instance=resume.meta)
 
-    return render_to_response(template_name, {'resume': resume, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'resume': resume, 'form':form})
 
 
 @is_enabled('resumes')
@@ -255,8 +254,8 @@ def delete(request, id, template_name="resumes/delete.html"):
 
             return HttpResponseRedirect(reverse('resume.search'))
 
-        return render_to_response(template_name, {'resume': resume},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'resume': resume})
     else:
         raise Http403
 
@@ -267,8 +266,8 @@ def pending(request, template_name="resumes/pending.html"):
     if not request.user.profile.is_superuser:
         raise Http403
     resumes = Resume.objects.filter(status_detail='pending')
-    return render_to_response(template_name, {'resumes': resumes},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'resumes': resumes})
 
 
 @login_required
@@ -297,11 +296,11 @@ def approve(request, id, template_name="resumes/approve.html"):
 
         return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
 
-    return render_to_response(template_name, {'resume': resume},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'resume': resume})
 
 def thank_you(request, template_name="resumes/thank-you.html"):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @is_enabled('resumes')
@@ -360,5 +359,5 @@ def export(request, template_name="resumes/export.html"):
         export_id = run_export_task('resumes', 'resume', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

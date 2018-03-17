@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
+from django.shortcuts import get_object_or_404, render as render_to_resp, redirect
 from django.template import RequestContext
 from django.template import Template as DTemplate
 from django.template.loader import render_to_string
@@ -305,7 +305,7 @@ def generate(request):
 
     form = GenerateForm()
 
-    return render(request, 'newsletters/generate.html', {'form':form})
+    return render_to_resp(request=request, template_name='newsletters/generate.html', context={'form':form})
 
 @login_required
 def template_view(request, template_id, render=True):
@@ -438,11 +438,11 @@ def template_view(request, template_id, render=True):
         return response
     else:
         template_name="newsletters/content.html"
-        return render_to_response(
-            template_name, {
+        return render_to_resp(
+            request=request, template_name=template_name,
+            context={
             'content': content,
-            'template': template},
-            context_instance=RequestContext(request))
+            'template': template})
 
 
 @login_required
@@ -450,7 +450,7 @@ def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
         raise Http404
-    return render(request, template_name)
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def view_email_from_browser(request, pk):
@@ -464,5 +464,5 @@ def view_email_from_browser(request, pk):
         if key == "" or key != nl.security_key:
             raise Http403
 
-    return render_to_response("newsletters/viewbody.html", {'email': email},
-                                context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name="newsletters/viewbody.html",
+                                context={'email': email})

@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
@@ -22,8 +21,8 @@ def details(request, pk=None, template_name="testimonials/view.html"):
     if has_perm(request.user, 'testimonials.view_testimonial', testimonial):
         EventLog.objects.log(instance=testimonial)
 
-        return render_to_response(template_name, {'testimonial': testimonial},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'testimonial': testimonial})
     else:
         raise Http403
 
@@ -47,8 +46,8 @@ def search(request, template_name="testimonials/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'testimonials': testimonials},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'testimonials': testimonials})
 
 def search_redirect(request):
     return HttpResponseRedirect(reverse('testimonials'))

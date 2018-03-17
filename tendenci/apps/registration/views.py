@@ -7,8 +7,7 @@ Views which allow users to create and activate accounts.
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ImproperlyConfigured
 
@@ -89,20 +88,18 @@ def activate(request, activation_key,
                 }
                 notification.send_emails(recipients,'user_added', extra_context)
 
-    if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-
     next_url = request.GET.get('next', '')
     if account and next_url:
         return HttpResponseRedirect(next_url)
 
-    return render_to_response(template_name,
-                              { 'account': account,
-                                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
-                              context_instance=context)
+    if extra_context is None:
+        context = {}
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['account'] = account
+    context['expiration_days'] = settings.ACCOUNT_ACTIVATION_DAYS
+
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)
 
 
 def register(request, success_url=None,
@@ -187,10 +184,8 @@ def register(request, success_url=None,
         form = form_class()
 
     if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-    return render_to_response(template_name,
-                              { 'form': form },
-                              context_instance=context)
+        context = {}
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['form'] = form
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)

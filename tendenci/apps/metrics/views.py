@@ -1,7 +1,6 @@
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp
 from django.db.models import Sum
 
 from tendenci.apps.event_logs.models import EventLog
@@ -27,5 +26,5 @@ def index(request, template_name="metrics/index.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())

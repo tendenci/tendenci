@@ -6,7 +6,7 @@ import shutil
 
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render as render_to_resp
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -42,7 +42,7 @@ def home(request):
     ready to upload. This HTML page should contain your client-side code
     for instatiating and modifying Fine Uploader.
     """
-    return render(request, 'fine_uploader/index.html')
+    return render_to_resp(request=request, template_name='fine_uploader/index.html')
 
 
 class UploadView(View):

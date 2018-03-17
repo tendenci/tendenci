@@ -4,7 +4,6 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -29,7 +28,7 @@ from tendenci.apps.perms.utils import (
     has_perm,
     get_query_filters,
     has_view_perm)
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.jobs.models import Job, JobPricing
 from tendenci.apps.jobs.models import Category as JobCategory
@@ -53,8 +52,8 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 
     if can_view:
         EventLog.objects.log(instance=job)
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -98,10 +97,9 @@ def search(request, template_name="jobs/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'jobs': jobs, 'form': form},
-        context_instance=RequestContext(request)
+    return render_to_resp(
+        request=request, template_name=template_name,
+        context={'jobs': jobs, 'form': form}
     )
 
 
@@ -124,8 +122,8 @@ def my_jobs(request, template_name = "jobs/my_jobs.html"):
 
         EventLog.objects.log()
 
-        return render_to_response(template_name, {'jobs': jobs},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'jobs': jobs})
     else:
         return HttpResponseRedirect(reverse('jobs'))
 
@@ -139,8 +137,8 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     if can_view:
         EventLog.objects.log(instance=job)
 
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -255,10 +253,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             messages.add_message(request, messages.WARNING, _(msg_string))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
-    return render_to_response(template_name,
-            {'form': form,
-             'require_payment': require_payment},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'form': form,
+             'require_payment': require_payment})
 
 
 @csrf_exempt
@@ -312,10 +309,10 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
             return HttpResponseRedirect(
                 reverse(success_redirect, args=[job.slug]))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'job': job,
         'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('jobs')
@@ -367,8 +364,8 @@ def edit_meta(request, id, form_class=MetaForm,
     else:
         form = form_class(instance=job.meta)
 
-    return render_to_response(template_name, {'job': job, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job': job, 'form': form})
 
 
 @is_enabled('jobs')
@@ -397,8 +394,8 @@ def delete(request, id, template_name="jobs/delete.html"):
 
             return HttpResponseRedirect(reverse('job.search'))
 
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -429,8 +426,8 @@ def pricing_add(request, form_class=JobPricingForm,
         if "_popup" in request.GET:
             template_name="jobs/pricing-add-popup.html"
 
-        return render_to_response(template_name, {'form': form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form': form})
     else:
         raise Http403
 
@@ -458,8 +455,8 @@ def pricing_edit(request, id, form_class=JobPricingForm,
     else:
         form = form_class(instance=job_pricing)
 
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 @is_enabled('jobs')
@@ -469,8 +466,8 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
 
     if has_perm(request.user, 'jobs.view_jobpricing', job_pricing):
         EventLog.objects.log(instance=job_pricing)
-        return render_to_response(template_name, {'job_pricing': job_pricing},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job_pricing': job_pricing})
     else:
         raise Http403
 
@@ -492,8 +489,8 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
 
         return HttpResponseRedirect(reverse('job_pricing.search'))
 
-    return render_to_response(template_name, {'job_pricing': job_pricing},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job_pricing': job_pricing})
 
 
 @is_enabled('jobs')
@@ -501,8 +498,8 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
     job_pricings = JobPricing.objects.all().order_by('duration')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {'job_pricings': job_pricings},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job_pricings': job_pricings})
 
 
 @is_enabled('jobs')
@@ -516,8 +513,8 @@ def pending(request, template_name="jobs/pending.html"):
 
     EventLog.objects.log()
     jobs = Job.objects.filter(status_detail__contains='pending')
-    return render_to_response(template_name, {'jobs': jobs},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'jobs': jobs})
 
 
 @login_required
@@ -563,12 +560,12 @@ def approve(request, id, template_name="jobs/approve.html"):
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 
-    return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
 
 
 def thank_you(request, template_name="jobs/thank-you.html"):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @is_enabled('jobs')
@@ -634,5 +631,5 @@ def export(request, template_name="jobs/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

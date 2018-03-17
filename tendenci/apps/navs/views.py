@@ -1,13 +1,12 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import simplejson as json
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
@@ -32,11 +31,8 @@ def search(request, template_name="navs/search.html"):
 
     # EventLog.objects.log()
 
-    # return render_to_response(
-    #     template_name,
-    #     {'navs':navs},
-    #     context_instance=RequestContext(request)
-    # )
+    # return render_to_resp(request=request, template_name=template_name,
+    #     context={'navs':navs})
 
 
 @is_enabled('navs')
@@ -50,11 +46,8 @@ def detail(request, id, template_name="navs/detail.html"):
 
     # EventLog.objects.log(instance=nav)
 
-    # return render_to_response(
-    #     template_name,
-    #     {'current_nav':nav},
-    #     context_instance=RequestContext(request),
-    # )
+    # return render_to_resp(request=request, template_name=template_name,
+    #     context={'current_nav':nav})
 
 
 @is_enabled('navs')
@@ -75,11 +68,8 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
     # else:
     #     form = form_class(user=request.user)
 
-    # return render_to_response(
-    #     template_name,
-    #     {'form':form},
-    #     context_instance=RequestContext(request),
-    # )
+    # return render_to_resp(request=request, template_name=template_name,
+    #     context={'form':form})
 
 
 @is_enabled('navs')
@@ -102,11 +92,8 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
     # else:
     #     form = form_class(user=request.user, instance=nav)
 
-    # return render_to_response(
-    #     template_name,
-    #     {'form':form, 'current_nav':nav},
-    #     context_instance=RequestContext(request),
-    # )
+    # return render_to_resp(request=request, template_name=template_name,
+    #     context={'form':form, 'current_nav':nav})
 
 
 @is_enabled('navs')
@@ -148,11 +135,8 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
     # else:
     #     formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('position'))
 
-    # return render_to_response(
-    #     template_name,
-    #     {'page_select':page_select, 'formset':formset, 'current_nav':nav},
-    #     context_instance=RequestContext(request),
-    # )
+    # return render_to_resp(request=request, template_name=template_name,
+    #     context={'page_select':page_select, 'formset':formset, 'current_nav':nav})
 
 
 @is_enabled('navs')
@@ -167,8 +151,8 @@ def delete(request, id, template_name="navs/delete.html"):
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))
 
-        return render_to_response(template_name, {'current_nav': nav},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'current_nav': nav})
     else:
         raise Http403
 
@@ -212,8 +196,8 @@ def export(request, template_name="navs/export.html"):
 
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })
 
 
 def get_item_attrs(request):

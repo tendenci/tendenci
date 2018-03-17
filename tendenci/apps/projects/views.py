@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
@@ -29,8 +28,8 @@ def detail(request, slug=None, template_name="projects/detail.html"):
             'instance': project,
         }
         EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'project': project, 'project_photos': project_photos},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'project': project, 'project_photos': project_photos})
     else:
         raise Http403
 
@@ -65,9 +64,9 @@ def search(request, template_name="projects/search.html"):
     }
     EventLog.objects.log(**log_defaults)
 
-    return render_to_response(template_name, {'projects':projects, 'categories': categories
-        },
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'projects':projects, 'categories': categories
+        })
 
 def category(request, template_name="projects/category.html"):
     query = request.GET.get('q', None)
@@ -101,6 +100,6 @@ def category(request, template_name="projects/category.html"):
 
     EventLog.objects.log(**log_defaults)
 
-    return render_to_response(template_name, {'projects':projects, 'categories': categories
-        },
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'projects':projects, 'categories': categories
+        })

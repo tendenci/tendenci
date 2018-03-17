@@ -15,8 +15,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.shortcuts import render, render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, redirect, get_object_or_404
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
@@ -142,13 +141,13 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     EventLog.objects.log(instance=membership)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'membership': membership,
             'profile_form': profile_form,
             'education_form': education_form,
             'member_can_edit_records' : member_can_edit_records
-        }, context_instance=RequestContext(request))
+        })
 
 
 def membership_applications(request, template_name="memberships/applications/list.html"):
@@ -163,7 +162,7 @@ def membership_applications(request, template_name="memberships/applications/lis
 
     EventLog.objects.log()
 
-    return render(request, template_name, {'apps': apps})
+    return render_to_resp(request=request, template_name=template_name, context={'apps': apps})
 
 
 def referer_url(request):
@@ -232,10 +231,10 @@ def application_detail_default(request, **kwargs):
         form = MembershipDefaultForm(request=request)
 
     # show application
-    return render_to_response(
-        'memberships/applications/detail_default.html', {
+    return render_to_resp(
+        request=request, template_name='memberships/applications/detail_default.html', context={
         'form': form,
-        }, context_instance=RequestContext(request)
+        }
     )
 
 
@@ -255,12 +254,12 @@ def application_confirmation_default(request, hash):
 
     EventLog.objects.log(instance=membership)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
         'is_confirmation': True,
         'membership': membership,
         'app': app
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -279,9 +278,9 @@ def notice_email_content(request, id, template_name="memberships/notices/email_c
 
     EventLog.objects.log(instance=notice)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'notice': notice,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -324,12 +323,12 @@ def membership_default_import_upload(request,
     fks.sort()
     foreign_keys = ', '.join(fks)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'memb_type_exists': memb_type_exists,
         'memb_app_exists': memb_app_exists,
         'foreign_keys': foreign_keys
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -414,7 +413,7 @@ def membership_default_import_preview(request, mimport_id,
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
 
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name, context={
             'mimport': mimport,
             'users_list': users_list,
             'curr_page': curr_page,
@@ -424,7 +423,7 @@ def membership_default_import_preview(request, mimport_id,
             'num_pages': num_pages,
             'page_range': page_range,
             'fieldnames': fieldnames,
-            }, context_instance=RequestContext(request))
+            })
     else:
         if mimport.status in ('processing', 'completed'):
                 return redirect(reverse('memberships.default_import_status',
@@ -435,9 +434,9 @@ def membership_default_import_preview(request, mimport_id,
                               "membership_import_preprocess",
                               str(mimport.pk)])
 
-            return render_to_response(template_name, {
+            return render_to_resp(request=request, template_name=template_name, context={
                 'mimport': mimport,
-                }, context_instance=RequestContext(request))
+                })
 
 
 @login_required
@@ -482,9 +481,9 @@ def membership_default_import_status(request, mimport_id,
     if mimport.status not in ('processing', 'completed'):
         return redirect(reverse('memberships.default_import'))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'mimport': mimport,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -653,7 +652,7 @@ def membership_default_export(
 
     context = {"form": form,
                'corp_profile': corp_profile}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -692,7 +691,7 @@ def membership_default_export_status(request, identifier,
     context = {'identifier': identifier,
                'download_ready': download_ready,
                'corp_profile': corp_profile}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @csrf_exempt
@@ -807,7 +806,7 @@ def membership_default_preview(
                'education_form': education_form,
                'demographics_form': demographics_form,
                'membership_form': membership_form}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 def membership_default_add_legacy(request):
@@ -923,8 +922,8 @@ def membership_default_add(request, slug='', membership_id=None,
             renewed_corp = corp_membership.get_latest_renewed()
             if corp_membership.is_expired or (membership.expire_dt >= corp_membership.expiration_dt and not renewed_corp):
                 #display_msg = _("Sorry, we can't process your membership renewal at the moment.")
-                return render(request, 'memberships/applications/corp_not_renewed.html',
-                    {'app': app,
+                return render_to_resp(request=request, template_name='memberships/applications/corp_not_renewed.html',
+                    context={'app': app,
                        'corp_membership_renew_link': reverse('corpmembership.renew', args=[corp_membership.id]),
                        'corp_membership': corp_membership,
                        'is_rep': is_corp_rep,
@@ -953,8 +952,8 @@ def membership_default_add(request, slug='', membership_id=None,
                         if app_for_individuals:
                             join_as_indiv_url = reverse('membership_default.add', args=[app_for_individuals.slug])
 
-                    return render(request, 'memberships/applications/corp_cap_reached.html',
-                                  {'app': app,
+                    return render_to_resp(request=request, template_name='memberships/applications/corp_cap_reached.html',
+                                  context={'app': app,
                                    'join_as_indiv_url': join_as_indiv_url,
                                    'email_sent': email_sent,
                                    'reps': reps,
@@ -1320,7 +1319,7 @@ def membership_default_add(request, slug='', membership_id=None,
         'membership_form': membership_form,
         'captcha_form': captcha_form
     }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -1456,7 +1455,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'is_edit': True,
         'membership' : membership
     }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -1530,7 +1529,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
         'auto_renew_all_on': auto_renew_all_on,
         'auto_renew_all_off': auto_renew_all_off
     }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 def membership_default_corp_pre_add(request, cm_id=None,
@@ -1643,14 +1642,13 @@ def membership_default_corp_pre_add(request, cm_id=None,
 
     c = {'app': app, "form": form}
 
-    return render_to_response(template_name, c,
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=c)
 
 
 def email_to_verify_conf(request,
         template_name="memberships/applications/email_to_verify_conf.html"):
-    return render_to_response(template_name,
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def verify_email(request,
@@ -1699,11 +1697,11 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
         if next_page:
             return HttpResponseRedirect(next_page)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'membership': membership,
             'msg_deleted': msg_deleted
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -1733,11 +1731,11 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
         if next_page:
             return HttpResponseRedirect(next_page)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'membership': membership,
             'msg_expired': msg_expired
-        }, context_instance=RequestContext(request))
+        })
 
 
 @staff_member_required
@@ -1780,15 +1778,15 @@ def membership_join_report(request):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        'reports/membership_joins.html', {
+    return render_to_resp(
+        request=request, template_name='reports/membership_joins.html', context={
         'membership_type': membership_type,
         'membership_status': membership_status,
         'start_date': start_date,
         'end_date': end_date,
         'memberships': memberships,
         'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 # See the comments in reports.py
@@ -1840,7 +1838,7 @@ def report_list(request, template_name='reports/membership_report_list.html'):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @staff_member_required
@@ -1953,7 +1951,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
         )
     # ------------------------------------
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
             'mems': mems,
             'active': True,
             'days': days,
@@ -1964,7 +1962,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
             'is_ascending_subscription': is_ascending_subscription,
             'is_ascending_expiration': is_ascending_expiration,
             'is_ascending_invoice': is_ascending_invoice,
-            }, context_instance=RequestContext(request))
+            })
 
 
 @staff_member_required
@@ -2080,7 +2078,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
         )
     # ------------------------------------
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
             'mems': mems,
             'active': False,
             'days': days,
@@ -2091,7 +2089,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
             'is_ascending_subscription': is_ascending_subscription,
             'is_ascending_expiration': is_ascending_expiration,
             'is_ascending_invoice': is_ascending_invoice,
-            }, context_instance=RequestContext(request))
+            })
 
 
 @staff_member_required
@@ -2102,10 +2100,10 @@ def report_members_summary(request, template_name='reports/membership_summary.ht
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
                 'chart_data': chart_data,
                 'date_range': (days[0], days[-1]),
-            }, context_instance=RequestContext(request))
+            })
 
 
 @staff_member_required
@@ -2114,9 +2112,9 @@ def report_members_over_time(request, template_name='reports/membership_over_tim
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'stats': stats,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @staff_member_required
@@ -2127,10 +2125,10 @@ def report_members_stats(request, template_name='reports/membership_stats.html')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'summary': summary,
         'total': total,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @staff_member_required
@@ -2141,7 +2139,7 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'members': members})
 
 
 @staff_member_required
@@ -2181,7 +2179,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'members': members})
 
 
 @staff_member_required
@@ -2214,7 +2212,7 @@ def report_members_by_company(request, template_name='reports/members_by_company
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'companies': companies}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'companies': companies})
 
 
 @staff_member_required
@@ -2268,7 +2266,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'members': members, 'days': days}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'members': members, 'days': days})
 
 
 @staff_member_required
@@ -2294,7 +2292,7 @@ def report_renewal_period_members(request, template_name='reports/renewal_period
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'members': members})
 
 
 @staff_member_required
@@ -2320,7 +2318,7 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'members': members})
 
 
 @staff_member_required
@@ -2374,14 +2372,13 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
     exclude_total = request.GET.get('exclude_total', False)
     if request.GET.get('print', False):
         template_name='reports/active_members_ytd_print.html'
-    return render_to_response(template_name,
-                              {'months': months,
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'months': months,
                                'total_new': total_new,
                                'total_renew': total_renew,
                                'years': years,
                                'year_selected': year_selected,
-                               'exclude_total': exclude_total},
-                              context_instance=RequestContext(request))
+                               'exclude_total': exclude_total})
 
 
 @staff_member_required
@@ -2431,7 +2428,7 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'months': months, 'years': years, 'year': year, 'types_new': types_new, 'types_renew': types_renew, 'types_expired': types_expired, 'totals_new': totals_new, 'totals_renew': totals_renew, 'totals_expired': totals_expired}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'months': months, 'years': years, 'year': year, 'types_new': types_new, 'types_renew': types_renew, 'types_expired': types_expired, 'totals_new': totals_new, 'totals_renew': totals_renew, 'totals_expired': totals_expired})
 
 
 @staff_member_required
@@ -2443,9 +2440,8 @@ def report_members_donated(request, template_name='reports/members_donated.html'
                                 'create_dt', 'status_detail'
                                 ).order_by('-membership_set__donation_amount', 'user__last_name')
 
-    return render_to_response(template_name,
-                              {'memberships': memberships,},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'memberships': memberships,})
 
 @is_enabled('memberships')
 @staff_member_required
@@ -2461,7 +2457,7 @@ def memberships_overview(request,
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'summary': summary,
         'total': total,
-        }, context_instance=RequestContext(request))
+        })

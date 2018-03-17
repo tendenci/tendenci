@@ -1,7 +1,6 @@
 import subprocess
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
@@ -28,9 +27,9 @@ def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"
     else:
         form = form_class()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'form':form,
-    },context_instance=RequestContext(request))
+    })
 
 @login_required
 def detail(request, task_id, template_name="wp_exporter/detail.html"):
@@ -48,8 +47,7 @@ def detail(request, task_id, template_name="wp_exporter/detail.html"):
         _("Your site export is being processed. You will receive an email at %s when the export is complete." % request.user.email)
     )
 
-    return render_to_response(template_name, {},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 @login_required
 def download(request, export_id):

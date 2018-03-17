@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -9,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.redirects.models import Redirect
@@ -40,8 +39,8 @@ def search(request, template_name="redirects/search.html"):
     if not has_perm(request.user, 'redirects.add_redirect'):
         raise Http403
 
-    return render_to_response(template_name, {'redirects': redirects},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'redirects': redirects})
 
 
 @login_required
@@ -67,7 +66,7 @@ def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
     else:
         form = form_class()
 
-    return render_to_response(template_name, {'form': form}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form': form})
 
 @login_required
 def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.html"):
@@ -93,7 +92,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
 
             return HttpResponseRedirect(reverse('redirects'))
 
-    return render_to_response(template_name, {'redirect': redirect,'form':form}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'redirect': redirect,'form':form})
 
 @login_required
 def delete(request, id, template_name="redirects/delete.html"):
@@ -108,8 +107,8 @@ def delete(request, id, template_name="redirects/delete.html"):
         redirect.delete()
         return HttpResponseRedirect(reverse('redirects'))
 
-    return render_to_response(template_name, {'redirect': redirect},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'redirect': redirect})
 
 @login_required
 def export(request, template_name="redirects/export.html"):
@@ -132,5 +131,5 @@ def export(request, template_name="redirects/export.html"):
         export_id = run_export_task('redirects', 'redirect', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

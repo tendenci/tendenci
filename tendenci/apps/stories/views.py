@@ -2,7 +2,6 @@ from builtins import str
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -15,7 +14,7 @@ from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.stories.models import Story
@@ -33,8 +32,8 @@ def details(request, id=None, template_name="stories/view.html"):
 
     EventLog.objects.log(instance=story)
 
-    return render_to_response(template_name, {'story': story},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'story': story})
 
 
 @is_enabled('stories')
@@ -45,8 +44,8 @@ def print_details(request, id, template_name="stories/print_details.html"):
 
     EventLog.objects.log(instance=story)
 
-    return render_to_response(template_name, {'story': story},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'story': story})
 
 
 @is_enabled('stories')
@@ -70,8 +69,8 @@ def search(request, template_name="stories/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'stories':stories},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'stories':stories})
 
 def search_redirect(request):
     return HttpResponseRedirect(reverse('stories'))
@@ -113,8 +112,8 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     else:
         raise Http403
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 
 @is_enabled('stories')
@@ -149,8 +148,8 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     else:
         raise Http403
 
-    return render_to_response(template_name, {'story': story, 'form':form },
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'story': story, 'form':form })
 
 
 @is_enabled('stories')
@@ -168,8 +167,8 @@ def delete(request, id, template_name="stories/delete.html"):
 
             return HttpResponseRedirect(reverse('story.search'))
 
-        return render_to_response(template_name, {'story': story},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'story': story})
     else:
         raise Http403
 
@@ -200,5 +199,5 @@ def export(request, template_name="stories/export.html"):
         export_id = run_export_task('stories', 'story', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

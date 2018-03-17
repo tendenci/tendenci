@@ -1,5 +1,4 @@
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 #from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -62,13 +61,13 @@ def manage_payment_info(request, recurring_payment_id,
         else:
             token = response_d['token']
 
-    return render_to_response(template_name, {'token': token,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'token': token,
                                               'test_mode': test_mode,
                                               'form_post_url': form_post_url,
                                               'rp': rp,
                                               'gateway_error': gateway_error
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @ssl_required
@@ -98,13 +97,13 @@ def update_payment_info(request, recurring_payment_id,
                                      is_secure=request.is_secure())
     test_mode = get_test_mode()
 
-    return render_to_response(template_name, {'rp': rp,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'rp': rp,
                                               'payment_profile': payment_profile,
                                               'token': token,
                                               'test_mode': test_mode,
                                               'gateway_error': gateway_error
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @login_required

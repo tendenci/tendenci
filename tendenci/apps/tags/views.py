@@ -3,12 +3,11 @@ from tagging.models import Tag, TaggedItem
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, Http404
-from django.template import RequestContext
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 import simplejson
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 
 @login_required
@@ -23,8 +22,8 @@ def tags_list(request, template_name="tags/list.html"):
             item['name'] = ct.name
             item['tags'] = Tag.objects.filter(items__content_type=ct).annotate(num=Count('items')).order_by('-num')
             content_types.append(item)
-    return render_to_response(template_name, {'tags': tags, 'content_types': content_types},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'tags': tags, 'content_types': content_types})
 
 
 @login_required
@@ -32,8 +31,8 @@ def detail(request, id=None, template_name="tags/detail.html"):
     tag = get_object_or_404(Tag, pk=id)
     tagged_items = TaggedItem.objects.filter(tag=tag)
     tagged_items = sorted(tagged_items, key=lambda i: i.content_type.name)
-    return render_to_response(template_name, {'tag': tag, 'tagged_items': tagged_items},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'tag': tag, 'tagged_items': tagged_items})
 
 
 def autocomplete(request):

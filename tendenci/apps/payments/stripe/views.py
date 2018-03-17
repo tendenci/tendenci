@@ -1,10 +1,9 @@
 #import os
 import math
 #from datetime import datetime
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 #from django.http import HttpResponse
 from django.conf import settings
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 # from django.views.decorators.csrf import csrf_exempt
@@ -114,11 +113,11 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
             # redirect to thankyou
             return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id]))
 
-    return render_to_response(template_name, {'form': form,
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'form': form,
                                               'billing_info_form': billing_info_form,
                                               'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
-                                              'payment': payment},
-                              context_instance=RequestContext(request))
+                                              'payment': payment})
 
 
 @login_required
@@ -171,5 +170,5 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))
     payment = get_object_or_404(Payment, pk=payment_id)
 
-    return render_to_response(template_name,{'payment':payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment':payment})

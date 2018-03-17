@@ -1,8 +1,7 @@
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.exports.utils import run_export_task
@@ -26,5 +25,5 @@ def export(request, template_name="boxes/export.html"):
         export_id = run_export_task('boxes', 'box', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

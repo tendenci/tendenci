@@ -1,6 +1,5 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render as render_to_resp
 from django.http import HttpResponse
-from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from tendenci.apps.payments.authorizenet.utils import authorizenet_thankyou_processing
 from tendenci.apps.payments.utils import log_silent_post
@@ -13,8 +12,8 @@ def sim_thank_you(request, payment_id,
                                         request,
                                         request.POST.copy())
 
-    return render_to_response(template_name, {'payment': payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment': payment})
 
 
 @csrf_exempt

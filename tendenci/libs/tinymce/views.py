@@ -3,8 +3,8 @@
 
 import logging
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext, loader
+from django.shortcuts import render as render_to_resp
+from django.template import loader
 from django.utils.translation import ugettext as _
 from tendenci.libs.tinymce.compressor import gzip_compressor
 from tendenci.libs.tinymce.widgets import get_language_config
@@ -133,9 +133,8 @@ def filebrowser(request):
 #     except:
 #         fb_url = request.build_absolute_uri(urlresolvers.reverse('filebrowser:fb_browse'))
 #
-#     return render_to_response('tinymce/filebrowser.js', {'fb_url': fb_url},
-#             context_instance=RequestContext(request),
+#     return render_to_resp(request=request, template_name='tinymce/filebrowser.js',
+#             context={'fb_url': fb_url},
 #             content_type="application/x-javascript")
-    return render_to_response('tinymce/filebrowser.js', {},
-            context_instance=RequestContext(request),
+    return render_to_resp(request=request, template_name='tinymce/filebrowser.js',
             content_type="application/x-javascript")

@@ -15,7 +15,7 @@ from django.forms.models import model_to_dict
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.memberships.models import Membership
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.apps.events.models import Event, RegConfPricing, Registrant
 from tendenci.apps.events.utils import email_admins
@@ -357,7 +357,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         formset = FormSet(**params)
         hidden_form = formset.forms[0]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
             'event':event,
             'reg_form':reg_form,
             'custom_reg_form': custom_reg_form,
@@ -371,4 +371,4 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'total_price':reg_formset.get_total_price()+addon_formset.get_total_price(),
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             'shared_pricing':get_setting('module', 'events', 'sharedpricing'),
-            }, context_instance=RequestContext(request))
+            })

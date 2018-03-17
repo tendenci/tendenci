@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render as render_to_resp
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -113,8 +113,9 @@ class MultipleFileAdmin(admin.ModelAdmin):
                     string = 'Successfully uploaded %s files.' % counter
                     messages.success(request, _(string) )
                 return redirect(reverse('admin:files_file_changelist'))
-        return render(request,
-            'admin/files/file/multiple_file_upload.html',{
+        return render_to_resp(request=request,
+            template_name='admin/files/file/multiple_file_upload.html',
+            context={
             'adminform': form
         })
 

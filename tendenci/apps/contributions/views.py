@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -15,8 +14,8 @@ def index(request, id=None, template_name="contributions/view.html"):
     contribution = get_object_or_404(Contribution, pk=id)
 
     if has_perm(request.user,'contributions.view_contribution',contribution):
-        return render_to_response(template_name, {'contribution': contribution},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contribution': contribution})
     else:
         raise Http403
 
@@ -33,15 +32,15 @@ def search(request, template_name="contributions/search.html"):
 
     contributions = contributions.order_by('-create_dt')
 
-    return render_to_response(template_name, {'contributions':contributions},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'contributions':contributions})
 
 @login_required
 def print_view(request, id, template_name="contributions/print-view.html"):
     contribution = get_object_or_404(Contribution, pk=id)
 
     if has_perm(request.user,'contributions.view_contribution',contribution):
-        return render_to_response(template_name, {'contribution': contribution},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contribution': contribution})
     else:
         raise Http403

@@ -1,6 +1,5 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render as render_to_resp
 from django.http import HttpResponse
-from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.apps.payments.paypal.utils import paypal_thankyou_processing
@@ -14,8 +13,8 @@ def thank_you(request, template_name='payments/receipt.html'):
                                     request.POST.copy(),
                                     validate_type=validate_type)
 
-    return render_to_response(template_name, {'payment': payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment': payment})
 
 
 @csrf_exempt

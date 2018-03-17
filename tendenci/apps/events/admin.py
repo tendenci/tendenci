@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.http import HttpResponse, Http404
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render as render_to_resp, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -278,9 +278,9 @@ class StandardRegFormAdmin(admin.ModelAdmin):
             messages.success(request, "Successfully updated Standard Registration Form")
             return redirect(reverse('admin:standardregform_edit'))
 
-        return render(request,
-            'admin/events/standardregform/standard_reg_form_edit.html',
-            {'adminform': form})
+        return render_to_resp(request=request,
+            template_name='admin/events/standardregform/standard_reg_form_edit.html',
+            context={'adminform': form})
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:standardregform_edit'))

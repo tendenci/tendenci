@@ -9,8 +9,7 @@ views/kb.py - Public-facing knowledgebase views. The knowledgebase is a
 """
 
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.helpdesk.models import KBCategory, KBItem
@@ -19,31 +18,31 @@ from tendenci.apps.helpdesk.models import KBCategory, KBItem
 def index(request):
     category_list = KBCategory.objects.all()
     # TODO: It'd be great to have a list of most popular items here.
-    return render_to_response('helpdesk/kb_index.html',
-        RequestContext(request, {
+    return render_to_resp(request=request, template_name='helpdesk/kb_index.html',
+        context={
             'kb_categories': category_list,
             'helpdesk_settings': helpdesk_settings,
-        }))
+        })
 
 
 def category(request, slug):
     category = get_object_or_404(KBCategory, slug__iexact=slug)
     items = category.kbitem_set.all()
-    return render_to_response('helpdesk/kb_category.html',
-        RequestContext(request, {
+    return render_to_resp(request=request, template_name='helpdesk/kb_category.html',
+        context={
             'category': category,
             'items': items,
             'helpdesk_settings': helpdesk_settings,
-        }))
+        })
 
 
 def item(request, item):
     item = get_object_or_404(KBItem, pk=item)
-    return render_to_response('helpdesk/kb_item.html',
-        RequestContext(request, {
+    return render_to_resp(request=request, template_name='helpdesk/kb_item.html',
+        context={
             'item': item,
             'helpdesk_settings': helpdesk_settings,
-        }))
+        })
 
 
 def vote(request, item):

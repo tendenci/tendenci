@@ -1,6 +1,5 @@
 from datetime import datetime
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 #from django.conf import settings
@@ -100,7 +99,8 @@ def view_account(request, recurring_payment_id, guid=None,
 
     num_accounts = RecurringPayment.objects.filter(user=rp.user).count()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
                                               'rp': rp,
                                               'display_failed_transaction': display_failed_transaction,
                                               'last_paid_payment_transaction': last_paid_payment_transaction,
@@ -114,8 +114,7 @@ def view_account(request, recurring_payment_id, guid=None,
                                               'num_accounts': num_accounts,
                                               'memberships': rp.memberships,
                                               'STRIPE_PUBLISHABLE_KEY': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 @ssl_required
 @login_required
@@ -145,11 +144,11 @@ def my_accounts(request, username=None,
     is_owner = False
     if request.user.id == u.id: is_owner = True
 
-    return render_to_response(template_name, {'rps': rps,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'rps': rps,
                                               'is_owner': is_owner,
                                               'account_user': u
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @staff_member_required
@@ -234,15 +233,15 @@ def customers(request, template_name="recurring_payments/customers.html"):
     if not total_amount_past_due:
         total_amount_past_due = 0
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
                     'recurring_payments': recurring_payments,
                     'total_customers': total_customers,
                     'total_amount_received': total_amount_received,
                     'total_amount_unpaid': total_amount_unpaid,
                     'total_amount_past_due': total_amount_past_due,
                     'query': query
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
@@ -268,13 +267,13 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
         payment_profile = ''
     invoice = payment_transaction.payment.invoice
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
                     'rp': rp,
                     'invoice': invoice,
                     'payment_transaction': payment_transaction,
                     'payment_profile': payment_profile
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @login_required
@@ -322,6 +321,6 @@ def disable_account(request, rp_id,
 
             return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
 
-    return render_to_response(template_name, {
-                    'rp': rp},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+                    'rp': rp})

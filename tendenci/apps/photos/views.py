@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 import simplejson as json
-from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -24,7 +23,7 @@ from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.libs.utils import python_executable
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.perms.decorators import is_enabled
@@ -62,8 +61,8 @@ def search(request, template_name="photos/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {"photos": photos},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={"photos": photos})
 
 
 @is_enabled('photos')
@@ -106,14 +105,14 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         photo.get_license().name != 'All Rights Reserved',
     ]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo": photo,
         "size_name": size_name.replace("_"," "),
         "download_url": download_url,
         "source_url": source_url,
         "original_source_url": original_source_url,
         "can_view_original": any(view_original_requirments),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -176,7 +175,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     if partial:  # return partial html; for ajax end-user
         template_name = "photos/partial-details.html"
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_position": photo_position,
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,
@@ -188,7 +187,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         "id": id,
         "set_id": set_id,
         "is_me": is_me,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def photo_size(request, id, size, crop=False, quality=90, download=False, constrain=False):
@@ -305,10 +304,10 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
 
     photos = photos.order_by("-date_added")
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "group": group,
         "photos": photos,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -346,13 +345,13 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     else:
         form = form_class(instance=photo, user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_form": form,
         "photo": photo,
         "photo_sets": photo_sets,
         "id": photo.id,
         "set_id": set_id,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -378,9 +377,9 @@ def delete(request, id, set_id=0):
         except PhotoSet.DoesNotExist:
             return HttpResponseRedirect(reverse("photos_search"))
 
-    return render_to_response("photos/delete.html", {
+    return render_to_resp(request=request, template_name="photos/delete.html", context={
         "photo": photo,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -409,9 +408,9 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photoset_form": form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -451,10 +450,10 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     else:
         form = form_class(instance=photo_set, user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'photo_set': photo_set,
         "photoset_form": form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -477,9 +476,9 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         # redirect to the photo set search
         return redirect('photoset_latest')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'photo_set': photo_set,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -500,8 +499,8 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {"photo_sets": photo_sets},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={"photo_sets": photo_sets})
 
 
 @is_enabled('photos')
@@ -509,9 +508,9 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     """ View your photo set """
     photo_sets = PhotoSet.objects.all()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_sets": photo_sets,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def handle_uploaded_photo(request, photoset_id, file_path):
@@ -623,13 +622,13 @@ def photos_batch_add(request, photoset_id=0):
         image_slot_left = photo_limit - photo_set.image_set.count()
 
         # show the upload UI
-        return render_to_response('photos/batch-add.html', {
+        return render_to_resp(request=request, template_name='photos/batch-add.html',
+            context={
             "photoset_id": photoset_id,
             "photo_set": photo_set,
             "csrf_token": csrf_get_token(request),
             "image_slot_left": image_slot_left,
-             },
-            context_instance=RequestContext(request))
+             })
 
 
 @is_enabled('photos')
@@ -717,14 +716,14 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     default_group_id = Group.objects.get_initial_group_id()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
         "groups": groups,
         'default_group_id': default_group_id
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -750,10 +749,10 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         'instance': photo_set,
     })
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photos": photos,
         "photo_set": photo_set,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
@@ -776,11 +775,11 @@ def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
         task = ZipPhotoSetTask.delay(photo_set)
         task_id = task.task_id
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_set": photo_set,
         "task_id":task_id,
         "file_path":file_path,
-    }, context_instance=RequestContext(request))
+    })
 
 def photoset_zip_status(request, id, task_id):
     try:

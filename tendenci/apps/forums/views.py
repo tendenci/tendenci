@@ -12,13 +12,14 @@ from django.db.models import F, Q
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
     HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render as render_to_resp
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin
 from django.views.decorators.csrf import csrf_protect
 from django.views import generic
+
 from . import compat, defaults, util
 from .compat import get_atomic_func
 from .forms import PostForm, AdminPostForm, PollAnswerFormSet, PollForm
@@ -740,7 +741,7 @@ def add_subscription(request, topic_id):
 def post_ajax_preview(request):
     content = request.POST.get('data')
     html = util._get_markup_formatter()(content)
-    return render(request, 'pybb/_markitup_preview.html', {'html': html})
+    return render_to_resp(request=request, template_name='pybb/_markitup_preview.html', context={'html': html})
 
 
 @login_required

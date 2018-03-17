@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -29,8 +28,8 @@ def detail(request, slug=None, cv=None):
     if has_view_perm(request.user, 'staff.view_staff', staff):
         EventLog.objects.log(instance=staff)
 
-        return render_to_response(template_name, {'staff': staff},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'staff': staff})
     else:
         raise Http403
 
@@ -70,8 +69,8 @@ def search(request, slug=None, template_name="staff/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'staff_members':staff, 'department': department},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'staff_members':staff, 'department': department})
 
 
 @is_enabled('staff')

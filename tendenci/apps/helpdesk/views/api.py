@@ -18,7 +18,7 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render as render_to_resp
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
@@ -54,7 +54,7 @@ def api(request, method):
     """
 
     if method == 'help':
-        return render_to_response('helpdesk/help_api.html')
+        return render_to_resp(request=request, template_name='helpdesk/help_api.html')
 
     if request.method != 'POST':
         return api_return(STATUS_ERROR_BADMETHOD)

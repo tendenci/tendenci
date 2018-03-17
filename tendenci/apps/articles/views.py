@@ -12,7 +12,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404, Http404
-from django.template import RequestContext
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
@@ -28,7 +27,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.versions.models import Version
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.articles.forms import ArticleForm, ArticleSearchForm
@@ -69,8 +68,8 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
 
     if has_view_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
-        return render_to_response(template_name, {'article': article},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'article': article})
     else:
         raise Http403
 
@@ -144,9 +143,8 @@ def search(request, template_name="articles/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'articles': articles,
-        'form' : form,},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'articles': articles, 'form' : form})
 
 
 def search_redirect(request):
@@ -167,8 +165,8 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 
     if has_view_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
-        return render_to_response(template_name, {'article': article},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'article': article})
     else:
         raise Http403
 
@@ -216,10 +214,10 @@ def edit(request, id, form_class=ArticleForm,
             categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,)
 
-        return render_to_response(template_name, {'article': article,
-                                                  'form': form,
-                                                  'categoryform': categoryform,},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'article': article,
+                     'form': form,
+                     'categoryform': categoryform,})
     else:
         raise Http403
 
@@ -252,8 +250,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
     else:
         form = form_class(instance=article.meta)
 
-    return render_to_response(template_name, {'article': article, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'article': article, 'form': form})
 
 
 @is_enabled('articles')
@@ -300,9 +298,9 @@ def add(request, form_class=ArticleForm,
             categoryform = category_form_class(content_type,
                                                initial=initial_category_form_data,)
 
-        return render_to_response(template_name, {'form': form,
-                                                  'categoryform': categoryform,},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form': form,
+                     'categoryform': categoryform,})
     else:
         raise Http403
 
@@ -331,8 +329,8 @@ def delete(request, id, template_name="articles/delete.html"):
 
             return HttpResponseRedirect(reverse('article.search'))
 
-        return render_to_response(template_name, {'article': article},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'article': article})
     else:
         raise Http403
 
@@ -374,9 +372,9 @@ def articles_report(request, template_name='reports/articles.html'):
     if sort == 'day':
         stats = sorted(stats, key=lambda item: item['per_day'], reverse=True)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'stats': stats
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('articles')
@@ -400,7 +398,7 @@ def export(request, template_name="articles/export.html"):
         EventLog.objects.log()
         return HttpResponseRedirect(reverse('article.export_status', args=[identifier]))
 
-    return render_to_response(template_name, {}, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @is_enabled('articles')
@@ -422,7 +420,7 @@ def export_status(request, identifier, template_name="articles/export-status.htm
 
     context = {'identifier': identifier,
                'download_ready': download_ready}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('articles')

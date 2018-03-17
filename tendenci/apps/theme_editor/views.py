@@ -1,9 +1,8 @@
 from builtins import str
 import os
 
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render as render_to_resp, redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -137,7 +136,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'file_form': file_form,
         'theme_form': theme_form,
         'current_theme': selected_theme,
@@ -157,7 +156,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'all_files_folders': all_files_folders,
         'ext' : ext,
         'stylesheets' : stylesheets
-    }, context_instance=RequestContext(request))
+    })
 
 
 @permission_required('theme_editor.change_themefileversion')
@@ -225,9 +224,9 @@ def app_list(request, template_name="theme_editor/app_list.html"):
     app_list = []
     for app in app_templates:
         app_list.append((app, app_templates[app]))
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'apps': sorted(app_list, key=lambda app: app[0]),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @permission_required('theme_editor.change_themefileversion')
@@ -261,7 +260,7 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
 
     dirs = get_dir_list(current_dir, ROOT_DIR=root)
     files, non_editable_files = get_file_list(current_dir, ROOT_DIR=root)
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'app': app,
         'current_dir': current_dir,
         'prev_dir_name': prev_dir_name,
@@ -269,7 +268,7 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
         'dirs': dirs,
         'files': files,
         'non_editable_files': non_editable_files
-    }, context_instance=RequestContext(request))
+    })
 
 
 @permission_required('theme_editor.change_themefileversion')
@@ -405,11 +404,11 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
     current_theme = get_setting('module', 'theme_editor', 'theme')
     themes = sorted(themes, key=lambda theme: theme.create_dt)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'themes': themes,
         'current_theme': current_theme,
         'theme_choices': theme_choice_list(),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -444,6 +443,6 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
 
     if request.method == 'POST':
         SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
-        return render_to_response(template_name, context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name)
 
     raise Http404

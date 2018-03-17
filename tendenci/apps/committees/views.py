@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
@@ -51,14 +50,13 @@ def detail(request, slug, template_name="committees/detail.html"):
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=committee.group).distinct()
 
-        return render_to_response(template_name,
-            {
+        return render_to_resp(request=request, template_name=template_name,
+            context={
                 'committee': committee,
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
-            },
-            context_instance=RequestContext(request))
+            })
     else:
         raise Http403
 
@@ -76,8 +74,8 @@ def search(request, template_name="committees/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'committees': committees},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committees': committees})
 
 
 @is_enabled('committees')
@@ -156,13 +154,12 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 
-    return render_to_response(template_name,
-            {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                 'form':form,
                 'metaform':metaform,
                 'categoryform':categoryform,
-            },
-            context_instance=RequestContext(request))
+            })
 
 @is_enabled('committees')
 @login_required
@@ -253,15 +250,14 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         formset = OfficerFormSet(instance=committee, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, committee_group=committee.group))
 
-    return render_to_response(template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'committee': committee,
             'form': form,
             'metaform': metaform,
             'categoryform': categoryform,
             'formset': formset,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('committees')
@@ -298,8 +294,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-m
     else:
         form = form_class(instance=committee.meta)
 
-    return render_to_response(template_name, {'committee': committee, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committee': committee, 'form': form})
 
 
 @is_enabled('committees')
@@ -327,5 +323,5 @@ def delete(request, id, template_name="committees/delete.html"):
         committee.delete()
         return HttpResponseRedirect(reverse('committees.search'))
 
-    return render_to_response(template_name, {'committee': committee},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committee': committee})

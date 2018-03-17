@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.translation import ugettext_lazy as _
 
@@ -18,5 +17,5 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
         else:
             payment.response_reason_text = _("Your transaction has been declined.")
 
-    return render_to_response(template_name,{'payment':payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment':payment})

@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import render as render_to_resp, redirect
 from django.contrib.auth.models import User
 from dateutil import parser
 
@@ -45,13 +44,13 @@ def index(request, template_name="dashboard/index.html"):
     statistics = DashboardStatType.objects.filter(displayed=True)
 
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'has_paid': has_paid,
         'activate_url': activate_url,
         'expired': expired,
         'expiration_dt': expiration_dt,
         'statistics': statistics,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -104,13 +103,13 @@ def new(request, template_name="dashboard/new.html"):
     statistics = DashboardStatType.objects.filter(displayed=True)
 
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'has_paid': has_paid,
         'activate_url': activate_url,
         'expired': expired,
         'expiration_dt': expiration_dt,
         'statistics': statistics,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @superuser_required
@@ -130,6 +129,6 @@ def customize(request, template_name="dashboard/customize.html"):
     else:
         formset = DashboardStatFormSet(queryset=DashboardStatType.objects.all())
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'formset': formset,
-    }, context_instance=RequestContext(request))
+    })
