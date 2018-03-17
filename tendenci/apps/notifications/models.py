@@ -253,7 +253,7 @@ def create_notice_type(label, display, description, default=2, verbosity=1):
     """
     Creates a new NoticeType.
 
-    This is intended to be used by other apps as a post_syncdb manangement step.
+    This is intended to be used by other apps as a post_migrate manangement step.
     """
     [notice_type] = NoticeType.objects.filter(label=label)[:1] or [None]
     if notice_type:

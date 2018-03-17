@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, post_delete, post_syncdb
+from django.db.models.signals import post_save, post_delete, post_migrate
 from django.utils.translation import ugettext_noop as _
 from tendenci.apps.memberships.models import MembershipDefault, MembershipApp
 from tendenci.apps.contributions.signals import save_contribution
@@ -97,5 +97,5 @@ def assign_permissions(app, created_models, verbosity, **kwargs):
 post_save.connect(save_contribution, sender=MembershipDefault, weak=False)
 post_delete.connect(update_membs_app_id, sender=MembershipApp, weak=False)
 post_save.connect(check_and_update_membs_app_id, sender=MembershipApp, weak=False)
-post_syncdb.connect(create_notice_types, sender=notification)
-post_syncdb.connect(assign_permissions, sender=__file__)
+post_migrate.connect(create_notice_types, sender=notification)
+post_migrate.connect(assign_permissions, sender=__file__)

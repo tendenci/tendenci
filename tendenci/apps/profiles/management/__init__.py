@@ -1,7 +1,7 @@
 from __future__ import print_function
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
-from django.db.models.signals import post_syncdb
+from django.db.models.signals import post_migrate
 
 # The post_syncdb signal is not being called because
 # this profile application has migration files via
@@ -19,6 +19,6 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type("user_edited", _("User Edited"), _("A user has been edited."))
         notification.create_notice_type("user_deleted", _("User Deleted"), _("A user has been deleted"))
 
-    post_syncdb.connect(create_notice_types, sender=notification)
+    post_migrate.connect(create_notice_types, sender=notification)
 else:
     print("Profiles: Skipping creation of NoticeTypes as notification app not found")
