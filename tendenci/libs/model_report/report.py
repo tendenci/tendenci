@@ -3,7 +3,6 @@ from builtins import str
 import copy
 from itertools import groupby
 
-import django
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
@@ -124,11 +123,7 @@ def is_date_field(field):
 
 def get_model_name(model):
     """ Returns string name for the given model """
-    # model._meta.module_name is deprecated in django version 1.7 and removed in django version 1.8.
-    if django.VERSION < (1, 7):
-        return model._meta.module_name
-    else:
-        return model._meta.model_name
+    return model._meta.model_name
 
 
 class ReportAdmin(object):

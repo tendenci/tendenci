@@ -9,10 +9,8 @@ models.py - Model (and hence database) definitions. This is the core of the
 
 from __future__ import unicode_literals
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext
-from django import VERSION
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import User
 
@@ -1091,15 +1089,7 @@ def create_usersettings(sender, instance, created, **kwargs):
     if created:
         UserSettings.objects.create(user=instance, settings=DEFAULT_USER_SETTINGS)
 
-try:
-    # Connecting via settings.AUTH_USER_MODEL (string) fails in Django < 1.7. We need the actual model there.
-    # https://docs.djangoproject.com/en/1.7/topics/auth/customizing/#referencing-the-user-model
-    if VERSION < (1, 7):
-        raise ValueError
     models.signals.post_save.connect(create_usersettings, sender=settings.AUTH_USER_MODEL)
-except:
-    signal_user = get_user_model()
-    models.signals.post_save.connect(create_usersettings, sender=signal_user)
 
 
 @python_2_unicode_compatible
