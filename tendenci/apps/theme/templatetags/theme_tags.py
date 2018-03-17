@@ -5,7 +5,6 @@ from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableD
 from django.template import Library, Variable
 from django.conf import settings
 from django.template.base import TextNode
-from django.template.loader import get_template
 from django.template.loader_tags import (ExtendsNode, IncludeNode,
                                          BlockNode, BlockContext,
                                          BLOCK_CONTEXT_KEY,)
@@ -47,7 +46,7 @@ class ThemeExtendsNode(ExtendsNode):
     #     theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
     #     theme_template = get_theme_template(parent, theme=theme)
     #     try:
-    #         template = get_template(theme_template)
+    #         template = context.template.engine.get_template(theme_template)
     #     except TemplateDoesNotExist:
     #         #to be sure that we not are loading the active theme's template
     #         template = get_default_template(parent)
@@ -120,7 +119,7 @@ class ThemeConstantIncludeNode(IncludeNode):
         theme_template = get_theme_template(self.template_path, theme=theme)
         try:
             try:
-                t = get_template(theme_template)
+                t = context.template.engine.get_template(theme_template)
             except TemplateDoesNotExist:
                 t = get_default_template(self.template_path)
             self.template = t
@@ -129,7 +128,7 @@ class ThemeConstantIncludeNode(IncludeNode):
                 raise
             self.template = None
         if self.template:
-            return self.template.render(context)
+            return self.template.render(context=context)
         else:
             return ''
 
@@ -141,10 +140,10 @@ class ThemeIncludeNode(IncludeNode):
             theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
             theme_template = get_theme_template(template_name, theme=theme)
             try:
-                t = get_template(theme_template)
+                t = context.template.engine.get_template(theme_template)
             except TemplateDoesNotExist:
                 t = get_default_template(template_name)
-            return t.render(context)
+            return t.render(context=context)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise
@@ -171,8 +170,8 @@ class SpaceIncludeNode(IncludeNode):
                 filters = get_query_filters(AnonymousUser(), 'boxes.view_box')
                 box = Box.objects.filter(filters).filter(pk=setting_value)
                 context['box'] = box[0]
-                template = get_template('theme_includes/box.html')
-                return template.render(context)
+                template = context.template.engine.get_template('theme_includes/box.html')
+                return template.render(context=context)
             except:
                 # Otherwise try to render a template
                 try:
@@ -180,10 +179,10 @@ class SpaceIncludeNode(IncludeNode):
                     theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
                     theme_template = get_theme_template(template_name, theme=theme)
                     try:
-                        t = get_template(theme_template)
+                        t = context.template.engine.get_template(theme_template)
                     except TemplateDoesNotExist:
                         t = get_default_template(template_name)
-                    return t.render(context)
+                    return t.render(context=context)
                 except:
                     if settings.TEMPLATE_DEBUG:
                         raise
@@ -229,12 +228,12 @@ class ThemeSettingNode(IncludeNode):
         try:
             theme = context['THEME']
             try:
-                t = get_template("%s/templates/%s" % (theme, template_name))
+                t = context.template.engine.get_template("%s/templates/%s" % (theme, template_name))
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
                 t = get_default_template(template_name)
-            return t.render(context)
+            return t.render(context=context)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise

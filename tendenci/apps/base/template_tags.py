@@ -3,7 +3,7 @@ import random
 from operator import or_
 from functools import reduce
 
-from django.template import Node, Variable, Context, loader
+from django.template import Node, Variable
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
@@ -232,7 +232,7 @@ class ListNode(Node):
             except:
                 template = self.kwargs['template']
 
-            t = loader.get_template(template)
-            return t.render(Context(context, autoescape=context.autoescape))
+            t = context.template.engine.get_template(template)
+            return t.render(context=context, autoescape=context.autoescape)
 
         return ""

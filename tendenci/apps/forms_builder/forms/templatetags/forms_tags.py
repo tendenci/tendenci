@@ -1,5 +1,4 @@
 from django.template import Library
-from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser
 
 from tendenci.apps.forms_builder.forms.forms import FormForForm
@@ -78,16 +77,16 @@ def forms_entry_options(context, user, entry):
 #             form = Form.objects.get(pk=pk)
 #             context['embed_form'] = form.object
 #             context['embed_form_for_form'] = FormForForm(form.object, AnonymousUser())
-#             template = get_template(template_name)
-#             output = '<div class="embed-form">%s</div>' % template.render(context)
+#             template = context.template.engine.get_template(template_name)
+#             output = '<div class="embed-form">%s</div>' % template.render(context=context)
 #             return output
 #         except:
 #             try:
 #                 form = Form.objects.get(pk=pk)
 #                 context['embed_form'] = form
 #                 context['embed_form_for_form'] = FormForForm(form, AnonymousUser())
-#                 template = get_template(template_name)
-#                 output = '<div class="embed-form">%s</div>' % template.render(context)
+#                 template = context.template.engine.get_template(template_name)
+#                 output = '<div class="embed-form">%s</div>' % template.render(context=context)
 #                 return output
 #             except:
 #                 raise
@@ -121,8 +120,8 @@ def embed_form(context, pk, *args, **kwargs):
             if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
                 context['embed_form_for_form'].fields['captcha'].widget.gtag_attrs.update(
                                 {'data-size': kwargs['gsize']})
-        template = get_template(template_name)
-        output = '<div class="embed-form">%s</div>' % template.render(context)
+        template = context.template.engine.get_template(template_name)
+        output = '<div class="embed-form">%s</div>' % template.render(context=context)
         return output
     except:
         return ""
