@@ -1,5 +1,6 @@
 from builtins import str
 import os
+import subprocess
 
 from django.shortcuts import redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -14,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.base.models import UpdateTracker
 from tendenci.apps.base.utils import get_template_list, checklist_update
 from tendenci.apps.site_settings.utils import get_setting
@@ -443,7 +443,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
+        subprocess.Popen([python_executable(), "manage.py", "install_theme", "--all"])
         return render_to_resp(request=request, template_name=template_name)
 
     raise Http404

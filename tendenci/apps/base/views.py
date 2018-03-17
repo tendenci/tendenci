@@ -33,7 +33,6 @@ from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
 from tendenci.apps.base.models import ChecklistItem
-from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.site_settings.utils import get_setting
@@ -466,8 +465,8 @@ def update_tendenci(request, template_name="base/update.html"):
         tos = request.POST.get('tos')
 
         if tos:
-            SubProcessManager.set_process([python_executable(), "manage.py", "auto_update",
-                                            "--user_id=%s" % request.user.id])
+            subprocess.Popen([python_executable(), "manage.py", "auto_update",
+                             "--user_id=%s" % request.user.id])
             return redirect('update_tendenci.confirmation')
 
     return render_to_resp(request=request, template_name=template_name, context={
