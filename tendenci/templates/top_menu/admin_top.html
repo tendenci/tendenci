@@ -174,21 +174,21 @@
                 </div>
             </div>
         </li>
-        {% if CUSTOM_TEMPLATE %}
-            <li><a href="#">{% trans "Using Custom Template" %}</a>
+        {% if CUSTOM_THEME %}
+            <li><a href="#">{% trans "Using Custom Theme" %}</a>
                 <div class="sub">
                 <div class="column">
                     <ul>
                         <li><a href="{% url "setting.permalink" 'module' 'theme_editor' 'theme' %}">{% trans "Theme" %}: {{ THEME }}</a></li>
                         <li><a href="{% url "theme_editor.editor" %}?file=templates/{{ THEME_TEMPLATE }}&theme_edit={{ THEME }}">{% trans 'Template' %}: {{ THEME_TEMPLATE }}</a></li>
-                        <li><a href="?toggle_template">{% trans 'View using Default Template' %}</a></li>
+                        <li><a href="?disable_theme">{% trans 'View using Default Theme' %}</a></li>
                     </ul>
                 </div>
                 </div>
             </li>
         {% endif %}
-        {% if TOGGLE_TEMPLATE %}
-            <li><a href="?">{% trans "View using My Template" %}</a></li>
+        {% if DISABLE_THEME %}
+            <li><a href="?">{% trans "View using My Theme" %}</a></li>
         {% endif %}
 
         <li class="right visible-mobile"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
