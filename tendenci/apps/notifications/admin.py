@@ -17,7 +17,7 @@ class NoticeTypeAdmin(admin.ModelAdmin):
 
     def __init__(self, *args, **kwargs):
         super(NoticeTypeAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = (None, )
+        self.list_display_links = ()
 
 
 class NoticeSettingAdmin(admin.ModelAdmin):
@@ -54,7 +54,7 @@ class NoticeEmailAdmin(admin.ModelAdmin):
 
     def __init__(self, *args, **kwargs):
         super(NoticeEmailAdmin, self).__init__(*args, **kwargs)
-        self.list_display_links = (None, )
+        self.list_display_links = ()
 
 # admin.site.register(NoticeType, NoticeTypeAdmin)
 # admin.site.register(NoticeSetting, NoticeSettingAdmin)

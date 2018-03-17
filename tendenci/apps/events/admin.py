@@ -36,6 +36,8 @@ class EventAdmin(TendenciBaseModelAdmin):
         super(EventAdmin, self).__init__(*args, **kwargs)
         if 'edit_link' in self.list_display:
             self.list_display.remove('edit_link')
+        if 'edit_link' in self.list_display_links:
+            self.list_display_links = tuple(l for l in self.list_display_links if l != 'edit_link')
 
     def has_add_permission(self, request):
         return False
