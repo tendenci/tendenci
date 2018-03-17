@@ -69,8 +69,6 @@ class SkillSet(models.Model):
 
     loc = models.PointField(blank=True, null=True)
 
-    objects = models.GeoManager()
-
     def __unicode__(self):
         return '%s: Skills' % (self.user.profile.get_name())
 
@@ -151,8 +149,6 @@ class ReliefAssessment(models.Model):
     items_provided = tinymce_models.HTMLField(_('items provided'), blank=True, null=True)
 
     loc = models.PointField(blank=True, null=True)
-
-    objects = models.GeoManager()
 
     @models.permalink
     def get_absolute_url(self):
