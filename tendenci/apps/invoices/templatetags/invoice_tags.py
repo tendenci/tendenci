@@ -20,7 +20,6 @@ def invoices_search_results_line(request, invoice):
     search_line_display = None
     if invoice.object_type:
         from django.template.loader import render_to_string
-        from django.template import RequestContext
         from django.template import TemplateDoesNotExist
 
         app_label = invoice.object_type.app_label
@@ -33,9 +32,9 @@ def invoices_search_results_line(request, invoice):
 
         try:
             search_line_display = render_to_string(
-                template_name,
-                {'obj':obj,'invoice':invoice},
-                context_instance=RequestContext(request)
+                template_name=template_name,
+                context={'obj':obj,'invoice':invoice},
+                request=request
             )
         except TemplateDoesNotExist:
             pass
@@ -73,7 +72,6 @@ def invoice_object_display(request, invoice):
 
     if invoice.object_type:
         from django.template.loader import render_to_string
-        from django.template import RequestContext
         from django.template import TemplateDoesNotExist
 
         app_label = invoice.object_type.app_label
@@ -85,9 +83,9 @@ def invoice_object_display(request, invoice):
             template_name = "%s/invoice_view_display.html" % (app_label)
         try:
             object_display = render_to_string(
-                template_name,
-                {'obj': obj, 'invoice': invoice},
-                context_instance=RequestContext(request)
+                template_name=template_name,
+                context={'obj': obj, 'invoice': invoice},
+                request=request
             )
         except TemplateDoesNotExist:
             pass

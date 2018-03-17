@@ -55,14 +55,13 @@ def donation_email_user(request, donation, invoice, **kwargs):
     from django.core.mail.message import EmailMessage
     from django.template.loader import render_to_string
     from django.conf import settings
-    from django.template import RequestContext
 
-    subject = render_to_string('donations/email_user_subject.txt',
-                               {'donation':donation},
-                               context_instance=RequestContext(request))
-    body = render_to_string('donations/email_user.txt', {'donation':donation,
+    subject = render_to_string(template_name='donations/email_user_subject.txt',
+                               context={'donation':donation},
+                               request=request)
+    body = render_to_string(template_name='donations/email_user.txt', context={'donation':donation,
                                                         'invoice':invoice},
-                                                        context_instance=RequestContext(request))
+                                                        request=request)
     sender = settings.DEFAULT_FROM_EMAIL
     recipient = donation.email
     msg = EmailMessage(subject, body, sender, [recipient])

@@ -608,7 +608,7 @@ def tinymce_get_files(request):
 
         return_string = ''
         for file_item in files:
-            return_string += render_to_string('files/templates/tinymce_gallery.html', {'file': file_item})
+            return_string += render_to_string(template_name='files/templates/tinymce_gallery.html', context={'file': file_item})
 
         return JSONResponse({'content': return_string})
     raise Http404

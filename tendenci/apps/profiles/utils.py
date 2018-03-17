@@ -29,14 +29,13 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
-    from django.template import RequestContext
 
     subject = 'User Account Modification Notice for %s' % get_setting('site', 'global', 'sitedisplayname')
-    body = render_to_string('profiles/edit_notice.txt',
-                               {'old_user':old_user,
+    body = render_to_string(template_name='profiles/edit_notice.txt',
+                               context={'old_user':old_user,
                                 'old_profile': old_profile,
                                 'profile': profile},
-                               context_instance=RequestContext(request))
+                               request=request)
 
     sender = settings.DEFAULT_FROM_EMAIL
     recipients = ['%s<%s>' % (r[0], r[1]) for r in settings.ADMINS]
@@ -392,11 +391,11 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             'export_fields': export_fields}
 
         subject = render_to_string(
-            'profiles/notices/export_ready_subject.html', parms)
+            template_name='profiles/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'profiles/notices/export_ready_body.html', parms)
+            template_name='profiles/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

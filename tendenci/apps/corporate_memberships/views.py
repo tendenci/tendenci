@@ -141,8 +141,7 @@ def get_app_fields_json(request):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    app_fields = render_to_string('corporate_memberships/app_fields.json',
-                               {}, context_instance=None)
+    app_fields = render_to_string(template_name='corporate_memberships/app_fields.json')
 
     return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)), content_type="application/json")
 

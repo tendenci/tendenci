@@ -112,8 +112,8 @@ def get_default_reminder_template(event):
     context = {}
     for token in EMAIL_AVAILABLE_TOKENS:
         context[token] = '{{ %s }}' % token
-    return render_to_string('events/default_email.html',
-                           context)
+    return render_to_string(template_name='events/default_email.html',
+                           context=context)
 
 
 def get_ACRF_queryset(event=None):
@@ -1970,11 +1970,11 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             'type': event_type}
 
         subject = render_to_string(
-            'events/notices/export_ready_subject.html', parms)
+            template_name='events/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'events/notices/export_ready_body.html', parms)
+            template_name='events/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

@@ -814,8 +814,8 @@ class CorpMembership(TendenciBaseModel):
                         reverse('auth_login'))
                 login_info = \
                 render_to_string(
-                    'notification/corp_memb_notice_email/join_login_info.html',
-                    {'corp_membership': self,
+                    template_name='notification/corp_memb_notice_email/join_login_info.html',
+                    context={'corp_membership': self,
                      'created': created,
                      'username': username,
                      'password': password,
@@ -1291,9 +1291,9 @@ class CorpMembership(TendenciBaseModel):
 
         if reps:
             email_context['to_reps'] =  True
-            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = render_to_string(template_name='notification/corp_memb_cap_reached/short.txt', context=email_context)
             subject = subject.strip('\n').strip('\r')
-            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            body = render_to_string(template_name='notification/corp_memb_cap_reached/full.html', context=email_context)
             email = Email()
             email.subject = subject
             email.body = body
@@ -1306,9 +1306,9 @@ class CorpMembership(TendenciBaseModel):
         # email to site admins
         if membership_recipients:
             email_context['to_reps'] =  False
-            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = render_to_string(template_name='notification/corp_memb_cap_reached/short.txt', context=email_context)
             subject = "Admin: " + subject.strip('\n').strip('\r')
-            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            body = render_to_string(template_name='notification/corp_memb_cap_reached/full.html', context=email_context)
             email = Email()
             email.subject = subject
             email.body = body
@@ -1947,8 +1947,8 @@ class Notice(models.Model):
         if corporate_membership.renewal:
             renewed_individuals_list = \
               render_to_string(
-                        'notification/corp_memb_notice_email/renew_list.html',
-                        {'corp_membership': corporate_membership})
+                        template_name='notification/corp_memb_notice_email/renew_list.html',
+                        context={'corp_membership': corporate_membership})
             total_individuals_renewed = \
                 corporate_membership.indivmembershiprenewentry_set.count()
         else:
@@ -1963,8 +1963,8 @@ class Notice(models.Model):
 
         corp_app = CorpMembershipApp.objects.current_app()
         authentication_info = render_to_string(
-                        'notification/corp_memb_notice_email/auth_info.html',
-                        {'corp_membership': corporate_membership,
+                        template_name='notification/corp_memb_notice_email/auth_info.html',
+                        context={'corp_membership': corporate_membership,
                          'corp_app': corp_app})
 
         context.update({

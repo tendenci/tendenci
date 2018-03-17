@@ -325,14 +325,14 @@ def template_view(request, template_id, render=True):
     login_content = ""
     include_login = int(request.GET.get('include_login', 0))
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = int(request.GET.get('jump_links', 1))
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = int(request.GET.get('articles', 1))

@@ -88,11 +88,11 @@ def process_export(identifier, user_id):
             'date_today': datetime.now()}
 
         subject = render_to_string(
-            'articles/notices/export_ready_subject.html', parms)
+            template_name='articles/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'articles/notices/export_ready_body.html', parms)
+            template_name='articles/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

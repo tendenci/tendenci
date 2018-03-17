@@ -405,8 +405,7 @@ def get_corpapp_default_fields_list():
 #    data = ''.join(fd.read())
 #    fd.close()
 
-    data = render_to_string('corporate_memberships/regular_fields.json',
-                               {}, context_instance=None)
+    data = render_to_string(template_name='corporate_memberships/regular_fields.json')
 
     if data:
         return simplejson.loads(data)

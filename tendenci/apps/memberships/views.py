@@ -759,7 +759,7 @@ def get_app_fields_json(request):
         raise Http403
 
     complete_list = simplejson.loads(
-        render_to_string('memberships/app_fields.json'))
+        render_to_string(template_name='memberships/app_fields.json'))
     return HttpResponse(simplejson.dumps(complete_list), content_type="application/json")
 
 

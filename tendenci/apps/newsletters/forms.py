@@ -4,7 +4,6 @@ from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.template import RequestContext
 
 from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
@@ -114,7 +113,7 @@ class OldGenerateForm(forms.ModelForm):
         nl.date_created = datetime.datetime.now()
         nl.send_status = 'draft'
         if nl.default_template:
-            template = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
+            template = render_to_string(template_name=nl.default_template, request=self.request)
             email_content = nl.generate_newsletter(self.request, template)
 
             email = Email()

@@ -19,7 +19,7 @@ class RangeWidget(forms.MultiWidget):
 
     def format_output(self, rendered_widgets):
         widget_context = {'min': rendered_widgets[0], 'max': rendered_widgets[1]}
-        return render_to_string('model_report/widgets/range_widget.html', widget_context)
+        return render_to_string(template_name='model_report/widgets/range_widget.html', context=widget_context)
 
 
 class RangeField(forms.MultiValueField):

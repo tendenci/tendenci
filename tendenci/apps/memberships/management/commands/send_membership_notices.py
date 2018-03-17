@@ -61,8 +61,8 @@ class Command(BaseCommand):
                 template_name = "memberships/notices/email_recap.html"
                 try:
                     recap_email_content = render_to_string(
-                               template_name,
-                               {'notices': notices,
+                               template_name=template_name,
+                               context={'notices': notices,
                               'total_sent': total_sent,
                               'site_url': site_url,
                               'site_display_name': site_display_name,

@@ -81,7 +81,7 @@ class Command(BaseCommand):
         # Send email to author
         context = { 'obj':dump_obj, 'author':dump_obj.author }
         email_subject = "Your database export (id:%d) is ready for download" % dump_obj.id
-        email_body = render_to_string("explorer/dbdump_ready_email_body.html", context)
+        email_body = render_to_string(template_name="explorer/dbdump_ready_email_body.html", context=context)
         email = Email(recipient=dump_obj.author.email, subject=email_subject, body=email_body)
         email.send()
 

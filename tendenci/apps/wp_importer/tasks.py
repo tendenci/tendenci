@@ -35,12 +35,12 @@ class WPImportTask(Task):
                 get_pages(item, user)
 
         if user.email:
-            context_instance = {
+            context = {
                 'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                 'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
             }
-            subject = ''.join(render_to_string(('notification/wp_import/short.txt'), context_instance).splitlines())
-            body = render_to_string(('notification/wp_import/full.html'), context_instance)
+            subject = ''.join(render_to_string(template_name=('notification/wp_import/short.txt'), context=context).splitlines())
+            body = render_to_string(template_name=('notification/wp_import/full.html'), context=context)
 
             #send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
             email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email])

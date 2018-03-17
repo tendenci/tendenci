@@ -61,15 +61,14 @@ def make_payment_inv_add(user, make_payment, **kwargs):
 def make_payment_email_user(request, make_payment, invoice, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
-    from django.template import RequestContext
 
-    subject = render_to_string('make_payments/email_user_subject.txt',
-                               {'make_payment':make_payment},
-                               context_instance=RequestContext(request))
+    subject = render_to_string(template_name='make_payments/email_user_subject.txt',
+                               context={'make_payment':make_payment},
+                               request=request)
     subject = subject.replace('\n', ' ')
-    body = render_to_string('make_payments/email_user.txt', {'make_payment':make_payment,
+    body = render_to_string(template_name='make_payments/email_user.txt', context={'make_payment':make_payment,
                                                              'invoice':invoice},
-                                                             context_instance=RequestContext(request))
+                                                             request=request)
     sender = settings.DEFAULT_FROM_EMAIL
     recipient = make_payment.email
     email = Email(

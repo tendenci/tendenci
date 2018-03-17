@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 import simplejson as json
-from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponse
 from django.forms.formsets import formset_factory
@@ -159,9 +158,9 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             d['allow_anonymous'] = True
         a_list.append(d)
 
-    form = render_to_string('events/addons/addon-add-box.html',
-        {'addons':a_list, 'anon_pricing':True},
-        RequestContext(request))
+    form = render_to_string(template_name='events/addons/addon-add-box.html',
+        context={'addons':a_list, 'anon_pricing':True},
+        request=request)
 
     data = json.dumps({
         'pricings':pricing_list,

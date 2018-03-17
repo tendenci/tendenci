@@ -15,9 +15,7 @@ from django.apps import apps
 from django.db.models.query import QuerySet
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.template import Context
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.core.mail import EmailMessage
 
 from django.core.exceptions import ImproperlyConfigured
@@ -317,7 +315,7 @@ def get_formatted_messages(formats, label, context):
             'notification/%s' % format
         )
 
-        template = render_to_string(list_of_templates, context_instance=context)
+        template = render_to_string(template_name=list_of_templates, context=context)
 
         if template_name == 'short':
             template = template.strip()
@@ -367,41 +365,34 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         'notice.html',
     )  # TODO make formats configurable
 
+    extra_context.update({
+        "notice": ugettext(notice_type.display),
+        "notices_url": notices_url,
+        "current_site": current_site,
+    })
+
     # test for request in the extra_context
+    request = None
     if 'request' in extra_context:
-        context = RequestContext(extra_context['request'])
-        extra_context.update({
-            "notice": ugettext(notice_type.display),
-            "notices_url": notices_url,
-            "current_site": current_site,
-        })
-        context.update(extra_context)
-    else:
-        # update context with user specific translations
-        context = Context({
-            "notice": ugettext(notice_type.display),
-            "notices_url": notices_url,
-            "current_site": current_site,
-        })
-        context.update(extra_context)
+        request = extra_context['request']
 
     # get prerendered format messages
-    messages = get_formatted_messages(formats, label, context)
+    messages = get_formatted_messages(formats, label, extra_context)
 
     if 'admin' in label:
         subject = messages['short']
         body = messages['full']
 
     else:
+        extra_context.update({'message': mark_safe(messages['short'])})
         subject = render_to_string(
-            'notification/email_subject.txt',
-            {'message': mark_safe(messages['short'])},
-            context)
+            template_name='notification/email_subject.txt',
+            context=extra_context, request=request)
 
+        extra_context.update({'message': mark_safe(messages['full'])})
         body = render_to_string(
-            'notification/email_body.txt',
-            {'message': mark_safe(messages['full'])},
-            context)
+            template_name='notification/email_body.txt',
+            context=extra_context, request=request)
 
     if 'reply_to' in extra_context:
         reply_to = extra_context['reply_to']
@@ -523,37 +514,30 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
                 # activate the user's language
                 activate(language)
 
+            extra_context.update({
+                "user": user,
+                "notice": ugettext(notice_type.display),
+                "notices_url": notices_url,
+                "current_site": current_site,
+            })
+
             # test for request in the extra_context
             if 'request' in extra_context:
-                context = RequestContext(extra_context['request'])
-                extra_context.update({
-                    "user": user,
-                    "notice": ugettext(notice_type.display),
-                    "notices_url": notices_url,
-                    "current_site": current_site,
-                })
-                context.update(extra_context)
+                request = extra_context['request']
             else:
-                # update context with user specific translations
-                context = Context({
-                    "user": user,
-                    "notice": ugettext(notice_type.display),
-                    "notices_url": notices_url,
-                    "current_site": current_site,
-                })
-                context.update(extra_context)
+                request = None
 
             # get prerendered format messages
-            messages = get_formatted_messages(formats, label, context)
+            messages = get_formatted_messages(formats, label, extra_context)
 
             # Strip newlines from subject
-            subject = ''.join(render_to_string('notification/email_subject.txt', {
-                'message': messages['short'][0],
-            }, context).splitlines())
+            extra_context.update({'message': mark_safe(messages['short'])})
+            subject = ''.join(render_to_string(template_name='notification/email_subject.txt',
+                context=extra_context, request=request).splitlines())
 
-            body = render_to_string('notification/email_body.txt', {
-                'message': messages['full'][0],
-            }, context)
+            extra_context.update({'message': mark_safe(messages['full'])})
+            body = render_to_string(template_name='notification/email_body.txt',
+                context=extra_context, request=request)
 
             Notice.objects.create(user=user,
                                   message=messages['notice'][0],

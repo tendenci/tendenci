@@ -155,11 +155,11 @@ def process_export(
             'site_display_name': site_display_name}
 
         subject = render_to_string(
-            'user_groups/exports/export_ready_subject.html', parms)
+            template_name='user_groups/exports/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'user_groups/exports/export_ready_body.html', parms)
+            template_name='user_groups/exports/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

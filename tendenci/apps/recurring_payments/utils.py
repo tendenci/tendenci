@@ -38,7 +38,7 @@ class RecurringPaymentEmailNotices(object):
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
         self.email.reply_to = self.reply_to_email
-        self.email_footer = render_to_string("email_footer.html")
+        self.email_footer = render_to_string(template_name="email_footer.html")
 
         self.admin_emails = self.get_admin_emails()
 
@@ -70,8 +70,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_script_support_transaction.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -97,8 +97,8 @@ class RecurringPaymentEmailNotices(object):
                 if payment_transaction.payment.state.lower() in ['texas', 'tx']:
                     user_in_texas = True
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url,
                                                 'user_in_texas': user_in_texas,
@@ -127,8 +127,8 @@ class RecurringPaymentEmailNotices(object):
             membership = kwargs.get('membership', None)
 
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url,
                                                 'membership': membership,
@@ -155,8 +155,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_no_payment_profile.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -177,8 +177,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_no_payment_profile.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -199,8 +199,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_account_disabled.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'user_by': user_by,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url

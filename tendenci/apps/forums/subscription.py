@@ -33,8 +33,8 @@ def get_email_message(user, **kwargs):
     lang = util.get_pybb_profile(user).language or settings.LANGUAGE_CODE
     translation.activate(lang)
 
-    message = render_to_string('pybb/mail_templates/subscription_email_body.html',
-                               kwargs)
+    message = render_to_string(template_name='pybb/mail_templates/subscription_email_body.html',
+                               context=kwargs)
     return message
 
 def notify_topic_subscribers(post):
@@ -59,8 +59,8 @@ def notify_topic_subscribers(post):
         subject_template = 'pybb/mail_templates/subscription_email_subject.html'
         users = topic.subscribers.exclude(pk=post.user.pk)
 
-    subject = render_to_string(subject_template,
-                                   {'site_url': context_vars['site_url'],
+    subject = render_to_string(template_name=subject_template,
+                                   context={'site_url': context_vars['site_url'],
                                     'post': post,
                                     'topic': topic})
     # Email subject *must not* contain newlines

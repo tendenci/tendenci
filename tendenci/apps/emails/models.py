@@ -193,7 +193,7 @@ class Email(TendenciBaseModel):
 
             pass
         else:
-            self.body = render_to_string(template)
+            self.body = render_to_string(template_name=template)
             for key in email_d:
                 # need to convert [blah] to %5Bblah%5D for replace line
                 tmp_value = "%5B" + key[1:-1] + "%5D"

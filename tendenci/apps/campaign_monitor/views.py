@@ -79,14 +79,14 @@ def template_html(request, template_id):
     login_content = ""
     include_login = request.GET.get('include_login', False)
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = request.GET.get('jump_links', 1)
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = request.GET.get('articles', 1)
@@ -169,14 +169,14 @@ def template_render(request, template_id):
     login_content = ""
     include_login = request.GET.get('include_login', False)
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = request.GET.get('jump_links', 1)
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = request.GET.get('articles', 1)

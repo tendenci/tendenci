@@ -65,8 +65,8 @@ class Command(BaseCommand):
                 template_name = "corporate_memberships/notices/email_recap.html"
                 try:
                     recap_email_content = render_to_string(
-                               template_name,
-                               {'notices': notices,
+                               template_name=template_name,
+                               context={'notices': notices,
                               'total_sent': total_sent,
                               'site_url': site_url,
                               'site_display_name': site_display_name,
@@ -207,8 +207,8 @@ class Command(BaseCommand):
 
             corp_app = CorpMembershipApp.objects.current_app()
             authentication_info = render_to_string(
-                'notification/corp_memb_notice_email/auth_info.html',
-                {'corp_membership': membership,
+                template_name='notification/corp_memb_notice_email/auth_info.html',
+                context={'corp_membership': membership,
                  'corp_app': corp_app})
             individuals_join_url = '%s%s' % (site_url,
                                              reverse('membership_default.corp_pre_add',
@@ -226,8 +226,8 @@ class Command(BaseCommand):
 
             if membership.renewal:
                 renewed_individuals_list = render_to_string(
-                    'notification/corp_memb_notice_email/renew_list.html',
-                    {'corp_membership': membership})
+                    template_name='notification/corp_memb_notice_email/renew_list.html',
+                    context={'corp_membership': membership})
                 total_individuals_renewed = membership.indivmembershiprenewentry_set.count()
             else:
                 renewed_individuals_list = ''

@@ -20,7 +20,6 @@ from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.db.models.fields import AutoField
 
 from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
@@ -833,14 +832,12 @@ class MembershipDefault(TendenciBaseModel):
                 for rep in reps:
                     params.update({'user': rep.user})
                     subject = render_to_string(
-                        'memberships/notices/email_corp_reps_subject.html',
-                        params,
-                        context_instance=RequestContext(request))
+                        template_name='memberships/notices/email_corp_reps_subject.html',
+                        context=params)
                     subject = subject.strip('\n').strip('\r')
                     body = render_to_string(
-                                'memberships/notices/email_corp_reps_body.html',
-                                params,
-                                context_instance=RequestContext(request))
+                                template_name='memberships/notices/email_corp_reps_body.html',
+                                context=params)
 
                     email = Email(recipient=rep.user.email,
                                   subject=subject,

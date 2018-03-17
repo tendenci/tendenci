@@ -103,9 +103,9 @@ class Command(BaseCommand):
         email_context['errors_list'] = errors_list
 
         if email_recipient:
-            subject = render_to_string('notification/update_tendenci_notice/short.txt', email_context)
+            subject = render_to_string(template_name='notification/update_tendenci_notice/short.txt', context=email_context)
             subject = subject.strip('\n').strip('\r')
-            body = render_to_string('notification/update_tendenci_notice/full.html', email_context)
+            body = render_to_string(template_name='notification/update_tendenci_notice/full.html', context=email_context)
             email = EmailMessage()
             email.subject = subject
             email.body = body

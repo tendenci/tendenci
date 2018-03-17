@@ -147,7 +147,7 @@ class Command(BaseCommand):
                     'detail_url': detail_url}
 
         body = render_to_string(
-                'newsletters/newsletter_sent_email_body.html', params)
+                template_name='newsletters/newsletter_sent_email_body.html', context=params)
 
         email = Email(
             recipient=newsletter.email.sender,

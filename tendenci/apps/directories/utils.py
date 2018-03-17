@@ -281,11 +281,11 @@ def process_export(export_fields='all_fields', export_status_detail='',
             'export_fields': export_fields}
 
         subject = render_to_string(
-            'directories/notices/export_ready_subject.html', parms)
+            template_name='directories/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'directories/notices/export_ready_body.html', parms)
+            template_name='directories/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

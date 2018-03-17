@@ -181,11 +181,11 @@ def process_invoice_export(start_dt=None, end_dt=None,
             'end_dt': end_dt}
 
         subject = render_to_string(
-            'invoices/notices/export_ready_subject.html', parms)
+            template_name='invoices/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'invoices/notices/export_ready_body.html', parms)
+            template_name='invoices/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

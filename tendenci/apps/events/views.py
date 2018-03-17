@@ -26,7 +26,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
 from django.core.urlresolvers import reverse
@@ -3503,10 +3502,10 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             return HttpResponseRedirect(reverse('event', args=([event_id])))
 
     else:
-        defaultsubject = render_to_string('events/message/subject-text.txt', {'event': event},
-            context_instance=RequestContext(request))
-        openingtext = render_to_string('events/message/opening-text.txt', {'event': event},
-            context_instance=RequestContext(request))
+        defaultsubject = render_to_string(template_name='events/message/subject-text.txt', context={'event': event},
+            request=request)
+        openingtext = render_to_string(template_name='events/message/opening-text.txt', context={'event': event},
+            request=request)
         form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
 
     return render_to_resp(request=request, template_name=template_name,context={

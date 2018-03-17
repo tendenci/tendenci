@@ -17,13 +17,13 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     next = kwargs.pop('next', '')
 
     site_url = get_setting('site', 'global', 'siteurl')
-    subject = render_to_string('registration/activation_email_subject.txt',
-                                       { 'site_url': site_url })
+    subject = render_to_string(template_name='registration/activation_email_subject.txt',
+                                       context={ 'site_url': site_url })
 
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
-    message = render_to_string('registration/activation_email.txt',
-                               { 'activation_key': registration_profile.activation_key,
+    message = render_to_string(template_name='registration/activation_email.txt',
+                               context={ 'activation_key': registration_profile.activation_key,
                                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
                                  'event_url': event_url,
                                  'site_url': site_url,

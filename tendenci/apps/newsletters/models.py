@@ -6,7 +6,6 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 
@@ -319,28 +318,28 @@ class Newsletter(models.Model):
     def generate_newsletter_contents(self, request):
         simplified = True if self.format == 0 else False
 
-        opening_txt = render_to_string('newsletters/opening_text.txt',
-                                            context_instance=RequestContext(request))
+        opening_txt = render_to_string(template_name='newsletters/opening_text.txt',
+                                            request=request)
 
-        footer_txt = render_to_string('newsletters/footer.txt',
-                                            {'newsletter': self },
-                                            context_instance=RequestContext(request))
+        footer_txt = render_to_string(template_name='newsletters/footer.txt',
+                                            context={'newsletter': self },
+                                            request=request)
 
-        unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
-                                            context_instance=RequestContext(request))
+        unsubscribe_txt = render_to_string(template_name='newsletters/newsletter_unsubscribe.txt',
+                                            request=request)
 
-        view_from_browser_txt = render_to_string('newsletters/view_from_browser.txt',
-                                            context_instance=RequestContext(request))
+        view_from_browser_txt = render_to_string(template_name='newsletters/view_from_browser.txt',
+                                            request=request)
 
         login_content = ""
         if self.include_login:
-            login_content = render_to_string('newsletters/login.txt',
-                                             context_instance=RequestContext(request))
+            login_content = render_to_string(template_name='newsletters/login.txt',
+                                             request=request)
 
         jumplink_content = ""
         if self.jump_links:
-            jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                                context_instance=RequestContext(request))
+            jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                                request=request)
 
         articles_content = ""
         articles_list =[]

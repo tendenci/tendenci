@@ -94,4 +94,4 @@ def gravatar(user, size=settings.GAVATAR_DEFAULT_SIZE, **kwargs):
         'alt': str(user),
         'size': size,
     })
-    return render_to_string('profiles/gravatar_tag.html', context)
+    return render_to_string(template_name='profiles/gravatar_tag.html', context=context)
