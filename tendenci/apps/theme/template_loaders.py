@@ -29,7 +29,6 @@ class Loader(Loader):
     Since the context is not available. We will be unable to mark if
     a template is custom from here.
     """
-    is_usable = True
 
     def __init__(self, engine, *args, **kwargs):
         """
@@ -119,4 +118,3 @@ class Loader(Loader):
         else:
             error_msg = "Your TEMPLATE_DIRS setting is empty. Change it to point to at least one template directory."
         raise TemplateDoesNotExist(_(error_msg))
-    load_template_source.is_usable = True
