@@ -9,7 +9,6 @@ views/staff.py - The bulk of the application - provides most business logic and
 from __future__ import unicode_literals
 from datetime import datetime, timedelta
 
-from django import VERSION
 from django.conf import settings
 try:
     from django.contrib.auth import get_user_model
@@ -24,7 +23,7 @@ from django.db import connection
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import Context, RequestContext
+from django.template import RequestContext
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
@@ -380,27 +379,15 @@ def update_ticket(request, ticket_id, public=False):
     if no_changes:
         return return_to_ticket(request.user, helpdesk_settings, ticket)
 
-    # We need to allow the 'ticket' and 'queue' contexts to be applied to the
-    # comment.
-    context = safe_template_context(ticket)
-    # this line sometimes creates problems if code is sent as a comment.
-    # if comment contains some django code, like "why does {% if bla %} crash",
-    # then the following line will give us a crash, since django expects {% if %}
-    # to be closed with an {% endif %} tag.
-
-    # get_template_from_string was removed in Django 1.8 http://django.readthedocs.org/en/1.8.x/ref/templates/upgrading.html
-    #try:
-    #    from django.template import engines
-    #    template_func = engines['django'].from_string
-    #except ImportError:  # occurs in django < 1.8
-    #    template_func = loader.get_template_from_string
-
-    # RemovedInDjango110Warning: render() must be called with a dict, not a Context.
-    if VERSION < (1, 8):
-        context = Context(context)
-
-    # commenting it out as we don't want the comment to be treated as django template
-    #comment = template_func(comment).render(context)
+    # Uncomment to handle the comment as a Django template
+    # This sometimes creates problems, for example if the comment is
+    # "why does {% if bla %} crash", then template rendering will crash
+    # because django expects {% if %} to have a corresponding
+    # {% endif %} tag.
+    #context = safe_template_context(ticket)
+    #from django.template import engines, Context
+    #get_template_from_string = engines['django'].from_string
+    #comment = get_template_from_string(comment).render(context=context)
 
     if owner is -1 and ticket.assigned_to:
         owner = ticket.assigned_to.id
