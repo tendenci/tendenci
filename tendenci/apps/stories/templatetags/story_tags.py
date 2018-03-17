@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -65,7 +66,7 @@ def story_expiration(obj):
     else:
         value = t % ('active', "Never Expires")
 
-    return value
+    return mark_safe(value)
 
 
 class ListStoriesNode(ListNode):

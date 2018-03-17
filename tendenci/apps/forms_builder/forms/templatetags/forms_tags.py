@@ -1,5 +1,6 @@
 from django.template import Library
 from django.contrib.auth.models import AnonymousUser
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.forms_builder.forms.forms import FormForForm
 from tendenci.apps.forms_builder.forms.models import Form
@@ -122,7 +123,7 @@ def embed_form(context, pk, *args, **kwargs):
                                 {'data-size': kwargs['gsize']})
         template = context.template.engine.get_template(template_name)
         output = '<div class="embed-form">%s</div>' % template.render(context=context)
-        return output
+        return mark_safe(output)
     except:
         return ""
 
