@@ -36,7 +36,7 @@ def render_corpmembership_field(request, field_obj,
             'field': field, 'field_pwd': None}
 
 
-@register.assignment_tag
+@register.simple_tag
 def individual_pricing_desp(corp_membership):
     """
     Return the description of pricing for the individual memberships

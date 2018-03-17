@@ -215,7 +215,7 @@ def endswith(str, substr):
     return str.endswith(substr)
 
 
-@register.assignment_tag
+@register.simple_tag
 def pybb_get_profile(*args, **kwargs):
     try:
         return util.get_pybb_profile(kwargs.get('user') or args[0])
@@ -223,7 +223,7 @@ def pybb_get_profile(*args, **kwargs):
         return util.get_pybb_profile_model().objects.none()
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def pybb_get_latest_topics(context, cnt=5, user=None):
     qs = Topic.objects.all().order_by('-updated', '-created', '-id')
     if not user:
@@ -232,7 +232,7 @@ def pybb_get_latest_topics(context, cnt=5, user=None):
     return qs[:cnt]
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def pybb_get_latest_posts(context, cnt=5, user=None):
     qs = Post.objects.all().order_by('-created', '-id')
     if not user:
