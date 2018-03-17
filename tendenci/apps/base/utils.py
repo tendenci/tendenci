@@ -35,7 +35,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.utils import NestedObjects
-from django.utils.functional import allow_lazy
+from django.utils.functional import keep_lazy_text
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import smart_str
 from django.db import router
@@ -678,11 +678,11 @@ def slugify_fields(match):
 
 
 entities_re = re.compile(r'&(?:\w+|#\d+);')
+@keep_lazy_text
 def strip_entities(value):
     """Returns the given HTML with all entities (&something;) stripped."""
     # This was copied from Django 1.9 since it is removed in Django 1.10
     return entities_re.sub('', force_text(value))
-strip_entities = allow_lazy(strip_entities, str)
 
 
 def strip_html(value):
@@ -955,10 +955,10 @@ def normalize_field_names(fieldnames):
     return fieldnames
 
 
+@keep_lazy_text
 def truncate_words(s, num, end_text='...'):
     truncate = end_text and ' %s' % end_text or ''
     return Truncator(s).words(num, truncate=truncate)
-truncate_words = allow_lazy(truncate_words, str)
 
 
 def validate_email(s, quiet=True):
