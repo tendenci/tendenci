@@ -861,7 +861,7 @@ class ApplyRecurringChangesForm(forms.Form):
 
 class TypeChoiceField(forms.ModelChoiceField):
 
-    def __init__(self, queryset, empty_label=u"---------", cache_choices=False,
+    def __init__(self, queryset, empty_label=u"---------",
                  required=True, widget=None, label=None, initial=None, choices=None,
                  help_text=None, to_field_name=None, *args, **kwargs):
 
@@ -869,7 +869,6 @@ class TypeChoiceField(forms.ModelChoiceField):
             self.empty_label = None
         else:
             self.empty_label = empty_label
-        self.cache_choices = cache_choices
 
         self._choices = ()
         if choices:
@@ -878,7 +877,6 @@ class TypeChoiceField(forms.ModelChoiceField):
         forms.fields.ChoiceField.__init__(self, choices=self._choices, widget=widget)
 
         self.queryset = queryset
-        self.choice_cache = None
         self.to_field_name = to_field_name
 
 
