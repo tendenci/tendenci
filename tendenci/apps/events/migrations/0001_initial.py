@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=100)),
-                ('addon', models.ForeignKey(related_name='options', to='events.Addon')),
+                ('addon', models.ForeignKey(related_name='options', to='events.Addon', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -121,7 +121,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('entry_time', models.DateTimeField(verbose_name='Date/time')),
-                ('form', models.ForeignKey(related_name='entries', to='events.CustomRegForm')),
+                ('form', models.ForeignKey(related_name='entries', to='events.CustomRegForm', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -176,7 +176,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EventPhoto',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
             ],
             bases=('files.file',),
         ),
@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100, blank=True)),
                 ('description', models.TextField(blank=True)),
                 ('event', models.ManyToManyField(to='events.Event', blank=True)),
-                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -238,15 +238,15 @@ class Migration(migrations.Migration):
                 ('amount', models.DecimalField(default=0, verbose_name='Amount', max_digits=21, decimal_places=2)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
-                ('addon', models.ForeignKey(to='events.Addon')),
+                ('addon', models.ForeignKey(to='events.Addon', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='RegAddonOption',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('option', models.ForeignKey(to='events.AddonOption')),
-                ('regaddon', models.ForeignKey(to='events.RegAddon')),
+                ('option', models.ForeignKey(to='events.AddonOption', on_delete=django.db.models.deletion.CASCADE)),
+                ('regaddon', models.ForeignKey(to='events.RegAddon', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -303,8 +303,8 @@ class Migration(migrations.Migration):
                 ('reminder', models.BooleanField(default=False, verbose_name='Receive event reminders')),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
-                ('custom_reg_form_entry', models.ForeignKey(related_name='registrants', to='events.CustomRegFormEntry', null=True)),
-                ('pricing', models.ForeignKey(to='events.RegConfPricing', null=True)),
+                ('custom_reg_form_entry', models.ForeignKey(related_name='registrants', to='events.CustomRegFormEntry', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('pricing', models.ForeignKey(to='events.RegConfPricing', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'permissions': (('view_registrant', 'Can view registrant'),),
@@ -327,11 +327,11 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('addons_added', models.TextField(null=True, blank=True)),
                 ('creator', models.ForeignKey(related_name='created_registrations', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('event', models.ForeignKey(to='events.Event')),
-                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
+                ('event', models.ForeignKey(to='events.Event', on_delete=django.db.models.deletion.CASCADE)),
+                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='owned_registrations', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('payment_method', models.ForeignKey(to='payments.PaymentMethod', null=True)),
-                ('reg_conf_price', models.ForeignKey(to='events.RegConfPricing', null=True)),
+                ('payment_method', models.ForeignKey(to='payments.PaymentMethod', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('reg_conf_price', models.ForeignKey(to='events.RegConfPricing', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'permissions': (('view_registration', 'Can view registration'),),
@@ -357,9 +357,9 @@ class Migration(migrations.Migration):
                 ('registration_email_text', models.TextField(verbose_name='Registration Email Text', blank=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
-                ('email', models.ForeignKey(to='emails.Email', null=True)),
+                ('email', models.ForeignKey(to='emails.Email', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('payment_method', models.ManyToManyField(to='payments.PaymentMethod')),
-                ('reg_form', models.ForeignKey(related_name='regconfs', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form')),
+                ('reg_form', models.ForeignKey(related_name='regconfs', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -370,7 +370,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True)),
                 ('featured', models.BooleanField(default=False, help_text='All speakers marked as featured will be displayed when viewing the event.')),
                 ('event', models.ManyToManyField(to='events.Event', blank=True)),
-                ('user', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -400,12 +400,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='type',
             name='color_set',
-            field=models.ForeignKey(to='events.TypeColorSet'),
+            field=models.ForeignKey(to='events.TypeColorSet', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='registrant',
             name='registration',
-            field=models.ForeignKey(to='events.Registration'),
+            field=models.ForeignKey(to='events.Registration', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='registrant',
@@ -415,32 +415,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='regconfpricing',
             name='reg_conf',
-            field=models.ForeignKey(blank=True, to='events.RegistrationConfiguration', null=True),
+            field=models.ForeignKey(blank=True, to='events.RegistrationConfiguration', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='regconfpricing',
             name='reg_form',
-            field=models.ForeignKey(related_name='regconfpricings', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form'),
+            field=models.ForeignKey(related_name='regconfpricings', blank=True, to='events.CustomRegForm', help_text="You'll have the chance to edit the selected form", null=True, verbose_name='Custom Registration Form', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='regaddon',
             name='registration',
-            field=models.ForeignKey(to='events.Registration'),
+            field=models.ForeignKey(to='events.Registration', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='payment',
             name='registration',
-            field=models.OneToOneField(to='events.Registration'),
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='events.Registration'),
         ),
         migrations.AddField(
             model_name='event',
             name='image',
-            field=models.ForeignKey(blank=True, to='events.EventPhoto', help_text='Photo that represents this event.', null=True),
+            field=models.ForeignKey(blank=True, to='events.EventPhoto', help_text='Photo that represents this event.', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='meta',
-            field=models.OneToOneField(null=True, to='meta.Meta'),
+            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta'),
         ),
         migrations.AddField(
             model_name='event',
@@ -450,17 +450,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='place',
-            field=models.ForeignKey(to='events.Place', null=True),
+            field=models.ForeignKey(to='events.Place', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='recurring_event',
-            field=models.ForeignKey(to='events.RecurringEvent', null=True),
+            field=models.ForeignKey(to='events.RecurringEvent', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='event',
             name='registration_configuration',
-            field=models.OneToOneField(null=True, editable=False, to='events.RegistrationConfiguration'),
+            field=models.OneToOneField(null=True, editable=False, on_delete=django.db.models.deletion.CASCADE, to='events.RegistrationConfiguration'),
         ),
         migrations.AddField(
             model_name='event',
@@ -470,32 +470,32 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='discount',
             name='event',
-            field=models.ForeignKey(to='events.Event'),
+            field=models.ForeignKey(to='events.Event', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='customregfieldentry',
             name='entry',
-            field=models.ForeignKey(related_name='field_entries', to='events.CustomRegFormEntry'),
+            field=models.ForeignKey(related_name='field_entries', to='events.CustomRegFormEntry', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='customregfieldentry',
             name='field',
-            field=models.ForeignKey(related_name='entries', to='events.CustomRegField'),
+            field=models.ForeignKey(related_name='entries', to='events.CustomRegField', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='customregfield',
             name='form',
-            field=models.ForeignKey(related_name='fields', to='events.CustomRegForm'),
+            field=models.ForeignKey(related_name='fields', to='events.CustomRegForm', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='addon',
             name='event',
-            field=models.ForeignKey(to='events.Event'),
+            field=models.ForeignKey(to='events.Event', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='addon',
             name='group',
-            field=models.ForeignKey(blank=True, to='user_groups.Group', null=True),
+            field=models.ForeignKey(blank=True, to='user_groups.Group', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='regaddonoption',

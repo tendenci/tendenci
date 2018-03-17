@@ -20,7 +20,7 @@ class Version(models.Model):
 
     create_dt = models.DateTimeField(_('create time'))
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.IntegerField(_('object id'))
     object_repr = models.CharField(_('object repr'), max_length=200)
     object_changes = models.TextField(_('change message'), blank=True)

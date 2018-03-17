@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Documents',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('other', models.CharField(max_length=200, verbose_name='other', blank=True)),
                 ('document_dt', models.DateField(null=True, verbose_name='Document Date', blank=True)),
             ],
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Photo',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('title', models.CharField(max_length=200, verbose_name='title', blank=True)),
                 ('photo_description', models.TextField(null=True, verbose_name='Photo Description', blank=True)),
             ],
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                 ('video_embed_code', models.TextField(verbose_name='Video Embed Code', blank=True)),
                 ('video_title', models.CharField(max_length=200, verbose_name='Video Title', blank=True)),
                 ('video_description', models.TextField(verbose_name='Video Description', blank=True)),
-                ('client', models.ForeignKey(blank=True, to='projects.ClientList', null=True)),
+                ('client', models.ForeignKey(blank=True, to='projects.ClientList', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('creator', models.ForeignKey(related_name='projects_project_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='projects_project_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('owner', models.ForeignKey(related_name='projects_project_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
@@ -113,13 +113,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TeamMembers',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('first_name', models.CharField(max_length=200, verbose_name='First Name', blank=True)),
                 ('last_name', models.CharField(max_length=200, verbose_name='Last Name', blank=True)),
                 ('title', models.CharField(max_length=200, verbose_name='Title', blank=True)),
                 ('role', models.CharField(max_length=200, verbose_name='Role', blank=True)),
                 ('team_description', models.TextField(null=True, verbose_name='Description', blank=True)),
-                ('project', models.ForeignKey(related_name='projects_teammembers_related', to='projects.Project')),
+                ('project', models.ForeignKey(related_name='projects_teammembers_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -129,26 +129,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='project_manager',
-            field=models.ForeignKey(blank=True, to='projects.ProjectManager', null=True),
+            field=models.ForeignKey(blank=True, to='projects.ProjectManager', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='project',
             name='project_number',
-            field=models.ForeignKey(null=True, blank=True, to='projects.ProjectNumber', unique=True),
+            field=models.ForeignKey(null=True, blank=True, to='projects.ProjectNumber', unique=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='photo',
             name='project',
-            field=models.ForeignKey(related_name='projects_photo_related', to='projects.Project'),
+            field=models.ForeignKey(related_name='projects_photo_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='documents',
             name='project',
-            field=models.ForeignKey(related_name='projects_documents_related', to='projects.Project'),
+            field=models.ForeignKey(related_name='projects_documents_related', to='projects.Project', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='documents',
             name='type',
-            field=models.ForeignKey(to='projects.DocumentType', blank=True),
+            field=models.ForeignKey(to='projects.DocumentType', blank=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

@@ -92,7 +92,7 @@ class SpeakerFile(File):
             (PHOTO_TYPE_FUN, 'Fun'),
     )
 
-    speaker = models.ForeignKey(Speaker)
+    speaker = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     photo_type = models.CharField(max_length=50, choices=PHOTO_TYPE_CHOICES)
     position = models.IntegerField(blank=True)
 

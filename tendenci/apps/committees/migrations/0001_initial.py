@@ -51,9 +51,9 @@ class Migration(migrations.Migration):
                 ('join_link', models.CharField(max_length=200, null=True, blank=True)),
                 ('creator', models.ForeignKey(related_name='committees_committee_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='committees_committee_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
-                ('header_image', models.ForeignKey(to='pages.HeaderImage', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
+                ('header_image', models.ForeignKey(to='pages.HeaderImage', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
                 ('owner', models.ForeignKey(related_name='committees_committee_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('phone', models.CharField(max_length=50, null=True, blank=True)),
-                ('committee', models.ForeignKey(to='committees.Committee')),
+                ('committee', models.ForeignKey(to='committees.Committee', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -78,11 +78,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='officer',
             name='position',
-            field=models.ForeignKey(to='committees.Position'),
+            field=models.ForeignKey(to='committees.Position', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='officer',
             name='user',
-            field=models.ForeignKey(related_name='committees_officer_user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='committees_officer_user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

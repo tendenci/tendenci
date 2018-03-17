@@ -22,7 +22,7 @@ STATUS_DETAIL_CHOICES = (
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
 
-    object_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
     object_id = models.IntegerField(default=0, blank=True, null=True)
     _object = GenericForeignKey('object_type', 'object_id')
     title = models.CharField(max_length=200, blank=True, null=True)

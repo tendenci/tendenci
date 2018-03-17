@@ -23,7 +23,7 @@ class StudyGroup(BasePage):
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -56,7 +56,7 @@ class StudyGroup(BasePage):
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)
-    group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True)
+    group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'studygroups'
@@ -66,9 +66,9 @@ class Position(models.Model):
 
 
 class Officer(models.Model):
-    study_group = models.ForeignKey(StudyGroup)
-    user = models.ForeignKey(User)
-    position = models.ForeignKey(Position)
+    study_group = models.ForeignKey(StudyGroup, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:

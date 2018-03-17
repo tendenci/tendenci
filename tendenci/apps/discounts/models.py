@@ -79,8 +79,8 @@ class Discount(TendenciBaseModel):
 
 
 class DiscountUse(models.Model):
-    invoice = models.ForeignKey(Invoice)
-    discount = models.ForeignKey(Discount)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    discount = models.ForeignKey(Discount, on_delete=models.CASCADE)
     create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -19,7 +19,7 @@ class DatabaseDumpFile(models.Model):
         ("json", "json"),
         ("xml", "xml")
     )
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     start_dt = models.DateTimeField(auto_now_add=True)
     end_dt = models.DateTimeField(null=True, blank=True)
     dbfile = models.FileField(upload_to='dbdump')

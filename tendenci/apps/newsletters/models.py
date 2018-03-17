@@ -133,7 +133,7 @@ class NewsletterTemplate(models.Model):
 
 
 class Newsletter(models.Model):
-    email = models.ForeignKey(Email, null=True)
+    email = models.ForeignKey(Email, null=True, on_delete=models.CASCADE)
 
     subject = models.CharField(max_length=255, null=True, blank=True)
     actiontype = models.CharField(max_length=30, choices=ACTIONTYPE_CHOICES, default='Distribution E-mail')

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import tendenci.apps.profiles.models
 import tendenci.libs.abstracts.models
 from django.conf import settings
@@ -23,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='user',
-            field=tendenci.libs.abstracts.models.UnsavedOneToOne(related_name='profile', verbose_name='user', to=settings.AUTH_USER_MODEL),
+            field=tendenci.libs.abstracts.models.UnsavedOneToOne(related_name='profile', verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='userimport',

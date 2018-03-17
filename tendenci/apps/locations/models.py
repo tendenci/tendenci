@@ -144,7 +144,7 @@ class Location(TendenciBaseModel):
 
 class LocationImport(models.Model):
 
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -161,7 +161,7 @@ class LocationImport(models.Model):
 class Distance(models.Model):
     """Holds distance information between zip codes and locations"""
     zip_code = models.CharField(max_length=7)
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     distance = models.PositiveSmallIntegerField()
 
     class Meta:

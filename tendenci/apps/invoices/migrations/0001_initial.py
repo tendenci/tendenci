@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('box_and_packing', models.DecimalField(default=0, max_digits=6, decimal_places=2)),
                 ('creator', models.ForeignKey(related_name='invoice_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='invoices', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('object_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+                ('object_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='invoice_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={

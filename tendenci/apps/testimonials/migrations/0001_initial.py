@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TestimonialPhoto',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
             ],
             options={
                 'abstract': False,
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='testimonial',
             name='image',
-            field=models.ForeignKey(default=None, to='testimonials.TestimonialPhoto', help_text='Photo for this testimonial.', null=True),
+            field=models.ForeignKey(default=None, to='testimonials.TestimonialPhoto', help_text='Photo for this testimonial.', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='testimonial',

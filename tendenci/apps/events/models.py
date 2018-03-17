@@ -78,7 +78,7 @@ class Type(models.Model):
     """
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, editable=False)
-    color_set = models.ForeignKey('TypeColorSet')
+    color_set = models.ForeignKey('TypeColorSet', on_delete=models.CASCADE)
 
     objects = EventTypeManager()
 
@@ -184,7 +184,8 @@ class RegistrationConfiguration(models.Model):
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfs',
-                                 help_text=_("You'll have the chance to edit the selected form"))
+                                 help_text=_("You'll have the chance to edit the selected form"),
+                                 on_delete=models.CASCADE)
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
                                  choices=BIND_CHOICES,
@@ -263,7 +264,7 @@ class RegConfPricing(OrderingBaseModel):
     """
     Registration configuration pricing
     """
-    reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
+    reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True, on_delete=models.CASCADE)
 
     title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     description = models.TextField(_("Pricing description"), blank=True)
@@ -280,7 +281,8 @@ class RegConfPricing(OrderingBaseModel):
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfpricings',
-                                 help_text=_("You'll have the chance to edit the selected form"))
+                                 help_text=_("You'll have the chance to edit the selected form"),
+                                 on_delete=models.CASCADE)
 
     start_dt = models.DateTimeField(_('Start Date'))
     end_dt = models.DateTimeField(_('End Date'))
@@ -414,7 +416,7 @@ class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)
     note = models.TextField(blank=True)
-    event = models.ForeignKey('Event')
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
 
     # This field will not be used if dynamic pricings are enabled for registration
@@ -716,13 +718,13 @@ class Registrant(models.Model):
     The names do not change nor does their information
     This is the information that was used while registering
     """
-    registration = models.ForeignKey('Registration')
+    registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
 
     custom_reg_form_entry = models.ForeignKey(
-        "CustomRegFormEntry", related_name="registrants", null=True)
+        "CustomRegFormEntry", related_name="registrants", null=True, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
     salutation = models.CharField(_('salutation'), max_length=15,
@@ -931,7 +933,7 @@ class Payment(models.Model):
     Event registration payment
     Extends the registration model
     """
-    registration = models.OneToOneField('Registration')
+    registration = models.OneToOneField('Registration', on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'events'
@@ -971,7 +973,7 @@ class Discount(models.Model):
     Event can have multiple discounts
     Discount can only be associated with one event
     """
-    event = models.ForeignKey('Event')
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50)
 
@@ -987,7 +989,7 @@ class Organizer(models.Model):
     _original_name = None
 
     event = models.ManyToManyField('Event', blank=True)
-    user = models.OneToOneField(User, blank=True, null=True)
+    user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
 
@@ -1011,7 +1013,7 @@ class Speaker(models.Model):
     _original_name = None
 
     event = models.ManyToManyField('Event', blank=True)
-    user = models.OneToOneField(User, blank=True, null=True)
+    user = models.OneToOneField(User, blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(_('Speaker Name'), blank=True, max_length=100) # static info.
     description = models.TextField(blank=True) # static info.
     featured = models.BooleanField(
@@ -1097,7 +1099,7 @@ class Event(TendenciBaseModel):
     end_dt = models.DateTimeField()
     timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
-    registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
+    registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
     private_slug = models.CharField(max_length=500, blank=True, default=u'')
@@ -1112,7 +1114,7 @@ class Event(TendenciBaseModel):
 
     # recurring events
     is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)
-    recurring_event = models.ForeignKey(RecurringEvent, null=True)
+    recurring_event = models.ForeignKey(RecurringEvent, null=True, on_delete=models.CASCADE)
 
     # additional permissions
     display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
@@ -1496,7 +1498,7 @@ class CustomRegForm(models.Model):
 
 
 class CustomRegField(OrderingBaseModel):
-    form = models.ForeignKey("CustomRegForm", related_name="fields")
+    form = models.ForeignKey("CustomRegForm", related_name="fields", on_delete=models.CASCADE)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     map_to_field = models.CharField(_("Map to User Field"), choices=USER_FIELD_CHOICES,
         max_length=64, blank=True, null=True)
@@ -1550,7 +1552,7 @@ class CustomRegField(OrderingBaseModel):
 
 
 class CustomRegFormEntry(models.Model):
-    form = models.ForeignKey("CustomRegForm", related_name="entries")
+    form = models.ForeignKey("CustomRegForm", related_name="entries", on_delete=models.CASCADE)
     entry_time = models.DateTimeField(_("Date/time"))
 
     class Meta:
@@ -1633,8 +1635,8 @@ class CustomRegFormEntry(models.Model):
 
 
 class CustomRegFieldEntry(models.Model):
-    entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
-    field = models.ForeignKey("CustomRegField", related_name="entries")
+    entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries", on_delete=models.CASCADE)
+    field = models.ForeignKey("CustomRegField", related_name="entries", on_delete=models.CASCADE)
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
     class Meta:
@@ -1648,7 +1650,7 @@ class EventPhoto(File):
 
 
 class Addon(models.Model):
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
 
     class Meta:
@@ -1692,7 +1694,7 @@ class Addon(models.Model):
 
 
 class AddonOption(models.Model):
-    addon = models.ForeignKey(Addon, related_name="options")
+    addon = models.ForeignKey(Addon, related_name="options", on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
@@ -1710,8 +1712,8 @@ class RegAddon(models.Model):
     This stores the addon's price at the time of registration.
     This stores the user's selected options for the addon.
     """
-    registration = models.ForeignKey('Registration')
-    addon = models.ForeignKey('Addon')
+    registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    addon = models.ForeignKey('Addon', on_delete=models.CASCADE)
 
     # price at the moment of registration
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, default=0)
@@ -1729,8 +1731,8 @@ class RegAddon(models.Model):
 class RegAddonOption(models.Model):
     """Selected event registration addon option.
     """
-    regaddon = models.ForeignKey(RegAddon)
-    option = models.ForeignKey(AddonOption)
+    regaddon = models.ForeignKey(RegAddon, on_delete=models.CASCADE)
+    option = models.ForeignKey(AddonOption, on_delete=models.CASCADE)
     # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
     # selected_option = models.CharField(max_length=50)
 

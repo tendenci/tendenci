@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('action', models.CharField(max_length=50, db_index=True)),
                 ('model_name', models.CharField(max_length=75)),
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.ContentType', null=True)),
-                ('entity', models.ForeignKey(to='entities.Entity', null=True)),
+                ('entity', models.ForeignKey(to='entities.Entity', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('robot', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to='robots.Robot', null=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],

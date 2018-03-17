@@ -50,13 +50,14 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         'StoryPhoto',
         help_text=_('Photo that represents this story.'),
         null=True,
-        default=None
+        default=None,
+        on_delete=models.CASCADE,
     )
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, default='')
 
     rotator = models.ForeignKey('Rotator', null=True, default=None, blank=True,
-        help_text=_('The rotator where this story belongs.'))
+        help_text=_('The rotator where this story belongs.'), on_delete=models.CASCADE)
     rotator_position = models.IntegerField(_('Rotator Position'), default=0, blank=True)
 
     categories = GenericRelation(CategoryItem,

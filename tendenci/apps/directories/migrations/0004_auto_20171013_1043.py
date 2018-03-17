@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
                 ('slug', models.SlugField()),
-                ('parent', models.ForeignKey(related_name='children', blank=True, to='directories.Category', null=True)),
+                ('parent', models.ForeignKey(related_name='children', blank=True, to='directories.Category', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('name',),

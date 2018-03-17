@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                 ('object_id', models.IntegerField(null=True, blank=True)),
                 ('is_public', models.BooleanField(default=True)),
                 ('tags', tagging.fields.TagField(max_length=255, null=True, blank=True)),
-                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+                ('content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('creator', models.ForeignKey(related_name='files_file_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='files_file_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
-                ('parent', models.ForeignKey(to='files.FilesCategory', null=True)),
+                ('parent', models.ForeignKey(to='files.FilesCategory', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('name',),

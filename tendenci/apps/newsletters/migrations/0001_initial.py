@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('resend_count', models.IntegerField(default=0, null=True, blank=True)),
                 ('security_key', models.CharField(max_length=50, null=True, blank=True)),
                 ('article', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='articles.Article', null=True)),
-                ('email', models.ForeignKey(to='emails.Email', null=True)),
+                ('email', models.ForeignKey(to='emails.Email', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='user_groups.Group', null=True)),
             ],
             options={

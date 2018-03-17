@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 from django.conf import settings
 from tendenci.apps.forums.compat import get_image_field_class
 import tendenci.apps.forums.util
@@ -55,9 +56,9 @@ class Migration(migrations.Migration):
                 ('topic_count', models.IntegerField(default=0, verbose_name='Topic count', blank=True)),
                 ('hidden', models.BooleanField(default=False, verbose_name='Hidden')),
                 ('headline', models.TextField(null=True, verbose_name='Headline', blank=True)),
-                ('category', models.ForeignKey(related_name='forums', verbose_name='Category', to='forums.Category')),
+                ('category', models.ForeignKey(related_name='forums', verbose_name='Category', to='forums.Category', on_delete=django.db.models.deletion.CASCADE)),
                 ('moderators', models.ManyToManyField(to=settings.AUTH_USER_MODEL, null=True, verbose_name='Moderators', blank=True)),
-                ('parent', models.ForeignKey(related_name='child_forums', verbose_name='Parent forum', blank=True, to='forums.Forum', null=True)),
+                ('parent', models.ForeignKey(related_name='child_forums', verbose_name='Parent forum', blank=True, to='forums.Forum', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['position'],
@@ -71,8 +72,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('time_stamp', models.DateTimeField(auto_now=True)),
-                ('forum', models.ForeignKey(blank=True, to='forums.Forum', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('forum', models.ForeignKey(blank=True, to='forums.Forum', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Forum read tracker',
@@ -97,8 +98,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('poll_answer', models.ForeignKey(related_name='users', verbose_name='Poll answer', to='forums.PollAnswer')),
-                ('user', models.ForeignKey(related_name='poll_answers', verbose_name='User', to=settings.AUTH_USER_MODEL)),
+                ('poll_answer', models.ForeignKey(related_name='users', verbose_name='Poll answer', to='forums.PollAnswer', on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(related_name='poll_answers', verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Poll answer user',
@@ -137,7 +138,7 @@ class Migration(migrations.Migration):
                 ('post_count', models.IntegerField(default=0, verbose_name='Post count', blank=True)),
                 ('avatar', get_image_field_class()(upload_to=tendenci.apps.forums.util.FilePathGenerator(to='pybb/avatar'), null=True, verbose_name='Avatar', blank=True)),
                 ('autosubscribe', models.BooleanField(default=True, help_text='Automatically subscribe to topics that you answer', verbose_name='Automatically subscribe')),
-                ('user', annoying.fields.AutoOneToOneField(related_name='pybb_profile', verbose_name='User', to=settings.AUTH_USER_MODEL)),
+                ('user', annoying.fields.AutoOneToOneField(related_name='pybb_profile', verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Profile',
@@ -159,7 +160,7 @@ class Migration(migrations.Migration):
                 ('on_moderation', models.BooleanField(default=False, verbose_name='On moderation')),
                 ('poll_type', models.IntegerField(default=0, verbose_name='Poll type', choices=[(0, 'None'), (1, 'Single answer'), (2, 'Multiple answers')])),
                 ('poll_question', models.TextField(null=True, verbose_name='Poll question', blank=True)),
-                ('forum', models.ForeignKey(related_name='topics', verbose_name='Forum', to='forums.Forum')),
+                ('forum', models.ForeignKey(related_name='topics', verbose_name='Forum', to='forums.Forum', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['-created'],
@@ -173,8 +174,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('time_stamp', models.DateTimeField(auto_now=True)),
-                ('topic', models.ForeignKey(blank=True, to='forums.Topic', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('topic', models.ForeignKey(blank=True, to='forums.Topic', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Topic read tracker',
@@ -201,19 +202,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='topic',
             name='user',
-            field=models.ForeignKey(verbose_name='User', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='post',
             name='topic',
-            field=models.ForeignKey(related_name='posts', verbose_name='Topic', to='forums.Topic'),
+            field=models.ForeignKey(related_name='posts', verbose_name='Topic', to='forums.Topic', on_delete=django.db.models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='post',
             name='user',
-            field=models.ForeignKey(related_name='posts', verbose_name='User', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='posts', verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -223,7 +224,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pollanswer',
             name='topic',
-            field=models.ForeignKey(related_name='poll_answers', verbose_name='Topic', to='forums.Topic'),
+            field=models.ForeignKey(related_name='poll_answers', verbose_name='Topic', to='forums.Topic', on_delete=django.db.models.deletion.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -239,7 +240,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attachment',
             name='post',
-            field=models.ForeignKey(related_name='attachments', verbose_name='Post', to='forums.Post'),
+            field=models.ForeignKey(related_name='attachments', verbose_name='Post', to='forums.Post', on_delete=django.db.models.deletion.CASCADE),
             preserve_default=True,
         ),
     ]

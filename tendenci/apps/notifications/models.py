@@ -77,8 +77,8 @@ class NoticeSetting(models.Model):
     of a given type to a given medium.
     """
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     medium = models.CharField(_('medium'), max_length=1, choices=NOTICE_MEDIA)
     send = models.BooleanField(_('send'), default=False)
 
@@ -139,9 +139,9 @@ class NoticeManager(models.Manager):
 
 class Notice(models.Model):
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
     message = models.TextField(_('message'))
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     added = models.DateTimeField(_('added'), default=datetime.datetime.now)
     unseen = models.BooleanField(_('unseen'), default=True)
     archived = models.BooleanField(_('archived'), default=False)
@@ -198,7 +198,7 @@ class NoticeEmail(models.Model):
     sender = models.CharField(max_length=200, blank=True)
     emails = models.CharField(max_length=200, blank=True)
     bcc = models.CharField(max_length=200, blank=True)
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     reply_to = models.CharField(max_length=100, blank=True)
     from_display = models.CharField(max_length=100, blank=True)
     title = models.TextField(blank=True)
@@ -619,13 +619,13 @@ class ObservedItemManager(models.Manager):
 
 class ObservedItem(models.Model):
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
 
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     observed_object = GenericForeignKey('content_type', 'object_id')
 
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
 
     added = models.DateTimeField(_('added'), default=datetime.datetime.now)
 

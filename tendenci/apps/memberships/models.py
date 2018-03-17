@@ -118,7 +118,8 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         help_text=_("Admin fee for the first time processing"))
 
     group = models.ForeignKey(Group, related_name="membership_types",
-        help_text=_("Members joined will be added to this group"))
+        help_text=_("Members joined will be added to this group"),
+        on_delete=models.CASCADE)
 
     require_approval = models.BooleanField(_('Require Approval'), default=True)
     require_payment_approval = models.BooleanField(
@@ -346,7 +347,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         return mark_safe(price_display)
 
 class MembershipSet(models.Model):
-    invoice = models.ForeignKey(Invoice)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
 
     class Meta:
@@ -471,8 +472,8 @@ class MembershipDefault(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
     lang = models.CharField(max_length=10, editable=False, default='eng')
     member_number = models.CharField(max_length=50, blank=True)
-    membership_type = models.ForeignKey(MembershipType)
-    user = models.ForeignKey(User, editable=False)
+    membership_type = models.ForeignKey(MembershipType, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
     renewal = models.BooleanField(blank=True, default=False)
     auto_renew = models.BooleanField(blank=True, default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
@@ -555,7 +556,7 @@ class MembershipDefault(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
 
-    membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
+    membership_set = models.ForeignKey(MembershipSet, blank=True, null=True, on_delete=models.CASCADE)
     app = models.ForeignKey("MembershipApp", null=True, on_delete=models.SET_NULL)
 
     objects = MembershipDefaultManager()
@@ -2043,7 +2044,7 @@ class MembershipImport(models.Model):
         ('completed', _('Completed')),
     )
 
-#     app = models.ForeignKey('App', null=True)
+#     app = models.ForeignKey('App', null=True, on_delete=models.CASCADE)
     upload_file = models.FileField(_("Upload File"), max_length=260,
                                    upload_to=get_import_file_path,
                                    null=True)
@@ -2112,7 +2113,7 @@ class MembershipImport(models.Model):
 
 
 class MembershipImportData(models.Model):
-    mimport = models.ForeignKey(MembershipImport, related_name="membership_import_data")
+    mimport = models.ForeignKey(MembershipImport, related_name="membership_import_data", on_delete=models.CASCADE)
     # dictionary object representing a row in csv
     row_data = DictField(_('Row Data'))
     # the original row number in the uploaded csv file
@@ -2172,10 +2173,8 @@ class Notice(models.Model):
         "MembershipType",
         blank=True,
         null=True,
-        help_text=_("Note that if you \
-            don't select a membership type, \
-            the notice will go out to all members."
-    ))
+        help_text=_("Note that if you don't select a membership type, the notice will go out to all members."),
+        on_delete=models.CASCADE)
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
@@ -2425,7 +2424,7 @@ class Notice(models.Model):
 
 class NoticeLog(models.Model):
     guid = models.CharField(max_length=50, editable=False)
-    notice = models.ForeignKey(Notice, related_name="logs")
+    notice = models.ForeignKey(Notice, related_name="logs", on_delete=models.CASCADE)
     notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
 
@@ -2436,9 +2435,11 @@ class NoticeLog(models.Model):
 class NoticeDefaultLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice_log = models.ForeignKey(NoticeLog,
-                                   related_name="default_log_records")
+                                   related_name="default_log_records",
+                                   on_delete=models.CASCADE)
     membership = models.ForeignKey(MembershipDefault,
-                                   related_name="default_log_records")
+                                   related_name="default_log_records",
+                                   on_delete=models.CASCADE)
     action_taken = models.BooleanField(default=False)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -2538,10 +2539,9 @@ class MembershipAppField(OrderingBaseModel):
                 )
     FIELD_TYPE_CHOICES = FIELD_TYPE_CHOICES1 + FIELD_TYPE_CHOICES2
 
-    membership_app = models.ForeignKey("MembershipApp", related_name="fields")
+    membership_app = models.ForeignKey("MembershipApp", related_name="fields", on_delete=models.CASCADE)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
-    content_type = models.ForeignKey(ContentType,
-                                     null=True)
+    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.CASCADE)
     field_name = models.CharField(max_length=100, blank=True, default='')
     required = models.BooleanField(_("Required"), default=False, blank=True)
     display = models.BooleanField(_("Show"), default=True, blank=True)
@@ -2669,7 +2669,7 @@ class MembershipAppField(OrderingBaseModel):
 
 
 class MembershipDemographic(models.Model):
-    user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'))
+    user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'), on_delete=models.CASCADE)
 
     ud1 = models.TextField(blank=True, default=u'', null=True)
     ud2 = models.TextField(blank=True, default=u'', null=True)

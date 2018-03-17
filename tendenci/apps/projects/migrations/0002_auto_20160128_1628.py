@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -26,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CategoryPhoto',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
             ],
             options={
                 'abstract': False,
@@ -36,12 +37,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='project_number',
-            field=models.OneToOneField(null=True, blank=True, to='projects.ProjectNumber'),
+            field=models.OneToOneField(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='projects.ProjectNumber'),
         ),
         migrations.AddField(
             model_name='category',
             name='image',
-            field=models.ForeignKey(default=None, to='projects.CategoryPhoto', help_text='Photo that represents this category.', null=True),
+            field=models.ForeignKey(default=None, to='projects.CategoryPhoto', help_text='Photo that represents this category.', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='project',

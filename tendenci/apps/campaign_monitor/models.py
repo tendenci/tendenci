@@ -10,7 +10,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class ListMap(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     # list id for campaign monitor
     list_id = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -24,13 +24,13 @@ class ListMap(models.Model):
 
 
 class GroupQueue(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
 
 class SubscriberQueue(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    subscriber = models.ForeignKey(FormEntry, null=True)
+    subscriber = models.ForeignKey(FormEntry, null=True, on_delete=models.CASCADE)
 
 
 class Template(models.Model):
@@ -137,7 +137,7 @@ class Campaign(models.Model):
     from_name = models.CharField(max_length=100, null=True, blank=True)
     from_email = models.EmailField(null=True, blank=True)
     reply_to = models.EmailField(null=True, blank=True)
-    template = models.ForeignKey(Template, null=True, blank=True)
+    template = models.ForeignKey(Template, null=True, blank=True, on_delete=models.CASCADE)
 
     @models.permalink
     def get_absolute_url(self):

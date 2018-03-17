@@ -19,7 +19,7 @@ class SkillSet(models.Model):
     '''
     A list of skills available to users
     '''
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Emergency Response Skills
     paramedic = models.BooleanField(_('paramedic'), default=False)
     fireman = models.BooleanField(_('fireman trained'), default=False)
@@ -97,7 +97,7 @@ class SkillSet(models.Model):
 
 
 class ReliefAssessment(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # Additional Personal Information
     id_number = models.CharField(_('ID number'), max_length=50, blank=True, null=True)
     issuing_authority = models.CharField(_('issuing authority'), max_length=100,

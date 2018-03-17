@@ -91,10 +91,10 @@ class Migration(migrations.Migration):
                 ('original_username', models.CharField(max_length=50)),
                 ('sf_contact_id', models.CharField(max_length=100, null=True, blank=True)),
                 ('total_spend', models.DecimalField(default=0, verbose_name='total spend', editable=False, max_digits=16, decimal_places=4)),
-                ('creator', models.ForeignKey(related_name='profiles_profile_creator', editable=False, to=settings.AUTH_USER_MODEL)),
-                ('entity', models.ForeignKey(blank=True, to='entities.Entity', null=True)),
-                ('owner', models.ForeignKey(related_name='profiles_profile_owner', to=settings.AUTH_USER_MODEL)),
-                ('user', models.OneToOneField(related_name='profile', verbose_name='user', to=settings.AUTH_USER_MODEL)),
+                ('creator', models.ForeignKey(related_name='profiles_profile_creator', editable=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
+                ('entity', models.ForeignKey(blank=True, to='entities.Entity', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('owner', models.ForeignKey(related_name='profiles_profile_owner', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.OneToOneField(related_name='profile', verbose_name='user', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'User',
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
                 ('row_num', models.IntegerField(verbose_name='Row #')),
                 ('action_taken', models.CharField(max_length=20, null=True, verbose_name='Action Taken')),
                 ('error', models.CharField(default='', max_length=500, verbose_name='Error')),
-                ('uimport', models.ForeignKey(related_name='user_import_data', to='profiles.UserImport')),
+                ('uimport', models.ForeignKey(related_name='user_import_data', to='profiles.UserImport', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'abstract': False,

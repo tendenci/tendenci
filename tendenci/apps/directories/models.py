@@ -33,7 +33,7 @@ def file_directory(instance, filename):
 class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('slug', 'parent',)
@@ -57,7 +57,7 @@ class Directory(TendenciBaseModel):
     #                         help_text=_('Company logo. Only jpg, gif, or png images.'),
     #                         blank=True)
 
-    logo_file = models.ForeignKey(File, null=True)
+    logo_file = models.ForeignKey(File, null=True, on_delete=models.CASCADE)
 
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
@@ -77,10 +77,10 @@ class Directory(TendenciBaseModel):
     renewal_notice_sent = models.BooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
-    pricing = models.ForeignKey('DirectoryPricing', null=True)
+    pricing = models.ForeignKey('DirectoryPricing', null=True, on_delete=models.CASCADE)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)

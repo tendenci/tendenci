@@ -37,9 +37,10 @@ class AcctEntry(models.Model):
 
 class AcctTran(models.Model):
     acct_entry = models.ForeignKey(AcctEntry,
-                                   related_name="trans")
+                                   related_name="trans",
+                                   on_delete=models.CASCADE)
     #account_number = models.IntegerField()
-    account = models.ForeignKey(Acct, related_name="accts",  null=True)
+    account = models.ForeignKey(Acct, related_name="accts", null=True, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     cleared = models.BooleanField(default=False)
     create_dt = models.DateTimeField(auto_now_add=True)

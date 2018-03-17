@@ -98,8 +98,8 @@ class Migration(migrations.Migration):
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('creator', models.ForeignKey(related_name='formentry_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('form', models.ForeignKey(related_name='entries', to='forms.Form')),
-                ('payment_method', models.ForeignKey(to='payments.PaymentMethod', null=True)),
+                ('form', models.ForeignKey(related_name='entries', to='forms.Form', on_delete=django.db.models.deletion.CASCADE)),
+                ('payment_method', models.ForeignKey(to='payments.PaymentMethod', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Form entry',
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                 ('has_trial_period', models.BooleanField(default=False)),
                 ('trial_period_days', models.IntegerField(default=0)),
                 ('trial_amount', models.DecimalField(default=0.0, null=True, max_digits=15, decimal_places=2, blank=True)),
-                ('form', models.ForeignKey(to='forms.Form')),
+                ('form', models.ForeignKey(to='forms.Form', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['pk'],
@@ -131,21 +131,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formentry',
             name='pricing',
-            field=models.ForeignKey(to='forms.Pricing', null=True),
+            field=models.ForeignKey(to='forms.Pricing', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='fieldentry',
             name='entry',
-            field=models.ForeignKey(related_name='fields', to='forms.FormEntry'),
+            field=models.ForeignKey(related_name='fields', to='forms.FormEntry', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='fieldentry',
             name='field',
-            field=models.ForeignKey(related_name='field', to='forms.Field'),
+            field=models.ForeignKey(related_name='field', to='forms.Field', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='field',
             name='form',
-            field=models.ForeignKey(related_name='fields', to='forms.Form'),
+            field=models.ForeignKey(related_name='fields', to='forms.Form', on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

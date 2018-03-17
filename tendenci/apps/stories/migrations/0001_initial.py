@@ -65,14 +65,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StoryPhoto',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
             ],
             bases=('files.file',),
         ),
         migrations.AddField(
             model_name='story',
             name='image',
-            field=models.ForeignKey(default=None, to='stories.StoryPhoto', help_text='Photo that represents this story.', null=True),
+            field=models.ForeignKey(default=None, to='stories.StoryPhoto', help_text='Photo that represents this story.', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='story',
@@ -82,6 +82,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='story',
             name='rotator',
-            field=models.ForeignKey(default=None, blank=True, to='stories.Rotator', help_text='The rotator where this story belongs.', null=True),
+            field=models.ForeignKey(default=None, blank=True, to='stories.Rotator', help_text='The rotator where this story belongs.', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

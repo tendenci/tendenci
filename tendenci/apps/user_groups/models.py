@@ -45,7 +45,7 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
 
-    group = models.OneToOneField(AuthGroup, null=True, default=None)
+    group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.CASCADE)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
 
@@ -156,8 +156,8 @@ class GroupMembership(models.Model):
         (STATUS_INACTIVE, 'Inactive'),
     )
 
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(User, related_name='group_member')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    member = models.ForeignKey(User, related_name='group_member', on_delete=models.CASCADE)
 
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)

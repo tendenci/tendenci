@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -15,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='corpprofile',
             name='parent_entity',
-            field=models.ForeignKey(blank=True, to='entities.Entity', null=True),
+            field=models.ForeignKey(blank=True, to='entities.Entity', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='corporatemembershiptype',

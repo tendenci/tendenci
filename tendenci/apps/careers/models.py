@@ -41,7 +41,7 @@ class Career(TendenciBaseModel):
     experience = models.TextField(_('Experience'),
                                            blank=True,
                                            default='')
-    user = models.ForeignKey(User, related_name="careers")
+    user = models.ForeignKey(User, related_name="careers", on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",

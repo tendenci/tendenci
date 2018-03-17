@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='educations_education_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='educations_education_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('owner', models.ForeignKey(related_name='educations_education_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
-                ('user', models.ForeignKey(related_name='educations', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(related_name='educations', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Education',

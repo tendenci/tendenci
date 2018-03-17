@@ -16,7 +16,7 @@ class Export(models.Model):
     result = PickledObjectField(null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)
     date_done = models.DateTimeField(auto_now=True)
-    #memb_app = models.ForeignKey(App, blank=True, null=True)
+    #memb_app = models.ForeignKey(App, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'exports'

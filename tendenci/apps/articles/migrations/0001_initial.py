@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='articles_article_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='articles_article_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
                 ('owner', models.ForeignKey(related_name='articles_article_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={

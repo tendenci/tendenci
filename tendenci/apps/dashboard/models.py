@@ -11,7 +11,7 @@ class DashboardStatType(OrderingBaseModel):
 
 
 class DashboardStat(models.Model):
-    key = models.ForeignKey(DashboardStatType)
+    key = models.ForeignKey(DashboardStatType, on_delete=models.CASCADE)
     value = models.TextField()
     create_dt = models.DateTimeField(auto_now_add=True)
 

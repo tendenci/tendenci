@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 from django.conf import settings
 
 
@@ -21,7 +22,7 @@ class Migration(migrations.Migration):
                 ('dbfile', models.FileField(upload_to='dbdump')),
                 ('status', models.CharField(default='pending', max_length=50, choices=[('completed', 'Completed'), ('pending', 'Pending'), ('failed', 'Failed'), ('expired', 'Expired')])),
                 ('export_format', models.CharField(default='json', max_length=20, choices=[('json', 'json'), ('xml', 'xml')])),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]

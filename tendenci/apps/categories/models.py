@@ -137,10 +137,10 @@ class Category(models.Model):
         verbose_name_plural = _("Categories")
 
 class CategoryItem(models.Model):
-    content_type = models.ForeignKey(ContentType, db_index=True)
+    content_type = models.ForeignKey(ContentType, db_index=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, related_name='%(class)s_category',null=True,blank=True)
-    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True,blank=True)
+    category = models.ForeignKey(Category, related_name='%(class)s_category', null=True, blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True, blank=True, on_delete=models.CASCADE)
     object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:

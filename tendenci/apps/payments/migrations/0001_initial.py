@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                 ('status_detail', models.CharField(default='', max_length=50)),
                 ('status', models.BooleanField(default=True)),
                 ('creator', models.ForeignKey(related_name='payment_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('invoice', models.ForeignKey(to='invoices.Invoice')),
+                ('invoice', models.ForeignKey(to='invoices.Invoice', on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='payment_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),

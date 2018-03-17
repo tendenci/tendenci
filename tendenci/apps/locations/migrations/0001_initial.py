@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('hq', models.BooleanField(default=False, verbose_name='Headquarters')),
                 ('creator', models.ForeignKey(related_name='locations_location_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='locations_location_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('logo', models.ForeignKey(default=None, to='files.File', help_text='Only jpg, gif, or png images.', null=True)),
+                ('logo', models.ForeignKey(default=None, to='files.File', help_text='Only jpg, gif, or png images.', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='locations_location_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -71,12 +71,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
-                ('creator', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('creator', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='distance',
             name='location',
-            field=models.ForeignKey(to='locations.Location'),
+            field=models.ForeignKey(to='locations.Location', on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

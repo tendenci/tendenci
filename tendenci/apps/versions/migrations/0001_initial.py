@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('object_changes', models.TextField(verbose_name='change message', blank=True)),
                 ('object_value', models.TextField(verbose_name='changed object', blank=True)),
                 ('hash', models.CharField(default='', max_length=40, null=True)),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),

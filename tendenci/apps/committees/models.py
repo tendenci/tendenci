@@ -23,7 +23,7 @@ class Committee(BasePage):
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -65,9 +65,9 @@ class Position(models.Model):
 
 
 class Officer(models.Model):
-    committee = models.ForeignKey(Committee)
-    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user")
-    position = models.ForeignKey(Position)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:

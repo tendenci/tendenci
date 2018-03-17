@@ -61,9 +61,9 @@ class Comment(models.Model):
     Contacts will fill out a form and leave a message.
     These comments are added later to help describe the contact.
     """
-    contact = models.ForeignKey('Contact', related_name='comments')
+    contact = models.ForeignKey('Contact', related_name='comments', on_delete=models.CASCADE)
     comment = models.TextField()
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
@@ -79,7 +79,7 @@ class Contact(TendenciBaseModel):
     """
     guid = models.CharField(max_length=40)
     timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
-    user = models.ForeignKey(User, null=True, related_name='contact_user')
+    user = models.ForeignKey(User, null=True, related_name='contact_user', on_delete=models.CASCADE)
 
     first_name = models.CharField(max_length=100, blank=True)
     middle_name = models.CharField(max_length=100, blank=True)

@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
             name='GroupQueue',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -55,15 +55,15 @@ class Migration(migrations.Migration):
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('last_sync_dt', models.DateTimeField(null=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='SubscriberQueue',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
-                ('subscriber', models.ForeignKey(to='forms.FormEntry', null=True)),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
+                ('subscriber', models.ForeignKey(to='forms.FormEntry', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
@@ -92,6 +92,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='campaign',
             name='template',
-            field=models.ForeignKey(blank=True, to='campaign_monitor.Template', null=True),
+            field=models.ForeignKey(blank=True, to='campaign_monitor.Template', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

@@ -24,7 +24,7 @@ from tendenci.apps.invoices.models import Invoice
 class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('slug', 'parent',)
@@ -92,7 +92,7 @@ class BaseJob(TendenciBaseModel):
     contact_email = models.CharField(max_length=300, blank=True)
     contact_website = models.CharField(max_length=300, blank=True)
 
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 

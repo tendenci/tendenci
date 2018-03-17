@@ -118,7 +118,7 @@ class StaffFile(OrderingBaseModel, File):
         (PHOTO_TYPE_OTHER, 'Other'),
     )
 
-    staff = models.ForeignKey(Staff)
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
     photo_type = models.CharField(
         max_length=50,
         choices=PHOTO_TYPE_CHOICES

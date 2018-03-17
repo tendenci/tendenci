@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
                 ('output', models.TextField(blank=True)),
                 ('output_type', models.CharField(default='html', max_length=20, choices=[('html', 'HTML'), ('html-extended', 'HTML Extended'), ('html-summary', 'HTML Summary')])),
                 ('creator', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
-                ('report', models.ForeignKey(to='reports.Report')),
+                ('report', models.ForeignKey(to='reports.Report', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Run',

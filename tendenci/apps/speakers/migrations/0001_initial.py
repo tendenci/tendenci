@@ -60,10 +60,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SpeakerFile',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('photo_type', models.CharField(max_length=50, choices=[('professional', 'Professional'), ('fun', 'Fun')])),
                 ('position', models.IntegerField(blank=True)),
-                ('speaker', models.ForeignKey(to='speakers.Speaker')),
+                ('speaker', models.ForeignKey(to='speakers.Speaker', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('position',),
@@ -80,6 +80,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='speaker',
             name='track',
-            field=models.ForeignKey(to='speakers.Track', null=True),
+            field=models.ForeignKey(to='speakers.Track', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

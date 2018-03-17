@@ -556,7 +556,7 @@ class RecurringPayment(models.Model):
         return d['total']
 
 class PaymentProfile(models.Model):
-    #recurring_payment =  models.ForeignKey(RecurringPayment)
+    #recurring_payment =  models.ForeignKey(RecurringPayment, on_delete=models.CASCADE)
     customer_profile_id = models.CharField(max_length=100)
     # assigned by gateway
     payment_profile_id = models.CharField(max_length=100, unique=True)
@@ -596,8 +596,8 @@ class PaymentProfile(models.Model):
 
 
 class RecurringPaymentInvoice(models.Model):
-    recurring_payment =  models.ForeignKey(RecurringPayment, related_name="rp_invoices")
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    recurring_payment =  models.ForeignKey(RecurringPayment, related_name="rp_invoices", on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"), blank=True, null=True)
     billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     last_payment_failed_dt = models.DateTimeField(_('Last payment failed date'), blank=True, null=True)
@@ -752,13 +752,13 @@ class RecurringPaymentInvoice(models.Model):
 
 
 class PaymentTransaction(models.Model):
-    recurring_payment =  models.ForeignKey(RecurringPayment, related_name="transactions")
-    recurring_payment_invoice =  models.ForeignKey(RecurringPaymentInvoice, related_name="transactions")
+    recurring_payment =  models.ForeignKey(RecurringPayment, related_name="transactions", on_delete=models.CASCADE)
+    recurring_payment_invoice =  models.ForeignKey(RecurringPaymentInvoice, related_name="transactions", on_delete=models.CASCADE)
     payment_profile_id = models.CharField(max_length=100, default='')
     # trans_type - capture, refund or void
     trans_type  = models.CharField(max_length=50, null=True)
     # refid
-    payment =  models.ForeignKey(Payment, null=True)
+    payment =  models.ForeignKey(Payment, null=True, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
 
     result_code = models.CharField(max_length=10, default='')

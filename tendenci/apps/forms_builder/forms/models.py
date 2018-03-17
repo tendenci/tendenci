@@ -209,7 +209,7 @@ class Field(OrderingBaseModel):
     - Includes their respective values to the email's subject
     """
 
-    form = models.ForeignKey("Form", related_name="fields")
+    form = models.ForeignKey("Form", related_name="fields", on_delete=models.CASCADE)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
         max_length=64)
@@ -289,7 +289,7 @@ class FormEntry(models.Model):
     An entry submitted via a user-built form.
     """
 
-    form = models.ForeignKey("Form", related_name="entries")
+    form = models.ForeignKey("Form", related_name="entries", on_delete=models.CASCADE)
     entry_time = models.DateTimeField(_("Date/time"))
     entry_path = models.CharField(max_length=200, blank=True, default="")
     payment_method = models.ForeignKey('payments.PaymentMethod', null=True, on_delete=models.SET_NULL)
@@ -437,8 +437,8 @@ class FieldEntry(models.Model):
     A single field value for a form entry submitted via a user-built form.
     """
 
-    entry = models.ForeignKey("FormEntry", related_name="fields")
-    field = models.ForeignKey("Field", related_name="field")
+    entry = models.ForeignKey("FormEntry", related_name="fields", on_delete=models.CASCADE)
+    field = models.ForeignKey("Field", related_name="field", on_delete=models.CASCADE)
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
     class Meta:
@@ -465,7 +465,7 @@ class Pricing(models.Model):
     """
     Pricing options for custom payment forms.
     """
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Form', on_delete=models.CASCADE)
     label = models.CharField(max_length=100)
     description = models.TextField(_("Pricing Description"), blank=True)
     price = models.DecimalField(

@@ -45,13 +45,13 @@ class Nav(TendenciBaseModel):
         return self.navitem_set.filter(level=0).order_by('position')
 
 class NavItem(OrderingBaseModel):
-    nav = models.ForeignKey(Nav)
+    nav = models.ForeignKey(Nav, on_delete=models.CASCADE)
     label = models.CharField(max_length=100)
     title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
     new_window = models.BooleanField(_("Open in a new window"), default=False)
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
     level = models.IntegerField(default=0)
-    page = models.ForeignKey(Page, null=True)
+    page = models.ForeignKey(Page, null=True, on_delete=models.CASCADE)
     url = models.CharField(_("URL"), max_length=200, blank=True, null=True)
 
     class Meta:

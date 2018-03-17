@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='contact',
             name='user',
-            field=models.ForeignKey(related_name='contact_user', to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='contact_user', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='company',
@@ -142,11 +142,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='contact',
-            field=models.ForeignKey(related_name='comments', to='contacts.Contact'),
+            field=models.ForeignKey(related_name='comments', to='contacts.Contact', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='comment',
             name='creator',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

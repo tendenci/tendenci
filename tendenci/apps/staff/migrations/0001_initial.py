@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('personal_sites', models.TextField(help_text='List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
                 ('tags', tagging.fields.TagField(help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255, blank=True)),
                 ('creator', models.ForeignKey(related_name='staff_staff_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
-                ('department', models.ForeignKey(blank=True, to='staff.Department', null=True)),
+                ('department', models.ForeignKey(blank=True, to='staff.Department', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('entity', models.ForeignKey(related_name='staff_staff_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('owner', models.ForeignKey(related_name='staff_staff_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
                 ('positions', models.ManyToManyField(to='staff.Position', blank=True)),
@@ -70,10 +70,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StaffFile',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
                 ('photo_type', models.CharField(max_length=50, choices=[('featured', 'Featured'), ('other', 'Other')])),
-                ('staff', models.ForeignKey(to='staff.Staff')),
+                ('staff', models.ForeignKey(to='staff.Staff', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('position',),

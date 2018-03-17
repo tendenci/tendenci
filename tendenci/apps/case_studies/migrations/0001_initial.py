@@ -51,10 +51,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Image',
             fields=[
-                ('file_ptr', models.OneToOneField(related_name='case_studies_image_related', primary_key=True, serialize=False, to='files.File')),
+                ('file_ptr', models.OneToOneField(related_name='case_studies_image_related', primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
                 ('file_type', models.CharField(default='other', max_length=50, verbose_name='File type', choices=[('featured', 'Featured Screenshot'), ('screenshot', 'Screenshot'), ('homepage', 'Homepage Image'), ('other', 'Other')])),
                 ('position', models.IntegerField(blank=True)),
-                ('case_study', models.ForeignKey(to='case_studies.CaseStudy')),
+                ('case_study', models.ForeignKey(to='case_studies.CaseStudy', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('position',),

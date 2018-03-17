@@ -545,7 +545,7 @@ class UserImport(BaseImport):
 
 
 class UserImportData(BaseImportData):
-    uimport = models.ForeignKey(UserImport, related_name="user_import_data")
+    uimport = models.ForeignKey(UserImport, related_name="user_import_data", on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'profiles'

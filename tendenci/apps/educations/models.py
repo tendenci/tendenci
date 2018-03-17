@@ -23,7 +23,7 @@ class Education(TendenciBaseModel):
     graduation_dt = models.DateTimeField(_('Graduation Date/Time'),
                                          null=True, blank=True)
     graduation_year = models.IntegerField(_('Graduation Year'), null=True, blank=True)
-    user = models.ForeignKey(User, related_name="educations")
+    user = models.ForeignKey(User, related_name="educations", on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                   object_id_field="object_id",

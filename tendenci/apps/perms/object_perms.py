@@ -15,9 +15,9 @@ class ObjectPermission(models.Model):
     because it will cause circular references
     all over the place. Please leave it here.
     """
-    user = models.ForeignKey(User, null=True)
-    group = models.ForeignKey(Group, null=True)
-    content_type = models.ForeignKey(ContentType)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, null=True, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     codename = models.CharField(max_length=255)
     object_id = models.IntegerField()
     create_dt = models.DateTimeField(auto_now_add=True)

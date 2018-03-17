@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
                 ('crop', models.BooleanField(default=False, help_text='If selected the image will be scaled and cropped to fit the supplied dimensions.', verbose_name='crop to fit?')),
                 ('pre_cache', models.BooleanField(default=False, help_text='If selected this photo size will be pre-cached as photos are added.', verbose_name='pre-cache?')),
                 ('increment_count', models.BooleanField(default=False, help_text='If selected the image\'s "view_count" will be incremented when this photo size is displayed.', verbose_name='increment view count?')),
-                ('effect', models.ForeignKey(related_name='photo_sizes', verbose_name='photo effect', blank=True, to='photos.PhotoEffect', null=True)),
+                ('effect', models.ForeignKey(related_name='photo_sizes', verbose_name='photo effect', blank=True, to='photos.PhotoEffect', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['width', 'height'],
@@ -155,8 +155,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.PositiveIntegerField()),
                 ('created_at', models.DateTimeField(default=datetime.datetime.now, verbose_name='created_at')),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('photo', models.ForeignKey(to='photos.Image')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
+                ('photo', models.ForeignKey(to='photos.Image', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'pool',
@@ -182,12 +182,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='photosize',
             name='watermark',
-            field=models.ForeignKey(related_name='photo_sizes', verbose_name='watermark image', blank=True, to='photos.Watermark', null=True),
+            field=models.ForeignKey(related_name='photo_sizes', verbose_name='watermark image', blank=True, to='photos.Watermark', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
             name='effect',
-            field=models.ForeignKey(related_name='image_related', verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True),
+            field=models.ForeignKey(related_name='image_related', verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
@@ -202,7 +202,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='license',
-            field=models.ForeignKey(blank=True, to='photos.License', null=True),
+            field=models.ForeignKey(blank=True, to='photos.License', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='meta',
-            field=models.OneToOneField(null=True, blank=True, to='meta.Meta'),
+            field=models.OneToOneField(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta'),
         ),
         migrations.AddField(
             model_name='image',
@@ -227,12 +227,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='albumcover',
             name='photo',
-            field=models.ForeignKey(to='photos.Image'),
+            field=models.ForeignKey(to='photos.Image', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='albumcover',
             name='photoset',
-            field=models.OneToOneField(to='photos.PhotoSet'),
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='photos.PhotoSet'),
         ),
         migrations.AlterUniqueTogether(
             name='pool',

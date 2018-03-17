@@ -25,7 +25,7 @@ class ClientList(models.Model):
 
 class Category(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
-    image = models.ForeignKey('CategoryPhoto', help_text=_('Photo that represents this category.'), null=True, default=None)
+    image = models.ForeignKey('CategoryPhoto', help_text=_('Photo that represents this category.'), null=True, default=None, on_delete=models.CASCADE)
     position = models.IntegerField(blank=True, default=0)
 
     def __unicode__(self):
@@ -89,7 +89,7 @@ class Project(TendenciBaseModel):
     project_name = models.CharField(
         _(u'Project Name'), max_length=300)
     project_manager = models.ForeignKey(ProjectManager, blank=True, null=True, on_delete=models.SET_NULL)
-    project_number = models.OneToOneField(ProjectNumber, blank=True, null=True)
+    project_number = models.OneToOneField(ProjectNumber, blank=True, null=True, on_delete=models.CASCADE)
     project_status = models.CharField(_(u'Project Status'),
         blank=True,
         max_length=50,
@@ -147,7 +147,7 @@ class Project(TendenciBaseModel):
 
 
 class Photo(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
     title = models.CharField(_(u'title'), max_length=200, blank=True)
     photo_description = models.TextField(_(u'Photo Description'), null=True, blank=True)
 
@@ -157,7 +157,7 @@ class Photo(File):
         return self.title
 
 class TeamMembers(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
     last_name = models.CharField(_(u'Last Name'), max_length=200, blank=True)
     title = models.CharField(_(u'Title'), max_length=200, blank=True)
@@ -170,8 +170,8 @@ class TeamMembers(File):
         return self.title
 
 class Documents(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
-    type = models.ForeignKey(DocumentType, blank=True)
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
+    type = models.ForeignKey(DocumentType, blank=True, on_delete=models.CASCADE)
     other = models.CharField(_(u'other'), max_length=200, blank=True)
     document_dt = models.DateField(_(u'Document Date'), null=True, blank=True)
 

@@ -52,8 +52,8 @@ class Migration(migrations.Migration):
                 ('css', models.CharField(max_length=100, null=True, verbose_name='CSS Class', blank=True)),
                 ('level', models.IntegerField(default=0)),
                 ('url', models.CharField(max_length=200, null=True, verbose_name='URL', blank=True)),
-                ('nav', models.ForeignKey(to='navs.Nav')),
-                ('page', models.ForeignKey(to='pages.Page', null=True)),
+                ('nav', models.ForeignKey(to='navs.Nav', on_delete=django.db.models.deletion.CASCADE)),
+                ('page', models.ForeignKey(to='pages.Page', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]

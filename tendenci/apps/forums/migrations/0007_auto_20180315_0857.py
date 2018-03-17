@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 from django.conf import settings
 
 
@@ -20,6 +21,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='topic',
             name='user',
-            field=models.ForeignKey(verbose_name='Owner', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='Owner', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

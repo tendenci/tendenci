@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 from django.conf import settings
 
 
@@ -39,10 +40,10 @@ class Migration(migrations.Migration):
                 ('owner_username', models.CharField(max_length=50, null=True)),
                 ('status_detail', models.CharField(default='estimate', max_length=50)),
                 ('status', models.NullBooleanField(default=True)),
-                ('creator', models.ForeignKey(related_name='donation_creator', to=settings.AUTH_USER_MODEL, null=True)),
-                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
-                ('owner', models.ForeignKey(related_name='donation_owner', to=settings.AUTH_USER_MODEL, null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('creator', models.ForeignKey(related_name='donation_creator', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('owner', models.ForeignKey(related_name='donation_owner', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]

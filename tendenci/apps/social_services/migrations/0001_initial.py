@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import django.contrib.gis.db.models.fields
 import tendenci.libs.tinymce.models
 from django.conf import settings
@@ -54,7 +55,7 @@ class Migration(migrations.Migration):
                 ('case_notes', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='case notes', blank=True)),
                 ('items_provided', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='items provided', blank=True)),
                 ('loc', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -100,7 +101,7 @@ class Migration(migrations.Migration):
                 ('marksman', models.BooleanField(default=False, verbose_name='marksman')),
                 ('security_clearance', models.CharField(max_length=200, null=True, verbose_name='security clearance', blank=True)),
                 ('loc', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

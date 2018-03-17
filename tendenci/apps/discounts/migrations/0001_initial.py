@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
-                ('discount', models.ForeignKey(to='discounts.Discount')),
-                ('invoice', models.ForeignKey(to='invoices.Invoice')),
+                ('discount', models.ForeignKey(to='discounts.Discount', on_delete=django.db.models.deletion.CASCADE)),
+                ('invoice', models.ForeignKey(to='invoices.Invoice', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]

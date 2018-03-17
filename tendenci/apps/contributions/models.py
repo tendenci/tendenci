@@ -13,7 +13,7 @@ from tendenci.apps.files.models import File
 
 class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40)
-    content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
+    content_type = models.ForeignKey(ContentType, verbose_name=_('content type'), on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(_('object id'), db_index=True)
     title = models.CharField(max_length=500, blank=True)
 

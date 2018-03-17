@@ -416,7 +416,7 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
 
 class FilesCategory(models.Model):
     name = models.CharField(max_length=255)
-    parent = models.ForeignKey('self', null=True)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = _("File Categories")

@@ -493,8 +493,8 @@ class PhotoSize(models.Model):
     crop = models.BooleanField(_('crop to fit?'), default=False, help_text=_('If selected the image will be scaled and cropped to fit the supplied dimensions.'))
     pre_cache = models.BooleanField(_('pre-cache?'), default=False, help_text=_('If selected this photo size will be pre-cached as photos are added.'))
     increment_count = models.BooleanField(_('increment view count?'), default=False, help_text=_('If selected the image\'s "view_count" will be incremented when this photo size is displayed.'))
-    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name='photo_sizes', verbose_name=_('photo effect'))
-    watermark = models.ForeignKey('Watermark', null=True, blank=True, related_name='photo_sizes', verbose_name=_('watermark image'))
+    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name='photo_sizes', verbose_name=_('photo effect'), on_delete=models.CASCADE)
+    watermark = models.ForeignKey('Watermark', null=True, blank=True, related_name='photo_sizes', verbose_name=_('watermark image'), on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['width', 'height']
@@ -1000,8 +1000,8 @@ class Pool(models.Model):
     model for a photo to be applied to an object
     """
 
-    photo = models.ForeignKey(Image)
-    content_type = models.ForeignKey(ContentType)
+    photo = models.ForeignKey(Image, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
     created_at = models.DateTimeField(_('created_at'), default=datetime.now)
@@ -1018,8 +1018,8 @@ class AlbumCover(models.Model):
     """
     model to mark a photo set's album cover
     """
-    photoset = models.OneToOneField(PhotoSet)
-    photo = models.ForeignKey(Image)
+    photoset = models.OneToOneField(PhotoSet, on_delete=models.CASCADE)
+    photo = models.ForeignKey(Image, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'photos'

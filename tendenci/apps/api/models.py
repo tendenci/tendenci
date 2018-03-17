@@ -8,6 +8,6 @@ class APIAccessKey(models.Model):
     client_url = models.CharField(max_length=200, default='')
 
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, related_name="apiaccesskey_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="apiaccesskey_creator", null=True, on_delete=models.CASCADE)
     update_dt = models.DateTimeField(auto_now=True)
     status = models.BooleanField(default=True)

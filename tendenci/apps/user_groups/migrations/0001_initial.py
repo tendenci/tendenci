@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('notes', models.TextField(blank=True)),
                 ('creator', models.ForeignKey(related_name='user_groups_group_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='user_groups_group_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.OneToOneField(null=True, default=None, to='auth.Group')),
+                ('group', models.OneToOneField(null=True, default=None, on_delete=django.db.models.deletion.CASCADE, to='auth.Group')),
             ],
             options={
                 'ordering': ('name',),
@@ -73,8 +73,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('is_newsletter_subscribed', models.BooleanField(default=True)),
                 ('newsletter_key', models.CharField(max_length=50, null=True, blank=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
-                ('member', models.ForeignKey(related_name='group_member', to=settings.AUTH_USER_MODEL)),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
+                ('member', models.ForeignKey(related_name='group_member', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'Group Membership',

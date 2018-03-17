@@ -72,9 +72,9 @@ class Migration(migrations.Migration):
                 ('enclosure_length', models.IntegerField(default=0, verbose_name='Enclosure Length')),
                 ('creator', models.ForeignKey(related_name='directories_directory_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='directories_directory_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
-                ('logo_file', models.ForeignKey(to='files.File', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('logo_file', models.ForeignKey(to='files.File', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
                 ('owner', models.ForeignKey(related_name='directories_directory_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -109,6 +109,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='directory',
             name='pricing',
-            field=models.ForeignKey(to='directories.DirectoryPricing', null=True),
+            field=models.ForeignKey(to='directories.DirectoryPricing', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

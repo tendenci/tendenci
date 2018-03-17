@@ -147,7 +147,7 @@ class Run(models.Model):
         range start and end times as well as output in different
         modes like HTML or PDF.
     """
-    report = models.ForeignKey(Report)
+    report = models.ForeignKey(Report, on_delete=models.CASCADE)
     create_dt = models.DateTimeField(auto_now_add=True)
     start_dt = models.DateTimeField(null=True)
     complete_dt = models.DateTimeField(null=True)

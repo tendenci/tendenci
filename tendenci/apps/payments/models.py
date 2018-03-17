@@ -8,7 +8,7 @@ from tendenci.apps.site_settings.utils import get_setting
 
 class Payment(models.Model):
     guid = models.CharField(max_length=50)
-    invoice = models.ForeignKey(Invoice)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     payment_attempted = models.BooleanField(default=True)
     response_code = models.CharField(max_length=2, default='')
     response_subcode = models.CharField(max_length=10, default='')
