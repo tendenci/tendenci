@@ -510,8 +510,7 @@ def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
 
     else:
         template = get_template("invoices/email_invoice_template.html")
-        body_initial  = template.render(RequestContext(request, {
-                                       'invoice': invoice,}))
+        body_initial = template.render(context={'invoice': invoice}, request=request)
         form = form_class(initial={'subject': 'Invoice for {}'.format(invoice.title),
                                    'recipient': invoice.bill_to_email,
                                    'body': body_initial})

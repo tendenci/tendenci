@@ -306,7 +306,7 @@ def base_file(request, file_name):
     except TemplateDoesNotExist:
         raise Http404
 
-    return HttpResponse(t.render(RequestContext(request)))
+    return HttpResponse(t.render(request=request))
 
 
 def exception_test(request):

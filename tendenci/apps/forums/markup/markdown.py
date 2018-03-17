@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import
 from markdown import Markdown
 import bleach
 from django.forms import Textarea
-from django.template import Context
 from django.template.loader import get_template
 from ..markup.base import smile_it, BaseParser
 
@@ -26,8 +25,8 @@ class MarkdownWidget(Textarea):
 
     def render(self, *args, **kwargs):
         tpl = get_template('pybb/markup/markdown_widget.html')
-        ctx = Context({'widget_output': super(MarkdownWidget, self).render(*args, **kwargs)})
-        return tpl.render(ctx)
+        ctx = {'widget_output': super(MarkdownWidget, self).render(*args, **kwargs)}
+        return tpl.render(context=ctx)
 
 
 class MarkdownParser(BaseParser):

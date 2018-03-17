@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator
-from django.template import Context, loader
+from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -244,5 +244,5 @@ class PasswordResetForm(forms.Form):
                 sender=from_email,
                 recipient=user.email,
                 subject=_("Password reset on %s") % site_name,
-                body=t.render(Context(c)))
+                body=t.render(context=c))
         email.send()

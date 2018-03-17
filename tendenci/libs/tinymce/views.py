@@ -27,11 +27,10 @@ def textareas_js(request, name, lang=None):
     )
     template = loader.select_template(template_files)
 
-    vars = get_language_config(lang)
-    vars['content_language'] = lang
-    context = RequestContext(request, vars)
+    context = get_language_config(lang)
+    context['content_language'] = lang
 
-    return HttpResponse(template.render(context),
+    return HttpResponse(template.render(context=context, request=request),
             content_type="application/x-javascript")
 
 def spell_check(request):
@@ -87,7 +86,7 @@ def preview(request, name):
         '%s/tinymce_preview.html' % name,
     )
     template = loader.select_template(template_files)
-    return HttpResponse(template.render(RequestContext(request)),
+    return HttpResponse(template.render(request=request),
             content_type="text/html")
 
 

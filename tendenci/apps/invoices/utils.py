@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.template.loader import get_template
-from django.template import RequestContext
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import UnicodeWriter
@@ -45,13 +44,13 @@ def invoice_pdf(request, invoice):
 
     template_name="invoices/pdf.html"
     template = get_template(template_name)
-    html  = template.render(RequestContext(request, {
-                           'invoice': invoice,
-                           'obj_name': obj_name,
-                           'payment_method': payment_method,
-                           'tmp_total': tmp_total,
-                           'pdf_version': True,
-                                     }))
+    html  = template.render(context={
+                             'invoice': invoice,
+                             'obj_name': obj_name,
+                             'payment_method': payment_method,
+                             'tmp_total': tmp_total,
+                             'pdf_version': True,
+                            }, request=request)
     result = BytesIO()
     pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
                       path=get_setting('site', 'global', 'siteurl'))
