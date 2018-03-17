@@ -74,7 +74,7 @@ def app_dropdown(request):
             try:
                 get_template(path[2]+'/top_nav.html')
                 context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': path[2]+'/top_nav.html'})
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 context.update({'ADMIN_MENU_APP_TEMPLATE_DROPDOWN': 'site_settings/top_nav.html'})
 
             # special case profile setting as users

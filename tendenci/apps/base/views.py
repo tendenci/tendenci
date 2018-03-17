@@ -302,7 +302,7 @@ def base_file(request, file_name):
 
     try:
         t = get_template(file_name.encode('ascii', 'ignore'))
-    except TemplateDoesNotExist:
+    except (TemplateDoesNotExist, IOError):
         raise Http404
 
     return HttpResponse(t.render(request=request))

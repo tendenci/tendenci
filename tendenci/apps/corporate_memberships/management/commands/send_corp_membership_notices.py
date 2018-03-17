@@ -81,7 +81,7 @@ class Command(BaseCommand):
 
                     notification.send_emails(recap_recipient, 'corp_memb_notice_email',
                                              email_context)
-                except TemplateDoesNotExist:
+                except (TemplateDoesNotExist, IOError):
                     pass
 
         def email_script_errors(err_msg):

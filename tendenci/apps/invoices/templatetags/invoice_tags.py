@@ -36,7 +36,7 @@ def invoices_search_results_line(request, invoice):
                 context={'obj':obj,'invoice':invoice},
                 request=request
             )
-        except TemplateDoesNotExist:
+        except (TemplateDoesNotExist, IOError):
             pass
 
     return {'request':request, 'invoice':invoice, 'obj':obj, 'search_line_display':search_line_display}
@@ -87,7 +87,7 @@ def invoice_object_display(request, invoice):
                 context={'obj': obj, 'invoice': invoice},
                 request=request
             )
-        except TemplateDoesNotExist:
+        except (TemplateDoesNotExist, IOError):
             pass
 
     context = {

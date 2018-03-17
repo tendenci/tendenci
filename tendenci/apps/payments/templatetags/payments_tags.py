@@ -41,7 +41,7 @@ def payment_thankyou_display(request, payment):
                 obj_display = render_to_string(template_name=template_name, context={'obj':obj,
                                                    'payment':payment},
                                                    request=request)
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
             template_name = "%s/payment_thankyou_header.html" % (app_label)
@@ -49,7 +49,7 @@ def payment_thankyou_display(request, payment):
                 obj_header = render_to_string(template_name=template_name, context={'obj':obj,
                                                    'payment':payment},
                                                    request=request)
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     return {'request': request,

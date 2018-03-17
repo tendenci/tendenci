@@ -64,7 +64,7 @@ class SearchResultNode(IncludeNode):
 
             try:
                 t = context.template.engine.get_template(template_name)
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 #load the default search result template
                 t = context.template.engine.get_template("search/search-result.html")
 

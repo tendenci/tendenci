@@ -656,7 +656,7 @@ def template_exists(template):
     """
     try:
         get_template(template)
-    except TemplateDoesNotExist:
+    except (TemplateDoesNotExist, IOError):
         return False
     return True
 

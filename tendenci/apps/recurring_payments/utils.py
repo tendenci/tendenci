@@ -82,7 +82,7 @@ class RecurringPaymentEmailNotices(object):
                                                                             'dname':self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_transaction_result(self, payment_transaction, success=True, **kwargs):
@@ -115,7 +115,7 @@ class RecurringPaymentEmailNotices(object):
                                                                                 'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_customer_transaction_result(self, payment_transaction, **kwargs):
@@ -145,7 +145,7 @@ class RecurringPaymentEmailNotices(object):
                             'desc': payment_transaction.recurring_payment.description})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_no_payment_profile(self, recurring_payment):
@@ -167,7 +167,7 @@ class RecurringPaymentEmailNotices(object):
                                     'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_customer_no_payment_profile(self, recurring_payment):
@@ -189,7 +189,7 @@ class RecurringPaymentEmailNotices(object):
                                     'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_account_disabled(self, recurring_payment, user_by):
@@ -213,7 +213,7 @@ class RecurringPaymentEmailNotices(object):
                        'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
 
