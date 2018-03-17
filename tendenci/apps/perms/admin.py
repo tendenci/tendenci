@@ -189,11 +189,12 @@ def soft_delete_selected(modeladmin, request, queryset):
     }
 
     # Display the confirmation page
-    return TemplateResponse(request, [
+    request.current_app = modeladmin.admin_site.name
+    return TemplateResponse(request=request, template=[
         "admin/%s/%s/soft_delete_selected_confirmation.html" % (app_label, opts.object_name.lower()),
         "admin/%s/soft_delete_selected_confirmation.html" % app_label,
         "admin/soft_delete_selected_confirmation.html"
-    ], context, current_app=modeladmin.admin_site.name)
+    ], context=context)
 
 soft_delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 

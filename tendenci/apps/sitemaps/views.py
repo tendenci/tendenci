@@ -83,5 +83,5 @@ def sitemap(request, sitemaps, section=None,
             raise Http404("Page %s empty" % page)
         except PageNotAnInteger:
             raise Http404("No page '%s'" % page)
-    return TemplateResponse(request, template_name, {'urlset': urls},
+    return TemplateResponse(request=request, template=template_name, context={'urlset': urls},
                             content_type=mimetype)
