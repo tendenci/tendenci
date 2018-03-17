@@ -1,7 +1,7 @@
 future
 six
 configparser
-Django>=1.8,<1.9
+Django>=1.9,<1.10
 django-formtools>=1.0
 pisa
 Pillow==4.2.1
@@ -15,7 +15,7 @@ django-picklefield>=0.1.6
 django-simple-captcha==0.5.5
 django-nocaptcha-recaptcha==0.0.20
 django-tagging==0.4.3
-django-haystack==2.4.1
+django-haystack==2.6.0
 django-debug-toolbar>=1.2.2
 django-sql-explorer==1.1.1
 feedparser>=4.1
