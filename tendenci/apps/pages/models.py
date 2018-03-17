@@ -21,11 +21,18 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
+class HeaderImage(File):
+    pass
+
+    class Meta:
+        app_label = 'pages'
+
+
 class BasePage(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'))
-    header_image = models.ForeignKey('HeaderImage', null=True, on_delete=models.SET_NULL)
+    header_image = models.ForeignKey(HeaderImage, null=True, on_delete=models.SET_NULL)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField(default=False)
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -128,10 +135,3 @@ class Page(BasePage):
     @property
     def has_google_publisher(self):
         return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
-
-
-class HeaderImage(File):
-    pass
-
-    class Meta:
-        app_label = 'pages'
