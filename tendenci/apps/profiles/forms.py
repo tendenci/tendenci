@@ -5,7 +5,7 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 

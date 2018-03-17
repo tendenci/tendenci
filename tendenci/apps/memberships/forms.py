@@ -83,7 +83,7 @@ CLASS_AND_WIDGET = {
     'multi-select': ('MultipleChoiceField', 'django.forms.CheckboxSelectMultiple'),
     'email-field': ('EmailField', None),
     'file-uploader': ('FileField', None),
-    'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
+    'date': ('DateField', 'django.forms.widgets.SelectDateWidget'),
     'date-time': ('DateTimeField', None),
     'membership-type': ('ChoiceField', 'django.forms.RadioSelect'),
     'payment-method': ('ChoiceField', None),

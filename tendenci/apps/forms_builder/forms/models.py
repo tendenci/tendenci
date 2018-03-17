@@ -37,7 +37,7 @@ FIELD_CHOICES = (
     ("CountryField", _("Countries")),
     ("StateProvinceField", _("States/Provinces")),
     ("FileField", _("File upload")),
-    ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
+    ("DateField/django.forms.widgets.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),
     ("DateTimeField", _("Date/time")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),

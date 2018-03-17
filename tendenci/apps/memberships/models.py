@@ -2531,7 +2531,7 @@ class MembershipAppField(OrderingBaseModel):
                     ("CountrySelectField", _("Countries Drop Down")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
+                    ("DateField/django.forms.widgets.SelectDateWidget", _("Date")),
                     ("DateTimeField", _("Date/time")),
                 )
     FIELD_TYPE_CHOICES2 = (

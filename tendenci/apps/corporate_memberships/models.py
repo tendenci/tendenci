@@ -73,7 +73,7 @@ FIELD_CHOICES = (
                         _("Multi select (Checkboxes)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget",
+                    ("DateField/django.forms.widgets.SelectDateWidget",
                         _("Date")),
                     ("DateTimeField", _("Date/time")),
                     ("section_break", _("Section Break")),
@@ -1501,7 +1501,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     ("CountrySelectField", _("Countries Drop Down")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget",
+                    ("DateField/django.forms.widgets.SelectDateWidget",
                         _("Date")),
                     ("DateTimeField", _("Date/time")),
                 )

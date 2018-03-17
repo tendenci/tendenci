@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 
