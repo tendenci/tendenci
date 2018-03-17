@@ -193,14 +193,14 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     if not request.user.profile.is_superuser:
         # block anon
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             if not allow_anonymous_search:
                 raise Http403
             if not allow_user_search:
                 raise Http403
 
         # block member or user
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.profile.is_member:  # if member
                 if membership_view_perms == 'private':
                     if not allow_user_search:
@@ -216,7 +216,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         display_membership_type = True
     else:
         if membership_view_perms in ['all-members', 'member-type']:
-            if request.user.is_authenticated() and \
+            if request.user.is_authenticated and \
                 request.user.profile.is_member:
                 display_membership_type = True
     mt_ids_list = None
@@ -270,7 +270,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
-        if request.user.is_authenticated() and request.user.profile.is_member:
+        if request.user.is_authenticated and request.user.profile.is_member:
             if allow_member_search:
                 filters = (Q(status=True) & Q(status_detail='active'))
             else:

@@ -394,7 +394,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     # If form has a recurring payment, make sure the user is logged in
     if form.recurring_payment:
         [email_field] = form.fields.filter(field_type__iexact='EmailVerificationField')[:1] or [None]
-        if request.user.is_anonymous() and not email_field:
+        if request.user.is_anonymous and not email_field:
             # anonymous user - if we don't have the email field, redirect to login
             response = redirect('auth_login')
             response['Location'] += '?next=%s' % form.get_absolute_url()
@@ -408,7 +408,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
     if form.custom_payment and not form.recurring_payment:
         billing_form = BillingForm(request.POST or None)
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             billing_form.initial = {
                         'first_name':request.user.first_name,
                         'last_name':request.user.last_name,
@@ -425,7 +425,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 if entry.get_email_address():
                     emailfield = entry.get_email_address()
                     firstnamefield = entry.get_first_name()
@@ -533,7 +533,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
 
                 if form.recurring_payment:
-                    if request.user.is_anonymous():
+                    if request.user.is_anonymous:
                         rp_user = entry.creator
                     else:
                         rp_user = request.user
@@ -640,7 +640,7 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             # redirect to invoice page
             return redirect('invoice.view', invoice.id, invoice.guid)
     else:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             form = form_class(initial={
                         'first_name':request.user.first_name,
                         'last_name':request.user.last_name,

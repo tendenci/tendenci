@@ -40,7 +40,7 @@ def search(request, template_name="speakers/search.html"):
     else:
         filters = get_query_filters(request.user, 'speakers.view_speaker')
         speakers = Speaker.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             speakers = speakers.select_related()
     speakers = speakers.order_by('ordering')
 

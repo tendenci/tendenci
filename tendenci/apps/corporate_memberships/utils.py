@@ -211,7 +211,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.object_id = corp_memb.id
         inv.title = corp_memb.corp_profile.name
 
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name
             inv.bill_to_last_name = user.last_name

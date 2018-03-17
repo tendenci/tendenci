@@ -353,7 +353,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
     filters = get_query_filters(request.user, 'events.view_event')
     events = Event.objects.filter(filters).distinct()
     events = events.filter(enable_private_slug=False)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         events = events.select_related()
 
     start_dt = datetime.now()
@@ -427,7 +427,7 @@ def icalendar(request):
     else:
         d['domain_name'] = ""
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         file_name = 'ics-%s.ics' % (request.user.pk)
 
     absolute_directory = os.path.join(settings.MEDIA_ROOT, 'files/ics')
@@ -1653,7 +1653,7 @@ def register(request, event_id=0,
 
     if is_strict:
         # strict requires logged in
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             messages.add_message(request, messages.INFO,
                                 _('Please log in or sign up for a user account to register for an event.'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
@@ -1787,7 +1787,7 @@ def register(request, event_id=0,
     if request.method != 'POST':
         # set the initial data if logged in
         initial = {}
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             profile = request.user.profile
 
             initial = {'first_name':request.user.first_name,
@@ -1834,7 +1834,7 @@ def register(request, event_id=0,
         )
 
     # remove captcha for logged in user
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         del reg_form.fields['captcha']
     elif request.method == 'POST' and 'addmore' in request.POST:
         # captcha not required when add another was clicked
@@ -2169,7 +2169,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method != 'POST':
         # set the initial data if logged in
         initial = {}
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 profile = request.user.profile
             except:
@@ -2231,7 +2231,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             event_price,
             user=request.user
         )
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         del reg_form.fields['captcha']
 
     # total registrant forms
@@ -2523,7 +2523,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         if not registration.canceled:
             for registrant in registrants:
                 user_is_registrant = False
-                if not request.user.is_anonymous() and registrant.user:
+                if not request.user.is_anonymous and registrant.user:
                     if request.user.id == registrant.user.id:
                         user_is_registrant = True
 
@@ -2625,7 +2625,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         # check if already canceled. if so, do nothing
         if not registrant.cancel_dt:
             user_is_registrant = False
-            if request.user.is_authenticated() and registrant.user:
+            if request.user.is_authenticated and registrant.user:
                 if request.user == registrant.user:
                     user_is_registrant = True
 

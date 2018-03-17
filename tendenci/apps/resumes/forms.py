@@ -166,7 +166,7 @@ class ResumeForm(TendenciBaseForm):
 
         # adjust fields depending on user status
         fields_to_pop = []
-        if not self.user.is_authenticated():
+        if not self.user.is_authenticated:
             fields_to_pop += [
                 'allow_anonymous_view',
                 'user_perms',

@@ -1549,21 +1549,21 @@ class CustomPermissionHandler(permissions.DefaultPermissionHandler):
     """
 
     def filter_categories(self, user, qs):
-        return qs.filter(hidden=False) if user.is_anonymous() else qs
+        return qs.filter(hidden=False) if user.is_anonymous else qs
 
     def may_view_category(self, user, category):
-        return user.is_authenticated() if category.hidden else True
+        return user.is_authenticated if category.hidden else True
 
     def filter_forums(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(hidden=False) & Q(category__hidden=False))
         return qs
 
     def may_view_forum(self, user, forum):
-        return user.is_authenticated() if forum.hidden or forum.category.hidden else True
+        return user.is_authenticated if forum.hidden or forum.category.hidden else True
 
     def filter_topics(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(forum__hidden=False) & Q(forum__category__hidden=False))
         qs = qs.filter(closed=False)  # filter out closed topics for test
         return qs
@@ -1572,7 +1572,7 @@ class CustomPermissionHandler(permissions.DefaultPermissionHandler):
         return self.may_view_forum(user, topic.forum)
 
     def filter_posts(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(topic__forum__hidden=False) & Q(topic__forum__category__hidden=False))
         return qs
 

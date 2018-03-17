@@ -178,7 +178,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
 
-        if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
+        if not self.user.is_authenticated and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()

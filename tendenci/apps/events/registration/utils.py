@@ -69,7 +69,7 @@ def get_available_pricings(event, user):
         # return all if user.profile.is_superuser is user
         return pricings
 
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         # public pricings only
         pricings = pricings.filter(allow_anonymous=True)
     else:
@@ -161,7 +161,7 @@ def create_registrant(form, event, reg8n, **kwargs):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
         user = form.get_user()
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             registrant.user = user
         registrant.initialize_fields()
     else:
@@ -173,7 +173,7 @@ def create_registrant(form, event, reg8n, **kwargs):
 
         # associate the registrant with a user of the form
         user = form.get_user()
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             registrant.user = user
             try:
                 user_profile = registrant.user.profile
@@ -232,7 +232,7 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
     }
 
     # if user; record creator and owner
-    if not user.is_anonymous():
+    if not user.is_anonymous:
         reg8n_attrs.update({'creator': user,'owner': user})
 
     reg8n = Registration.objects.create(**reg8n_attrs)

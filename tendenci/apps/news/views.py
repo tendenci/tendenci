@@ -42,7 +42,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 
     #check for release date if it's in the future or not
     if not news.is_released:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise Http404
 
         if not request.user.profile.is_superuser:

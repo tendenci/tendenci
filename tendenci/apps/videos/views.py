@@ -17,7 +17,7 @@ def index(request, cat_slug=None, template_name="videos/list.html"):
     category = get_object_or_404(Category, slug=cat_slug)
     filters = get_query_filters(request.user, 'videos.view_video')
     videos = Video.objects.filter(filters).distinct()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         videos = videos.select_related()
     if cat_slug:
         videos = videos.filter(category__slug=cat_slug)
@@ -46,7 +46,7 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
 
     filters = get_query_filters(request.user, 'videos.view_video')
     videos = Video.objects.filter(filters).distinct()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         videos = videos.select_related()
 
     if query:

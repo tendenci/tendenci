@@ -489,12 +489,12 @@ class CorpProfileForm(CorpProfileBaseForm):
     def save(self, *args, **kwargs):
         from tendenci.apps.files.models import File
         if not self.instance.id:
-            if not self.request_user.is_anonymous():
+            if not self.request_user.is_anonymous:
                 self.instance.creator = self.request_user
                 self.instance.creator_username = self.request_user.username
             self.instance.status = True
             self.instance.status_detail = 'active'
-        if not self.request_user.is_anonymous():
+        if not self.request_user.is_anonymous:
             self.instance.owner = self.request_user
             self.instance.owner_username = self.request_user.username
         for field_key in self.fields:
@@ -627,10 +627,10 @@ class CorpMembershipForm(FormControlWidgetMixin, forms.ModelForm):
                 self.instance.status_detail = 'pending'
             if not self.instance.join_dt:
                 self.instance.join_dt = datetime.now()
-            if not creator_owner.is_anonymous():
+            if not creator_owner.is_anonymous:
                 self.instance.creator = creator_owner
                 self.instance.creator_username = creator_owner.username
-        if not creator_owner.is_anonymous():
+        if not creator_owner.is_anonymous:
             self.instance.owner = creator_owner
             self.instance.owner_username = creator_owner.username
         if corp_profile:

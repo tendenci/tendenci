@@ -31,7 +31,7 @@ def search(request, template_name="redirects/search.html"):
     else:
         filters = get_query_filters(request.user, 'redirects.add_redirect')
         redirects = Redirect.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             redirects = redirects.select_related()
         redirects = redirects.order_by('-create_dt')
 

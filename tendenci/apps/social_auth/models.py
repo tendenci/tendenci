@@ -11,15 +11,10 @@ from tendenci.apps.social_auth.fields import JSONField
 
 # If User class is overridden, it *must* provide the following fields,
 # or it won't be playing nicely with django.contrib.auth module:
-#
-#   username   = CharField()
-#   last_login = DateTimeField()
-#   is_active  = BooleanField()
-#
-# and methods:
-#
-#   def is_authenticated():
-#       ...
+#   username         = CharField()
+#   last_login       = DateTimeField()
+#   is_active        = BooleanField()
+#   is_authetnicated = BooleanField()
 RECOMMENDED_FIELDS = ('username', 'last_login', 'is_active')
 RECOMMENDED_METHODS = ('is_authenticated',)
 

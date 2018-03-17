@@ -12,7 +12,7 @@ class ProfileMiddleware(object):
     """
     def process_request(self, request):
         from tendenci.apps.profiles.models import Profile
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             request.user.profile = Profile(status=False, status_detail="inactive", user=User(is_staff=False, is_superuser=False, is_active=False))
         else:
             try:
@@ -53,6 +53,6 @@ class ForceLogoutProfileMiddleware(object):
     def process_request(self, request):
 
         # this will force logout deactivated user on next request
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if not request.user.is_active:
                 logout(request)

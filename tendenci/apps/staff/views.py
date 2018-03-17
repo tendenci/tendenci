@@ -53,7 +53,7 @@ def search(request, slug=None, template_name="staff/search.html"):
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         staff = staff.select_related()
 
     if query:

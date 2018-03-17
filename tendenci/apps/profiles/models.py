@@ -215,12 +215,12 @@ class Profile(Person):
 
         # allow user search users
         if get_setting('module', 'users', 'allowusersearch') \
-            and self.user.is_authenticated():
+            and self.user.is_authenticated:
             return True
 
         # allow members search users/members
         if get_setting('module', 'memberships', 'memberprotection') != 'private':
-            if self.user.is_authenticated() and self.user.profile.is_member:
+            if self.user.is_authenticated and self.user.profile.is_member:
                 return True
 
         return False

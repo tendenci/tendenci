@@ -126,7 +126,7 @@ class SearchForm(forms.Form):
                 sqs = sqs.auto_query(sqs.query.clean(query))
                 if user:
                     if not is_an_admin:
-                        if not user.is_anonymous():
+                        if not user.is_anonymous:
                         # if b/w admin and anon
 
                             # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
@@ -157,7 +157,7 @@ class SearchForm(forms.Form):
                     if is_an_admin:
                         sqs = sqs.all()
                     else:
-                        if not user.is_anonymous():
+                        if not user.is_anonymous:
                             # (status+status_detail+anon OR who_can_view__exact)
                             sec1_query = Q(**{
                                 'status':1,
@@ -225,7 +225,7 @@ class ModelSearchForm(SearchForm):
         include_users = False
 
         if kwargs['user'].profile.is_superuser or get_setting('module', 'users', 'allowanonymoususersearchuser') \
-        or (kwargs['user'].is_authenticated() and get_setting('module', 'users', 'allowusersearch')):
+        or (kwargs['user'].is_authenticated and get_setting('module', 'users', 'allowusersearch')):
             include_users = True
 
         if include_users:

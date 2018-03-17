@@ -48,7 +48,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
     else:
         form = form_class()
 
-        if request.user.is_authenticated() and redirect_to:
+        if request.user.is_authenticated and redirect_to:
                 return HttpResponseRedirect(redirect_to)
 
     return render_to_resp(request=request, template_name=template_name, context={

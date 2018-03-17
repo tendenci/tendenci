@@ -792,7 +792,7 @@ def add_registration(*args, **kwargs):
     }
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         reg8n_attrs['creator'] = request.user
         reg8n_attrs['owner'] = request.user
 
@@ -948,7 +948,7 @@ def create_registrant_from_form(*args, **kwargs):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
         user = form.get_user()
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             registrant.user = user
             entry.set_group_subscribers(user)
         registrant.initialize_fields()
@@ -1077,7 +1077,7 @@ def get_pricing(user, event, pricing=None):
                 continue
 
         # User permissions
-        if price.allow_user and not user.is_authenticated():
+        if price.allow_user and not user.is_authenticated:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price,

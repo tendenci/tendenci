@@ -273,7 +273,7 @@ class JobForm(TendenciBaseForm):
 
         # adjust fields depending on user status
         fields_to_pop = []
-        if not self.user.is_authenticated():
+        if not self.user.is_authenticated:
             fields_to_pop += [
                 'entity',
                 'allow_anonymous_view',

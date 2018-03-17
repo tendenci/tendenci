@@ -71,7 +71,7 @@ class PybbTimeNode(template.Node):
                 else:
                     msg = _('minutes ago')
                 return '%d %s' % (minutes, msg)
-        if context['user'].is_authenticated():
+        if context['user'].is_authenticated:
             if time.daylight:
                 tz1 = time.altzone
             else:
@@ -129,7 +129,7 @@ def pybb_posted_by(post, user):
 
 @register.filter
 def pybb_is_topic_unread(topic, user):
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False
 
     last_topic_update = topic.updated or topic.created
@@ -152,7 +152,7 @@ def pybb_topic_unread(topics, user):
     """
     topic_list = list(topics)
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         for topic in topic_list:
             topic.unread = True
 
@@ -181,7 +181,7 @@ def pybb_forum_unread(forums, user):
     Check if forum has unread messages.
     """
     forum_list = list(forums)
-    if user.is_authenticated():
+    if user.is_authenticated:
         for forum in forum_list:
             forum.unread = forum.topic_count > 0
         forum_marks = ForumReadTracker.objects.filter(

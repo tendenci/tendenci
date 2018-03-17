@@ -37,7 +37,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             donation = form.save(commit=False)
             donation.payment_method = donation.payment_method.lower()
             # we might need to create a user record if not exist
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 user = request.user
             else:
                 try:
@@ -45,7 +45,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 except:
                     user = request.user
 
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 donation.user = user
                 donation.creator = user
                 donation.creator_username = user.username
@@ -70,7 +70,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                                  'zipcode':donation.zip_code,
                                  'country':donation.country,
                                  'phone':donation.phone}
-                if request.user.is_anonymous():
+                if request.user.is_anonymous:
                     profile_kwarg['creator'] = user
                     profile_kwarg['creator_username'] = user.username
                     profile_kwarg['owner'] = user

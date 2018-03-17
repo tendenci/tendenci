@@ -48,7 +48,7 @@ def search(request, template_name="photos/search.html"):
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'photos.view_image')
     photos = Image.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         photos = photos.select_related()
 
     if query:
@@ -487,7 +487,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'photos.view_photoset')
     photo_sets = PhotoSet.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         photo_sets = photo_sets.select_related()
 
     if query:

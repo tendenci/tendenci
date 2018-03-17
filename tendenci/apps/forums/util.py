@@ -133,7 +133,7 @@ def unescape(text):
 def get_pybb_profile(user):
     from . import defaults
 
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         if defaults.PYBB_ENABLE_ANONYMOUS_POST:
             user = get_user_model().objects.get(**{get_username_field(): defaults.PYBB_ANONYMOUS_USERNAME})
         else:

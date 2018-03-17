@@ -20,10 +20,10 @@ from tendenci.apps.helpdesk.models import Ticket, Queue, UserSettings, KBCategor
 
 
 def homepage(request):
-    if not request.user.is_authenticated() and helpdesk_settings.HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT:
+    if not request.user.is_authenticated and helpdesk_settings.HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT:
         return HttpResponseRedirect(reverse('auth_login') + "?next=" + request.path)
 
-    if (request.user.is_staff or (request.user.is_authenticated() and helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE)):
+    if (request.user.is_staff or (request.user.is_authenticated and helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE)):
         try:
             if getattr(request.user.usersettings.settings, 'login_view_ticketlist', False):
                 return HttpResponseRedirect(reverse('helpdesk_list'))
@@ -58,7 +58,7 @@ def homepage(request):
         if queue:
             initial_data['queue'] = queue.id
 
-        if request.user.is_authenticated() and request.user.email:
+        if request.user.is_authenticated and request.user.email:
             initial_data['submitter_email'] = request.user.email
 
         form = PublicTicketForm(initial=initial_data)

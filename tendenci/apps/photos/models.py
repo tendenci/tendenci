@@ -650,7 +650,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
 
         photos = Image.objects.filter(filters).filter(photoset=self.pk)
 
-        if user.is_authenticated():
+        if user.is_authenticated:
             photos = photos.distinct()
 
         return photos

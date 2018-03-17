@@ -52,7 +52,7 @@ class RedirectToLoginMixin(object):
         try:
             return super(RedirectToLoginMixin, self).dispatch(request, *args, **kwargs)
         except PermissionDenied:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 from django.contrib.auth.views import redirect_to_login
                 return redirect_to_login(self.get_login_redirect_url())
             else:
@@ -198,7 +198,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
         self.topic = self.get_topic(**kwargs)
 
         if request.GET.get('first-unread'):
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 read_dates = []
                 try:
                     read_dates.append(TopicReadTracker.objects.get(user=request.user, topic=self.topic).time_stamp)
@@ -224,7 +224,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
     def get_queryset(self):
         if not perms.may_view_topic(self.request.user, self.topic):
             raise PermissionDenied
-        if self.request.user.is_authenticated() or not defaults.PYBB_ANONYMOUS_VIEWS_CACHE_BUFFER:
+        if self.request.user.is_authenticated or not defaults.PYBB_ANONYMOUS_VIEWS_CACHE_BUFFER:
             Topic.objects.filter(id=self.topic.id).update(views=F('views') + 1)
         else:
             cache_key = util.build_cache_key('anonymous_topic_views', topic_id=self.topic.id)
@@ -243,7 +243,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
     def get_context_data(self, **kwargs):
         ctx = super(TopicView, self).get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             self.request.user.is_moderator = perms.may_moderate_topic(self.request.user, self.topic)
             self.request.user.is_subscribed = self.request.user in self.topic.subscribers.all()
             if perms.may_post_as_admin(self.request.user):
@@ -391,7 +391,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             self.user = request.user
         else:
             if defaults.PYBB_ENABLE_ANONYMOUS_POST:
@@ -446,7 +446,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
         return ctx
 
     def get_success_url(self):
-        if (not self.request.user.is_authenticated()) and defaults.PYBB_PREMODERATION:
+        if (not self.request.user.is_authenticated) and defaults.PYBB_PREMODERATION:
             return reverse('pybb:index')
         return self.object.get_absolute_url()
 

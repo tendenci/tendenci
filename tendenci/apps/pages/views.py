@@ -53,7 +53,7 @@ def index(request, slug=None, id=None, hash=None,
     elif id:
         page = get_object_or_404(Page, pk=id)
         if page.status_detail != 'active':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 pages = Page.objects.filter(
                     slug=page.slug, status_detail='active'
                 ).order_by('-pk')

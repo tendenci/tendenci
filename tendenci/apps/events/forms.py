@@ -110,7 +110,7 @@ class EventSearchForm(forms.Form):
         user = kwargs.pop('user', None)
         super(EventSearchForm, self).__init__(*args, **kwargs)
 
-        if user and not user.is_authenticated():
+        if user and not user.is_authenticated:
             del self.fields['registration']
         if user and not user.is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
@@ -334,7 +334,7 @@ class FormForCustomRegForm(forms.ModelForm):
         # add override and override_price to allow admin override the price
         if hasattr(self.event, 'is_table') and hasattr(self.event, 'free_event'):
             if self.event and not self.event.is_table and not self.event.free_event:
-                if (not self.user.is_anonymous() and self.user.profile.is_superuser):
+                if (not self.user.is_anonymous and self.user.profile.is_superuser):
                     self.fields['override'] = forms.BooleanField(label=_("Admin Price Override?"),
                                                                  required=False)
                     self.fields['override_price'] = forms.DecimalField(label=_("Override Price"),
@@ -387,7 +387,7 @@ class FormForCustomRegForm(forms.ModelForm):
                 email = self.cleaned_data.get('email', u'')
                 registrant_user = self.get_user(email)
 
-                if not registrant_user.is_anonymous():
+                if not registrant_user.is_anonymous:
 
                     if registrant_user.profile.is_superuser:
                         return pricing
@@ -1485,7 +1485,7 @@ class Reg8nForm(forms.Form):
         self.fields['price'] = forms.DecimalField(
             widget=forms.HiddenInput(), initial=event.registration_configuration.price)
 
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             self.fields.pop('captcha')
             user_fields = ['first_name', 'last_name', 'company_name', 'username', 'phone','email']
             for user_field in user_fields:
@@ -1579,7 +1579,7 @@ class RegistrationForm(forms.Form):
                 payment_methods = reg_conf.payment_method.exclude(
                     machine_name='credit card').order_by('pk')
 
-            if not self.user or self.user.is_anonymous() or not self.user.is_superuser:
+            if not self.user or self.user.is_anonymous or not self.user.is_superuser:
                 payment_methods = payment_methods.exclude(admin_only=True)
 
             self.fields['payment_method'] = forms.ModelChoiceField(
@@ -1588,7 +1588,7 @@ class RegistrationForm(forms.Form):
 #            if user and user.profile.is_superuser:
 #                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
             if event.is_table and not event.free_event:
-                if (not self.user.is_anonymous() and self.user.is_superuser):
+                if (not self.user.is_anonymous and self.user.is_superuser):
                     self.fields['override_table'] = forms.BooleanField(label=_("Admin Price Override?"),
                                                                  required=False)
                     self.fields['override_price_table'] = forms.DecimalField(label=_("Override Price"),
@@ -1712,7 +1712,7 @@ class RegistrantForm(forms.Form):
                                 help_text=_('Please enter a member ID if a member price is selected.'))
 
         if not self.event.is_table and not self.event.free_event:
-            if (not self.user.is_anonymous() and self.user.is_superuser):
+            if (not self.user.is_anonymous and self.user.is_superuser):
                 self.fields['override'] = forms.BooleanField(label=_("Admin Price Override?"),
                                                              required=False)
                 self.fields['override_price'] = forms.DecimalField(label=_("Override Price"),
@@ -1781,7 +1781,7 @@ class RegistrantForm(forms.Form):
                 email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)
 
-                if not registrant_user.is_anonymous():
+                if not registrant_user.is_anonymous:
                     if pricing.allow_user:
                         return pricing
 

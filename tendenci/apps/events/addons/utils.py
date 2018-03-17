@@ -43,7 +43,7 @@ def get_addon_access_filter(user, is_strict=False):
     filter_and, filter_or = None, None
 
     if is_strict:
-        if user.is_anonymous():
+        if user.is_anonymous:
             filter_or = {'allow_anonymous': True}
         elif not user.profile.is_member:
             filter_or = {'allow_anonymous': True,

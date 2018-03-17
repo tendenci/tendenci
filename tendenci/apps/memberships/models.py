@@ -877,7 +877,7 @@ class MembershipDefault(TendenciBaseModel):
         self.application_approved_dt = \
             self.application_approved_dt or NOW
 
-        if request_user and request_user.is_authenticated():  # else: don't set
+        if request_user and request_user.is_authenticated:  # else: don't set
             self.application_approved_user = request_user
             self.application_approved_denied_user = request_user
             self.action_taken_user = request_user
@@ -955,7 +955,7 @@ class MembershipDefault(TendenciBaseModel):
         dupe.application_approved = True
         dupe.application_approved_dt = NOW
 
-        if request_user and not request_user.is_anonymous():  # else: don't set
+        if request_user and not request_user.is_anonymous:  # else: don't set
             dupe.application_approved_user = request_user
             dupe.application_approved_denied_user = request_user
             dupe.action_taken_user = request_user
@@ -1970,7 +1970,7 @@ class MembershipDefault(TendenciBaseModel):
                                        status=True,
                                        status_detail__in=['active', 'disabled'])[:1] or [None]
             if not rp:
-                if not request_user or request_user.is_anonymous():
+                if not request_user or request_user.is_anonymous:
                     request_user = self.user
                 rp = RecurringPayment(user=self.user,
                                      object_content_type=ct,

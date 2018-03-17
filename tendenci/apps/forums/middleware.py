@@ -7,7 +7,7 @@ from . import util
 
 class PybbMiddleware(object):
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 # Here we try to load profile, but can get error
                 # if user created during migrate but profile model

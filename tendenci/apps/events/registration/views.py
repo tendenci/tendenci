@@ -61,7 +61,7 @@ def ajax_user(request, event_id):
 
     data = json.dumps(None)
     #check if already registered
-    if not (user.is_anonymous() or pricing.allow_anonymous):
+    if not (user.is_anonymous or pricing.allow_anonymous):
         used = Registrant.objects.filter(user=user)
         if used:
             if not (pricing.allow_anonymous or user.profile.is_superuser):
@@ -114,7 +114,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
 
     # register user in user list
     user_pks = request.session.get('user_list', [])
-    if not user.is_anonymous():
+    if not user.is_anonymous:
         user_pks.append(user.pk)
     request.session['user_list'] = user_pks
 

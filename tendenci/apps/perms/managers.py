@@ -528,10 +528,10 @@ class TendenciBaseManager(models.Manager):
         return user
 
     def _permissions_sqs(self, sqs, user, status_detail, **kwargs):
-        if user.is_authenticated() and user.profile.is_superuser:
+        if user.is_authenticated and user.profile.is_superuser:
             return sqs
 
-        if user.is_anonymous():
+        if user.is_anonymous:
             sqs = self._anon_sqs(sqs, status_detail=status_detail)
         elif user.profile.is_member:
             sqs = self._member_sqs(sqs, user,

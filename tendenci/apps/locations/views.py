@@ -46,7 +46,7 @@ def search(request, template_name="locations/search.html"):
     filters = get_query_filters(request.user, 'locations.view_location')
     locations = Location.objects.filter(filters).distinct()
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         locations = locations.select_related()
 
     data = {'country':request.POST.get('country', ''),
@@ -80,7 +80,7 @@ def nearest(request, template_name="locations/nearest.html"):
         lat, lng = get_coordinates(address=query)
 
     all_locations = Location.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         all_locations = all_locations.select_related()
 
     if all((lat,lng)):

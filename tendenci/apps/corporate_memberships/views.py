@@ -211,7 +211,7 @@ def corpmembership_add(request, slug='',
     """
     creator = None
     hash = request.GET.get('hash', '')
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         if hash:
             [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
         if not creator:
@@ -288,7 +288,7 @@ def corpmembership_add(request, slug='',
             corp_membership.invoice = inv
             corp_membership.save(log=False)
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 # set the user as representative of the corp. membership
                 CorpMembershipRep.objects.create(
                     corp_profile=corp_membership.corp_profile,
@@ -713,7 +713,7 @@ def corpmembership_search(request, my_corps_only=False,
                                      'corporate_memberships',
                                      'anonymoussearchcorporatemembers')
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         if my_corps_only or not allow_anonymous_search:
             raise Http403
     is_superuser = request.user.profile.is_superuser

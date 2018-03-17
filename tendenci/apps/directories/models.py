@@ -277,7 +277,7 @@ class DirectoryPricing(models.Model):
         super(DirectoryPricing, self).save(*args, **kwargs)
 
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
-        if not user.is_anonymous() and user.profile.is_member:
+        if not user.is_anonymous and user.profile.is_member:
             if list_type == 'regular':
                 return self.regular_price_member
             else:

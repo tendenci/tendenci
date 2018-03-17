@@ -83,7 +83,7 @@ def search(request, template_name="articles/search.html"):
     category = None
     sub_category = None
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         articles = articles.select_related()
 
     query = request.GET.get('q', None)
@@ -123,7 +123,7 @@ def search(request, template_name="articles/search.html"):
             articles = articles.filter( release_dt__month=date.month, release_dt__day=date.day, release_dt__year=date.year )
 
     if not has_perm(request.user, 'articles.view_article'):
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             articles = articles.filter(release_dt_local__lte=datetime.now())
         else:
             articles = articles.filter(Q(release_dt_local__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))

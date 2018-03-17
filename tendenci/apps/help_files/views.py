@@ -46,7 +46,7 @@ def search(request, template_name="help_files/search.html"):
     else:
         filters = get_query_filters(request.user, 'help_files.view_helpfile')
         help_files = HelpFile.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             help_files = help_files.select_related()
 
     EventLog.objects.log()
@@ -62,7 +62,7 @@ def topic(request, id, template_name="help_files/topic.html"):
 
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
     help_files = HelpFile.objects.filter(filters).filter(topics__in=[topic.pk]).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         help_files = help_files.select_related()
 
     EventLog.objects.log(instance=topic)

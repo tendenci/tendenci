@@ -42,7 +42,7 @@ def search(request, template_name="testimonials/search.html"):
     else:
         filters = get_query_filters(request.user, 'testimonials.view_story')
         testimonials = Testimonial.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             testimonials = testimonials.select_related()
     testimonials = testimonials.order_by('-position', '-create_dt')
 

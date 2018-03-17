@@ -341,7 +341,7 @@ class CorpProfile(TendenciBaseModel):
         Check if this user is one of the representatives of
         # this corp profile.
         """
-        if this_user.is_anonymous():
+        if this_user.is_anonymous:
             return False
         reps = self.reps.all()
         for rep in reps:
@@ -531,7 +531,7 @@ class CorpMembership(TendenciBaseModel):
                 filter_and = {'status': True,
                               'status_detail': 'active'}
             else:
-                if user.is_authenticated():
+                if user.is_authenticated:
                     filter_or = {'creator': user,
                                  'owner': user}
                     filter_or.update({'corp_profile__reps__user': user})
@@ -548,7 +548,7 @@ class CorpMembership(TendenciBaseModel):
         filter_or = None
         filter_and = {'status': True,
                       'status_detail': 'active'}
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             if user.profile.is_member:
                 filter_or = {'allow_anonymous_view': True,
                              'allow_user_view': True,
@@ -789,7 +789,7 @@ class CorpMembership(TendenciBaseModel):
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             self.approved_denied_user = request.user
         self.status = True
         self.status_detail = 'active'
@@ -869,7 +869,7 @@ class CorpMembership(TendenciBaseModel):
             # 2) approve corp_membership
             self.approved = True
             self.approved_denied_dt = datetime.now()
-            if request_user and (not request_user.is_anonymous()):
+            if request_user and (not request_user.is_anonymous):
                 self.approved_denied_user = request_user
             self.status = True
             self.status_detail = 'active'
@@ -886,7 +886,7 @@ class CorpMembership(TendenciBaseModel):
                                             join_dt=self.join_dt,
                                             renew_dt=self.renew_dt,
                                             previous_expire_dt=previous_expire_dt)
-            if not request_user.is_anonymous():
+            if not request_user.is_anonymous:
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
@@ -912,7 +912,7 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.status_detail = 'active'
                 new_membership.application_approved = True
                 new_membership.application_approved_dt = self.approved_denied_dt
-                if not request_user.is_anonymous():
+                if not request_user.is_anonymous:
                     new_membership.owner_id = request_user.id
                     new_membership.owner_username = request_user.username
                     new_membership.application_approved_user = request_user
@@ -939,7 +939,7 @@ class CorpMembership(TendenciBaseModel):
                         'status': True,
                         'status_detail': 'active',
                         }
-                    if not request_user.is_anonymous():
+                    if not request_user.is_anonymous:
                         opt.update({
                                 'creator_id': request_user.id,
                                 'creator_username': request_user.username,
@@ -986,7 +986,7 @@ class CorpMembership(TendenciBaseModel):
             self.approved = True
             self.approved_denied_dt = datetime.now()
             self.status_detail = 'inactive'
-            if not request_user.is_anonymous():
+            if not request_user.is_anonymous:
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
@@ -1081,7 +1081,7 @@ class CorpMembership(TendenciBaseModel):
                      'anonymoussearchcorporatemembers'):
             return True
 
-        if not this_user.is_anonymous():
+        if not this_user.is_anonymous:
             if self.is_rep(this_user):
                 return True
             if self.creator:
@@ -1100,7 +1100,7 @@ class CorpMembership(TendenciBaseModel):
             if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
-            if not this_user.is_anonymous():
+            if not this_user.is_anonymous:
                 if self.is_active:
                     if self.is_rep(this_user):
                         return True
@@ -1333,7 +1333,7 @@ class FreePassesStat(TendenciBaseModel):
         app_label = 'corporate_memberships'
 
     def set_creator_owner(self, request_user):
-        if request_user and not request_user.is_anonymous():
+        if request_user and not request_user.is_anonymous:
             self.creator = request_user
             self.owner = request_user
             self.creator_username = request_user.username

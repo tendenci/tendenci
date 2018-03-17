@@ -120,7 +120,7 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.estimate = True
             inv.status_detail = 'estimate'
 
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 inv.set_creator(user)
                 inv.set_owner(user)
 

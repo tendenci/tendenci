@@ -114,7 +114,7 @@ def make_invoice_for_entry(entry, **kwargs):
         inv.total = total
         inv.balance = total
 
-    if entry.creator and not entry.creator.is_anonymous():
+    if entry.creator and not entry.creator.is_anonymous:
         inv.set_owner(entry.creator)
 
     inv.save()

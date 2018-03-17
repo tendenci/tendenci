@@ -252,7 +252,7 @@ class ListCorpMembershipNode(Node):
 
         items = CorpMembership.objects.all()
         if not allow_anonymous_search:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     if user.profile.is_member and allow_member_search:
                         items = items.distinct()

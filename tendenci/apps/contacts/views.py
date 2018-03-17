@@ -35,7 +35,7 @@ def details(request, id=None, template_name="contacts/view.html"):
         raise Http403
 
 def search(request, template_name="contacts/search.html"):
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         raise Http403
     if not has_perm(request.user,'contacts.view_contact'):
         raise Http403
@@ -46,7 +46,7 @@ def search(request, template_name="contacts/search.html"):
     else:
         filters = get_query_filters(request.user, 'contacts.view_contact')
         contacts = Contact.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             contacts = contacts.select_related()
 
     contacts = contacts.order_by('-create_dt')
@@ -148,7 +148,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 email__iexact=email,
             ).exists()
 
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 username = first_name.replace(' ', '')
                 if last_name:
                     username = username + '_' + last_name.replace(' ', '')

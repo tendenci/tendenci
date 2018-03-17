@@ -367,7 +367,7 @@ class RegConfPricing(OrderingBaseModel):
         filter_and, filter_or = None, None
 
         if is_strict:
-            if user.is_anonymous():
+            if user.is_anonymous:
                 filter_or = {'allow_anonymous': True}
             elif not user.profile.is_member:
                 filter_or = {'allow_anonymous': True,
@@ -383,7 +383,7 @@ class RegConfPricing(OrderingBaseModel):
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
                         'allow_member': True}
-        if not user.is_anonymous() and user.profile.is_member:
+        if not user.is_anonymous and user.profile.is_member:
             # get a list of groups for this user
             groups_id_list = user.group_member.values_list('group__id', flat=True)
             if groups_id_list:
@@ -1269,7 +1269,7 @@ class Event(TendenciBaseModel):
                 return True
             if user.profile.is_member and self.display_registrants_to == 'member':
                 return True
-            if not user.profile.is_member and not user.is_anonymous() and self.display_registrants_to == 'user':
+            if not user.profile.is_member and not user.is_anonymous and self.display_registrants_to == 'user':
                 return True
 
         return False

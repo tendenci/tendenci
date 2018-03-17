@@ -38,7 +38,7 @@ def search(request, template_name="case_studies/search.html"):
     else:
         filters = get_query_filters(request.user, 'case_studies.view_casestudy')
         case_studies = CaseStudy.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             case_studies = case_studies.select_related()
     case_studies = case_studies.order_by('-create_dt')
     services = Service.objects.all()

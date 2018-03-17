@@ -171,7 +171,7 @@ class ListNode(Node):
         else:
             filters = get_query_filters(user, self.perms)
             items = self.model.objects.filter(filters)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 items = items.distinct()
 
             if tags:  # tags is a comma delimited list

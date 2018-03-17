@@ -39,7 +39,7 @@ def view_account(request, recurring_payment_id, guid=None,
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
 
     # only admin or user self can access this page
-    if not (request.user.is_authenticated() and
+    if not (request.user.is_authenticated and
         (request.user.profile.is_superuser
             or request.user.id == rp.user.id) or rp.guid == guid):
         raise Http403
@@ -251,7 +251,7 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
                         template_name="recurring_payments/transaction_receipt.html"):
     """Display a transaction receipt.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         rp = get_object_or_404(RecurringPayment, pk=rp_id)
         # only admin or user self can access this page
         if not request.user.profile.is_superuser and request.user.id != rp.user.id:

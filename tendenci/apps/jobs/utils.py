@@ -99,7 +99,7 @@ def job_set_inv_payment(user, job, pricing):
                 inv.subtotal = total
                 inv.balance = total
 
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 inv.set_creator(user)
                 inv.set_owner(user)
 

@@ -662,7 +662,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     Please click {activation_link} and we'll send you an email to activate your account and then you
                     will be returned to this application.''').format(email=email, activation_link=activation_link))
 
-        if self.request.user.is_authenticated() and self.request.user.username == un:
+        if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
             if email and email !=  self.request.user.email:
                 # email is changed
@@ -703,7 +703,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 # we didn't find user, check if email address is already in use
                 if un and email:
                     if User.objects.filter(email=email).exists():
-                        if self.request.user.is_authenticated():
+                        if self.request.user.is_authenticated:
                             # user is logged in
                             raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
 
@@ -744,7 +744,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             user.email = user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
-        elif self.request.user.is_authenticated() and \
+        elif self.request.user.is_authenticated and \
                 not (self.request.user.is_superuser or self.is_corp_rep):
             created = False
             user = self.request.user
@@ -809,7 +809,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
                     v = v.strip() or getattr(profile, k)
                 setattr(profile, k, v)
 
-        if not request_user.is_anonymous():
+        if not request_user.is_anonymous:
             profile.owner = request_user
             profile.owner_username = request_user.username
 
@@ -1163,7 +1163,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             del self.fields['payment_method']
         else:
             payment_method_qs = self.membership_app.payment_methods.all()
-            if not (request_user and request_user.is_authenticated() and request_user.is_superuser):
+            if not (request_user and request_user.is_authenticated and request_user.is_superuser):
                 payment_method_qs = payment_method_qs.exclude(admin_only=True)
             self.fields['payment_method'].queryset = payment_method_qs
 

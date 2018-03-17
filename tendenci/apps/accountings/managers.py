@@ -7,7 +7,7 @@ class AcctEntryManager(Manager):
              'object_id': object_id,
              'status': 1}
 
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             d['creator'] = user
             d['creator_username'] = user.username
             d['owner'] = user
@@ -23,7 +23,7 @@ class AcctTranManager(Manager):
              'amount': amount,
              'status': 1}
 
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             d['creator'] = user
             d['owner'] = user
 

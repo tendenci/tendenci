@@ -65,7 +65,7 @@ def search(request, template_name="jobs/search.html"):
 
     filters = get_query_filters(request.user, 'jobs.view_job')
     jobs = Job.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         jobs = jobs.select_related()
 
     form = JobSearchForm(request.GET)
@@ -86,7 +86,7 @@ def search(request, template_name="jobs/search.html"):
                 jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
     # filter for "my pending jobs"
-    if my_pending_jobs and not request.user.is_anonymous():
+    if my_pending_jobs and not request.user.is_anonymous:
         template_name = "jobs/my_pending_jobs.html"
         jobs = jobs.filter(
             creator_username=request.user.username,
@@ -110,7 +110,7 @@ def search_redirect(request):
 @is_enabled('jobs')
 def my_jobs(request, template_name = "jobs/my_jobs.html"):
     query = request.GET.get('q', None)
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         if get_setting('site', 'global', 'searchindex') and query:
             jobs = Job.objects.search(query, user=request.user)
         else:

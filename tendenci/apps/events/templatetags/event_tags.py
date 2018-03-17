@@ -379,7 +379,7 @@ class ListEventsNode(ListNode):
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
-        if user.is_authenticated():
+        if user.is_authenticated:
             if not user.profile.is_superuser:
                 items = items.distinct()
 

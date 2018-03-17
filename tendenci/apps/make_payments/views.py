@@ -26,7 +26,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
         if form.is_valid():
             mp = form.save(commit=False)
             # we might need to create a user record if not exist
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 user = request.user
             else:
                 try:
@@ -34,7 +34,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 except:
                     user = request.user
 
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 mp.user = user
                 mp.creator = user
                 mp.creator_username = user.username

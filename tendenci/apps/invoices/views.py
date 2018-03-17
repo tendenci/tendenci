@@ -344,7 +344,7 @@ def search_report(request, template_name="invoices/search.html"):
         print(dir(ct))
 
     else:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403

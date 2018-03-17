@@ -6,7 +6,7 @@ class Http403Middleware(object):
     def process_exception(self, request, exception):
         from django.contrib.auth.views import redirect_to_login
         if isinstance(exception, Http403):
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 return redirect_to_login(request.path)
             return render_to_403(request=request)
 

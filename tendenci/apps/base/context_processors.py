@@ -56,7 +56,7 @@ def user_classification(request):
 
 
 def display_name(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         if request.user.first_name:
             return {'DISPLAY_NAME': request.user.first_name}
         else:

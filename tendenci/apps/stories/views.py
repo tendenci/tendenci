@@ -63,7 +63,7 @@ def search(request, template_name="stories/search.html"):
     else:
         filters = get_query_filters(request.user, 'stories.view_story')
         stories = Story.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             stories = stories.select_related()
         stories = stories.order_by('-create_dt')
 

@@ -194,7 +194,7 @@ class Invoice(models.Model):
         """
         self.guid = self.guid or uuid.uuid1().get_hex()
 
-        if hasattr(user, 'pk') and not user.is_anonymous():
+        if hasattr(user, 'pk') and not user.is_anonymous:
             self.set_creator(user)
             self.set_owner(user)
 
@@ -292,7 +292,7 @@ class Invoice(models.Model):
         if self.guid == guid:
             return True
 
-        if user2_compare.is_authenticated():
+        if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \
                     user2_compare.email == self.bill_to_email:
                 return self.status

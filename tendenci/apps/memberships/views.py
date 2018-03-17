@@ -158,7 +158,7 @@ def membership_applications(request, template_name="memberships/applications/lis
     if not request.user.profile.is_superuser:
         apps = apps.filter(status_detail='published')
 
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         apps = apps.filter(allow_anonymous_view=True)
 
     EventLog.objects.log()
@@ -847,7 +847,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if membership_id:
         # it's renewal - make sure they are logged in
         membership = get_object_or_404(MembershipDefault, id=membership_id)
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
                                 request.get_full_path()))
         is_renewal = True
@@ -982,7 +982,7 @@ def membership_default_add(request, slug='', membership_id=None,
             return redirect(redirect_url)
 
     if not (request.user.is_superuser or (join_under_corporate and is_corp_rep)):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             username = username or request.user.username
 
     allowed_users = (
@@ -1107,7 +1107,7 @@ def membership_default_add(request, slug='', membership_id=None,
         multiple_membership=multiple_membership, **params)
 
     captcha_form = CaptchaForm(request.POST or None)
-    if request.user.is_authenticated() or not app.use_captcha:
+    if request.user.is_authenticated or not app.use_captcha:
         del captcha_form.fields['captcha']
 
     if 'discount_code' in membership_form.fields and (not app.discount_eligible or
@@ -1592,7 +1592,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
                         indiv_veri = IndivEmailVerification()
                         indiv_veri.corp_profile = corp_profile
                         indiv_veri.verified_email = form.cleaned_data['email']
-                        if request.user and not request.user.is_anonymous():
+                        if request.user and not request.user.is_anonymous:
                             indiv_veri.creator = request.user
                         indiv_veri.save()
 
@@ -1660,7 +1660,7 @@ def verify_email(request,
     if not indiv_veri.verified:
         indiv_veri.verified = True
         indiv_veri.verified_dt = datetime.now()
-        if request.user and not request.user.is_anonymous():
+        if request.user and not request.user.is_anonymous:
             indiv_veri.updated_by = request.user
         indiv_veri.save()
     corp_membership = indiv_veri.corp_profile.active_corp_membership

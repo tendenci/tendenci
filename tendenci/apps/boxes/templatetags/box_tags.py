@@ -31,7 +31,7 @@ class GetBoxNode(Node):
         try:
             filters = get_query_filters(user, 'boxes.view_box')
             box = Box.objects.filter(filters).filter(pk=pk)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     box = box.distinct()
             context['box'] = box[0]
@@ -86,7 +86,7 @@ class GetBoxTitleNode(Node):
         try:
             filters = get_query_filters(user, 'boxes.view_box')
             box = Box.objects.filter(filters).filter(pk=pk)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     box = box.distinct()
             box = box[0]

@@ -83,7 +83,7 @@ def search(request, template_name="resumes/search.html"):
     else:
         filters = get_query_filters(request.user, 'resumes.view_resume')
         resumes = Resume.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             resumes = resumes.select_related()
     resumes = resumes.order_by('-create_dt')
 
@@ -147,7 +147,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
 
             EventLog.objects.log(instance=resume)
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 messages.add_message(request, messages.SUCCESS, _('Successfully added %(r)s' % {'r':resume}))
 
             # send notification to administrators
@@ -160,7 +160,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                     }
                     notification.send_emails(recipients,'resume_added', extra_context)
 
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return HttpResponseRedirect(reverse('resume.thank_you'))
             else:
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))

@@ -38,7 +38,7 @@ class GroupManager(TendenciBaseManager):
                   'status': True,
                   'status_detail': 'active'
                   }
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 params.update({'creator': user,
                                'creator_username': user.username,
                                'owner': user,
@@ -85,7 +85,7 @@ class OldGroupManager(Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
             if user:
                 if not is_a_superuser:
-                    if not user.is_anonymous():
+                    if not user.is_anonymous:
                     # if b/w superuser and anon
 
                         # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
@@ -127,7 +127,7 @@ class OldGroupManager(Manager):
                     #sqs = sqs.all()
                     sqs = sqs.filter(status=True)
                 else:
-                    if not user.is_anonymous():
+                    if not user.is_anonymous:
                         # (status+status_detail+anon OR who_can_view__exact)
                         anon_query = Q(**{'allow_anonymous_view':True,})
                         user_query = Q(**{'allow_user_view':True,})

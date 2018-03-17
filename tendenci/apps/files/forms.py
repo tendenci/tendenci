@@ -212,7 +212,7 @@ class FileSearchForm(forms.Form):
         filters = get_query_filters(user, 'user_groups.view_group', **{'perms_field': False})
         groups = Group.objects.filter(filters).distinct()
         groups_list = [[g.id, g.name] for g in groups]
-        if user.is_authenticated():
+        if user.is_authenticated:
             users_groups = self.user.profile.get_groups()
             for g in users_groups:
                 if [g.id, g.name] not in groups_list:

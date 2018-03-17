@@ -154,7 +154,7 @@ class ListStoriesNode(ListNode):
 
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters)
-        if isinstance(user, User) and user.is_authenticated():
+        if isinstance(user, User) and user.is_authenticated:
             if not user.profile.is_superuser:
                 items = items.distinct()
 

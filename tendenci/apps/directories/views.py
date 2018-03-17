@@ -60,7 +60,7 @@ def search(request, template_name="directories/search.html"):
     directories = Directory.objects.filter(filters).distinct()
     cat = None
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         directories = directories.select_related()
 
     query = request.GET.get('q', None)

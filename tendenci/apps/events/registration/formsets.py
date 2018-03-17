@@ -101,7 +101,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         for i in range(0, self.total_form_count()):
             form = self.forms[i]
             user = form.get_user()
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 users.append(user)
         return users
 
@@ -154,7 +154,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                         if not can_use_pricing(self.event, user, pricing):
                             errors.append(forms.ValidationError(_("%(user)s is not authorized to use %(pricing)s" % {'user': user, 'pricing': pricing})))
 
-                    if not user.is_anonymous():
+                    if not user.is_anonymous:
                         # check if this user has already been used before
                         if user.pk in users:
                             errors.append(forms.ValidationError(_("%s can only be registered once per registration" % user)))

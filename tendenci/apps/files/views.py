@@ -75,7 +75,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # extra permission
     if not file.is_public:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise Http403
 
     # if string and digit convert to integer

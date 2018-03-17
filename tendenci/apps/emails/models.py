@@ -127,10 +127,10 @@ class Email(TendenciBaseModel):
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = uuid.uuid1()
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 self.creator = user
                 self.creator_username = user.username
-        if user and not user.is_anonymous():
+        if user and not user.is_anonymous:
             self.owner = user
             self.owner_username = user.username
 
