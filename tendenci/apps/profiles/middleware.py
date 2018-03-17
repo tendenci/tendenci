@@ -1,11 +1,12 @@
 from django.contrib.auth import logout
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.deprecation import MiddlewareMixin
 
 from tendenci.apps.site_settings.utils import get_setting
 
 
-class ProfileMiddleware(object):
+class ProfileMiddleware(MiddlewareMixin):
     """
         Appends a profile instance to anonymous users.
         Creates a profile for logged in users without one.
@@ -21,7 +22,7 @@ class ProfileMiddleware(object):
                 Profile.objects.create_profile(user=request.user)
 
 
-class ProfileLanguageMiddleware(object):
+class ProfileLanguageMiddleware(MiddlewareMixin):
     """This middleware should come before django's LocaleMiddleware
     """
     if settings.USE_I18N:
@@ -49,7 +50,7 @@ class ProfileLanguageMiddleware(object):
             return response
 
 
-class ForceLogoutProfileMiddleware(object):
+class ForceLogoutProfileMiddleware(MiddlewareMixin):
     def process_request(self, request):
 
         # this will force logout deactivated user on next request

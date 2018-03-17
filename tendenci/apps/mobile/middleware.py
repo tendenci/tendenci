@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
 
 mobile_agents = [
 #    'iPad',  # Removed on 2012-07-11
@@ -62,7 +63,7 @@ def show_mobile(request):
     return False
 
 
-class MobileMiddleware(object):
+class MobileMiddleware(MiddlewareMixin):
     def process_request(self, request):
         request.user_agent = user_agent(request)
         request.mobile_browser = is_mobile_browser(request)

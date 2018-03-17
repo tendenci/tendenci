@@ -1,8 +1,9 @@
+from django.utils.deprecation import MiddlewareMixin
 
 from tendenci.apps.base.http import Http403, render_to_403, MissingApp, render_to_missing_app
 
 
-class Http403Middleware(object):
+class Http403Middleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         from django.contrib.auth.views import redirect_to_login
         if isinstance(exception, Http403):
@@ -11,7 +12,7 @@ class Http403Middleware(object):
             return render_to_403(request=request)
 
 
-class MissingAppMiddleware(object):
+class MissingAppMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         if isinstance(exception, MissingApp):
             return render_to_missing_app(request=request)

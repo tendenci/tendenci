@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import unicode_literals
+
 from django.utils import translation
 from django.db.models import ObjectDoesNotExist
+from django.utils.deprecation import MiddlewareMixin
+
 from . import util
 
-class PybbMiddleware(object):
+
+class PybbMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if request.user.is_authenticated:
             try:

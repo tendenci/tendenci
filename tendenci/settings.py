@@ -67,7 +67,7 @@ MEDIA_URL = '/site_media/media/'
 SECRET_KEY = 's$6*!=msW0__=51^w@_tbaconjm4+fg@0+ic#bx^3rj)zc$a6i'
 SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
     'tendenci.apps.forums.middleware.PybbMiddleware',
     'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-)
+]
 
 ROOT_URLCONF = 'tendenci.urls'
 
@@ -105,14 +105,14 @@ STATIC_URL = LOCAL_STATIC_URL
 
 STOCK_STATIC_URL = STATIC_URL
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
-)
+]
 
 # other static files besides the STATIC_ROOT
-STATICFILES_DIRS = (
-)
+STATICFILES_DIRS = [
+]
 
 
 # AVATARS
@@ -175,7 +175,7 @@ TEMPLATES = [
 ]
 
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -277,7 +277,7 @@ INSTALLED_APPS = (
     # celery task system, must stay at the bottom of installed apps
     'kombu.transport.django',
     'djcelery',
-)
+]
 
 # This is the number of days users will have to activate their
 # accounts after registering. If a user does not activate within
@@ -287,11 +287,11 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 LOGIN_REDIRECT_URL = '/dashboard'
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'tendenci.apps.perms.backend.ObjectPermBackend',
     #'tendenci.apps.social_auth.backends.facebook.FacebookBackend',  # Does not support Python 3
     'django.contrib.auth.backends.ModelBackend',
-)
+]
 
 #--------------------------------------------------
 # LANGUAGE
