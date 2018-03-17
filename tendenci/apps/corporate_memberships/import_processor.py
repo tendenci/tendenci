@@ -409,9 +409,9 @@ class CorpMembershipImportProcessor(object):
         if field_type == 'ForeignKey':
             if field.name not in ['creator', 'owner']:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.all()[:1] or [None]
                 return value
             return None
@@ -506,9 +506,9 @@ class CorpMembershipImportProcessor(object):
 
             if value:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
@@ -526,9 +526,9 @@ class CorpMembershipImportProcessor(object):
                 if field.name not in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
                     try:
-                        model = field.related.parent_model()
+                        model = field.remote_field.parent_model()
                     except AttributeError:
-                        model = field.related.model
+                        model = field.remote_field.model
                     [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value

@@ -11,10 +11,7 @@ from django.utils.encoding import force_text
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model
-try:
-    from django.db.models.fields.related import ForeignObjectRel
-except ImportError:  # Django < 1.8
-    from django.db.models.related import RelatedObject as ForeignObjectRel
+from django.db.models.fields.related import ForeignObjectRel
 from django.db.models import ForeignKey
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -256,7 +253,7 @@ class ReportAdmin(object):
                             if is_date_field(pre_field):
                                 pre_field = pre_field
                             else:
-                                base_model = pre_field.rel.to
+                                base_model = pre_field.remote_field.model
                                 pre_field = base_model._meta.get_field(field_lookup)
                     model_field = pre_field
                 else:
@@ -277,9 +274,9 @@ class ReportAdmin(object):
         self.model_fields = model_fields
         self.model_m2m_fields = model_m2m_fields
         if parent_report:
-            self.related_inline_field = [f for f in self.model._meta.get_fields() if f.rel and hasattr(f.rel, 'to') and f.rel.to is self.parent_report.model][0]
-            self.related_inline_accessor = self.related_inline_field.related.get_accessor_name()
-            self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.rel.to]
+            self.related_inline_field = [f for f in self.model._meta.get_fields() if f.remote_field and f.remote_field.model is self.parent_report.model][0]
+            self.related_inline_accessor = self.related_inline_field.remote_field.get_accessor_name()
+            self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.remote_field.model]
             self.related_inline_filters = []
 
             for pfield, pattname in self.parent_report.model_fields:
@@ -601,7 +598,7 @@ class ReportAdmin(object):
                                 if isinstance(pre_field, ForeignObjectRel):
                                     base_model = pre_field.model
                                 else:
-                                    base_model = pre_field.rel.to
+                                    base_model = pre_field.remote_field.model
                             pre_field = base_model._meta.get_field(field_lookup)
 
                         model_field = pre_field
@@ -620,7 +617,7 @@ class ReportAdmin(object):
                         elif isinstance(model_field, ForeignKey):
                             field = model_field.formfield()
 
-                            if self.always_show_full_username and (model_field.rel.to == User):
+                            if self.always_show_full_username and (model_field.remote_field.model == User):
                                 field.label_from_instance = self.get_user_label
 
                             if self.list_filter_queryset:
@@ -723,7 +720,7 @@ class ReportAdmin(object):
             if isinstance(model_field, str) and 'self.' in model_field:
                 model_qs = self.model.objects.filter(pk__in=model_ids)
             else:
-                model_qs = model_field.rel.to.objects.filter(pk__in=model_ids)
+                model_qs = model_field.remote_field.model.objects.filter(pk__in=model_ids)
             div = {}
             method_name = dot_indexes[index].split('.')[1]
             for obj in model_qs:

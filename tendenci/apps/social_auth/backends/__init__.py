@@ -64,7 +64,7 @@ SESSION_NAME = 'openid'
 # method
 USERNAME = 'username'
 # get User class, could not be auth.User
-User = UserSocialAuth._meta.get_field('user').rel.to
+User = UserSocialAuth._meta.get_field('user').remote_field.model
 # username field max length
 USERNAME_MAX_LENGTH = User._meta.get_field(USERNAME).max_length
 # uuid hex characters to keep while generating unique usernames

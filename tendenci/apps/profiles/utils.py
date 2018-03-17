@@ -787,9 +787,9 @@ class ImportUsers(object):
 
         if field_type == 'ForeignKey':
             try:
-                model = field.related.parent_model()
+                model = field.remote_field.parent_model()
             except AttributeError:
-                model = field.related.model
+                model = field.remote_field.model
             [value] = model.objects.all()[:1] or [None]
             return value
 
@@ -878,17 +878,17 @@ class ImportUsers(object):
 
             if value:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.filter(pk=value)[:1] or [None]
 
             if not value and not field.null:
                 # if the field doesn't allow null, grab the first one.
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value

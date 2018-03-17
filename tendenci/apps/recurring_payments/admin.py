@@ -51,7 +51,7 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
             # OneToOneField with parent_link=True or a M2M intermediary.
 #            if formfield and db_field.name not in self.raw_id_fields:
 #                related_modeladmin = self.admin_site._registry.get(
-#                                                            db_field.rel.to)
+#                                                            db_field.remote_field.model)
 #                can_add_related = bool(related_modeladmin and
 #                            related_modeladmin.has_add_permission(request))
 #                formfield.widget = widgets.RelatedFieldWidgetWrapper(
