@@ -253,11 +253,11 @@ def load_perms_filters():
         return newfunc
 
     for method in inspect.getmembers(perms):
-        if inspect.ismethod(method[1]) and inspect.getargspec(method[1]).args[0] == 'self' and\
+        if inspect.ismethod(method[1]) and inspect.getfullargspec(method[1]).args[0] == 'self' and\
                 (method[0].startswith('may') or method[0].startswith('filter')):
-            if len(inspect.getargspec(method[1]).args) == 3:
+            if len(inspect.getfullargspec(method[1]).args) == 3:
                 register.filter('%s%s' % ('pybb_', method[0]), partial(method[0], perms))
-            elif len(inspect.getargspec(method[1]).args) == 2: # only user should be passed to permission method
+            elif len(inspect.getfullargspec(method[1]).args) == 2: # only user should be passed to permission method
                 register.filter('%s%s' % ('pybb_', method[0]), partial_no_param(method[0], perms))
 load_perms_filters()
 
