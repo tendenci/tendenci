@@ -7,7 +7,7 @@ from django.contrib.admin import SimpleListFilter
 from django.conf.urls import url
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import force_text

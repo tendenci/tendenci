@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.emails.models import Email

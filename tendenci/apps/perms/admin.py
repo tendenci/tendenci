@@ -6,7 +6,7 @@ from django.contrib.admin import SimpleListFilter, helpers
 from django.contrib.admin.utils import get_deleted_objects, model_ngettext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri, force_text
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType

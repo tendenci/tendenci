@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.db.models import Max, Count

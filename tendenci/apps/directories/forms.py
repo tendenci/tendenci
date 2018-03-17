@@ -9,7 +9,7 @@ from django.forms.utils import ErrorList
 from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.libs.tinymce.widgets import TinyMCE
 

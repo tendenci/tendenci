@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tagging.fields import TagField
 from tendenci.libs.tinymce import models as tinymce_models

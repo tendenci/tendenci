@@ -3,7 +3,7 @@ from builtins import str
 from django.http import HttpResponse
 from django.conf import settings
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 

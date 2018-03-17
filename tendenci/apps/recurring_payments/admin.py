@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -12,6 +12,7 @@ from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
+
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign

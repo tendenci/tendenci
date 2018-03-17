@@ -12,7 +12,7 @@ import csv
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string

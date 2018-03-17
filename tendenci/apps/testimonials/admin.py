@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.template.defaultfilters import truncatewords as truncate_words
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin

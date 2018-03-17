@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp

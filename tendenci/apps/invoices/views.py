@@ -17,7 +17,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import get_template
 
 from tendenci.libs.utils import python_executable

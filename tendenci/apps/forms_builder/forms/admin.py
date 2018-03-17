@@ -8,7 +8,7 @@ from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify

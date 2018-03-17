@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_text

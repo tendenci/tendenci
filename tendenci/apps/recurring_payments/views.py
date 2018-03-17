@@ -3,13 +3,11 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-#from django.conf import settings
-#from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 import simplejson
 from django.http import HttpResponse, Http404

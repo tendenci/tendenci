@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin

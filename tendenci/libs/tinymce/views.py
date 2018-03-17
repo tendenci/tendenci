@@ -5,6 +5,7 @@ import logging
 
 from django.http import HttpResponse
 from django.template import loader
+#from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -133,9 +134,9 @@ def render_to_js_vardef(var_name, var_value):
 
 def filebrowser(request):
 #     try:
-#         fb_url = request.build_absolute_uri(urlresolvers.reverse('fb_browse'))
+#         fb_url = request.build_absolute_uri(reverse('fb_browse'))
 #     except:
-#         fb_url = request.build_absolute_uri(urlresolvers.reverse('filebrowser:fb_browse'))
+#         fb_url = request.build_absolute_uri(reverse('filebrowser:fb_browse'))
 #
 #     return render_to_resp(request=request, template_name='tinymce/filebrowser.js',
 #             context={'fb_url': fb_url},

@@ -28,7 +28,7 @@ from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter

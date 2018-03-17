@@ -9,7 +9,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from haystack.query import SearchQuerySet
 from tendenci.libs.tinymce.widgets import TinyMCE

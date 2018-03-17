@@ -5,7 +5,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType

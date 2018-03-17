@@ -9,7 +9,7 @@ from bs4 import BeautifulStoneSoup
 from django.utils.safestring import mark_safe
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.cache import cache
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _

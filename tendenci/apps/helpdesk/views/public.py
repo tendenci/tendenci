@@ -8,7 +8,7 @@ views/public.py - All public facing views, eg non-staff (no authentication
 """
 
 import requests
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 

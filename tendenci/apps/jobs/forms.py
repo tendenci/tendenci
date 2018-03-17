@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.admin import widgets
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 # from captcha.fields import CaptchaField
 from tendenci.libs.tinymce.widgets import TinyMCE

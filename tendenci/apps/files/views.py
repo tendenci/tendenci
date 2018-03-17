@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.http import (
     HttpResponseRedirect, HttpResponse, Http404, JsonResponse, HttpResponseForbidden)
 import simplejson
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 from django.forms.models import modelformset_factory
 from django.conf import settings

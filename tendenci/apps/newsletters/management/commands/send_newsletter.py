@@ -7,7 +7,7 @@ from logging import getLogger
 from django.core.management.base import BaseCommand, CommandError
 from django.core.cache import cache
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class Command(BaseCommand):

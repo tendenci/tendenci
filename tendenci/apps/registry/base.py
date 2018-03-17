@@ -1,7 +1,7 @@
 from six import with_metaclass
 from builtins import str
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
 from django.utils.translation import ugettext_lazy as _

@@ -116,7 +116,7 @@ def size(file, size):
         size = 'x100'
         size = '100x200/constrain'
     """
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
 
     if not isinstance(file, File):
         return u''

@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.db.models import Q
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType

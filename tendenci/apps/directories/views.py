@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 import simplejson

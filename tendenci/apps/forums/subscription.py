@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from django.utils import translation

@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article

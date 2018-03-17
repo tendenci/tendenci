@@ -2,7 +2,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm

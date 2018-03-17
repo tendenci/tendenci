@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.apps.rss.feedsmanager import SubFeed
 from tendenci.apps.site_settings.utils import get_setting

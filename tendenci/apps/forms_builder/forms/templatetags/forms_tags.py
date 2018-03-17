@@ -134,7 +134,7 @@ def media_url(field):
     example: field|media_url
     """
     # from django.conf import settings
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
 
     # internal url; we handle privacy
     return reverse('form_files', args=[field.pk])

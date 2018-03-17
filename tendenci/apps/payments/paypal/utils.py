@@ -4,7 +4,7 @@ import cgi
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import forms
 from django.http import Http404
 from django.shortcuts import get_object_or_404

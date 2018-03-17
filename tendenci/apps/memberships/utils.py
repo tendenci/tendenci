@@ -21,7 +21,7 @@ from django.core import exceptions
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 

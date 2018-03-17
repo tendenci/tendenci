@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.db.utils import IntegrityError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.apps.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel

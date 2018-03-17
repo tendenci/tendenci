@@ -16,7 +16,7 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.core import paginator
 from django.db import connection

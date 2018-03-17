@@ -2,7 +2,7 @@ from six.moves.urllib.parse import urlparse
 from django.test import TestCase
 from django.core import mail
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tendenci.apps.helpdesk.models import Queue, CustomField, Ticket
 
 class TicketBasicsTestCase(TestCase):

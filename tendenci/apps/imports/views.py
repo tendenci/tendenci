@@ -2,7 +2,7 @@ import os
 from six.moves import cPickle
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.storage import default_storage
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp

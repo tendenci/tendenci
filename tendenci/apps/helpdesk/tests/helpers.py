@@ -2,10 +2,9 @@
 import sys
 try:
     from django.contrib.auth import get_user_model
+    User = get_user_model()
 except ImportError:
     from django.contrib.auth.models import User
-else:
-    User = get_user_model()
 
 
 def get_staff_user(username='helpdesk.staff', password='password'):
@@ -36,7 +35,7 @@ def reload_urlconf(urlconf=None):
     if urlconf in sys.modules:
         reload(sys.modules[urlconf])
 
-    from django.core.urlresolvers import clear_url_caches
+    from django.urls import clear_url_caches
     clear_url_caches()
 
 

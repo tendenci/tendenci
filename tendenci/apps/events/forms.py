@@ -17,7 +17,7 @@ from django.forms.utils import ErrorList
 from importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 

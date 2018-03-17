@@ -1,5 +1,5 @@
 from django import forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.widgets import RadioFieldRenderer
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe

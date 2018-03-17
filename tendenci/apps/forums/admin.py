@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.utils import update_perms_and_save

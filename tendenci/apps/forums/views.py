@@ -6,7 +6,7 @@ import math
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.db.models import F, Q
 from django.forms.utils import ErrorList

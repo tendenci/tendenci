@@ -464,7 +464,7 @@ class Ticket(models.Model):
         a URL to the submitter of a ticket.
         """
         from django.contrib.sites.models import Site
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         try:
             site = Site.objects.get_current()
         except:
@@ -483,7 +483,7 @@ class Ticket(models.Model):
         a staff member (in emails etc)
         """
         from django.contrib.sites.models import Site
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         try:
             site = Site.objects.get_current()
         except:

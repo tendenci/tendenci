@@ -18,7 +18,7 @@ from importlib import import_module
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 

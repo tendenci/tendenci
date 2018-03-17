@@ -140,7 +140,7 @@ class Payment(models.Model):
         return boo
 
     def payments_pop_by_invoice_user(self, user, inv, session_id='', **kwargs):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         boo = False
         if inv.allow_payment_by(user, session_id):
             boo = True

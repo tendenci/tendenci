@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import time
 import traceback
 from django.core.management.base import BaseCommand
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template import engines, TemplateDoesNotExist
 

@@ -90,7 +90,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         url = reverse("story", args=[self.pk])
         if self.full_story_link:
             url = self.full_story_link

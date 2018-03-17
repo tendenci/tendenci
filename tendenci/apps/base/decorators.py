@@ -1,6 +1,6 @@
 import time
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
 from django.shortcuts import redirect

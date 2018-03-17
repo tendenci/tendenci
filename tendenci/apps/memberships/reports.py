@@ -22,7 +22,7 @@ from geraldo import Report, ReportBand, ObjectValue,\
      Label, landscape
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A5
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # ReportLab does not support ugettext_lazy() translations, so use ugettext() instead
@@ -30,7 +30,9 @@ from django.utils.translation import ugettext as _
 from tendenci.libs.model_report.report import reports, ReportAdmin
 from tendenci.libs.model_report.utils import us_date_format
 from tendenci.apps.memberships.models import MembershipDefault, MembershipType
+
 MEMBERSHIPTYPE_DICT = None
+
 
 class ReportBandNewMems(ReportBand):
     def __init__(self, *args, **kwargs):

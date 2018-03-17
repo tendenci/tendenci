@@ -14,7 +14,7 @@ from django.db import models
 from django.apps import apps
 from django.db.models.query import QuerySet
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 

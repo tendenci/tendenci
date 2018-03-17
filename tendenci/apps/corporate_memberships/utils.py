@@ -8,7 +8,7 @@ from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 import simplejson
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.utils.translation import ugettext_lazy as _

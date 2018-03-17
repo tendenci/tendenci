@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tendenci.apps.helpdesk.models import Queue, Ticket
 
 class PublicActionsTestCase(TestCase):
