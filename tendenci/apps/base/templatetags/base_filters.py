@@ -342,8 +342,8 @@ def thumbnail(file, size='200x200'):
 
     thumbnail_exist = False
     if default_storage.exists(miniature_filename):
-        mt_filename = default_storage.modified_time(filename)
-        mt_miniature_filename = default_storage.modified_time(
+        mt_filename = default_storage.get_modified_time(filename)
+        mt_miniature_filename = default_storage.get_modified_time(
                                                 miniature_filename)
         if mt_filename > mt_miniature_filename:
             # remove the miniature

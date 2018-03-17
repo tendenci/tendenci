@@ -903,7 +903,7 @@ def directory_cleanup(dir_path, ndays):
         if not filename:
             continue
         file_path = os.path.join(dir_path, filename)
-        modified_dt = default_storage.modified_time(file_path)
+        modified_dt = default_storage.get_modified_time(file_path)
         if modified_dt + timedelta(days=ndays) < datetime.now():
             # the file is older than ndays, delete it
             default_storage.delete(file_path)
