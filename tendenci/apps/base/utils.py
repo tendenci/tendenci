@@ -30,7 +30,7 @@ from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.template.loader import get_template, render_to_string
+from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
@@ -48,6 +48,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from simple_salesforce import Salesforce
 
 from tendenci.apps.base.models import ChecklistItem
+from tendenci.apps.emails import footers
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_root
 
@@ -943,10 +944,10 @@ def get_latest_version():
 
 def add_tendenci_footer(email_content, content_type='html'):
     if content_type == 'text':
-        footer = render_to_string('email_footer.txt')
+        footer = footers.text_footer()
         return email_content + '\n\n' + footer
     else:
-        footer = render_to_string('email_footer.html')
+        footer = footers.html_footer()
         if email_content.find('</body>') != -1:
             return email_content.replace("</body>", footer + "\n</body>")
         else:

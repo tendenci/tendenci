@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load email_tags %}
 
 {% trans "Greetings:" %}<br /><br />
 {% blocktrans %}Membership Notices were distributed on {{ site_display_name }}.{% endblocktrans %}
@@ -37,4 +38,4 @@
 
 <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
 
-{% include email_footer.html %}
+{% html_footer %}

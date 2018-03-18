@@ -56,6 +56,7 @@ from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.files.models import File
+from tendenci.apps.emails import footers
 
 
 FIELD_CHOICES = (
@@ -1845,7 +1846,7 @@ class Notice(models.Model):
         Return self.email_content with footer appended and replace shortcode
         (context) variables
         """
-        content = self.email_content + '\n<br /><br />\n{% include "email_footer.html" %}'
+        content = self.email_content + '\n<br /><br />\n' + footers.html_footer()
         context = self.get_default_context(corporate_membership, recipient, **kwargs)
 
         return self.build_notice(content, context=context, **kwargs)

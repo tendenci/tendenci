@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
+from tendenci.apps.emails import footers
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
@@ -38,7 +39,7 @@ class RecurringPaymentEmailNotices(object):
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
         self.email.reply_to = self.reply_to_email
-        self.email_footer = render_to_string("email_footer.html")
+        self.email_footer = footers.html_footer()
 
         self.admin_emails = self.get_admin_emails()
 

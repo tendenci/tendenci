@@ -11,6 +11,7 @@ from django.template import TemplateDoesNotExist
 from django.template import Context, Template
 from django.conf import settings
 
+from tendenci.apps.emails import footers
 
 class Command(BaseCommand):
     """
@@ -266,7 +267,7 @@ class Command(BaseCommand):
 
                 body = fieldify(body)
 
-                body = body + ' <br /><br />{% include "email_footer.html" %}'
+                body = body + ' <br /><br />' + footers.html_footer()
 
                 context = Context(context)
                 template = Template(body)
