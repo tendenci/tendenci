@@ -62,7 +62,7 @@ class CategoryManager(Manager):
         ct = ContentType.objects.get_for_model(model)
         filters = {'content_type':ct}
 
-        cat_items = CategoryItem.objects.filter(**filters).select_related('category__name','parent__name')
+        cat_items = CategoryItem.objects.filter(**filters).select_related('category','parent')
         categories = []
         sub_categories = []
         for cat in cat_items:

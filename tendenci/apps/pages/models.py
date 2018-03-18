@@ -76,7 +76,7 @@ class BasePage(TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
