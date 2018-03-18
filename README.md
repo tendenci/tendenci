@@ -5,14 +5,14 @@ Tendenci is an open source content management system built for non-profits, asso
 
 ## Demo?
 
-https://demo.tendenci.com/ - resets every hour or two. Use "admin/admin" or "user/user" to login and look around.
+https://demo.tendenci.com/
+
+This site resets every hour or two. Use "admin/admin" or "user/user" to log in and look around.
 
 
 ## Installation
 
-Please see install documents located at:
-
-[https://tendenci.readthedocs.org](https://tendenci.readthedocs.org)
+See [https://tendenci.readthedocs.org](https://tendenci.readthedocs.org)
 
 
 ## Vision
@@ -22,9 +22,9 @@ Please see install documents located at:
 
 ## License
 
-The License information (GNU GPL) can be found at [https://github.com/tendenci/tendenci/blob/master/LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
+License information (GNU GPLv3+) can be found in [LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
 
 
 ## Credits
 
-Props [https://github.com/tendenci/tendenci/blob/master/docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)
+See [docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)
