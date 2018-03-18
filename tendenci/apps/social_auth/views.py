@@ -37,7 +37,7 @@ def complete_process(request, backend):
         return HttpResponseServerError(_('Incorrect authentication service'))
 
     try:
-        user = backend.auth_complete()
+        user = backend.auth_complete(request)
     except ValueError as e:  # some Authentication error ocurred
         user = None
         error_key = getattr(settings, 'SOCIAL_AUTH_ERROR_KEY', None)
@@ -73,7 +73,7 @@ def associate_complete(request, backend):
     backend = get_backend(backend, request, request.path)
     if not backend:
         return HttpResponseServerError(_('Incorrect authentication service'))
-    backend.auth_complete(user=request.user)
+    backend.auth_complete(request, user=request.user)
     url = request.session.pop(REDIRECT_FIELD_NAME, '') or DEFAULT_REDIRECT
     return HttpResponseRedirect(url)
 

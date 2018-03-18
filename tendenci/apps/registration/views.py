@@ -74,7 +74,7 @@ def activate(request, activation_key,
             'password': '',
             'user': account
         }
-        user = authenticate(**credentials)
+        user = authenticate(request, **credentials)
         login(request, user)
 
         # send notification to administrators

@@ -15,7 +15,7 @@ class ObjectPermBackend(object):
     supports_object_permissions = True
     supports_anonymous_user = True
 
-    def authenticate(self, username=None, password=None, user=None):
+    def authenticate(self, request=None, username=None, password=None, user=None):
         """
             Modified version of django's authenticate.
 

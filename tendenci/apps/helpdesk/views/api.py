@@ -61,6 +61,7 @@ def api(request, method):
 
     # TODO: Move away from having the username & password in every request.
     request.user = authenticate(
+        request=request,
         username=request.POST.get('user', False),
         password=request.POST.get('password'),
         )
