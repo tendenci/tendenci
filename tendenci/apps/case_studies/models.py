@@ -114,7 +114,7 @@ class Image(File):
     )
 
     case_study = models.ForeignKey(CaseStudy, on_delete=models.CASCADE)
-    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE, parent_link=True)
     file_type = models.CharField(
         _('File type'),
         max_length=50,
