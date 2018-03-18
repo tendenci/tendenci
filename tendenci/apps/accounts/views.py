@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
-from django.contrib.auth.views import password_reset as auth_password_reset
+from django.contrib.auth.views import PasswordResetView
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -217,4 +217,5 @@ def password_reset(request):
     extra_context = {
         'from_registration': from_registration,
     }
-    return auth_password_reset(request, password_reset_form=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context= extra_context)
+    auth_password_reset = PasswordResetView.as_view()
+    return auth_password_reset(request, form_class=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context=extra_context)
