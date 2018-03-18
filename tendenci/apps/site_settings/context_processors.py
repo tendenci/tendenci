@@ -52,7 +52,6 @@ def settings(request):
 
     contexts['USE_I18N'] = d_settings.USE_I18N
     contexts['LOGIN_URL'] = d_settings.LOGIN_URL
-    contexts['LOGOUT_URL'] = d_settings.LOGOUT_URL
 
     return contexts
 
