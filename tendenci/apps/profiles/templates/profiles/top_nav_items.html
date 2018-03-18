@@ -116,11 +116,14 @@
                                         <a href="{% url 'profile.edit_groups' user_this.username %}">{% trans "Edit Groups" %}</a>
                                     </span>
                                 </li>
+
+                                {% if MODULE_EDUCATIONS_ENABLED %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'profile.edit_education' user_this.username %}">{% trans "Edit Education" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
                             {% endif %}
 
                             {% if user.profile.is_staff %}

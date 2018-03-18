@@ -41,9 +41,11 @@
                 <li>
                     <a href="{% url "profile.edit_groups" profile.user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
+                {% if MODULE_EDUCATIONS_ENABLED %}
                 <li>
                     <a href="{% url "profile.edit_education" profile.user.username %}" class="educations" title=="Edit Education">{% trans "Edit Education" %}</a>
                 </li>
+                {% endif %}
                 {% endif %}
                 <li>
                     <a href="{% url 'auth_password_change' profile.user_id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
