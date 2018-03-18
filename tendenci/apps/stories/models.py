@@ -20,6 +20,12 @@ from tendenci.apps.stories.managers import StoryManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 
+class StoryPhoto(File):
+    class Meta:
+        app_label = 'stories'
+        manager_inheritance_from_future = True
+
+
 class Story(OrderingBaseModel, TendenciBaseModel):
     """
     A Story is used across a site to add linked image content to a specific design area.
@@ -47,7 +53,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
     image = models.ForeignKey(
-        'StoryPhoto',
+        StoryPhoto,
         help_text=_('Photo that represents this story.'),
         null=True,
         default=None,
@@ -148,13 +154,6 @@ class Story(OrderingBaseModel, TendenciBaseModel):
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
-
-
-class StoryPhoto(File):
-    pass
-
-    class Meta:
-        app_label = 'stories'
 
 
 class Rotator(models.Model):

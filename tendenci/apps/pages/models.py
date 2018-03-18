@@ -22,10 +22,9 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class HeaderImage(File):
-    pass
-
     class Meta:
         app_label = 'pages'
+        manager_inheritance_from_future = True
 
 
 class BasePage(TendenciBaseModel):

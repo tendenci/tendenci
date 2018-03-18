@@ -11,6 +11,13 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.testimonials.managers import TestimonialManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
+
+class TestimonialPhoto(File):
+    class Meta:
+        app_label = 'testimonials'
+        manager_inheritance_from_future = True
+
+
 class Testimonial(OrderingBaseModel, TendenciBaseModel):
     first_name = models.CharField(max_length=50, blank=True, default="")
     last_name = models.CharField(max_length=50, blank=True, default="")
@@ -22,7 +29,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     title = models.CharField(max_length=50, blank=True, default="")
     website = models.URLField(max_length=255, blank=True, null=True)
     testimonial = models.TextField(help_text=_('Supports &lt;strong&gt;, &lt;em&gt;, and &lt;a&gt; HTML tags.'))
-    image = models.ForeignKey('TestimonialPhoto',
+    image = models.ForeignKey(TestimonialPhoto,
         on_delete=models.SET_NULL,
         help_text=_('Photo for this testimonial.'), null=True, default=None)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
@@ -90,8 +97,3 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
-
-
-class TestimonialPhoto(File):
-    class Meta:
-        app_label = 'testimonials'

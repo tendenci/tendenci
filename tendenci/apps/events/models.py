@@ -1085,6 +1085,12 @@ class RecurringEvent(models.Model):
                             'ends_on': ends_on})
 
 
+class EventPhoto(File):
+    class Meta:
+        app_label = 'events'
+        manager_inheritance_from_future = True
+
+
 class Event(TendenciBaseModel):
     """
     Calendar Event
@@ -1105,7 +1111,7 @@ class Event(TendenciBaseModel):
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
-    image = models.ForeignKey('EventPhoto',
+    image = models.ForeignKey(EventPhoto,
         help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
@@ -1638,13 +1644,6 @@ class CustomRegFieldEntry(models.Model):
 
     class Meta:
         app_label = 'events'
-
-class EventPhoto(File):
-    pass
-
-    class Meta:
-        app_label = 'events'
-
 
 class Addon(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

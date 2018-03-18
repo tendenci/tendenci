@@ -17,6 +17,7 @@ def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     return 'speakers/%s' % (filename)
 
+
 class Track(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -25,6 +26,7 @@ class Track(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Speaker(TendenciBaseModel):
     name = models.CharField(max_length=50)

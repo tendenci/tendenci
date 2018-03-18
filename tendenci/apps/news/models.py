@@ -23,6 +23,13 @@ from tendenci.apps.news.module_meta import NewsMeta
 from tendenci.apps.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
+
+class NewsImage(File):
+    class Meta:
+        app_label = 'news'
+        manager_inheritance_from_future = True
+
+
 class News(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
@@ -45,7 +52,7 @@ class News(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    thumbnail = models.ForeignKey('NewsImage', default=None, null=True,
+    thumbnail = models.ForeignKey(NewsImage, default=None, null=True,
                                   on_delete=models.SET_NULL,
                                   help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
@@ -174,10 +181,3 @@ class News(TendenciBaseModel):
             self.release_dt_local = self.release_dt + time_diff
         else:
             self.release_dt_local = self.release_dt
-
-
-class NewsImage(File):
-    pass
-
-    class Meta:
-        app_label = 'news'

@@ -24,9 +24,16 @@ class ClientList(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class CategoryPhoto(File):
+    class Meta:
+        app_label = 'projects'
+        manager_inheritance_from_future = True
+
+
 class Category(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
-    image = models.ForeignKey('CategoryPhoto', help_text=_('Photo that represents this category.'), null=True, default=None, on_delete=models.CASCADE)
+    image = models.ForeignKey(CategoryPhoto, help_text=_('Photo that represents this category.'), null=True, default=None, on_delete=models.CASCADE)
     position = models.IntegerField(blank=True, default=0)
 
     def __unicode__(self):
@@ -53,6 +60,7 @@ class Category(models.Model):
             self.image = image  # set image
 
             self.save()
+
 
 class ProjectManager(models.Model):
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
@@ -179,7 +187,3 @@ class Documents(File):
 
     def __unicode__(self):
         return self.type
-
-
-class CategoryPhoto(File):
-    pass

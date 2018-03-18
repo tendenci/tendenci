@@ -2698,12 +2698,12 @@ class MembershipDemographic(models.Model):
     class Meta:
         app_label = 'memberships'
 
+
 class MembershipFile(File):
     """
     This model will be used as handlers of File upload assigned
     to User Defined fields for the under Membership demographics
     """
-    pass
-
     class Meta:
         app_label = 'memberships'
+        manager_inheritance_from_future = True
