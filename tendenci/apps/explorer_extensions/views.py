@@ -1,10 +1,10 @@
 from __future__ import print_function
 import subprocess
+from wsgiref.util import FileWrapper
 
 from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.http import HttpResponse, Http404
-from django.core.servers.basehttp import FileWrapper
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
