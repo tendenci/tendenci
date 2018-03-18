@@ -57,8 +57,6 @@ SAMPLE_IMAGE_PATH = getattr(settings, 'SAMPLE_IMAGE_PATH', os.path.join(os.path.
 # Modify image file buffer size.
 ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
 
-PHOTOS_DIR = settings.MEDIA_URL
-
 
 def get_storage_path(instance, filename):
     # AWS S3 max key length: 260 characters
@@ -360,10 +358,10 @@ class BaseEffect(models.Model):
         abstract = True
 
     def sample_dir(self):
-        return os.path.join(settings.MEDIA_ROOT, PHOTOS_DIR, 'samples')
+        return os.path.join(settings.MEDIA_ROOT, settings.PHOTOS_DIR, 'samples')
 
     def sample_url(self):
-        return settings.MEDIA_URL + '/'.join([PHOTOS_DIR, 'samples', '%s %s.jpg' % (self.name.lower(), 'sample')])
+        return settings.MEDIA_URL + '/'.join([settings.PHOTOS_DIR, 'samples', '%s %s.jpg' % (self.name.lower(), 'sample')])
 
     def sample_filename(self):
         return os.path.join(self.sample_dir(), '%s %s.jpg' % (self.name.lower(), 'sample'))
@@ -465,7 +463,7 @@ class PhotoEffect(BaseEffect):
 
 
 class Watermark(BaseEffect):
-    image = models.ImageField(_('image'), upload_to=PHOTOS_DIR + "/watermarks")
+    image = models.ImageField(_('image'), upload_to=settings.PHOTOS_DIR + "/watermarks")
     style = models.CharField(_('style'), max_length=5, choices=WATERMARK_STYLE_CHOICES, default='scale')
     opacity = models.FloatField(_('opacity'), default=1, help_text=_("The opacity of the overlay."))
 

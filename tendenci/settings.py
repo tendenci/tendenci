@@ -63,6 +63,9 @@ MEDIA_ROOT = os.path.join(TENDENCI_ROOT, 'site_media', 'media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/site_media/media/'
 
+# Path for photos relative to MEDIA_ROOT and MEDIA_URL
+PHOTOS_DIR = 'photos'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=msW0__=51^w@_tbaconjm4+fg@0+ic#bx^3rj)zc$a6i'
 SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
