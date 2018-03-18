@@ -22,13 +22,12 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
 
         # num_days
         num_days_widget = self.pos_d['num_days'][1]
         num_days_widget.attrs = {'size':'8'}
-        rendered_num_days = self.render_widget(num_days_widget, name, value, final_attrs,
+        rendered_num_days = self.render_widget(num_days_widget, name, value, attrs,
                                              self.pos_d['num_days'][0], id_)
 
         # notice_time
@@ -37,14 +36,14 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
                                       ('before','Before'),
                                       ('attimeof','At Time Of'))
         rendered_notice_time = self.render_widget(notice_time_widget,
-                                                  name, value, final_attrs, self.pos_d['notice_time'][0], id_)
+                                                  name, value, attrs, self.pos_d['notice_time'][0], id_)
 
         # notice_type
         notice_type_widget = self.pos_d['notice_type'][1]
         notice_type_widget.choices = NOTICE_TYPES
         rendered_notice_type = self.render_widget(
-            notice_type_widget,name,value,final_attrs,
-            self.pos_d['notice_type'][0],id
+            notice_type_widget, name, value, attrs,
+            self.pos_d['notice_type'][0], id
         )
 
         output_html = """

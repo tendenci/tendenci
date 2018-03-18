@@ -85,7 +85,7 @@ class TinyMCE(forms.Textarea):
         if value is None:
             value = ''
         value = smart_text(value)
-        final_attrs = self.build_attrs(attrs)
+        final_attrs = attrs.copy()
         final_attrs['name'] = name
         final_attrs['class'] = 'tinymce'
         assert 'id' in final_attrs, "TinyMCE widget attributes must contain 'id'"

@@ -74,37 +74,36 @@ class TypeExpMethodWidget(forms.MultiWidget):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
 
-        custom_field_final_attrs = final_attrs.copy()
-        if 'class' in custom_field_final_attrs:
-            classes = custom_field_final_attrs["class"].split(" ")
-            custom_field_final_attrs['class'] = " ".join([cls for cls in classes if cls != "form-control"])
+        #custom_field_attrs = attrs.copy()
+        #if 'class' in custom_field_attrs:
+        #    classes = custom_field_attrs["class"].split(" ")
+        #    custom_field_attrs['class'] = " ".join([cls for cls in classes if cls != "form-control"])
 
         # period type
         period_type_widget = self.pos_d['period_type'][1]
         period_type_widget.choices = PERIOD_CHOICES
         #self.widgets.append(period_type_widget)
         rendered_period_type = self.render_widget(period_type_widget,
-                                                  name, value, final_attrs, self.pos_d['period_type'][0], id_)
+                                                  name, value, attrs, self.pos_d['period_type'][0], id_)
 
         # period
         period_widget = self.pos_d['period'][1]
         period_widget.attrs = {'size':'8'}
-        rendered_period = self.render_widget(period_widget, name, value, final_attrs,
+        rendered_period = self.render_widget(period_widget, name, value, attrs,
                                              self.pos_d['period'][0], id_)
 
         # period_unit
         period_unit_widget = self.pos_d['period_unit'][1]
         period_unit_widget.choices = PERIOD_UNIT_CHOICE
         rendered_period_unit = self.render_widget(period_unit_widget,
-                                                  name, value, final_attrs, self.pos_d['period_unit'][0], id_)
+                                                  name, value, attrs, self.pos_d['period_unit'][0], id_)
         # expiration_method_day
         rolling_option1_day_widget = self.pos_d['rolling_option1_day'][1]
         rolling_option1_day_widget.attrs = {'size':'8'}
         rendered_rolling_option1_day = self.render_widget(rolling_option1_day_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['rolling_option1_day'][0], id_)
         # expiration_method
         JOIN_EXP_METHOD_CHOICE = (
@@ -114,20 +113,20 @@ class TypeExpMethodWidget(forms.MultiWidget):
         rolling_option_widget = self.pos_d['rolling_option'][1]
         rolling_option_widget.choices=JOIN_EXP_METHOD_CHOICE
         rendered_rolling_option = self.render_widget(rolling_option_widget,
-                                                  name, value, final_attrs,
+                                                  name, value, attrs,
                                                   self.pos_d['rolling_option'][0], id_)
 
         # rolling_renew_option1_day
         rolling_renew_option1_day_widget = self.pos_d['rolling_renew_option1_day'][1]
         rolling_renew_option1_day_widget.attrs = {'size':'8'}
         rendered_rolling_renew_option1_day = self.render_widget(rolling_renew_option1_day_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['rolling_renew_option1_day'][0], id_)
         # renew_expiration_day2
         rolling_renew_option2_day_widget = self.pos_d['rolling_renew_option2_day'][1]
         rolling_renew_option2_day_widget.attrs = {'size':'8'}
         rendered_rolling_renew_option2_day = self.render_widget(rolling_renew_option2_day_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                            self.pos_d['rolling_renew_option2_day'][0], id_)
         # renew_expiration_method
         RENEW_EXP_METHOD_CHOICE = (
@@ -139,19 +138,19 @@ class TypeExpMethodWidget(forms.MultiWidget):
         rolling_renew_option_widget = self.pos_d['rolling_renew_option'][1]
         rolling_renew_option_widget.choices=RENEW_EXP_METHOD_CHOICE
         rendered_rolling_renew_option = self.render_widget(rolling_renew_option_widget,
-                                                  name, value, final_attrs,
+                                                  name, value, attrs,
                                                   self.pos_d['rolling_renew_option'][0], id_)
         # fixed_option1_day
         fixed_option1_day_widget = self.pos_d['fixed_option1_day'][1]
         fixed_option1_day_widget.choices=DAYS_CHOICES
         rendered_fixed_option1_day = self.render_widget(fixed_option1_day_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option1_day'][0], id_)
         # fixed_option1_month
         fixed_option1_month_widget = self.pos_d['fixed_option1_month'][1]
         fixed_option1_month_widget.choices=MONTHS_CHOICES
         rendered_fixed_option1_month = self.render_widget(fixed_option1_month_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option1_month'][0], id_)
         # dynamically generate the year choices for fixed_option1_year
         fixed_option1_year = ''
@@ -168,19 +167,19 @@ class TypeExpMethodWidget(forms.MultiWidget):
         fixed_option1_year_widget =  self.pos_d['fixed_option1_year'][1]
         fixed_option1_year_widget.choices=years
         rendered_fixed_option1_year = self.render_widget(fixed_option1_year_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option1_year'][0], id_)
         # fixed_option2_day
         fixed_option2_day_widget = self.pos_d['fixed_option2_day'][1]
         fixed_option2_day_widget.choices=DAYS_CHOICES
         rendered_fixed_option2_day = self.render_widget(fixed_option2_day_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option2_day'][0], id_)
         #fixed_option2_month
         fixed_option2_month_widget = self.pos_d['fixed_option2_month'][1]
         fixed_option2_month_widget.choices=MONTHS_CHOICES
         rendered_fixed_option2_month = self.render_widget(fixed_option2_month_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option2_month'][0], id_)
         FIXED_EXP_METHOD_CHOICE = (
                                   ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
@@ -194,17 +193,17 @@ class TypeExpMethodWidget(forms.MultiWidget):
         fixed_option_widget = self.pos_d['fixed_option'][1]
         fixed_option_widget.choices=FIXED_EXP_METHOD_CHOICE
         rendered_fixed_option = self.render_widget(fixed_option_widget,
-                                                  name, value, final_attrs,
+                                                  name, value, attrs,
                                                   self.pos_d['fixed_option'][0], id_)
         # fixed_option2_rollover_days
         fixed_option2_rollover_days_widget = self.pos_d['fixed_option2_rollover_days'][1]
         fixed_option2_rollover_days_widget.attrs={'size':'8'}
         rendered_fixed_option2_rollover_days = self.render_widget(fixed_option2_rollover_days_widget,
-                                                            name, value, final_attrs,
+                                                            name, value, attrs,
                                                             self.pos_d['fixed_option2_rollover_days'][0], id_)
         # fixed_option2_can_rollover
         fixed_option2_can_rollover_widget = self.pos_d['fixed_option2_can_rollover'][1]
-        can_rollover_attrs = final_attrs.copy()
+        can_rollover_attrs = attrs.copy()
         if "class" in can_rollover_attrs:
             can_rollover_attrs["class"] = "%s checkbox" % can_rollover_attrs["class"]
         else:
@@ -280,13 +279,12 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
 
         # num_days
         num_days_widget = self.pos_d['num_days'][1]
         num_days_widget.attrs = {'size':'8'}
-        rendered_num_days = self.render_widget(num_days_widget, name, value, final_attrs,
+        rendered_num_days = self.render_widget(num_days_widget, name, value, attrs,
                                              self.pos_d['num_days'][0], id_)
 
         # notice_time
@@ -295,13 +293,13 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
                                       ('before',_('Before')),
                                       ('attimeof',_('At Time Of')))
         rendered_notice_time = self.render_widget(notice_time_widget,
-                                                  name, value, final_attrs, self.pos_d['notice_time'][0], id_)
+                                                  name, value, attrs, self.pos_d['notice_time'][0], id_)
 
         # notice_type
         notice_type_widget = self.pos_d['notice_type'][1]
         notice_type_widget.choices = NOTICE_TYPES
         rendered_notice_type = self.render_widget(
-            notice_type_widget,name,value,final_attrs,
+            notice_type_widget,name,value,attrs,
             self.pos_d['notice_type'][0],id
         )
 
@@ -356,15 +354,14 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
         # donation_amount
         donation_amount_widget = self.pos_d['donation_amount'][1]
         donation_amount_widget.attrs = {'size':'8'}
         rendered_donation_amount = self.render_widget(donation_amount_widget,
-                                    name, value, final_attrs, self.pos_d['donation_amount'][0], id_)
+                                    name, value, attrs, self.pos_d['donation_amount'][0], id_)
 
         # donation_option
         OPTION_CHOICE = (
@@ -375,7 +372,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         donation_option_widget = self.pos_d['donation_option'][1]
         donation_option_widget.choices=OPTION_CHOICE
         output_html = self.render_widget(donation_option_widget,
-                                          name, value, final_attrs,
+                                          name, value, attrs,
                                           self.pos_d['donation_option'][0], id_)
 
         return mark_safe(output_html)
@@ -551,7 +548,8 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
         output = [u'<div>']
         # Normalize to strings
         str_values = set([force_text(v) for v in value])
@@ -591,7 +589,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                 # suffix, so that the checkboxes don't all have the same
                 # ID attribute.
                 if has_id:
-                    final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'],
+                    final_attrs = dict(attrs, id='%s_%s' % (attrs['id'],
                                                                   i))
                     label_for = u' for="%s"' % final_attrs['id']
                 else:

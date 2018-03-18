@@ -115,7 +115,8 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
@@ -146,7 +147,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_text(next(user_perm)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -199,7 +200,8 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
@@ -230,7 +232,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_text(next(member_perm)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -283,7 +285,8 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
@@ -314,7 +317,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
             change_input_value = force_text(next(group)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)

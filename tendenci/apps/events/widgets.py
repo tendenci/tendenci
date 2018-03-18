@@ -59,12 +59,11 @@ class UseCustomRegWidget(forms.MultiWidget):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
         use_custom_reg_form_widget = self.widgets[0]
         rendered_use_custom_reg_form = self.render_widget(
             use_custom_reg_form_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             0, id_
         )
 
@@ -73,7 +72,7 @@ class UseCustomRegWidget(forms.MultiWidget):
         #reg_form_widget.attrs = {'size':'8'}
         rendered_reg_form = self.render_widget(
             reg_form_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             1, id_
         )
 
@@ -85,7 +84,7 @@ class UseCustomRegWidget(forms.MultiWidget):
 
         rendered_bind_reg_form_to_conf_only = self.render_widget(
             bind_reg_form_to_conf_only_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             2, id_
         )
         rendered_bind_reg_form_to_conf_only = rendered_bind_reg_form_to_conf_only.replace(
