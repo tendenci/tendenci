@@ -119,7 +119,7 @@ class CategoryManager(Manager):
                     return cat.category
         else: #it's a sub category
             for cat in categories:
-                if cat.parent_id > 0:
+                if cat.parent_id is not None:
                     return self.get(pk=cat.parent_id)
         return None
 
