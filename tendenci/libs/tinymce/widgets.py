@@ -12,7 +12,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.admin import widgets as admin_widgets
 from django.urls import reverse
-from django.forms.widgets import flatatt
+from django.forms.utils import flatatt
 from django.utils.html import escape
 try:
     from collections import OrderedDict as SortedDict
