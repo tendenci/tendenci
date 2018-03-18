@@ -6,7 +6,7 @@
     {% if detail_view %}
     <div class="meta-left">
         {% if user.profile.is_superuser or user.pk == profile.creator_id or user.pk == profile.owner_id %}
-            {% meta_creator_owner profile %}
+        {% meta_creator_owner profile %}
         {% endif %}
     </div>
     {% endif %}
@@ -23,9 +23,9 @@
         {% if profile.user.is_superuser %}
         <li><span class="t-role-superuser">{% trans 'Superuser' %}</span></li>
         {% else %}
-            {% if profile.user.is_staff %}
-            <li><span class="t-role-staff">{% trans 'Staff' %}</span></li>
-            {% endif %}
+        {% if profile.user.is_staff %}
+        <li><span class="t-role-staff">{% trans 'Staff' %}</span></li>
+        {% endif %}
         {% endif %}
 
     </ul>
@@ -41,7 +41,7 @@
                 <li>
                     <a href="{% url "profile.edit_groups" profile.user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
-                 <li>
+                <li>
                     <a href="{% url "profile.edit_education" profile.user.username %}" class="educations" title=="Edit Education">{% trans "Edit Education" %}</a>
                 </li>
                 {% endif %}
@@ -54,11 +54,12 @@
                 <li>
                     <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>
+                {% if MODULE_SOCIAL_SERVICES_ENABLED %}
                 <li>
                     <a href="{% url "user.skills_edit" profile.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
                 </li>
+                {% endif %}
                 {% if request.user.is_superuser and MODULE_IMPERSONATION_ENABLED %}
-
                 <li>
                     <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
                 </li>

@@ -44,9 +44,11 @@
                     <li>
                         <a href="{% url "profile.edit_perms" m_user.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                     </li>
+                    {% if MODULE_SOCIAL_SERVICES_ENABLED %}
                     <li>
                         <a href="{% url "user.skills_edit" m_user.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
                     </li>
+                    {% endif %}
                 {% endif %}
                 <li>
                     <a href="{% url "membership.delete" membership.id %}" class="delete" title="Delete membership">{% trans "Delete" %}</a>

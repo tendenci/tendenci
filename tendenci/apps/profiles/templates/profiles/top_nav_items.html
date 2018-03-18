@@ -132,6 +132,7 @@
                                     </span>
                                 </li>
 
+                                {% if MODULE_SOCIAL_SERVICES_ENABLED %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'user.skills' user_this.username %}">{% trans "View Skills" %}</a>
@@ -143,6 +144,7 @@
                                         <a href="{% url 'user.skills_edit' user_this.username %}">{% trans "Edit Skills" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
 
                                 <li class="content-item">
                                     <span class="app-name">
