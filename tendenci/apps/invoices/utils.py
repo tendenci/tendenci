@@ -1,4 +1,3 @@
-from builtins import str
 from datetime import datetime, date, time
 import time as ttime
 from io import BytesIO
@@ -8,7 +7,6 @@ from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.utils.encoding import smart_str
 from django.template.loader import get_template
 
 from tendenci.apps.invoices.models import Invoice
@@ -152,9 +150,6 @@ def process_invoice_export(start_dt=None, end_dt=None,
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, str):
-                        item = item.encode("utf-8")
-                item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
 

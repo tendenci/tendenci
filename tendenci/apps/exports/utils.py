@@ -56,8 +56,6 @@ def render_csv(filename, title_list, data_list):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                 elif isinstance(row_item_list[i], datetime.time):
                     row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
-                elif isinstance(row_item_list[i], str):
-                    row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
 
     return response

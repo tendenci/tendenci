@@ -1,4 +1,3 @@
-from builtins import str
 import time as ttime
 from datetime import datetime, date, time
 
@@ -6,7 +5,6 @@ from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.urls import reverse
 from django.template.loader import render_to_string
-from django.utils.encoding import smart_str
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.base.utils import UnicodeWriter
@@ -60,9 +58,6 @@ def process_export(identifier, user_id):
                     item = item.strftime('%Y-%m-%d')
                 elif isinstance(item, time):
                     item = item.strftime('%H:%M:%S')
-                elif isinstance(item, str):
-                    item = item.encode("utf-8")
-                item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
 

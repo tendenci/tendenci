@@ -100,9 +100,6 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                         row_item_list[i] = row_item_list[i].strftime(
                             '%H:%M:%S'
                             )
-                if isinstance(row_item_list[i], str):
-                    row_item_list[i] = row_item_list[i].encode("utf-8")
-
             csv_writer.writerow(row_item_list)
     else:
         from io import BytesIO

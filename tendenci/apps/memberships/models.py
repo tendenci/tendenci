@@ -18,7 +18,6 @@ from django import forms
 from importlib import import_module
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
-from django.utils.encoding import smart_str
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 
@@ -2101,7 +2100,6 @@ class MembershipImport(models.Model):
                 data_dict = idata.row_data
                 row = [data_dict[k] for k in header_row if k in data_dict]
                 row.extend([idata.action_taken, idata.error])
-                row = [smart_str(s).decode('utf-8') for s in row]
                 recap_writer.writerow(row)
 
             f.close()

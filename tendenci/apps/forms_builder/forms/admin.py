@@ -168,7 +168,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         field_indexes = {}
         file_field_ids = []
         for field in form.fields.all().order_by('position', 'id'):
-            columns.append(field.label.encode("utf-8"))
+            columns.append(field.label)
             field_indexes[field.id] = len(field_indexes)
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
@@ -200,7 +200,7 @@ class FormAdmin(TendenciBaseModelAdmin):
                 row[-1] = entry_time
 
             for field_entry in values:
-                value = field_entry.value.encode("utf-8")
+                value = field_entry.value
                 # Create download URL for file fields.
                 if field_entry.field_id in file_field_ids:
                     url = reverse("admin:forms_form_file", args=(field_entry.id,))

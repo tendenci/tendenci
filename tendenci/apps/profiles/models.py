@@ -8,7 +8,6 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
-from django.utils.encoding import smart_str
 from django.conf import settings
 from django.db import connection, ProgrammingError
 
@@ -536,7 +535,6 @@ class UserImport(BaseImport):
                 data_dict = idata.row_data
                 row = [data_dict[k] for k in header_row if k in data_dict]
                 row.extend([idata.action_taken, idata.error])
-                row = [smart_str(s).decode('utf-8') for s in row]
                 recap_writer.writerow(row)
 
             f.close()

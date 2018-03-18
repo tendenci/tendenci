@@ -221,7 +221,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         columns = []
         field_indexes = {}
         for field in form.fields.all().order_by('position', 'id'):
-            columns.append(field.label.encode("utf-8"))
+            columns.append(field.label)
             field_indexes[field.id] = len(field_indexes)
 
         csv.writerow(columns)
@@ -233,7 +233,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             row = [""] * len(columns)
 
             for field_entry in values:
-                value = field_entry.value.encode("utf-8")
+                value = field_entry.value
                 # Only use values for fields that currently exist for the form.
                 try:
                     row[field_indexes[field_entry.field_id]] = value
