@@ -941,7 +941,7 @@ def extract_pdf(fp):
                 if isinstance(lt_obj.get_text(), str):
                     text_content.append(lt_obj.get_text())
                 else:
-                    text_content.append(lt_obj.get_text().encode('utf-8'))
+                    text_content.append(lt_obj.get_text().decode())
     device.close()
     return '\n\n'.join(text_content)
 
