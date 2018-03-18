@@ -163,14 +163,16 @@ class Form(TendenciBaseModel):
         if self.custom_payment:
             return _("Custom Payment")
 
+    @mark_safe
     def admin_link_view(self):
         url = self.get_absolute_url()
-        return mark_safe("<a href='%s'>%s</a>" % (url, ugettext("View on site")))
+        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
     admin_link_view.short_description = ""
 
+    @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
-        return mark_safe("<a href='%s'>%s</a>" % (url, ugettext("Export entries")))
+        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.short_description = ""
 
     def has_files(self):

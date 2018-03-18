@@ -38,16 +38,19 @@ class BoxAdmin(TendenciBaseModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
+    @mark_safe
     def admin_status(self, obj):
-        return mark_safe(obj.obj_status)
+        return obj.obj_status
     admin_status.short_description = _('status')
 
+    @mark_safe
     def admin_perms(self, obj):
-        return mark_safe(obj.obj_perms)
+        return obj.obj_perms
     admin_perms.short_description = _('permission')
 
+    @mark_safe
     def short_content(self, obj):
-        return mark_safe('<div style="max-width: 600px; overflow: hidden;">%s</div>' % truncatewords_html(obj.content, 30))
+        return '<div style="max-width: 600px; overflow: hidden;">%s</div>' % truncatewords_html(obj.content, 30)
     short_content.short_description = _('content')
 
 admin.site.register(Box, BoxAdmin)

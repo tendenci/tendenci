@@ -78,6 +78,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
             EventLog.objects.log(**log_defaults)
         return object
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
@@ -86,7 +87,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
             alt = "%s" % obj.image
             if len(alt) > 123:
                 alt = alt[:123]
-            return mark_safe('<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt))
+            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return _("No image")
     image_preview.short_description = _('Image')
@@ -105,6 +106,7 @@ class StoryInline(admin.TabularInline):
     readonly_fields = ('image_preview','title')
     ordering = ('rotator_position','title')
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
@@ -113,7 +115,7 @@ class StoryInline(admin.TabularInline):
             alt = "%s" % obj.image
             if len(alt) > 123:
                 alt = alt[:123]
-            return mark_safe('<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt))
+            return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return _("No image")
     image_preview.short_description = _('Image')

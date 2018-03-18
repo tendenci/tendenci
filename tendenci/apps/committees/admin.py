@@ -116,18 +116,21 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             instance.owner = request.user
             instance.save()
 
+    @mark_safe
     def link(self, obj):
-        return mark_safe('<a href="%s" title="%s">%s</a>' % (
+        return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
             obj.title,
             obj.slug
-        ))
+        )
 
+    @mark_safe
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:committees_committee_change', args=[obj.pk])
-        return mark_safe(link)
+        return link
     edit_link.short_description = 'edit'
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
@@ -135,7 +138,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             obj.title,
             link_icon,
         )
-        return mark_safe(link)
+        return link
     view_on_site.short_description = 'view'
 
 

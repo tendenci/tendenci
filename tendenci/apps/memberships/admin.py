@@ -348,20 +348,21 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_status.short_description = u'Status'
     get_status.admin_order_field = 'status_detail'
 
+    @mark_safe
     def get_invoice(self, instance):
         inv = instance.get_invoice()
         if inv:
             if inv.balance > 0:
-                return mark_safe('<a href="%s" title="Invoice">#%s (%s)</a>' % (
+                return '<a href="%s" title="Invoice">#%s (%s)</a>' % (
                     inv.get_absolute_url(),
                     inv.pk,
                     tcurrency(inv.balance)
-                ))
+                )
             else:
-                return mark_safe('<a href="%s" title="Invoice">#%s</a>' % (
+                return '<a href="%s" title="Invoice">#%s</a>' % (
                     inv.get_absolute_url(),
                     inv.pk
-                ))
+                )
         return ""
     get_invoice.short_description = u'Invoice'
 
@@ -655,13 +656,14 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
 
+    @mark_safe
     def show_group(self, instance):
         if instance.group:
-            return mark_safe('<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
+            return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
                     reverse('group.detail', args=[instance.group.slug]),
                     instance.group,
                     instance.group.id
-                ))
+                )
         return ""
     show_group.short_description = u'Group'
     show_group.admin_order_field = 'group'
@@ -731,9 +733,10 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
 
 class NoticeAdmin(admin.ModelAdmin):
+    @mark_safe
     def notice_log(self):
-        return mark_safe('<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('membership.notice.log.search'), self.id))
+        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
+                         reverse('membership.notice.log.search'), self.id)
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'membership_type', 'status', 'status_detail']

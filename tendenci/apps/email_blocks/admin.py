@@ -24,8 +24,9 @@ class EmailBlockAdmin(TendenciBaseModelAdmin):
     form = EmailBlockForm
     ordering = ['-update_dt']
 
+    @mark_safe
     def reason_truncated(self, obj):
-        return mark_safe(truncatewords(striptags(obj.reason), 15))
+        return truncatewords(striptags(obj.reason), 15)
     reason_truncated.short_description = _('Reason')
 
 admin.site.register(EmailBlock, EmailBlockAdmin)

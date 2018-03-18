@@ -54,6 +54,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         return "Edit"
     edit_link.short_description = _('edit')
 
+    @mark_safe
     def view_on_site(self, obj):
         if not hasattr(obj, 'get_absolute_url'):
             return None
@@ -64,9 +65,10 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return mark_safe(link)
+        return link
     view_on_site.short_description = _('view')
 
+    @mark_safe
     def owner_link(self, obj):
         link = ''
         if obj.owner_username:
@@ -75,15 +77,17 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
                 obj.owner_username,
                 obj.owner_username,
             )
-        return mark_safe(link)
+        return link
     owner_link.short_description = _('owner')
 
+    @mark_safe
     def admin_status(self, obj):
-        return mark_safe(obj.obj_status)
+        return obj.obj_status
     admin_status.short_description = _('status')
 
+    @mark_safe
     def admin_perms(self, obj):
-        return mark_safe(obj.obj_perms)
+        return obj.obj_perms
     admin_perms.short_description = _('permission')
 
     def save_model(self, request, object, form, change):

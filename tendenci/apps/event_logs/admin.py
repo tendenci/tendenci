@@ -14,8 +14,9 @@ class EventLogAdmin(admin.ModelAdmin):
 class EventLogColorAdmin(admin.ModelAdmin):
     list_display = ['event_id', 'color']
 
+    @mark_safe
     def color(self, obj):
-        return mark_safe('<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color))
+        return '<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color)
 
 
 class EventLogBaseColorAdmin(EventLogColorAdmin):

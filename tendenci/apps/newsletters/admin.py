@@ -10,6 +10,7 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 class NewsletterTemplateAdmin(admin.ModelAdmin):
     list_display = ['name', 'rendered_view', 'content_view']
 
+    @mark_safe
     def rendered_view(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" alt="External 16x16" title="external 16x16" /></a>' % (
@@ -17,9 +18,10 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return mark_safe(link)
+        return link
     rendered_view.short_description = _('view rendered template')
 
+    @mark_safe
     def content_view(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" alt="External 16x16" title="external 16x16" /></a>' % (
@@ -27,7 +29,7 @@ class NewsletterTemplateAdmin(admin.ModelAdmin):
             obj,
             link_icon,
         )
-        return mark_safe(link)
+        return link
     content_view.short_description = _('view template content')
 
 

@@ -46,8 +46,9 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
 
+    @mark_safe
     def sub_categories(self, instance):
-        return mark_safe(', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True)))
+        return ', '.join(DirectoryCategory.objects.filter(parent=instance).values_list('name', flat=True))
 
     def get_queryset(self, request):
         qs = super(DirectoryCategoryAdmin, self).get_queryset(request)

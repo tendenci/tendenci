@@ -110,11 +110,12 @@ class FormAdmin(TendenciBaseModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def export_all_link(self, obj):
         link = '-----'
         if obj.has_files():
             link = '<a href="%s" title="Export all">Export entries (including uploaded files)</a>' % reverse('form_entries_export_full', args=[obj.pk])
-        return mark_safe(link)
+        return link
     export_all_link.short_description = ''
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

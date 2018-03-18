@@ -1853,6 +1853,7 @@ class MembershipDefault(TendenciBaseModel):
                     pk=self.corporate_membership_id)[:1] or [None]
         return corp_memb
 
+    @mark_safe
     def membership_type_link(self):
         link = '<a href="%s">%s</a>' % (
                 reverse('admin:memberships_membershiptype_change',
@@ -1867,7 +1868,7 @@ class MembershipDefault(TendenciBaseModel):
                     reverse('corpmembership.view',
                             args=[self.corporate_membership_id]),
                     corp_member.status_detail)
-        return mark_safe(link)
+        return link
     membership_type_link.short_description = u'Membership Type'
 
     def auto_update_paid_object(self, request, payment):
@@ -2505,10 +2506,11 @@ class MembershipApp(TendenciBaseModel):
 
         return app_cloned
 
+    @mark_safe
     def application_form_link(self):
-        return mark_safe('<a href="%s">%s</a>' % (
+        return '<a href="%s">%s</a>' % (
             self.get_absolute_url(), self.slug
-        ))
+        )
 
 
 class MembershipAppField(OrderingBaseModel):

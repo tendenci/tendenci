@@ -55,10 +55,11 @@ class EventTypeAdmin(admin.ModelAdmin):
     )
     list_display_links = ('name',)
 
+    @mark_safe
     def reassign(self, obj):
 
-        return mark_safe("""<a href="%s">Reassign all events from this type</a>
-            """ % (reverse('event.reassign_type', args=[obj.id])))
+        return """<a href="%s">Reassign all events from this type</a>
+            """ % (reverse('event.reassign_type', args=[obj.id]))
     reassign.short_description = _('Reassign Link')
 
     class Media:
@@ -128,18 +129,19 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def preview_link(self, obj):
-
-        return mark_safe("""<a href="%s">preview</a>
-            """ % (reverse('event.custom_reg_form_preview', args=[obj.id])))
+        return """<a href="%s">preview</a>
+            """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
     preview_link.short_description = _('Preview Link')
 
+    @mark_safe
     def for_event(self, obj):
         [regconf] = obj.regconfs.all()[:1] or [None]
         if regconf:
             event = regconf.event
-            return mark_safe("""<a href="%s">%s(ID:%d)</a>
-            """ % (reverse('event', args=[event.id]), event.title, event.id))
+            return """<a href="%s">%s(ID:%d)</a>
+            """ % (reverse('event', args=[event.id]), event.title, event.id)
         return ''
     for_event.short_description = _('For Event')
 

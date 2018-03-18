@@ -85,12 +85,13 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
 
         return object
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return mark_safe('<img src="%s" />' % reverse('file', args=args))
+            return '<img src="%s" />' % reverse('file', args=args)
         else:
             return "No image"
     image_preview.short_description = 'Image'

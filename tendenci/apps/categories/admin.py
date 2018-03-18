@@ -43,19 +43,21 @@ class CategoryItemAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    @mark_safe
     def show_parent(self, instance):
-        return mark_safe(instance.parent)
+        return instance.parent
     show_parent.short_description = 'Subcategory'
     show_parent.admin_order_field = 'parent'
 
+    @mark_safe
     def show_object(self, instance):
         if instance.content_type and instance.object_id:
             obj = instance.content_type.get_object_for_this_type(id=instance.object_id)
             if obj:
-                return mark_safe('<a href="{0}">{1}</a>'.format(
+                return '<a href="{0}">{1}</a>'.format(
                         obj.get_absolute_url(),
                         instance.object,
-                    ))
+                    )
         return ""
     show_object.short_description = u'Object'
 

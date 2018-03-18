@@ -57,9 +57,10 @@ class ArticleAdmin(TendenciBaseModelAdmin):
     form = ArticleForm
     ordering = ['-update_dt']
 
+    @mark_safe
     def article_body(self, obj):
         content = truncatewords(striptags(obj.body), 15)
-        return mark_safe(content)
+        return content
     article_body.short_description = _('body')
 
 admin.site.register(Article, ArticleAdmin)

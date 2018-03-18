@@ -136,21 +136,23 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
         # filter out soft-deleted items
         return qs.filter(status=True)
 
+    @mark_safe
     def dues_reps_group_with_link(self, instance):
         if instance.dues_reps_group:
-            return mark_safe('<a href="%s">%s</a>' % (
+            return '<a href="%s">%s</a>' % (
                   reverse('group.detail',
                           args=[instance.dues_reps_group.slug]),
-                instance.dues_reps_group.name))
+                instance.dues_reps_group.name)
         return ''
     dues_reps_group_with_link.short_description = _('Dues Reps Group')
 
+    @mark_safe
     def member_reps_group_with_link(self, instance):
         if instance.member_reps_group:
-            return mark_safe('<a href="%s">%s</a>' % (
+            return '<a href="%s">%s</a>' % (
                   reverse('group.detail',
                           args=[instance.member_reps_group.slug]),
-                instance.member_reps_group.name))
+                instance.member_reps_group.name)
         return ''
     member_reps_group_with_link.short_description = _('Member Reps Group')
 
@@ -223,11 +225,12 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                               ).order_by('status_detail',
                                          'corp_profile__name')
 
+    @mark_safe
     def profile(self, instance):
-        return mark_safe('<a href="%s">%s</a>' % (
+        return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,))
+              instance.corp_profile.name,)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
@@ -241,11 +244,12 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     parent_entity.short_description = _('Parent Entity')
     parent_entity.admin_order_field = 'corp_profile__parent_entity'
 
+    @mark_safe
     def cm_type(self, instance):
-        return mark_safe('<a href="%s">%s</a>' % (
+        return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corporatemembershiptype_change',
                       args=[instance.corporate_membership_type.id]),
-              instance.corporate_membership_type.name,))
+              instance.corporate_membership_type.name,)
     cm_type.short_description = _('Membership Type')
     cm_type.admin_order_field = 'corporate_membership_type'
 
@@ -270,17 +274,19 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
     expire_date.short_description = _('Expiration Date')
     expire_date.admin_order_field = 'expiration_dt'
 
+    @mark_safe
     def edit_link(self, instance):
-        return mark_safe('<a href="%s">%s</a>' % (
+        return '<a href="%s">%s</a>' % (
                     reverse('corpmembership.edit',args=[instance.id]),
-                    _('Edit'),))
+                    _('Edit'),)
     edit_link.short_description = _('edit')
 
+    @mark_safe
     def roster_link(self, instance):
-        return mark_safe('<a href="%s?cm_id=%d">%s</a>' % (
+        return '<a href="%s?cm_id=%d">%s</a>' % (
                     reverse('corpmembership.roster_search'),
                     instance.id,
-                    _('Roster'),))
+                    _('Roster'),)
     roster_link.short_description = _('Roster')
 
     def display_reps(self, reps):
@@ -296,30 +302,33 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
                 reps_display += rep.user.email
         return reps_display
 
+    @mark_safe
     def dues_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_dues_rep=True)
-        return mark_safe(self.display_reps(reps))
+        return self.display_reps(reps)
     dues_reps.short_description = _('Dues Reps')
 
+    @mark_safe
     def member_reps(self, instance):
         reps = instance.corp_profile.reps.filter(is_member_rep=True)
-        return mark_safe(self.display_reps(reps))
+        return self.display_reps(reps)
     member_reps.short_description = _('Member Reps')
 
+    @mark_safe
     def invoice_url(self, instance):
         invoice = instance.invoice
         if invoice:
             if invoice.balance > 0:
-                return mark_safe('<a href="%s">Invoice %s (%s)</a>' % (
+                return '<a href="%s">Invoice %s (%s)</a>' % (
                     invoice.get_absolute_url(),
                     invoice.pk,
                     tcurrency(invoice.balance)
-                ))
+                )
             else:
-                return mark_safe('<a href="%s">Invoice %s</a>' % (
+                return '<a href="%s">Invoice %s</a>' % (
                     invoice.get_absolute_url(),
                     invoice.pk
-                ))
+                )
         return ""
     invoice_url.short_description = u'Invoice'
 
@@ -341,11 +350,12 @@ class CorpMembershipAdmin(TendenciBaseModelAdmin):
 
 
 class NoticeAdmin(admin.ModelAdmin):
+    @mark_safe
     def notice_log(self):
         if self.notice_time == 'attimeof':
             return '--'
-        return mark_safe('<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
-                         reverse('corporate_membership.notice.log.search'), self.id))
+        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
+                         reverse('corporate_membership.notice.log.search'), self.id)
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status_detail']
@@ -605,19 +615,22 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
 
     ordering = ['corp_profile']
 
+    @mark_safe
     def profile(self, instance):
-        return mark_safe('<a href="%s">%s</a>' % (
+        return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
                       args=[instance.corp_profile.id]),
-              instance.corp_profile.name,))
+              instance.corp_profile.name,)
     profile.short_description = _('Corp Profile')
     profile.admin_order_field = 'corp_profile__name'
 
+    @mark_safe
     def rep_name(self, instance):
-        return mark_safe('<a href="{0}">{1}</a>'.format(
+        return '<a href="{0}">{1}</a>'.format(
                 reverse('profile', args=[instance.user.username]),
                 instance.user.get_full_name() or instance.user.username,
-            ))
+
+            )
     rep_name.short_description = u'Rep Name'
     rep_name.admin_order_field = 'user__first_name'
 

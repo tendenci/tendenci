@@ -73,6 +73,7 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
 
 
 class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
+    @mark_safe
     def edit_payment_info_link(self):
         # customer_profile_id
         if not self.customer_profile_id:
@@ -84,12 +85,12 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
         if pp:
             pp = pp[0]
-            return mark_safe('<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
+            return '<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
                                                                         link,
                                                                         pp.owner,
-                                                                        pp.update_dt.strftime('%Y-%m-%d')))
+                                                                        pp.update_dt.strftime('%Y-%m-%d'))
         else:
-            return mark_safe('<a href="%s">Add payment info</a>' % (link))
+            return '<a href="%s">Add payment info</a>' % (link)
 
     def how_much_to_pay(self):
         if self.object_content_type and self.object_content_type.name == 'Membership':
@@ -124,11 +125,12 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     form = RecurringPaymentForm
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
-        return mark_safe('<a href="%s"><img src="%s" /></a>' % (
+        return '<a href="%s"><img src="%s" /></a>' % (
             reverse('recurring_payment.view_account', args=[obj.id]),
-            link_icon))
+            link_icon)
     view_on_site.short_description = _('view')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):

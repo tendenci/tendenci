@@ -50,19 +50,20 @@ class FileAdmin(TendenciBaseModelAdmin):
 
         return super(FileAdmin, self).changelist_view(request, extra_context)
 
+    @mark_safe
     def file_preview(self, obj):
         if obj.type() == "image":
             if obj.file:
                 args = [obj.pk]
                 args.append("100x50")
                 args.append("crop")
-                return mark_safe('<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args)))
+                return '<img alt="%s" title="%s" src="%s" />' % (obj, obj, reverse('file', args=args))
             else:
                 return ""
         elif obj.icon():
-            return mark_safe('<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon()))
+            return '<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon())
         else:
-            return mark_safe(obj.type())
+            return obj.type()
     file_preview.short_description = _('Preview')
 
     def file_path(self, obj):

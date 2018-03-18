@@ -41,12 +41,13 @@ class CategoryAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
             args.append("100x50")
             args.append("crop")
-            return mark_safe('<img src="%s" />' % reverse('file', args=args))
+            return '<img src="%s" />' % reverse('file', args=args)
         else:
             return "No image"
     image_preview.short_description = 'Image'
@@ -172,11 +173,13 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
         formset.save()
 
+    @mark_safe
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:projects_project_change', args=[obj.pk])
-        return mark_safe(link)
+        return link
     edit_link.short_description = 'edit'
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
@@ -184,7 +187,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             obj,
             link_icon,
         )
-        return mark_safe(link)
+        return link
     view_on_site.short_description = 'view'
 
     # def log_deletion(self, request, object, object_repr):

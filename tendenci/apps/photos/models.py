@@ -132,17 +132,18 @@ class ImageModel(models.Model):
             except:
                 return {}
 
+    @mark_safe
     def admin_thumbnail(self):
         func = getattr(self, 'get_admin_thumbnail_url', None)
         if func is None:
             return _('An "admin_thumbnail" photo size has not been defined.')
         else:
             if hasattr(self, 'get_absolute_url'):
-                return mark_safe(u'<a href="%s"><img src="%s"></a>' %
-                    (self.get_absolute_url(), func()))
+                return u'<a href="%s"><img src="%s"></a>' % \
+                    (self.get_absolute_url(), func())
             else:
-                return mark_safe(u'<a href="%s"><img src="%s"></a>' %
-                    (self.image.url, func()))
+                return u'<a href="%s"><img src="%s"></a>' % \
+                    (self.image.url, func())
     admin_thumbnail.short_description = _('Thumbnail')
 
     def cache_path(self):
@@ -376,8 +377,9 @@ class BaseEffect(models.Model):
         im = self.process(im)
         im.save(self.sample_filename(), 'JPEG', quality=90, optimize=True)
 
+    @mark_safe
     def admin_sample(self):
-        return mark_safe(u'<img src="%s">' % self.sample_url())
+        return u'<img src="%s">' % self.sample_url()
     admin_sample.short_description = 'Sample'
 
     def pre_process(self, im):

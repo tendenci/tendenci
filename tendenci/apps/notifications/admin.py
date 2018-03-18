@@ -39,9 +39,10 @@ class NoticeEmailAdmin(admin.ModelAdmin):
     def has_view_permission(self, request, obj=None):
         return False
 
+    @mark_safe
     def preview_email(self, obj):
-        return mark_safe('<a href="%s">%s</a>' %
-            (reverse('notification_email', args=[obj.guid]), obj.title))
+        return '<a href="%s">%s</a>' % \
+            (reverse('notification_email', args=[obj.guid]), obj.title)
     preview_email.short_description = _('Preview Email')
 
     def resend(self, request, queryset):
