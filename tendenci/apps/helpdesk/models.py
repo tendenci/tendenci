@@ -1047,7 +1047,7 @@ class UserSettings(models.Model):
         except ImportError:
             import pickle
         from tendenci.apps.helpdesk.lib import b64encode
-        self.settings_pickled = b64encode(pickle.dumps(data))
+        self.settings_pickled = b64encode(pickle.dumps(data)).decode()
 
     def _get_settings(self):
         # return a python dictionary representing the pickled data.
@@ -1057,7 +1057,7 @@ class UserSettings(models.Model):
             import pickle
         from tendenci.apps.helpdesk.lib import b64decode
         try:
-            return pickle.loads(b64decode(str(self.settings_pickled)))
+            return pickle.loads(b64decode(str(self.settings_pickled).encode()))
         except pickle.UnpicklingError:
             return {}
 

@@ -511,7 +511,7 @@ date_times = FormDateTimes()
 
 def enc_pass(password):
     from base64 import urlsafe_b64encode
-    return ''.join(list(reversed(urlsafe_b64encode(password))))
+    return ''.join(list(reversed(urlsafe_b64encode(password.encode()).decode())))
 
 
 def dec_pass(password):
@@ -520,7 +520,7 @@ def dec_pass(password):
     pw_list = list(str(password))
     pw_list.reverse()
 
-    return urlsafe_b64decode(''.join(pw_list))
+    return urlsafe_b64decode(''.join(pw_list).encode()).decode()
 
 
 def url_exists(url):
