@@ -6,9 +6,6 @@ from tendenci.apps.theme.utils import get_theme_info
 def theme(request):
     contexts = {}
 
-    if 'disable_theme' in request.GET:
-        contexts['DISABLE_THEME'] = True
-
     contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
     theme = request.session.get('theme', contexts['ACTIVE_THEME'])
     contexts['THEME'] = theme
