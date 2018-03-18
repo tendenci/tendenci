@@ -541,39 +541,6 @@ def _get_price_labels(pricing):
                                       description) )
 
 
-# class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
-
-#     def __iter__(self):
-#         for i, choice in enumerate(self.choices):
-#             yield RadioImageInput(self.name, self.value, self.attrs.copy(), choice, i)
-
-#     def __getitem__(self, idx):
-#         choice = self.choices[idx] # Let the IndexError propogate
-#         return RadioImageInput(self.name, self.value, self.attrs.copy(), choice, idx)
-
-
-# class RadioImageInput(forms.widgets.RadioInput):
-
-#     def __unicode__(self):
-#         if 'id' in self.attrs:
-#             label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
-#         else:
-#             label_for = ''
-#         choice_label = self.choice_label
-#         return u'<label%s>%s %s</label>' % (label_for, self.tag(), choice_label)
-
-#     def tag(self):
-#         from django.utils.safestring import mark_safe
-#         from django.forms.util import flatatt
-
-#         if 'id' in self.attrs:
-#             self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
-#         final_attrs = dict(self.attrs, type='radio', name=self.name, value=self.choice_value)
-#         if self.is_checked():
-#             final_attrs['checked'] = 'checked'
-#         return mark_safe(u'<input%s />' % flatatt(final_attrs))
-
-
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},

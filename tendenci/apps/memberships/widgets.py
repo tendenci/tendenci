@@ -4,7 +4,6 @@ from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django import forms
-from django.forms.widgets import RadioFieldRenderer, RadioChoiceInput
 from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
@@ -396,23 +395,14 @@ class DonationOptionAmountWidget(forms.MultiWidget):
         return value
 
 
-# removed the label when any of the radio select contains another input field
-class CustomRadioInput(RadioChoiceInput):
-    def __unicode__(self):
-        #if 'id' in self.attrs:
-        #    label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
-        #else:
-        #    label_for = ''
-        choice_label = conditional_escape(force_text(self.choice_label))
-        return mark_safe(u'<div class="form-inline"><label>%s %s</label></div>' % (self.tag(), choice_label))
-
-
-class CustomRadioFieldRenderer(RadioFieldRenderer):
-    choice_input_class = CustomRadioInput
-
-
+# Add support for nested widgets
 class CustomRadioSelect(forms.RadioSelect):
-    renderer = CustomRadioFieldRenderer
+    option_template_name = 'widgets/custom_radio_option.html'
+    def create_option(self, *args, **kwargs):
+        option = super(CustomRadioSelect, self).create_option(*args, **kwargs)
+        option['label'] = mark_safe(conditional_escape(force_text(self.choice_label)))
+        return option
+
 
 class Output(forms.Widget):
     """

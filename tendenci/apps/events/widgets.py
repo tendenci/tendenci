@@ -1,34 +1,11 @@
 from django import forms
 from django.urls import reverse
-from django.forms.widgets import RadioFieldRenderer
-from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_text
-import chardet
 
 
-class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
-    """
-    An object used by RadioSelect to enable customization of radio widgets.
-    """
-
-    def render(self, name, value, attrs=None, renderer=None):
-        """
-        Outputs a <div> for this set of choice fields.
-        If an id was given to the field, it is applied to the <di> (each
-        item in the list will get an id of `$id_$i`).
-        """
-        id_ = self.attrs.get('id', None)
-        start_tag = format_html('<div id="{0}">', id_) if id_ else '<div>'
-        output = [start_tag]
-        for widget in self:
-            output.append(format_html('<div class="radio">{0}</div>', str(widget)))
-        output.append('</div>')
-        ret_value = '\n'.join(output)
-        encoding = chardet.detect(ret_value)['encoding']
-        if encoding not in ['ascii', 'utf-8']:
-            ret_value = smart_text(ret_value)
-        return ret_value
+class BootstrapRadioSelect(forms.RadioSelect):
+    template_name = 'widgets/bootstrap_radio.html'
+    option_template_name = 'widgets/bootstrap_radio_option.html'
 
 
 class UseCustomRegWidget(forms.MultiWidget):
@@ -50,7 +27,7 @@ class UseCustomRegWidget(forms.MultiWidget):
         self.widgets = (
             forms.CheckboxInput(),
             forms.Select(attrs={'class': 'form-control'}),
-            forms.RadioSelect(renderer=BootstrapChoiceFieldRenderer)
+            BootstrapRadioSelect(),
         )
 
         super(UseCustomRegWidget, self).__init__(self.widgets, attrs)
