@@ -30,8 +30,7 @@ class RegisteredApps(object):
         self.addons = []
         self.people = []
 
-        # append core and plugin apps to
-        # individual lists
+        # append core and plugin apps to individual lists
         if not build_from_cache:
             for model, registry in apps.items():
 
@@ -71,59 +70,51 @@ class RegisteredApps(object):
         else:
             #since we can only cache the list of apps and not the RegisteredApps instance
             #we have to rebuild this object based on the list of apps from the cache.
+            for app in apps:
 
-            # fix for TypeErrors encountered
-            # This is just a patch fix.
-            # TODO: Find the root cause of TypeError here
+                setting_tuple = (
+                    'module',
+                    app['model']._meta.app_label,
+                    'enabled',
+                )
 
-            try:
-                for app in apps:
+                # enabled / has settings
+                if check_setting(*setting_tuple):
+                    app['enabled'] = get_setting(*setting_tuple)
+                    app['has_settings'] = True
+                else:
+                    app['enabled'] = True
+                    app['has_settings'] = False
 
-                    setting_tuple = (
-                        'module',
-                        app['model']._meta.app_label,
-                        'enabled',
-                    )
+                if 'settings' not in app['url']:
+                    app['url'].update({
+                        'settings': lazy_reverse('settings.index', args=[
+                            'module',
+                            app['model']._meta.app_label
+                        ])
+                    })
 
-                    # enabled / has settings
-                    if check_setting(*setting_tuple):
-                        app['enabled'] = get_setting(*setting_tuple)
-                        app['has_settings'] = True
-                    else:
-                        app['enabled'] = True
-                        app['has_settings'] = False
+                if app['app_type'] == 'addon':
+                    self.addons.append(app)
 
-                    if 'settings' not in app['url']:
-                        app['url'].update({
-                            'settings': lazy_reverse('settings.index', args=[
-                                'module',
-                                app['model']._meta.app_label
-                            ])
-                        })
+                if app['app_type'] == 'people':
+                    self.people.append(app)
 
-                    if app['app_type'] == 'addon':
-                        self.addons.append(app)
+                if app['app_type'] == 'core':
+                    self.core.append(app)
 
-                    if app['app_type'] == 'people':
-                        self.people.append(app)
+                # append all apps for main iterable
+                self.all_apps.append(app)
 
-                    if app['app_type'] == 'core':
-                        self.core.append(app)
-
-                    # append all apps for main iterable
-                    self.all_apps.append(app)
-
-            except TypeError:
-                pass
-
-        # sort the applications alphabetically by
-        # object representation
-        def key(x):
-            return str(x)
-        self.all_apps = sorted(self.all_apps, key=key)
-        self.core = sorted(self.core, key=key)
-        self.addons = sorted(self.addons, key=key)
-        self.people = sorted(self.people, key=key)
+        # Sort the applications alphabetically by verbose_name
+        def sort_by(app):
+            return app['verbose_name'].lower()
+            # Could instead sort by model class name
+            #return str(app['model']).lower()
+        self.all_apps = sorted(self.all_apps, key=sort_by)
+        self.core = sorted(self.core, key=sort_by)
+        self.addons = sorted(self.addons, key=sort_by)
+        self.people = sorted(self.people, key=sort_by)
 
     def __iter__(self):
         return iter(self.all_apps)
