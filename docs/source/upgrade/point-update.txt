@@ -6,7 +6,7 @@ These instructions will upgrade Tendenci to a new minor version.
 Shut down the Tendenci server if necessary:
 ::
 
-    service tendenci stop
+    sudo service tendenci stop
 
 Activate your virtualenv:
 ::
@@ -32,11 +32,17 @@ Apply database and static media updates, then clear the cache:
 Verify that permissions are still set appropriately:
 ::
 
-    sudo chmod -Rh -x+X /var/www/tendenci/media/
+    # For a testing/development installation, this may be sufficient:
+    chmod -Rh -x+X /var/www/tendenci/media/
+    # For a live site, you should run:
+    chmod -R o+rX-w /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
-    sudo chmod -Rh g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
+    chmod -R g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    sudo chown -Rh www-data:adm /var/log/tendenci/
+    sudo chmod -R -x+X,g+r-w,o-rwx /var/log/tendenci/
 
 Restart the Tendenci server:
 ::
 
-    service tendenci restart
+    sudo service tendenci restart
