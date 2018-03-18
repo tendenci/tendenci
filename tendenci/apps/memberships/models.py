@@ -1336,7 +1336,7 @@ class MembershipDefault(TendenciBaseModel):
             user = User.objects.create_user(**{
                 'username': un or spawn_username(fn[:1], ln),
                 'email': em,
-                'password': pw or hashlib.sha1(em).hexdigest()[:6],
+                'password': pw or hashlib.sha1(em.encode()).hexdigest()[:6]
             })
 
             user.first_name = fn

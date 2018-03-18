@@ -98,17 +98,17 @@ def google_cmap_sign_url(url):
     url_parts_to_sign = url_parts.path + "?" + url_parts.query
 
     # retrieve the URL signing secret by decoding it - it is encoded in a modified Base64
-    decoded_signing_secret = base64.urlsafe_b64decode(signing_secret)
+    decoded_signing_secret = base64.urlsafe_b64decode(signing_secret.encode())
 
     # sign it  using the HMAC-SHA1 algorithm
-    signature = hmac.new(decoded_signing_secret, url_parts_to_sign, hashlib.sha1)
+    signature = hmac.new(decoded_signing_secret, url_parts_to_sign.encode(), hashlib.sha1)
 
     # encode the resulting binary signature using the modified Base64 for URLs
     # to convert this signature into something that can be passed within a URL
     encoded_signature = base64.urlsafe_b64encode(signature.digest())
 
     # append digital signature
-    return url + "&signature=" + encoded_signature
+    return url + "&signature=" + encoded_signature.decode()
 
 
 class LazyEncoder(DjangoJSONEncoder):

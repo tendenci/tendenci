@@ -24,4 +24,4 @@ def get_h_sequence(access_id, time_stamp, secret_key):
            str(time_stamp)
            ])+'&'
 
-    return hmac.new(str(secret_key), str(msg)).hexdigest()
+    return hmac.new(str(secret_key).encode(), str(msg).encode()).hexdigest()

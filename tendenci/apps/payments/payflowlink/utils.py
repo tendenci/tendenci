@@ -1,5 +1,4 @@
 #import time
-#import hashlib
 from django.conf import settings
 #from django.http import Http404
 from django.db import transaction

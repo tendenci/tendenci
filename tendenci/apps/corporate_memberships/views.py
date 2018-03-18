@@ -186,7 +186,7 @@ def corpmembership_add_pre(request,
     if request.method == "POST":
         if form.is_valid():
             creator = form.save()
-            hash = md5('%d.%s' % (creator.id, creator.email)
+            hash = md5(('%d.%s' % (creator.id, creator.email)).encode()
                        ).hexdigest()
             creator.hash = hash
             creator.save()

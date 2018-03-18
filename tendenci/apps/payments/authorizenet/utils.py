@@ -17,7 +17,7 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
            x_amount
            ])+'^'
 
-    return hmac.new(settings.MERCHANT_TXN_KEY, msg).hexdigest()
+    return hmac.new(settings.MERCHANT_TXN_KEY.encode(), msg.encode()).hexdigest()
 
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
@@ -88,7 +88,7 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         amount = response_d.get('x_amount', 0)
 
         s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
-        my_md5_hash = hashlib.md5(s).hexdigest()
+        my_md5_hash = hashlib.md5(s.encode()).hexdigest()
 
         # don't break the payment process if md5 hash is not set up
         if md5_hash_value:

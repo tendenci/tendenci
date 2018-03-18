@@ -1,7 +1,7 @@
 from __future__ import print_function
 import random
 import time
-import md5
+import hashlib
 import sys
 
 from django.core.management.base import BaseCommand
@@ -69,10 +69,10 @@ class Command(BaseCommand):
 
     @property
     def random_session_key(self):
-        session_key = md5.new(
+        session_key = hashlib.md5.new((
             str(random.randint(0, sys.maxsize - 1)) + "#" +
             str(random.randint(0, sys.maxsize - 1)) + "#" +
-            str(time.time()) + "#").hexdigest()
+            str(time.time()) + "#").encode()).hexdigest()
         return session_key
 
     @property

@@ -20,7 +20,7 @@ getting django-registration running in the default setup, to wit:
 """
 
 import datetime
-import sha
+import hashlib
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -103,7 +103,7 @@ class RegistrationModelTests(RegistrationTestCase):
         self.failIf(RegistrationProfile.objects.activate_user('foo'))
 
         # Activating from a key that doesn't exist returns False.
-        self.failIf(RegistrationProfile.objects.activate_user(sha.new('foo').hexdigest()))
+        self.failIf(RegistrationProfile.objects.activate_user(hashlib.sha1.new(b'foo').hexdigest()))
 
     def test_account_expiration_condition(self):
         """
@@ -314,5 +314,5 @@ class RegistrationViewTests(RegistrationTestCase):
 
         # Nonexistent key sets the account to False.
         response = self.client.get(reverse('registration_activate',
-                                           kwargs={ 'activation_key': sha.new('foo').hexdigest() }))
+                                           kwargs={ 'activation_key': hashlib.sha1.new(b'foo').hexdigest() }))
         self.failIf(response.context['account'])

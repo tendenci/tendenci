@@ -144,7 +144,7 @@ class FanCountNode(Node):
         if self.service == "facebook":
             query = '%s?method=facebook.fql.query&query=SELECT%%20fan_count%%20FROM%%20page%%20WHERE%%20page_id=%s'
             xml_path = query % (fb_api_url, self.service_id)
-            cache_key = md5(xml_path).hexdigest()
+            cache_key = md5(xml_path.encode()).hexdigest()
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
@@ -161,7 +161,7 @@ class FanCountNode(Node):
         if self.service == "twitter":
             query = "%s/1/users/show/%s.xml"
             xml_path = query % (tw_api_url, self.service_id)
-            cache_key = md5(xml_path).hexdigest()
+            cache_key = md5(xml_path.encode()).hexdigest()
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
@@ -429,7 +429,7 @@ class RssParserNode(Node):
         except:
             pass
 
-        cache_key = md5(self.url).hexdigest()
+        cache_key = md5(self.url.encode()).hexdigest()
         url_content = cache.get(cache_key)
 
         if url_content is None:
@@ -584,9 +584,8 @@ class Md5Hash(Node):
         self.bits = [Variable(bit) for bit in kwargs.get("bits", [])[1:]]
 
     def render(self, context):
-        from hashlib import md5
         bits = [str(b.resolve(context)) for b in self.bits]
-        return md5(".".join(bits)).hexdigest()
+        return md5(".".join(bits).encode()).hexdigest()
 
 @register.tag
 def md5_hash(parser, token):
