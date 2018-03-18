@@ -18,7 +18,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         super(NoticeTimeTypeWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 

@@ -16,7 +16,7 @@ class Reg8nDtWidget(Widget):
         'end_dt': '',
     }
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         str_format_kwargs = []
         for k, v in self.reg8n_dict.items():
             # date field

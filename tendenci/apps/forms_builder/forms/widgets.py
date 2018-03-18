@@ -13,7 +13,7 @@ class Output(forms.Widget):
             return formats.localize_input(value)
         return value
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         return force_text(self.format_value(value))

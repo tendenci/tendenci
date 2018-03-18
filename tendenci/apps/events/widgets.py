@@ -12,7 +12,7 @@ class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
     An object used by RadioSelect to enable customization of radio widgets.
     """
 
-    def render(self):
+    def render(self, name, value, attrs=None, renderer=None):
         """
         Outputs a <div> for this set of choice fields.
         If an id was given to the field, it is applied to the <di> (each
@@ -55,7 +55,7 @@ class UseCustomRegWidget(forms.MultiWidget):
 
         super(UseCustomRegWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 

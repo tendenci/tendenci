@@ -71,7 +71,7 @@ class NoticeTimeTypeField(forms.MultiValueField):
 
 
 class PriceInput(forms.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         if currency_symbol == u'':
             currency_symbol = '$'

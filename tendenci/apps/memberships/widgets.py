@@ -70,7 +70,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
 
         super(TypeExpMethodWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 
@@ -276,7 +276,7 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         super(NoticeTimeTypeWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 
@@ -352,7 +352,7 @@ class DonationOptionAmountWidget(forms.MultiWidget):
 
         super(DonationOptionAmountWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 
@@ -428,7 +428,7 @@ class Output(forms.Widget):
             return formats.localize_input(value)
         return value
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         return force_text(self.format_value(value))
@@ -547,7 +547,7 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
                                         ])
     # TODO: add directory section
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs

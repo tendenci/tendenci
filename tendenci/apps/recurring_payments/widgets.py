@@ -5,7 +5,7 @@ from tendenci.apps.recurring_payments.models import BILLING_PERIOD_CHOICES, DUE_
 
 
 class BillingDateSelectInput(forms.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         return mark_safe('%s day(s) after billing cycle end date'
                          % super(BillingDateSelectInput, self).render(name, value, attrs))
 
@@ -24,7 +24,7 @@ class BillingDateSelectWidget(forms.MultiWidget):
 
         super(BillingDateSelectWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 
@@ -88,7 +88,7 @@ class BillingCycleWidget(forms.MultiWidget):
 
         super(BillingCycleWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 

@@ -111,7 +111,7 @@ def has_groups_perms(instance):
 
 
 class UserPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
@@ -195,7 +195,7 @@ class UserPermissionField(MultipleChoiceField):
 
 
 class MemberPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
@@ -279,7 +279,7 @@ class MemberPermissionField(MultipleChoiceField):
 
 
 class GroupPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs

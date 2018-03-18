@@ -99,7 +99,7 @@ class EmailVerificationWidget(MultiWidget):
 
 
 class PriceWidget(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
         html = super(PriceWidget, self).render(name, value, attrs)
 

@@ -81,7 +81,7 @@ class TinyMCE(forms.Textarea):
             mce_json = mce_json[:index]+', '+k+':'+js_functions[k].strip()+mce_json[index:]
         return mce_json
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         value = smart_text(value)
