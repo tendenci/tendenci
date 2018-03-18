@@ -1,10 +1,11 @@
 from haystack import indexes
 
 from tendenci.apps.events.models import Event, Registrant
+from tendenci.apps.events.utils import count_event_spots_taken
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
-from tendenci.apps.base.utils import strip_html, count_event_spots_taken
+from tendenci.apps.base.utils import strip_html
 
 
 class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
