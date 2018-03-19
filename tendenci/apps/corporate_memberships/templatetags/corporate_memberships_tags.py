@@ -4,6 +4,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.functions import Lower
 
 from tendenci.apps.corporate_memberships.models import CorpMembership
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -251,14 +252,14 @@ class ListCorpMembershipNode(Node):
                 order = self.kwargs['order']
 
         items = CorpMembership.objects.all()
-        if user.is_authenticated():
-            if not user.profile.is_superuser:
-                if user.profile.is_member and allow_member_search:
-                    items = items.distinct()
-                else:
-                    items = items.none()
-        else:
-            if not allow_anonymous_search:
+        if not allow_anonymous_search:
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    if user.profile.is_member and allow_member_search:
+                        items = items.distinct()
+                    else:
+                        items = items.none()
+            else:
                 items = items.none()
                 
         items = self.custom_model_filter(items, user)
@@ -267,7 +268,10 @@ class ListCorpMembershipNode(Node):
 
         # if order is not specified it sorts by relevance
         if order:
-            items = items.order_by(order)
+            if order == 'corp_profile__name':
+                items = items.order_by(Lower(order))
+            else:
+                items = items.order_by(order)
 
         if randomize:
             objects = [item for item in random.sample(items, items.count())]

@@ -70,5 +70,5 @@
         // This hotfix makes older versions of jQuery UI drag-and-drop work in IE10 and IE9
         jQuery.ready(function($) {var a=$.ui.mouse.prototype._mouseMove;$.ui.mouse.prototype._mouseMove=function(b){if($.browser.msie&&document.documentMode>=9){b.button=1};a.apply(this,[b]);}});
     </script>
-    <script type="text/javascript" src="{%static 'js/dashboard-stats-ordering.js' %}"></script>
+    <script type="text/javascript" src="{%static 'js/tendenci-ams-dashboard-ordering.js' %}"></script>
 {% endblock %}

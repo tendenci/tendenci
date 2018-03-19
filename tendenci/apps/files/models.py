@@ -55,7 +55,7 @@ class File(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     name = models.CharField(max_length=250, blank=True)
     description = models.TextField(blank=True)
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL)
     # file type - image, video, or text...
     f_type = models.CharField(max_length=20, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)

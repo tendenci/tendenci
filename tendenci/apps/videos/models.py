@@ -49,8 +49,8 @@ class Video(OrderingBaseModel, TendenciBaseModel):
     """
     title = models.CharField(max_length=200)
     slug = models.SlugField(_('URL Path'), unique=True, max_length=200)
-    category = models.ForeignKey(Category)
-    video_type = models.ForeignKey(VideoType, null=True, blank=True)
+    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    video_type = models.ForeignKey(VideoType, null=True, blank=True, on_delete=models.SET_NULL)
     image = models.ImageField(upload_to='uploads/videos/%y/%m', blank=True)
     video_url = models.CharField(max_length=500, help_text='Youtube, Vimeo, etc..')
     description = tinymce_models.HTMLField()

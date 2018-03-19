@@ -499,34 +499,40 @@ class MembershipDefault(TendenciBaseModel):
     application_abandoned = models.BooleanField(default=False)
     application_abandoned_dt = models.DateTimeField(null=True, default=None)
     application_abandoned_user = models.ForeignKey(
-        User, related_name='application_abandond_set', null=True)
+        User, related_name='application_abandond_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_complete = models.BooleanField(default=True)
     application_complete_dt = models.DateTimeField(null=True, default=None)
     application_complete_user = models.ForeignKey(
-        User, related_name='application_complete_set', null=True)
+        User, related_name='application_complete_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_approved = models.BooleanField(default=False)
     application_approved_dt = models.DateTimeField(null=True, default=None)
     application_approved_user = models.ForeignKey(
-        User, related_name='application_approved_set', null=True)
+        User, related_name='application_approved_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_approved_denied_dt = models.DateTimeField(null=True, default=None)
     application_approved_denied_user = models.ForeignKey(
-        User, related_name='application_approved_denied_set', null=True)
+        User, related_name='application_approved_denied_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_denied = models.BooleanField(default=False)
 
     action_taken = models.CharField(max_length=500, blank=True)
     action_taken_dt = models.DateTimeField(null=True, default=None)
     action_taken_user = models.ForeignKey(
-        User, related_name='action_taken_set', null=True)
+        User, related_name='action_taken_set', null=True,
+        on_delete=models.SET_NULL)
     # workflow fields -----------------------------------------
 
     bod_dt = models.DateTimeField(null=True)
     personnel_notified_dt = models.DateTimeField(null=True)
     payment_received_dt = models.DateTimeField(null=True)
-    payment_method = models.ForeignKey(PaymentMethod, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, null=True,
+                                       on_delete=models.SET_NULL)
     override = models.BooleanField(default=False)
     override_price = models.FloatField(null=True)
     exported = models.BooleanField(default=False)
@@ -543,11 +549,11 @@ class MembershipDefault(TendenciBaseModel):
     government_agency = models.CharField(max_length=250, blank=True, default=u'')
     license_number = models.CharField(max_length=50, blank=True, default=u'')
     license_state = models.CharField(max_length=50, blank=True, default=u'')
-    industry = models.ForeignKey(Industry, blank=True, null=True)
-    region = models.ForeignKey(Region, blank=True, null=True)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     company_size = models.CharField(max_length=50, blank=True, default=u'')
     promotion_code = models.CharField(max_length=50, blank=True, default=u'')
-    directory = models.ForeignKey(Directory, blank=True, null=True)
+    directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
 
     membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)

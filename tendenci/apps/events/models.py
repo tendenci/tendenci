@@ -187,7 +187,7 @@ class RegistrationConfiguration(models.Model):
                                  default=BIND_TRUE)
 
     # base email for reminder email
-    email = models.ForeignKey(Email, null=True)
+    email = models.ForeignKey(Email, null=True, on_delete=models.SET_NULL)
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
     reminder_days = models.CharField(_('Specify when (? days before the event ' +
                                        'starts) the reminder should be sent '),
@@ -411,17 +411,17 @@ class Registration(models.Model):
     guid = models.TextField(max_length=40, editable=False)
     note = models.TextField(blank=True)
     event = models.ForeignKey('Event')
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
 
     # This field will not be used if dynamic pricings are enabled for registration
     # The pricings should then be found in the Registrant instances
-    reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
+    reg_conf_price = models.ForeignKey(RegConfPricing, null=True, on_delete=models.SET_NULL)
 
     reminder = models.BooleanField(default=False)
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
-    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
+    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True, on_delete=models.SET_NULL)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
     is_table = models.BooleanField(_('Is table registration'), default=False)
@@ -717,7 +717,7 @@ class Registrant(models.Model):
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
-    pricing = models.ForeignKey('RegConfPricing', null=True)  # used for dynamic pricing
+    pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
 
     custom_reg_form_entry = models.ForeignKey(
         "CustomRegFormEntry", related_name="registrants", null=True)
@@ -1094,7 +1094,7 @@ class Event(TendenciBaseModel):
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
     timezone = TimeZoneField(_('Time Zone'))
-    place = models.ForeignKey('Place', null=True)
+    place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
@@ -1103,7 +1103,7 @@ class Event(TendenciBaseModel):
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
-        help_text=_('Photo that represents this event.'), null=True, blank=True)
+        help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
@@ -1121,7 +1121,7 @@ class Event(TendenciBaseModel):
     display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="admin")
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -1655,7 +1655,7 @@ class Addon(models.Model):
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
-    group = models.ForeignKey(Group, blank=True, null=True)
+    group = models.ForeignKey(Group, blank=True, null=True, on_delete=models.SET_NULL)
     allow_anonymous = models.BooleanField(_("Public can use"), default=False)
     allow_user = models.BooleanField(_("Signed in user can use"), default=False)
     allow_member = models.BooleanField(_("All members can use"), default=False)

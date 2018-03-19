@@ -57,7 +57,7 @@ class RecurringPayment(models.Model):
     description = models.CharField(_('Description'), max_length=100, help_text=_("Use a short term, example: web hosting"))
     # with object_content_type and object_content_id, we can apply the recurring
     # payment to other modules such as memberships, jobs, etc.
-    object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL)
     object_content_id = models.IntegerField(default=0, blank=True, null=True)
 
     billing_period = models.CharField(max_length=50, choices=BILLING_PERIOD_CHOICES,

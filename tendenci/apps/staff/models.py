@@ -25,7 +25,7 @@ def file_directory(instance, filename):
 class Staff(OrderingBaseModel, TendenciBaseModel):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=75, unique=True)
-    department = models.ForeignKey('Department', blank=True, null=True)
+    department = models.ForeignKey('Department', blank=True, null=True, on_delete=models.SET_NULL)
     positions = models.ManyToManyField('Position', blank=True)
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)

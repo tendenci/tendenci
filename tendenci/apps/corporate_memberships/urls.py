@@ -11,6 +11,8 @@ if not urlpath:
 urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     url(r'^%s/$' % urlpath, 'search', name="corp_memb"),
     url(r'^%s/$' % urlpath, 'search', name="corp_memb.search"),
+    url(r"^%s/profiles/(?P<id>\d+)/$" % urlpath,
+        "corpprofile_view", name="corpmembership.view_profile"),
     url(r"^%s/get_app_fields/$" % urlpath,
         "get_app_fields_json",
         name="corpmemberships.get_app_fields"),
@@ -101,10 +103,12 @@ urlpatterns = patterns('tendenci.apps.corporate_memberships.views',
     (r'^%s/notices/' % urlpath, include('tendenci.apps.corporate_memberships.notices.urls')),
 
     # report
-    url(r"^%s/reports/summary/$" % urlpath, "summary_report", name="corp_membership.summary_report"),
+    url(r"^%s/reports/overview/$" % urlpath, "overview", name="corp_membership.overview"),
 
 
     # reports
+    url(r"^%s/reports/active_members_by_type/$" % urlpath, "report_active_corp_members_by_type", name="reports-active-corp-mems-by-type"),
+    url(r"^%s/reports/corp_members_by_status/$" % urlpath, "report_corp_members_by_status", name="reports-corp-mems-by-status"),
     url(r"^%s/reports/corp_mems_over_time/$" % urlpath, "new_over_time_report", name="reports-corp-mems-over-time"),
     url(r"^%s/reports/corp_mems_summary/$" % urlpath, "corp_mems_summary", name="reports-corp-mems-summary"),
     url(r"^%s/reports/free_passes_list/$" % urlpath, "free_passes_list", name="corp_memb.reports.free_passes_list"),

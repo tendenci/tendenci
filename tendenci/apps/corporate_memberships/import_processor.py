@@ -15,6 +15,7 @@ from tendenci.apps.corporate_memberships.models import (
 from tendenci.apps.corporate_memberships.utils import update_authorized_domains
 from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.entities.models import Entity
 
 
 class CorpMembershipImportProcessor(object):
@@ -372,12 +373,13 @@ class CorpMembershipImportProcessor(object):
                         if value is None:
                             setattr(instance, field_name, value)
         
-        # for fields not in spreadsheet, assign default value                   
-        for field_name in assign_to_fields:
-            if field_name not in self.field_names:
-                value = self.get_default_value(assign_to_fields[field_name])
-                if value is not None:
-                    setattr(instance, field_name, value)
+        # for fields not in spreadsheet, assign default value 
+        if action == 'insert':                  
+            for field_name in assign_to_fields:
+                if field_name not in self.field_names:
+                    value = self.get_default_value(assign_to_fields[field_name])
+                    if value is not None:
+                        setattr(instance, field_name, value)
 
     def get_default_value(self, field):
         # if allows null or has default, return None
@@ -517,6 +519,11 @@ class CorpMembershipImportProcessor(object):
             if not value and field.name == 'corporate_membership_type':
                 [value] = CorporateMembershipType.objects.filter(
                                             name=orignal_value)[:1] or [None]
+
+            # allow entity_name in parent_entity field
+            if not value and field.name == 'parent_entity':
+                [value] = Entity.objects.filter(
+                            entity_name=orignal_value)[:1] or [None]
 
             if not value and not field.null:
                 if field.name not in ['creator', 'owner']:

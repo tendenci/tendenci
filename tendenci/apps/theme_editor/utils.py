@@ -9,6 +9,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
 
 from tendenci.apps.theme.utils import get_theme_root, get_theme
@@ -313,7 +314,7 @@ def handle_uploaded_file(file_path, file_dir):
 
     # copy to s3
     if settings.USE_S3_THEME:
-        if os.path.splitext(f.name)[1] == '.html':
+        if os.path.splitext(file_name)[1] == '.html':
             public = False
         else:
             public = True

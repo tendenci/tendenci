@@ -16,7 +16,7 @@ class Box(OrderingBaseModel, TendenciBaseModel):
     title = models.CharField(max_length=500, blank=True)
     content = tinymce_models.HTMLField()
     tags = TagField(blank=True)
-    group = models.ForeignKey(Group, null=True, default=get_default_group)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

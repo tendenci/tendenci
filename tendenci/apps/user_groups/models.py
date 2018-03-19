@@ -143,6 +143,9 @@ class Group(TendenciBaseModel):
 
         return user, False
 
+    def remove_user(self, user, **kwargs):
+        if self.is_member(user):
+            GroupMembership.objects.get(group=self, member=user).delete()
 
 class GroupMembership(models.Model):
 

@@ -87,7 +87,7 @@ class Project(TendenciBaseModel):
     slug = models.SlugField(_(u'URL Path'), unique=True, max_length=200)
     project_name = models.CharField(
         _(u'Project Name'), max_length=300)
-    project_manager = models.ForeignKey(ProjectManager, blank=True, null=True)
+    project_manager = models.ForeignKey(ProjectManager, blank=True, null=True, on_delete=models.SET_NULL)
     project_number = models.OneToOneField(ProjectNumber, blank=True, null=True)
     project_status = models.CharField(_(u'Project Status'),
         blank=True,
@@ -101,7 +101,7 @@ class Project(TendenciBaseModel):
         null = True,
         blank = True
         )
-    client = models.ForeignKey(ClientList, blank=True, null=True)
+    client = models.ForeignKey(ClientList, blank=True, null=True, on_delete=models.SET_NULL)
     location = models.CharField(
         _(u'Location'), max_length=200, null = True, blank = True)
     city = models.CharField(

@@ -88,7 +88,7 @@ class Resume(TendenciBaseModel):
     # status = models.NullBooleanField("Active", default=True)
     # status_detail = models.CharField(max_length=50, default='active')
 
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     perms = GenericRelation(ObjectPermission,

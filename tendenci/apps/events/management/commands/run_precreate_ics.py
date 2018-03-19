@@ -15,7 +15,7 @@ class Command(BaseCommand):
             if args:
                 try:
                     ics = ICS.objects.get(pk=int(args[0]))
-                except Export.DoesNotExist:
+                except ICS.DoesNotExist:
                     raise CommandError('ICS not specified')
 
                 self.stdout.write('Started compiling ics file...')

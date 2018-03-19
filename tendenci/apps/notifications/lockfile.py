@@ -297,7 +297,7 @@ class MkdirFileLock(LockBase):
         """
         LockBase.__init__(self, path, threaded)
         if threaded:
-            tname = "%x-" % thread.get_ident()
+            tname = "%x-" % threading.current_thread().get_ident()
         else:
             tname = ""
         # Lock file itself is a directory.  Place the unique file name into
