@@ -1,6 +1,8 @@
+from builtins import str
 import random
 from datetime import datetime, timedelta
 from operator import or_
+from functools import reduce
 
 from django.db import models
 from django.db.models import Q
@@ -311,7 +313,7 @@ class ListEventsNode(ListNode):
         if 'tags' in self.kwargs:
             try:
                 tags = Variable(self.kwargs['tags'])
-                tags = unicode(tags.resolve(context))
+                tags = str(tags.resolve(context))
             except:
                 tags = self.kwargs['tags']
 
@@ -366,7 +368,7 @@ class ListEventsNode(ListNode):
         if 'group' in self.kwargs:
             try:
                 group = Variable(self.kwargs['group'])
-                group = unicode(group.resolve(context))
+                group = str(group.resolve(context))
             except:
                 group = self.kwargs['group']
 
@@ -377,7 +379,7 @@ class ListEventsNode(ListNode):
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
-        if user.is_authenticated():
+        if user.is_authenticated:
             if not user.profile.is_superuser:
                 items = items.distinct()
 
@@ -434,9 +436,10 @@ class ListEventsNode(ListNode):
                 items = items.order_by(order)
 
         if randomize:
-            objects = [item for item in random.sample(items, items.count())][:limit]
+            items = list(items)
+            objects = random.sample(items, min(len(items), limit))
         else:
-            objects = [item for item in items[:limit]]
+            objects = items[:limit]
 
         context[self.context_var] = objects
         return ""

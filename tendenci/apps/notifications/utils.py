@@ -18,7 +18,6 @@ def send_welcome_email(user):
     Send email to user account.
     Expects user account else returns false.
     """
-    from django.utils.http import int_to_base36
     from django.contrib.auth.tokens import default_token_generator
     from tendenci.apps.site_settings.utils import get_setting
 

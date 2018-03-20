@@ -5,15 +5,17 @@ import os.path
 import shutil
 
 from django.conf import settings
-from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from forms import UploadFileForm
-import utils
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+
+from .forms import UploadFileForm
+from . import utils
 
 logger = logging.getLogger('django')
+
 
 ##
 # Utils
@@ -42,7 +44,7 @@ def home(request):
     ready to upload. This HTML page should contain your client-side code
     for instatiating and modifying Fine Uploader.
     """
-    return render(request, 'fine_uploader/index.html')
+    return render_to_resp(request=request, template_name='fine_uploader/index.html')
 
 
 class UploadView(View):

@@ -1,14 +1,22 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.files.models import File, file_directory
+from tendenci.apps.files.models import File
 from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.testimonials.managers import TestimonialManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
+
+
+class TestimonialPhoto(File):
+    class Meta:
+        app_label = 'testimonials'
+        manager_inheritance_from_future = True
+
 
 class Testimonial(OrderingBaseModel, TendenciBaseModel):
     first_name = models.CharField(max_length=50, blank=True, default="")
@@ -21,7 +29,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     title = models.CharField(max_length=50, blank=True, default="")
     website = models.URLField(max_length=255, blank=True, null=True)
     testimonial = models.TextField(help_text=_('Supports &lt;strong&gt;, &lt;em&gt;, and &lt;a&gt; HTML tags.'))
-    image = models.ForeignKey('TestimonialPhoto',
+    image = models.ForeignKey(TestimonialPhoto,
         on_delete=models.SET_NULL,
         help_text=_('Photo for this testimonial.'), null=True, default=None)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
@@ -42,9 +50,8 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     def __unicode__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("testimonial.view", [self.pk])
+        return reverse('testimonial.view', args=[self.pk])
 
     def first_last_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -90,8 +97,3 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
-
-
-class TestimonialPhoto(File):
-    class Meta:
-        app_label = 'testimonials'

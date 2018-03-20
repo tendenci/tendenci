@@ -1,14 +1,14 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-
-urlpatterns = patterns('tendenci.apps.discounts.views',
-    url(r'^$', 'search', name="discounts"),
-    url(r'^add/$', 'add', name="discount.add"),
-    url(r'^detail/(?P<id>\d+)/$', 'detail', name="discount.detail"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="discount.edit"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="discount.delete"),
-    url(r'^discounted_price/$', 'discounted_price', name='discount.discounted_price'),
-    url(r'^discounted_prices/$', 'discounted_prices', name='discount.discounted_prices'),
-    url(r'^check_discount/$', 'discounted_prices', {'check':True}, name='discount.check_discount'),
-    url(r'^export/$', 'export', name='discount.export'),
-)
+urlpatterns = [
+    url(r'^$', views.search, name="discounts"),
+    url(r'^add/$', views.add, name="discount.add"),
+    url(r'^detail/(?P<id>\d+)/$', views.detail, name="discount.detail"),
+    url(r'^edit/(?P<id>\d+)/$', views.edit, name="discount.edit"),
+    url(r'^delete/(?P<id>\d+)/$', views.delete, name="discount.delete"),
+    url(r'^discounted_price/$', views.discounted_price, name='discount.discounted_price'),
+    url(r'^discounted_prices/$', views.discounted_prices, name='discount.discounted_prices'),
+    url(r'^check_discount/$', views.discounted_prices, {'check':True}, name='discount.check_discount'),
+    url(r'^export/$', views.export, name='discount.export'),
+]

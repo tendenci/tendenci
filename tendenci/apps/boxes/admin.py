@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.template.defaultfilters import truncatewords_html
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.boxes.models import Box
@@ -37,19 +38,19 @@ class BoxAdmin(TendenciBaseModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
+    @mark_safe
     def admin_status(self, obj):
         return obj.obj_status
-    admin_status.allow_tags = True
     admin_status.short_description = _('status')
 
+    @mark_safe
     def admin_perms(self, obj):
         return obj.obj_perms
-    admin_perms.allow_tags = True
     admin_perms.short_description = _('permission')
 
+    @mark_safe
     def short_content(self, obj):
         return '<div style="max-width: 600px; overflow: hidden;">%s</div>' % truncatewords_html(obj.content, 30)
-    short_content.allow_tags = True
     short_content.short_description = _('content')
 
 admin.site.register(Box, BoxAdmin)

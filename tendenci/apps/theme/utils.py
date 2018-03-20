@@ -1,5 +1,5 @@
 import os
-import ConfigParser
+import configparser
 from django.conf import settings
 from django.core.cache import cache
 from tendenci.apps.site_settings.utils import get_setting
@@ -24,17 +24,6 @@ def get_theme_root(theme=None):
         # local theme root
         theme_root = (os.path.join(settings.ORIGINAL_THEMES_DIR, theme)).replace('\\', '/')
     return theme_root
-
-
-# this function is doing nothing and needs to be removed
-def get_theme_template(template_name, theme=None):
-    """Returns a relative path for the theme template.
-    This is used primarily as an input for loader's get_template
-    """
-#     if theme is None:  # default theme
-#         theme = get_theme()
-#     theme_template = template_name
-    return template_name
 
 
 def theme_options():
@@ -89,10 +78,10 @@ def get_theme_info(theme=None):
     if cached is None:
         # Get a dict of the fields, not the object itself.
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         try:
             config.read(os.path.join(theme_root, 'theme.info'))
-        except ConfigParser.MissingSectionHeaderError:
+        except configparser.MissingSectionHeaderError:
             prepend_file(os.path.join(theme_root, 'theme.info'))
             config.read(os.path.join(theme_root, 'theme.info'))
 

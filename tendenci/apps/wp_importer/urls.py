@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.wp_importer.views',
-    url(r'^$', 'index'),
-    url(r'^detail/(?P<task_id>[-\w]+)/$', 'detail', name='detail'),
-)
+urlpatterns = [
+    url(r'^$', views.index),
+    url(r'^detail/(?P<task_id>[-\w]+)/$', views.detail, name='detail'),
+]

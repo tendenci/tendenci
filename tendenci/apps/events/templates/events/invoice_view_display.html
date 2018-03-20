@@ -32,10 +32,10 @@
                     {% endwith %}
                     {% endif %}
                     {% with reg.pricing as price_title  %}
-		            {% if price_title %}
-		             <br />{% trans "Registered as:" %} {{ price_title}}
-		            {% endif %}
-		            {% endwith %}
+                    {% if price_title %}
+                     <br />{% trans "Registered as:" %} {{ price_title}}
+                    {% endif %}
+                    {% endwith %}
                 </td>
                 <td class="td-right">
                     {{ reg.amount|format_currency }}

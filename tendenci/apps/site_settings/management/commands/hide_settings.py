@@ -1,9 +1,6 @@
 from __future__ import print_function
-import os
-import simplejson as json
 
-from django.conf import settings as django_settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting
 
@@ -20,19 +17,19 @@ class Command(BaseCommand):
         parser.add_argument('scope_category')
 
     def handle(self, scope_category, **options):
-        try:
-            verbosity = int(options['verbosity'])
-        except:
-            verbosity = 1
+        #try:
+        #    verbosity = int(options['verbosity'])
+        #except:
+        #    verbosity = 1
 
         if scope_category:
             settings = Setting.objects.filter(scope_category=scope_category)
 
-            required_keys = [
-                'scope',
-                'scope_category',
-                'name'
-            ]
+            #required_keys = [
+            #    'scope',
+            #    'scope_category',
+            #    'name'
+            #]
             for setting in settings:
                 try:
                     current_setting = Setting.objects.get(

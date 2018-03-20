@@ -1,20 +1,19 @@
-
+from builtins import str
 from csv import writer
 from datetime import datetime
-from mimetypes import guess_type
-
 
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
@@ -111,12 +110,12 @@ class FormAdmin(TendenciBaseModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def export_all_link(self, obj):
         link = '-----'
         if obj.has_files():
             link = '<a href="%s" title="Export all">Export entries (including uploaded files)</a>' % reverse('form_entries_export_full', args=[obj.pk])
         return link
-    export_all_link.allow_tags = True
     export_all_link.short_description = ''
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -142,14 +141,14 @@ class FormAdmin(TendenciBaseModelAdmin):
         Add the export view to urls.
         """
         urls = super(FormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^export/(?P<form_id>\d+)/$",
                 self.admin_site.admin_view(self.export_view),
                 name="forms_form_export"),
             url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="forms_form_file"),
-        )
+        ]
         return extra_urls + urls
 
     def export_view(self, request, form_id):
@@ -174,11 +173,11 @@ class FormAdmin(TendenciBaseModelAdmin):
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
         entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
-        columns.append(unicode(entry_time_name))
+        columns.append(str(entry_time_name))
         if form.custom_payment:
-            columns.append(unicode("Pricing"))
-            columns.append(unicode("Price"))
-            columns.append(unicode("Payment Method"))
+            columns.append(str("Pricing"))
+            columns.append(str("Price"))
+            columns.append(str("Payment Method"))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each
         # entry as a row.

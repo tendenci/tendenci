@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.forms.models import modelformset_factory, inlineformset_factory
+from django.urls import reverse
+from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
@@ -16,11 +16,9 @@ from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
-from tagging.models import Tag, TaggedItem
-from tagging.utils import parse_tag_input
-from tendenci.apps.committees.models import Committee, Officer, Position
-from tendenci.apps.committees.forms import CommitteeForm, CommitteeAdminForm, OfficerForm
-from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
+from tendenci.apps.committees.models import Committee, Officer
+from tendenci.apps.committees.forms import CommitteeForm, OfficerForm
+from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
 try:
@@ -41,7 +39,7 @@ def detail(request, slug, template_name="committees/detail.html"):
         #group where the user is a member that has a view_committee permission.
         has_group_view_permission = False
         #Check user for group view permissions
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             groups = request.user.group_set.all()
             perms = has_groups_perms(committee).filter(group__in=groups)
             for perm in perms:
@@ -53,14 +51,13 @@ def detail(request, slug, template_name="committees/detail.html"):
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=committee.group).distinct()
 
-        return render_to_response(template_name,
-            {
+        return render_to_resp(request=request, template_name=template_name,
+            context={
                 'committee': committee,
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
-            },
-            context_instance=RequestContext(request))
+            })
     else:
         raise Http403
 
@@ -78,8 +75,8 @@ def search(request, template_name="committees/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'committees': committees},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committees': committees})
 
 
 @is_enabled('committees')
@@ -158,13 +155,12 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 
-    return render_to_response(template_name,
-            {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                 'form':form,
                 'metaform':metaform,
                 'categoryform':categoryform,
-            },
-            context_instance=RequestContext(request))
+            })
 
 @is_enabled('committees')
 @login_required
@@ -208,7 +204,8 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
             meta = metaform.save()
             committee.meta = meta
 
-            officers = formset.save()
+            #officers = formset.save()
+            formset.save()
 
             ## update the category of the committee
             category_removed = False
@@ -254,15 +251,14 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         formset = OfficerFormSet(instance=committee, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, committee_group=committee.group))
 
-    return render_to_response(template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'committee': committee,
             'form': form,
             'metaform': metaform,
             'categoryform': categoryform,
             'formset': formset,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('committees')
@@ -299,8 +295,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-m
     else:
         form = form_class(instance=committee.meta)
 
-    return render_to_response(template_name, {'committee': committee, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committee': committee, 'form': form})
 
 
 @is_enabled('committees')
@@ -328,5 +324,5 @@ def delete(request, id, template_name="committees/delete.html"):
         committee.delete()
         return HttpResponseRedirect(reverse('committees.search'))
 
-    return render_to_response(template_name, {'committee': committee},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'committee': committee})

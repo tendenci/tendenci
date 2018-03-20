@@ -1,9 +1,10 @@
+from builtins import str
 import os
-from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
-from django.template import Library, Template, Variable
+
+from django.template import TemplateSyntaxError, VariableDoesNotExist
+from django.template import Library, Variable
 from django.conf import settings
 from django.template.base import TextNode
-from django.template.loader import get_template
 from django.template.loader_tags import (ExtendsNode, IncludeNode,
                                          BlockNode, BlockContext,
                                          BLOCK_CONTEXT_KEY,)
@@ -14,43 +15,13 @@ from tendenci.apps.boxes.models import Box
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.forms import build_settings_form
-from tendenci.apps.site_settings.utils import get_setting
 
-from tendenci.apps.theme.template_loaders import get_default_template
-from tendenci.apps.theme.utils import get_theme_template
 
 register = Library()
 
+
 class ThemeExtendsNode(ExtendsNode):
     must_be_first = False
-
-    # def __init__(self, nodelist, parent_name, parent_name_expr):
-    #     self.parent_name = parent_name
-    #     self.parent_name_expr = parent_name_expr
-    #     self.nodelist = nodelist
-    #     self.blocks = dict([(n.name, n) for n in nodelist.get_nodes_by_type(BlockNode)])
-
-    # def get_parent(self, context):
-    #     if self.parent_name_expr:
-    #         self.parent_name = self.parent_name_expr.resolve(context)
-    #     parent = unicode(self.parent_name)
-
-    #     if not parent:
-    #         error_msg = "Invalid template name in 'extends' tag: %r." % parent
-    #         if self.parent_name_expr:
-    #             error_msg += " Got this from the '%s' variable." % self.parent_name_expr.token
-    #         raise TemplateSyntaxError(_(error_msg))
-    #     if hasattr(parent, 'render'):
-    #         return parent  # parent is a Template object
-    #     theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
-    #     theme_template = get_theme_template(parent, theme=theme)
-    #     try:
-    #         template = get_template(theme_template)
-    #     except TemplateDoesNotExist:
-    #         #to be sure that we not are loading the active theme's template
-    #         template = get_default_template(parent)
-
-    #     return template
 
     def __init__(self, nodelist, parent_name, template_dirs=None):
         self.nodelist = nodelist
@@ -73,13 +44,7 @@ class ThemeExtendsNode(ExtendsNode):
         if hasattr(parent, 'render'):
             return parent # parent is a Template object
 
-        theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
-        theme_template = get_theme_template(parent, theme=theme)
-        try:
-            template = context.template.engine.get_template(theme_template)
-        except TemplateDoesNotExist:
-            # to be sure that we are not loadnig the active theme's template
-            template = context.template.engine.get_template(parent)
+        template = context.template.engine.get_template(parent)
 
         return template
 
@@ -114,20 +79,14 @@ class ThemeConstantIncludeNode(IncludeNode):
         self.template_path = template_path
 
     def render(self, context):
-        theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
-        theme_template = get_theme_template(self.template_path, theme=theme)
         try:
-            try:
-                t = get_template(theme_template)
-            except TemplateDoesNotExist:
-                t = get_default_template(self.template_path)
-            self.template = t
+            self.template = context.template.engine.get_template(self.template_path)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise
             self.template = None
         if self.template:
-            return self.template.render(context)
+            return self.template.render(context=context)
         else:
             return ''
 
@@ -136,13 +95,8 @@ class ThemeIncludeNode(IncludeNode):
     def render(self, context):
         try:
             template_name = self.template_name.resolve(context)
-            theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
-            theme_template = get_theme_template(template_name, theme=theme)
-            try:
-                t = get_template(theme_template)
-            except TemplateDoesNotExist:
-                t = get_default_template(template_name)
-            return t.render(context)
+            t = context.template.engine.get_template(template_name)
+            return t.render(context=context)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise
@@ -151,7 +105,7 @@ class ThemeIncludeNode(IncludeNode):
 
 class SpaceIncludeNode(IncludeNode):
     def render(self, context):
-        context['setting_name'] = unicode(self.template).replace('MODULE_THEME_', '').lower()
+        context['setting_name'] = str(self.template).replace('MODULE_THEME_', '').lower()
         try:
             setting_value = Variable(self.template).resolve(context)
         except VariableDoesNotExist:
@@ -159,29 +113,24 @@ class SpaceIncludeNode(IncludeNode):
 
         if setting_value:
             # First try to render this as a box
-            user = AnonymousUser()
-            if 'user' in context:
-                if isinstance(context['user'], User):
-                    user = context['user']
+            #user = AnonymousUser()
+            #if 'user' in context:
+            #    if isinstance(context['user'], User):
+            #        user = context['user']
             try:
                 # for performance reason, pass AnonymousUser() to reduce the joins of objectpermissions
                 # in the meantime, we do want to show public items on homepage
                 filters = get_query_filters(AnonymousUser(), 'boxes.view_box')
                 box = Box.objects.filter(filters).filter(pk=setting_value)
                 context['box'] = box[0]
-                template = get_template('theme_includes/box.html')
-                return template.render(context)
+                template = context.template.engine.get_template('theme_includes/box.html')
+                return template.render(context=context)
             except:
                 # Otherwise try to render a template
                 try:
                     template_name = os.path.join('theme_includes', setting_value)
-                    theme = context.get('THEME', get_setting('module', 'theme_editor', 'theme'))
-                    theme_template = get_theme_template(template_name, theme=theme)
-                    try:
-                        t = get_template(theme_template)
-                    except TemplateDoesNotExist:
-                        t = get_default_template(template_name)
-                    return t.render(context)
+                    t = context.template.engine.get_template(template_name)
+                    return t.render(context=context)
                 except:
                     if settings.TEMPLATE_DEBUG:
                         raise
@@ -226,13 +175,8 @@ class ThemeSettingNode(IncludeNode):
         template_name = 'theme_includes/setting_edit_form.html'
         try:
             theme = context['THEME']
-            try:
-                t = get_template("%s/templates/%s" % (theme, template_name))
-            except TemplateDoesNotExist:
-                #load the true default template directly to be sure
-                #that we are not loading the active theme's template
-                t = get_default_template(template_name)
-            return t.render(context)
+            t = context.template.engine.get_template("%s/templates/%s" % (theme, template_name))
+            return t.render(context=context)
         except:
             if settings.TEMPLATE_DEBUG:
                 raise
@@ -324,7 +268,8 @@ def theme_setting(parser, token):
     if len(bits) != 2:
         raise TemplateSyntaxError(_("%r tag takes one argument: the setting to be included" % bits[0]))
     path = bits[1]
-    return ThemeSettingNode(bits[1])
+    return ThemeSettingNode(path)
+
 
 register.tag('theme_extends', theme_extends)
 register.tag('theme_include', theme_include)

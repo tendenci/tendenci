@@ -10,8 +10,8 @@ urls.py - Mapping of URL's to our various views. Note we always used NAMED
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
-from tendenci.apps.helpdesk import settings as helpdesk_settings
-from tendenci.apps.helpdesk.views import feeds, staff, public, api, kb
+from . import settings as helpdesk_settings
+from .views import feeds, staff, public, api, kb
 from django.contrib.auth import views as auth_views
 
 from django.views.generic import TemplateView

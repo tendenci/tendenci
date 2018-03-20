@@ -30,7 +30,7 @@ class EntityManager(models.Manager):
                       'status': True,
                       'status_detail': 'active'
                       }
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 params.update({'creator': user,
                                'creator_username': user.username,
                                'owner': user,

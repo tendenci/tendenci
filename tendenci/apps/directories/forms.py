@@ -9,14 +9,13 @@ from django.forms.utils import ErrorList
 from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.utils import (get_payment_method_choices,
@@ -110,7 +109,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
-                x = int(q)
+                int(q)
             except ValueError:
                 self._errors['q'] = ErrorList(['ID must be a number.'])
 

@@ -1,4 +1,7 @@
-from django.core.urlresolvers import reverse
+from six import with_metaclass
+from builtins import str
+
+from django.urls import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
 from django.utils.translation import ugettext_lazy as _
@@ -39,8 +42,8 @@ class DeclarativeMetaclass(type):
         ]
 
         if 'app_registry' in attrs['__module__']:
-            for field_name, item in attrs.items():
-                if field_name not in ['fields', '__module__']:
+            for field_name, item in attrs.copy().items():
+                if field_name not in ['fields', '__module__', '__qualname__']:
                     if field_name not in allowed_fields:
                         exception = 'Registry field %s not allowed. '\
                                     'The following fields are allowed: %s'
@@ -54,7 +57,7 @@ class DeclarativeMetaclass(type):
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-class Registry(object):
+class Registry(with_metaclass(DeclarativeMetaclass, object)):
     """
     Base registry class for core and plugin applications
 
@@ -77,7 +80,6 @@ class Registry(object):
 
     site.register(ExampleModel, ExampleRegistry)
     """
-    __metaclass__ = DeclarativeMetaclass
 
     def __init__(self, model):
         self.model = model
@@ -87,8 +89,8 @@ class Registry(object):
         self.fields['model'] = self.model
 
         # transfer verbose names for easy access
-        self.fields['verbose_name'] = unicode(self.model._meta.verbose_name)
-        self.fields['verbose_name_plural'] = unicode(self.model._meta.verbose_name_plural)
+        self.fields['verbose_name'] = str(self.model._meta.verbose_name)
+        self.fields['verbose_name_plural'] = str(self.model._meta.verbose_name_plural)
 
         # default url patterns
         if 'url' not in self.fields:
@@ -126,7 +128,7 @@ class Registry(object):
         default_plugin_url = 'plugin-media'
         return '/%s/%s/images/icon.png' % (
             default_plugin_url,
-            unicode(self.model._meta.verbose_name_plural.lower())
+            str(self.model._meta.verbose_name_plural.lower())
         )
 
     def _get_url(self):
@@ -170,7 +172,7 @@ class Registry(object):
         """
         Tests for django admin site registration
         """
-        for model in admin_site._registry.keys():
+        for model in admin_site._registry:
             if self.model is model:
                 return True
         return False

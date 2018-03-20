@@ -98,7 +98,7 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
         if cat in ('id', 'owner__id', 'creator__id') :
             try:
-                x = int(q)
+                int(q)
             except ValueError:
                 self._errors['q'] = ErrorList([_('Must be an integer')])
 
@@ -223,7 +223,7 @@ class ArticleForm(TendenciBaseForm):
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
-        
+
         self.fields['release_dt'].initial = datetime.now()
 
     def clean_group(self):

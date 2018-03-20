@@ -1,3 +1,5 @@
+from builtins import str
+
 from django.db.models import FloatField
 
 from tendenci.apps.imports.utils import extract_from_excel
@@ -49,14 +51,14 @@ def user_groups_import_process(import_i, preview=True):
             group_object_dict = {}
             data_dict = data_dict_list[r]
 
-            for key in data_dict.keys():
+            for key in data_dict:
                 group_object_dict[key] = data_dict[key]
 
             group_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
 
             # Validate Group Name
             try:
-                group_exists = Group.objects.get(name=group_object_dict['name'])
+                Group.objects.get(name=group_object_dict['name'])
                 invalid = True
                 invalid_reason = "A GROUP WITH NAME '%s' ALREADY EXISTS" % group_object_dict['name']
             except Group.DoesNotExist:
@@ -106,7 +108,7 @@ def user_groups_import_process(import_i, preview=True):
             import_i.save()
     except Exception as e:
         import_i.status = "failed"
-        import_i.failure_reason = unicode(e)
+        import_i.failure_reason = str(e)
         import_i.save()
 
     #print("END IMPORT PROCESS")
@@ -120,14 +122,14 @@ def do_group_import(group_object_dict):
     # assure the correct fields get the right value types
     for field in GROUP_FIELDS:
         if field in group_object_dict:
-            field_type = Group._meta.get_field_by_name(field)[0]
+            field_type = Group._meta.get_field(field)
             if isinstance(field_type, FloatField):
                 setattr(group, field, group_object_dict[field])
             else:
                 if field_type.max_length:
-                    setattr(group, field, unicode(group_object_dict[field])[:field_type.max_length])
+                    setattr(group, field, str(group_object_dict[field])[:field_type.max_length])
                 else:
-                    setattr(group, field, unicode(group_object_dict[field]))
+                    setattr(group, field, str(group_object_dict[field]))
     # Since the allow_anonymous_view is not included in the GROUP_FIELDS,
     # set it to False
     group.allow_anonymous_view = False

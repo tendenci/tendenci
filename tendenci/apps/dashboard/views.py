@@ -1,19 +1,18 @@
-import simplejson
 from datetime import datetime, timedelta
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.forms.models import modelformset_factory
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
-from django.contrib.auth.models import User
 from dateutil import parser
 
+from django.contrib.auth.decorators import login_required
+from django.forms.models import modelformset_factory
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.dashboard.models import DashboardStatType
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.shortcuts import themed_response
+
 
 @login_required
 def index(request, template_name="dashboard/index.html"):
@@ -48,13 +47,13 @@ def index(request, template_name="dashboard/index.html"):
     statistics = DashboardStatType.objects.filter(displayed=True)
 
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'has_paid': has_paid,
         'activate_url': activate_url,
         'expired': expired,
         'expiration_dt': expiration_dt,
         'statistics': statistics,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -74,8 +73,8 @@ def new(request, template_name="dashboard/new.html"):
         return redirect(profile_redirect)
 
     if get_setting('site', 'global', 'groupdashboard'):
-        group_dashboard_urls = filter(None, request.user.group_member
-                                                    .values_list('group__dashboard_url', flat=True))
+        group_dashboard_urls = [m for m in request.user.group_member
+                                                    .values_list('group__dashboard_url', flat=True) if m]
         if group_dashboard_urls:
             url = group_dashboard_urls[0]
             return redirect(url)
@@ -107,13 +106,13 @@ def new(request, template_name="dashboard/new.html"):
     statistics = DashboardStatType.objects.filter(displayed=True)
 
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'has_paid': has_paid,
         'activate_url': activate_url,
         'expired': expired,
         'expiration_dt': expiration_dt,
         'statistics': statistics,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @superuser_required
@@ -133,6 +132,6 @@ def customize(request, template_name="dashboard/customize.html"):
     else:
         formset = DashboardStatFormSet(queryset=DashboardStatType.objects.all())
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'formset': formset,
-    }, context_instance=RequestContext(request))
+    })

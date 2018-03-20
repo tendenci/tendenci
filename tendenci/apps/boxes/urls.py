@@ -1,6 +1,6 @@
 from django.conf.urls import url
-
+from . import views
 
 urlpatterns = [
-    url(r'^export/$', 'tendenci.apps.boxes.views.export', name='boxes.export'),
+    url(r'^export/$', views.export, name='boxes.export'),
 ]

@@ -33,7 +33,8 @@ def basic_auth_required(realm=None, test_func=None, callback_func=None):
     if realm is None:
         realm = getattr(settings, 'HTTP_AUTHENTICATION_REALM', _('Restricted Access'))
     if test_func is None:
-        test_func = lambda u: u.is_authenticated()
+        def test_func(u):
+            return u.is_authenticated
 
     def decorator(view_func):
         def basic_auth(request, *args, **kwargs):

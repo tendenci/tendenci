@@ -1,9 +1,9 @@
+from builtins import str
 import inspect
-from time import strptime
 from datetime import datetime, timedelta
 from operator import and_
-from haystack.query import SearchQuerySet
 from socket import gethostbyname, gethostname
+from functools import reduce
 
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
@@ -130,7 +130,7 @@ class EventLogManager(Manager):
             ct = ContentType.objects.get_for_model(instance)
             event_log.content_type = ct
             event_log.object_id = instance.pk
-            event_log.headline = unicode(instance)[:50]
+            event_log.headline = str(instance)[:50]
             event_log.model_name = ct.name
             event_log.application = instance.__module__
             if hasattr(instance, 'guid'):

@@ -1,5 +1,5 @@
 from tendenci.apps.registry.sites import site
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.registry.base import CoreRegistry
 from tendenci.apps.boxes.models import Box
 from django.utils.translation import ugettext_lazy as _
 

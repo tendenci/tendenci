@@ -1,11 +1,6 @@
-from datetime import datetime
-import itertools
-import feedsmanager
-from haystack.query import SearchQuerySet
+from . import feedsmanager
 
 from django.contrib.syndication.views import Feed
-from django.contrib.syndication.views import FeedDoesNotExist
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -57,7 +52,7 @@ class GlobalFeed(Feed):
         if hasattr(feed, 'title_template') and feed.title_template is not None:
             # use the template instead of the method
             #print(feed.title_template)
-            return render_to_string(feed.title_template, { 'obj' : item })
+            return render_to_string(template_name=feed.title_template, context={ 'obj' : item })
         return self.get_attr_item('title', item)
 
     def item_description(self, item):
@@ -65,7 +60,7 @@ class GlobalFeed(Feed):
         if hasattr(feed, 'description_template') and feed.description_template is not None:
             # use the template instead
             #print(feed.description_template)
-            return render_to_string(feed.description_template, { 'obj' : item })
+            return render_to_string(template_name=feed.description_template, context={ 'obj' : item })
         return self.get_attr_item('description', item)
 
     def item_pubdate(self, item):

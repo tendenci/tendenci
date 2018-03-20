@@ -1,6 +1,7 @@
+from builtins import str
 import uuid
 
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 from django.db import models
 from tendenci.apps.user_groups.models import Group
@@ -13,10 +14,16 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
 from tagging.fields import TagField
-from tendenci.apps.files.models import File, file_directory
+from tendenci.apps.files.models import File
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.stories.managers import StoryManager
 from tendenci.libs.abstracts.models import OrderingBaseModel
+
+
+class StoryPhoto(File):
+    class Meta:
+        app_label = 'stories'
+        manager_inheritance_from_future = True
 
 
 class Story(OrderingBaseModel, TendenciBaseModel):
@@ -46,16 +53,17 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
     image = models.ForeignKey(
-        'StoryPhoto',
+        StoryPhoto,
         help_text=_('Photo that represents this story.'),
         null=True,
-        default=None
+        default=None,
+        on_delete=models.CASCADE,
     )
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, default='')
 
     rotator = models.ForeignKey('Rotator', null=True, default=None, blank=True,
-        help_text=_('The rotator where this story belongs.'))
+        help_text=_('The rotator where this story belongs.'), on_delete=models.CASCADE)
     rotator_position = models.IntegerField(_('Rotator Position'), default=0, blank=True)
 
     categories = GenericRelation(CategoryItem,
@@ -88,7 +96,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         url = reverse("story", args=[self.pk])
         if self.full_story_link:
             url = self.full_story_link
@@ -100,7 +108,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         return url
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         photo_upload = kwargs.pop('photo', None)
 
         if self.pk is None:
@@ -140,19 +148,12 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
-
-
-class StoryPhoto(File):
-    pass
-
-    class Meta:
-        app_label = 'stories'
 
 
 class Rotator(models.Model):

@@ -1,11 +1,9 @@
+from builtins import str, int
 import os
 import re
 from datetime import datetime
-from haystack.query import SearchQuerySet
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Manager
-from django.conf import settings
 from django.core.files.storage import default_storage
 
 from tendenci.apps.perms.managers import TendenciBaseManager
@@ -26,10 +24,10 @@ def save_to_disk(f, instance):
     )
 
     # make directory with pk
-    if isinstance(instance.pk, (int, long)):
+    if isinstance(instance.pk, int):
         relative_directory = os.path.join(
             relative_directory,
-            unicode(instance.pk))
+            str(instance.pk))
 
     default_storage.save(os.path.join(relative_directory, file_name), f)
 
@@ -66,7 +64,7 @@ class FileManager(TendenciBaseManager):
 
         try:  # explicit user; default to admin
             user = kwargs.get('user') or User.objects.get(id=1)
-        except User.DoesNotExist as e:
+        except User.DoesNotExist:
             return []
 
         # loop; save file; save file record in db
@@ -83,7 +81,7 @@ class FileManager(TendenciBaseManager):
             # ----------------------------------------------
 
             instance_pk = None
-            if isinstance(instance.pk, long):
+            if isinstance(instance.pk, int):
                 instance_pk = instance.pk
 
             try:
@@ -131,7 +129,7 @@ class FileManager(TendenciBaseManager):
             # update file record; or create new file record
             # ----------------------------------------------
             instance_pk = None
-            if isinstance(instance.pk, long) or isinstance(instance.pk, int):
+            if isinstance(instance.pk, int):
                 instance_pk = instance.pk
 
             try:

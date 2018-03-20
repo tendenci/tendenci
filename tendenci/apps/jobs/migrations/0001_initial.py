@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('guid', models.CharField(max_length=40)),
                 ('title', models.CharField(max_length=250)),
                 ('slug', tendenci.apps.base.fields.SlugField(unique=True, max_length=100, verbose_name='URL Path', db_index=True)),
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
                 ('contact_email', models.CharField(max_length=300, blank=True)),
                 ('contact_website', models.CharField(max_length=300, blank=True)),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
-                ('payment_method', models.CharField(default=b'', max_length=50, blank=True)),
+                ('payment_method', models.CharField(default='', max_length=50, blank=True)),
                 ('member_price', models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)),
                 ('member_count', models.IntegerField(null=True, blank=True)),
                 ('non_member_price', models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)),
@@ -83,8 +83,8 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='jobs_job_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='jobs_job_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
-                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('invoice', models.ForeignKey(blank=True, to='invoices.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
                 ('owner', models.ForeignKey(related_name='jobs_job_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -124,6 +124,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='pricing',
-            field=models.ForeignKey(to='jobs.JobPricing', null=True),
+            field=models.ForeignKey(to='jobs.JobPricing', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

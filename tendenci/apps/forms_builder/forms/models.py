@@ -1,11 +1,9 @@
-from django.core.exceptions import AppRegistryNotReady
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
-
-from django.shortcuts import get_object_or_404
+from django.utils.safestring import mark_safe
 
 from django_countries import countries as COUNTRIES
 from localflavor.us.us_states import STATE_CHOICES
@@ -17,9 +15,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.base.utils import checklist_update
-from tendenci.apps.redirects.models import Redirect
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
 
@@ -42,7 +38,7 @@ FIELD_CHOICES = (
     ("CountryField", _("Countries")),
     ("StateProvinceField", _("States/Provinces")),
     ("FileField", _("File upload")),
-    ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
+    ("DateField/django.forms.widgets.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),
     ("DateTimeField", _("Date/time")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
@@ -156,9 +152,8 @@ class Form(TendenciBaseModel):
             checklist_update('update-contact')
         super(Form, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("form_detail", (), {"slug": self.slug})
+        return reverse('form_detail', kwargs={"slug": self.slug})
 
     def get_payment_type(self):
         if self.recurring_payment and self.custom_payment:
@@ -168,16 +163,16 @@ class Form(TendenciBaseModel):
         if self.custom_payment:
             return _("Custom Payment")
 
+    @mark_safe
     def admin_link_view(self):
         url = self.get_absolute_url()
         return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
-    admin_link_view.allow_tags = True
     admin_link_view.short_description = ""
 
+    @mark_safe
     def admin_link_export(self):
         url = reverse("admin:forms_form_export", args=(self.id,))
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
-    admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
 
     def has_files(self):
@@ -214,7 +209,7 @@ class Field(OrderingBaseModel):
     - Includes their respective values to the email's subject
     """
 
-    form = models.ForeignKey("Form", related_name="fields")
+    form = models.ForeignKey("Form", related_name="fields", on_delete=models.CASCADE)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
         max_length=64)
@@ -242,14 +237,14 @@ class Field(OrderingBaseModel):
         if "/" in self.field_type:
             field_class, field_widget = self.field_type.split("/")
         else:
-            field_class, field_widget = self.field_type, None
+            field_class = self.field_type
         return field_class
 
     def get_field_widget(self):
         if "/" in self.field_type:
             field_class, field_widget = self.field_type.split("/")
         else:
-            field_class, field_widget = self.field_type, None
+            field_widget = None
         return field_widget
 
     def get_choices(self):
@@ -294,7 +289,7 @@ class FormEntry(models.Model):
     An entry submitted via a user-built form.
     """
 
-    form = models.ForeignKey("Form", related_name="entries")
+    form = models.ForeignKey("Form", related_name="entries", on_delete=models.CASCADE)
     entry_time = models.DateTimeField(_("Date/time"))
     entry_path = models.CharField(max_length=200, blank=True, default="")
     payment_method = models.ForeignKey('payments.PaymentMethod', null=True, on_delete=models.SET_NULL)
@@ -312,9 +307,8 @@ class FormEntry(models.Model):
     def __unicode__(self):
         return ('%s submission' % (self.form.title,))
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("form_entry_detail", (), {"id": self.pk})
+        return reverse('form_entry_detail', kwargs={"id": self.pk})
 
     @property
     def owner(self):
@@ -442,8 +436,8 @@ class FieldEntry(models.Model):
     A single field value for a form entry submitted via a user-built form.
     """
 
-    entry = models.ForeignKey("FormEntry", related_name="fields")
-    field = models.ForeignKey("Field", related_name="field")
+    entry = models.ForeignKey("FormEntry", related_name="fields", on_delete=models.CASCADE)
+    field = models.ForeignKey("Field", related_name="field", on_delete=models.CASCADE)
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
     class Meta:
@@ -470,7 +464,7 @@ class Pricing(models.Model):
     """
     Pricing options for custom payment forms.
     """
-    form = models.ForeignKey('Form')
+    form = models.ForeignKey('Form', on_delete=models.CASCADE)
     label = models.CharField(max_length=100)
     description = models.TextField(_("Pricing Description"), blank=True)
     price = models.DecimalField(

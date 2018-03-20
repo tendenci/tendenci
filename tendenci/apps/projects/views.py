@@ -1,11 +1,11 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
-from tendenci.apps.projects.models import Project, Photo, Category
-from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters
+from tendenci.apps.projects.models import Project, Category
+from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -29,8 +29,8 @@ def detail(request, slug=None, template_name="projects/detail.html"):
             'instance': project,
         }
         EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'project': project, 'project_photos': project_photos},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'project': project, 'project_photos': project_photos})
     else:
         raise Http403
 
@@ -65,9 +65,9 @@ def search(request, template_name="projects/search.html"):
     }
     EventLog.objects.log(**log_defaults)
 
-    return render_to_response(template_name, {'projects':projects, 'categories': categories
-        },
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'projects':projects, 'categories': categories
+        })
 
 def category(request, template_name="projects/category.html"):
     query = request.GET.get('q', None)
@@ -101,6 +101,6 @@ def category(request, template_name="projects/category.html"):
 
     EventLog.objects.log(**log_defaults)
 
-    return render_to_response(template_name, {'projects':projects, 'categories': categories
-        },
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'projects':projects, 'categories': categories
+        })

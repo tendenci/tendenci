@@ -1,9 +1,7 @@
+from builtins import str
 import os
-from django.db.models import Avg, Max, Min, Count
-from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import Max, Count
 from celery.task import Task
-from celery.registry import tasks
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.navs.models import Nav
 
@@ -54,7 +52,7 @@ class NavsExportTask(Task):
             nav_d = full_model_to_dict(nav)
             for field in nav_fields:
                 value = nav_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
             if nav.navitem_set.all():
@@ -63,7 +61,7 @@ class NavsExportTask(Task):
                     nav_item_d = full_model_to_dict(nav_item)
                     for field in nav_item_fields:
                         value = nav_item_d[field]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the nav_item columns

@@ -4,13 +4,14 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
@@ -36,7 +37,7 @@ class MembershipStatusDetailFilter(SimpleListFilter):
     def lookups(self, request, model_admin):
         memberships = model_admin.model.objects.exclude(status_detail='archive')
         status_detail_list = set([m.status_detail for m in memberships])
-        return zip(status_detail_list, status_detail_list)
+        return list(zip(status_detail_list, status_detail_list))
 
     def queryset(self, request, queryset):
 
@@ -47,29 +48,29 @@ class MembershipStatusDetailFilter(SimpleListFilter):
             return queryset.filter(status_detail=self.value())
         else:
             return queryset
-        
+
 class MembershipAutoRenewFilter(SimpleListFilter):
     title = 'auto renew'
     parameter_name = 'auto_renew'
- 
+
     def lookups(self, request, model_admin):
         return (
             (1, 'Yes'),
             (0, 'No'),
         )
- 
+
     def queryset(self, request, queryset):
         try:
             value = int(self.value())
         except:
             value = None
-        
-        if value == None:
+
+        if value is None:
             return queryset
-        
+
         if value == 1:
             return queryset.filter(auto_renew=True)
-        
+
         return queryset.filter(Q(auto_renew=False) | Q(auto_renew__isnull=True))
 
 
@@ -347,6 +348,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_status.short_description = u'Status'
     get_status.admin_order_field = 'status_detail'
 
+    @mark_safe
     def get_invoice(self, instance):
         inv = instance.get_invoice()
         if inv:
@@ -363,7 +365,6 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
                 )
         return ""
     get_invoice.short_description = u'Invoice'
-    get_invoice.allow_tags = True
 
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
@@ -427,8 +428,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         When the change page is submitted we can redirect
         to a URL specified in the next parameter.
         """
-        POST_KEYS = request.POST.keys()
-        GET_KEYS = request.GET.keys()
+        POST_KEYS = request.POST
+        GET_KEYS = request.GET
         NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
 
         do_next_url = (
@@ -451,8 +452,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
-        extra_urls = patterns(
-            u'',
+        extra_urls = [
             url("^approve/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
@@ -465,7 +465,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             url("^expire/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
-        )
+        ]
         return extra_urls + urls
 
     # django-admin custom views ----------------------------------------
@@ -656,6 +656,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
 
+    @mark_safe
     def show_group(self, instance):
         if instance.group:
             return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
@@ -665,7 +666,6 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
                 )
         return ""
     show_group.short_description = u'Group'
-    show_group.allow_tags = True
     show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):
@@ -733,10 +733,10 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
 
 class NoticeAdmin(admin.ModelAdmin):
+    @mark_safe
     def notice_log(self):
         return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
                          reverse('membership.notice.log.search'), self.id)
-    notice_log.allow_tags = True
 
     list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'membership_type', 'status', 'status_detail']
@@ -780,11 +780,11 @@ class NoticeAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
-        extra_urls = patterns('',
+        extra_urls = [
             url("^clone/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
-        )
+        ]
         return extra_urls + urls
 
     def clone(self, request, pk):
@@ -912,8 +912,8 @@ class MembershipAppField2Admin(admin.ModelAdmin):
                 module_name = opts_.model_name
 
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
-                        'name': force_unicode(verbose_name),
-                        'obj': force_unicode(obj)}
+                        'name': force_text(verbose_name),
+                        'obj': force_text(obj)}
             self.message_user(request, msg)
             post_url = '%s?membership_app_id=%d' % (
                             reverse('admin:%s_%s_changelist' %

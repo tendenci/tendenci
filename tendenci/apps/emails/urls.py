@@ -1,22 +1,22 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
+from . import views
 
-
-urlpatterns = patterns('tendenci.apps.emails.views',
-    url(r'^$', 'search', name="emails"),
-    url(r'^search/$', 'search', name="email.search"),
-    url(r'^(?P<id>\d+)/$', 'view', name="email.view"),
-    url(r'^viewbody/(?P<id>\d+)/$', 'view',
+urlpatterns = [
+    url(r'^$', views.search, name="emails"),
+    url(r'^search/$', views.search, name="email.search"),
+    url(r'^(?P<id>\d+)/$', views.view, name="email.view"),
+    url(r'^viewbody/(?P<id>\d+)/$', views.view,
         {'template_name': 'emails/viewbody.html'},
         name="email.viewbody"),
-    url(r'^add/$', 'add', name="email.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="email.edit"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="email.delete"),
-    url(r'^amazon_ses/$', 'amazon_ses_index',
+    url(r'^add/$', views.add, name="email.add"),
+    url(r'^edit/(?P<id>\d+)/$', views.edit, name="email.edit"),
+    url(r'^delete/(?P<id>\d+)/$', views.delete, name="email.delete"),
+    url(r'^amazon_ses/$', views.amazon_ses_index,
         name="email.amazon_ses_index"),
-    url(r'^amazon_ses/verify_email/$', 'amazon_ses_verify_email',
+    url(r'^amazon_ses/verify_email/$', views.amazon_ses_verify_email,
         name="email.amazon_ses_verify_email"),
-    url(r'^amazon_ses/list_verified_emails/$', 'amazon_ses_list_verified_emails',
+    url(r'^amazon_ses/list_verified_emails/$', views.amazon_ses_list_verified_emails,
         name="email.amazon_ses_list_verified_emails"),
-    url(r'^amazon_ses/send_quota/$', 'amazon_ses_send_quota',
+    url(r'^amazon_ses/send_quota/$', views.amazon_ses_send_quota,
         name="email.amazon_ses_send_quota"),
-)
+]

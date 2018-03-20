@@ -1,7 +1,8 @@
 import copy
-from django.conf import settings
+
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.jobs.models import Job, JobPricing
@@ -130,9 +131,9 @@ class JobCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
 
+    @mark_safe
     def sub_categories(self, instance):
         return ', '.join(JobCategory.objects.filter(parent=instance).values_list('name', flat=True))
-    sub_categories.allow_tags = True
 
     def get_queryset(self, request):
         qs = super(JobCategoryAdmin, self).get_queryset(request)

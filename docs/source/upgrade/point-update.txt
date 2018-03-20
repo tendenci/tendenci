@@ -1,20 +1,42 @@
-Performing a minor update
+Performing a Minor Update
 =========================
 
-When a minor update comes out the following steps will upgrade tendenci and its dependencies
+These instructions will upgrade Tendenci to a new minor version.
+
+Shut down the Tendenci server if necessary:
 ::
 
-    pip install tendenci --upgrade
+    service tendenci stop
+
+Activate your virtualenv:
+::
+
+    source /srv/tendenci/bin/activate
+
+Upgrade Tendenci and its dependencies:
+::
+
+    cd /var/www/tendenci/
+    # For testing installations:
+    pip install -r requirements/dev.txt --upgrade
+    # For live installations:
+    pip install -r requirements/prod.txt --upgrade
+
+Apply database and static media updates, then clear the cache:
+::
+
+    python manage.py migrate
     python deploy.py
-
-If dependencies need to be upgraded at the same time run pip against the requirements file.
-::
-
-    pip install -r requirements.txt --upgrade
-    python deploy.py
-
-To ensure no stale data is carried over in caches between versions clear the application cache and restart.
-::
-
     python manage.py clear_cache
+
+Verify that permissions are still set appropriately:
+::
+
+    sudo chmod -Rh -x+X /var/www/tendenci/media/
+    sudo chgrp -Rh www-data /var/www/tendenci/
+    sudo chmod -Rh g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+
+Restart the Tendenci server:
+::
+
     service tendenci restart

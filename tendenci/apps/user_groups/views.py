@@ -1,17 +1,15 @@
 from __future__ import print_function
-import subprocess, os
+import subprocess
 from datetime import datetime
 from datetime import date
 import time as ttime
 from djcelery.models import TaskMeta
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sites.models import Site
@@ -20,9 +18,9 @@ from django.http import HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.http import Http404
-from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
@@ -30,7 +28,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.apps.imports.forms import ImportForm
 from tendenci.apps.imports.models import Import
-from tendenci.apps.imports.utils import extract_from_excel, render_excel
+from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.event_logs.utils import request_month_range, day_bars
@@ -59,7 +57,7 @@ def search(request, template_name="user_groups/search.html"):
     filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
     groups = Group.objects.filter(filters).distinct()
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         groups = groups.select_related()
 
     if form.is_valid():
@@ -72,8 +70,8 @@ def search(request, template_name="user_groups/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'groups':groups, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'groups':groups, 'form': form})
 
 def search_redirect(request):
     """
@@ -108,10 +106,8 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
         groupmemberships = GroupMembership.objects.none()
 
     count_members = len(groupmemberships)
-    return render_to_response(
-        template_name,
-        locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())
 
 @superuser_required
 def message(request, group_slug, template_name='user_groups/message.html'):
@@ -173,9 +169,9 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         return redirect('group.detail', group_slug=group_slug)
 
     else:
-        print('form errors', form.errors.items())
+        print('form errors', list(form.errors.items()))
 
-    return render(request, template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'group': group,
         'num_members': num_members,
         'form': form})
@@ -236,7 +232,7 @@ def group_add_edit(request, group_slug=None,
         else:
             form = form_class(user=request.user)
 
-    return render_to_response(template_name, {'form':form, 'titie':title, 'group':group}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form':form, 'titie':title, 'group':group})
 
 
 @login_required
@@ -253,8 +249,8 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
         group_edit.save()
         return HttpResponseRedirect(group_edit.get_absolute_url())
 
-    return render_to_response(template_name, {'group':group_edit, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'group':group_edit, 'form':form})
 
 def group_delete(request, id, template_name="user_groups/delete.html"):
     group = get_object_or_404(Group, pk=id)
@@ -286,16 +282,15 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
     else:
         title = _("Are you sure?")
 
-    return render_to_response(template_name,
-            {'group':group,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'group':group,
              "title": title,
              "object_name": object_name,
              "deleted_objects": deleted_objects,
              "perms_lacking": perms_needed,
              "protected": protected,
              "opts": group._meta,
-             },
-        context_instance=RequestContext(request))
+             })
 
 def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
@@ -402,7 +397,7 @@ def groupmembership_bulk_add(request, group_slug,
         member_label = request.GET.get('member_label', 'username')
         form = form_class(group, member_label=member_label)
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 def groupmembership_add_edit(request, group_slug, user_id=None,
                              form_class=GroupMembershipForm,
@@ -441,7 +436,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     else:
         form = form_class(group, user_id, instance=group_membership)
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 
 def groupmembership_delete(request, group_slug, user_id, template_name="user_groups/member_delete.html"):
@@ -464,7 +459,7 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         )
         return HttpResponseRedirect(group.get_absolute_url())
 
-    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=locals())
 
 
 def _events_chart(from_date, to_date, event_ids):
@@ -506,13 +501,12 @@ def users_added_report(request, kind):
             .annotate(count=Count('pk'))\
             .order_by('-count')
 
-    return render_to_response('reports/users_added.html',
-                              {'data': data, 'chart_data': chart_data,
+    return render_to_resp(request=request, template_name='reports/users_added.html',
+                              context={'data': data, 'chart_data': chart_data,
                                'report_title': title,
                                'entities': Entity.objects.all().order_by('entity_name'),
                                'site': Site.objects.get_current(),
-                               'date_range': (from_date, to_date)},
-                              context_instance=RequestContext(request))
+                               'date_range': (from_date, to_date)})
 
 
 @login_required
@@ -594,7 +588,7 @@ def group_members_export_status(request, group_slug,
                'export_target': export_target,
                'download_ready': download_ready,
                'email_recipient': email_recipient}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -656,7 +650,7 @@ def group_member_export(request, group_slug):
         ('is_active', 'au.is_active'),
         ('date', 'gm.create_dt'),
     ])
-    group_lookups = ','.join(group_mappings.values())
+    group_lookups = ','.join(list(group_mappings.values()))
 
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you
@@ -676,7 +670,7 @@ def group_member_export(request, group_slug):
 
     # Append the heading to the list of values that will
     # go into the excel sheet
-    values_list.insert(0, group_mappings.keys())
+    values_list.insert(0, list(group_mappings.keys()))
 
     # excel date styles
     default_style = xlwt.Style.default_style
@@ -712,8 +706,6 @@ def group_subscriber_export(request, group_slug):
         raise Http403
 
     import xlwt
-    from ordereddict import OrderedDict
-    from django.db import connection
     from tendenci.apps.forms_builder.forms.models import FieldEntry
 
     # create the excel book and sheet
@@ -737,7 +729,7 @@ def group_subscriber_export(request, group_slug):
             row = row_index[entry.entry.pk]
         else:
             # assign the row if it is not yet available
-            row = len(row_index.keys()) + 1
+            row = len(row_index) + 1
             row_index[entry.entry.pk] = row
 
         if entry.field.label in col_index:
@@ -746,7 +738,7 @@ def group_subscriber_export(request, group_slug):
         else:
             # assign the col if it is not yet available
             # and label the new column
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[entry.field.label] = col
             sheet.write(0, col, entry.field.label, style=default_style)
 
@@ -816,7 +808,7 @@ def group_all_export(request, group_slug):
         ('is_active', 'au.is_active'),
         ('date', 'gm.create_dt'),
     ])
-    group_lookups = ','.join(group_mappings.values())
+    group_lookups = ','.join(list(group_mappings.values()))
 
     # Use custom sql to fetch the rows because we need to
     # populate the user profiles information and you
@@ -835,9 +827,9 @@ def group_all_export(request, group_slug):
     values_list = list(cursor.fetchall())
 
     # index the group key mappings and insert them into the sheet.
-    for key in group_mappings.keys():
+    for key in group_mappings:
         if key not in col_index:
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[key] = col
             sheet.write(0, col, key, style=default_style)
 
@@ -874,7 +866,7 @@ def group_all_export(request, group_slug):
             row = row_index["subscriber %s" % str(entry.entry.pk)]
         else:
             # assign the row if it is not yet available
-            row = len(row_index.keys()) + 1
+            row = len(row_index) + 1
             row_index["subscriber %s" % str(entry.entry.pk)] = row
 
         if field in col_index:
@@ -883,7 +875,7 @@ def group_all_export(request, group_slug):
         else:
             # assign the col if it is not yet available
             # and label the new column
-            col = len(col_index.keys())
+            col = len(col_index)
             col_index[field] = col
             sheet.write(0, col, field, style=default_style)
 
@@ -931,20 +923,20 @@ def group_subscriber_import(request, group_slug, template="user_groups/import_su
     #             # evaluate the result and render the results page
     #             result = ImportSubscribersTask()
     #             subs = result.run(group, csv.file.path)
-    #             return render_to_response('user_groups/import_subscribers_result.html', {
+    #             return render_to_resp(request=request, template_name='user_groups/import_subscribers_result.html', context={
     #                 'group':group,
     #                 'subs':subs,
-    #             }, context_instance=RequestContext(request))
+    #             })
     #         else:
     #             result = ImportSubscribersTask.delay(group, csv.file.path)
     #             return redirect('subscribers_import_status', group.slug, result.task_id)
     # else:
     #     form = form_class()
 
-    # return render_to_response(template, {
+    # return render_to_resp(request=request, template_name=template, context={
     #     'group':group,
     #     'form':form,
-    # }, context_instance=RequestContext(request))
+    # })
 
 @login_required
 def subscribers_import_status(request, group_slug, task_id, template_name='user_groups/import_status.html'):
@@ -964,21 +956,21 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
 
     if task and task.status == "SUCCESS":
         subs = task.result
-        return render_to_response('user_groups/import_subscribers_result.html', {
+        return render_to_resp(request=request, template_name='user_groups/import_subscribers_result.html', context={
             'group':group,
             'subs':subs,
-        }, context_instance=RequestContext(request))
+        })
     else:
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name, context={
             'group':group,
             'task':task,
-        }, context_instance=RequestContext(request))
+        })
 
 @login_required
 def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_add_redirect.html'):
     EventLog.objects.log()
 
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @login_required
@@ -1005,8 +997,8 @@ def import_add(request, form_class=ImportForm,
                 reverse('group.import_preview', args=[import_i.id]))
     else:
         form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 @login_required
 def import_preview(request, import_id,
@@ -1019,11 +1011,11 @@ def import_preview(request, import_id,
     user_groups_list, invalid_list = user_groups_import_process(import_i,
                                                         preview=True)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         'user_groups_list': user_groups_list,
         'import_i': import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def import_process(request, import_id,
@@ -1037,10 +1029,10 @@ def import_process(request, import_id,
 
     subprocess.Popen([python_executable(), 'manage.py', 'import_groups', str(import_id)])
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def import_download_template(request, file_ext='.csv'):
@@ -1112,4 +1104,4 @@ def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key
     if not groupmembership.unsubscribe_to_newsletter():
         raise Http404
 
-    return render(request, 'user_groups/newsletter_unsubscribe.html')
+    return render_to_resp(request=request, template_name='user_groups/newsletter_unsubscribe.html')

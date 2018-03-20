@@ -1,6 +1,5 @@
 from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models.loading import get_model
 
 
 class Command(BaseCommand):
@@ -15,7 +14,7 @@ class Command(BaseCommand):
             if args:
                 try:
                     ics = ICS.objects.get(pk=int(args[0]))
-                except Export.DoesNotExist:
+                except ICS.DoesNotExist:
                     raise CommandError('ICS not specified')
 
                 self.stdout.write('Started compiling ics file...')

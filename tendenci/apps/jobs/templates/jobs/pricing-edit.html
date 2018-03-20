@@ -13,15 +13,15 @@
     <p>{% trans "To edit the job price, complete the fields below and press Submit." %}</p>
 
     <div class="jobpricing">
-	    <div class="jobpricing-wrap">
-		    <form action="." method="post" class="form-horizontal">{% csrf_token %}
-		    	{{ form|styled_form }}
-		        <div id="pricing-submit">
-		            <input type="submit" value="{% trans 'Submit' %}" />
-		        </div>
-		    </form>
-	    </div>
-	</div>
+        <div class="jobpricing-wrap">
+            <form action="." method="post" class="form-horizontal">{% csrf_token %}
+                {{ form|styled_form }}
+                <div id="pricing-submit">
+                    <input type="submit" value="{% trans 'Submit' %}" />
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

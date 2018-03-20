@@ -81,12 +81,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='status',
-            field=models.BooleanField(default=True, verbose_name=b'Active'),
+            field=models.BooleanField(default=True, verbose_name='Active'),
         ),
         migrations.AddField(
             model_name='category',
             name='status_detail',
-            field=models.CharField(default=b'active', max_length=50),
+            field=models.CharField(default='active', max_length=50),
         ),
         migrations.AddField(
             model_name='category',

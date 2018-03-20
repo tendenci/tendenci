@@ -1,6 +1,5 @@
 from __future__ import print_function
 import re
-from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
 
@@ -13,13 +12,13 @@ class Command(BaseCommand):
     Example:
         python manage.py scan_and_retrieve_files articles pages --src_url=http://www.YourOldSite.com
     """
-    option_list = BaseCommand.option_list + (
-        make_option('--src_url',
+
+    def add_arguments(self, parser):
+        parser.add_argument('--src_url',
             action='store',
             dest='src_url',
             default=None,
-            help='src_url from which the files being downloaded'),
-        )
+            help='src_url from which the files being downloaded')
 
     def handle(self, *apps, **kwargs):
         from tendenci.apps.site_settings.utils import get_setting
@@ -66,7 +65,7 @@ class Command(BaseCommand):
 
         if retriever.broken_links:
             print('\nBROKEN LINKS:\n', '-' * 30)
-            for key in retriever.broken_links.keys():
+            for key in retriever.broken_links:
                 print()
                 print(key)
                 for link in retriever.broken_links[key]:

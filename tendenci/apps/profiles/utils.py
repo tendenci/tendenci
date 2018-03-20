@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import time as ttime
 from datetime import datetime, date, time
@@ -11,7 +12,7 @@ import csv
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
@@ -28,14 +29,13 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
-    from django.template import RequestContext
 
     subject = 'User Account Modification Notice for %s' % get_setting('site', 'global', 'sitedisplayname')
-    body = render_to_string('profiles/edit_notice.txt',
-                               {'old_user':old_user,
+    body = render_to_string(template_name='profiles/edit_notice.txt',
+                               context={'old_user':old_user,
                                 'old_profile': old_profile,
                                 'profile': profile},
-                               context_instance=RequestContext(request))
+                               request=request)
 
     sender = settings.DEFAULT_FROM_EMAIL
     recipients = ['%s<%s>' % (r[0], r[1]) for r in settings.ADMINS]
@@ -146,7 +146,7 @@ def group_choices(user):
 
 
 def update_user(user, **kwargs):
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
         if hasattr(user, k):
             setattr(user, k, v)
     user.save()
@@ -165,7 +165,7 @@ def make_username_unique(un):
 
     if others and 0 in others:
         # the appended digit will compromise the username length
-        un = '%s%s' % (un, unicode(max(others) + 1))
+        un = '%s%s' % (un, str(max(others) + 1))
 
     return un
 
@@ -210,7 +210,7 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     if em:
         return make_username_unique(em.split('@')[0][:max_length].lower())
 
-    int_string = ''.join([choice(digits) for x in xrange(10)])
+    int_string = ''.join([choice(digits) for x in range(10)])
     return 'user.%s' % int_string
 
 
@@ -363,7 +363,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)
@@ -391,11 +391,11 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             'export_fields': export_fields}
 
         subject = render_to_string(
-            'profiles/notices/export_ready_subject.html', parms)
+            template_name='profiles/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'profiles/notices/export_ready_body.html', parms)
+            template_name='profiles/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,
@@ -537,7 +537,6 @@ class ImportUsers(object):
                              'PST': 'US/Pacific',
                              'GMT': 'UTC'
                              }
-        self.t4_timezone_map_keys = self.t4_timezone_map.keys()
         if self.uimport.group_id:
             [self.uimport.group] = Group.objects.filter(id=self.uimport.group_id)[:1] or [None]
         else:
@@ -630,7 +629,7 @@ class ImportUsers(object):
                 else:
                     self.summary_d['update'] += 1
 
-                self.field_names = self.user_data.keys()
+                self.field_names = list(self.user_data.keys())
                 # now do the update or insert
                 self.do_import_user(user, self.user_data, user_display)
                 idata.action_taken = user_display['action']
@@ -737,10 +736,9 @@ class ImportUsers(object):
             assign_to_fields = self.user_fields
         elif instance.__class__ == Profile:
             assign_to_fields = self.profile_fields
-        assign_to_fields_names = assign_to_fields.keys()
 
         for field_name in self.field_names:
-            if field_name in assign_to_fields_names:
+            if field_name in assign_to_fields:
                 if any([
                         action == 'insert',
                         self.uimport.override,
@@ -754,9 +752,9 @@ class ImportUsers(object):
                     setattr(instance, field_name, value)
 
         # if insert, set defaults for the fields not in csv.
-        for field_name in assign_to_fields_names:
+        for field_name in assign_to_fields:
             if field_name not in self.field_names and action == 'insert':
-                if field_name not in self.private_settings.keys():
+                if field_name not in self.private_settings:
                     value = self.get_default_value(assign_to_fields[field_name])
 
                     if value is not None:
@@ -789,9 +787,9 @@ class ImportUsers(object):
 
         if field_type == 'ForeignKey':
             try:
-                model = field.related.parent_model()
+                model = field.remote_field.parent_model()
             except AttributeError:
-                model = field.related.model
+                model = field.remote_field.model
             [value] = model.objects.all()[:1] or [None]
             return value
 
@@ -811,7 +809,7 @@ class ImportUsers(object):
                 value = value[:field.max_length]
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
-                    if value in self.t4_timezone_map_keys:
+                    if value in self.t4_timezone_map:
                         value = self.t4_timezone_map[value]
             try:
                 value = field.to_python(value)
@@ -872,7 +870,6 @@ class ImportUsers(object):
             except:
                 value = 0
         elif field_type == 'ForeignKey':
-            orignal_value = value
             # assume id for foreign key
             try:
                 value = int(value)
@@ -881,17 +878,17 @@ class ImportUsers(object):
 
             if value:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.filter(pk=value)[:1] or [None]
 
             if not value and not field.null:
                 # if the field doesn't allow null, grab the first one.
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value
@@ -913,7 +910,7 @@ def user_import_parse_csv(mimport):
     normalize_newline(mimport.upload_file.name)
     csv_reader = csv.reader(
         default_storage.open(mimport.upload_file.name, 'rb'))
-    fieldnames = csv_reader.next()
+    fieldnames = next(csv_reader)
     fieldnames = normalize_field_names(fieldnames)
 
     data_list = []

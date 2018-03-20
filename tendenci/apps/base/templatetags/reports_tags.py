@@ -1,6 +1,6 @@
-from datetime import datetime, date, timedelta
+from builtins import str
+from datetime import datetime
 from django import template
-from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 
 

@@ -1,9 +1,9 @@
+from builtins import str
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -25,7 +25,7 @@ from tendenci.apps.perms.utils import (update_perms_and_save,
                                        get_query_filters)
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.notifications import models as notification
 
@@ -53,7 +53,7 @@ def index(request, slug=None, id=None, hash=None,
     elif id:
         page = get_object_or_404(Page, pk=id)
         if page.status_detail != 'active':
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 pages = Page.objects.filter(
                     slug=page.slug, status_detail='active'
                 ).order_by('-pk')
@@ -85,8 +85,8 @@ def index(request, slug=None, id=None, hash=None,
 
     EventLog.objects.log(instance=page)
 
-    return render_to_response(template_name, {'page': page},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'page': page})
 
 
 @is_enabled('pages')
@@ -124,8 +124,8 @@ def search(request, template_name="pages/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'pages': pages},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'pages': pages})
 
 
 @is_enabled('pages')
@@ -148,8 +148,8 @@ def print_view(request, slug, template_name="pages/print-view.html"):
 
     EventLog.objects.log(instance=page)
 
-    return render_to_response(template_name, {'page': page},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'page': page})
 
 
 @is_enabled('pages')
@@ -208,7 +208,7 @@ def edit(request, id, form_class=PageForm,
                 checklist_update('update-about')
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated %(p)s' % {'p': unicode(page)}))
+                                 _('Successfully updated %(p)s' % {'p': str(page)}))
 
             if not request.user.profile.is_superuser:
                 # send notification to administrators
@@ -243,14 +243,13 @@ def edit(request, id, form_class=PageForm,
         categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,)
 
-    return render_to_response(template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'page': page,
             'form': form,
             'metaform': metaform,
             'categoryform': categoryform,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('pages')
@@ -279,14 +278,14 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
             page.save()  # save relationship
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully updated meta for %(p)s' % {'p': unicode(page)}))
+                                 _('Successfully updated meta for %(p)s' % {'p': str(page)}))
 
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
         form = form_class(instance=page.meta)
 
-    return render_to_response(template_name, {'page': page, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'page': page, 'form': form})
 
 
 @login_required
@@ -330,12 +329,12 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                header.file.save(filename, f, save=False)
                page.header_image = header
 
-           return render_to_response(template, {'page': page,
+           return render_to_resp(request=request, template_name=template,
+               context={'page': page,
                                                 'form': form,
                                                 'metaform': metaform,
                                                 'categoryform': categoryform,
-                                                'edit_button': edit_button},
-               context_instance=RequestContext(request))
+                                                'edit_button': edit_button})
 
     return HttpResponseRedirect(reverse('page.search'))
 
@@ -389,7 +388,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
             page = update_perms_and_save(request, form, page)
 
             messages.add_message(request, messages.SUCCESS,
-                                 _('Successfully added %(p)s' % {'p': unicode(page)}))
+                                 _('Successfully added %(p)s' % {'p': str(page)}))
 
             checklist_update('add-page')
 
@@ -418,13 +417,12 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,)
-    return render_to_response(template_name,
-            {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                 'form': form,
                 'metaform': metaform,
                 'categoryform': categoryform,
-            },
-            context_instance=RequestContext(request))
+            })
 
 
 @is_enabled('pages')
@@ -438,7 +436,7 @@ def delete(request, id, template_name="pages/delete.html"):
     if request.method == "POST":
         EventLog.objects.log(instance=page)
         messages.add_message(request, messages.SUCCESS,
-                             _('Successfully deleted %(p)s' % { 'p': unicode(page)}))
+                             _('Successfully deleted %(p)s' % { 'p': str(page)}))
 
         # send notification to administrators
         recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
@@ -456,8 +454,8 @@ def delete(request, id, template_name="pages/delete.html"):
         page.save()
         return HttpResponseRedirect(reverse('page.search'))
 
-    return render_to_response(template_name, {'page': page},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'page': page})
 
 
 @is_enabled('pages')
@@ -500,5 +498,5 @@ def export(request, template_name="pages/export.html"):
         export_id = run_export_task('pages', 'page', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

@@ -1,3 +1,4 @@
+from builtins import str
 import hashlib
 import os
 import mimetypes
@@ -5,10 +6,11 @@ import uuid
 from PIL import Image
 import re
 #from slate import PDF
-import cStringIO
+from io import BytesIO
 from base64 import b64encode
 
-from django.db import models, connection
+from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -16,7 +18,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.files.storage import default_storage
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.fields.related import ManyToOneRel
 
 from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -44,7 +45,7 @@ def file_directory(instance, filename):
             content_type = instance.content_type()
         else:
             content_type = instance.content_type
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(content_type))
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(content_type))
         return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
     return 'files/files/%s/%s' % (hex_digest, filename)
@@ -85,35 +86,33 @@ class File(TendenciBaseModel):
         super(File, self).__init__(*args, **kwargs)
 
         self._originaldict = {}
-        for field_name in self._meta.get_all_field_names():
+        for field in self._meta.get_fields():
 
-            if isinstance(self._meta.get_field_by_name(field_name)[0], ManyToOneRel):
+            if field.auto_created or field.many_to_one:
                 continue  # preventing circular reference
 
-            if hasattr(self, field_name):
-                value = getattr(self, field_name)
+            if hasattr(self, field.name):
+                value = getattr(self, field.name)
                 # skip Manager type objects
                 if not isinstance(value, models.Manager):
-                    self._originaldict[field_name] = value
+                    self._originaldict[field.name] = value
 
     def has_changed(self):
         """
         Loop through key fields and return True
         if a key field has changed.
         """
-        for field_name in self._originaldict.keys():
+        for field_name in self._originaldict:
             if getattr(self, field_name) != self._originaldict[field_name]:
                 return True
 
         return False
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("file", [self.pk])
+        return reverse('file', args=[self.pk])
 
-    @models.permalink
     def get_absolute_download_url(self):
-        return ("file", [self.pk, 'download'])
+        return reverse('file', args=[self.pk, 'download'])
 
     def __unicode__(self):
         return self.get_name()
@@ -121,7 +120,7 @@ class File(TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
@@ -131,7 +130,7 @@ class File(TendenciBaseModel):
     def save(self, *args, **kwargs):
         created = False
         if not self.id:
-            self.guid = unicode(uuid.uuid1())
+            self.guid = str(uuid.uuid1())
             created = True
         self.f_type = self.type()
 
@@ -214,7 +213,7 @@ class File(TendenciBaseModel):
         super(File, self).delete(*args, **kwargs)
 
     def basename(self):
-        return os.path.basename(unicode(self.file.name))
+        return os.path.basename(str(self.file.name))
 
     def ext(self):
         return os.path.splitext(self.basename())[-1]
@@ -287,7 +286,7 @@ class File(TendenciBaseModel):
         return icons_dir + '/' + icons[self.type()]
 
     def get_file_from_remote_storage(self):
-        return cStringIO.StringIO(default_storage.open(self.file.name).read())
+        return BytesIO(default_storage.open(self.file.name).read())
 
     def image_dimensions(self):
         try:
@@ -313,7 +312,7 @@ class File(TendenciBaseModel):
 
         if not settings.USE_S3_STORAGE:
             if not os.path.exists(self.file.path):
-                return unicode()
+                return str()
 
         if settings.INDEX_FILE_CONTENT:
             if self.type() == 'pdf':
@@ -321,9 +320,9 @@ class File(TendenciBaseModel):
                 try:
                     return extract_pdf(self.file.file)
                 except:
-                    return unicode()
+                    return str()
 
-        return unicode()
+        return str()
 
     def is_public_file(self):
         return all([
@@ -355,7 +354,10 @@ class File(TendenciBaseModel):
             except:
                 return None
         else:
-            for r_object in self._meta.get_all_related_objects():
+            r_objects = [f for f in self._meta.get_fields()
+                         if (f.one_to_many or f.one_to_one)
+                         and f.auto_created and not f.concrete]
+            for r_object in r_objects:
                 if hasattr(self, r_object.name):
                     return getattr(self, r_object.name)
             return None
@@ -413,7 +415,7 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
 
 class FilesCategory(models.Model):
     name = models.CharField(max_length=255)
-    parent = models.ForeignKey('self', null=True)
+    parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = _("File Categories")

@@ -34,23 +34,22 @@ def payment_thankyou_display(request, payment):
 
         if obj:
             from django.template.loader import render_to_string
-            from django.template import RequestContext
             from django.template import TemplateDoesNotExist
             app_label = obj._meta.app_label
             template_name = "%s/payment_thankyou_display.html" % (app_label)
             try:
-                obj_display = render_to_string(template_name, {'obj':obj,
+                obj_display = render_to_string(template_name=template_name, context={'obj':obj,
                                                    'payment':payment},
-                                                   context_instance=RequestContext(request))
-            except TemplateDoesNotExist:
+                                                   request=request)
+            except (TemplateDoesNotExist, IOError):
                 pass
 
             template_name = "%s/payment_thankyou_header.html" % (app_label)
             try:
-                obj_header = render_to_string(template_name, {'obj':obj,
+                obj_header = render_to_string(template_name=template_name, context={'obj':obj,
                                                    'payment':payment},
-                                                   context_instance=RequestContext(request))
-            except TemplateDoesNotExist:
+                                                   request=request)
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     return {'request': request,

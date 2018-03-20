@@ -1,5 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.metrics.views',
-    url(r'^$', 'index', name="metrics"),
-)
+urlpatterns = [
+    url(r'^$', views.index, name="metrics"),
+]

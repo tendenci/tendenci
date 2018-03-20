@@ -1,8 +1,9 @@
-from tendenci.apps.contacts.models import Contact
 from django import forms
+from django.conf import settings
 # from captcha.fields import CaptchaField
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.contacts.models import Contact
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.apps.base.forms import CustomCatpchaField
 
@@ -20,6 +21,9 @@ class ContactForm(forms.ModelForm):
             'companies',
             'message',
         )
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        self.fields['timezone'].initial = settings.TIME_ZONE
 
 class SubmitContactForm(forms.Form):
 

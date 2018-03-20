@@ -44,13 +44,13 @@ class Command(BaseCommand):
         ]
         for setting in settings:
             # check the required fields
-            req_list = [k for k in setting.keys() if k in required_keys]
+            req_list = [k for k in setting if k in required_keys]
             if len(req_list) != len(required_keys):
                 print('Setting does not have the required fields ... skipping.')
                 continue
 
             try:
-                current_setting = Setting.objects.get(**{
+                Setting.objects.get(**{
                     'name': setting['name'],
                     'scope': setting['scope'],
                     'scope_category': setting['scope_category']

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.categories.models import Category, CategoryItem
 
@@ -42,12 +43,13 @@ class CategoryItemAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    @mark_safe
     def show_parent(self, instance):
         return instance.parent
     show_parent.short_description = 'Subcategory'
-    show_parent.allow_tags = True
     show_parent.admin_order_field = 'parent'
 
+    @mark_safe
     def show_object(self, instance):
         if instance.content_type and instance.object_id:
             obj = instance.content_type.get_object_for_this_type(id=instance.object_id)
@@ -58,7 +60,6 @@ class CategoryItemAdmin(admin.ModelAdmin):
                     )
         return ""
     show_object.short_description = u'Object'
-    show_object.allow_tags = True
 
 
 admin.site.register(Category, CategoryAdmin)

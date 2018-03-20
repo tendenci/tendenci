@@ -1,20 +1,21 @@
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 #from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-#from django.core.urlresolvers import reverse
+#from django.urls import reverse
 from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
 import simplejson
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.base.http import Http403
+#from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.decorators import ssl_required
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from tendenci.apps.recurring_payments.authnet.utils import get_token, get_test_mode
 
-from tendenci.apps.base.http import Http403
-#from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.decorators import ssl_required
 
 @login_required
 def manage_payment_info(request, recurring_payment_id,
@@ -62,13 +63,13 @@ def manage_payment_info(request, recurring_payment_id,
         else:
             token = response_d['token']
 
-    return render_to_response(template_name, {'token': token,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'token': token,
                                               'test_mode': test_mode,
                                               'form_post_url': form_post_url,
                                               'rp': rp,
                                               'gateway_error': gateway_error
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @ssl_required
@@ -98,13 +99,13 @@ def update_payment_info(request, recurring_payment_id,
                                      is_secure=request.is_secure())
     test_mode = get_test_mode()
 
-    return render_to_response(template_name, {'rp': rp,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'rp': rp,
                                               'payment_profile': payment_profile,
                                               'token': token,
                                               'test_mode': test_mode,
                                               'gateway_error': gateway_error
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @login_required
@@ -135,9 +136,7 @@ def update_payment_profile_local(request):
 
     # just so the owner and update_dt are updated
     try:
-        payment_profile = PaymentProfile.objects.get(
-                                id=payment_profile_id
-                                ).save()
+        PaymentProfile.objects.get(id=payment_profile_id).save()
     except: pass
 
     return HttpResponse(simplejson.dumps(ret_d))

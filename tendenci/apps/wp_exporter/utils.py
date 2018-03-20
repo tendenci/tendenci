@@ -1,5 +1,5 @@
-import datetime, encoder
-from django.conf import settings
+import datetime
+from . import encoder
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -37,7 +37,6 @@ def gen_xml(data):
     if data["events"]:
         offset = encode_events(xml, offset)
     try:
-        from tendenci.apps.case_studies import CaseStudy
         if data["case_studies"]:
             offset = encode_casestudies(xml, offset)
     except ImportError:
@@ -141,16 +140,16 @@ def encode_tags(xml):
         ct_event = ContentType.objects.get_for_model(Event)
     except ImportError:
         ct_event = None
-    try:
-        from tendenci.apps.resumes.models import Resume
-        ct_resume = ContentType.objects.get_for_model(Resume)
-    except ImportError:
-        ct_resume = None
-    try:
-        from tendenci.apps.case_studies.models import CaseStudy
-        ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
-    except ImportError:
-        ct_casestudy = None
+    #try:
+    #    from tendenci.apps.resumes.models import Resume
+    #    ct_resume = ContentType.objects.get_for_model(Resume)
+    #except ImportError:
+    #    ct_resume = None
+    #try:
+    #    from tendenci.apps.case_studies.models import CaseStudy
+    #    ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
+    #except ImportError:
+    #    ct_casestudy = None
     tags = Tag.objects.filter(
         Q(items__content_type__pk=ct_page.pk) or
         Q(items__content_type__pk=ct_article.pk) or

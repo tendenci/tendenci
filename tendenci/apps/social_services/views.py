@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import fromstr
 from django.contrib.gis.measure import D
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.social_services.forms import SkillSetForm, ReliefAssessmentForm, AddressForm
 from tendenci.apps.social_services.models import SkillSet, ReliefAssessment
 from tendenci.apps.social_services.utils import get_responder_skills_data
@@ -41,7 +42,7 @@ def skill_list(request, username, edit=False, template_name="social_services/ski
                'skills_form': skills_form,
                'edit_mode': edit_mode,
                'user_this': user_this}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 def relief_form(request, template_name="social_services/relief_form.html"):
@@ -53,7 +54,7 @@ def relief_form(request, template_name="social_services/relief_form.html"):
         return redirect('social-services.map')
 
     context = {'form': form, 'now': now}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 def relief_map(request, template_name="social_services/map.html"):
@@ -75,7 +76,7 @@ def relief_map(request, template_name="social_services/map.html"):
     r_points = [[r.loc.x, r.loc.y] for r in disaster_areas]
 
     context = {'b_points': b_points, 'r_points': r_points, 'center': center}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 def responders_list(request, template_name="social_services/responders.html"):
@@ -104,7 +105,7 @@ def responders_list(request, template_name="social_services/responders.html"):
                'education_skills': education_skills,
                'military_skills': military_skills,
                'lon': lon, 'lat': lat}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 def relief_areas_list(request, template_name="social_services/relief-areas.html"):
@@ -130,7 +131,7 @@ def relief_areas_list(request, template_name="social_services/relief-areas.html"
              relief_areas.filter(prescription=True).count()]
 
     context = {'relief_areas': relief_areas, 'stats': stats, 'lon': lon, 'lat': lat}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 def relief_area_detail(request, area_id, template_name="social_services/relief-area-detail.html"):
@@ -139,4 +140,4 @@ def relief_area_detail(request, area_id, template_name="social_services/relief-a
     form = ReliefAssessmentForm(edit=False, instance=area)
 
     context = {'form': form}
-    return render(request, template_name, context)
+    return render_to_resp(request=request, template_name=template_name, context=context)

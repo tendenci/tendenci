@@ -1,9 +1,7 @@
-from django.contrib.auth.models import User
+from builtins import str
 from django.template import Library
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.utils import six
 
 
 register = Library()
@@ -93,7 +91,7 @@ def gravatar(user, size=settings.GAVATAR_DEFAULT_SIZE, **kwargs):
     context = dict(kwargs, **{
         'user': user,
         'url': url,
-        'alt': six.text_type(user),
+        'alt': str(user),
         'size': size,
     })
-    return render_to_string('profiles/gravatar_tag.html', context)
+    return render_to_string(template_name='profiles/gravatar_tag.html', context=context)

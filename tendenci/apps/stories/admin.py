@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.stories.models import Story, Rotator
@@ -77,6 +78,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
             EventLog.objects.log(**log_defaults)
         return object
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
@@ -88,7 +90,6 @@ class StoryAdmin(TendenciBaseModelAdmin):
             return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return _("No image")
-    image_preview.allow_tags = True
     image_preview.short_description = _('Image')
 
     def clone_story(self, request, queryset):
@@ -105,6 +106,7 @@ class StoryInline(admin.TabularInline):
     readonly_fields = ('image_preview','title')
     ordering = ('rotator_position','title')
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
@@ -116,7 +118,6 @@ class StoryInline(admin.TabularInline):
             return '<img src="%s" alt="%s" title="%s" />' % (reverse('file', args=args), alt, alt)
         else:
             return _("No image")
-    image_preview.allow_tags = True
     image_preview.short_description = _('Image')
 
 

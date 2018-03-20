@@ -1,12 +1,7 @@
 from __future__ import print_function
-import os
-from optparse import make_option
-from boto.s3.connection import S3Connection
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 from django.core.exceptions import FieldError
 
 
@@ -28,7 +23,7 @@ cores_list = [
 class Command(BaseCommand):
     help = "Remove non-profit-organization default data"
 
-    option_list = BaseCommand.option_list
+def add_arguments(self, parser):
 
     def handle(self, *args, **options):
         module = None
@@ -72,7 +67,8 @@ class Command(BaseCommand):
                     for instance in instances:
                         if instance.owner == instance.creator:
                             print("%s -- %s" % (m.__name__, instance))
-                            links = [rel.get_accessor_name() for rel in instance._meta.get_all_related_objects()]
+                            links = [f.get_accessor_name() for f in instance._meta.get_fields()
+                                     if (f.one_to_many or f.one_to_one) and f.auto_created and not f.concrete]
                             print("looking at related objects...")
                             for link in links:
                                 try:
@@ -91,6 +87,7 @@ class Command(BaseCommand):
                     pass # model has no tag field
                 except Exception:
                     print("Error in deleting %s -- %s" % (m.__module__, m.__name__))
-                    import sys, traceback
+                    import sys
+                    import traceback
                     traceback.print_exc(file=sys.stdout)
                     pass

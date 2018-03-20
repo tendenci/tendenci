@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=200, verbose_name='title')),
-                ('group', models.ForeignKey(to='user_groups.Group', help_text=b'Group with associated permissions for this officer position.', null=True)),
+                ('group', models.ForeignKey(to='user_groups.Group', help_text='Group with associated permissions for this officer position.', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('guid', models.CharField(max_length=40)),
                 ('title', models.CharField(max_length=500, blank=True)),
                 ('slug', tendenci.apps.base.fields.SlugField(max_length=100, verbose_name='URL Path', db_index=True)),
@@ -66,9 +66,9 @@ class Migration(migrations.Migration):
                 ('join_link', models.CharField(max_length=200, null=True, blank=True)),
                 ('creator', models.ForeignKey(related_name='studygroups_studygroup_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='studygroups_studygroup_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(to='user_groups.Group')),
-                ('header_image', models.ForeignKey(to='pages.HeaderImage', null=True)),
-                ('meta', models.OneToOneField(null=True, to='meta.Meta')),
+                ('group', models.ForeignKey(to='user_groups.Group', on_delete=django.db.models.deletion.CASCADE)),
+                ('header_image', models.ForeignKey(to='pages.HeaderImage', null=True, on_delete=django.db.models.deletion.CASCADE)),
+                ('meta', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta')),
                 ('owner', models.ForeignKey(related_name='studygroups_studygroup_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
@@ -78,16 +78,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='officer',
             name='position',
-            field=models.ForeignKey(to='studygroups.Position'),
+            field=models.ForeignKey(to='studygroups.Position', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='officer',
             name='study_group',
-            field=models.ForeignKey(to='studygroups.StudyGroup'),
+            field=models.ForeignKey(to='studygroups.StudyGroup', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='officer',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

@@ -18,7 +18,7 @@ class Command(BaseCommand):
         ages = []
         verbosity = int(options.get('verbosity', 0))
 
-        unindexed_items = UnindexedItem.objects.all().select_related('content_type__app_label').order_by('create_dt')
+        unindexed_items = UnindexedItem.objects.all().select_related('content_type').order_by('create_dt')
         for ui in unindexed_items:
             app = ui.content_type.app_label
             if app not in items:

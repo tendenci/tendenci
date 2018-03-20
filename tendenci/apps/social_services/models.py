@@ -2,6 +2,7 @@ import requests
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.tinymce import models as tinymce_models
 
@@ -19,7 +20,7 @@ class SkillSet(models.Model):
     '''
     A list of skills available to users
     '''
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Emergency Response Skills
     paramedic = models.BooleanField(_('paramedic'), default=False)
     fireman = models.BooleanField(_('fireman trained'), default=False)
@@ -69,17 +70,14 @@ class SkillSet(models.Model):
 
     loc = models.PointField(blank=True, null=True)
 
-    objects = models.GeoManager()
-
     def __unicode__(self):
         return '%s: Skills' % (self.user.profile.get_name())
 
     @property
     def is_first_responder(self):
-        for field_name in self._meta.get_all_field_names():
-            field = self._meta.get_field_by_name(field_name)[0]
+        for field in self._meta.get_fields():
             if isinstance(field, models.BooleanField):
-                if getattr(self, field_name):
+                if getattr(self, field.name):
                     return True
         return False
 
@@ -98,7 +96,7 @@ class SkillSet(models.Model):
 
 
 class ReliefAssessment(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # Additional Personal Information
     id_number = models.CharField(_('ID number'), max_length=50, blank=True, null=True)
     issuing_authority = models.CharField(_('issuing authority'), max_length=100,
@@ -153,11 +151,8 @@ class ReliefAssessment(models.Model):
 
     loc = models.PointField(blank=True, null=True)
 
-    objects = models.GeoManager()
-
-    @models.permalink
     def get_absolute_url(self):
-        return ('social-services.relief_area', [self.pk])
+        return reverse('social-services.relief_area', args=[self.pk])
 
     def get_ethnicity(self):
         if self.ethnicity == 'other':

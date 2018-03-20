@@ -1,21 +1,20 @@
+from builtins import str
 import os
 import csv
 import zipfile
+from io import open
 from os.path import join
 from os import unlink
 from time import time
 from tempfile import NamedTemporaryFile
 
 from django.conf import settings
-from django.db.models import Avg, Max, Min, Count
-from django.db.models.fields.related import ManyToManyField, ForeignKey
-from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import Max, Count
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from celery.task import Task
-from celery.registry import tasks
 
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
@@ -85,7 +84,7 @@ class FormsExportTask(Task):
                     value = [m.human_name for m in form.payment_methods.all()]
                 else:
                     value = form_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
             if form.fields.all():
@@ -94,7 +93,7 @@ class FormsExportTask(Task):
                     field_d = full_model_to_dict(field)
                     for f in field_fields:
                         value = field_d[f]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the field columns
@@ -109,7 +108,7 @@ class FormsExportTask(Task):
                     pricing_d = full_model_to_dict(pricing)
                     for f in pricing_fields:
                         value = pricing_d[f]
-                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        value = str(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
 
             # fill out the rest of the field columns
@@ -187,7 +186,10 @@ class FormEntriesExportTask(Task):
             temp_zip.close()
 
             # set the response for the zip files
-            response = HttpResponse(file(temp_zip.name).read(), content_type='application/zip')
+            f = open(temp_zip.name, 'rt')
+            body = f.read()
+            f.close()
+            response = HttpResponse(body, content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="export_entries_%d.zip"' % time()
 
             # remove the temporary files

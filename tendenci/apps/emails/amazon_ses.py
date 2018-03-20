@@ -19,8 +19,9 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-import httplib
-import urllib
+from builtins import str
+from six.moves import http_client
+from six.moves.urllib.parse import urlencode
 import hashlib
 import hmac
 import logging
@@ -55,8 +56,8 @@ class AmazonSES:
             params = {}
         params['Action'] = actionName
         #https://email.us-east-1.amazonaws.com/
-        conn = httplib.HTTPSConnection('email.us-east-1.amazonaws.com')
-        params = urllib.urlencode(params)
+        conn = http_client.HTTPSConnection('email.us-east-1.amazonaws.com')
+        params = urlencode(params)
         conn.request('POST', '/', params, self._getHeaders())
         response = conn.getresponse()
         responseResult = response.read()
@@ -84,7 +85,7 @@ class AmazonSES:
         params = { 'Source': source }
         for objName, addresses in zip(["ToAddresses", "CcAddresses", "BccAddresses"], [toAddresses, ccAddresses, bccAddresses]):
             if addresses:
-                if not isinstance(addresses, basestring) and getattr(addresses, '__iter__', False):
+                if not isinstance(addresses, str) and getattr(addresses, '__iter__', False):
                     for i, address in enumerate(addresses, 1):
                         params['Destination.%s.member.%d' % (objName, i)] = address
                 else:

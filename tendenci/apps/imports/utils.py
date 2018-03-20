@@ -1,7 +1,9 @@
+from builtins import str
 import os
 import datetime
 import re
 import csv
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
@@ -84,7 +86,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         csv_writer.writerow(title_list)
 
         for row_item_list in data_list:
-            for i in xrange(0, len(row_item_list)):
+            for i in range(0, len(row_item_list)):
                 if row_item_list[i]:
                     if isinstance(row_item_list[i], datetime.datetime):
                         row_item_list[i] = row_item_list[i].strftime(
@@ -98,13 +100,13 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                         row_item_list[i] = row_item_list[i].strftime(
                             '%H:%M:%S'
                             )
-                if isinstance(row_item_list[i], basestring):
+                if isinstance(row_item_list[i], str):
                     row_item_list[i] = row_item_list[i].encode("utf-8")
 
             csv_writer.writerow(row_item_list)
     else:
-        import StringIO
-        output = StringIO.StringIO()
+        from io import BytesIO
+        output = BytesIO()
         export_wb = Workbook()
         export_sheet = export_wb.add_sheet('Sheet1')
         col_idx = 0
@@ -186,7 +188,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     else:
         finish = data_dict_list_len
 
-    for r in xrange(start, finish):
+    for r in range(start, finish):
         user_object_dict = {}
         if not preview:
             user_import_dict = {}
@@ -196,11 +198,11 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
         data_dict = data_dict_list[r]
 
-        missing_keys = [key for key in data_dict.keys()
+        missing_keys = [key for key in data_dict
                         if key in key_list
                         and data_dict[key] == '']
 
-        for key in data_dict.keys():
+        for key in data_dict:
             user_object_dict[key] = data_dict[key]
 
             if key in key_list and data_dict[key] != '':
@@ -262,7 +264,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
             setting_dict['is_completed'] = False
 
-            for r in xrange(start, finish):
+            for r in range(start, finish):
                 # remove those already processed rows
                 data_dict_list.remove(data_dict_list[0])
 
@@ -351,7 +353,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     for key, value in user.__dict__.items():
         max_length = 90
         try:
-            max_length = User._meta.get_field_by_name(key)[0].max_length
+            max_length = User._meta.get_field(key).max_length
         except FieldDoesNotExist:
             max_length = None
         if max_length:  # truncate per max_length field attribute
@@ -468,7 +470,7 @@ def get_header_list(file_path):
     header_list = []
     book = xlrd.open_workbook(file_path)
     sheet = book.sheet_by_index(0)
-    for col in xrange(0, sheet.ncols):
+    for col in range(0, sheet.ncols):
         col_item = sheet.cell_value(rowx=0, colx=col)
         header_list.append(col_item)
     return header_list
@@ -486,9 +488,9 @@ def get_header_list_from_content(file_content, file_name):
         else:
             book = xlrd.open_workbook(file_contents=file_content)
             nsheets = book.nsheets
-            for i in xrange(0, nsheets):
+            for i in range(0, nsheets):
                 sh = book.sheet_by_index(i)
-                for c in xrange(0, sh.ncols):
+                for c in range(0, sh.ncols):
                     col_item = sh.cell_value(rowx=0, colx=c)
                     header_list.append(col_item)
     return header_list
@@ -515,13 +517,13 @@ def extract_from_excel(file_path):
         data = csv.reader(default_storage.open(file_path, 'rU'))
 
         # read the column header
-        fields = data.next()
+        fields = next(data)
         fields = [smart_str(field) for field in fields]
 
         r = 1
         for row in data:
             item = dict(zip(fields, row))
-            for key in item.keys():
+            for key in item:
                 if key in field_type_dict and \
                 field_type_dict[key] == 'DateTimeField':
                     item[key] = dparser.parse(item[key])
@@ -534,18 +536,18 @@ def extract_from_excel(file_path):
         nrows = book.sheet_by_index(0).nrows
 
         # get the fields from the first row
-        for i in xrange(0, nsheets):
+        for i in range(0, nsheets):
             sh = book.sheet_by_index(i)
-            for c in xrange(0, sh.ncols):
+            for c in range(0, sh.ncols):
                 col_item = sh.cell_value(rowx=0, colx=c)
                 fields.append(smart_str(col_item))
 
         # get the data - skip the first row
-        for r in  xrange(1, nrows):
+        for r in  range(1, nrows):
             row = []
-            for i in xrange(0, nsheets):
+            for i in range(0, nsheets):
                 sh = book.sheet_by_index(i)
-                for c in xrange(0, sh.ncols):
+                for c in range(0, sh.ncols):
                     cell = sh.cell(r, c)
                     cell_value = cell.value
                     if cell.ctype == xlrd.XL_CELL_DATE:

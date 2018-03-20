@@ -25,7 +25,7 @@
 
     {% include "model_report/includes/report_chart.html" %}
 
-	{% if report_anchors %}
+    {% if report_anchors %}
         <select id="anchors">
             <option>{% trans "Go to..." %}</option>
             {% for anchor in report_anchors %}

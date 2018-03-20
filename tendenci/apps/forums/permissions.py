@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from django.db.models import Q
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
 
-import defaults, util
+from . import defaults, util
 from .models import Category, Forum
 
 
@@ -57,7 +57,7 @@ class DefaultPermissionHandler(object):
         if not user.is_staff:
             qs = qs.filter(Q(forum__hidden=False) & Q(forum__category__hidden=False))
         if not user.is_superuser:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 qs = qs.filter(Q(forum__moderators=user) | Q(user=user) | Q(on_moderation=False)).distinct()
             else:
                 qs = qs.filter(on_moderation=False)
@@ -70,7 +70,7 @@ class DefaultPermissionHandler(object):
         if not user.is_staff and (topic.forum.hidden or topic.forum.category.hidden):
             return False  # only staff may see hidden forum / category
         if topic.on_moderation:
-            return user.is_authenticated() and (user == topic.user or user in topic.forum.moderators)
+            return user.is_authenticated and (user == topic.user or user in topic.forum.moderators)
         return True
 
     def may_moderate_topic(self, user, topic):
@@ -95,7 +95,7 @@ class DefaultPermissionHandler(object):
     def may_vote_in_topic(self, user, topic):
         """ return True if `user` may unstick `topic` """
         return (
-            user.is_authenticated() and topic.poll_type != topic.POLL_TYPE_NONE and not topic.closed and
+            user.is_authenticated and topic.poll_type != topic.POLL_TYPE_NONE and not topic.closed and
             not user.poll_answers.filter(poll_answer__topic=topic).exists()
         )
 
@@ -135,7 +135,7 @@ class DefaultPermissionHandler(object):
             # superuser may see all posts, also if premoderation is turned off moderation
             # flag is ignored
             return qs
-        elif user.is_authenticated():
+        elif user.is_authenticated:
             # post is visible if user is author, post is not on moderation, or user is moderator
             # for this forum
             qs = qs.filter(Q(user=user) | Q(on_moderation=False) | Q(topic__forum__moderators=user))
@@ -235,7 +235,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         if not user.is_staff:
             qs = qs.filter(Q(forum__hidden=False) & Q(forum__in=self.filter_forums(user, Forum.objects.all())))
         if not user.is_superuser:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 qs = qs.filter(Q(forum__moderators=user) | Q(user=user) | Q(on_moderation=False)).distinct()
             else:
                 qs = qs.filter(on_moderation=False)
@@ -248,7 +248,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
         if not user.is_staff and (topic.forum.hidden or topic.forum.category.hidden):
             return False  # only staff may see hidden forum / category
         if topic.on_moderation:
-            return user.is_authenticated() and (user == topic.user or user in topic.forum.moderators.all())
+            return user.is_authenticated and (user == topic.user or user in topic.forum.moderators.all())
 
         return user.has_perm('forums.view_category', obj=topic.forum.category) or \
             user.has_perm('forums.view_forum')
@@ -283,7 +283,7 @@ class CustomPermissionHandler(DefaultPermissionHandler):
             # superuser may see all posts, also if premoderation is turned off moderation
             # flag is ignored
             return qs
-        elif user.is_authenticated():
+        elif user.is_authenticated:
             # post is visible if user is author, post is not on moderation, or user is moderator
             # for this forum
             qs = qs.filter(Q(user=user) | Q(on_moderation=False) | Q(topic__forum__moderators=user))

@@ -1,16 +1,15 @@
-from django.conf.urls import patterns, include
+from django.conf.urls import include, url
 
-from tendenci.apps.api_tasty.api import SafeApi
-from tendenci.apps.api_tasty.settings.resources import SettingResource
-from tendenci.apps.api_tasty.users.resources import UserResource
-from tendenci.apps.api_tasty.profiles.resources import ProfileResource
-from tendenci.apps.api_tasty.discounts.resources import DiscountResource
-from tendenci.apps.api_tasty.entities.resources import EntityResource
-from tendenci.apps.api_tasty.payments.resources import PaymentMethodResource
-from tendenci.apps.api_tasty.memberships.resources import (MembershipResource,
-    MembershipTypeResource, AppResource)
-from tendenci.apps.api_tasty.events.resources import (EventResource, TypeResource,
-    PlaceResource)
+from .api import SafeApi
+from .settings.resources import SettingResource
+from .users.resources import UserResource
+from .profiles.resources import ProfileResource
+from .discounts.resources import DiscountResource
+from .entities.resources import EntityResource
+from .payments.resources import PaymentMethodResource
+from .memberships.resources import (MembershipResource, MembershipTypeResource,
+    AppResource)
+from .events.resources import (EventResource, TypeResource, PlaceResource)
 
 api = SafeApi(api_name='v1')
 # user profiles
@@ -32,6 +31,6 @@ api.register(EventResource())
 api.register(TypeResource())
 api.register(PlaceResource())
 
-urlpatterns = patterns('',
-    (r'^', include(api.urls)),
-)
+urlpatterns = [
+    url(r'^', include(api.urls)),
+]

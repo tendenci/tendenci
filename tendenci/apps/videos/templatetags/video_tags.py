@@ -1,4 +1,5 @@
 from operator import or_
+from functools import reduce
 
 from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable, Node

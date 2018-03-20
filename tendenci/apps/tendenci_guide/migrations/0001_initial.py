@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=100)),
                 ('slug', models.CharField(unique=True, max_length=100)),
                 ('content', models.TextField(blank=True)),
-                ('section', models.CharField(default=b'misc', max_length=50, choices=[(b'Events', 'Events'), (b'Getting Started', 'Getting Started'), (b'Miscellaneous', 'Miscellaneous')])),
+                ('section', models.CharField(default='misc', max_length=50, choices=[('Events', 'Events'), ('Getting Started', 'Getting Started'), ('Miscellaneous', 'Miscellaneous')])),
             ],
             options={
                 'permissions': (('view_guide', 'Can view guide'),),

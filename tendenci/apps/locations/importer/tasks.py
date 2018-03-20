@@ -1,10 +1,5 @@
-from datetime import datetime
-from dateutil.parser import parse as dt_parse
-
-from django.contrib.auth.models import User
-
+from builtins import str
 from celery.task import Task
-from celery.registry import tasks
 
 from tendenci.apps.locations.models import Location
 from tendenci.apps.locations.importer.utils import parse_locs_from_csv
@@ -24,9 +19,9 @@ class ImportLocationsTask(Task):
             if not m['skipped']:
                 # Create Location object
                 obj_dict = {}
-                for key in m.keys():
+                for key in m:
                     if key in location_fields:
-                        if isinstance(m[key], basestring):
+                        if isinstance(m[key], str):
                             m[key] = m[key].strip()
                         obj_dict[key] = m[key]
 

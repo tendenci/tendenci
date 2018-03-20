@@ -1,8 +1,9 @@
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from django.utils.http import urlquote
+from django.utils.deprecation import MiddlewareMixin
 
 
-class RedirectMiddleware(object):
+class RedirectMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         """ search url in redirects for 404 or 302 custom redirect """
         if response.status_code != 404 and (not (response.status_code == 302 and
@@ -18,7 +19,7 @@ class RedirectMiddleware(object):
                 return view(*args, **kwargs)
             except:
                 raise
-        except Exception as e:
+        except Exception:
             # No redirect was found. Return the response.
             # Log the 404
             # print("e: ", e)

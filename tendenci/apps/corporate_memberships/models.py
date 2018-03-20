@@ -2,19 +2,20 @@ import operator
 import time
 import uuid
 from datetime import datetime, timedelta
-from functools import partial
+from functools import partial, reduce
+from builtins import str
 
 from django import forms
 from importlib import import_module
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.template import Context, Template
+from django.template import engines
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.db.models import Q
-from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
@@ -72,7 +73,7 @@ FIELD_CHOICES = (
                         _("Multi select (Checkboxes)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget",
+                    ("DateField/django.forms.widgets.SelectDateWidget",
                         _("Date")),
                     ("DateTimeField", _("Date/time")),
                     ("section_break", _("Section Break")),
@@ -116,7 +117,8 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                         blank=True, default=0, null=True,
                                         help_text=_("Set 0 for free membership."))
     membership_type = models.ForeignKey(MembershipType,
-        help_text=_("Bind individual memberships to this membership type."))
+        help_text=_("Bind individual memberships to this membership type."),
+        on_delete=models.CASCADE)
     admin_only = models.BooleanField(_('Admin Only'), default=False)
 
     apply_cap = models.BooleanField(_('Apply cap'),
@@ -161,7 +163,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                 self.position = int(last.position) + 1
             else:
                 self.position = 1
-                
+
         super(CorporateMembershipType, self).save(*args, **kwargs)
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
@@ -264,7 +266,7 @@ class CorpProfile(TendenciBaseModel):
             if self.name != self.entity.entity_name and self.entity.id != 1:
                 self.entity.entity_name = self.name
                 self.entity.save()
-                
+
         if not self.parent_entity:
             if self.entity.entity_parent:
                 self.parent_entity = self.entity.entity_parent
@@ -275,13 +277,12 @@ class CorpProfile(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.name)
-    
-    @models.permalink
+
     def get_absolute_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.view_profile', [self.pk])
+        return reverse('corpmembership.view_profile', args=[self.pk])
 
     def delete(self, *args, **kwargs):
         if len(self.name) + len(str(self.pk)) >= 250:
@@ -339,7 +340,7 @@ class CorpProfile(TendenciBaseModel):
         Check if this user is one of the representatives of
         # this corp profile.
         """
-        if this_user.is_anonymous():
+        if this_user.is_anonymous:
             return False
         reps = self.reps.all()
         for rep in reps:
@@ -352,7 +353,7 @@ class CorpProfile(TendenciBaseModel):
             return u''
 
         return reverse('file', args=[self.logo.pk])
-    
+
     def get_member_rep(self):
         [rep] = self.reps.filter(is_member_rep=True)[:1] or [None]
         return rep
@@ -365,7 +366,8 @@ class CorpProfile(TendenciBaseModel):
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     corp_profile = models.ForeignKey("CorpProfile",
-                                     related_name='corp_memberships')
+                                     related_name='corp_memberships',
+                                     on_delete=models.CASCADE)
     corporate_membership_type = models.ForeignKey("CorporateMembershipType",
                                     verbose_name=_("MembershipType"),
                                     null=True,
@@ -428,12 +430,11 @@ class CorpMembership(TendenciBaseModel):
     def __unicode__(self):
         return "%s" % (self.corp_profile.name)
 
-    @models.permalink
     def get_absolute_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.view', [self.pk])
+        return reverse('corpmembership.view', args=[self.pk])
 
     @property
     def group(self):
@@ -443,12 +444,11 @@ class CorpMembership(TendenciBaseModel):
     def membership_type(self):
         return self.corporate_membership_type.membership_type
 
-    @models.permalink
     def get_renewal_url(self):
         """
         Returns admin change_form page.
         """
-        return ('corpmembership.renew', [self.pk])
+        return reverse('corpmembership.renew', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.guid:
@@ -528,7 +528,7 @@ class CorpMembership(TendenciBaseModel):
                 filter_and = {'status': True,
                               'status_detail': 'active'}
             else:
-                if user.is_authenticated():
+                if user.is_authenticated:
                     filter_or = {'creator': user,
                                  'owner': user}
                     filter_or.update({'corp_profile__reps__user': user})
@@ -545,7 +545,7 @@ class CorpMembership(TendenciBaseModel):
         filter_or = None
         filter_and = {'status': True,
                       'status_detail': 'active'}
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             if user.profile.is_member:
                 filter_or = {'allow_anonymous_view': True,
                              'allow_user_view': True,
@@ -661,7 +661,7 @@ class CorpMembership(TendenciBaseModel):
                 elif hasattr(self, field_name):
                     items[field_name] = getattr(self, field_name)
 
-            for name, value in items.iteritems():
+            for name, value in items.items():
                 if hasattr(value, 'all'):
                     items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
@@ -786,7 +786,7 @@ class CorpMembership(TendenciBaseModel):
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             self.approved_denied_user = request.user
         self.status = True
         self.status_detail = 'active'
@@ -813,8 +813,8 @@ class CorpMembership(TendenciBaseModel):
                         reverse('auth_login'))
                 login_info = \
                 render_to_string(
-                    'notification/corp_memb_notice_email/join_login_info.html',
-                    {'corp_membership': self,
+                    template_name='notification/corp_memb_notice_email/join_login_info.html',
+                    context={'corp_membership': self,
                      'created': created,
                      'username': username,
                      'password': password,
@@ -866,7 +866,7 @@ class CorpMembership(TendenciBaseModel):
             # 2) approve corp_membership
             self.approved = True
             self.approved_denied_dt = datetime.now()
-            if request_user and (not request_user.is_anonymous()):
+            if request_user and (not request_user.is_anonymous):
                 self.approved_denied_user = request_user
             self.status = True
             self.status_detail = 'active'
@@ -883,7 +883,7 @@ class CorpMembership(TendenciBaseModel):
                                             join_dt=self.join_dt,
                                             renew_dt=self.renew_dt,
                                             previous_expire_dt=previous_expire_dt)
-            if not request_user.is_anonymous():
+            if not request_user.is_anonymous:
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
@@ -909,7 +909,7 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.status_detail = 'active'
                 new_membership.application_approved = True
                 new_membership.application_approved_dt = self.approved_denied_dt
-                if not request_user.is_anonymous():
+                if not request_user.is_anonymous:
                     new_membership.owner_id = request_user.id
                     new_membership.owner_username = request_user.username
                     new_membership.application_approved_user = request_user
@@ -936,7 +936,7 @@ class CorpMembership(TendenciBaseModel):
                         'status': True,
                         'status_detail': 'active',
                         }
-                    if not request_user.is_anonymous():
+                    if not request_user.is_anonymous:
                         opt.update({
                                 'creator_id': request_user.id,
                                 'creator_username': request_user.username,
@@ -983,7 +983,7 @@ class CorpMembership(TendenciBaseModel):
             self.approved = True
             self.approved_denied_dt = datetime.now()
             self.status_detail = 'inactive'
-            if not request_user.is_anonymous():
+            if not request_user.is_anonymous:
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
@@ -1078,7 +1078,7 @@ class CorpMembership(TendenciBaseModel):
                      'anonymoussearchcorporatemembers'):
             return True
 
-        if not this_user.is_anonymous():
+        if not this_user.is_anonymous:
             if self.is_rep(this_user):
                 return True
             if self.creator:
@@ -1097,7 +1097,7 @@ class CorpMembership(TendenciBaseModel):
             if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
-            if not this_user.is_anonymous():
+            if not this_user.is_anonymous:
                 if self.is_active:
                     if self.is_rep(this_user):
                         return True
@@ -1290,9 +1290,9 @@ class CorpMembership(TendenciBaseModel):
 
         if reps:
             email_context['to_reps'] =  True
-            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = render_to_string(template_name='notification/corp_memb_cap_reached/short.txt', context=email_context)
             subject = subject.strip('\n').strip('\r')
-            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            body = render_to_string(template_name='notification/corp_memb_cap_reached/full.html', context=email_context)
             email = Email()
             email.subject = subject
             email.body = body
@@ -1305,9 +1305,9 @@ class CorpMembership(TendenciBaseModel):
         # email to site admins
         if membership_recipients:
             email_context['to_reps'] =  False
-            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = render_to_string(template_name='notification/corp_memb_cap_reached/short.txt', context=email_context)
             subject = "Admin: " + subject.strip('\n').strip('\r')
-            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            body = render_to_string(template_name='notification/corp_memb_cap_reached/full.html', context=email_context)
             email = Email()
             email.subject = subject
             email.body = body
@@ -1319,17 +1319,18 @@ class CorpMembership(TendenciBaseModel):
 
 
 class FreePassesStat(TendenciBaseModel):
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     corp_membership = models.ForeignKey("CorpMembership",
-                                related_name="passes_used")
-    event = models.ForeignKey(Event, related_name="passes_used")
-    registrant = models.ForeignKey(Registrant, null=True)
+                                related_name="passes_used",
+                                on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, related_name="passes_used", on_delete=models.CASCADE)
+    registrant = models.ForeignKey(Registrant, null=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'corporate_memberships'
 
     def set_creator_owner(self, request_user):
-        if request_user and not request_user.is_anonymous():
+        if request_user and not request_user.is_anonymous:
             self.creator = request_user
             self.owner = request_user
             self.creator_username = request_user.username
@@ -1366,13 +1367,14 @@ class CorpMembershipApp(TendenciBaseModel):
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),
-                            default=1)
+                            default=1,
+                            on_delete=models.CASCADE)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
-    
+
     dues_reps_group = models.ForeignKey(Group, null=True,
         related_name='dues_reps_group',
         on_delete=models.SET_NULL,
@@ -1393,9 +1395,8 @@ class CorpMembershipApp(TendenciBaseModel):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("corpmembership_app.preview", [self.slug])
+        return reverse('corpmembership_app.preview', args=[self.slug])
 
     def is_current(self):
         """
@@ -1421,14 +1422,13 @@ class CorpMembershipApp(TendenciBaseModel):
             if not self.member_reps_group:
                 self.add_member_reps_group()
 
+    @mark_safe
     def application_form_link(self):
         if self.is_current():
             return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
                                             self.slug)
         return '--'
 
-    application_form_link.allow_tags = True
-    
     def _add_reps_group(self, **kwargs):
         return Group.objects.create(
                     name=kwargs.get('name'),
@@ -1448,7 +1448,7 @@ class CorpMembershipApp(TendenciBaseModel):
                     creator_username=self.creator_username,
                     owner=self.owner,
                     owner_username=self.owner_username)
-    
+
     def add_dues_reps_group(self):
         if self.is_current():
             if not self.dues_reps_group:
@@ -1468,7 +1468,7 @@ class CorpMembershipApp(TendenciBaseModel):
     def add_member_reps_group(self):
         if self.is_current():
             if not self.member_reps_group:
-                [corp_app] = CorpMembershipApp.objects.filter(member_reps_group__isnull=False)[:1]  or [None]
+                [corp_app] = CorpMembershipApp.objects.filter(member_reps_group__isnull=False)[:1] or [None]
                 if corp_app:
                     # only support on corp app currently, so just take over the member_reps_group
                     self.member_reps_group = corp_app.member_reps_group
@@ -1479,7 +1479,7 @@ class CorpMembershipApp(TendenciBaseModel):
                          'description': _('Auto-generated with the corp app. Used for member reps only'),
                          })
                     self.member_reps_group = group
-                self.save()        
+                self.save()
 
 
 class CorpMembershipAppField(OrderingBaseModel):
@@ -1496,7 +1496,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                     ("CountrySelectField", _("Countries Drop Down")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget",
+                    ("DateField/django.forms.widgets.SelectDateWidget",
                         _("Date")),
                     ("DateTimeField", _("Date/time")),
                 )
@@ -1505,7 +1505,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                 )
     FIELD_TYPE_CHOICES = FIELD_TYPE_CHOICES1 + FIELD_TYPE_CHOICES2
 
-    corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
+    corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields", on_delete=models.CASCADE)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True,
                                   default='')
@@ -1551,13 +1551,12 @@ class CorpMembershipAppField(OrderingBaseModel):
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
 
+    @mark_safe
     def app_link(self):
         return '<a href="%s">%s</a>' % (
                 reverse('admin:corporate_memberships_corpmembershipapp_change',
                         args=[self.corp_app.id]),
                 self.corp_app.id)
-
-    app_link.allow_tags = True
 
     def get_field_class(self, initial=None):
         """
@@ -1580,7 +1579,7 @@ class CorpMembershipAppField(OrderingBaseModel):
             field_args = {"label": self.label,
                           "required": self.required,
                           'help_text': self.help_text}
-            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            arg_names = field_class.__init__.__func__.__code__.co_varnames
             if initial:
                 field_args['initial'] = initial
             else:
@@ -1596,7 +1595,7 @@ class CorpMembershipAppField(OrderingBaseModel):
                         field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
                     else:
                         choices = self.choices.split(",")
-                        field_args["choices"] = zip(choices, choices)
+                        field_args["choices"] = list(zip(choices, choices))
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
@@ -1644,7 +1643,8 @@ class CorpMembershipAppField(OrderingBaseModel):
 
 class CorpMembershipAuthDomain(models.Model):
     corp_profile = models.ForeignKey("CorpProfile",
-                                        related_name="authorized_domains")
+                                     related_name="authorized_domains",
+                                     on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -1652,8 +1652,9 @@ class CorpMembershipAuthDomain(models.Model):
 
 class CorpMembershipRep(models.Model):
     corp_profile = models.ForeignKey("CorpProfile",
-                                        related_name="reps")
-    user = models.ForeignKey(User, verbose_name=_("Representative"),)
+                                     related_name="reps",
+                                     on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name=_("Representative"), on_delete=models.CASCADE)
     is_dues_rep = models.BooleanField(_('is dues rep?'),
                                       default=True, blank=True)
     is_member_rep = models.BooleanField(_('is member rep?'),
@@ -1667,11 +1668,11 @@ class CorpMembershipRep(models.Model):
 
     def __unicode__(self):
         return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
-    
+
     def save(self, *args, **kwargs):
         super(CorpMembershipRep, self).save(*args, **kwargs)
         self.sync_reps_groups()
-        
+
     def delete(self, *args, **kwargs):
         super(CorpMembershipRep, self).delete(*args, **kwargs)
         self.remove_from_reps_groups()
@@ -1705,7 +1706,7 @@ class CorpMembershipRep(models.Model):
 
 class IndivEmailVerification(models.Model):
     guid = models.CharField(max_length=50)
-    corp_profile = models.ForeignKey("CorpProfile")
+    corp_profile = models.ForeignKey("CorpProfile", on_delete=models.CASCADE)
     verified_email = models.CharField(_('email'), max_length=200)
     verified = models.BooleanField(default=False)
     verified_dt = models.DateTimeField(null=True)
@@ -1738,8 +1739,8 @@ class IndivMembershipRenewEntry(models.Model):
         ('approved', _('Approved')),
         ('disapproved', _('Disapproved')),
     )
-    corp_membership = models.ForeignKey("CorpMembership")
-    membership = models.ForeignKey(MembershipDefault)
+    corp_membership = models.ForeignKey("CorpMembership", on_delete=models.CASCADE)
+    membership = models.ForeignKey(MembershipDefault, on_delete=models.CASCADE)
     status_detail = models.CharField(max_length=50,
                                      choices=STATUS_DETAIL_CHOICES,
                                      default='pending')
@@ -1803,7 +1804,8 @@ class CorpMembershipImport(models.Model):
 
 class CorpMembershipImportData(models.Model):
     mimport = models.ForeignKey(CorpMembershipImport,
-                                related_name="corp_membership_import_data",)
+                                related_name="corp_membership_import_data",
+                                on_delete=models.CASCADE)
     # dictionary object representing a row in csv
     row_data = DictField(_('Row Data'))
     # the original row number in the uploaded csv file
@@ -1870,10 +1872,7 @@ class Notice(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        help_text=_("Note that if you \
-            don't select a corporate membership type, \
-            the notice will go out to all members."
-        ))
+        help_text=_("Note that if you don't select a corporate membership type, the notice will go out to all members."))
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
@@ -1946,8 +1945,8 @@ class Notice(models.Model):
         if corporate_membership.renewal:
             renewed_individuals_list = \
               render_to_string(
-                        'notification/corp_memb_notice_email/renew_list.html',
-                        {'corp_membership': corporate_membership})
+                        template_name='notification/corp_memb_notice_email/renew_list.html',
+                        context={'corp_membership': corporate_membership})
             total_individuals_renewed = \
                 corporate_membership.indivmembershiprenewentry_set.count()
         else:
@@ -1962,8 +1961,8 @@ class Notice(models.Model):
 
         corp_app = CorpMembershipApp.objects.current_app()
         authentication_info = render_to_string(
-                        'notification/corp_memb_notice_email/auth_info.html',
-                        {'corp_membership': corporate_membership,
+                        template_name='notification/corp_memb_notice_email/auth_info.html',
+                        context={'corp_membership': corporate_membership,
                          'corp_app': corp_app})
 
         context.update({
@@ -2018,12 +2017,11 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         content = fieldify(content)
-        template = Template(content)
+        template = engines['django'].from_string(content)
 
         context = kwargs.get('context') or {}
-        context = Context(context)
 
-        return template.render(context)
+        return template.render(context=context)
 
     @classmethod
     def send_notice(cls, **kwargs):
@@ -2042,12 +2040,12 @@ class Notice(models.Model):
         corporate_membership = kwargs.get('corporate_membership')
         recipients = kwargs.get('recipients') or []
         anonymous_join_login_info = kwargs.get('anonymous_join_login_info', '')
-        request = kwargs.get('request')
+        #request = kwargs.get('request')
 
         if not isinstance(corporate_membership, CorpMembership):
             return False
 
-        if isinstance(recipients, basestring):
+        if isinstance(recipients, str):
             recipients = [recipients]  # expecting list of emails
 
         # allowed notice types
@@ -2103,13 +2101,13 @@ class Notice(models.Model):
         return True
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(Notice, self).save(*args, **kwargs)
 
 
 class NoticeLog(models.Model):
     guid = models.CharField(max_length=50, editable=False)
-    notice = models.ForeignKey(Notice, related_name="logs")
+    notice = models.ForeignKey(Notice, related_name="logs", on_delete=models.CASCADE)
     notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
 
@@ -2120,9 +2118,11 @@ class NoticeLog(models.Model):
 class NoticeLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice_log = models.ForeignKey(NoticeLog,
-                                   related_name="log_records")
+                                   related_name="log_records",
+                                   on_delete=models.CASCADE)
     corp_membership = models.ForeignKey(CorpMembership,
-                                   related_name="log_records")
+                                   related_name="log_records",
+                                   on_delete=models.CASCADE)
     action_taken = models.BooleanField(default=False)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)

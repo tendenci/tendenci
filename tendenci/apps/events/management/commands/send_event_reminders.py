@@ -33,8 +33,8 @@ class Command(BaseCommand):
         from tendenci.apps.site_settings.utils import get_setting
         template_name = 'events/reminder_conf_email.html'
 
-        return render_to_string(template_name,
-                       {'event': event,
+        return render_to_string(template_name=template_name,
+                       context={'event': event,
                         'site_url': get_setting('site', 'global',
                                                 'siteurl'),
                         'site_display_name': get_setting(

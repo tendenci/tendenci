@@ -3,8 +3,7 @@ import os
 import traceback
 from datetime import datetime
 import time
-from optparse import make_option
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -24,17 +23,15 @@ class Command(BaseCommand):
     # https://github.com/campaignmonitor/createsend-python/tree/master/createsend
     # http://www.campaignmonitor.com/api/clients/
 
-    option_list = BaseCommand.option_list + (
-        make_option('--password',
+    def add_arguments(self, parser):
+        parser.add_argument('--password',
             action='store',
             dest='password',
             default=None,
-            help='Password of the campaign monitor account being created'),
-        )
+            help='Password of the campaign monitor account being created')
 
     def handle(self, *args, **options):
-        from createsend import CreateSend, Client, List, Subscriber, \
-                BadRequest, Unauthorized
+        from createsend import CreateSend, Client
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.emails.models import Email
 

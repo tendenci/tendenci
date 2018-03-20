@@ -29,5 +29,10 @@ def autodiscover():
             # Decide whether to bubble up this error. If the app just
             # doesn't have an admin module, we can ignore the error
             # attempting to import it, otherwise we want it to bubble up.
-            if module_has_submodule(mod, 'app_registry'):
-                raise
+            try:
+                if module_has_submodule(mod, 'app_registry'):
+                    raise
+            # Work-around for bug in Django <2.0 on Python >=3.4
+            # https://code.djangoproject.com/ticket/28241
+            except (ImportError, AttributeError):
+                pass

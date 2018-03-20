@@ -62,7 +62,7 @@ class CategoryManager(Manager):
         ct = ContentType.objects.get_for_model(model)
         filters = {'content_type':ct}
 
-        cat_items = CategoryItem.objects.filter(**filters).select_related('category__name','parent__name')
+        cat_items = CategoryItem.objects.filter(**filters).select_related('category','parent')
         categories = []
         sub_categories = []
         for cat in cat_items:
@@ -137,10 +137,10 @@ class Category(models.Model):
         verbose_name_plural = _("Categories")
 
 class CategoryItem(models.Model):
-    content_type = models.ForeignKey(ContentType, db_index=True)
+    content_type = models.ForeignKey(ContentType, db_index=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, related_name='%(class)s_category',null=True,blank=True)
-    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True,blank=True)
+    category = models.ForeignKey(Category, related_name='%(class)s_category', null=True, blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True, blank=True, on_delete=models.CASCADE)
     object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:

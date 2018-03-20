@@ -1,16 +1,19 @@
 from __future__ import print_function
+from builtins import str
 import uuid
 import os
 from PIL import Image as PILImage
 from PIL.ExifTags import TAGS as PILTAGS
 from PIL import ImageFile
 from PIL import ImageFilter
+from PIL import ImageEnhance
 
 from datetime import datetime
 from inspect import isclass
-from cStringIO import StringIO
+from io import BytesIO
 
 from django.db import models
+from django.urls import reverse
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
@@ -20,9 +23,10 @@ from django.core.files.storage import default_storage
 from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.encoding import smart_str, force_unicode
+from django.utils.encoding import smart_str, force_text
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 import simplejson
 import requests
 
@@ -52,8 +56,6 @@ SAMPLE_IMAGE_PATH = getattr(settings, 'SAMPLE_IMAGE_PATH', os.path.join(os.path.
 
 # Modify image file buffer size.
 ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
-
-PHOTOS_DIR = settings.MEDIA_URL
 
 
 def get_storage_path(instance, filename):
@@ -117,8 +119,8 @@ class ImageModel(models.Model):
 
     def EXIF(self):
         try:
-            content = default_storage.open(unicode(self.image)).read()
-            im = PILImage.open(StringIO(content))
+            content = default_storage.open(str(self.image)).read()
+            im = PILImage.open(BytesIO(content))
         except IOError:
             return
 
@@ -130,6 +132,7 @@ class ImageModel(models.Model):
             except:
                 return {}
 
+    @mark_safe
     def admin_thumbnail(self):
         func = getattr(self, 'get_admin_thumbnail_url', None)
         if func is None:
@@ -142,11 +145,10 @@ class ImageModel(models.Model):
                 return u'<a href="%s"><img src="%s"></a>' % \
                     (self.image.url, func())
     admin_thumbnail.short_description = _('Thumbnail')
-    admin_thumbnail.allow_tags = True
 
     def cache_path(self):
         # example 'photos/cache/3949a2d9' or 'photos/cache'
-        l = unicode(self.image).split('/')
+        l = str(self.image).split('/')
         l.insert(1, 'cache')
         return os.path.dirname('/'.join(l))
 
@@ -154,7 +156,7 @@ class ImageModel(models.Model):
         return os.path.join(settings.MEDIA_URL, self.cache_path())
 
     def image_filename(self):
-        return os.path.basename(force_unicode(self.image))
+        return os.path.basename(force_text(self.image))
 
     def _get_filename_for_size(self, size):
         size = getattr(size, 'name', size)
@@ -196,7 +198,7 @@ class ImageModel(models.Model):
         models.Model.save(self)
 
     def add_accessor_methods(self, *args, **kwargs):
-        for size in PhotoSizeCache().sizes.keys():
+        for size in PhotoSizeCache().sizes:
             setattr(self, 'get_%s_size' % size,
                     curry(self._get_SIZE_size, size=size))
             setattr(self, 'get_%s_photosize' % size,
@@ -264,8 +266,8 @@ class ImageModel(models.Model):
             return
 
         try:
-            content = default_storage.open(unicode(self.image)).read()
-            im = PILImage.open(StringIO(content))
+            content = default_storage.open(str(self.image)).read()
+            im = PILImage.open(BytesIO(content))
         except IOError as e:
             print(e)
             return
@@ -290,8 +292,7 @@ class ImageModel(models.Model):
         im_filename = getattr(self, "get_%s_filename" % photosize.name)()
 
         try:
-            import StringIO as StringIO2
-            buffer = StringIO2.StringIO()
+            buffer = BytesIO()
             im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
@@ -358,10 +359,10 @@ class BaseEffect(models.Model):
         abstract = True
 
     def sample_dir(self):
-        return os.path.join(settings.MEDIA_ROOT, PHOTOS_DIR, 'samples')
+        return os.path.join(settings.MEDIA_ROOT, settings.PHOTOS_DIR, 'samples')
 
     def sample_url(self):
-        return settings.MEDIA_URL + '/'.join([PHOTOS_DIR, 'samples', '%s %s.jpg' % (self.name.lower(), 'sample')])
+        return settings.MEDIA_URL + '/'.join([settings.PHOTOS_DIR, 'samples', '%s %s.jpg' % (self.name.lower(), 'sample')])
 
     def sample_filename(self):
         return os.path.join(self.sample_dir(), '%s %s.jpg' % (self.name.lower(), 'sample'))
@@ -376,10 +377,10 @@ class BaseEffect(models.Model):
         im = self.process(im)
         im.save(self.sample_filename(), 'JPEG', quality=90, optimize=True)
 
+    @mark_safe
     def admin_sample(self):
         return u'<img src="%s">' % self.sample_url()
     admin_sample.short_description = 'Sample'
-    admin_sample.allow_tags = True
 
     def pre_process(self, im):
         return im
@@ -464,7 +465,7 @@ class PhotoEffect(BaseEffect):
 
 
 class Watermark(BaseEffect):
-    image = models.ImageField(_('image'), upload_to=PHOTOS_DIR + "/watermarks")
+    image = models.ImageField(_('image'), upload_to=settings.PHOTOS_DIR + "/watermarks")
     style = models.CharField(_('style'), max_length=5, choices=WATERMARK_STYLE_CHOICES, default='scale')
     opacity = models.FloatField(_('opacity'), default=1, help_text=_("The opacity of the overlay."))
 
@@ -475,8 +476,8 @@ class Watermark(BaseEffect):
 
     def post_process(self, im):
         try:
-            content = default_storage.open(unicode(self.image)).read()
-            mark = PILImage.open(StringIO(content))
+            content = default_storage.open(str(self.image)).read()
+            mark = PILImage.open(BytesIO(content))
         except IOError as e:
             raise e
 
@@ -492,8 +493,8 @@ class PhotoSize(models.Model):
     crop = models.BooleanField(_('crop to fit?'), default=False, help_text=_('If selected the image will be scaled and cropped to fit the supplied dimensions.'))
     pre_cache = models.BooleanField(_('pre-cache?'), default=False, help_text=_('If selected this photo size will be pre-cached as photos are added.'))
     increment_count = models.BooleanField(_('increment view count?'), default=False, help_text=_('If selected the image\'s "view_count" will be incremented when this photo size is displayed.'))
-    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name='photo_sizes', verbose_name=_('photo effect'))
-    watermark = models.ForeignKey('Watermark', null=True, blank=True, related_name='photo_sizes', verbose_name=_('watermark image'))
+    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name='photo_sizes', verbose_name=_('photo effect'), on_delete=models.CASCADE)
+    watermark = models.ForeignKey('Watermark', null=True, blank=True, related_name='photo_sizes', verbose_name=_('watermark image'), on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['width', 'height']
@@ -582,7 +583,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         super(PhotoSet, self).save()
 
@@ -633,9 +634,8 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
             return True
         return False
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("photoset_details", [self.pk])
+        return reverse('photoset_details', args=[self.pk])
 
     def get_images(self, user=None, status=True, status_detail='active'):
         """
@@ -650,7 +650,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
 
         photos = Image.objects.filter(filters).filter(photoset=self.pk)
 
-        if user.is_authenticated():
+        if user.is_authenticated:
             photos = photos.distinct()
 
         return photos
@@ -790,13 +790,12 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
 
-    @models.permalink
     def get_absolute_url(self):
         try:
             photo_set = self.photoset.all()[0]
         except IndexError:
             return ("photo", [self.pk])
-        return ("photo", [self.pk, photo_set.pk])
+        return reverse('photo', args=[self.pk, photo_set.pk])
 
     def get_exif_data(self):
         """
@@ -954,13 +953,13 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         return License.objects.get(id=1)
 
     def file_exists(self):
-        return default_storage.exists(unicode(self.image))
+        return default_storage.exists(str(self.image))
 
     def default_thumbnail(self):
         return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
 
     def get_file_from_remote_storage(self):
-        return StringIO(default_storage.open(self.image.file.name).read())
+        return BytesIO(default_storage.open(self.image.file.name).read())
 
     def image_dimensions(self):
         try:
@@ -999,8 +998,8 @@ class Pool(models.Model):
     model for a photo to be applied to an object
     """
 
-    photo = models.ForeignKey(Image)
-    content_type = models.ForeignKey(ContentType)
+    photo = models.ForeignKey(Image, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
     created_at = models.DateTimeField(_('created_at'), default=datetime.now)
@@ -1017,8 +1016,8 @@ class AlbumCover(models.Model):
     """
     model to mark a photo set's album cover
     """
-    photoset = models.OneToOneField(PhotoSet)
-    photo = models.ForeignKey(Image)
+    photoset = models.OneToOneField(PhotoSet, on_delete=models.CASCADE)
+    photo = models.ForeignKey(Image, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'photos'

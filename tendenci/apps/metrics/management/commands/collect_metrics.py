@@ -1,9 +1,9 @@
 from __future__ import print_function
-import commands
+import subprocess
 from datetime import date, timedelta
 from decimal import Decimal
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db.models import Sum
 from django.conf import settings
 
@@ -105,10 +105,11 @@ class Command(BaseCommand):
         """
         cmd = 'du -s -k %s' % settings.PROJECT_ROOT
         size_in_kb = 0
-        status, output = commands.getstatusoutput(cmd)
-
-        if status == 0:
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
             size_in_kb = int(output.split()[0].strip())
+        except subprocess.CalledProcessError:
+            pass
 
         return size_in_kb * 1024
 

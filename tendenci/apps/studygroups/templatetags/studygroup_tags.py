@@ -1,4 +1,4 @@
-from django.template import Node, Library, TemplateSyntaxError, Variable
+from django.template import Library, TemplateSyntaxError
 
 from tendenci.apps.studygroups.models import StudyGroup
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs

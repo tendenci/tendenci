@@ -43,11 +43,11 @@
 
 {% if release_years_list %}
 <div class="pull-right">
-	{% for year in release_years_list %}
+    {% for year in release_years_list %}
    <span><a href="{% url 'news_by_release_year' year %}">{{ year }}</a></span>
     &vert;
-	{% endfor %}
-	<span><a href="{% url 'news' %}">All</a></span>
+    {% endfor %}
+    <span><a href="{% url 'news' %}">All</a></span>
 </div>
 {% endif %}
 

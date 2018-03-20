@@ -11,7 +11,6 @@ class Command(BaseCommand):
         import os
         from django.conf import settings
         from site_settings.utils import get_setting
-        from events.models import Event
         from events.utils import get_vevents
         from django.contrib.auth.models import User
 
@@ -30,21 +29,20 @@ class Command(BaseCommand):
 
         # Create ics file for every user
         users = User.objects.all()
-        user = User.objects.get(pk='1')
-        #for user in users:
-        ics_str = "BEGIN:VCALENDAR\n"
-        ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
-        ics_str += "VERSION:2.0\n"
-        ics_str += "METHOD:PUBLISH\n"
+        for user in users:
+            ics_str = "BEGIN:VCALENDAR\n"
+            ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+            ics_str += "VERSION:2.0\n"
+            ics_str += "METHOD:PUBLISH\n"
 
-        # function get_vevents in events.utils
-        ics_str += get_vevents(user, d)
+            # function get_vevents in events.utils
+            ics_str += get_vevents(user, d)
 
-        ics_str += "END:VCALENDAR\n"
-        ics_str = ics_str.encode('UTF-8')
-        file_name = 'ics-%s.ics' % (user.pk)
-        file_path = os.path.join(absolute_directory, file_name)
-        destination = open(file_path, 'w+')
-        destination.write(ics_str)
-        destination.close()
-        print('Created ics for user %s pk=%s' % (user, user.pk))
+            ics_str += "END:VCALENDAR\n"
+            ics_str = ics_str.encode('UTF-8')
+            file_name = 'ics-%s.ics' % (user.pk)
+            file_path = os.path.join(absolute_directory, file_name)
+            destination = open(file_path, 'w+')
+            destination.write(ics_str)
+            destination.close()
+            print('Created ics for user %s pk=%s' % (user, user.pk))

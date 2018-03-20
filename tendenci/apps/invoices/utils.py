@@ -1,16 +1,15 @@
+from builtins import str
 from datetime import datetime, date, time
 import time as ttime
-import csv
-import cStringIO as StringIO
+from io import BytesIO
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.template.loader import get_template
-from django.template import RequestContext
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import UnicodeWriter
@@ -42,18 +41,18 @@ def invoice_pdf(request, invoice):
             tmp_total += invoice.shipping_surcharge
         if invoice.box_and_packing:
             tmp_total += invoice.box_and_packing
-    
+
     template_name="invoices/pdf.html"
     template = get_template(template_name)
-    html  = template.render(RequestContext(request, {
-                           'invoice': invoice,
-                           'obj_name': obj_name,
-                           'payment_method': payment_method,
-                           'tmp_total': tmp_total,
-                           'pdf_version': True,         
-                                     }))
-    result = StringIO.StringIO()
-    pisa.pisaDocument(StringIO.StringIO(html.encode("utf-8")), result,
+    html  = template.render(context={
+                             'invoice': invoice,
+                             'obj_name': obj_name,
+                             'payment_method': payment_method,
+                             'tmp_total': tmp_total,
+                             'pdf_version': True,
+                            }, request=request)
+    result = BytesIO()
+    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
                       path=get_setting('site', 'global', 'siteurl'))
     return result
 
@@ -153,7 +152,7 @@ def process_invoice_export(start_dt=None, end_dt=None,
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)
@@ -182,11 +181,11 @@ def process_invoice_export(start_dt=None, end_dt=None,
             'end_dt': end_dt}
 
         subject = render_to_string(
-            'invoices/notices/export_ready_subject.html', parms)
+            template_name='invoices/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'invoices/notices/export_ready_body.html', parms)
+            template_name='invoices/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

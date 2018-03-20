@@ -1,9 +1,9 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
@@ -29,8 +29,8 @@ def detail(request, slug=None, cv=None):
     if has_view_perm(request.user, 'staff.view_staff', staff):
         EventLog.objects.log(instance=staff)
 
-        return render_to_response(template_name, {'staff': staff},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'staff': staff})
     else:
         raise Http403
 
@@ -53,7 +53,7 @@ def search(request, slug=None, template_name="staff/search.html"):
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         staff = staff.select_related()
 
     if query:
@@ -70,8 +70,8 @@ def search(request, slug=None, template_name="staff/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'staff_members':staff, 'department': department},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'staff_members':staff, 'department': department})
 
 
 @is_enabled('staff')

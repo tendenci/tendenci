@@ -1,12 +1,7 @@
 from decimal import Decimal
 
-from django import forms
 from django.forms.formsets import BaseFormSet
 from django.forms.utils import ErrorList
-from django.utils.translation import ugettext_lazy as _
-
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.events.addons.utils import can_use_addon
 
 class RegAddonBaseFormSet(BaseFormSet):
     """
@@ -31,7 +26,7 @@ class RegAddonBaseFormSet(BaseFormSet):
             'form_index': i,
         }
 
-        for key in self.extra_params.keys():
+        for key in self.extra_params:
             defaults[key] = self.extra_params[key]
         if self.data or self.files:
             defaults['data'] = self.data

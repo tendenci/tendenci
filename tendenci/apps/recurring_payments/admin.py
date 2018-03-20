@@ -1,11 +1,10 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
-
-from django.contrib.admin import widgets
+from django.urls import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.recurring_payments.models import RecurringPayment, PaymentProfile
 from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
@@ -13,6 +12,7 @@ from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
+
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign
@@ -41,10 +41,10 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
                 kwargs = dict(self.formfield_overrides[db_field.__class__], **kwargs)
 
             # Get the correct formfield.
-            if isinstance(db_field, models.ForeignKey):
-                formfield = self.formfield_for_foreignkey(db_field, request, **kwargs)
-            elif isinstance(db_field, models.ManyToManyField):
-                formfield = self.formfield_for_manytomany(db_field, request, **kwargs)
+#            if isinstance(db_field, models.ForeignKey):
+#                formfield = self.formfield_for_foreignkey(db_field, request, **kwargs)
+#            elif isinstance(db_field, models.ManyToManyField):
+#                formfield = self.formfield_for_manytomany(db_field, request, **kwargs)
 
             # For non-raw_id fields, wrap the widget with a wrapper that adds
             # extra HTML -- the "add other" interface -- to the end of the
@@ -52,7 +52,7 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
             # OneToOneField with parent_link=True or a M2M intermediary.
 #            if formfield and db_field.name not in self.raw_id_fields:
 #                related_modeladmin = self.admin_site._registry.get(
-#                                                            db_field.rel.to)
+#                                                            db_field.remote_field.model)
 #                can_add_related = bool(related_modeladmin and
 #                            related_modeladmin.has_add_permission(request))
 #                formfield.widget = widgets.RelatedFieldWidgetWrapper(
@@ -73,6 +73,7 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
 
 
 class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
+    @mark_safe
     def edit_payment_info_link(self):
         # customer_profile_id
         if not self.customer_profile_id:
@@ -90,7 +91,6 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
                                                                         pp.update_dt.strftime('%Y-%m-%d'))
         else:
             return '<a href="%s">Add payment info</a>' % (link)
-    edit_payment_info_link.allow_tags = True
 
     def how_much_to_pay(self):
         if self.object_content_type and self.object_content_type.name == 'Membership':
@@ -100,16 +100,15 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
 
-    list_display = ['id', 'user', 'view_on_site'] 
-                   
+    list_display = ['id', 'user', 'view_on_site']
+
     if get_setting("site", "global", "merchantaccount").lower() == 'authorizenet':
         list_display.append(edit_payment_info_link)
-        
+
     list_display += ['description', 'create_dt',
                      how_much_to_pay,
                      'status_detail']
-        
-    
+
     list_filter = ['status_detail']
 
     fieldsets = (
@@ -126,14 +125,14 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     form = RecurringPaymentForm
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         return '<a href="%s"><img src="%s" /></a>' % (
             reverse('recurring_payment.view_account', args=[obj.id]),
             link_icon)
-    view_on_site.allow_tags = True
     view_on_site.short_description = _('view')
-    
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = RecurringPayment.objects.get(id=object_id)
         # if it's for membership auto-renew, redirect to list page
@@ -144,9 +143,9 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
                 model=opts.model_name,
             ))
             return HttpResponseRedirect(url)
-         
+
         return super(RecurringPaymentAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
-    
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 

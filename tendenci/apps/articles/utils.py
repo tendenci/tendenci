@@ -1,15 +1,15 @@
+from builtins import str
 import time as ttime
 from datetime import datetime, date, time
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
-from django.core.files.base import ContentFile
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 
 from tendenci.apps.articles.models import Article
-from tendenci.apps.base.utils import normalize_newline, UnicodeWriter
+from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -60,7 +60,7 @@ def process_export(identifier, user_id):
                     item = item.strftime('%Y-%m-%d')
                 elif isinstance(item, time):
                     item = item.strftime('%H:%M:%S')
-                elif isinstance(item, basestring):
+                elif isinstance(item, str):
                     item = item.encode("utf-8")
                 item = smart_str(item).decode('utf-8')
                 items_list.append(item)
@@ -88,11 +88,11 @@ def process_export(identifier, user_id):
             'date_today': datetime.now()}
 
         subject = render_to_string(
-            'articles/notices/export_ready_subject.html', parms)
+            template_name='articles/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'articles/notices/export_ready_body.html', parms)
+            template_name='articles/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

@@ -1,14 +1,15 @@
 import os
 import shutil
-import sys
 import boto
-import urllib
+from six.moves.urllib.request import urlopen
 from datetime import datetime
 from dateutil.parser import parse
 from operator import itemgetter
+from functools import reduce
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
 
 from tendenci.apps.theme.utils import get_theme_root, get_theme
@@ -57,7 +58,7 @@ class ThemeInfo(object):
         # check if theme info file exists
         is_file = qstr_is_file(DEFAULT_THEME_INFO, ROOT_DIR=theme_root)
         if is_file:
-            theme_file = file(os.path.join(theme_root, DEFAULT_THEME_INFO))
+            theme_file = open(os.path.join(theme_root, DEFAULT_THEME_INFO))
             data = theme_file.readlines()
             theme_file.close()
             # set attributes according to data in info file
@@ -77,7 +78,6 @@ class ThemeInfo(object):
                     setattr(self, label, value)
 
 # At compile time, cache the directories to search.
-fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
 app_templates = {}
 for app in settings.INSTALLED_APPS:
     try:
@@ -86,7 +86,7 @@ for app in settings.INSTALLED_APPS:
         raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
     template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
     if os.path.isdir(template_dir):
-        app_templates[app] = template_dir.decode(fs_encoding)
+        app_templates[app] = template_dir
 
 
 def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
@@ -313,7 +313,7 @@ def handle_uploaded_file(file_path, file_dir):
 
     # copy to s3
     if settings.USE_S3_THEME:
-        if os.path.splitext(f.name)[1] == '.html':
+        if os.path.splitext(file_name)[1] == '.html':
             public = False
         else:
             public = True
@@ -324,4 +324,4 @@ def handle_uploaded_file(file_path, file_dir):
         cache.delete(cache_key)
 
         if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
-            urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+            urlopen(settings.REMOTE_DEPLOY_URL)

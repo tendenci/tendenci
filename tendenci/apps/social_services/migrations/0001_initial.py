@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import django.contrib.gis.db.models.fields
 import tendenci.libs.tinymce.models
 from django.conf import settings
@@ -34,27 +35,27 @@ class Migration(migrations.Migration):
                 ('alt_state', models.CharField(max_length=50, null=True, verbose_name='state', blank=True)),
                 ('alt_zipcode', models.CharField(max_length=50, null=True, verbose_name='ZIP', blank=True)),
                 ('alt_country', models.CharField(max_length=50, null=True, verbose_name='country', blank=True)),
-                ('ethnicity', models.CharField(blank=True, max_length=10, null=True, verbose_name=b'', choices=[(b'black', b'Black'), (b'caucasian', b'Caucasian'), (b'hispanic', b'Hispanic'), (b'asian', b'Asian'), (b'other', b'Other')])),
-                ('other_ethnicity', models.CharField(help_text=b'Specify here if your ethnicity is not included above.', max_length=50, null=True, verbose_name=b'', blank=True)),
+                ('ethnicity', models.CharField(blank=True, max_length=10, null=True, verbose_name='', choices=[('black', 'Black'), ('caucasian', 'Caucasian'), ('hispanic', 'Hispanic'), ('asian', 'Asian'), ('other', 'Other')])),
+                ('other_ethnicity', models.CharField(help_text='Specify here if your ethnicity is not included above.', max_length=50, null=True, verbose_name='', blank=True)),
                 ('below_2', models.IntegerField(null=True, verbose_name='0 - 2 yrs', blank=True)),
                 ('between_3_11', models.IntegerField(null=True, verbose_name='3 - 11 yrs', blank=True)),
                 ('between_12_18', models.IntegerField(null=True, verbose_name='12 - 18 yrs', blank=True)),
                 ('between_19_59', models.IntegerField(null=True, verbose_name='19 - 59 yrs', blank=True)),
                 ('above_60', models.IntegerField(null=True, verbose_name='over 60 yrs', blank=True)),
-                ('ssa', models.BooleanField(default=False, help_text=b'current recipient of Social Security', verbose_name='social security administration')),
-                ('dhs', models.BooleanField(default=False, help_text=b'food stamps, WIC, TANF', verbose_name='department human services')),
-                ('children_needs', models.BooleanField(default=False, help_text=b'school supplies, uniforms, clothing, child care, diapers, wipes', verbose_name='children needs')),
+                ('ssa', models.BooleanField(default=False, help_text='current recipient of Social Security', verbose_name='social security administration')),
+                ('dhs', models.BooleanField(default=False, help_text='food stamps, WIC, TANF', verbose_name='department human services')),
+                ('children_needs', models.BooleanField(default=False, help_text='school supplies, uniforms, clothing, child care, diapers, wipes', verbose_name='children needs')),
                 ('toiletries', models.BooleanField(default=False, verbose_name='toiletries')),
                 ('employment', models.BooleanField(default=False, verbose_name='employment')),
                 ('training', models.BooleanField(default=False, verbose_name='training')),
                 ('food', models.BooleanField(default=False, verbose_name='food')),
                 ('gas', models.BooleanField(default=False, verbose_name='gas')),
                 ('prescription', models.BooleanField(default=False, verbose_name='prescription care')),
-                ('other_service', models.CharField(help_text=b'Specify additional services needed.', max_length=100, null=True, verbose_name='other', blank=True)),
+                ('other_service', models.CharField(help_text='Specify additional services needed.', max_length=100, null=True, verbose_name='other', blank=True)),
                 ('case_notes', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='case notes', blank=True)),
                 ('items_provided', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='items provided', blank=True)),
                 ('loc', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -100,7 +101,7 @@ class Migration(migrations.Migration):
                 ('marksman', models.BooleanField(default=False, verbose_name='marksman')),
                 ('security_clearance', models.CharField(max_length=200, null=True, verbose_name='security clearance', blank=True)),
                 ('loc', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

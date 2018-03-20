@@ -1,11 +1,12 @@
 # coding=utf-8
-import urllib, hashlib
+from builtins import str
+from six.moves.urllib.parse import urlencode
+import hashlib
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-import defaults, util
-from .compat import get_image_field_class, get_username_field
+from . import defaults, util
+from .compat import get_image_field_class
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -64,7 +65,7 @@ class PybbProfile(models.Model):
             if not defaults.PYBB_PROFILE_RELATED_NAME:  # we now in user custom model itself
                 return self.get_username()
         except Exception:
-            return unicode(self)
+            return str(self)
 
     def getMD5(self):
         m = hashlib.md5()
@@ -75,5 +76,5 @@ class PybbProfile(models.Model):
         size = defaults.PYBB_AVATAR_WIDTH
         default = get_setting('site', 'global', 'siteurl') +  defaults.PYBB_DEFAULT_AVATAR_URL
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
-        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url

@@ -1,5 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.handler404.views',
-    url(r'^reports/$', 'reports_404', name="reports-404-count"),
-)
+urlpatterns = [
+    url(r'^reports/$', views.reports_404, name="reports-404-count"),
+]

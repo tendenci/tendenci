@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-import cStringIO as StringIO
+from io import BytesIO
 from cgi import escape
 from xhtml2pdf import pisa
 
 from django.template.loader import get_template
-from django.template import Context
 from django.http import HttpResponse
 
 from .base import Exporter
@@ -16,7 +15,7 @@ class PdfExporter(Exporter):
     def render(cls, report, column_labels, report_rows, report_inlines):
         # where is_export is being used?
         setattr(report, 'is_export', True)
-        context_dict = {
+        context = {
             'report': report,
             'column_labels': column_labels,
             'report_rows': report_rows,
@@ -24,12 +23,11 @@ class PdfExporter(Exporter):
             'pagesize': 'legal landscape'
         }
         template = get_template('model_report/export_pdf.html')
-        context = Context(context_dict)
-        html = template.render(context)
-        result = StringIO.StringIO()
+        html = template.render(context=context)
+        result = BytesIO()
         pdf_encoding='UTF-8'
 
-        pdf = pisa.CreatePDF(StringIO.StringIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
+        pdf = pisa.CreatePDF(BytesIO(html.encode(pdf_encoding)), result, encoding=pdf_encoding)
 
         if not pdf.err:
             response = HttpResponse(result.getvalue(), content_type='application/pdf')

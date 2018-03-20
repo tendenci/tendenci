@@ -1,3 +1,4 @@
+from builtins import str
 from django.template import Library, TemplateSyntaxError, Variable, Node
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -54,7 +55,7 @@ def navigation(context, nav_id):
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
-        if user.is_authenticated():
+        if user.is_authenticated:
             if not user.profile.is_superuser:
                 navs = navs.distinct()
         nav = navs[0]
@@ -131,7 +132,7 @@ def nav(context, nav_id, show_title=False, is_site_map=False):
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
-        if user.is_authenticated():
+        if user.is_authenticated:
             if not user.profile.is_superuser:
                 navs = navs.distinct()
 
@@ -170,7 +171,7 @@ def bootstrap_nav(context, nav_id, show_title=False):
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
-        if user.is_authenticated():
+        if user.is_authenticated:
             if not user.profile.is_superuser:
                 navs = navs.distinct()
 
@@ -269,7 +270,7 @@ class GetNavNode(Node):
         try:
             filters = get_query_filters(user, 'navs.view_nav')
             nav = Nav.objects.filter(filters).filter(pk=pk)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     nav = nav.distinct()
 
@@ -277,7 +278,7 @@ class GetNavNode(Node):
         except:
             pass
 
-        return unicode()
+        return str()
 
 
 @register.tag

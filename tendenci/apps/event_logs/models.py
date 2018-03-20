@@ -1,8 +1,10 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import validate_comma_separated_integer_list
 
 from tendenci.apps.event_logs.managers import EventLogManager
 from tendenci.apps.entities.models import Entity
@@ -56,8 +58,7 @@ class EventLog(models.Model):
         return get_color(str(self.event_id))
 
     def get_absolute_url(self):
-        return ('event_log', [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('event_log', args=[self.pk])
 
     def __unicode__(self):
         return str(self.event_id)
@@ -115,7 +116,7 @@ class EventLogColor(CachedColorModel):
     """
     event_id = models.IntegerField()
     hex_color = models.CharField(max_length=6)
-    rgb_color = models.CommaSeparatedIntegerField(max_length=11)
+    rgb_color = models.CharField(max_length=11, validators=[validate_comma_separated_integer_list])
 
     @classmethod
     def get_color(cls, event_id):

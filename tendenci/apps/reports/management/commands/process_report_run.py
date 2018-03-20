@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum, Q
-from django.template import TemplateDoesNotExist, Context
+from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
 from tendenci.apps.reports.utils import get_ct_nice_name
@@ -26,10 +26,6 @@ class Command(BaseCommand):
 
     def report_output_invoices(self, run):
         from tendenci.apps.corporate_memberships.models import CorpMembership
-        try:
-            from tendenci.apps.donations.models import Donation
-        except:
-            Donation = None
         from tendenci.apps.memberships.models import (MembershipType,
             MembershipSet, MembershipDefault)
         from tendenci.apps.invoices.models import Invoice
@@ -136,13 +132,13 @@ class Command(BaseCommand):
                 t = get_template("reports/invoices/results-summary.html")
             else:
                 t = get_template("reports/invoices/results.html")
-        except TemplateDoesNotExist:
+        except (TemplateDoesNotExist, IOError):
             self.end_with_error(run)
             raise CommandError('The template for this report is missing.')
-        return t.render(Context({
+        return t.render(context={
             'results': results,
             'totals': totals,
-            'run': run}))
+            'run': run})
 
     def add_arguments(self, parser):
         parser.add_argument('run_id', type=int)

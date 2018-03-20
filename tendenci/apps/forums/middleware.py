@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import unicode_literals
+
 from django.utils import translation
 from django.db.models import ObjectDoesNotExist
-from django.contrib.auth.models import Permission
-import util
-from tendenci.apps.site_settings.utils import get_setting
+from django.utils.deprecation import MiddlewareMixin
 
-class PybbMiddleware(object):
+from . import util
+
+
+class PybbMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             try:
                 # Here we try to load profile, but can get error
-                # if user created during syncdb but profile model
+                # if user created during migrate but profile model
                 # under south control. (Like pybb.Profile).
                 profile = util.get_pybb_profile(request.user)
             except ObjectDoesNotExist:

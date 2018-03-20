@@ -1,3 +1,4 @@
+from builtins import str
 import decimal
 from datetime import datetime
 import requests
@@ -7,8 +8,8 @@ from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import mark_safe
-from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from haystack.query import SearchQuerySet
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -82,7 +83,7 @@ CLASS_AND_WIDGET = {
     'multi-select': ('MultipleChoiceField', 'django.forms.CheckboxSelectMultiple'),
     'email-field': ('EmailField', None),
     'file-uploader': ('FileField', None),
-    'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
+    'date': ('DateField', 'django.forms.widgets.SelectDateWidget'),
     'date-time': ('DateTimeField', None),
     'membership-type': ('ChoiceField', 'django.forms.RadioSelect'),
     'payment-method': ('ChoiceField', None),
@@ -112,11 +113,12 @@ def get_suggestions(entry):
         user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
 
     if entry.first_name and entry.last_name:
-        mentioned_fn = entry.first_name
-        mentioned_ln = entry.last_name
+        #mentioned_fn = entry.first_name
+        #mentioned_ln = entry.last_name
         mentioned_em = entry.email
     else:
-        mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+        #mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+        mentioned_em = None
 
     sqs = SearchQuerySet()
 
@@ -132,7 +134,7 @@ def get_suggestions(entry):
 
     user_set[0] = 'Create new user'
 
-    return user_set.items()
+    return list(user_set.items())
 
 
 class MembershipTypeForm(TendenciBaseForm):
@@ -424,8 +426,7 @@ class AutoRenewSetupForm(forms.Form):
         memberships = kwargs.pop('memberships')
         super(AutoRenewSetupForm, self).__init__(*args, **kwargs)
         self.fields['selected_m'].choices = [(m.id, m.id) for m in memberships]
-        
-        
+
 
 class MembershipAppFieldAdminForm(forms.ModelForm):
     class Meta:
@@ -510,13 +511,12 @@ def get_field_size(app_field_obj):
 
 
 def assign_fields(form, app_field_objs):
-    form_field_keys = form.fields.keys()
     # a list of names of app fields
     field_names = [field.field_name for field in app_field_objs
                    if field.field_name != '' and
-                   field.field_name in form_field_keys]
+                   field.field_name in form.fields]
 
-    for name in form_field_keys:
+    for name in form.fields:
         if name not in field_names and name != 'discount_code':
             del form.fields[name]
     # update the field attrs - label, required...
@@ -550,7 +550,7 @@ def assign_fields(form, app_field_objs):
             elif obj.field_stype == 'datetimeinput':
                 field.widget.attrs.update({'class': 'datepicker'})
             elif 'selectdatewidget' in obj.field_stype:
-                field.widget.years = range(1920, THIS_YEAR + 10)
+                field.widget.years = list(range(1920, THIS_YEAR + 10))
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'membership_type',
@@ -581,7 +581,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
         del self.fields['groups']
 
         assign_fields(self, app_field_objs)
-        self_fields_keys = self.fields.keys()
+        self_fields_keys = list(self.fields.keys())
 
         self.is_renewal = 'username' in self.request.GET
         if (self.request.user.is_superuser and self.is_renewal) or (self.instance and self.instance.pk):
@@ -625,7 +625,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
 
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
         self.add_form_control_class()
 
     def clean(self):
@@ -662,7 +662,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                     Please click {activation_link} and we'll send you an email to activate your account and then you
                     will be returned to this application.''').format(email=email, activation_link=activation_link))
 
-        if self.request.user.is_authenticated() and self.request.user.username == un:
+        if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
             if email and email !=  self.request.user.email:
                 # email is changed
@@ -703,7 +703,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 # we didn't find user, check if email address is already in use
                 if un and email:
                     if User.objects.filter(email=email).exists():
-                        if self.request.user.is_authenticated():
+                        if self.request.user.is_authenticated:
                             # user is logged in
                             raise forms.ValidationError(_('This email "%s" is taken. Please check username or enter a different email address.') % email)
 
@@ -744,7 +744,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             user.email = user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
-        elif self.request.user.is_authenticated() and \
+        elif self.request.user.is_authenticated and \
                 not (self.request.user.is_superuser or self.is_corp_rep):
             created = False
             user = self.request.user
@@ -789,7 +789,7 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         del self.fields['referral_source']
 
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
         self.add_form_control_class()
 
@@ -805,11 +805,11 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
         for k, v in self.cleaned_data.items():
 
             if v:
-                if hasattr(profile, k) and isinstance(v, basestring):
+                if hasattr(profile, k) and isinstance(v, str):
                     v = v.strip() or getattr(profile, k)
                 setattr(profile, k, v)
 
-        if not request_user.is_anonymous():
+        if not request_user.is_anonymous:
             profile.owner = request_user
             profile.owner_username = request_user.username
 
@@ -848,8 +848,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
             self.user = None
         if app_field_objs:
             assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
-        self.keys = self.fields.keys()
+        self.field_names = [name for name in self.fields]
 
         if self.user:
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -857,16 +856,16 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                 cnt = 1
                 for education in education_list:
                     field_key = 'school%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.school
                     field_key = 'major%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.major
                     field_key = 'degree%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.degree
                     field_key = 'graduation_dt%s' % cnt
-                    if field_key in self.keys:
+                    if field_key in self.fields:
                         self.fields[field_key].initial = education.graduation_year
                     cnt += 1
 
@@ -928,7 +927,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         self.membership = kwargs.pop('membership', None)
         super(DemographicsForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
         self.file_upload_fields = {}
         # change the default widget to TextInput instead of TextArea
         for key, field in self.fields.items():
@@ -937,7 +936,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
             if 'fileinput' in field.widget.__class__.__name__.lower():
                 self.file_upload_fields.update({key:field})
             if field.widget.__class__.__name__.lower() == 'selectdatewidget':
-                field.widget.years = range(1920, THIS_YEAR + 10)
+                field.widget.years = list(range(1920, THIS_YEAR + 10))
 
         self.app = None
         self.demographics = None
@@ -969,7 +968,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
     def save(self, commit=True, *args, **kwargs):
         pks ={}
         if self.file_upload_fields:
-            for key in self.file_upload_fields.keys():
+            for key in self.file_upload_fields:
                 new_file = self.cleaned_data.get(key, None)
 
                 if self.request:
@@ -995,10 +994,10 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     file_instance.save()
                     data = {
                         'type' : u'file',
-                        'pk' : unicode(file_instance.pk),
+                        'pk' : str(file_instance.pk),
                         'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
-                    data = unicode(data)
+                    data = str(data)
                     pks.update({ key : data })
 
         demographic = super(DemographicsForm, self).save(commit=commit, *args, **kwargs)
@@ -1053,15 +1052,15 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         self.is_renewal = kwargs.pop('is_renewal', False)
         self.renew_from_id = kwargs.pop('renew_from_id', None)
 
-        if 'join_under_corporate' in kwargs.keys():
+        if 'join_under_corporate' in kwargs:
             self.join_under_corporate = kwargs.pop('join_under_corporate')
         else:
             self.join_under_corporate = False
-        if 'corp_membership' in kwargs.keys():
+        if 'corp_membership' in kwargs:
             self.corp_membership = kwargs.pop('corp_membership')
         else:
             self.corp_membership = None
-        if 'authentication_method' in kwargs.keys():
+        if 'authentication_method' in kwargs:
             self.corp_app_authentication_method = kwargs.pop('authentication_method')
         else:
             self.corp_app_authentication_method = ''
@@ -1108,15 +1107,13 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             require_payment = self.membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
 
-        self_fields_keys = self.fields.keys()
-
-        if 'status_detail' in self_fields_keys:
+        if 'status_detail' in self.fields:
             self.fields['status_detail'].widget = forms.widgets.Select(
                         choices=self.STATUS_DETAIL_CHOICES)
-        if 'status' in self_fields_keys:
+        if 'status' in self.fields:
             self.fields['status'].widget = forms.widgets.Select(
                         choices=self.STATUS_CHOICES)
-        if 'groups' in self_fields_keys:
+        if 'groups' in self.fields:
             self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
             self.fields['groups'].queryset = Group.objects.filter(
                                                 allow_self_add=True,
@@ -1124,7 +1121,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                                                 status_detail='active')
             self.fields['groups'].help_text = ''
 
-        if 'corporate_membership_id' in self_fields_keys:
+        if 'corporate_membership_id' in self.fields:
             if self.join_under_corporate and self.corp_membership:
                 self.fields['corporate_membership_id'].widget = forms.widgets.Select(
                                         choices=((self.corp_membership.id, self.corp_membership),))
@@ -1136,7 +1133,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                                                 status_detail__in=['archive', 'inactive'])
 
         assign_fields(self, app_field_objs)
-        self.field_names = [name for name in self.fields.keys()]
+        self.field_names = [name for name in self.fields]
 
         if self.instance and self.instance.pk:
             self.fields['membership_type'].widget.attrs['disabled'] = 'disabled'
@@ -1150,7 +1147,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
 
         if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
-            if not 'corporate_membership_id' in self.fields:
+            if 'corporate_membership_id' not in self.fields:
                 self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
 
         self.add_form_control_class()
@@ -1166,7 +1163,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             del self.fields['payment_method']
         else:
             payment_method_qs = self.membership_app.payment_methods.all()
-            if not (request_user and request_user.is_authenticated() and request_user.is_superuser):
+            if not (request_user and request_user.is_authenticated and request_user.is_superuser):
                 payment_method_qs = payment_method_qs.exclude(admin_only=True)
             self.fields['payment_method'].queryset = payment_method_qs
 
@@ -1184,7 +1181,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                     raise forms.ValidationError(_("Please enter a valid donation amount."))
 
         return value_list
-    
+
     def clean_auto_renew(self):
         value = self.cleaned_data['auto_renew']
         if value:
@@ -1192,7 +1189,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             if payment_method and not payment_method.is_online:
                 raise forms.ValidationError(_("Please either de-select it or change to an online payment method."))
         return value
-
 
     def save(self, *args, **kwargs):
         """
@@ -2092,10 +2088,10 @@ class MembershipDefaultForm(TendenciBaseForm):
                         file_instance.save()
                         data = {
                             'type' : u'file',
-                            'pk' : unicode(file_instance.pk),
+                            'pk' : str(file_instance.pk),
                             'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                         }
-                        data = unicode(data)
+                        data = str(data)
                         setattr(demographics, field_name, data)
 
                 else:

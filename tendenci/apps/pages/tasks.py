@@ -1,10 +1,7 @@
-import os
-from django.forms.models import model_to_dict
+from builtins import str
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
-from celery.registry import tasks
-from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.exports.utils import render_csv
 from tendenci.apps.pages.models import Page
 
@@ -71,7 +68,7 @@ class PagesExportTask(Task):
             data_row = []
             for field in fields:
                 # clean the derived values into unicode
-                value = unicode(d[field]).rstrip()
+                value = str(d[field]).rstrip()
                 data_row.append(value)
 
             data_row_list.append(data_row)

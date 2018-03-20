@@ -1,4 +1,7 @@
+from builtins import str
+
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -21,7 +24,7 @@ class Committee(BasePage):
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -30,15 +33,14 @@ class Committee(BasePage):
     objects = CommitteeManager()
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
     class Meta:
         permissions = (("view_committee", "Can view committee"),)
         app_label = 'committees'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("committees.detail", [self.slug])
+        return reverse('committees.detail', args=[self.slug])
 
     def get_meta(self, name):
         """
@@ -59,13 +61,13 @@ class Position(models.Model):
         app_label = 'committees'
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
 
 class Officer(models.Model):
-    committee = models.ForeignKey(Committee)
-    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user")
-    position = models.ForeignKey(Position)
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import datetime
 from django.conf import settings
 
@@ -57,7 +58,7 @@ class Migration(migrations.Migration):
             name='NoticeSetting',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('medium', models.CharField(max_length=1, verbose_name='medium', choices=[(b'1', 'Email')])),
+                ('medium', models.CharField(max_length=1, verbose_name='medium', choices=[('1', 'Email')])),
                 ('send', models.BooleanField(default=False, verbose_name='send')),
             ],
             options={
@@ -86,9 +87,9 @@ class Migration(migrations.Migration):
                 ('object_id', models.PositiveIntegerField()),
                 ('added', models.DateTimeField(default=datetime.datetime.now, verbose_name='added')),
                 ('signal', models.TextField(verbose_name='signal')),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('notice_type', models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType')),
-                ('user', models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL)),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
+                ('notice_type', models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType', on_delete=django.db.models.deletion.CASCADE)),
+                ('user', models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['-added'],
@@ -99,27 +100,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='noticesetting',
             name='notice_type',
-            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType'),
+            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='noticesetting',
             name='user',
-            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='noticeemail',
             name='notice_type',
-            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType'),
+            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='notice',
             name='notice_type',
-            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType'),
+            field=models.ForeignKey(verbose_name='notice type', to='notifications.NoticeType', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='notice',
             name='user',
-            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='noticesetting',

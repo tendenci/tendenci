@@ -1,19 +1,19 @@
 import uuid
-import re
 from datetime import datetime, timedelta
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
-from timezones.fields import TimeZoneField
+from timezone_field import TimeZoneField
+
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.base.fields import SlugField
-from tendenci.apps.base.utils import correct_filename
+from tendenci.apps.base.utils import correct_filename, get_timezone_choices
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -33,7 +33,7 @@ def file_directory(instance, filename):
 class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('slug', 'parent',)
@@ -48,7 +48,7 @@ class Directory(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
-    timezone = TimeZoneField(_('Time Zone'))
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(_('Name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField(_('Description'))
@@ -57,7 +57,7 @@ class Directory(TendenciBaseModel):
     #                         help_text=_('Company logo. Only jpg, gif, or png images.'),
     #                         blank=True)
 
-    logo_file = models.ForeignKey(File, null=True)
+    logo_file = models.ForeignKey(File, null=True, on_delete=models.CASCADE)
 
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
@@ -77,10 +77,10 @@ class Directory(TendenciBaseModel):
     renewal_notice_sent = models.BooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
-    pricing = models.ForeignKey('DirectoryPricing', null=True)
+    pricing = models.ForeignKey('DirectoryPricing', null=True, on_delete=models.CASCADE)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
@@ -124,13 +124,11 @@ class Directory(TendenciBaseModel):
         """
         return DirectoryMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("directory", [self.slug])
+        return reverse('directory', args=[self.slug])
 
-    @models.permalink
     def get_renew_url(self):
-        return ("directory.renew", [self.id])
+        return reverse('directory.renew', args=[self.id])
 
     def __unicode__(self):
         return self.headline
@@ -222,7 +220,7 @@ class Directory(TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
@@ -277,7 +275,7 @@ class DirectoryPricing(models.Model):
         super(DirectoryPricing, self).save(*args, **kwargs)
 
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
-        if not user.is_anonymous() and user.profile.is_member:
+        if not user.is_anonymous and user.profile.is_member:
             if list_type == 'regular':
                 return self.regular_price_member
             else:

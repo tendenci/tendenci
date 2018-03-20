@@ -1,3 +1,5 @@
+from builtins import str
+
 import os
 import re
 
@@ -7,14 +9,12 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 import simplejson as json
-from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core import serializers
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage
 from django.forms.models import modelformset_factory
@@ -23,7 +23,7 @@ from django.db.models import Q
 from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.libs.utils import python_executable
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.perms.decorators import is_enabled
@@ -36,7 +36,7 @@ from djcelery.models import TaskMeta
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex
-from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
+from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License
 from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask
@@ -48,7 +48,7 @@ def search(request, template_name="photos/search.html"):
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'photos.view_image')
     photos = Image.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         photos = photos.select_related()
 
     if query:
@@ -61,8 +61,8 @@ def search(request, template_name="photos/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {"photos": photos},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={"photos": photos})
 
 
 @is_enabled('photos')
@@ -105,14 +105,14 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         photo.get_license().name != 'All Rights Reserved',
     ]
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo": photo,
         "size_name": size_name.replace("_"," "),
         "download_url": download_url,
         "source_url": source_url,
         "original_source_url": original_source_url,
         "can_view_original": any(view_original_requirments),
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -175,7 +175,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     if partial:  # return partial html; for ajax end-user
         template_name = "photos/partial-details.html"
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_position": photo_position,
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,
@@ -187,7 +187,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         "id": id,
         "set_id": set_id,
         "is_me": is_me,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def photo_size(request, id, size, crop=False, quality=90, download=False, constrain=False):
@@ -198,7 +198,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     Returns 404 if if image rendering fails
     """
 
-    if isinstance(quality, unicode) and quality.isdigit():
+    if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
 
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
@@ -220,7 +220,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
 
     if not photo.image or not default_storage.exists(photo.image.name):
         raise Http404
-    
+
     # At this point, we didn't get the image from the cache.
     # Check if this particular thumbnail already exists on file system.
     # If it's there, no need to rebuild it from the original image!
@@ -267,7 +267,7 @@ def photo_original(request, id):
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
-    image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
+    image_data = default_storage.open(str(photo.image.file), 'rb').read()
     try:
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
@@ -290,7 +290,7 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
     else:
         group = None
 
-    user = get_object_or_404(User, username=username)
+    get_object_or_404(User, username=username)
 
     photos = Image.objects.filter(
         member__username = username,
@@ -304,10 +304,10 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
 
     photos = photos.order_by("-date_added")
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "group": group,
         "photos": photos,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -334,7 +334,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': unicode(photo)}) )
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%(title)s'" % {'title': str(photo)}) )
                 if set_id:
                     return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
                 else:
@@ -345,13 +345,13 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     else:
         form = form_class(instance=photo, user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_form": form,
         "photo": photo,
         "photo_sets": photo_sets,
         "id": photo.id,
         "set_id": set_id,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -365,21 +365,21 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': unicode(photo)}))
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%(title)s'" % {'title': str(photo)}))
 
         photo.delete()
 
         messages.add_message(request, messages.SUCCESS, _('Photo %(id)s deleted' % {'id' : id}))
 
         try:
-            photo_set = PhotoSet.objects.get(id=set_id)
+            PhotoSet.objects.get(id=set_id)
             return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
         except PhotoSet.DoesNotExist:
             return HttpResponseRedirect(reverse("photos_search"))
 
-    return render_to_response("photos/delete.html", {
+    return render_to_resp(request=request, template_name="photos/delete.html", context={
         "photo": photo,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -408,9 +408,9 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photoset_form": form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -437,7 +437,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
 
                 # photo set group permissions
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')
-                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms ])
+                group_perms = tuple([(str(g), c.split('_')[0]) for g, c in group_perms ])
 
                 photos = Image.objects.filter(photoset=photo_set)
                 for photo in photos:
@@ -450,10 +450,10 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     else:
         form = form_class(instance=photo_set, user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'photo_set': photo_set,
         "photoset_form": form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -476,9 +476,9 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         # redirect to the photo set search
         return redirect('photoset_latest')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'photo_set': photo_set,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -487,7 +487,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'photos.view_photoset')
     photo_sets = PhotoSet.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         photo_sets = photo_sets.select_related()
 
     if query:
@@ -499,8 +499,8 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {"photo_sets": photo_sets},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={"photo_sets": photo_sets})
 
 
 @is_enabled('photos')
@@ -508,9 +508,9 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     """ View your photo set """
     photo_sets = PhotoSet.objects.all()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_sets": photo_sets,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def handle_uploaded_photo(request, photoset_id, file_path):
@@ -529,7 +529,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
 
     # truncate; make unique; append extension
-    filename = filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
+    filename = filename[:70] + '-' + str(uuid.uuid1())[:5] + extension
 
     photo.image.save(filename, File(open(file_path, 'rb')))
 
@@ -581,13 +581,13 @@ def handle_uploaded_photo(request, photoset_id, file_path):
 
     # photo group perms = album group perms
     group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
-    group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
+    group_perms = tuple([(str(g), c.split('_')[0]) for g, c in group_perms])
     ObjectPermission.objects.assign_group(group_perms, photo)
 
     # serialize queryset
-    data = serializers.serialize("json", Image.objects.filter(id=photo.id))
+    #data = serializers.serialize("json", Image.objects.filter(id=photo.id))
 
-    cache_image = Popen([python_executable(), "manage.py", "precache_photo", str(photo.pk)])
+    Popen([python_executable(), "manage.py", "precache_photo", str(photo.pk)])
 
 
 @is_enabled('photos')
@@ -622,13 +622,13 @@ def photos_batch_add(request, photoset_id=0):
         image_slot_left = photo_limit - photo_set.image_set.count()
 
         # show the upload UI
-        return render_to_response('photos/batch-add.html', {
+        return render_to_resp(request=request, template_name='photos/batch-add.html',
+            context={
             "photoset_id": photoset_id,
             "photo_set": photo_set,
             "csrf_token": csrf_get_token(request),
             "image_slot_left": image_slot_left,
-             },
-            context_instance=RequestContext(request))
+             })
 
 
 @is_enabled('photos')
@@ -712,18 +712,18 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             if g not in groups:
                 groups.append(g)
 
-    tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
+    tag_help_text = Image._meta.get_field('tags').help_text
 
     default_group_id = Group.objects.get_initial_group_id()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
         "groups": groups,
         'default_group_id': default_group_id
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('photos')
@@ -733,7 +733,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
 
-    order = get_setting('module', 'photos', 'photoordering')
+    #order = get_setting('module', 'photos', 'photoordering')
     #if order == 'descending':
     #    photos = photo_set.get_images(user=request.user).order_by('-pk')
     #else:
@@ -749,10 +749,10 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         'instance': photo_set,
     })
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photos": photos,
         "photo_set": photo_set,
-    }, context_instance=RequestContext(request))
+    })
 
 
 def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
@@ -775,11 +775,11 @@ def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
         task = ZipPhotoSetTask.delay(photo_set)
         task_id = task.task_id
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "photo_set": photo_set,
         "task_id":task_id,
         "file_path":file_path,
-    }, context_instance=RequestContext(request))
+    })
 
 def photoset_zip_status(request, id, task_id):
     try:

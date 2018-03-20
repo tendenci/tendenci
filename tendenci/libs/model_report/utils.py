@@ -3,7 +3,7 @@ from decimal import Decimal
 from string import capwords
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.entities.models import Entity
 
@@ -22,9 +22,11 @@ def base_label(report, field):
         return "%s" % capwords(field.verbose_name)
     return field
 
-base_lookup_label = lambda report, field: "[%s] %s" % (field.model._meta.verbose_name.title(), field.verbose_name.title())
+def base_lookup_label(report, field):
+    return "[%s] %s" % (field.model._meta.verbose_name.title(), field.verbose_name.title())
 
-model_lookup_label = lambda report, field: "[%s] %s" % (report.model._meta.verbose_name.title(), field.verbose_name.title())
+def model_lookup_label(report, field):
+    return "[%s] %s" % (report.model._meta.verbose_name.title(), field.verbose_name.title())
 
 
 def sum_column(values):
@@ -146,7 +148,7 @@ class ReportValue(object):
         """
         Render as text the value. This function also format the value.
         """
-        return force_unicode(self.format(self.value, instance=self))
+        return force_text(self.format(self.value, instance=self))
 
     def __repr__(self):
         return self.text()

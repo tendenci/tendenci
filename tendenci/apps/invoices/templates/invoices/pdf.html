@@ -9,11 +9,11 @@
 <title>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</title>
 <style>
 td.td-right {
-	text-align: right;
+    text-align: right;
 }
 td{
-	padding: 3px;
-	width: 40%;
+    padding: 3px;
+    width: 40%;
 }
 .page-header {
     padding-bottom: 9px;
@@ -21,19 +21,19 @@ td{
     border-bottom: 1px solid #eee;
 }
 address{
-	font-style: italic;
+    font-style: italic;
 }
 div.invoice-meta{
-    
+
 }
 .table.table-tendenci-reports {
     border: 1px solid #cccccc;
 }
 .invoice-table-header{
-	font-style: bold;
+    font-style: bold;
 }
 #invoice-meta-logo{
-	text-align: right;
+    text-align: right;
 }
 </style>
 </head>
@@ -41,28 +41,28 @@ div.invoice-meta{
 <body>
 <div class="t">
 
-  
+
   <div class="page-header">
     <h1>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</h1>
   </div>
   <table>
-	  <tr>
-		  <td style="width: 50%;">
-			<div>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</div>
-		  {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
-		  <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
-		  {% endif %}
-		  </td>
-		  <td class="td-right" style="width: 30%;"> 
-		     {% if MODULE_INVOICES_INVOICELOGO %}
-			  <div id="invoice-meta-logo print-view">
-			    <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
-			  </div>
-			  {% endif %}
-		  </td>
-	  </tr>
+      <tr>
+          <td style="width: 50%;">
+            <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</div>
+          {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
+          <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
+          {% endif %}
+          </td>
+          <td class="td-right" style="width: 30%;">
+             {% if MODULE_INVOICES_INVOICELOGO %}
+              <div id="invoice-meta-logo print-view">
+                <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
+              </div>
+              {% endif %}
+          </td>
+      </tr>
   </table>
-	<br />
+    <br />
   {% with invoice.get_object as object %}
   <div class="invoice-meta">
     <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">

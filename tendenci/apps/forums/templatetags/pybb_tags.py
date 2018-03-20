@@ -71,7 +71,7 @@ class PybbTimeNode(template.Node):
                 else:
                     msg = _('minutes ago')
                 return '%d %s' % (minutes, msg)
-        if context['user'].is_authenticated():
+        if context['user'].is_authenticated:
             if time.daylight:
                 tz1 = time.altzone
             else:
@@ -129,7 +129,7 @@ def pybb_posted_by(post, user):
 
 @register.filter
 def pybb_is_topic_unread(topic, user):
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False
 
     last_topic_update = topic.updated or topic.created
@@ -152,7 +152,7 @@ def pybb_topic_unread(topics, user):
     """
     topic_list = list(topics)
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         for topic in topic_list:
             topic.unread = True
 
@@ -181,7 +181,7 @@ def pybb_forum_unread(forums, user):
     Check if forum has unread messages.
     """
     forum_list = list(forums)
-    if user.is_authenticated():
+    if user.is_authenticated:
         for forum in forum_list:
             forum.unread = forum.topic_count > 0
         forum_marks = ForumReadTracker.objects.filter(
@@ -201,7 +201,7 @@ def pybb_forum_unread(forums, user):
 def pybb_topic_inline_pagination(topic):
     page_count = int(math.ceil(topic.post_count / float(defaults.PYBB_TOPIC_PAGE_SIZE)))
     if page_count <= 5:
-        return range(1, page_count+1)
+        return list(range(1, page_count+1))
     return list(range(1, 5)) + ['...', page_count]
 
 
@@ -215,7 +215,7 @@ def endswith(str, substr):
     return str.endswith(substr)
 
 
-@register.assignment_tag
+@register.simple_tag
 def pybb_get_profile(*args, **kwargs):
     try:
         return util.get_pybb_profile(kwargs.get('user') or args[0])
@@ -223,7 +223,7 @@ def pybb_get_profile(*args, **kwargs):
         return util.get_pybb_profile_model().objects.none()
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def pybb_get_latest_topics(context, cnt=5, user=None):
     qs = Topic.objects.all().order_by('-updated', '-created', '-id')
     if not user:
@@ -232,7 +232,7 @@ def pybb_get_latest_topics(context, cnt=5, user=None):
     return qs[:cnt]
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def pybb_get_latest_posts(context, cnt=5, user=None):
     qs = Post.objects.all().order_by('-created', '-id')
     if not user:
@@ -253,11 +253,11 @@ def load_perms_filters():
         return newfunc
 
     for method in inspect.getmembers(perms):
-        if inspect.ismethod(method[1]) and inspect.getargspec(method[1]).args[0] == 'self' and\
+        if inspect.ismethod(method[1]) and inspect.getfullargspec(method[1]).args[0] == 'self' and\
                 (method[0].startswith('may') or method[0].startswith('filter')):
-            if len(inspect.getargspec(method[1]).args) == 3:
+            if len(inspect.getfullargspec(method[1]).args) == 3:
                 register.filter('%s%s' % ('pybb_', method[0]), partial(method[0], perms))
-            elif len(inspect.getargspec(method[1]).args) == 2: # only user should be passed to permission method
+            elif len(inspect.getfullargspec(method[1]).args) == 2: # only user should be passed to permission method
                 register.filter('%s%s' % ('pybb_', method[0]), partial_no_param(method[0], perms))
 load_perms_filters()
 

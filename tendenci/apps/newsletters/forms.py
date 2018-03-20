@@ -1,16 +1,12 @@
 import datetime
 
-from django.conf import settings
 from django import forms
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.template import RequestContext
 
 from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.base.http import Http403
 from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
@@ -43,8 +39,8 @@ class GenerateForm(forms.Form):
     # module content
     jump_links = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
-    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
-    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
+    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
+    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
     events_type = forms.ChoiceField(initial='', choices=get_type_choices(), required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
@@ -66,8 +62,8 @@ class OldGenerateForm(forms.ModelForm):
         fields = "__all__"
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
-            'event_start_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
-            'event_end_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
+            'event_start_dt': SelectDateWidget(None, list(range(THIS_YEAR, THIS_YEAR+10))),
+            'event_end_dt': SelectDateWidget(None, list(range(THIS_YEAR, THIS_YEAR+10))),
             'format': forms.RadioSelect
         }
 
@@ -117,7 +113,7 @@ class OldGenerateForm(forms.ModelForm):
         nl.date_created = datetime.datetime.now()
         nl.send_status = 'draft'
         if nl.default_template:
-            template = render_to_string(nl.default_template, context_instance=RequestContext(self.request))
+            template = render_to_string(template_name=nl.default_template, request=self.request)
             email_content = nl.generate_newsletter(self.request, template)
 
             email = Email()

@@ -1,10 +1,8 @@
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.photos.models import PhotoSet, Image
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
 
 
 class PhotoSetIndex(TendenciBaseSearchIndex, indexes.Indexable):
@@ -20,10 +18,7 @@ class PhotoSetIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return PhotoSet
 
     def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
+        return strip_html(obj.description)
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status == 1 \
@@ -51,10 +46,7 @@ class PhotoIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Image
 
     def prepare_caption(self, obj):
-        caption = obj.caption
-        caption = strip_tags(caption)
-        caption = strip_entities(caption)
-        return caption
+        return strip_html(obj.caption)
 
     def prepare_photosets(self, obj):
         if obj.photoset.all():

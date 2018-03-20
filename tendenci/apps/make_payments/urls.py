@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from tendenci.apps.make_payments.signals import init_signals
+from . import views
 
 init_signals()
 
-urlpatterns = patterns('tendenci.apps.make_payments.views',
-    url(r'^$', 'add', name="make_payment.add"),
-    url(r'^conf/(?P<id>\d+)/$', 'add_confirm', name="make_payment.add_confirm"),
-    url(r'^(?P<id>\d+)/$', 'view', name="make_payment.view"),
-)
+urlpatterns = [
+    url(r'^$', views.add, name="make_payment.add"),
+    url(r'^conf/(?P<id>\d+)/$', views.add_confirm, name="make_payment.add_confirm"),
+    url(r'^(?P<id>\d+)/$', views.view, name="make_payment.view"),
+]

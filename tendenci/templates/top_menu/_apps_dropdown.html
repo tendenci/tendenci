@@ -6,7 +6,6 @@
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
         <img class="nav-icon" src="{% static 'famfamfam/icons/application_view_tile.png' %}"/><span class="nav-label">{% trans "Apps" %}</span>
         <span class="caret"></span>
-
     </a>
 
     <ul id="t-admin-megamenu-apps-dd" class="dropdown-menu apps-dropdown" role="menu">
@@ -35,10 +34,10 @@
                                                     </li>
 
                                                     <li class="content-item">
-	                                                    <a href="{% url 'reports-memberships_overview' %}"
-	                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
-	                                                    </a>
-                                                	</li>
+                                                        <a href="{% url 'reports-memberships_overview' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
+                                                        </a>
+                                                    </li>
 
                                                     <li class="content-item">
                                                         <a href="{% url 'apps.list' %}"
@@ -57,21 +56,21 @@
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
                                             {% if USER_IS_SUPERUSER %}
                                                 <li class="content-item">
-                                    				<a href="{% url 'settings.index' 'site' 'global' %}">
-                                    					<img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"><span class="nav-label">{% trans 'Site Settings' %}</span>
-                                    				</a>
-                                    			</li>
-                                    			<li class="content-item">
-                                    				<a href="{% url 'settings' %}">
-                                    				    <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/><span class="nav-label">{% trans 'Full Settings' %}</span>
-                                    				</a>
+                                                    <a href="{% url 'settings.index' 'site' 'global' %}">
+                                                        <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"><span class="nav-label">{% trans 'Site Settings' %}</span>
+                                                    </a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'settings' %}">
+                                                        <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/><span class="nav-label">{% trans 'Full Settings' %}</span>
+                                                    </a>
                                                     </li>
 
                                                     <li class="content-item">
-					                                    <a href="/explorer/"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Database Export' %}</span></a>
-					                                </li>
-					                                
-					                                <li class="content-item">
+                                                        <a href="/explorer/"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Database Export' %}</span></a>
+                                                    </li>
+
+                                                    <li class="content-item">
                                                         <a href="{% url 'theme_editor.editor' %}"
                                                             ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme Editor' %}</span>
                                                         </a>
@@ -112,7 +111,7 @@
                                                 {% endif %}
                                             {% endif %}
 
-                                            	{% if MODULE_NEWS_ENABLED %}
+                                                {% if MODULE_NEWS_ENABLED %}
                                                     <li class="content-item">
                                                         <a href="{% url 'news' %}"
                                                             ><img class="nav-icon" src="{% static 'famfamfam/icons/newspaper.png' %}"/><span class="nav-label">{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %}</span>
@@ -169,7 +168,7 @@
                                                             ><img class="nav-icon" src="{% static 'famfamfam/icons/page_attach.png' %}"/><span class="nav-label">{% firstof MODULE_RESUMES_LABEL trans "Resumes" %}</span>
                                                         </a>
                                                     </li>
-												{% endif %}
+                                                {% endif %}
 
 
                                                 {% if MODULE_HELP_FILES_ENABLED %}
@@ -179,14 +178,14 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
-												
-												{% if MODULE_TESTIMONIALS_ENABLED and USER_IS_SUPERUSER %}
+
+                                                {% if MODULE_TESTIMONIALS_ENABLED and USER_IS_SUPERUSER %}
                                                 <li class="content-item">
                                                     <a href="{% url 'testimonials' %}"
                                                         ><img class="nav-icon" src="{% static 'famfamfam/icons/thumb_up.png' %}"/><span class="nav-label">{% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "Testimonials" %}</span>
                                                     </a>
                                                 </li>
-												{% endif %}
+                                                {% endif %}
 
                                             </ul>
                                         </div>
@@ -222,7 +221,7 @@
 
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                    {% if USER_IS_SUPERUSER %}
-                                                   	<li class="content-item">
+                                                       <li class="content-item">
                                                         <a href="{% url 'event.reports.financial' %}"
                                                             ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
                                                         </a>
@@ -282,19 +281,19 @@
 
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
                                                     {% if MODULE_FORUMS_ENABLED and USER_IS_SUPERUSER %}
-						                                <li class="content-item">
-						                                    <a href="{% url 'admin:app_list' 'announcements'%}">
-						                                        <img class="nav-icon" src="{% static 'famfamfam/icons/bell.png' %}"/><span class="nav-label">{% trans 'Announcements' %}</span>
-						                                    </a>
-						                                </li>
-						                            {% endif %}
+                                                        <li class="content-item">
+                                                            <a href="{% url 'admin:app_list' 'announcements'%}">
+                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/bell.png' %}"/><span class="nav-label">{% trans 'Announcements' %}</span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
                                                     {% if MODULE_FORUMS_ENABLED %}
-						                                <li class="content-item">
-						                                    <a href="{% url 'pybb:index' %}">
-						                                        <img class="nav-icon" src="{% static 'famfamfam/icons/comments.png' %}"/><span class="nav-label">{% trans 'Forums' %}</span>
-						                                    </a>
-						                                </li>
-						                            {% endif %}
+                                                        <li class="content-item">
+                                                            <a href="{% url 'pybb:index' %}">
+                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/comments.png' %}"/><span class="nav-label">{% trans 'Forums' %}</span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
                                                 </ul>
                                         </div>
                                     </div>
@@ -348,7 +347,7 @@
                                  </div>
                             </div>
 
-							{% if USER_IS_SUPERUSER %}
+                            {% if USER_IS_SUPERUSER %}
                             <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="headingFive">
                                     <h4 class="panel-title">
@@ -359,7 +358,7 @@
                                 <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
                                     <div class="panel-body">
                                         <div class="row">
-                                        	<ul class="list-unstyled col-sm-6 col-xs-12">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
                                                 {% if MODULE_INVOICES_ENABLED %}
                                                     <li class="content-item">
                                                         <a href="{% url 'invoices' %}"
@@ -396,7 +395,7 @@
                             </div>
                             {% endif %}
 
-							{% if USER_IS_SUPERUSER %}
+                            {% if USER_IS_SUPERUSER %}
                             <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="headingSix">
                                     <h4 class="panel-title">
@@ -437,7 +436,7 @@
                                     </div>
                                  </div>
                             </div>
-							{% endif %}
+                            {% endif %}
 
                         </div>
                     </div>

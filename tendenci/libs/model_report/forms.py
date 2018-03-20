@@ -1,6 +1,8 @@
 # coding=utf-8
+from builtins import str
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 from tendenci.libs.model_report.widgets import RangeField
 
 
@@ -70,7 +72,7 @@ class GroupByForm(forms.Form):
     def get_cleaned_data(self):
         cleaned_data = getattr(self, 'cleaned_data', {})
         if 'groupby' in cleaned_data:
-            if unicode(cleaned_data['groupby']) == u'None':
+            if str(cleaned_data['groupby']) == u'None':
                 cleaned_data['groupby'] = None
         return cleaned_data
 
@@ -84,7 +86,7 @@ class FilterForm(forms.BaseForm):
         if not self.is_valid():
             return {}
         filter_kwargs = dict(self.cleaned_data)
-        for k, v in dict(filter_kwargs).items():
+        for k, v in filter_kwargs.copy().items():
             if not v:
                 filter_kwargs.pop(k)
                 continue
@@ -102,7 +104,7 @@ class FilterForm(forms.BaseForm):
             elif hasattr(self.fields[k], 'as_boolean'):
                 if v:
                     filter_kwargs.pop(k)
-                    filter_kwargs[k] = (unicode(v) == u'True')
+                    filter_kwargs[k] = (str(v) == u'True')
         return filter_kwargs
 
     def get_cleaned_data(self):
@@ -114,7 +116,7 @@ class FilterForm(forms.BaseForm):
         try:
             data_filters = {}
             vals = args[0]
-            for k in vals.keys():
+            for k in vals:
                 if k in self.fields:
                     data_filters[k] = vals[k]
             for name in self.fields:
@@ -124,7 +126,9 @@ class FilterForm(forms.BaseForm):
                     field = self.fields[name]
                     if hasattr(field, 'queryset'):
                         qs = field.queryset
-                        if k in qs.model._meta.get_all_field_names():
+                        model_field_names = [f.name for f in qs.model._meta.get_fields()
+                                             if not (f.many_to_one and f.related_model is None)]
+                        if k in model_field_names:
                             field.queryset = qs.filter(Q(**{k: v}))
         except:
             pass

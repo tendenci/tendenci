@@ -1,15 +1,14 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.entities.forms import EntityForm
-from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters
 
@@ -21,8 +20,8 @@ def index(request, id=None, template_name="entities/view.html"):
     if has_perm(request.user,'entities.view_entity',entity):
         EventLog.objects.log(instance=entity)
 
-        return render_to_response(template_name, {'entity': entity},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'entity': entity})
     else:
         raise Http403
 
@@ -32,8 +31,8 @@ def search(request, template_name="entities/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'entities':entities},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'entities':entities})
 
 def print_view(request, id, template_name="entities/print-view.html"):
     entity = get_object_or_404(Entity, pk=id)
@@ -41,8 +40,8 @@ def print_view(request, id, template_name="entities/print-view.html"):
     if has_perm(request.user,'entities.view_entity',entity):
         EventLog.objects.log(instance=entity)
 
-        return render_to_response(template_name, {'entity': entity},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'entity': entity})
     else:
         raise Http403
 
@@ -63,8 +62,8 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
         else:
             form = form_class(user=request.user)
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -85,8 +84,8 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
         else:
             form = form_class(instance=entity, user=request.user)
 
-        return render_to_response(template_name, {'entity': entity, 'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'entity': entity, 'form':form})
     else:
         raise Http403
 
@@ -101,7 +100,7 @@ def delete(request, id, template_name="entities/delete.html"):
 
             return HttpResponseRedirect(reverse('entity.search'))
 
-        return render_to_response(template_name, {'entity': entity},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'entity': entity})
     else:
         raise Http403

@@ -1,4 +1,4 @@
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>	
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <div class="g-recaptcha" {% for attr in gtag_attrs.items %}{{ attr.0 }}="{{ attr.1 }}" {% endfor %}data-sitekey="{{ site_key }}"></div>
 <noscript>
     <div style="width: 302px; height: 352px;">

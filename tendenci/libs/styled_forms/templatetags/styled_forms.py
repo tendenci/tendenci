@@ -1,4 +1,3 @@
-from django.template import Context
 from django.template.loader import get_template
 from django import template
 
@@ -67,23 +66,19 @@ def col_sm_width(field):
 @register.filter
 def styled_form(form):
     template = get_template('styled_forms/form.html')
-    c = Context({'form':form})
-    return template.render(c)
+    return template.render(context={'form':form})
 
 @register.filter
 def styled_multi_forms(forms):
     template = get_template('styled_forms/multi_form.html')
-    c = Context({'forms':forms})
-    return template.render(c)
+    return template.render(context={'forms':forms})
 
 @register.filter
 def styled_form_set(form_set):
     template = get_template('styled_forms/form_set.html')
-    c = Context({'form_set':form_set})
-    return template.render(c)
+    return template.render(context={'form_set':form_set})
 
 @register.filter
 def styled_dynamic_form_set(form_set):
     template = get_template('styled_forms/dynamic_form_set.html')
-    c = Context({'form_set':form_set})
-    return template.render(c)
+    return template.render(context={'form_set':form_set})

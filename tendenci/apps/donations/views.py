@@ -1,9 +1,10 @@
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.donations.forms import DonationForm
 from tendenci.apps.donations.utils import donation_inv_add, donation_email_user
 from tendenci.apps.donations.models import Donation
@@ -36,7 +37,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             donation = form.save(commit=False)
             donation.payment_method = donation.payment_method.lower()
             # we might need to create a user record if not exist
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 user = request.user
             else:
                 try:
@@ -44,7 +45,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 except:
                     user = request.user
 
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 donation.user = user
                 donation.creator = user
                 donation.creator_username = user.username
@@ -69,7 +70,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                                  'zipcode':donation.zip_code,
                                  'country':donation.country,
                                  'phone':donation.phone}
-                if request.user.is_anonymous():
+                if request.user.is_anonymous:
                     profile_kwarg['creator'] = user
                     profile_kwarg['creator_username'] = user.username
                     profile_kwarg['owner'] = user
@@ -129,18 +130,18 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'form':form,
         'captcha_form' : captcha_form,
         'use_captcha' : use_captcha,
-        'currency_symbol': currency_symbol},
-        context_instance=RequestContext(request))
+        'currency_symbol': currency_symbol})
 
 
 def add_confirm(request, id, template_name="donations/add_confirm.html"):
     donation = get_object_or_404(Donation, pk=id)
     EventLog.objects.log(instance=donation)
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @login_required
@@ -151,8 +152,8 @@ def detail(request, id=None, template_name="donations/view.html"):
     EventLog.objects.log(instance=donation)
 
     donation.donation_amount = tcurrency(donation.donation_amount)
-    return render_to_response(template_name, {'donation':donation},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donation':donation})
 
 
 def receipt(request, id, guid, template_name="donations/receipt.html"):
@@ -164,8 +165,8 @@ def receipt(request, id, guid, template_name="donations/receipt.html"):
 
     if (not donation.invoice) or donation.invoice.balance > 0 or (not donation.invoice.is_tendered):
         template_name="donations/view.html"
-    return render_to_response(template_name, {'donation':donation},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donation':donation})
 
 
 @login_required
@@ -178,5 +179,5 @@ def search(request, template_name="donations/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'donations':donations},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'donations':donations})

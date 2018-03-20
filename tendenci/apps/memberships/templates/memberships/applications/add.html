@@ -64,18 +64,18 @@
             margin-left: 125px;
         }
         #t-memberships-application-form.form-horizontal .control-label {
-		  text-align: right !important;
-		}
-		.form-horizontal .form-group{
-			margin-bottom: 8px !important;
-		}
-		.form-group ul{
-			list-style: none;
-		}
-		.donation-option-value ul{
-			padding-left: 0;
-		}
-		.donation-option-value ul li label{
+          text-align: right !important;
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px !important;
+        }
+        .form-group ul{
+            list-style: none;
+        }
+        .donation-option-value ul{
+            padding-left: 0;
+        }
+        .donation-option-value ul li label{
             font-weight: normal !important;
         }
     </style>
@@ -184,36 +184,36 @@
 
         {% for field_obj in app_fields %}
             {% render_membership_field request field_obj user_form profile_form demographics_form membership_form education_form %}
-        	{% if field_obj.field_name == 'membership_type' %}
+            {% if field_obj.field_name == 'membership_type' %}
 
-        		{% if membership_form.donation_option_value %}
-		            <div class="form-group clearfix donation-option-value" style="margin-top: 1.5em;">
-		                <label for="{{ membership_form.donation_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donation_option_value.label }}</label>
-		
-		                <div class="col-sm-8">
-		                    {{ membership_form.donation_option_value }}
-		                </div>
-		            </div>
-		
-		        {% endif %}
-        	{% endif %}
-        	{% if field_obj.field_name == 'payment_method' %}
-        		{% if membership_form.auto_renew %}
-		            <div class="form-group clearfix">
-		                <div class="col-sm-3"></div>
-		                <div class="col-sm-8">
-		                {% if membership_form.auto_renew.errors %}
+                {% if membership_form.donation_option_value %}
+                    <div class="form-group clearfix donation-option-value" style="margin-top: 1.5em;">
+                        <label for="{{ membership_form.donation_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donation_option_value.label }}</label>
+
+                        <div class="col-sm-8">
+                            {{ membership_form.donation_option_value }}
+                        </div>
+                    </div>
+
+                {% endif %}
+            {% endif %}
+            {% if field_obj.field_name == 'payment_method' %}
+                {% if membership_form.auto_renew %}
+                    <div class="form-group clearfix">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-8">
+                        {% if membership_form.auto_renew.errors %}
                             <div class="error">
                                 {% for error in membership_form.auto_renew.errors %}
                                     <div><br />{{ error }}</div>
                                 {% endfor %}
                             </div>
                         {% endif %}
-		                    {{ membership_form.auto_renew }} <label for="{{ membership_form.auto_renew.id_for_label }}" class="control-label">{{ membership_form.auto_renew.label }}</label>
-		                </div>
-		            </div>
-		        {% endif %}
-        	{% endif %}
+                            {{ membership_form.auto_renew }} <label for="{{ membership_form.auto_renew.id_for_label }}" class="control-label">{{ membership_form.auto_renew.label }}</label>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
         {% endfor %}
 
         {% if membership_form.discount_code %}
@@ -289,7 +289,7 @@
         });
       })(jQuery);
         $(document).ready(function(){
-        	
+
         });
       </script>
 {% endblock extra_body %}

@@ -2,7 +2,6 @@ from django.template import Library
 
 from tendenci.apps.announcements.models import EmergencyAnnouncement
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.site_settings.utils import get_setting
 
 register = Library()
 

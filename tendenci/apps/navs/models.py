@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -28,9 +29,8 @@ class Nav(TendenciBaseModel):
     def __unicode__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return('navs.detail', [self.pk])
+        return reverse('navs.detail', args=[self.pk])
 
     def save(self, *args, **kwargs):
         super(Nav, self).save(*args, **kwargs)
@@ -45,13 +45,13 @@ class Nav(TendenciBaseModel):
         return self.navitem_set.filter(level=0).order_by('position')
 
 class NavItem(OrderingBaseModel):
-    nav = models.ForeignKey(Nav)
+    nav = models.ForeignKey(Nav, on_delete=models.CASCADE)
     label = models.CharField(max_length=100)
     title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
     new_window = models.BooleanField(_("Open in a new window"), default=False)
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
     level = models.IntegerField(default=0)
-    page = models.ForeignKey(Page, null=True)
+    page = models.ForeignKey(Page, null=True, on_delete=models.CASCADE)
     url = models.CharField(_("URL"), max_length=200, blank=True, null=True)
 
     class Meta:
@@ -124,7 +124,7 @@ class NavItem(OrderingBaseModel):
         else:
             #first item
             next = range(0, self.level+1)
-        return next
+        return list(next)
 
     @property
     def prev_range(self):
@@ -133,7 +133,7 @@ class NavItem(OrderingBaseModel):
         else:
             #last item
             prev = range(0, self.level+1)
-        return prev
+        return list(prev)
 
 # Update page nav items when a page is saved
 models.signals.post_save.connect(update_nav_links, sender=Nav)

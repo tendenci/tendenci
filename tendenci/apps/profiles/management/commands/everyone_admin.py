@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group as Auth_Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.db.models import Q
 
 class Command(BaseCommand):
 

@@ -1,13 +1,14 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
+from builtins import str
 from datetime import datetime, date, time
-from cStringIO import StringIO
+from io import BytesIO
 from PIL import Image
 import time as ttime
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
@@ -31,7 +32,7 @@ def resize_s3_image(image_path, width=200, height=200):
     f = storage.open(image_path)
     content = f.read()
     f.close()
-    img = Image.open(StringIO(content))
+    img = Image.open(BytesIO(content))
     img.thumbnail((width,height),Image.ANTIALIAS)
     f = storage.open(image_path, 'w')
     img.save(f)
@@ -119,7 +120,7 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.estimate = True
             inv.status_detail = 'estimate'
 
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 inv.set_creator(user)
                 inv.set_owner(user)
 
@@ -134,11 +135,11 @@ def directory_set_inv_payment(user, directory, pricing):
 
             if user.profile.is_superuser:
                 if directory.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                    boo_inv = inv.tender(user)
+                    inv.tender(user)
 
                     # payment
                     payment = Payment()
-                    boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
+                    payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                     payment.mark_as_paid()
                     payment.method = directory.payment_method
                     payment.save(user)
@@ -248,7 +249,7 @@ def process_export(export_fields='all_fields', export_status_detail='',
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                     elif field_name == 'invoice':
                         # display total vs balance
@@ -280,11 +281,11 @@ def process_export(export_fields='all_fields', export_status_detail='',
             'export_fields': export_fields}
 
         subject = render_to_string(
-            'directories/notices/export_ready_subject.html', parms)
+            template_name='directories/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'directories/notices/export_ready_body.html', parms)
+            template_name='directories/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

@@ -31,7 +31,7 @@ def api_rp(request):
     """
     result_code_success = {'result_code': '1001'}
     result_code_invalid = {'result_code': 'E004'}
-    result_code_error = {'result_code': 'E005'}
+    #result_code_error = {'result_code': 'E005'}  # Not currently used
 
     try:
         data = simplejson.loads(request.raw_post_data)

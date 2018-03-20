@@ -1,9 +1,10 @@
 import os
 import uuid
 import hashlib
-import urllib
+from six.moves.urllib.parse import urlencode
 
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
@@ -107,14 +108,13 @@ class Profile(Person):
         else:
             return u''
 
-    @models.permalink
     def get_absolute_url(self):
         from tendenci.apps.profiles.utils import clean_username
         cleaned_username = clean_username(self.user.username)
         if cleaned_username != self.user.username:
             self.user.username = cleaned_username
             self.user.save()
-        return ('profile', [self.user.username])
+        return reverse('profile', args=[self.user.username])
 
     def _can_login(self):
         """
@@ -215,12 +215,12 @@ class Profile(Person):
 
         # allow user search users
         if get_setting('module', 'users', 'allowusersearch') \
-            and self.user.is_authenticated():
+            and self.user.is_authenticated:
             return True
 
         # allow members search users/members
         if get_setting('module', 'memberships', 'memberprotection') != 'private':
-            if self.user.is_authenticated() and self.user.profile.is_member:
+            if self.user.is_authenticated and self.user.profile.is_member:
                 return True
 
         return False
@@ -426,7 +426,7 @@ class Profile(Person):
 
         if created:
             profile = Profile.objects.create_profile(user)
-            sf_id = create_salesforce_contact(profile)
+            create_salesforce_contact(profile)  # Returns sf_id
 
         return user, created
 
@@ -484,7 +484,7 @@ class Profile(Person):
                                    settings.GAVATAR_DEFAULT_URL)
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
-        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url
 
 
@@ -545,7 +545,7 @@ class UserImport(BaseImport):
 
 
 class UserImportData(BaseImportData):
-    uimport = models.ForeignKey(UserImport, related_name="user_import_data")
+    uimport = models.ForeignKey(UserImport, related_name="user_import_data", on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'profiles'

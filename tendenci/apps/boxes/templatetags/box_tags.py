@@ -1,6 +1,6 @@
+from builtins import str
+
 from django.template import Node, Library, TemplateSyntaxError, Variable
-from django.template.loader import get_template
-from django.utils.safestring import mark_safe
 from django.contrib.auth.models import AnonymousUser, User
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,19 +31,19 @@ class GetBoxNode(Node):
         try:
             filters = get_query_filters(user, 'boxes.view_box')
             box = Box.objects.filter(filters).filter(pk=pk)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     box = box.distinct()
             context['box'] = box[0]
-            template = get_template('boxes/edit-link.html')
+            template = context.template.engine.get_template('boxes/edit-link.html')
             output = '<div id="box-%s" class="boxes">%s %s</div>' % (
                 box[0].pk,
                 box[0].content,
-                template.render(context),
+                template.render(context=context),
             )
             return output
         except:
-            return unicode()
+            return str()
 
 
 @register.tag
@@ -86,13 +86,13 @@ class GetBoxTitleNode(Node):
         try:
             filters = get_query_filters(user, 'boxes.view_box')
             box = Box.objects.filter(filters).filter(pk=pk)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if not user.profile.is_superuser:
                     box = box.distinct()
             box = box[0]
             return box.title
         except:
-            return unicode()
+            return str()
 @register.tag
 def box_title(parser, token):
     """

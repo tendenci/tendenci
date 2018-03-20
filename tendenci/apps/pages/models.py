@@ -1,9 +1,9 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from tendenci.libs.tinymce import models as tinymce_models
@@ -21,11 +21,17 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
+class HeaderImage(File):
+    class Meta:
+        app_label = 'pages'
+        manager_inheritance_from_future = True
+
+
 class BasePage(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'))
-    header_image = models.ForeignKey('HeaderImage', null=True, on_delete=models.SET_NULL)
+    header_image = models.ForeignKey(HeaderImage, null=True, on_delete=models.SET_NULL)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField(default=False)
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -70,7 +76,7 @@ class BasePage(TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
@@ -113,13 +119,11 @@ class Page(BasePage):
         """
         return PageMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("page", [self.slug])
+        return reverse('page', args=[self.slug])
 
-    @models.permalink
     def get_version_url(self, hash):
-        return ("page.version", [hash])
+        return reverse('page.version', args=[hash])
 
     @property
     def has_google_author(self):
@@ -128,10 +132,3 @@ class Page(BasePage):
     @property
     def has_google_publisher(self):
         return self.contributor_type == self.CONTRIBUTOR_PUBLISHER
-
-
-class HeaderImage(File):
-    pass
-
-    class Meta:
-        app_label = 'pages'

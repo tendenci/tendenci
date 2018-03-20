@@ -34,7 +34,7 @@ class EmailForm(forms.ModelForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
         # add form-control class
-        for k in self.fields.keys():
+        for k in self.fields:
             self.fields[k].widget.attrs['class'] = 'form-control'
 
     def save(self, user=None, *args, **kwargs):

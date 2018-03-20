@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-import defaults
+from . import defaults
 
 __author__ = 'zeus'
 

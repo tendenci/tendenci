@@ -1,12 +1,9 @@
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.jobs.models import Job
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import Category
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.base.utils import strip_html
+
 
 class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
     title = indexes.CharField(model_attr='title')
@@ -36,10 +33,7 @@ class JobIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Job
 
     def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
+        return strip_html(obj.description)
 
     def prepare_cate(self, obj):
         category = obj.cat

@@ -1,6 +1,6 @@
 import re
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import ugettext_lazy as _
 
@@ -87,9 +87,8 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         verbose_name_plural = get_setting('module', 'videos', 'label_plural') or "Videos"
         app_label = 'videos'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("video.details", [self.slug])
+        return reverse('video.details', args=[self.slug])
 
     def video_embed_url(self):
         """
@@ -103,7 +102,9 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
         url_pattern = r'http:\/\/www\.youtube\.com\/watch\?v=(\w+)'
         share_pattern = r'http:\/\/youtu\.be\/(\w+)'
-        repl = lambda x: 'http://www.youtube.com/embed/%s' % x.group(1)
+
+        def repl(x):
+            return 'http://www.youtube.com/embed/%s' % x.group(1)
 
         if re.match(url_pattern, self.video_url):
             return re.sub(url_pattern, repl, self.video_url)
@@ -155,7 +156,7 @@ class OembedlyCache(models.Model):
                 code = result['html']
             except KeyError:
                 return False
-            except Exception as e:
+            except Exception:
                 return False
             obj = OembedlyCache(url=url, width=width, height=height, thumbnail=thumbnail, code=code)
             obj.save()

@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils import formats
 
 class Output(forms.Widget):
@@ -8,15 +8,15 @@ class Output(forms.Widget):
     These are fake-fields; they do not take input.
     """
 
-    def _format_value(self, value):
+    def format_value(self, value):
         if self.is_localized:
             return formats.localize_input(value)
         return value
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
-        return force_unicode(self._format_value(value))
+        return force_text(self.format_value(value))
 
 class Header(Output):
     """

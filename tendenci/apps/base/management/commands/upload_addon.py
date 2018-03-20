@@ -1,5 +1,4 @@
 from __future__ import print_function
-from optparse import make_option
 import os
 import zipfile
 
@@ -19,14 +18,13 @@ class Command(BaseCommand):
         python manage.py upload_addon --zip_path /uploads/addons/addon.zip
     """
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--zip_path',
             action='store',
             dest='zip_path',
             default='',
-            help='Path to the zip file'),
-    )
+            help='Path to the zip file')
 
     def handle(self, *args, **options):
         path = options['zip_path']
@@ -37,7 +35,6 @@ class Command(BaseCommand):
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
         print('Updating tendenci site')
-        os.system('"%s" manage.py syncdb --noinput' % (python_executable()))
         os.system('"%s" manage.py migrate %s --noinput' % (python_executable(), addon_name))
         os.system('"%s" manage.py update_settings %s' % (python_executable(), addon_name))
         os.system('"%s" manage.py collectstatic --noinput' % (python_executable()))

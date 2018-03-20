@@ -12,7 +12,7 @@ COMMUNITY_DROPDOWN_MIN_COL_COUNT = 1
 BOOTSTRAP_GRID_COL_COUNT = 12
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_profile_dropdown_column_size(context):
     col_count = PROFILE_DROPDOWN_MIN_COL_COUNT
     is_superuser = context['USER_IS_SUPERUSER']
@@ -23,7 +23,7 @@ def get_profile_dropdown_column_size(context):
     return BOOTSTRAP_GRID_COL_COUNT / col_count
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def get_community_dropdown_column_size(context):
     col_count = COMMUNITY_DROPDOWN_MIN_COL_COUNT
     is_superuser = context['USER_IS_SUPERUSER']

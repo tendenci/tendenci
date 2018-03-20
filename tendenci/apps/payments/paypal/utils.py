@@ -1,10 +1,10 @@
-import urllib
-import urllib2
+from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import urlopen, Request
 import cgi
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import forms
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -77,7 +77,7 @@ def validate_with_paypal(request, validate_type):
                   'tx': request.GET.get('tx', ''),
                   'at': settings.MERCHANT_TXN_KEY
                   }
-        data = urllib.urlencode(params)
+        data = urlencode(params)
 
         # Sample response:
         # SUCCESS
@@ -100,10 +100,10 @@ def validate_with_paypal(request, validate_type):
     headers = {"Content-type": "application/x-www-form-urlencoded",
                'encoding': 'utf-8',
                "Accept": "text/plain"}
-    request = urllib2.Request(settings.PAYPAL_POST_URL,
+    request = Request(settings.PAYPAL_POST_URL,
                               data,
                               headers)
-    response = urllib2.urlopen(request)
+    response = urlopen(request)
     data = response.read()
 
     if validate_type == 'PDT':
@@ -186,8 +186,7 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
         success, response_d = validate_with_paypal(request, validate_type)
     else:
         success = validate_with_paypal(request, validate_type)[0]
-        response_d = dict(map(lambda x: (x[0].lower(), x[1]),
-                              response_d.items()))
+        response_d = dict([(x[0].lower(), x[1]) for x in response_d.items()])
 
     if not success:
         raise Http404
@@ -195,7 +194,7 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     charset = response_d.get('charset', '')
     # make sure data is encoded in utf-8 before processing
     if charset and charset not in ('ascii', 'utf8', 'utf-8'):
-        for k in response_d.keys():
+        for k in response_d:
             response_d[k] = response_d[k].decode(charset).encode('utf-8')
 
     paymentid = response_d.get('invoice', 0)

@@ -1,4 +1,3 @@
-from django.db.models import signals
 from haystack import indexes
 
 from tendenci.apps.recurring_payments.models import RecurringPayment

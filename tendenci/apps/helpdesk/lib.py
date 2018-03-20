@@ -6,24 +6,16 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 lib.py - Common functions (eg multipart e-mail)
 """
 
-chart_colours = ('80C65A', '990066', 'FF9900', '3399CC', 'BBCCED', '3399CC', 'FFCC33')
-
-try:
-    from base64 import urlsafe_b64encode as b64encode
-except ImportError:
-    from base64 import encodestring as b64encode
-try:
-    from base64 import urlsafe_b64decode as b64decode
-except ImportError:
-    from base64 import decodestring as b64decode
+from builtins import str
+from django.utils.encoding import smart_str
 
 import logging
 logger = logging.getLogger('helpdesk')
 
-from django.utils.encoding import smart_str
+chart_colours = ('80C65A', '990066', 'FF9900', '3399CC', 'BBCCED', '3399CC', 'FFCC33')
 
 
-def send_templated_mail(template_name, email_context, recipients, sender=None, bcc=None, fail_silently=False, files=None):
+def send_templated_mail(template_name, context, recipients, sender=None, bcc=None, fail_silently=False, files=None):
     """
     send_templated_mail() is a warpper around Django's e-mail routines that
     allows us to easily send multipart (text/plain & text/html) e-mails using
@@ -33,7 +25,7 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
     template_name is the slug of the template to use for this message (see
         models.EmailTemplate)
 
-    email_context is a dictionary to be used when rendering the template
+    context is a dictionary to be used when rendering the template
 
     recipients can be either a string, eg 'a@b.com', or a list of strings.
 
@@ -50,20 +42,13 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
         along with the File objects to be read. files can be blank.
 
     """
-    from django import VERSION
     from django.conf import settings
     from django.core.mail import EmailMultiAlternatives
-    from django.template import loader, Context
+    from django.template import engines
 
     from tendenci.apps.helpdesk.models import EmailTemplate
     from tendenci.apps.helpdesk.settings import HELPDESK_EMAIL_SUBJECT_TEMPLATE
     import os
-
-    # RemovedInDjango110Warning: render() must be called with a dict, not a Context.
-    if VERSION >= (1, 8):
-        context = email_context
-    else:
-        context = Context(email_context)
 
     if hasattr(context['queue'], 'locale'):
         locale = getattr(context['queue'], 'locale', '')
@@ -90,16 +75,11 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
 
     footer_file = os.path.join('helpdesk', locale, 'email_text_footer.txt')
 
-    # get_template_from_string was removed in Django 1.8 http://django.readthedocs.org/en/1.8.x/ref/templates/upgrading.html
-    try:
-        from django.template import engines
-        template_func = engines['django'].from_string
-    except ImportError:  # occurs in django < 1.8
-        template_func = loader.get_template_from_string
+    get_template_from_string = engines['django'].from_string
 
-    text_part = template_func(
+    text_part = get_template_from_string(
         "%s{%% include '%s' %%}" % (t.plain_text, footer_file)
-        ).render(context)
+        ).render(context=context)
 
     email_html_base_file = os.path.join('helpdesk', locale, 'email_html_base.html')
 
@@ -111,16 +91,14 @@ def send_templated_mail(template_name, email_context, recipients, sender=None, b
         html_txt = html_txt.replace('\r\n', '<br>')
         context['comment'] = mark_safe(html_txt)
 
-    # get_template_from_string was removed in Django 1.8 http://django.readthedocs.org/en/1.8.x/ref/templates/upgrading.html
-    html_part = template_func(
+    html_part = get_template_from_string(
         "{%% extends '%s' %%}{%% block title %%}%s{%% endblock %%}{%% block content %%}%s{%% endblock %%}" % (email_html_base_file, t.heading, t.html)
-        ).render(context)
+        ).render(context=context)
 
-    # get_template_from_string was removed in Django 1.8 http://django.readthedocs.org/en/1.8.x/ref/templates/upgrading.html
-    subject_part = template_func(
+    subject_part = get_template_from_string(
         HELPDESK_EMAIL_SUBJECT_TEMPLATE % {
             "subject": t.subject,
-        }).render(context)
+        }).render(context=context)
 
     if isinstance(recipients, str):
         if recipients.find(','):
@@ -179,7 +157,7 @@ def apply_query(queryset, params):
             set of Q() objects.
         sorting: The name of the column to sort by
     """
-    for key in params['filtering'].keys():
+    for key in params['filtering']:
         filter = {key: params['filtering'][key]}
         queryset = queryset.filter(**filter)
 

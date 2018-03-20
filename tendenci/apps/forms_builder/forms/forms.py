@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
@@ -81,7 +82,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     field_class = getattr(forms, field_class)
                 field_args = {"label": mark_safe(field.label), "required": field.required}
-                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                arg_names = field_class.__init__.__func__.__code__.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = FIELD_MAX_LENGTH
                 if "choices" in arg_names and field.field_type != 'CountryField':
@@ -122,7 +123,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     form.fields[field_key].widget.widgets[1].attrs['class'] += ' formforform-field'
                 widget_name = form.fields[field_key].widget.__class__.__name__.lower()
                 if widget_name == 'selectdatewidget':
-                    form.fields[field_key].widget.years = range(1920, THIS_YEAR + 10)
+                    form.fields[field_key].widget.years = list(range(1920, THIS_YEAR + 10))
                 if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
                     form.fields[field_key].initial = datetime.now()
 
@@ -130,7 +131,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             # include pricing options if any
             if (formforform.custom_payment or formforform.recurring_payment) and formforform.pricing_set.all():
 
-                currency_symbol = get_setting('site', 'global', 'currencysymbol')
+                #currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
                 pricing_options = []
                 for pricing in formforform.pricing_set.all():
@@ -139,7 +140,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
-                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label, pricing.description)))
+                                (pricing.pk, form.data.get('custom_price_%s' %pricing.pk, str()), pricing.label, pricing.description)))
                         )
                     else:
                         if formforform.recurring_payment:
@@ -177,7 +178,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
 
-        if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
+        if not self.user.is_authenticated and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
@@ -458,7 +459,7 @@ class FormForField(forms.ModelForm):
         field_function = cleaned_data.get("field_function")
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
-        required = cleaned_data.get("required")
+        #required = cleaned_data.get("required")
         visible = cleaned_data.get("visible")
 
         if field_function == "GroupSubscription":

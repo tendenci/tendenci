@@ -1,3 +1,4 @@
+from builtins import str
 import re
 import os
 import pytz
@@ -15,12 +16,14 @@ from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.storage import default_storage
 
+from tendenci.apps.base.utils import strip_entities, strip_html
+
 register = Library()
 
 
 @register.filter(name="localize_date")
 def localize_date(value, to_tz=None):
-    from timezones.utils import adjust_datetime_to_timezone
+    from tendenci.apps.base.utils import adjust_datetime_to_timezone
     try:
         if to_tz is None:
             to_tz = settings.UI_TIME_ZONE
@@ -136,7 +139,7 @@ def in_group(user, group):
 
 @register.filter
 def domain(link):
-    from urlparse import urlparse
+    from six.moves.urllib.parse import urlparse
     link = urlparse(link)
     return link.hostname
 
@@ -148,10 +151,16 @@ def strip_template_tags(string):
 @register.filter
 @stringfilter
 def stripentities(value):
-    """Strips all [X]HTML tags."""
-    from django.utils.html import strip_entities
+    """Strips all [X]HTML entities."""
     return strip_entities(value)
 stripentities.is_safe = True
+
+@register.filter
+@stringfilter
+def striphtml(value):
+    """Strips all [X]HTML tags and entities."""
+    return strip_html(value)
+striphtml.is_safe = True
 
 @register.filter
 def format_currency(value):
@@ -255,7 +264,8 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     if autoescape:
         esc = conditional_escape
     else:
-        esc = lambda x: x
+        def esc(x):
+            return x
 
     email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056',
         esc(email))).encode('rot13')
@@ -332,8 +342,8 @@ def thumbnail(file, size='200x200'):
 
     thumbnail_exist = False
     if default_storage.exists(miniature_filename):
-        mt_filename = default_storage.modified_time(filename)
-        mt_miniature_filename = default_storage.modified_time(
+        mt_filename = default_storage.get_modified_time(filename)
+        mt_miniature_filename = default_storage.get_modified_time(
                                                 miniature_filename)
         if mt_filename > mt_miniature_filename:
             # remove the miniature
@@ -395,7 +405,7 @@ def make_range(value):
     try:
         value = int(value)
         if value > 0:
-            return range(int(value))
+            return list(range(int(value)))
         return []
     except:
         return []
@@ -447,7 +457,7 @@ def phonenumber(value):
 
         # attach additional text extension
         ext = ''
-        for i in xrange(1, len(x)):
+        for i in range(1, len(x)):
             ext = ''.join((ext, x[i]))
         if ext:
             return ' '.join((number, ext))
@@ -466,7 +476,7 @@ def timezone_label(value):
 
 @register.filter
 def field_to_string(value):
-    if isinstance(value, str) or isinstance(value, unicode):
+    if isinstance(value, str):
         return value
     if isinstance(value, list):
         if len(value) == 0:

@@ -5,10 +5,10 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 
 {% if nav_object %}
-	{% has_perm user donations.view_donation nav_object as can_view_donation %}
+    {% has_perm user donations.view_donation nav_object as can_view_donation %}
 {% else %}
-	{% has_perm user donations.view_donation as can_view_donation %}
-	{% has_perm user donations.change_donation as can_edit_donation %}
+    {% has_perm user donations.view_donation as can_view_donation %}
+    {% has_perm user donations.change_donation as can_edit_donation %}
 {% endif %}
 
 {% if not SITE_GLOBAL_HIDEALLTABS %}

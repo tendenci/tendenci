@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, post_delete, pre_save
 from .models import Post, Category, Topic, Forum, create_or_check_slug
 from .subscription import notify_topic_subscribers
-import util, defaults, compat
+from . import util, defaults, compat
 from .permissions import perms
 
 
@@ -28,7 +28,7 @@ def post_deleted(instance, **kwargs):
     User = compat.get_user_model()
     try:
         profile = util.get_pybb_profile(instance.user)
-    except (Profile.DoesNotExist, User.DoesNotExist) as e:
+    except (Profile.DoesNotExist, User.DoesNotExist):
         #When we cascade delete an user, profile and posts are also deleted
         pass
     else:

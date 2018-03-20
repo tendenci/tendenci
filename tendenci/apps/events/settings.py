@@ -13,7 +13,7 @@ FIELD_TYPE_CHOICES = (
     ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi-select - Checkboxes")),
     ("MultipleChoiceField", _("Multi-select - From a List")),
     ("EmailVerificationField", _("Email")),
-    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
+    ("DateField/django.forms.widgets.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),

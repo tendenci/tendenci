@@ -26,8 +26,8 @@ def generate_colors():
     apps = site.get_registered_apps().all_apps
     for app in apps:
         if 'event_logs' in app:
-            for model in app['event_logs'].keys():
-                for event in app['event_logs'][model].keys():
+            for model in app['event_logs']:
+                for event in app['event_logs'][model]:
                     log_id = app['event_logs'][model][event][0]
                     color = app['event_logs'][model][event][1]
                     d[log_id] = color
@@ -38,8 +38,8 @@ def generate_base_colors():
     are not associated with any model or registry.
     """
     d = {}
-    for model in non_model_event_logs.keys():
-        for event in non_model_event_logs[model].keys():
+    for model in non_model_event_logs:
+        for event in non_model_event_logs[model]:
             log_id = non_model_event_logs[model][event][0]
             color = non_model_event_logs[model][event][1]
             d[log_id] = color

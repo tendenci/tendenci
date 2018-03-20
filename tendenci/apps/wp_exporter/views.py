@@ -1,22 +1,18 @@
 import subprocess
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
-from django.conf import settings
+from django.shortcuts import redirect
+from django.http import HttpResponse
 from django.contrib import messages
 from django.utils.translation import ugettext as _
-from django.template import Template
-from djcelery.models import TaskMeta
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.wp_exporter.utils import gen_xml
 from tendenci.apps.wp_exporter.forms import ExportForm
 from tendenci.apps.wp_exporter.tasks import WPExportTask
 from tendenci.apps.wp_exporter.models import XMLExport
+
 
 def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"):
     if not request.user.profile.is_superuser:
@@ -34,19 +30,19 @@ def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"
     else:
         form = form_class()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'form':form,
-    },context_instance=RequestContext(request))
+    })
 
 @login_required
 def detail(request, task_id, template_name="wp_exporter/detail.html"):
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        #tasks database entries are not created at once.
-        #instead of raising 404 we'll assume that there will be one for
-        #the id.
-        task = None
+    #try:
+    #    task = TaskMeta.objects.get(task_id=task_id)
+    #except TaskMeta.DoesNotExist:
+    #    #tasks database entries are not created at once.
+    #    #instead of raising 404 we'll assume that there will be one for
+    #    #the id.
+    #    task = None
 
     messages.add_message(
         request,
@@ -54,8 +50,7 @@ def detail(request, task_id, template_name="wp_exporter/detail.html"):
         _("Your site export is being processed. You will receive an email at %s when the export is complete." % request.user.email)
     )
 
-    return render_to_response(template_name, {},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 @login_required
 def download(request, export_id):

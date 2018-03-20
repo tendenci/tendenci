@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.template.defaultfilters import striptags, truncatewords
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin, TagsFilter
 from tendenci.apps.articles.models import Article
@@ -56,10 +57,10 @@ class ArticleAdmin(TendenciBaseModelAdmin):
     form = ArticleForm
     ordering = ['-update_dt']
 
+    @mark_safe
     def article_body(self, obj):
         content = truncatewords(striptags(obj.body), 15)
         return content
-    article_body.allow_tags = True
     article_body.short_description = _('body')
 
 admin.site.register(Article, ArticleAdmin)

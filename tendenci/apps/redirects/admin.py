@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.template.defaultfilters import striptags, truncatewords
-from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.redirects.models import Redirect

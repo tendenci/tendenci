@@ -3,12 +3,11 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.conf import settings
-from django import forms
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
-from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.committees.models import Committee, Position, Officer
 from tendenci.apps.committees.forms import CommitteeAdminForm, CommitteeAdminChangelistForm, UserModelChoiceField
 
@@ -28,11 +27,9 @@ class OfficerAdminInline(admin.TabularInline):
     def formfield_for_dbfield(self, field, **kwargs):
         if field.name == 'user':
 
-            group_members = []
             committee = None
             committee = self.get_object(kwargs['request'], Committee)
             if committee:
-                committee_group = committee.group
                 return UserModelChoiceField(queryset=User.objects.filter(group_member__group=committee.group), label="User")
             return UserModelChoiceField(queryset=User.objects.none(), label="User")
         return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
@@ -104,7 +101,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         """
         print('enter save_model')
         instance = form.save(commit=False)
-        perms = update_perms_and_save(request, form, instance)
+        update_perms_and_save(request, form, instance)  # Returns perms
         return instance
 
     def save_formset(self, request, form, formset, change):
@@ -119,20 +116,21 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             instance.owner = request.user
             instance.save()
 
+    @mark_safe
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
             obj.title,
             obj.slug
         )
-    link.allow_tags = True
 
+    @mark_safe
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:committees_committee_change', args=[obj.pk])
         return link
-    edit_link.allow_tags = True
     edit_link.short_description = 'edit'
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
@@ -141,7 +139,6 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             link_icon,
         )
         return link
-    view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
 
 

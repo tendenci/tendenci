@@ -41,13 +41,13 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
                 ('image', models.ImageField(upload_to=tendenci.apps.photos.models.get_storage_path, verbose_name='image')),
                 ('date_taken', models.DateTimeField(verbose_name='date taken', null=True, editable=False, blank=True)),
                 ('view_count', models.PositiveIntegerField(default=0, editable=False)),
-                ('crop_from', models.CharField(default=b'center', max_length=10, verbose_name='crop from', blank=True, choices=[(b'top', 'Top'), (b'right', 'Right'), (b'bottom', 'Bottom'), (b'left', 'Left'), (b'center', 'Center (Default)')])),
+                ('crop_from', models.CharField(default='center', max_length=10, verbose_name='crop from', blank=True, choices=[('top', 'Top'), ('right', 'Right'), ('bottom', 'Bottom'), ('left', 'Left'), ('center', 'Center (Default)')])),
                 ('guid', models.CharField(max_length=40, editable=False)),
                 ('title', models.CharField(max_length=200, verbose_name='title')),
                 ('title_slug', models.SlugField(verbose_name='slug')),
@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=30, verbose_name='name')),
                 ('description', models.TextField(verbose_name='description', blank=True)),
-                ('transpose_method', models.CharField(blank=True, max_length=15, verbose_name='rotate or flip', choices=[(b'FLIP_LEFT_RIGHT', 'Flip left to right'), (b'FLIP_TOP_BOTTOM', 'Flip top to bottom'), (b'ROTATE_90', 'Rotate 90 degrees counter-clockwise'), (b'ROTATE_270', 'Rotate 90 degrees clockwise'), (b'ROTATE_180', 'Rotate 180 degrees')])),
+                ('transpose_method', models.CharField(blank=True, max_length=15, verbose_name='rotate or flip', choices=[('FLIP_LEFT_RIGHT', 'Flip left to right'), ('FLIP_TOP_BOTTOM', 'Flip top to bottom'), ('ROTATE_90', 'Rotate 90 degrees counter-clockwise'), ('ROTATE_270', 'Rotate 90 degrees clockwise'), ('ROTATE_180', 'Rotate 180 degrees')])),
                 ('color', models.FloatField(default=1.0, help_text='A factor of 0.0 gives a black and white image, a factor of 1.0 gives the original image.', verbose_name='color')),
                 ('brightness', models.FloatField(default=1.0, help_text='A factor of 0.0 gives a black image, a factor of 1.0 gives the original image.', verbose_name='brightness')),
                 ('contrast', models.FloatField(default=1.0, help_text='A factor of 0.0 gives a solid grey image, a factor of 1.0 gives the original image.', verbose_name='contrast')),
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('filters', models.CharField(help_text='Chain multiple filters using the following pattern "FILTER_ONE->FILTER_TWO->FILTER_THREE". Image filters will be applied in order. The following filters are available: BLUR, CONTOUR, DETAIL, EDGE_ENHANCE, EDGE_ENHANCE_MORE, EMBOSS, FIND_EDGES, SHARPEN, SMOOTH, SMOOTH_MORE.', max_length=200, verbose_name='filters', blank=True)),
                 ('reflection_size', models.FloatField(default=0, help_text='The height of the reflection as a percentage of the orignal image. A factor of 0.0 adds no reflection, a factor of 1.0 adds a reflection equal to the height of the orignal image.', verbose_name='size')),
                 ('reflection_strength', models.FloatField(default=0.6, help_text='The initial opacity of the reflection gradient.', verbose_name='strength')),
-                ('background_color', models.CharField(default=b'#FFFFFF', help_text='The background color of the reflection gradient. Set this to match the background color of your page.', max_length=7, verbose_name='color')),
+                ('background_color', models.CharField(default='#FFFFFF', help_text='The background color of the reflection gradient. Set this to match the background color of your page.', max_length=7, verbose_name='color')),
             ],
             options={
                 'verbose_name': 'photo effect',
@@ -109,8 +109,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
                 ('guid', models.CharField(max_length=40)),
                 ('name', models.CharField(max_length=200, verbose_name='name')),
@@ -141,7 +141,7 @@ class Migration(migrations.Migration):
                 ('crop', models.BooleanField(default=False, help_text='If selected the image will be scaled and cropped to fit the supplied dimensions.', verbose_name='crop to fit?')),
                 ('pre_cache', models.BooleanField(default=False, help_text='If selected this photo size will be pre-cached as photos are added.', verbose_name='pre-cache?')),
                 ('increment_count', models.BooleanField(default=False, help_text='If selected the image\'s "view_count" will be incremented when this photo size is displayed.', verbose_name='increment view count?')),
-                ('effect', models.ForeignKey(related_name='photo_sizes', verbose_name='photo effect', blank=True, to='photos.PhotoEffect', null=True)),
+                ('effect', models.ForeignKey(related_name='photo_sizes', verbose_name='photo effect', blank=True, to='photos.PhotoEffect', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ['width', 'height'],
@@ -155,8 +155,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.PositiveIntegerField()),
                 ('created_at', models.DateTimeField(default=datetime.datetime.now, verbose_name='created_at')),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('photo', models.ForeignKey(to='photos.Image')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.CASCADE)),
+                ('photo', models.ForeignKey(to='photos.Image', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'pool',
@@ -170,8 +170,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=30, verbose_name='name')),
                 ('description', models.TextField(verbose_name='description', blank=True)),
-                ('image', models.ImageField(upload_to=b'/media//watermarks', verbose_name='image')),
-                ('style', models.CharField(default=b'scale', max_length=5, verbose_name='style', choices=[(b'tile', 'Tile'), (b'scale', 'Scale')])),
+                ('image', models.ImageField(upload_to='/media//watermarks', verbose_name='image')),
+                ('style', models.CharField(default='scale', max_length=5, verbose_name='style', choices=[('tile', 'Tile'), ('scale', 'Scale')])),
                 ('opacity', models.FloatField(default=1, help_text='The opacity of the overlay.', verbose_name='opacity')),
             ],
             options={
@@ -182,12 +182,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='photosize',
             name='watermark',
-            field=models.ForeignKey(related_name='photo_sizes', verbose_name='watermark image', blank=True, to='photos.Watermark', null=True),
+            field=models.ForeignKey(related_name='photo_sizes', verbose_name='watermark image', blank=True, to='photos.Watermark', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
             name='effect',
-            field=models.ForeignKey(related_name='image_related', verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True),
+            field=models.ForeignKey(related_name='image_related', verbose_name='effect', blank=True, to='photos.PhotoEffect', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
@@ -202,7 +202,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='license',
-            field=models.ForeignKey(blank=True, to='photos.License', null=True),
+            field=models.ForeignKey(blank=True, to='photos.License', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='image',
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='meta',
-            field=models.OneToOneField(null=True, blank=True, to='meta.Meta'),
+            field=models.OneToOneField(null=True, blank=True, on_delete=django.db.models.deletion.CASCADE, to='meta.Meta'),
         ),
         migrations.AddField(
             model_name='image',
@@ -227,12 +227,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='albumcover',
             name='photo',
-            field=models.ForeignKey(to='photos.Image'),
+            field=models.ForeignKey(to='photos.Image', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='albumcover',
             name='photoset',
-            field=models.OneToOneField(to='photos.PhotoSet'),
+            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='photos.PhotoSet'),
         ),
         migrations.AlterUniqueTogether(
             name='pool',

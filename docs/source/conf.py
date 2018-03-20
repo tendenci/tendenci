@@ -17,6 +17,8 @@ import os
 # from sphinx.util import compat
 # compat.make_admonition = BaseAdmonition
 
+from tendenci import __version__ as tendenci_version
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -26,8 +28,6 @@ sys.path.append(os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath('.'))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tendenci.settings")
 
-
-from tendenci import __version__ as tendenci_version
 
 # -- General configuration -----------------------------------------------------
 

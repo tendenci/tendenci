@@ -10,6 +10,7 @@ scripts/get_email.py - Designed to be run from cron, this script checks the
                        adding to existing tickets if needed)
 """
 from __future__ import print_function
+from builtins import str
 
 import email
 import imaplib
@@ -22,7 +23,6 @@ import chardet
 from datetime import timedelta
 from email.header import decode_header
 from email.Utils import parseaddr, collapse_rfc2231_value
-from optparse import make_option
 
 from email_reply_parser import EmailReplyParser
 
@@ -32,8 +32,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import striptags
 from django.utils.encoding import DjangoUnicodeDecodeError
-from HTMLParser import HTMLParser
-unescape = HTMLParser().unescape
+from six.moves.html_parser import HTMLParser
 from tendenci.apps.helpdesk import settings
 
 try:
@@ -44,20 +43,18 @@ except ImportError:
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Queue, Ticket, FollowUp, Attachment, IgnoreEmail
 
+unescape = HTMLParser().unescape
+
 
 class Command(BaseCommand):
-    def __init__(self):
-        BaseCommand.__init__(self)
+    help = 'Process Jutda Helpdesk queues and process e-mails via POP3/IMAP as required, feeding them into the helpdesk.'
 
-        self.option_list += (
-            make_option(
+    def add_arguments(self, parser):
+            parser.add_argument(
                 '--quiet', '-q',
                 default=False,
                 action='store_true',
-                help='Hide details about each queue/message as they are processed'),
-            )
-
-    help = 'Process Jutda Helpdesk queues and process e-mails via POP3/IMAP as required, feeding them into the helpdesk.'
+                help='Hide details about each queue/message as they are processed')
 
     def handle(self, *args, **options):
         quiet = options.get('quiet', False)
@@ -125,7 +122,7 @@ def process_queue(q, quiet=False):
 
         for msg in messagesInfo:
             msgNum = msg.split(" ")[0]
-            msgSize = msg.split(" ")[1]
+            #msgSize = msg.split(" ")[1]
 
             full_message = "\n".join(server.retr(msgNum)[1])
             ticket = ticket_from_message(message=full_message, queue=q, quiet=quiet)
@@ -166,11 +163,11 @@ def decodeUnknown(charset, string):
             return string.decode('utf-8','ignore')
         except:
             return string.decode('iso8859-1','ignore')
-    return unicode(string, charset)
+    return str(string, charset)
 
 def decode_mail_headers(string):
     decoded = decode_header(string)
-    return u' '.join([unicode(msg, charset or 'utf-8') for msg, charset in decoded])
+    return u' '.join([str(msg, charset or 'utf-8') for msg, charset in decoded])
 
 def ticket_from_message(message, queue, quiet):
     # 'message' must be an RFC822 formatted message.
@@ -236,9 +233,9 @@ def ticket_from_message(message, queue, quiet):
                 try:
                     # strip html tags
                     body_plain = striptags(body_html)
-                except DjangoUnicodeDecodeError as e:
+                except DjangoUnicodeDecodeError:
                     charset = chardet.detect(body_html)['encoding']
-                    body_plain = striptags(unicode(body_html, charset))
+                    body_plain = striptags(str(body_html, charset))
 
                 body_plain = unescape(body_plain)
         else:
@@ -299,7 +296,7 @@ def ticket_from_message(message, queue, quiet):
         )
         t.save()
         new = True
-        update = ''
+        #update = ''
 
     elif t.status == Ticket.CLOSED_STATUS:
         t.status = Ticket.REOPENED_STATUS
@@ -371,10 +368,10 @@ def ticket_from_message(message, queue, quiet):
     else:
         context.update(comment=f.comment)
 
-        if t.status == Ticket.REOPENED_STATUS:
-            update = _(' (Reopened)')
-        else:
-            update = _(' (Updated)')
+        #if t.status == Ticket.REOPENED_STATUS:
+        #    update = _(' (Reopened)')
+        #else:
+        #    update = _(' (Updated)')
 
         if t.assigned_to:
             send_templated_mail(

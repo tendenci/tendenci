@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
@@ -13,7 +14,7 @@ from tendenci.apps.files.models import File
 
 class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40)
-    content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
+    content_type = models.ForeignKey(ContentType, verbose_name=_('content type'), on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(_('object id'), db_index=True)
     title = models.CharField(max_length=500, blank=True)
 
@@ -28,9 +29,8 @@ class Contribution(TendenciBaseModel):
         permissions = (("view_contribution",_("Can view contribution")),)
         app_label = 'contributions'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("contribution", [self.pk])
+        return reverse('contribution', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.id:

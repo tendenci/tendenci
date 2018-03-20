@@ -1,7 +1,7 @@
 from django.conf.urls import url
-from tendenci.apps.pages.feeds import LatestEntriesFeed
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
+from .feeds import LatestEntriesFeed
 
 urlpath = get_setting('module', 'pages', 'url')
 if not urlpath:

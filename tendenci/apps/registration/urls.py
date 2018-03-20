@@ -5,7 +5,7 @@ If the default behavior of the registration views is acceptable to
 you, simply use a line like this in your root URLConf to set up the
 default URLs for registration::
 
-    (r'^accounts/', include('registration.urls')),
+    url(r'^accounts/', include('registration.urls')),
 
 This will also automatically set up the views in
 ``django.contrib.auth`` at sensible default locations.
@@ -19,22 +19,18 @@ various steps of the user-signup process.
 
 """
 
-
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from . import views
 
-from tendenci.apps.registration.views import activate
-from tendenci.apps.registration.views import register
-
-
-urlpatterns = patterns('',
+urlpatterns = [
                        # Activation keys get matched by \w+ instead of the more specific
                        # [a-fA-F0-9]{40} because a bad activation key should still get to the view;
                        # that way it can return a sensible "invalid key" message instead of a
                        # confusing 404.
                        url(r'^activate/(?P<activation_key>\w+)/$',
-                           activate,
+                           views.activate,
                            name='registration_activate'),
                        url(r'^login/$',
                            auth_views.login,
@@ -63,9 +59,9 @@ urlpatterns = patterns('',
                            auth_views.password_reset_done,
                            name='auth_password_reset_done'),
                        url(r'^register/$',
-                           register,
+                           views.register,
                            name='registration_register'),
                        url(r'^register/complete/$',
                            TemplateView.as_view(template_name='registration/registration_complete.html'),
                            name='registration_complete'),
-                       )
+                       ]

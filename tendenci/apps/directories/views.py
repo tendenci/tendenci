@@ -1,15 +1,15 @@
 from datetime import datetime, timedelta
-import subprocess, time
+import subprocess
+import time
 import string
 import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 import simplejson
@@ -28,7 +28,7 @@ from tendenci.apps.perms.utils import (get_notice_recipients,
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
@@ -48,8 +48,8 @@ def details(request, slug=None, template_name="directories/view.html"):
     if has_view_perm(request.user,'directories.view_directory',directory):
         EventLog.objects.log(instance=directory)
 
-        return render_to_response(template_name, {'directory': directory},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'directory': directory})
     else:
         raise Http403
 
@@ -60,7 +60,7 @@ def search(request, template_name="directories/search.html"):
     directories = Directory.objects.filter(filters).distinct()
     cat = None
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         directories = directories.select_related()
 
     query = request.GET.get('q', None)
@@ -96,11 +96,10 @@ def search(request, template_name="directories/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name,
-        {'directories': directories,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directories': directories,
         'form' : form,
-        'a_to_z': string.lowercase[:26]},
-        context_instance=RequestContext(request))
+        'a_to_z': string.ascii_lowercase})
 
 
 def search_redirect(request):
@@ -113,8 +112,8 @@ def print_view(request, slug, template_name="directories/print-view.html"):
     if has_view_perm(request.user,'directories.view_directory',directory):
         EventLog.objects.log(instance=directory)
 
-        return render_to_response(template_name, {'directory': directory},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'directory': directory})
     else:
         raise Http403
 
@@ -203,10 +202,9 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))
 
-    return render_to_response(template_name,
-                              {'form': form,
-                               'require_payment': require_payment},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form,
+                               'require_payment': require_payment})
 
 
 @csrf_exempt
@@ -260,8 +258,8 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
-    return render_to_response(template_name, {'directory': directory, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directory': directory, 'form':form})
 
 
 @is_enabled('directories')
@@ -292,8 +290,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
     else:
         form = form_class(instance=directory.meta)
 
-    return render_to_response(template_name, {'directory': directory, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directory': directory, 'form':form})
 
 
 @is_enabled('directories')
@@ -351,8 +349,8 @@ def delete(request, id, template_name="directories/delete.html"):
 
             return HttpResponseRedirect(reverse('directory.search'))
 
-        return render_to_response(template_name, {'directory': directory},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'directory': directory})
     else:
         raise Http403
 
@@ -378,8 +376,8 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
         if "_popup" in request.GET:
             template_name="directories/pricing-add-popup.html"
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -400,8 +398,8 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
     else:
         form = form_class(instance=directory_pricing, user=request.user)
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 
 @is_enabled('directories')
@@ -412,8 +410,8 @@ def pricing_view(request, id, template_name="directories/pricing-view.html"):
     if has_perm(request.user,'directories.view_directorypricing',directory_pricing):
         EventLog.objects.log(instance=directory_pricing)
 
-        return render_to_response(template_name, {'directory_pricing': directory_pricing},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'directory_pricing': directory_pricing})
     else:
         raise Http403
 
@@ -435,8 +433,8 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
 
         return HttpResponseRedirect(reverse('directory_pricing.search'))
 
-    return render_to_response(template_name, {'directory_pricing': directory_pricing},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directory_pricing': directory_pricing})
 
 
 @is_enabled('directories')
@@ -448,8 +446,8 @@ def pricing_search(request, template_name="directories/pricing-search.html"):
     directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'directory_pricings':directory_pricing},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directory_pricings':directory_pricing})
 
 
 @is_enabled('directories')
@@ -464,8 +462,8 @@ def pending(request, template_name="directories/pending.html"):
     directories = Directory.objects.filter(status_detail__contains='pending')
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'directories': directories},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'directories': directories})
 
 
 @is_enabled('directories')
@@ -513,11 +511,11 @@ def approve(request, id, template_name="directories/approve.html"):
 
         return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
-    return render_to_response(template_name, {'directory': directory},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'directory': directory})
 
 def thank_you(request, template_name="directories/thank-you.html"):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @is_enabled('directories')
@@ -587,8 +585,8 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))
 
-    return render_to_response(template_name, {'directory':directory, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'directory':directory, 'form':form})
 
 
 @is_enabled('directories')
@@ -620,7 +618,7 @@ def directory_export(request, template_name="directories/export.html"):
         return HttpResponseRedirect(reverse('directory.export_status', args=[identifier]))
 
     context = {'form': form}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('directories')
@@ -643,7 +641,7 @@ def directory_export_status(request, identifier, template_name="directories/expo
 
     context = {'identifier': identifier,
                'download_ready': download_ready}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @is_enabled('directories')

@@ -22,9 +22,9 @@
 {% endif %}
 <div class="label">{% trans 'Invoice ID' %}:</div>
 {% if donation.invoice %}
-	<div><a href="{% url 'invoice.view' donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
+    <div><a href="{% url 'invoice.view' donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
 {% else %}
-	<div>n/a</div>
+    <div>n/a</div>
 {% endif %}
 <div class="clear-left"></div>
 {% if donation.user %}
@@ -37,7 +37,7 @@
 <div class="label">{% trans 'Company' %}:</div><div>{{ donation.company }}</div>
 <div class="clear-left"></div>
 <div class="label">{% trans 'Address' %}:</div><div>{{ donation.address }} {{ donation.address2 }}
-		{{ donation.city }} {{ donation.state }} {{ donation.zip_code }} {{ donation.country }}</div>
+        {{ donation.city }} {{ donation.state }} {{ donation.zip_code }} {{ donation.country }}</div>
 <div class="clear-left"></div>
 <div class="label">{% trans 'Phone' %}:</div><div>{{ donation.phone }}</div>
 <div class="clear-left"></div>

@@ -1,6 +1,5 @@
 from __future__ import print_function
 import time
-from optparse import make_option
 from django.core.management.base import BaseCommand
 
 
@@ -18,51 +17,44 @@ class Command(BaseCommand):
                                                    --user 1
                                                    --cp_id 21
     """
-    option_list = BaseCommand.option_list + (
 
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--export_status_detail',
             action='store',
             dest='export_status_detail',
             default='active',
-            help='Export memberships with the status detail specified'),
-
-        make_option(
+            help='Export memberships with the status detail specified')
+        parser.add_argument(
             '--export_fields',
             action='store',
             dest='export_fields',
             default='main_fields',
-            help='Either main_fields or all_fields to export'),
-
-        make_option(
+            help='Either main_fields or all_fields to export')
+        parser.add_argument(
             '--export_type',
             action='store',
             dest='export_type',
             default='all',
-            help='All or one specific membership type'),
-
-        make_option(
+            help='All or one specific membership type')
+        parser.add_argument(
             '--identifier',
             action='store',
             dest='identifier',
             default='',
-            help='Export file identifier'),
-
-        make_option(
+            help='Export file identifier')
+        parser.add_argument(
             '--user',
             action='store',
             dest='user',
             default='1',
-            help='Request user'),
-
-        make_option(
+            help='Request user')
+        parser.add_argument(
             '--cp_id',
             action='store',
             dest='cp_id',
             default=0,
-            help='corp_profile id'),
-
-    )
+            help='corp_profile id')
 
     def handle(self, *args, **options):
         from tendenci.apps.memberships.utils import process_export

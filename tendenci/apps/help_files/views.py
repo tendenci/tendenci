@@ -1,12 +1,11 @@
-from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
@@ -33,8 +32,8 @@ def index(request, template_name="help_files/index.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())
 
 
 @is_enabled('help_files')
@@ -47,30 +46,29 @@ def search(request, template_name="help_files/search.html"):
     else:
         filters = get_query_filters(request.user, 'help_files.view_helpfile')
         help_files = HelpFile.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             help_files = help_files.select_related()
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'help_files':help_files},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'help_files':help_files})
 
 
 @is_enabled('help_files')
 def topic(request, id, template_name="help_files/topic.html"):
     """ List of topic help files """
     topic = get_object_or_404(Topic, pk=id)
-    query = None
 
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
     help_files = HelpFile.objects.filter(filters).filter(topics__in=[topic.pk]).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         help_files = help_files.select_related()
 
     EventLog.objects.log(instance=topic)
 
-    return render_to_response(template_name, {'topic':topic, 'help_files':help_files},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'topic':topic, 'help_files':help_files})
 
 
 @is_enabled('help_files')
@@ -81,8 +79,8 @@ def detail(request, slug, template_name="help_files/details.html"):
     if has_view_perm(request.user, 'help_files.view_helpfile', help_file):
         HelpFile.objects.filter(pk=help_file.pk).update(view_totals=help_file.view_totals+1)
         EventLog.objects.log(instance=help_file)
-        return render_to_response(template_name, {'help_file': help_file},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'help_file': help_file})
     else:
         raise Http403
 
@@ -102,9 +100,9 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
                 msg_string = 'Successfully added %s' % help_file
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                # send notification to administrator(s) and module recipient(s)
-                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-                # if recipients and notification:
+#                # send notification to administrator(s) and module recipient(s)
+#                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+#                # if recipients and notification:
 #                     notification.send_emails(recipients,'help_file_added', {
 #                         'object': help_file,
 #                         'request': request,
@@ -114,8 +112,8 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
         else:
             form = form_class(user=request.user)
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -136,9 +134,9 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
                 msg_string = 'Successfully edited %s' % help_file
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-                # send notification to administrator(s) and module recipient(s)
-                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-                # if recipients and notification:
+#                # send notification to administrator(s) and module recipient(s)
+#                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+#                # if recipients and notification:
 #                     notification.send_emails(recipients,'help_file_added', {
 #                         'object': help_file,
 #                         'request': request,
@@ -148,8 +146,8 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
         else:
             form = form_class(instance=help_file, user=request.user)
 
-        return render_to_response(template_name, {'help_file': help_file, 'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'help_file': help_file, 'form':form})
     else:
         raise Http403
 
@@ -176,8 +174,8 @@ def request_new(request, template_name="help_files/request_new.html"):
     else:
         form = RequestForm()
 
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 def redirects(request, id):
@@ -205,9 +203,9 @@ def requests(request, template_name="help_files/request_list.html"):
 
     requests = Request.objects.all()
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'requests': requests,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('help_files')
@@ -220,7 +218,6 @@ def export(request, template_name="help_files/export.html"):
 
     if request.method == 'POST':
         # initilize initial values
-        file_name = "help_files.csv"
         fields = [
             'slug',
             'topics',
@@ -237,5 +234,5 @@ def export(request, template_name="help_files/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

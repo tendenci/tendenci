@@ -1,9 +1,8 @@
-from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
-from django.template import RequestContext
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.forms import build_settings_form
@@ -58,8 +57,8 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         # Log the get so we see if someone views setting values
         EventLog.objects.log()
 
-    return render_to_response(template_name, {'form': form,
-                                              'scope_category': scope_category }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form': form,
+                                              'scope_category': scope_category })
 
 
 def index(request, template_name="site_settings/settings.html"):
@@ -69,7 +68,7 @@ def index(request, template_name="site_settings/settings.html"):
     # Do not display standard regform settings
     settings = settings.exclude(scope_category='events', name__startswith='regform_')
     EventLog.objects.log()
-    return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'settings':settings})
 
 
 def single_setting(request, scope, scope_category, name, template_name="site_settings/list.html"):
@@ -104,4 +103,4 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
     else:
         form = build_settings_form(request.user, settings)()
 
-    return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form': form })

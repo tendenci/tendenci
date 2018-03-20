@@ -16,8 +16,8 @@ def cache_nav(nav, show_title=False, is_site_map=False):
     """
     keys = [settings.CACHE_PRE_KEY, get_pre_key(is_site_map), str(nav.id)]
     key = '.'.join(keys)
-    value = render_to_string("navs/render_nav.html",
-                        {'nav':nav,
+    value = render_to_string(template_name="navs/render_nav.html",
+                        context={'nav':nav,
                          "show_title": show_title,
                          'is_site_map': is_site_map})
     cache.set(key, value, 432000) #5 days

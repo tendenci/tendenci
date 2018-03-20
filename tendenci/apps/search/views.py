@@ -1,20 +1,18 @@
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.search.forms import ModelSearchForm
 from tendenci.apps.event_logs.models import EventLog
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
+
 def open_search(request, template_name="search/open_search_xml.html"):
-    return render_to_response(
-        template_name,
-        content_type="application/opensearchdescription+xml",
-        context_instance=RequestContext(request)
+    return render_to_resp(request=request, template_name=template_name,
+        content_type="application/opensearchdescription+xml"
     )
 
 
@@ -26,10 +24,9 @@ class SearchView(object):
     request = None
     form = None
 
-    def __init__(self, template=None, load_all=False, form_class=ModelSearchForm, searchqueryset=None, context_class=RequestContext):
+    def __init__(self, template=None, load_all=False, form_class=ModelSearchForm, searchqueryset=None):
         self.load_all = load_all
         self.form_class = form_class
-        self.context_class = context_class
         self.searchqueryset = searchqueryset
         self.user = None
         if template:
@@ -50,7 +47,7 @@ class SearchView(object):
         # log an event
         EventLog.objects.log(action='global_search')
 
-        return self.create_response()
+        return self.create_response(request)
 
     def build_form(self):
         """
@@ -109,7 +106,7 @@ class SearchView(object):
         # TODO: Add the selected models so they can be shown in the H1
         return {}
 
-    def create_response(self):
+    def create_response(self, request):
         """
         Generates the actual HttpResponse to send back to the user.
         """
@@ -123,7 +120,7 @@ class SearchView(object):
         }
         context.update(self.extra_context())
 
-        return render_to_response(self.template, context, context_instance=self.context_class(self.request))
+        return render_to_resp(request=request, template_name=self.template, context=context)
 
 
 class FacetedSearchView(SearchView):
@@ -141,7 +138,7 @@ class FacetedSearchView(SearchView):
         return extra
 
 
-def basic_search(request, template='search/search.html', load_all=True, form_class=ModelSearchForm, searchqueryset=None, context_class=RequestContext, extra_context=None):
+def basic_search(request, template='search/search.html', load_all=True, form_class=ModelSearchForm, searchqueryset=None, extra_context=None):
     """
     A more traditional view that also demonstrate an alternative
     way to use Haystack.
@@ -191,4 +188,4 @@ def basic_search(request, template='search/search.html', load_all=True, form_cla
     if extra_context:
         context.update(extra_context)
 
-    return render_to_response(template, context, context_instance=context_class(request))
+    return render_to_resp(request=request, template_name=template, context=context)

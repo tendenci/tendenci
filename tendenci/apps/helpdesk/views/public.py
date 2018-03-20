@@ -8,23 +8,22 @@ views/public.py - All public facing views, eg non-staff (no authentication
 """
 
 import requests
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import loader, Context, RequestContext
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.helpdesk.forms import PublicTicketForm
-from tendenci.apps.helpdesk.lib import send_templated_mail, text_is_spam
+from tendenci.apps.helpdesk.lib import text_is_spam
 from tendenci.apps.helpdesk.models import Ticket, Queue, UserSettings, KBCategory
 
 
 def homepage(request):
-    if not request.user.is_authenticated() and helpdesk_settings.HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT:
+    if not request.user.is_authenticated and helpdesk_settings.HELPDESK_REDIRECT_TO_LOGIN_BY_DEFAULT:
         return HttpResponseRedirect(reverse('auth_login') + "?next=" + request.path)
 
-    if (request.user.is_staff or (request.user.is_authenticated() and helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE)):
+    if (request.user.is_staff or (request.user.is_authenticated and helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE)):
         try:
             if getattr(request.user.usersettings.settings, 'login_view_ticketlist', False):
                 return HttpResponseRedirect(reverse('helpdesk_list'))
@@ -42,7 +41,7 @@ def homepage(request):
         if form.is_valid():
             if text_is_spam(form.cleaned_data['body'], request):
                 # This submission is spam. Let's not save it.
-                return render_to_response('helpdesk/public_spam.html', RequestContext(request, {}))
+                return render_to_resp(request=request, template_name='helpdesk/public_spam.html')
             else:
                 ticket = form.save()
                 return HttpResponseRedirect('%s?ticket=%s&email=%s'% (
@@ -59,7 +58,7 @@ def homepage(request):
         if queue:
             initial_data['queue'] = queue.id
 
-        if request.user.is_authenticated() and request.user.email:
+        if request.user.is_authenticated and request.user.email:
             initial_data['submitter_email'] = request.user.email
 
         form = PublicTicketForm(initial=initial_data)
@@ -67,12 +66,12 @@ def homepage(request):
 
     knowledgebase_categories = KBCategory.objects.all()
 
-    return render_to_response('helpdesk/public_homepage.html',
-        RequestContext(request, {
+    return render_to_resp(request=request, template_name='helpdesk/public_homepage.html',
+        context={
             'form': form,
             'helpdesk_settings': helpdesk_settings,
             'kb_categories': knowledgebase_categories
-        }))
+        })
 
 
 def view_ticket(request):
@@ -120,25 +119,25 @@ def view_ticket(request):
             if helpdesk_settings.HELPDESK_NAVIGATION_ENABLED:
                 redirect_url = reverse('helpdesk_view', args=[ticket_id])
 
-            return render_to_response('helpdesk/public_view_ticket.html',
-                RequestContext(request, {
+            return render_to_resp(request=request, template_name='helpdesk/public_view_ticket.html',
+                context={
                     'ticket': ticket,
                     'helpdesk_settings': helpdesk_settings,
                     'next': redirect_url,
-                }))
+                })
 
-    return render_to_response('helpdesk/public_view_form.html',
-        RequestContext(request, {
+    return render_to_resp(request=request, template_name='helpdesk/public_view_form.html',
+        context={
             'ticket': ticket,
             'email': email,
             'error_message': error_message,
             'helpdesk_settings': helpdesk_settings,
-        }))
+        })
 
 def change_language(request):
     return_to = ''
     if 'return_to' in request.GET:
         return_to = request.GET['return_to']
 
-    return render_to_response('helpdesk/public_change_language.html',
-        RequestContext(request, {'next': return_to}))
+    return render_to_resp(request=request, template_name='helpdesk/public_change_language.html',
+        context={'next': return_to})

@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('discount_code', models.CharField(help_text='Discount codes must be unique.', unique=True, max_length=100)),
                 ('start_dt', models.DateTimeField(verbose_name='Start Date/Time')),
                 ('end_dt', models.DateTimeField(verbose_name='Start Date/Time')),
@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
-                ('discount', models.ForeignKey(to='discounts.Discount')),
-                ('invoice', models.ForeignKey(to='invoices.Invoice')),
+                ('discount', models.ForeignKey(to='discounts.Discount', on_delete=django.db.models.deletion.CASCADE)),
+                ('invoice', models.ForeignKey(to='invoices.Invoice', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]

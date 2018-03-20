@@ -1,9 +1,8 @@
-from optparse import make_option
 from django.conf import settings
-from django.core.management.base import CommandError, NoArgsCommand
+from django.core.management.base import BaseCommand
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Download themes from S3 to the local themes directory.
 
@@ -12,15 +11,15 @@ class Command(NoArgsCommand):
         python manage.py download_themes_from_s3 --update-only
         python manage.py download_themes_from_s3
     """
-    option_list = NoArgsCommand.option_list + (
-        make_option('-n', '--dry-run',
+    help = "Download themes from S3 to the local themes directory"
+
+    def add_arguments(self, parser):
+        parser.add_argument('-n', '--dry-run',
             action='store_true', dest='dry_run', default=False,
-            help="Do everything except modify the filesystem."),
-        make_option('-u', '--update-only', action='store_true',
+            help="Do everything except modify the filesystem.")
+        parser.add_argument('-u', '--update-only', action='store_true',
             dest='update_only', default=False,
-            help="Update based on the last modified timestamp. "),
-    )
-    help = "Dowload themes from S3 to the local themes directory"
+            help="Update based on the last modified timestamp. ")
 
     def set_options(self, **options):
         """

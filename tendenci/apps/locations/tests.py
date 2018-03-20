@@ -4,6 +4,8 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+from builtins import int
+
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
@@ -41,4 +43,4 @@ class LocationLocationTest(TestCase):
 
         self.location.save()
 
-        self.assertEquals(type(self.location.id), long)
+        self.assertTrue(isinstance(self.location.id, int))

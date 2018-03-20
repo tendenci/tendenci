@@ -1,3 +1,4 @@
+from builtins import str
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -116,7 +117,7 @@ class ObjectPermissionManager(models.Manager):
         if group_with_perms:
             from tendenci.apps.user_groups.models import Group
             for group, perm in group_or_groups:
-                if isinstance(group, unicode):
+                if isinstance(group, str):
                     if group.isdigit():
                         try:
                             group = Group.objects.get(pk=group)
@@ -240,7 +241,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except self.model.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned:
                             pass
 
                 else:  # all default permissions
@@ -255,7 +256,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except self.model.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned:
                             pass
 
         else:  # not muli_user
@@ -274,7 +275,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except self.model.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned:
                         pass
 
             else:  # all default permissions
@@ -289,7 +290,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except self.model.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned:
                         pass
 
     def list_all(self, object):
@@ -353,7 +354,7 @@ class TendenciBaseManager(models.Manager):
 
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
-        member_q = SQ(allow_member_view=True)
+        #member_q = SQ(allow_member_view=True)
         status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
@@ -527,10 +528,10 @@ class TendenciBaseManager(models.Manager):
         return user
 
     def _permissions_sqs(self, sqs, user, status_detail, **kwargs):
-        if user.is_authenticated() and user.profile.is_superuser:
+        if user.is_authenticated and user.profile.is_superuser:
             return sqs
 
-        if user.is_anonymous():
+        if user.is_anonymous:
             sqs = self._anon_sqs(sqs, status_detail=status_detail)
         elif user.profile.is_member:
             sqs = self._member_sqs(sqs, user,

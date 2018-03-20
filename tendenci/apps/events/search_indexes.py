@@ -1,13 +1,10 @@
 from haystack import indexes
 
-
-from django.utils.html import strip_tags, strip_entities
-
 from tendenci.apps.events.models import Event, Registrant
-from tendenci.apps.events.utils import count_event_spots_taken
 from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
+from tendenci.apps.base.utils import strip_html, count_event_spots_taken
 
 
 class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
@@ -39,10 +36,7 @@ class EventIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return Event
 
     def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
+        return strip_html(obj.description)
 
     def prepare_hour(self, obj):
         return int(obj.start_dt.hour)

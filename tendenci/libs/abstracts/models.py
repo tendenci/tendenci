@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
-from timezones.fields import TimeZoneField
 
+from timezone_field import TimeZoneField
+
+from tendenci.apps.base.utils import get_timezone_choices
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.object_perms import ObjectPermission
 
@@ -20,9 +22,9 @@ class TendenciBaseModel(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_creator", editable=False, on_delete=models.CASCADE)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
+    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner" , on_delete=models.CASCADE)
     owner_username = models.CharField(max_length=50)
     status = models.NullBooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
@@ -96,7 +98,7 @@ class UnsavedOneToOne(models.OneToOneField):
     allow_unsaved_instance_assignment = True
 
 class Person(TendenciBaseModel):
-    user = UnsavedOneToOne(User, related_name="profile", verbose_name=_('user'))
+    user = UnsavedOneToOne(User, related_name="profile", verbose_name=_('user'), on_delete=models.CASCADE)
     phone = models.CharField(_('phone'), max_length=50, blank=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
@@ -119,7 +121,7 @@ class Person(TendenciBaseModel):
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 
-    time_zone = TimeZoneField(_('timezone'))
+    time_zone = TimeZoneField(verbose_name=_('timezone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
     perms = GenericRelation(ObjectPermission,

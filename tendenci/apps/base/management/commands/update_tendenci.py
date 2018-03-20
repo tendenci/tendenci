@@ -1,6 +1,7 @@
 from __future__ import print_function
-import os, subprocess, sys, xmlrpclib
-from optparse import make_option
+import os
+import subprocess
+from six.moves import xmlrpc_client
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,27 +18,25 @@ class Command(BaseCommand):
     Update tendenci via pip and restarts the server
     """
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--user',
             action='store',
             dest='user',
             default='',
-            help='Request user'),
-    )
+            help='Request user')
 
     def handle(self, *args, **options):
         from tendenci.apps.site_settings.utils import get_setting
 
         pass_update_tendenci = False
         pass_update_tendenci_site = False
-        pass_restart_server = False
         is_uwsgi = False
         gunicorn_error_msg = None
         uwsgi_error_msg = None
         errors_list = []
 
-        pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+        pypi = xmlrpc_client.ServerProxy('http://pypi.python.org/pypi')
         latest_version = pypi.package_releases('tendenci')[0]
         error_message = ""
         email_context = {'site_url':get_setting('site', 'global', 'siteurl'),
@@ -104,9 +103,9 @@ class Command(BaseCommand):
         email_context['errors_list'] = errors_list
 
         if email_recipient:
-            subject = render_to_string('notification/update_tendenci_notice/short.txt', email_context)
+            subject = render_to_string(template_name='notification/update_tendenci_notice/short.txt', context=email_context)
             subject = subject.strip('\n').strip('\r')
-            body = render_to_string('notification/update_tendenci_notice/full.html', email_context)
+            body = render_to_string(template_name='notification/update_tendenci_notice/full.html', context=email_context)
             email = EmailMessage()
             email.subject = subject
             email.body = body

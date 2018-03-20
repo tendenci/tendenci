@@ -1,5 +1,5 @@
 from tendenci.apps.registry.sites import site
-from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.registry.base import LogRegistry
 from tendenci.apps.accountings.models import Acct
 
 

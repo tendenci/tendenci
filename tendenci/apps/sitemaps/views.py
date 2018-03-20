@@ -5,7 +5,7 @@ Created on 28-02-2011
 '''
 import subprocess
 
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.http import Http404
 from django.template.response import TemplateResponse
@@ -35,7 +35,7 @@ def get_all_sitemaps():
 def _try_import(module):
     try:
         __import__(module)
-    except ImportError as e:
+    except ImportError:
         pass
 
 
@@ -56,7 +56,7 @@ def sitemap(request, sitemaps, section=None,
             raise Http404(_("No sitemap available for section: %r" % section))
         maps = [sitemaps[section]]
     else:
-        maps = sitemaps.values()
+        maps = list(sitemaps.values())
     page = request.GET.get("p", 1)
 
     urls = []
@@ -83,5 +83,5 @@ def sitemap(request, sitemaps, section=None,
             raise Http404("Page %s empty" % page)
         except PageNotAnInteger:
             raise Http404("No page '%s'" % page)
-    return TemplateResponse(request, template_name, {'urlset': urls},
+    return TemplateResponse(request=request, template=template_name, context={'urlset': urls},
                             content_type=mimetype)

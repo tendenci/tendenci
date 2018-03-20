@@ -1,5 +1,5 @@
 from django.contrib import admin
-from tendenci.apps.event_logs.models import EventLog, EventLogColor, EventLogBaseColor
+from django.utils.safestring import mark_safe
 
 
 class EventLogAdmin(admin.ModelAdmin):
@@ -14,9 +14,9 @@ class EventLogAdmin(admin.ModelAdmin):
 class EventLogColorAdmin(admin.ModelAdmin):
     list_display = ['event_id', 'color']
 
+    @mark_safe
     def color(self, obj):
         return '<span style="background-color: #%s"> #%s </span> ' % (obj.hex_color, obj.hex_color)
-    color.allow_tags = True
 
 
 class EventLogBaseColorAdmin(EventLogColorAdmin):

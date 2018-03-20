@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
@@ -10,7 +11,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class ListMap(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     # list id for campaign monitor
     list_id = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -24,13 +25,13 @@ class ListMap(models.Model):
 
 
 class GroupQueue(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
 
 class SubscriberQueue(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    subscriber = models.ForeignKey(FormEntry, null=True)
+    subscriber = models.ForeignKey(FormEntry, null=True, on_delete=models.CASCADE)
 
 
 class Template(models.Model):
@@ -57,25 +58,20 @@ class Template(models.Model):
     def content_type(self):
         return 'template'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("campaign_monitor.template_view", [self.template_id])
+        return reverse('campaign_monitor.template_view', args=[self.template_id])
 
-    @models.permalink
     def get_html_url(self):
-        return ("campaign_monitor.template_html", [self.template_id])
+        return reverse('campaign_monitor.template_html', args=[self.template_id])
 
-    @models.permalink
     def get_html_original_url(self):
-        return ("campaign_monitor.template_html_original", [self.template_id])
+        return reverse('campaign_monitor.template_html_original', args=[self.template_id])
 
-    @models.permalink
     def get_render_url(self):
-        return ("campaign_monitor.template_render", [self.template_id])
+        return reverse('campaign_monitor.template_render', args=[self.template_id])
 
-    @models.permalink
     def get_text_url(self):
-        return ("campaign_monitor.template_text", [self.template_id])
+        return reverse('campaign_monitor.template_text', args=[self.template_id])
 
     def get_zip_url(self):
         if self.zip_file:
@@ -137,11 +133,10 @@ class Campaign(models.Model):
     from_name = models.CharField(max_length=100, null=True, blank=True)
     from_email = models.EmailField(null=True, blank=True)
     reply_to = models.EmailField(null=True, blank=True)
-    template = models.ForeignKey(Template, null=True, blank=True)
+    template = models.ForeignKey(Template, null=True, blank=True, on_delete=models.CASCADE)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("campaign_monitor.campaign_view", [self.campaign_id])
+        return reverse('campaign_monitor.campaign_view', args=[self.campaign_id])
 
     def __unicode__(self):
         return self.name
@@ -290,8 +285,6 @@ if cm_api_key and cm_client_id:
                     subscriber_obj = Subscriber(auth, list_id)
 
                     try:
-                        list_stats = alist.stats()
-
                         # check if this user has already subscribed, if not, subscribe it
                         try:
                             subscriber = subscriber_obj.get(list_id, email)
@@ -325,8 +318,7 @@ if cm_api_key and cm_client_id:
                     list_map.save()
 
                 if add_subscriber:
-                    email_address = subscriber_obj.add(list_id, email, name,
-                                                       custom_data, True)
+                    subscriber_obj.add(list_id, email, name, custom_data, True)  # Returns email_address
             except BadRequest:
                 pass
 

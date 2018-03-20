@@ -3,14 +3,16 @@ from datetime import datetime
 
 from django.contrib import admin, messages
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.conf.urls import patterns, url
+from django.urls import reverse
+from django.conf.urls import url
 from django.http import HttpResponse, Http404
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
     CustomRegFormEntry, CustomRegFieldEntry, Event)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
@@ -35,6 +37,8 @@ class EventAdmin(TendenciBaseModelAdmin):
         super(EventAdmin, self).__init__(*args, **kwargs)
         if 'edit_link' in self.list_display:
             self.list_display.remove('edit_link')
+        if 'edit_link' in self.list_display_links:
+            self.list_display_links = tuple(l for l in self.list_display_links if l != 'edit_link')
 
     def has_add_permission(self, request):
         return False
@@ -51,11 +55,11 @@ class EventTypeAdmin(admin.ModelAdmin):
     )
     list_display_links = ('name',)
 
+    @mark_safe
     def reassign(self, obj):
 
         return """<a href="%s">Reassign all events from this type</a>
             """ % (reverse('event.reassign_type', args=[obj.id]))
-    reassign.allow_tags = True
     reassign.short_description = _('Reassign Link')
 
     class Media:
@@ -125,13 +129,13 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def preview_link(self, obj):
-
         return """<a href="%s">preview</a>
             """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
-    preview_link.allow_tags = True
     preview_link.short_description = _('Preview Link')
 
+    @mark_safe
     def for_event(self, obj):
         [regconf] = obj.regconfs.all()[:1] or [None]
         if regconf:
@@ -139,8 +143,6 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             return """<a href="%s">%s(ID:%d)</a>
             """ % (reverse('event', args=[event.id]), event.title, event.id)
         return ''
-
-    for_event.allow_tags = True
     for_event.short_description = _('For Event')
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -246,11 +248,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(CustomRegFormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^export/(?P<regform_id>\d+)/$",
                 self.admin_site.admin_view(self.export_view),
                 name="customregform_export"),
-        )
+        ]
         return extra_urls + urls
 
 admin.site.register(CustomRegForm, CustomRegFormAdmin)
@@ -263,11 +265,11 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(StandardRegFormAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^edit",
                 self.admin_site.admin_view(self.edit_regform_view),
                 name="standardregform_edit"),
-        )
+        ]
         return extra_urls + urls
 
     def edit_regform_view(self, request):
@@ -278,9 +280,9 @@ class StandardRegFormAdmin(admin.ModelAdmin):
             messages.success(request, "Successfully updated Standard Registration Form")
             return redirect(reverse('admin:standardregform_edit'))
 
-        return render(request,
-            'admin/events/standardregform/standard_reg_form_edit.html',
-            {'adminform': form})
+        return render_to_resp(request=request,
+            template_name='admin/events/standardregform/standard_reg_form_edit.html',
+            context={'adminform': form})
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:standardregform_edit'))

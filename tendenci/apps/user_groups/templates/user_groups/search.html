@@ -24,8 +24,8 @@
 
      <h4 class="capitalize">
     <span><em>{{ paginator.count }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %} {% trans "Found" %}</em></span>
-	</h4>
-	
+    </h4>
+
     <section>
     {% for group in groups %}
             {% search_result group %}

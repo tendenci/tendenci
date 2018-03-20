@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.categories.views',
+urlpatterns = [
     url(r'^update/(?P<app_label>\w+)/(?P<model>\w+)/(?P<pk>[\w\d]+)/$',
-        'edit_categories', name="category.update"),
-)
+        views.edit_categories, name="category.update"),
+]

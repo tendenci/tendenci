@@ -6,20 +6,23 @@ import math
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.db.models import F, Q
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseBadRequest,\
     HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin
 from django.views.decorators.csrf import csrf_protect
 from django.views import generic
-import compat, defaults, util
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+
+from . import compat, defaults, util
 from .compat import get_atomic_func
 from .forms import PostForm, AdminPostForm, PollAnswerFormSet, PollForm
 from .models import Category, Forum, Topic, Post, TopicReadTracker, ForumReadTracker, PollAnswerUser
@@ -49,7 +52,7 @@ class RedirectToLoginMixin(object):
         try:
             return super(RedirectToLoginMixin, self).dispatch(request, *args, **kwargs)
         except PermissionDenied:
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 from django.contrib.auth.views import redirect_to_login
                 return redirect_to_login(self.get_login_redirect_url())
             else:
@@ -195,7 +198,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
         self.topic = self.get_topic(**kwargs)
 
         if request.GET.get('first-unread'):
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 read_dates = []
                 try:
                     read_dates.append(TopicReadTracker.objects.get(user=request.user, topic=self.topic).time_stamp)
@@ -221,7 +224,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
     def get_queryset(self):
         if not perms.may_view_topic(self.request.user, self.topic):
             raise PermissionDenied
-        if self.request.user.is_authenticated() or not defaults.PYBB_ANONYMOUS_VIEWS_CACHE_BUFFER:
+        if self.request.user.is_authenticated or not defaults.PYBB_ANONYMOUS_VIEWS_CACHE_BUFFER:
             Topic.objects.filter(id=self.topic.id).update(views=F('views') + 1)
         else:
             cache_key = util.build_cache_key('anonymous_topic_views', topic_id=self.topic.id)
@@ -240,7 +243,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
     def get_context_data(self, **kwargs):
         ctx = super(TopicView, self).get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             self.request.user.is_moderator = perms.may_moderate_topic(self.request.user, self.topic)
             self.request.user.is_subscribed = self.request.user in self.topic.subscribers.all()
             if perms.may_post_as_admin(self.request.user):
@@ -388,7 +391,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
 
     @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             self.user = request.user
         else:
             if defaults.PYBB_ENABLE_ANONYMOUS_POST:
@@ -443,7 +446,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
         return ctx
 
     def get_success_url(self):
-        if (not self.request.user.is_authenticated()) and defaults.PYBB_PREMODERATION:
+        if (not self.request.user.is_authenticated) and defaults.PYBB_PREMODERATION:
             return reverse('pybb:index')
         return self.object.get_absolute_url()
 
@@ -740,7 +743,7 @@ def add_subscription(request, topic_id):
 def post_ajax_preview(request):
     content = request.POST.get('data')
     html = util._get_markup_formatter()(content)
-    return render(request, 'pybb/_markitup_preview.html', {'html': html})
+    return render_to_resp(request=request, template_name='pybb/_markitup_preview.html', context={'html': html})
 
 
 @login_required

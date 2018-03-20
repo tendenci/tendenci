@@ -2,15 +2,14 @@
 
 from __future__ import unicode_literals
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 from django.utils import translation
-from django.contrib.sites.models import Site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import add_tendenci_footer
 
-import defaults, util, compat
+from . import defaults, util, compat
 
 if defaults.PYBB_USE_DJANGO_MAILER:
     try:
@@ -34,8 +33,8 @@ def get_email_message(user, **kwargs):
     lang = util.get_pybb_profile(user).language or settings.LANGUAGE_CODE
     translation.activate(lang)
 
-    message = render_to_string('pybb/mail_templates/subscription_email_body.html',
-                               kwargs)
+    message = render_to_string(template_name='pybb/mail_templates/subscription_email_body.html',
+                               context=kwargs)
     return message
 
 def notify_topic_subscribers(post):
@@ -60,8 +59,8 @@ def notify_topic_subscribers(post):
         subject_template = 'pybb/mail_templates/subscription_email_subject.html'
         users = topic.subscribers.exclude(pk=post.user.pk)
 
-    subject = render_to_string(subject_template,
-                                   {'site_url': context_vars['site_url'],
+    subject = render_to_string(template_name=subject_template,
+                                   context={'site_url': context_vars['site_url'],
                                     'post': post,
                                     'topic': topic})
     # Email subject *must not* contain newlines

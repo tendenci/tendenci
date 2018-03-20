@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group as AuthGroup
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.forms import GroupAdminForm
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
@@ -36,6 +37,5 @@ class GroupMembershipAdmin(admin.ModelAdmin):
 admin.site.register(Group, GroupAdmin)
 #admin.site.register(GroupMembership, GroupMembershipAdmin)
 
-from django.contrib.auth.models import Group as AuthGroup
 # unregister AuthGroup
 admin.site.unregister(AuthGroup)

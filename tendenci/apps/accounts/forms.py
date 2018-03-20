@@ -3,14 +3,13 @@ import re
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator
-from django.template import Context, loader
-from django.utils.http import int_to_base36
+from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
@@ -121,7 +120,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
-        sf_id = create_salesforce_contact(new_profile)
+        create_salesforce_contact(new_profile)  # Returns sf_id
 
         return new_user
 
@@ -213,8 +212,6 @@ class PasswordResetForm(forms.Form):
         Generates a one-use only link for resetting password and sends to the designated email.
         The email will contain links for resetting passwords for all accounts associated to the email.
         """
-        from django.core.mail import send_mail
-
         email_template_name = 'registration/password_reset_email_user_list.html'
 
         domain_override = kwargs.get('domain_override', False)
@@ -247,5 +244,5 @@ class PasswordResetForm(forms.Form):
                 sender=from_email,
                 recipient=user.email,
                 subject=_("Password reset on %s") % site_name,
-                body=t.render(Context(c)))
+                body=t.render(context=c))
         email.send()

@@ -1,12 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.contrib.contenttypes.models import ContentType
 from django.http import Http404, HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
@@ -84,5 +83,5 @@ def edit_categories(request, app_label, model, pk, form_class=CategoryForm, temp
         'model': model,
     }
 
-    return render_to_response(template_name, response_data,
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context=response_data)

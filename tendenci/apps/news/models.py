@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from django.db import models
+from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
@@ -8,10 +9,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
 
 from tagging.fields import TagField
+from timezone_field import TimeZoneField
+
 from tendenci.apps.base.fields import SlugField
-from timezones.fields import TimeZoneField
-from timezones.utils import localtime_for_timezone
-from timezones.utils import adjust_datetime_to_timezone
+from tendenci.apps.base.utils import adjust_datetime_to_timezone, get_timezone_choices
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -22,6 +23,13 @@ from tendenci.apps.news.module_meta import NewsMeta
 from tendenci.apps.files.models import File
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
+
+class NewsImage(File):
+    class Meta:
+        app_label = 'news'
+        manager_inheritance_from_future = True
+
+
 class News(TendenciBaseModel):
     CONTRIBUTOR_AUTHOR = 1
     CONTRIBUTOR_PUBLISHER = 2
@@ -30,7 +38,7 @@ class News(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
-    timezone = TimeZoneField(_('Time Zone'))
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField()
@@ -44,7 +52,7 @@ class News(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    thumbnail = models.ForeignKey('NewsImage', default=None, null=True,
+    thumbnail = models.ForeignKey(NewsImage, default=None, null=True,
                                   on_delete=models.SET_NULL,
                                   help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
@@ -88,9 +96,8 @@ class News(TendenciBaseModel):
         """
         return NewsMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("news.detail", [self.slug])
+        return reverse('news.detail', args=[self.slug])
 
     def __unicode__(self):
         return self.headline
@@ -130,7 +137,7 @@ class News(TendenciBaseModel):
     @property
     def category_set(self):
         items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
+        for cat in self.categories.select_related('category', 'parent'):
             if cat.category:
                 items["category"] = cat.category
             elif cat.parent:
@@ -174,10 +181,3 @@ class News(TendenciBaseModel):
             self.release_dt_local = self.release_dt + time_diff
         else:
             self.release_dt_local = self.release_dt
-
-
-class NewsImage(File):
-    pass
-
-    class Meta:
-        app_label = 'news'

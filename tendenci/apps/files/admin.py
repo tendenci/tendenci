@@ -1,14 +1,15 @@
 from django.conf import settings
-from django.conf.urls import patterns, url
-from django.contrib.contenttypes.models import ContentType
+from django.conf.urls import url
 from django.contrib import admin, messages
-from django.core.urlresolvers import reverse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
+from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.files.models import File, MultipleFile, FilesCategory
-from tendenci.apps.files.forms import FileForm, MultiFileForm, FilewithCategoryForm, FileCategoryForm
+from tendenci.apps.files.forms import MultiFileForm, FilewithCategoryForm, FileCategoryForm
 
 
 class FileAdmin(TendenciBaseModelAdmin):
@@ -49,6 +50,7 @@ class FileAdmin(TendenciBaseModelAdmin):
 
         return super(FileAdmin, self).changelist_view(request, extra_context)
 
+    @mark_safe
     def file_preview(self, obj):
         if obj.type() == "image":
             if obj.file:
@@ -62,7 +64,6 @@ class FileAdmin(TendenciBaseModelAdmin):
             return '<img alt="%s" title="%s" src="%s" />' % (obj.type(), obj.type(), obj.icon())
         else:
             return obj.type()
-    file_preview.allow_tags = True
     file_preview.short_description = _('Preview')
 
     def file_path(self, obj):
@@ -94,11 +95,11 @@ class MultipleFileAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(MultipleFileAdmin, self).get_urls()
-        extra_urls = patterns("",
+        extra_urls = [
             url("^add",
                 self.admin_site.admin_view(self.add_multiple_file_view),
                 name="multiplefile_add"),
-        )
+        ]
         return extra_urls + urls
 
     def add_multiple_file_view(self, request):
@@ -114,8 +115,9 @@ class MultipleFileAdmin(admin.ModelAdmin):
                     string = 'Successfully uploaded %s files.' % counter
                     messages.success(request, _(string) )
                 return redirect(reverse('admin:files_file_changelist'))
-        return render(request,
-            'admin/files/file/multiple_file_upload.html',{
+        return render_to_resp(request=request,
+            template_name='admin/files/file/multiple_file_upload.html',
+            context={
             'adminform': form
         })
 

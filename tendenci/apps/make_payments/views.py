@@ -1,16 +1,15 @@
-from django.template import RequestContext
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from django.utils.html import strip_entities, strip_tags
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.make_payments.forms import MakePaymentForm
 from tendenci.apps.make_payments.utils import make_payment_inv_add, make_payment_email_user
 from tendenci.apps.make_payments.models import MakePayment
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.base.utils import strip_html, tcurrency
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import get_notice_recipients
 
@@ -27,7 +26,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
         if form.is_valid():
             mp = form.save(commit=False)
             # we might need to create a user record if not exist
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 user = request.user
             else:
                 try:
@@ -35,7 +34,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 except:
                     user = request.user
 
-            if not user.is_anonymous():
+            if not user.is_anonymous:
                 mp.user = user
                 mp.creator = user
                 mp.creator_username = user.username
@@ -88,19 +87,18 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
         # check for initial comment and clean up
         comments = request.GET.get('comments','')
         if comments:
-            comments = strip_tags(comments)
-            comments = strip_entities(comments)
+            comments = strip_html(comments)
             form.fields['comments'].initial = comments
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
 
-    return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form, 'currency_symbol': currency_symbol})
 
 
 def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def view(request, id=None, template_name="make_payments/view.html"):
@@ -110,5 +108,5 @@ def view(request, id=None, template_name="make_payments/view.html"):
     EventLog.objects.log(instance=mp)
 
     mp.payment_amount = tcurrency(mp.payment_amount)
-    return render_to_response(template_name, {'mp':mp},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'mp':mp})

@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import str
 import base64
 from Crypto.Cipher import AES
 
@@ -9,23 +10,24 @@ def encrypt(value):
     """Return the encrypted value of the setting.
     Uses the character '\0' as padding.
     """
-    cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
-    value = unicode(value).encode('utf-8')
+    cipher = AES.new(settings.SITE_SETTINGS_KEY.encode('utf-8'), AES.MODE_ECB)
+    value = str(value).encode('utf-8')
     padding = cipher.block_size - len(value) % cipher.block_size
-    for i in xrange(padding):
+    for i in range(padding):
         value += '\0'
     ciphertext = cipher.encrypt(value)
     ciphertext = base64.b64encode(ciphertext) # make it database friendly
-    return ciphertext
+    return ciphertext.decode('utf-8')
 
 def decrypt(value):
     """Return the decrypted value of the setting.
     This removes the padding character '\0'
     """
-    cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
+    cipher = AES.new(settings.SITE_SETTINGS_KEY.encode('utf-8'), AES.MODE_ECB)
+    value = value.encode('utf-8')
     value = base64.b64decode(value)
     value = cipher.decrypt(value)
-    return value.replace('\0', '')
+    return value.replace(b'\0', b'').decode('utf-8')
 
 def test():
     """Check if original values and decrypted values

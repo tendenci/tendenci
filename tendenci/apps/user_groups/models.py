@@ -1,11 +1,11 @@
 import uuid
-from django.db import models, connection
+from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.db.utils import IntegrityError
-from django.core.urlresolvers import reverse
 
 from tendenci.apps.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
@@ -45,7 +45,7 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
 
-    group = models.OneToOneField(AuthGroup, null=True, default=None)
+    group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.CASCADE)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
 
@@ -61,9 +61,8 @@ class Group(TendenciBaseModel):
     def __unicode__(self):
         return self.label or self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('group.detail', [self.slug])
+        return reverse('group.detail', args=[self.slug])
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self.guid:
@@ -156,8 +155,8 @@ class GroupMembership(models.Model):
         (STATUS_INACTIVE, 'Inactive'),
     )
 
-    group = models.ForeignKey(Group)
-    member = models.ForeignKey(User, related_name='group_member')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    member = models.ForeignKey(User, related_name='group_member', on_delete=models.CASCADE)
 
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)

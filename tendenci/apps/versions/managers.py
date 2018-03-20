@@ -1,3 +1,4 @@
+from builtins import str
 import uuid
 
 from django.db.models import Manager
@@ -12,7 +13,7 @@ class VersionManager(Manager):
             version = self.model()
             changes = []
             for field in old_instance._meta.fields:
-                field = unicode(field.name)
+                field = str(field.name)
                 if "create_dt" in field or "update_dt" in field:
                     continue
 
@@ -33,7 +34,7 @@ class VersionManager(Manager):
             if changes:
                 version.content_type = ContentType.objects.get_for_model(old_instance)
                 version.object_id = old_instance.pk
-                version.object_repr = unicode(old_instance)[:50]
+                version.object_repr = str(old_instance)[:50]
                 version.user = old_instance.owner
                 version.create_dt = old_instance.update_dt
                 version.hash = str(uuid.uuid1())

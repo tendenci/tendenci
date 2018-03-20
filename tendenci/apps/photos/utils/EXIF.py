@@ -32,7 +32,7 @@
 # Returned tags will be a dictionary mapping names of EXIF tags to their
 # values in the file named by path_name.  You can process the tags
 # as you wish.  In particular, you can iterate through all the tags with:
-#     for tag in tags.keys():
+#     for tag in tags:
 #         if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename',
 #                        'EXIF MakerNote'):
 #             print("Key: %s, value %s" % (tag, tags[tag]))
@@ -101,7 +101,7 @@ def make_string(seq):
 # Special version to deal with the code in the first 8 bytes of a user comment.
 # First 8 bytes gives coding system e.g. ASCII vs. JIS vs Unicode
 def make_string_uc(seq):
-    code = seq[0:8]
+    #code = seq[0:8]
     seq = seq[8:]
     # Of course, this is only correct if ASCII, and the standard explicitly
     # allows JIS and Unicode.
@@ -1497,7 +1497,7 @@ class EXIF_header:
 
         # Some apps use MakerNote tags but do not use a format for which we
         # have a description, so just do a raw dump for these.
-        #if self.tags.has_key('Image Make'):
+        #if 'Image Make' in self.tags:
         make = self.tags['Image Make'].printable
         #else:
         #    make = ''
@@ -1752,7 +1752,7 @@ if __name__ == '__main__':
             print('No EXIF information found')
             continue
 
-        x=data.keys()
+        x = list(data.keys())
         x.sort()
         for i in x:
             if i in ('JPEGThumbnail', 'TIFFThumbnail'):

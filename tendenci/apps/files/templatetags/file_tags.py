@@ -1,3 +1,4 @@
+from builtins import str
 from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.files.models import File
@@ -115,7 +116,7 @@ def size(file, size):
         size = 'x100'
         size = '100x200/constrain'
     """
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
 
     if not isinstance(file, File):
         return u''
@@ -126,7 +127,7 @@ def size(file, size):
         size, options = size.split('/')
 
     kwargs = {
-        'id': unicode(file.pk),
+        'id': str(file.pk),
         'size': size,
     }
 

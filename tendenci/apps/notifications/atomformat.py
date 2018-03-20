@@ -30,6 +30,7 @@
 
 from xml.sax.saxutils import XMLGenerator
 from datetime import datetime
+from six.moves.urllib.parse import urlparse
 
 
 GENERATOR_TEXT = 'django-atompub'
@@ -58,7 +59,7 @@ def rfc3339_date(date):
 ## based on django.utils.feedgenerator.get_tag_uri
 def get_tag_uri(url, date):
     "Creates a TagURI. See http://diveintomark.org/archives/2004/05/28/howto-atom-id"
-    parts = urlparse.urlparse(url)
+    parts = urlparse(url)
     date_part = ""
     if date is not None:
         date_part = ",%s:" % date.strftime("%Y-%m-%d")
@@ -85,14 +86,14 @@ class Feed(object):
         except AttributeError:
             return default
         if callable(attr):
-            # Check func_code.co_argcount rather than try/excepting the
+            # Check __code__.co_argcount rather than try/excepting the
             # function and catching the TypeError, because something inside
             # the function may raise the TypeError. This technique is more
             # accurate.
-            if hasattr(attr, 'func_code'):
-                argcount = attr.func_code.co_argcount
+            if hasattr(attr, '__code__'):
+                argcount = attr.__code__.co_argcount
             else:
-                argcount = attr.__call__.func_code.co_argcount
+                argcount = attr.__call__.__code__.co_argcount
             if argcount == 2: # one argument is 'self'
                 return attr(obj)
             else:
@@ -470,7 +471,7 @@ class LegacySyndicationFeed(AtomFeed):
         subtitle = subtitle
         author_dict = {'name': author_name}
         if author_link:
-            author_dict['uri'] = author_uri
+            author_dict['uri'] = author_link
         if author_email:
             author_dict['email'] = author_email
         authors = [author_dict]
@@ -509,7 +510,7 @@ class LegacySyndicationFeed(AtomFeed):
             summary = None
         author_dict = {'name': author_name}
         if author_link:
-            author_dict['uri'] = author_uri
+            author_dict['uri'] = author_link
         if author_email:
             author_dict['email'] = author_email
         authors = [author_dict]

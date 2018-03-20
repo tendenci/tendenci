@@ -1,12 +1,15 @@
+from builtins import str
 import random
 from datetime import datetime
 from operator import or_, and_
+from functools import reduce
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.db.models import Q
 from django.template import Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -63,7 +66,7 @@ def story_expiration(obj):
     else:
         value = t % ('active', "Never Expires")
 
-    return value
+    return mark_safe(value)
 
 
 class ListStoriesNode(ListNode):
@@ -96,7 +99,7 @@ class ListStoriesNode(ListNode):
         if 'tags' in self.kwargs:
             try:
                 tags = Variable(self.kwargs['tags'])
-                tags = unicode(tags.resolve(context))
+                tags = str(tags.resolve(context))
             except:
                 tags = self.kwargs['tags']
 
@@ -140,7 +143,7 @@ class ListStoriesNode(ListNode):
         if 'group' in self.kwargs:
             try:
                 group = Variable(self.kwargs['group'])
-                group = unicode(group.resolve(context))
+                group = str(group.resolve(context))
             except:
                 group = self.kwargs['group']
 
@@ -151,7 +154,7 @@ class ListStoriesNode(ListNode):
 
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters)
-        if isinstance(user, User) and user.is_authenticated():
+        if isinstance(user, User) and user.is_authenticated:
             if not user.profile.is_superuser:
                 items = items.distinct()
 
@@ -188,9 +191,10 @@ class ListStoriesNode(ListNode):
 
         # if order is not specified it sorts by relevance
         if randomize:
-            objects = [item for item in random.sample(items, len(items))][:limit]
+            items = list(items)
+            objects = random.sample(items, min(len(items), limit))
         else:
-            objects = [item for item in items[:limit]]
+            objects = items[:limit]
 
         context[self.context_var] = objects
 

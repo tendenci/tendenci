@@ -1,8 +1,7 @@
 from __future__ import print_function
 import subprocess
 
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Q
 from django.http import HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
@@ -12,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from explorer import app_settings
 from explorer.views import change_permission
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.explorer_extensions.models import DatabaseDumpFile
@@ -55,8 +55,7 @@ def export_page(request):
         ctx['enable_form'] = True
 
     ctx['form'] = form
-    return render_to_response("explorer/export_page.html", ctx,
-                                context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name="explorer/export_page.html", context=ctx)
 
 
 @login_required

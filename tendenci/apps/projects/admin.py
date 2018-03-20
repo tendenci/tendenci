@@ -1,12 +1,10 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
-from django.utils.encoding import iri_to_uri
+from django.urls import reverse
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.projects.models import (
     Project,
     ProjectManager,
@@ -43,6 +41,7 @@ class CategoryAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    @mark_safe
     def image_preview(self, obj):
         if obj.image:
             args = [obj.image.pk]
@@ -51,7 +50,6 @@ class CategoryAdmin(admin.ModelAdmin):
             return '<img src="%s" />' % reverse('file', args=args)
         else:
             return "No image"
-    image_preview.allow_tags = True
     image_preview.short_description = 'Image'
 
     def save_model(self, request, object, form, change):
@@ -175,12 +173,13 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
         formset.save()
 
+    @mark_safe
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:projects_project_change', args=[obj.pk])
         return link
-    edit_link.allow_tags = True
     edit_link.short_description = 'edit'
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
@@ -189,7 +188,6 @@ class ProjectAdmin(TendenciBaseModelAdmin):
             link_icon,
         )
         return link
-    view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
 
     # def log_deletion(self, request, object, object_repr):
@@ -249,7 +247,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
     # def change_view(self, request, object_id, extra_context=None):
     #     result = super(ProjectAdmin, self).change_view(request, object_id, extra_context)
-    #     if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+    #     if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
     #         result['Location'] = iri_to_uri("%s") % request.GET.get('next')
     #     return result
 

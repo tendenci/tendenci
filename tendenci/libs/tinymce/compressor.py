@@ -14,7 +14,6 @@ import re
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.text import compress_string
 from django.utils.cache import patch_vary_headers, patch_response_headers
@@ -59,9 +58,9 @@ def gzip_compressor(request):
     response["Content-Type"] = "text/javascript"
 
     if not isJS:
-        response.write(render_to_string('tinymce/tiny_mce_gzip.js', {
+        response.write(render_to_string(template_name='tinymce/tiny_mce_gzip.js', context={
             'base_url': tinymce_settings.JS_BASE_URL,
-        }, context_instance=RequestContext(request)))
+        }, request=request))
         return response
 
     patch_vary_headers(response, ['Accept-Encoding'])

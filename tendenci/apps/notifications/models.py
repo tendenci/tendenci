@@ -1,21 +1,21 @@
 from __future__ import print_function
+from builtins import str
 from os.path import splitext
 import datetime
 import logging
 import uuid
 
 try:
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 except ImportError:
     import pickle
 
 from django.db import models
+from django.apps import apps
 from django.db.models.query import QuerySet
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.template import Context
+from django.urls import reverse
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.core.mail import EmailMessage
 
 from django.core.exceptions import ImproperlyConfigured
@@ -77,8 +77,8 @@ class NoticeSetting(models.Model):
     of a given type to a given medium.
     """
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     medium = models.CharField(_('medium'), max_length=1, choices=NOTICE_MEDIA)
     send = models.BooleanField(_('send'), default=False)
 
@@ -139,9 +139,9 @@ class NoticeManager(models.Manager):
 
 class Notice(models.Model):
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
     message = models.TextField(_('message'))
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     added = models.DateTimeField(_('added'), default=datetime.datetime.now)
     unseen = models.BooleanField(_('unseen'), default=True)
     archived = models.BooleanField(_('archived'), default=False)
@@ -176,8 +176,7 @@ class Notice(models.Model):
         return unseen
 
     def get_absolute_url(self):
-        return ("notification_notice", [str(self.pk)])
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse("notification_notice", args=[self.pk])
 
 
 class NoticeQueueBatch(models.Model):
@@ -198,7 +197,7 @@ class NoticeEmail(models.Model):
     sender = models.CharField(max_length=200, blank=True)
     emails = models.CharField(max_length=200, blank=True)
     bcc = models.CharField(max_length=200, blank=True)
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     reply_to = models.CharField(max_length=100, blank=True)
     from_display = models.CharField(max_length=100, blank=True)
     title = models.TextField(blank=True)
@@ -212,12 +211,11 @@ class NoticeEmail(models.Model):
     def __unicode__(self):
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('notification_email', [self.guid])
+        return reverse('notification_email', args=[self.guid])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
         super(NoticeEmail, self).save(*args, **kwargs)
 
     def resend(self):
@@ -253,7 +251,7 @@ def create_notice_type(label, display, description, default=2, verbosity=1):
     """
     Creates a new NoticeType.
 
-    This is intended to be used by other apps as a post_syncdb manangement step.
+    This is intended to be used by other apps as a post_migrate manangement step.
     """
     [notice_type] = NoticeType.objects.filter(label=label)[:1] or [None]
     if notice_type:
@@ -286,7 +284,7 @@ def get_notification_language(user):
     if getattr(settings, 'NOTIFICATION_LANGUAGE_MODULE', False):
         try:
             app_label, model_name = settings.NOTIFICATION_LANGUAGE_MODULE.split('.')
-            model = models.get_model(app_label, model_name)
+            model = apps.get_model(app_label, model_name)
             language_model = model._default_manager.get(user__id__exact=user.id)
             if hasattr(language_model, 'language'):
                 return language_model.language
@@ -315,7 +313,7 @@ def get_formatted_messages(formats, label, context):
             'notification/%s' % format
         )
 
-        template = render_to_string(list_of_templates, context_instance=context)
+        template = render_to_string(template_name=list_of_templates, context=context)
 
         if template_name == 'short':
             template = template.strip()
@@ -355,7 +353,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     notices_url = u"%s://%s%s" % (
         protocol,
-        unicode(current_site),
+        str(current_site),
         reverse("notification_notices"),
     )
 
@@ -365,43 +363,36 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         'notice.html',
     )  # TODO make formats configurable
 
+    extra_context.update({
+        "notice": ugettext(notice_type.display),
+        "notices_url": notices_url,
+        "current_site": current_site,
+    })
+
     # test for request in the extra_context
-    if 'request' in extra_context.keys():
-        context = RequestContext(extra_context['request'])
-        extra_context.update({
-            "notice": ugettext(notice_type.display),
-            "notices_url": notices_url,
-            "current_site": current_site,
-        })
-        context.update(extra_context)
-    else:
-        # update context with user specific translations
-        context = Context({
-            "notice": ugettext(notice_type.display),
-            "notices_url": notices_url,
-            "current_site": current_site,
-        })
-        context.update(extra_context)
+    request = None
+    if 'request' in extra_context:
+        request = extra_context['request']
 
     # get prerendered format messages
-    messages = get_formatted_messages(formats, label, context)
+    messages = get_formatted_messages(formats, label, extra_context)
 
     if 'admin' in label:
         subject = messages['short']
         body = messages['full']
 
     else:
+        extra_context.update({'message': mark_safe(messages['short'])})
         subject = render_to_string(
-            'notification/email_subject.txt',
-            {'message': mark_safe(messages['short'])},
-            context)
+            template_name='notification/email_subject.txt',
+            context=extra_context, request=request)
 
+        extra_context.update({'message': mark_safe(messages['full'])})
         body = render_to_string(
-            'notification/email_body.txt',
-            {'message': mark_safe(messages['full'])},
-            context)
+            template_name='notification/email_body.txt',
+            context=extra_context, request=request)
 
-    if 'reply_to' in extra_context.keys():
+    if 'reply_to' in extra_context:
         reply_to = extra_context['reply_to']
         headers['Reply-To'] = reply_to
     else:
@@ -446,7 +437,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
-    reply_to = reply_to or unicode()
+    reply_to = reply_to or str()
 
     NoticeEmail.objects.create(
         emails=to,
@@ -492,7 +483,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
 
         notices_url = u"%s://%s%s" % (
             protocol,
-            unicode(current_site),
+            str(current_site),
             reverse("notification_notices"),
         )
 
@@ -521,37 +512,30 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
                 # activate the user's language
                 activate(language)
 
+            extra_context.update({
+                "user": user,
+                "notice": ugettext(notice_type.display),
+                "notices_url": notices_url,
+                "current_site": current_site,
+            })
+
             # test for request in the extra_context
-            if 'request' in extra_context.keys():
-                context = RequestContext(extra_context['request'])
-                extra_context.update({
-                    "user": user,
-                    "notice": ugettext(notice_type.display),
-                    "notices_url": notices_url,
-                    "current_site": current_site,
-                })
-                context.update(extra_context)
+            if 'request' in extra_context:
+                request = extra_context['request']
             else:
-                # update context with user specific translations
-                context = Context({
-                    "user": user,
-                    "notice": ugettext(notice_type.display),
-                    "notices_url": notices_url,
-                    "current_site": current_site,
-                })
-                context.update(extra_context)
+                request = None
 
             # get prerendered format messages
-            messages = get_formatted_messages(formats, label, context)
+            messages = get_formatted_messages(formats, label, extra_context)
 
             # Strip newlines from subject
-            subject = ''.join(render_to_string('notification/email_subject.txt', {
-                'message': messages['short'][0],
-            }, context).splitlines())
+            extra_context.update({'message': mark_safe(messages['short'])})
+            subject = ''.join(render_to_string(template_name='notification/email_subject.txt',
+                context=extra_context, request=request).splitlines())
 
-            body = render_to_string('notification/email_body.txt', {
-                'message': messages['full'][0],
-            }, context)
+            extra_context.update({'message': mark_safe(messages['full'])})
+            body = render_to_string(template_name='notification/email_body.txt',
+                context=extra_context, request=request)
 
             Notice.objects.create(user=user,
                                   message=messages['notice'][0],
@@ -633,13 +617,13 @@ class ObservedItemManager(models.Manager):
 
 class ObservedItem(models.Model):
 
-    user = models.ForeignKey(User, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'), on_delete=models.CASCADE)
 
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     observed_object = GenericForeignKey('content_type', 'object_id')
 
-    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
 
     added = models.DateTimeField(_('added'), default=datetime.datetime.now)
 
@@ -694,7 +678,7 @@ def is_observing(observed, observer, signal='post_save'):
     if isinstance(observer, AnonymousUser):
         return False
     try:
-        observed_items = ObservedItem.objects.get_for(observed, observer, signal)
+        ObservedItem.objects.get_for(observed, observer, signal)
         return True
     except ObservedItem.DoesNotExist:
         return False

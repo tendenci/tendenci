@@ -17,14 +17,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "Videos",
+        "default_value": "Video",
         "description": "The singular name of the plugin.",
         "data_type": "string",
         "update_dt": "2010-08-12 17:19:12",
         "input_type": "text",
         "client_editable": true,
         "name": "label",
-        "value": "Videos",
+        "value": "Video",
         "label": "Label",
         "input_value": " ",
         "parent_id": 0,

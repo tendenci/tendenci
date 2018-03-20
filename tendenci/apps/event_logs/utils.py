@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 from django.conf import settings
 
 app_exclude_list = [
@@ -73,7 +73,7 @@ def day_bars(data, year, month, height, color_func=None):
 
     if color_func:
         color_func(data)
-    result = SortedDict([(d, []) for d in month_days(year, month)])
+    result = OrderedDict([(d, []) for d in month_days(year, month)])
     for item in data:
         result[item['day']].append(item)
     try:

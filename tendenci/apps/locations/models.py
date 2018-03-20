@@ -1,5 +1,8 @@
+from builtins import str
 import uuid
+
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -9,7 +12,7 @@ from tendenci.apps.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.locations.managers import LocationManager
-from tendenci.apps.locations.utils import get_coordinates
+from tendenci.apps.locations.utils import get_coordinates, distance_api
 from tendenci.apps.files.models import File
 
 
@@ -52,9 +55,8 @@ class Location(TendenciBaseModel):
     def __unicode__(self):
         return self.location_name
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("location", [self.slug])
+        return reverse('location', args=[self.slug])
 
     def get_address(self):
         return "%s %s %s, %s %s" % (
@@ -64,17 +66,6 @@ class Location(TendenciBaseModel):
             self.state,
             self.zipcode
         )
-
-    def distance_api(self, **kwargs):
-        import simplejson, urllib
-        DISTANCE_BASE_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
-        kwargs.update({
-            'origins':kwargs.get('origin',''),
-            'destinations':self.get_address(),
-            'sensor':'false',
-            })
-        url = '%s?%s' % (DISTANCE_BASE_URL, urllib.urlencode(kwargs))
-        return simplejson.load(urllib.urlopen(url))
 
     def get_distance(self, **kwargs):
         """
@@ -97,7 +88,6 @@ class Location(TendenciBaseModel):
         Distance in kilometers multiply by 6373
         """
         import math
-        from time import clock, time
 
         # if we don't have latitude or longitude
         # we return a none type object instead of int
@@ -128,7 +118,7 @@ class Location(TendenciBaseModel):
         return arc * 3960
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         # update latitude and longitude
         if not all((self.latitude, self.longitude)):
@@ -154,7 +144,7 @@ class Location(TendenciBaseModel):
 
 class LocationImport(models.Model):
 
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -171,7 +161,7 @@ class LocationImport(models.Model):
 class Distance(models.Model):
     """Holds distance information between zip codes and locations"""
     zip_code = models.CharField(max_length=7)
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     distance = models.PositiveSmallIntegerField()
 
     class Meta:

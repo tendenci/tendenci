@@ -2,16 +2,13 @@
 Views which allow users to create and activate accounts.
 
 """
-
-
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ImproperlyConfigured
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -20,6 +17,7 @@ try:
     from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
+
 
 def activate(request, activation_key,
              template_name='registration/activate.html',
@@ -76,7 +74,7 @@ def activate(request, activation_key,
             'password': '',
             'user': account
         }
-        user = authenticate(**credentials)
+        user = authenticate(request, **credentials)
         login(request, user)
 
         # send notification to administrators
@@ -89,20 +87,18 @@ def activate(request, activation_key,
                 }
                 notification.send_emails(recipients,'user_added', extra_context)
 
-    if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-
     next_url = request.GET.get('next', '')
     if account and next_url:
         return HttpResponseRedirect(next_url)
 
-    return render_to_response(template_name,
-                              { 'account': account,
-                                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },
-                              context_instance=context)
+    if extra_context is None:
+        context = {}
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['account'] = account
+    context['expiration_days'] = settings.ACCOUNT_ACTIVATION_DAYS
+
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)
 
 
 def register(request, success_url=None,
@@ -177,7 +173,7 @@ def register(request, success_url=None,
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
-            new_user = form.save(profile_callback=profile_callback)
+            form.save(profile_callback=profile_callback)
             # success_url needs to be dynamically generated here; setting a
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which
@@ -187,10 +183,8 @@ def register(request, success_url=None,
         form = form_class()
 
     if extra_context is None:
-        extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-    return render_to_response(template_name,
-                              { 'form': form },
-                              context_instance=context)
+        context = {}
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['form'] = form
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)

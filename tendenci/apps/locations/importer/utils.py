@@ -3,7 +3,6 @@ import os
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 
-from tendenci.apps.locations.models import Location
 from tendenci.apps.locations.utils import csv_to_dict, has_null_byte
 
 

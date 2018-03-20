@@ -24,7 +24,7 @@
                 <td class="forum-name {% if forum.unread %} forum-unread{% endif %}">
                     <div class="state-indicator"></div>
                     <div>
-                    	<a href="{{ forum.get_absolute_url }}">{{ forum.name }}</a> {% if forum.hidden %}[{% trans "Hidden" %}]{% endif %}
+                        <a href="{{ forum.get_absolute_url }}">{{ forum.name }}</a> {% if forum.hidden %}[{% trans "Hidden" %}]{% endif %}
                     </div>
                 </td>
                 <td class="forum-topic-count">

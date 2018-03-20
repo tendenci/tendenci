@@ -1,4 +1,3 @@
-from django import forms
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.api_tasty.forms import TendenciForm
 

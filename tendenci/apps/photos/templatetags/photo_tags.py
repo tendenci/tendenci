@@ -1,3 +1,4 @@
+from builtins import str
 import re
 
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
@@ -16,7 +17,7 @@ class PrintExifNode(Node):
 
     def render(self, context):
         try:
-            exif = unicode(self.exif.resolve(context, True))
+            exif = str(self.exif.resolve(context, True))
         except VariableDoesNotExist:
             exif = u''
 

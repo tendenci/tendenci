@@ -1,7 +1,6 @@
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
-
 from . import views
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^image-preview/(?P<app_label>\w+)/(?P<model>\w+)/(?P<id>\d+)/(?P<size>(\d+|\d+x\d+))/$', views.image_preview, name="image_preview"),

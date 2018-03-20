@@ -26,7 +26,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core import management
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 
 from tendenci.apps.registration import forms

@@ -1,10 +1,10 @@
+from builtins import str
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,7 +16,7 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (get_notice_recipients, has_perm,
     update_perms_and_save, get_query_filters)
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.news.models import News
@@ -42,7 +42,7 @@ def detail(request, slug=None, template_name="news/view.html"):
 
     #check for release date if it's in the future or not
     if not news.is_released:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise Http404
 
         if not request.user.profile.is_superuser:
@@ -50,8 +50,8 @@ def detail(request, slug=None, template_name="news/view.html"):
 
     EventLog.objects.log(instance=news)
 
-    return render_to_response(template_name, {'news': news},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'news': news})
 
 
 @is_enabled('news')
@@ -91,11 +91,11 @@ def search(request, release_year=None, template_name="news/search.html"):
             raise Http404
         news = news.filter(release_dt_local__year=release_year)
 
-    return render_to_response(template_name, {'search_news': news,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'search_news': news,
                                               'form': form,
                                               'release_year': release_year,
-                                              'release_years_list': release_years_list},
-        context_instance=RequestContext(request))
+                                              'release_years_list': release_years_list})
 
 
 def search_redirect(request):
@@ -111,8 +111,8 @@ def print_view(request, slug, template_name="news/print-view.html"):
 
     EventLog.objects.log(instance=news)
 
-    return render_to_response(template_name, {'news': news},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'news': news})
 
 
 @is_enabled('news')
@@ -148,13 +148,13 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             if thumbnail:
                 thumbnail.status_detail = news.status_detail
                 thumbnail.save()
-            msg_string = 'Successfully updated %s' % unicode(news)
+            msg_string = 'Successfully updated %s' % str(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
 
-    return render_to_response(template_name, {'news': news, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'news': news, 'form': form})
 
 
 @is_enabled('news')
@@ -178,15 +178,15 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         if form.is_valid():
             news.meta = form.save()  # save meta
             news.save()  # save relationship
-            msg_string = 'Successfully updated meta for %s' % unicode(news)
+            msg_string = 'Successfully updated meta for %s' % str(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
     else:
         form = form_class(instance=news.meta)
 
-    return render_to_response(template_name, {'news': news, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'news': news, 'form': form})
 
 
 @is_enabled('news')
@@ -211,7 +211,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
                 news.save(photo=photo)
                 assign_files_perms(news, files=[news.thumbnail])
 
-            msg_string = 'Successfully added %s' % unicode(news)
+            msg_string = 'Successfully added %s' % str(news)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
@@ -228,8 +228,8 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 @is_enabled('news')
@@ -242,7 +242,7 @@ def delete(request, id, template_name="news/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        msg_string = 'Successfully deleted %s' % unicode(news)
+        msg_string = 'Successfully deleted %s' % str(news)
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         # send notification to administrators
@@ -258,8 +258,8 @@ def delete(request, id, template_name="news/delete.html"):
         news.delete()
         return HttpResponseRedirect(reverse('news.search'))
 
-    return render_to_response(template_name, {'news': news},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'news': news})
 
 
 @is_enabled('news')
@@ -300,5 +300,5 @@ def export(request, template_name="news/export.html"):
         export_id = run_export_task('news', 'news', fields)
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

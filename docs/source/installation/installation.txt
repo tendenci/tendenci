@@ -1,174 +1,65 @@
-Tendenci can be installed in two ways. The first is a quick and easy setup for
-development and basic testing, the second is a more scalable aproach for live
-deployments where the heavy lifting is done by services other than the Django
-built in web server.
-
-Since the second category is effectively an extension of the first both sets of
-instructions are presented below.
-
-These instructions create a Tendenci site on an Ubuntu server (14.04 is recommended).
-
-Testing Installation
-====================
-
-You can use the following installation instructions to install a local Tendenci site on Ubuntu (deb).
-This Django project is intended to help create a Tendenci site that you can deploy on a public hosting,
-but it's recommended that you install locally first in order to test your themes and designs.
-
-If working on a Mac or PC, or even Ubuntu, we strongly recommend using VMWare Fusion, or at least
-VirtualBox at a minimum to test different configurations. (Hint: VMWare handles bridge IPs much better
-than VirtualBox which matters if you travel a lot and bounce between networks like us.)
+The setup process is broken into three sections.  The first section covers required setup needed in
+all cases.  The second section covers optional additional setup for development purposes.  The third
+section covers recommended but optional setup to prepare for running a live site.
 
 
-System requirements
+Basic Setup
+===========
+
+If you are new to Tendenci, we recommend you setup a copy on your local system before attempting to
+install on public hosting.  This will allow you to experiment with the setup process, with Tendenci
+itself, with your site design/layout, and with themes before building a real site.  We strongly
+recommend installing Tendenci within a virtual machine (using VMWare Fusion, VirtualBox, or any
+other virtual machine manager), which will enable you to install/run Ubuntu within your existing OS,
+and will also make it easy to setup/test/discard multiple copies/configurations of Tendenci.
+
+
+System Requirements
 -------------------
 
-The following are recommended system specifications for a server that will run a test tendenci install.
+These instructions cover the installation of Tendenci on a system running Ubuntu 18.04.
+
+It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
+and some partial instructions for installing on OSX are included below.  However, we generally
+recommend installing Tendenci on Ubuntu, and this process has only been thoroughly tested and
+documented on Ubuntu.
+
+For testing purposes, we recommend using a virtual machine with at least:
+
+* 2 CPU cores
+* 2GB of RAM
+* 6GB of storage
+
+If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU core, 1GB of RAM, and
+3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
-* 1 CPU core for every 2 django workers
-* 2GB of RAM (Relying on swap will hurt performance)
-* 3GB of storage
+System Preparation
+------------------
 
-These values are minimums and its recommended you use at least double the
-minimum CPU cores and storage.
-
-
-System update
--------------
-
-Before installing it is recommended you update your system to ensure you have
-the latest packages. For Ubuntu this is done by
-
+Make sure Ubuntu is up to date before beginning:
 ::
 
     sudo apt-get update
     sudo apt-get dist-upgrade
 
-
-Required Dependencies
----------------------
-You'll need those packages installed on Ubuntu.
-::
-
-    sudo apt-get install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
-
-
-You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
-::
-
-    sudo apt-get install git
-
-To configure your system to automatically install security updates, run the following commands.
+Also ensure that Ubuntu is configured to automatically install security updates:
 ::
 
     sudo apt-get install unattended-upgrades update-notifier-common
     sudo dpkg-reconfigure -plow unattended-upgrades
 
-Note: Say 'Yes' when it asks about security updates. Without security we have nothing.
-
-Pip Install
------------
-Depending on your version of python `pip <http://www.pip-installer.org/>`_ is
-installed differently. If your system is python 2.7.9 or later pip can be
-installed with:
+Install the required system dependencies:
 ::
 
-    sudo apt-get install python-pip
+    sudo apt-get install python3-virtualenv
+    sudo apt-get install build-essential python3-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+    sudo apt-get install curl wget
 
+System Preparation on OS X
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If your system is pre Python 2.7.9 you will need to install pip from the Internet.
-The following command will download and install pip and its dependencies for you.
-::
-
-    wget https://bootstrap.pypa.io/get-pip.py -O - | sudo python
-
-
-Virtualenv install
-------------------
-
-Once pip is installed you can continue to install
-`virtualenv <http://www.virtualenv.org/>`_:
-::
-
-    sudo pip install virtualenv
-
-OS X specific
--------------
-
-This section includes the entire install process for Mac OS X.  Once you have installed Virtualenv, create a virtualenv inside your project top folder. You can name your virtualenv whatever you like, in this example, we used "venv."
-::
-
-    virtualenv -p venv
-
-Note: If you have anaconda installed on your machine, you would have to specify the path where the version of python is that you would like to use.
-::
-
-    virtualenv -p /Library/Frameworks/Python.framework/Versions/2.7/bin/python2 venv
-
-To activate the Virtualenv
-::
-
-    source venv/bin/activate
-
-Note: When you're ready to get out of the Virtualenv simply use the command:
-::
-
-    deactivate
-
-Once inside your VirtualEnv, install Tendenci with PyPy by using the pip command below (you can learn more about PyPy packages at: http://packages.pypy.org/ :
-::
-
-    pip install tendenci
-
-Noted in a separate section of the docs, you can get setup quickly with the Postgres App.  We strongly recommend checking out their documentation for help.  For documentation on their App check out: https://postgresapp.com/.
-
-You can "enter" Postgres with the command line
-::
-
-    psql
-
-One in Postgres, add a project, user, and password
-::
-
-    CREATE DATABASE myproject;
-    CREATE USER myprojectuser WITH PASSWORD 'password';
-
-    ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
-    ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
-    ALTER ROLE myprojectuser SET timezone TO 'UTC';
-    GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
-
-To exit:
-::
-\q
-
-You can also alter your database entirely from the command line using these commmands:
-::
-
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
-
-Or this
-::
-
-    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
-
-Next, to start your Tendenci project
-::
-
-    sudo django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip    myproject
-    cd myproject
-    sudo pip install -r requirements/dev.txt
-
-    cd ..
-
-Change to your top-level directory where "myproject" and "venv" are.  In order for images to correctly render, you will need to install the jpeg libraries with the commands below
+In order for images to correctly render, you will need to install the jpeg libraries:
 ::
 
     curl -O http://www.ijg.org/files/jpegsrc.v9.tar.gz
@@ -185,115 +76,32 @@ To remove the files
     rm -r jpeg-9
     rm jpegsrc.v9.tar.gz
 
+On Mac OS X 10.7 or higher you will also need Xcode 4.4.1 or higher (in the app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
 
-On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
 
-Next, configure your database in local_settings.py
+Database Preparation
+--------------------
+
+Tendenci is designed for use with PostgreSQL.
+
+It may be technically possible to use Tendenci with other databases, but Tendenci has only been
+tested with PostgreSQL and is not expected to work with other databases without some significant
+development effort.
+
+Install PostgreSQL and some required modules:
 ::
 
-    cd myprojectfolder/conf
-    sudo nano local_settings.py
+    sudo apt-get install --no-install-recommends postgresql postgresql-contrib postgis
 
-Set up the following:
-::
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'myproject',
-            'USER': 'myprojectuser',
-            'PASSWORD': 'password',
-            'HOST': 'localhost',
-            'PORT': '',
-        }
-    }
-
-Then migrate and deploy your project
-::
-
-    python manage.py migrate
-    python deploy.py
-    python manage.py runserver
-
-And finally load the default
-::
-
-    python manage.py load_creative_defaults
-    chmod -R -x+X media
-
-Then create a superuser to login!
-::
-
-    python manage.py createsuperuser
-    python manage.py runserver
-
-To exit the server
-::
-
-    ^C
-
-To add the tendenci code base to your local machine, pull down forked version to be able to submit pull requests on github.  Add above project folder, go to python packages and delete the tendenci folder then generate a symlink to the github repo
-
-Here's how to delete the current tendenci folder
-::
-
-    cd /Users/myusername/myprojectname/venv/lib/python2.7/site-packages
-    rm -rf tendenci
-
-To create a symlink, then
-::
-
-    ln -s /Users/myusername/myprojectname/code/tendenci/tendenci .
-
-
-
-Setting up the database
------------------------
-
-Tendenci is designed for use with PostgreSQL. You will need to have a
-PostgreSQL server you can connect your tendenci install too. Instructions are
-provided for OSX and Ubuntu below or for more on installing PostgreSQL for
-Django check the docs at
-https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes.
-
-OS X
-~~~~
-
-If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
-
-With Postgres installed, you can create a database from Terminal (replace ``<DB_NAME>`` with your database name):
-::
-
-    DB_NAME=<DB_NAME>
-    psql -h localhost -c "CREATE DATABASE $DB_NAME"
-    psql -h localhost -d $DB_NAME -c "CREATE EXTENSION postgis;"
-
-You can also create a database in your GUI of choice (recommended: `PGAdmin <http://www.pgadmin.org/>`_).
-
-Ubuntu
-~~~~~~
-
-Install postgres and required packages:
-
-On Ubuntu 14.04
-::
-
-    sudo apt-get install postgresql postgresql-contrib-9.3 postgresql-9.3-postgis-2.1
-
-
-On Ubuntu 16.04
-::
-
-    sudo apt-get install postgresql postgresql-contrib postgis
-
-
-Create the database and a new postgres user with the following commands (replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user and password):
+Create a database and user for Tendenci in PostgreSQL (Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user name, and password):
 ::
 
     DB_USER=<DB_USER>
     DB_PASS=<DB_PASS>
     DB_NAME=<DB_NAME>
     sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
     sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
     sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
@@ -301,188 +109,274 @@ Create the database and a new postgres user with the following commands (replace
     sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
     sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
 
+Database Preparation on OS X
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Creating a Virtualenv
+To install PostgreSQL on OSX, we recommend using `Postgres.app <http://postgresapp.com/>`_
+
+If you would like a database GUI, we recommend `PGAdmin <http://www.pgadmin.org/>`_
+
+The commands shown above for creating the database and user on Ubuntu should also work on OS X.
+
+
+Virtualenv Preparation
+----------------------
+
+Virtualenv enables a complete Python environment to be stored within a single directory, which helps
+keep the system clean, and makes it easy to run multiple versions of Python, Python libraries, or
+Tendenci within a single VM or server.  While not strictly required, we recommend using virtualenv
+with Tendenci.
+
+Prepare a virtualenv for Tendenci:
+::
+
+    sudo mkdir /srv
+    sudo chown "$(id -u -n)" /srv/
+    cd /srv/
+    python3 -m virtualenv tendenci
+    sudo chown root:root /srv/
+
+To use the virtualenv, you must "activate" it:
+::
+
+    source /srv/tendenci/bin/activate
+
+You can "deactivate" the virtualenv using:
+::
+
+    deactivate
+
+Activating the virtualenv adjusts your ``$PATH`` so that running ``python``, ``pip``, or other
+commands will run the versions in the virtualenv instead of the versions installed in the base
+system.
+
+The ``pip`` in the virtualenv automatically installs Python libraries into the virtualenv without
+modifying the base system.  The ``python`` in the virtualenv automatically uses the Python libraries
+within the virtualenv instead of any system-level libraries.
+
+Note that you must "activate" the virtualenv every time you open a new terminal or SSH session.  If
+your command prompt does not begin with ``(tendenci)``, then you have not activated the
+virtualenv, and any ``python`` or ``pip`` commands you run will use the system versions of those
+commands instead of the virtualenv versions, which may have unexpected results.
+
+Virtualenv on OS X
+~~~~~~~~~~~~~~~~~~
+
+To prepare a virtualenv for Tendenci:
+::
+
+    virtualenv -p venv
+
+If you have anaconda installed on your machine, you must specify the path to the version of Python that you would like to use:
+::
+
+    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 venv
+
+The commands shown above for activating/deactivating the virtualenv on Ubuntu should also work on
+OS X.
+
+
+Tendenci Installation
 ---------------------
 
-It's best practice to make a virtual environment for your site. Make a folder to hold your virtual environment and cd into it. This can go anywhere but avoid /var/www or anywhere inside your tendenci site directory.
+If you have not already activated your virtualenv, make sure you do so before continuing:
 ::
 
-    sudo mkdir /srv/tendenci/
-    cd /srv/tendenci/
+    source /srv/tendenci/bin/activate
 
-Make a virtual environment called 'venv' and activate it.
+Install Django:
 ::
 
-    sudo virtualenv venv
-    source venv/bin/activate
+    pip install "Django>=1.11,<2.0"
 
-
-Creating a new tendenci project
--------------------------------
-
-Make sure Django 1.8 is installed in your environment (sudo is not required if run in a virtualenv).
+Create a new Django project based on the Tendenci template:
 ::
 
-    sudo pip install "Django>=1.8,<1.9"
+    sudo chown "$(id -u -n)" /var/www/
+    cd /var/www/
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
+    sudo chown root:root /var/www/
 
+The above step will download around 70MB of data, so it may take some time to complete.
 
-In your environment, start a new tendenci project with the template (replace ``<project_name>`` with your project name)
-This download and install step will take some time and download around 70MB of packages.
+Set up some directories appropriately:
 ::
 
-    cd /var/www
-   sudo django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip <project_name>
+    chmod -Rh -x+X /var/www/tendenci/media/
+    mkdir /var/www/tendenci/index.whoosh
+    sudo mkdir /var/log/tendenci
+    sudo chown "$(id -u -n)" /var/log/tendenci/
 
-
-Installing the requirements
----------------------------
-
-Install the requirements with the following commands (do not use sudo if run in a virtualenv).
+Install Tendenci and its dependencies:
 ::
 
-    cd <project_name>
-    sudo pip install -r requirements/dev.txt
-
-.. Note::
-
-    Make sure you remove "sudo" when installing in your virtualenv. Otherwise, the requirements will be installed in your system.
-
-Next update the ``conf/local_settings.py`` file in the site folder (``/var/www/<project_name>``). Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` for the setting ``DATABASE`` with the newly created database name, user and password.
-
-Update your database name, database user and database password for the `DATABASES` setting in the ``conf/local_settings.py``.
+    cd /var/www/tendenci/
+    pip install -r requirements/dev.txt
 
 
-Setting up SECRET_KEY and SITE_SETTINGS_KEY
--------------------------------------------
+Tendenci Configuration
+----------------------
 
-``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` are random strings 32 characters in length. You can update them manually in ``conf/local_settings.py`` or automatically update them with the following script.
+Edit ``/var/www/tendenci/conf/local_settings.py``
+
+For testing, set ``DEBUG = True``
+
+Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to random strings 50 characters in length.  To
+change them automatically:
 ::
 
-    cd /var/www/<project_name>/
+    cd /var/www/tendenci/
     curl https://gist.githubusercontent.com/jennyq/45de71a93cff774c593d/raw/30ede14eb133de66cc839cc0458a1e915368534e/setup_keys.sh | bash
 
+For public sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
+sufficient.
 
-Setting up the site
--------------------
+In the ``DATABASES`` block, replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with the values
+you used when configuring the database.
 
-Now, use the deploy script to create the database tables and static media.
+Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci.  If you want to
+use a different time zone for Tendenci, you should configure PostgreSQL to match that time zone for
+connections from Tendenci:
+::
+
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET timezone TO 'US/Eastern';"
+
+
+Tendenci Preparation
+--------------------
+
+Initialize the database and static media:
+::
+
+    cd /var/www/tendenci/
+    python manage.py migrate
+    python deploy.py
+    python manage.py load_creative_defaults
+
+Set the "Site URL" setting appropriately:
+::
+
+    python manage.py set_setting site global siteurl 'https://www.example.com'
+
+Create an administrator login in Tendenci:
+::
+
+    python manage.py createsuperuser
+
+To change the theme (optional):
+::
+
+    python manage.py set_theme <theme name>
+
+
+Testing
+-------
+
+Start Tendenci:
+::
+
+    source /srv/tendenci/bin/activate
+    cd /var/www/tendenci/
+    python manage.py runserver
+
+Then open ``http://localhost:8000/`` in your browser to see your Tendenci site!
+
+Hit ``CTRL-C`` to exit from ``python manage.py runserver``
+
+
+Development Setup
+=================
+
+This section is optional and is only relevant if you plan to make changes to Tendenci itself.
+
+Install and configure git (replace the name and email with appropriate values):
+::
+
+    sudo apt-get install git
+    git config --global user.name "John Doe"
+    git config --global user.email "john.doe@example.com"
+
+Clone the Tendenci repository:
+::
+
+    cd /srv/
+    git clone https://github.com/tendenci/tendenci.git tendenci-git
+
+Edit ``/var/www/tendenci/requirements/tendenci.txt`` and comment out ``tendenci>=8,<9``
+
+Edit ``/var/www/tendenci/requirements/common.txt`` and add:
+::
+
+    -e /srv/tendenci-git/
+
+Run ``pip install`` again:
+::
+
+    source /srv/tendenci/bin/activate
+    cd /var/www/tendenci/
+    pip install -r requirements/dev.txt
+
+Apply any database and static media updates that are in the development version of Tendenci but are
+not yet in the released version of Tendenci:
 ::
 
     python manage.py migrate
     python deploy.py
 
-Load some defaults to ensure proper functioning
+You can now edit files under /srv/tendenci-git/ and/or run ``git pull`` to retrieve the latest
+changes from GitHub.  Any python code changes will automatically be picked up when you restart the
+server.  However, in order to pick up changes to static files under /srv/tendenci-git/, you must
+run:
 ::
 
-    python manage.py load_creative_defaults
+    source /srv/tendenci/bin/activate
+    cd /var/www/tendenci/
+    python deploy.py
 
 
+Live Site Setup
+===============
 
-Make sure the execute permission is removed from the media/ directory
+This section covers additional recommended setup to prepare for running a live site.
+
+You may want to check the
+`Django documentation <https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes>`_
+and
+`PostgreSQL documentation <https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server>`_
+for database configuration/tuning suggestions.
+
+
+Additional Installation
+-----------------------
+
+Install additional system dependencies:
 ::
 
-	chmod -R -x+X media
+    sudo apt-get install nginx memcached libmemcached-dev pylibmc
 
-To create an adminstrator login, run the following command and fill in the prompts:
+Install additional Python dependencies:
 ::
 
-    python manage.py createsuperuser
+    source /srv/tendenci/bin/activate
+    cd /var/www/tendenci/
+    pip install -r requirements/prod.txt
 
-Finally, we can use the runserver command so that we can view the site in our browser:
+
+SystemD Setup
+-------------
+
+When using the SystemD configuration below, Tendenci will run as the ``www-data`` user.  To ensure
+that Tendenci has appropriate permissions when running as ``www-data``:
 ::
 
-    python manage.py runserver
+    sudo chgrp -Rh www-data /var/www/tendenci/
+    sudo chmod -Rh g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    sudo chown -Rh www-data:adm /var/log/tendenci/
+    sudo chmod -Rh 750 /var/log/tendenci/
 
-Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
-
-
-Theming Options
-----------------
-
-**Optional:** If you want to use a different theme, you can set that theme with the following command, replacing `my-theme-name` with the name of your theme:
-::
-
-    python manage.py set_theme my-theme-name
-
-
-Scalable Installation
-=====================
-
-With a working test setup you can upgrade it to a fully functional, scalable install.
-
-All of the commands below should be run on the command line after you are
-connected to the server and build on the work done in the previous sections.
-
-Extra packages
----------------
-
-You can install all of the necessary Ubuntu packages with the following commands:
-::
-
-    sudo apt-get install openssh-server memcached libmemcached-dev nginx
-
-This will install openssh-server to allow remote connections to the server
-along with memcache (a caching system) and nginx the web server.
-
-Permissions
------------
-To change Tendenci to run as www-data (dropping root priviledges and increasing security) change permissions on the data directory (the Upstart and Systemd configuration provided below already runs tendenci as www-data)
-
-::
-
-    sudo chown -R www-data: /var/www/<project_name>
-
-
-Setting up Upstart
-------------------
-
-On Ubuntu, the Upstart functionality can be used to add the site as a service.
-
-First, create a file at the path ``/etc/init/tendenci.conf``.
-::
-
-    cd /etc/init/
-    sudo touch tendenci.conf
-
-The contents of that file should match the example below:
-::
-
-    description "Tendenci Upstart Script"
-    start on runlevel [2345]
-    stop on runlevel [06]
-    respawn
-    respawn limit 10 5
-    setuid www-data
-    setgid www-data
-    script
-        cd /var/www/<project_name>
-        # if use virtualenv, uncomment the next line and replace <path-to-virtualenv> with your virtualenv path
-        #. /<path-to-virtualenv>/bin/activate
-        exec /srv/tendenci/venv/bin/gunicorn -w 2 -b 127.0.0.1:8000 conf.wsgi --max-requests 350
-    end script
-
-You will need to replace the ``/var/www/<project_name>`` with the location of the site.
-
-To start this service, use the following command:
-::
-
-    sudo service tendenci start
-
-If any changes in the future are made to the file ``conf/local_settings.py``, the service should be restarted with this command:
-::
-
-    sudo service tendenci restart
-
-Setting up SystemD
-------------------
-
-On most distributions (Including recent Ubuntu systems) Systemd is the default
-init system.
-
-Systemd Unit files should be created in /etc/systemd/system/ with a name of
-your choice (eg tendenci-test.service ). The contents of your unit file should
-look like this
+SystemD Unit files should be created in ``/etc/systemd/system/`` with a name of
+your choice (eg ``tendenci.service``). The contents of your unit file should
+look like this:
 ::
 
     [Unit]
@@ -493,54 +387,76 @@ look like this
     After=postgresql.service
 
     [Service]
-    WorkingDirectory=/var/www/<project_name>
-    PIDFile=/run/<project_name>.pid
+    WorkingDirectory=/var/www/tendenci
+    PIDFile=/run/tendenci.pid
     Type=forking
     KillMode=process
     Restart=on-failure
-    ExecStart=/srv/tendenci/venv/bin/gunicorn              \
-              --group www-data                             \
-              --user www-data                              \
-              --workers 4                                  \
-              --bind=127.0.0.1:8000                        \
-              --pid=/run/<project_name>.pid                \
-              --pythonpath=/var/www/<project_name>         \
-              --error-logfile=/var/log/<project_name>.error \
-              --daemon                                     \
+    ExecStart=/srv/tendenci/bin/gunicorn                    \
+              --user www-data                               \
+              --group www-data                              \
+              --workers 4                                   \
+              --bind=127.0.0.1:8000                         \
+              --pid=/run/tendenci.pid                       \
+              --pythonpath=/var/www/tendenci                \
+              --access-logfile=/var/log/tendenci/access.log \
+              --error-logfile=/var/log/tendenci/server.log  \
+              --capture-output                              \
+              --daemon                                      \
              conf.wsgi
 
     [Install]
     WantedBy=multi-user.target
 
-To start the service run
-
+To start the service manually run:
 ::
 
     systemctl start tendenci-test
 
-and to enable it so it starts on boot use
-
+To start the service automatically on boot:
 ::
 
     systemctl enable tendenci-test
 
-Setting up nginx
-----------------
 
-First, make an nginx configuration file for the site. This will be created at ``/etc/nginx/sites-available/<project_name>`` and should match the example below:
+logrotate Setup
+---------------
+
+Create ``/etc/logrotate.d/tendenci`` containing:
+::
+
+    /var/log/tendenci/*.log {
+      daily
+      minsize 100k
+      missingok
+      rotate 14
+      compress
+      create 0640 www-data adm
+      sharedscripts
+      postrotate
+        service tendenci restart
+      endscript
+    }
+
+
+NGINX Setup
+-----------
+
+First, make an NGINX configuration file for the site. This will be created at
+``/etc/nginx/sites-available/tendenci`` and should look like this:
 ::
 
     server {
         listen 80;
         server_name localhost;
 
-        charset   utf-8;
-        keepalive_timeout  65;
-        client_max_body_size  30M;
+        charset utf-8;
+        keepalive_timeout 65;
+        client_max_body_size 30M;
         gzip_types text/css application/javascript text/javascript text/plain text/xml application/xml;
         gzip_vary on;
 
-        root /var/www/<project_name>/;
+        root /var/www/tendenci/;
 
         location /static/ {
             access_log off;
@@ -568,80 +484,79 @@ First, make an nginx configuration file for the site. This will be created at ``
         }
     }
 
-Again, replace ``/var/www/<project_name>/`` with the real path. If you have a domain name like ``example.com`` pointed at the server, add it to the ``server_name`` line in the place of ``localhost``.
+Be sure to update the ``server_name`` domain name and ``root`` path appropriately.
 
-Next, create a symlink to the new file at ``/etc/nginx/sites-enabled/<project_name>`` with this command:
+Next, create a symlink to the new file and remove the default symlink:
 ::
 
-    ln -s /etc/nginx/sites-available/<project_name> /etc/nginx/sites-enabled/<project_name>
-
-Remove the default record from the sites-enabled with this command:
-::
-
+    ln -s /etc/nginx/sites-available/tendenci /etc/nginx/sites-enabled/tendenci
     rm /etc/nginx/sites-enabled/default
 
-Finally, restart the nginx service:
+Finally, restart the NGINX service:
 ::
 
     sudo service nginx restart
 
 
-Setup Mail
-----------
+EMail Setup
+-----------
 
-For a mail server, install postfix. This package has 3 steps that you must respond to in order to complete the installation. If the server is alreadly configured with a domain name, enter that domain in the prompts. Otherwise, leave the defaults in place. To install the package, run this command:
+For a mail server, install postfix:
 ::
 
     apt-get install postfix
 
+During installation, you will see 3 prompts which you must respond to in order to complete the
+installation. If the server is already configured with a domain name, enter that domain in the
+prompts. Otherwise, leave the defaults in place.
 
-Memcached
----------
 
-Memcache is a service that can be used to speed up access to web pages by
-caching them in the systems memory for future use. Because tendenci is set up
-to use memcache by default, all that is required to enable it is installing it.
+memcached Setup
+---------------
 
-if you wish you increase the amount of memory memcache uses edit
-/etc/memcached.conf and change the '-m' value from 64 to your desired cache
-size.
+memcached is a service that can be used to speed up access to web pages by caching them in the
+systems memory for future use.
 
-Load the site
+Tendenci is configured to use memcache automatically once it is installed as described in the
+"Additional Installation" section above.
+
+If you wish you increase the amount of memory memcache uses, edit ``/etc/memcached.conf`` and
+change the "-m" value from 64 to your desired cache size in MB.
+
+
+Cron Setup
+----------
+
+Tendenci has two management commands that should be run on a regular basis.
+
+``run_nightly_commands`` is used to handle tasks like membership notices, event reminders, and
+periodic cleanup.
+
+``process_unindexed`` handles search indexing.
+
+Run ``sudo -u www-data crontab -e`` and add the following lines:
+::
+
+    30   2 * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py run_nightly_commands
+    */60 * * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py process_unindexed
+
+
+Multiple Sites
 --------------
 
-The site should now be viewable, either at the ip address of the server, or at the domain name that has been setup.
+To install multiple sites on a single server:
 
-
-Set up Cron Jobs for Production Sites
--------------------------------------
-
-For production sites, you'll need to set up cron jobs for the two management commands. The `run_nightly_commands` is
-to handle the tasks like membership notices, event reminders and other clean up jobs. The `process_unindexed` command
-is to process unindexed items in the queue.
-::
-
-	30 2 * * * /usr/bin/python /path/to/tendenci/site/manage.py run_nightly_commands
-	*/60 * * * * /usr/bin/python /path/to/tendenci/site/manage.py process_unindexed
-
-If you are using virtualenv, use the python executable from your site's virtualenv.
-::
-
-	30 2 * * * /path/to/virtualenv/bin/python /path/to/tendenci/site/manage.py run_nightly_commands
-	*/60 * * * * /path/to/virtualenv/bin/python /path/to/tendenci/site/manage.py process_unindexed
-
-
-
-Running Multiple sites on one server
-------------------------------------
-
-The process outlined above to install Tendenci can be used multiple times on a single server.
-
-The steps to install Server Packages and the steps to replace the main postgres password do not need to be repeated.
-
-When installing any additional Tendenci sites, replace the ``<project_name>`` used throughout the examples with a unique name.
-
-When creating the database for any additional sites, be sure to use a unique database name and username. In the instructions above, the database name and username were both ``tendenci``. Change this to something unique for each site.
-
-Each additional Tendenci site will need to run on a different port internally. In the instructions, port 8000 was used. This will be changed for additional sites in the nginx configuration file as well as the ``.upstart.sh`` file for each new site.
-
-You should also consider running a separate memcache instance for each tendenci install. This will increase the dedicated cache vailable for each instance and improve site performance.
+* Create a unique user and database in PostgreSQL for each site.
+* A unique virtualenv may optionally be created for each site, but is not required.  If using
+  multiple virtualenvs, be sure to source the correct virtualenv before running any ``python`` or
+  ``pip`` commands.
+* You can skip the ``pip install "Django"`` command, but otherwise follow the
+  "Tendenci Installation", "Tendenci Configuration", and "Tendenci Preparation" steps above.
+  Change the last parameter of the ``django-admin.py startproject ...`` command to create a
+  different ``/var/www/<project>/`` directory for each site, then change ``/var/www/tendenci/`` in
+  all of the commands in the instructions to work with the appropriate site.
+* Configure an additional SystemD Unit file and NGINX configuration file for each site, and
+  configure additional cron jobs for each site.  Each site will need to run on a different port
+  internally, so change ``8000`` in the example SystemD and NGINX configurations to a unique port
+  number for each site.
+* A separate memcached instance for each Tendenci site may optionally be used, but is not required.

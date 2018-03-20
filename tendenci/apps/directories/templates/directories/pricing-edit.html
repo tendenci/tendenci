@@ -13,7 +13,7 @@
     <p>{% trans "To edit the directory price, complete the fields below and press Submit." %}</p>
 
     <form action="." class="form-horizontal" method="post">{% csrf_token %}
-    	{{ form|styled_form }}
+        {{ form|styled_form }}
 
         <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
 

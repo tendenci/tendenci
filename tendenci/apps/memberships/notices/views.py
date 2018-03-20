@@ -1,12 +1,12 @@
 from datetime import datetime
 import time
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from tendenci.apps.memberships.models import Notice, NoticeLog
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.memberships.notices.forms import NoticeLogSearchForm
 
 
@@ -32,8 +32,8 @@ def membership_notice_log_search(request, template_name="memberships/notices/log
 
     logs = logs.order_by('-notice_sent_dt')
 
-    return render_to_response(template_name, {'logs': logs, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'logs': logs, 'form':form})
 
 
 @login_required
@@ -46,6 +46,6 @@ def membership_notice_log_view(request, id,
 
     log_records = log.default_log_records.all()
 
-    return render_to_response(template_name, {'log': log,
-                                              'log_records': log_records},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'log': log,
+                                              'log_records': log_records})

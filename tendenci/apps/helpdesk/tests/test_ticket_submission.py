@@ -1,14 +1,9 @@
+from six.moves.urllib.parse import urlparse
 from django.test import TestCase
 from django.core import mail
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tendenci.apps.helpdesk.models import Queue, CustomField, Ticket
-
-try:  # python 3
-    from urllib.parse import urlparse
-except ImportError:  # python 2
-    from urlparse import urlparse
-
 
 class TicketBasicsTestCase(TestCase):
     fixtures = ['emailtemplate.json']
@@ -48,7 +43,7 @@ class TicketBasicsTestCase(TestCase):
         response = self.client.post(reverse('helpdesk_home'), post_data, follow=True)
         last_redirect = response.redirect_chain[-1]
         last_redirect_url = last_redirect[0]
-        last_redirect_status = last_redirect[1]
+        #last_redirect_status = last_redirect[1]
 
         # Ensure we landed on the "View" page.
         # Django 1.9 compatible way of testing this
@@ -92,7 +87,7 @@ class TicketBasicsTestCase(TestCase):
         custom_field_1.delete()
         last_redirect = response.redirect_chain[-1]
         last_redirect_url = last_redirect[0]
-        last_redirect_status = last_redirect[1]
+        #last_redirect_status = last_redirect[1]
 
         # Ensure we landed on the "View" page.
         # Django 1.9 compatible way of testing this

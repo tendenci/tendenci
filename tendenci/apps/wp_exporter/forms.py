@@ -35,6 +35,6 @@ class ExportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ExportForm, self).__init__(*args, **kwargs)
         try:
-            import case_studies
+            import case_studies  # noqa:F401
         except ImportError:
             self.fields.pop('case_studies')

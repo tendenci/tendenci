@@ -1,5 +1,7 @@
 from django.template import Library, Node, Variable
 from django.contrib.auth.models import User
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms import utils
 from tendenci.apps.perms.fields import groups_with_perms
@@ -183,15 +185,15 @@ def obj_perms(obj):
     else:
         value = t % ('private','Private')
 
-    return value
+    return mark_safe(value)
 
 @register.simple_tag
 def obj_status(obj):
     t = '<span class="status-%s">%s</span>'
 
     if obj.status:
-        value = t % (obj.status_detail, obj.status_detail.capitalize())
+        value = t % (escape(obj.status_detail), escape(obj.status_detail.capitalize()))
     else:
         value = t % ('inactive','Inactive')
 
-    return value
+    return mark_safe(value)

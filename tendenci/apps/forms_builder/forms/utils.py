@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
 from django.conf import settings
-from django.template import Context
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
@@ -11,7 +10,7 @@ def generate_admin_email_body(entry, form_for_form):
     """
         Generates the email body so that is readable
     """
-    context = Context()
+    context = {}
     site_url = get_setting('site', 'global', 'siteurl')
     template = get_template('forms/admin_email_content.html')
 
@@ -24,7 +23,7 @@ def generate_admin_email_body(entry, form_for_form):
     context['form'] = entry.form
     context['entry'] = entry
     context['custom_price'] = form_for_form.cleaned_data.get('custom_price')
-    output = template.render(context)
+    output = template.render(context=context)
 
     return output
 
@@ -33,14 +32,14 @@ def generate_submitter_email_body(entry, form_for_form):
     """
         Generates the email body so that is readable
     """
-    context = Context()
+    context = {}
     template = get_template('forms/submitter_email_content.html')
 
     context['form'] = entry.form
     context['entry'] = entry
     context['fields'] = entry.entry_fields()
     context['custom_price'] = form_for_form.cleaned_data.get('custom_price')
-    output = template.render(context)
+    output = template.render(context=context)
 
     return output
 
@@ -115,7 +114,7 @@ def make_invoice_for_entry(entry, **kwargs):
         inv.total = total
         inv.balance = total
 
-    if entry.creator and not entry.creator.is_anonymous():
+    if entry.creator and not entry.creator.is_anonymous:
         inv.set_owner(entry.creator)
 
     inv.save()

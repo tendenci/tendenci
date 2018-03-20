@@ -1,3 +1,4 @@
+from builtins import str
 import re
 from time import strptime, strftime
 #from south.modelsinspector import add_introspection_rules
@@ -41,6 +42,7 @@ class SlugField(CharField):
         defaults.update(kwargs)
         return super(SlugField, self).formfield(**defaults)
 
+
 class SplitDateTimeField(fields.MultiValueField):
     """
         Custom split date time widget
@@ -81,13 +83,12 @@ class DictField(models.TextField):
     """
     A dictionary field
     """
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         if not value:
             return {}
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
                 return simplejson.loads(value)
             except (ValueError, TypeError):
@@ -99,11 +100,14 @@ class DictField(models.TextField):
 
         return {}
 
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
+
     def get_prep_value(self, value):
         if isinstance(value, dict):
             return simplejson.dumps(value)
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return value
 
         return ''

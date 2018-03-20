@@ -1,10 +1,12 @@
+from builtins import str
 from collections import OrderedDict
 import time
 from datetime import datetime, date
+
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
@@ -21,11 +23,14 @@ def member_choices(group, member_label):
     """
     members = User.objects.all().order_by('username')
     if member_label == 'email':
-        label = lambda x: x.email
+        def label(x):
+            return x.email
     elif member_label == 'full_name':
-        label = lambda x: x.get_full_name()
+        def label(x):
+            return x.get_full_name()
     else:
-        label = lambda x: x.username
+        def label(x):
+            return x.username
     choices = []
     for member in members:
         choices.append((member.pk, label(member)))
@@ -88,7 +93,7 @@ def process_export(
 
     with default_storage.open(file_path_temp, 'wb') as csvfile:
         csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_dict.keys())
+        csv_writer.writerow(list(field_dict.keys()))
 
         # process regular group members
         count_members = group.members.filter(
@@ -115,7 +120,7 @@ def process_export(
                     if hasattr(profile, field_name):
                         row_dict[field_name] = getattr(profile, field_name)
                 for k, v in row_dict.items():
-                    if not isinstance(v, basestring):
+                    if not isinstance(v, str):
                         if isinstance(v, datetime):
                             row_dict[k] = v.strftime('%Y-%m-%d %H:%M:%S')
                         elif isinstance(v, date):
@@ -123,7 +128,7 @@ def process_export(
                         else:
                             row_dict[k] = smart_str(v)
 
-                csv_writer.writerow(row_dict.values())
+                csv_writer.writerow(list(row_dict.values()))
 
     # rename the file name
     file_path = '%sgroup_%d_%s_%s.csv' % (file_dir,
@@ -150,11 +155,11 @@ def process_export(
             'site_display_name': site_display_name}
 
         subject = render_to_string(
-            'user_groups/exports/export_ready_subject.html', parms)
+            template_name='user_groups/exports/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'user_groups/exports/export_ready_body.html', parms)
+            template_name='user_groups/exports/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

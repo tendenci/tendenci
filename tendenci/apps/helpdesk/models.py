@@ -9,10 +9,10 @@ models.py - Model (and hence database) definitions. This is the core of the
 
 from __future__ import unicode_literals
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.urls import reverse
+from django.contrib.sites.models import Site
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext
-from django import VERSION
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import User
 
@@ -314,6 +314,7 @@ class Ticket(models.Model):
     queue = models.ForeignKey(
         Queue,
         verbose_name=_('Queue'),
+        on_delete=models.CASCADE,
         )
 
     created = models.DateTimeField(
@@ -342,6 +343,7 @@ class Ticket(models.Model):
         blank=True,
         null=True,
         verbose_name=_('Assigned to'),
+        on_delete=models.CASCADE,
         )
 
     status = models.IntegerField(
@@ -461,8 +463,6 @@ class Ticket(models.Model):
         Returns a publicly-viewable URL for this ticket, used when giving
         a URL to the submitter of a ticket.
         """
-        from django.contrib.sites.models import Site
-        from django.core.urlresolvers import reverse
         try:
             site = Site.objects.get_current()
         except:
@@ -480,8 +480,6 @@ class Ticket(models.Model):
         Returns a staff-only URL for this ticket, used when giving a URL to
         a staff member (in emails etc)
         """
-        from django.contrib.sites.models import Site
-        from django.core.urlresolvers import reverse
         try:
             site = Site.objects.get_current()
         except:
@@ -513,8 +511,7 @@ class Ticket(models.Model):
         return '%s %s' % (self.id, self.title)
 
     def get_absolute_url(self):
-        return ('helpdesk_view', (self.id,))
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_view', args=[self.id])
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -554,6 +551,7 @@ class FollowUp(models.Model):
     ticket = models.ForeignKey(
         Ticket,
         verbose_name=_('Ticket'),
+        on_delete=models.CASCADE,
         )
 
     date = models.DateTimeField(
@@ -587,6 +585,7 @@ class FollowUp(models.Model):
         blank=True,
         null=True,
         verbose_name=_('User'),
+        on_delete=models.CASCADE,
         )
 
     new_status = models.IntegerField(
@@ -627,6 +626,7 @@ class TicketChange(models.Model):
     followup = models.ForeignKey(
         FollowUp,
         verbose_name=_('Follow-up'),
+        on_delete=models.CASCADE,
         )
 
     field = models.CharField(
@@ -690,6 +690,7 @@ class Attachment(models.Model):
     followup = models.ForeignKey(
         FollowUp,
         verbose_name=_('Follow-up'),
+        on_delete=models.CASCADE,
         )
 
     file = models.FileField(
@@ -902,8 +903,7 @@ class KBCategory(models.Model):
         verbose_name_plural = _('Knowledge base categories')
 
     def get_absolute_url(self):
-        return ('helpdesk_kb_category', (), {'slug': self.slug})
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_kb_category', kwargs={'slug': self.slug})
 
 
 @python_2_unicode_compatible
@@ -915,6 +915,7 @@ class KBItem(models.Model):
     category = models.ForeignKey(
         KBCategory,
         verbose_name=_('Category'),
+        on_delete=models.CASCADE,
         )
 
     title = models.CharField(
@@ -970,8 +971,7 @@ class KBItem(models.Model):
         verbose_name_plural = _('Knowledge base items')
 
     def get_absolute_url(self):
-        return ('helpdesk_kb_item', (self.id,))
-    get_absolute_url = models.permalink(get_absolute_url)
+        return reverse('helpdesk_kb_item', args=[self.id])
 
 
 @python_2_unicode_compatible
@@ -989,6 +989,7 @@ class SavedSearch(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_('User'),
+        on_delete=models.CASCADE,
         )
 
     title = models.CharField(
@@ -1030,7 +1031,7 @@ class UserSettings(models.Model):
     We should always refer to user.usersettings.settings['setting_name'].
     """
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     settings_pickled = models.TextField(
         _('Settings Dictionary'),
@@ -1042,18 +1043,18 @@ class UserSettings(models.Model):
     def _set_settings(self, data):
         # data should always be a Python dictionary.
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64encode
         self.settings_pickled = b64encode(pickle.dumps(data))
 
     def _get_settings(self):
         # return a python dictionary representing the pickled data.
         try:
-            import pickle
+            import six.moves.cPickle as pickle
         except ImportError:
-            import cPickle as pickle
+            import pickle
         from tendenci.apps.helpdesk.lib import b64decode
         try:
             return pickle.loads(b64decode(str(self.settings_pickled)))
@@ -1074,7 +1075,7 @@ def create_usersettings(sender, instance, created, **kwargs):
     """
     Helper function to create UserSettings instances as
     required, eg when we first create the UserSettings database
-    table via 'syncdb' or when we save a new user.
+    table via 'migrate' or when we save a new user.
 
     If we end up with users with no UserSettings, then we get horrible
     'DoesNotExist: UserSettings matching query does not exist.' errors.
@@ -1083,15 +1084,7 @@ def create_usersettings(sender, instance, created, **kwargs):
     if created:
         UserSettings.objects.create(user=instance, settings=DEFAULT_USER_SETTINGS)
 
-try:
-    # Connecting via settings.AUTH_USER_MODEL (string) fails in Django < 1.7. We need the actual model there.
-    # https://docs.djangoproject.com/en/1.7/topics/auth/customizing/#referencing-the-user-model
-    if VERSION < (1, 7):
-        raise ValueError
     models.signals.post_save.connect(create_usersettings, sender=settings.AUTH_USER_MODEL)
-except:
-    signal_user = get_user_model()
-    models.signals.post_save.connect(create_usersettings, sender=signal_user)
 
 
 @python_2_unicode_compatible
@@ -1187,6 +1180,7 @@ class TicketCC(models.Model):
     ticket = models.ForeignKey(
         Ticket,
         verbose_name=_('Ticket'),
+        on_delete=models.CASCADE,
         )
 
     user = models.ForeignKey(
@@ -1195,6 +1189,7 @@ class TicketCC(models.Model):
         null=True,
         help_text=_('User who wishes to receive updates for this ticket.'),
         verbose_name=_('User'),
+        on_delete=models.CASCADE,
         )
 
     email = models.EmailField(
@@ -1322,7 +1317,7 @@ class CustomField(models.Model):
         )
 
     def _choices_as_array(self):
-        from StringIO import StringIO
+        from io import StringIO
         valuebuffer = StringIO(self.list_values)
         choices = [[item.strip(), item.strip()] for item in valuebuffer.readlines()]
         valuebuffer.close()
@@ -1356,11 +1351,13 @@ class TicketCustomFieldValue(models.Model):
     ticket = models.ForeignKey(
         Ticket,
         verbose_name=_('Ticket'),
+        on_delete=models.CASCADE,
         )
 
     field = models.ForeignKey(
         CustomField,
         verbose_name=_('Field'),
+        on_delete=models.CASCADE,
         )
 
     value = models.TextField(blank=True, null=True)
@@ -1385,12 +1382,14 @@ class TicketDependency(models.Model):
         Ticket,
         verbose_name=_('Ticket'),
         related_name='ticketdependency',
+        on_delete=models.CASCADE,
         )
 
     depends_on = models.ForeignKey(
         Ticket,
         verbose_name=_('Depends On Ticket'),
         related_name='depends_on',
+        on_delete=models.CASCADE,
         )
 
     def __str__(self):
@@ -1410,6 +1409,7 @@ class QueueMembership(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         verbose_name=_('User'),
+        on_delete=models.CASCADE,
         )
 
     queues = models.ManyToManyField(

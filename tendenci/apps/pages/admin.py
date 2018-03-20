@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import get_notice_recipients
@@ -48,21 +49,22 @@ class PageAdmin(admin.ModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
+    @mark_safe
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
             obj.title,
             obj.slug
         )
-    link.allow_tags = True
     link.admin_order_field = 'slug'
 
+    @mark_safe
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:pages_page_change', args=[obj.pk])
         return link
-    edit_link.allow_tags = True
     edit_link.short_description = _('edit')
 
+    @mark_safe
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" alt="%s" title="%s" /></a>' % (
@@ -73,7 +75,6 @@ class PageAdmin(admin.ModelAdmin):
             obj.title
         )
         return link
-    view_on_site.allow_tags = True
     view_on_site.short_description = _('view')
 
     def log_deletion(self, request, object, object_repr):

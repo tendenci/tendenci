@@ -4,7 +4,7 @@ from django.forms import MultipleChoiceField, CheckboxInput
 from django.contrib.contenttypes.models import ContentType
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.html import conditional_escape
 from django.utils.translation import ugettext_lazy as _
 
@@ -111,18 +111,19 @@ def has_groups_perms(instance):
 
 
 class UserPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
+        str_values = set([force_text(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -142,11 +143,11 @@ class UserPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (user_label, user_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(user_perm.next()[0])
-            change_input_value = force_unicode(user_perm.next()[0])
+            view_input_value = force_text(next(user_perm)[0])
+            change_input_value = force_text(next(user_perm)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -165,7 +166,7 @@ class UserPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'user_label': conditional_escape(force_unicode(user_label)),
+                   'user_label': conditional_escape(force_text(user_label)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }
@@ -195,18 +196,19 @@ class UserPermissionField(MultipleChoiceField):
 
 
 class MemberPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
+        str_values = set([force_text(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -226,11 +228,11 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (member_label, member_perm) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(member_perm.next()[0])
-            change_input_value = force_unicode(member_perm.next()[0])
+            view_input_value = force_text(next(member_perm)[0])
+            change_input_value = force_text(next(member_perm)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -249,7 +251,7 @@ class MemberPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'member_label': conditional_escape(force_unicode(member_label)),
+                   'member_label': conditional_escape(force_text(member_label)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }
@@ -279,18 +281,19 @@ class MemberPermissionField(MultipleChoiceField):
 
 
 class GroupPermissionWidget(CheckboxSelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None, choices=()):
         if value is None:
             value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs = attrs.copy()
+        attrs['name'] = name
 
         # set up output attributes
         html = u''
         table_rows = u''
 
         # Normalize to strings
-        str_values = set([force_unicode(v) for v in value])
+        str_values = set([force_text(v) for v in value])
 
         # setup the id attr
         if has_id:
@@ -310,11 +313,11 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
             </table>
         """
         for i, (group_name, group) in enumerate(groupby(self.choices, lambda x: x[1])):
-            view_input_value = force_unicode(group.next()[0])
-            change_input_value = force_unicode(group.next()[0])
+            view_input_value = force_text(next(group)[0])
+            change_input_value = force_text(next(group)[0])
 
             if has_id:
-                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                final_attrs = dict(attrs, id='%s_%s' % (attrs['id'], i))
 
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
@@ -333,7 +336,7 @@ class GroupPermissionWidget(CheckboxSelectMultiple):
                     <td>%(change_checkbox)s</td>
                 </tr>
             """ % {'tr_class': tr_class,
-                   'group_name': conditional_escape(force_unicode(group_name)),
+                   'group_name': conditional_escape(force_text(group_name)),
                    'view_checkbox': rendered_cb_view,
                    'change_checkbox': rendered_cb_change
                   }

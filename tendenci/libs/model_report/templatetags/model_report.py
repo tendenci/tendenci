@@ -18,7 +18,7 @@ class ModelReportInlineNode(template.Node):
         if row.is_value():
             inline_context = inline.get_render_context(request, by_row=row)
             if len(inline_context['report_rows']) > 0:
-                return render_to_string('model_report/includes/report_inline.html', inline_context)
+                return render_to_string(template_name='model_report/includes/report_inline.html', context=inline_context)
         return ''
 
 

@@ -1,22 +1,22 @@
 from collections import OrderedDict
 from ast import literal_eval
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 from django import forms
+from django.conf import settings as django_settings
 from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_unicode, smart_text, DjangoUnicodeDecodeError
-from timezones import zones
+from django.utils.encoding import force_text, DjangoUnicodeDecodeError
 from django_countries import countries as COUNTRIES
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.utils import checklist_update
+from tendenci.apps.base.utils import (get_timezone_choices, checklist_update,
+    get_languages_with_local_name)
 from tendenci.apps.site_settings.utils import (get_form_list,
                                                get_box_list,
                                                get_group_list)
-from tendenci.apps.base.utils import get_languages_with_local_name
-from django.utils.translation import ugettext_lazy as _
 
 
 def clean_settings_form(self):
@@ -121,7 +121,7 @@ def build_settings_form(user, settings):
             continue
 
         try:
-            setting_value = force_unicode(setting.get_value())
+            setting_value = force_text(setting.get_value())
         except DjangoUnicodeDecodeError:
             setting_value = ''
 
@@ -155,8 +155,10 @@ def build_settings_form(user, settings):
                 if not setting_value:
                     setting_value = initial
             elif setting.input_value == '<timezone_list>':
-                choices = zones.PRETTY_TIMEZONE_CHOICES
+                choices = get_timezone_choices()
                 required = True
+                if not setting_value:
+                    setting_value = django_settings.TIME_ZONE
             elif setting.input_value == '<language_list>':
                 choices = get_languages_with_local_name()
                 required = True

@@ -99,7 +99,7 @@ def job_set_inv_payment(user, job, pricing):
                 inv.subtotal = total
                 inv.balance = total
 
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 inv.set_creator(user)
                 inv.set_owner(user)
 
@@ -114,11 +114,11 @@ def job_set_inv_payment(user, job, pricing):
 
             if user.profile.is_superuser:
                 if job.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                    boo_inv = inv.tender(user)
+                    inv.tender(user)
 
                     # payment
                     payment = Payment()
-                    boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
+                    payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                     payment.mark_as_paid()
                     payment.method = job.payment_method
                     payment.save(user)

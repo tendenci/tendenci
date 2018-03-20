@@ -41,12 +41,12 @@
                 <tr>
                   <td width="17%" nowrap>{% trans "Name:" %}</td>
                   <td width="83%"><b>
-                  	{% if creator %}
-                  	{{ creator.first_name }} {{ creator.last_name }}
-                  	{% else %}
-                  	{{ request.user.get_full_name }}
-                  	{% endif %}
-                  	</b></td>
+                      {% if creator %}
+                      {{ creator.first_name }} {{ creator.last_name }}
+                      {% else %}
+                      {{ request.user.get_full_name }}
+                      {% endif %}
+                      </b></td>
                 </tr>
                 <tr>
                   <td width="17%" nowrap>{% trans "Title:" %}</td>
@@ -63,19 +63,19 @@
                 <tr>
                   <td width="17%" nowrap>{% trans "Email:" %}</td>
                   <td width="83%"><b>
-                  	{% if creator %}
-                  	{{ creator.email }}
-                  	{% else %}
-                  	{{ profile.email }}
-                  	{% endif %}
-                  	</b></td>
+                      {% if creator %}
+                      {{ creator.email }}
+                      {% else %}
+                      {{ profile.email }}
+                      {% endif %}
+                      </b></td>
                 </tr>
               </table>              <p>                  <br>
                 {% trans "To view the complete application, go to:" %}
                 <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}</strong>
                 {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
-                	<p>{% trans "To approve the application, go to:" %}
-                	<strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.approve" object.pk %}</strong></p>
+                    <p>{% trans "To approve the application, go to:" %}
+                    <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.approve" object.pk %}</strong></p>
                 {% endif %}
               {% if not creator %}
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>

@@ -3,7 +3,7 @@
 from django.conf import settings
 #from django.http import Http404
 from django.db import transaction
-from forms import PayflowLinkPaymentForm
+from .forms import PayflowLinkPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
@@ -46,7 +46,7 @@ def prepare_payflowlink_form(request, payment):
 
 def payflowlink_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
-    response_d = dict(map(lambda x: (x[0].lower(), x[1]), response_d.items()))
+    response_d = dict([(x[0].lower(), x[1]) for x in response_d.items()])
 
     paymentid = response_d.get('custid', 0)
     try:

@@ -1,6 +1,8 @@
+from builtins import str
 import uuid
 import copy
 from django.db import models
+from django.urls import reverse
 from django.db.models import Q
 
 from django.core.mail.message import EmailMessage
@@ -31,7 +33,7 @@ class Email(TendenciBaseModel):
     sender_display = models.CharField(max_length=255)
     reply_to = models.CharField(max_length=255)
     recipient = models.CharField(max_length=255, blank=True, default='')
-    recipient_dispaly = models.CharField(max_length=255, blank=True, default='')
+    recipient_display = models.CharField(max_length=255, blank=True, default='')
     recipient_cc = models.CharField(max_length=255, blank=True, default='')
     recipient_cc_display = models.CharField(max_length=255, blank=True, default='')
     recipient_bcc = models.CharField(max_length=255, blank=True, default='')
@@ -44,9 +46,8 @@ class Email(TendenciBaseModel):
     class Meta:
         app_label = 'emails'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("email.view", [self.pk])
+        return reverse('email.view', args=[self.pk])
 
     def __unicode__(self):
         return self.subject
@@ -67,20 +68,20 @@ class Email(TendenciBaseModel):
         headers = kwargs.get('headers', {})
         attachments = kwargs.get('attachments', [])
 
-        if isinstance(self.recipient, basestring):
+        if isinstance(self.recipient, str):
             recipient_list = self.recipient.split(',')
             recipient_list = [recipient.strip() for recipient in recipient_list
                               if recipient.strip() != '']
         else:
             recipient_list = list(self.recipient)
-        if isinstance(self.recipient_cc, basestring):
+        if isinstance(self.recipient_cc, str):
             recipient_cc_list = self.recipient_cc.split(',')
             recipient_cc_list = [recipient_cc.strip() for recipient_cc in recipient_cc_list if
                                   recipient_cc.strip() != '']
             recipient_list += recipient_cc_list
         else:
             recipient_list += list(self.recipient_cc)
-        if isinstance(self.recipient_bcc, basestring):
+        if isinstance(self.recipient_bcc, str):
             recipient_bcc_list = self.recipient_bcc.split(',')
             recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if
                                    recipient_bcc.strip() != '']
@@ -126,10 +127,10 @@ class Email(TendenciBaseModel):
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = uuid.uuid1()
-            if user and not user.is_anonymous():
+            if user and not user.is_anonymous:
                 self.creator = user
                 self.creator_username = user.username
-        if user and not user.is_anonymous():
+        if user and not user.is_anonymous:
             self.owner = user
             self.owner_username = user.username
 
@@ -192,8 +193,8 @@ class Email(TendenciBaseModel):
 
             pass
         else:
-            self.body = render_to_string(template)
-            for key in email_d.keys():
+            self.body = render_to_string(template_name=template)
+            for key in email_d:
                 # need to convert [blah] to %5Bblah%5D for replace line
                 tmp_value = "%5B" + key[1:-1] + "%5D"
                 if email_d[key] is not None:

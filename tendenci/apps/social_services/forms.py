@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
@@ -98,7 +98,7 @@ class SkillSetForm(BetterModelForm):
             edit = False
         super(SkillSetForm, self).__init__(*args, **kwargs)
         if not edit:
-            for name, field in self.fields.iteritems():
+            for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
 
 
@@ -117,7 +117,7 @@ class ReliefAssessmentForm(BetterModelForm):
     email2 = EmailVerificationField(label=_("Alternate Email"), required=False)
 
     dob = forms.DateField(label=_("Date of Birth"), required=False,
-                          widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
+                          widget=SelectDateWidget(None, list(range(THIS_YEAR-100, THIS_YEAR))))
     company = forms.CharField(label=_("Company"), max_length=100, required=False)
     position_title = forms.CharField(label=_("Position Title"), max_length=50, required=False)
     education = forms.CharField(label=_("Education Level"), max_length=100, required=False)
@@ -210,7 +210,7 @@ class ReliefAssessmentForm(BetterModelForm):
             edit = True
         super(ReliefAssessmentForm, self).__init__(*args, **kwargs)
         if not edit:
-            for name, field in self.fields.iteritems():
+            for name, field in self.fields.items():
                 field.widget.attrs['disabled'] = True
 
         if self.instance.pk:

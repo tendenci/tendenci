@@ -1,7 +1,7 @@
 
 import re
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from tendenci.apps.site_settings.utils import get_setting
 
 direct_response_fields = (
@@ -80,7 +80,7 @@ def payment_update_from_response(payment, direct_response_str):
     Update the payment entry with the direct response from payment gateway.
     """
     response_dict = direct_response_dict(direct_response_str)
-    for key in response_dict.keys():
+    for key in response_dict:
         if hasattr(payment, key):
             setattr(payment, key, response_dict[key])
 
@@ -93,10 +93,14 @@ def to_camel_case(d):
     camelCaseFormat and return the new dict
     """
     if type(d) is dict:
-        to_upper = lambda match: match.group(1).upper()
-        to_camel = lambda x: re.sub("_([a-z])", to_upper, x)
 
-        return dict(map(lambda x: (to_camel(x[0]), x[1]), d.items()))
+        def to_upper(match):
+            return match.group(1).upper()
+
+        def to_camel(x):
+            return re.sub("_([a-z])", to_upper, x)
+
+        return dict([(to_camel(x[0]), x[1]) for x in d.items()])
     return d
 
 

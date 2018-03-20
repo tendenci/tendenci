@@ -2,6 +2,7 @@ import os.path
 
 from django.conf import global_settings
 import django.conf.locale
+from django.contrib import messages
 
 # Paths
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -62,11 +63,14 @@ MEDIA_ROOT = os.path.join(TENDENCI_ROOT, 'site_media', 'media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/site_media/media/'
 
+# Path for photos relative to MEDIA_ROOT and MEDIA_URL
+PHOTOS_DIR = 'photos'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=msW0__=51^w@_tbaconjm4+fg@0+ic#bx^3rj)zc$a6i'
 SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -84,7 +88,7 @@ MIDDLEWARE_CLASSES = (
     'tendenci.apps.forums.middleware.PybbMiddleware',
     'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-)
+]
 
 ROOT_URLCONF = 'tendenci.urls'
 
@@ -104,14 +108,14 @@ STATIC_URL = LOCAL_STATIC_URL
 
 STOCK_STATIC_URL = STATIC_URL
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
-)
+]
 
 # other static files besides the STATIC_ROOT
-STATICFILES_DIRS = (
-)
+STATICFILES_DIRS = [
+]
 
 
 # AVATARS
@@ -164,10 +168,8 @@ TEMPLATES = [
                 ('django.template.loaders.cached.Loader', [
                 'app_namespace.Loader',
                 'tendenci.apps.theme.template_loaders.Loader',
-                #'tendenci.apps.theme.template_loaders.load_template_source',
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
-                #'django.template.loaders.eggs.load_template_source',
                 ])
             ],
          'debug': DEBUG
@@ -176,7 +178,7 @@ TEMPLATES = [
 ]
 
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -197,6 +199,7 @@ INSTALLED_APPS = (
     'captcha',
     'haystack',
     'tastypie',
+    'timezone_field',
 
     'tendenci',
     'tendenci.libs.model_report',
@@ -256,7 +259,7 @@ INSTALLED_APPS = (
     'tendenci.apps.resumes',
     'tendenci.apps.boxes',
     'tendenci.apps.mobile',
-    'tendenci.apps.social_auth',
+    #'tendenci.apps.social_auth',  # Does not support Python 3
     'tendenci.apps.campaign_monitor',
     'tendenci.apps.wp_importer',
     'tendenci.apps.wp_exporter',
@@ -275,9 +278,9 @@ INSTALLED_APPS = (
     'tendenci.apps.announcements',
     'tendenci.apps.forums',
     # celery task system, must stay at the bottom of installed apps
-    'djkombu',
+    'kombu.transport.django',
     'djcelery',
-)
+]
 
 # This is the number of days users will have to activate their
 # accounts after registering. If a user does not activate within
@@ -287,11 +290,11 @@ ACCOUNT_ACTIVATION_DAYS = 7
 
 LOGIN_REDIRECT_URL = '/dashboard'
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
     'tendenci.apps.perms.backend.ObjectPermBackend',
-    'tendenci.apps.social_auth.backends.facebook.FacebookBackend',
+    #'tendenci.apps.social_auth.backends.facebook.FacebookBackend',  # Does not support Python 3
     'django.contrib.auth.backends.ModelBackend',
-)
+]
 
 #--------------------------------------------------
 # LANGUAGE
@@ -319,14 +322,14 @@ EXTRA_LANG_INFO = {
 }
 
 # Add custom languages not provided by Django
-LANG_INFO = dict(django.conf.locale.LANG_INFO.items() + EXTRA_LANG_INFO.items())
+LANG_INFO = dict(list(django.conf.locale.LANG_INFO.items()) + list(EXTRA_LANG_INFO.items()))
 django.conf.locale.LANG_INFO = LANG_INFO
 
 # Languages using BiDi (right-to-left) layout
-LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + tuple(EXTRA_LANG_INFO.keys())
-LANGUAGES = sorted(global_settings.LANGUAGES + tuple([
+LANGUAGES_BIDI = global_settings.LANGUAGES_BIDI + list(EXTRA_LANG_INFO.keys())
+LANGUAGES = sorted(global_settings.LANGUAGES + [
     (k, v['name']) for k, v in EXTRA_LANG_INFO.items()
-    ]), key=lambda x: x[0])
+    ], key=lambda x: x[0])
 
 #--------------------------------------------------
 # DEBUG TOOLBAR
@@ -401,14 +404,9 @@ CACHE_PRE_KEY = "TENDENCI"
 # --------------------------------------#
 # CELERY
 # --------------------------------------#
-import djcelery
+import djcelery  # noqa: E402
 djcelery.setup_loader()
-BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
+BROKER_URL = "django://"
 CELERY_IS_ACTIVE = False
 
 # USE_SUBPROCESS - in places like exports and long-running
@@ -556,8 +554,6 @@ INDEX_UPDATE_NOTE = 'updated hourly'
 # Django Admin Bootstrap
 # ------------------------------------#
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-
-from django.contrib import messages
 
 MESSAGE_TAGS = {
             messages.SUCCESS: 'alert-success success',

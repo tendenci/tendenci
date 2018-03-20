@@ -106,7 +106,7 @@ class TendenciBaseModel(models.Model):
                 # Save a version of this content.
                 try:
                     Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
-                except Exception as e:
+                except Exception:
                     pass
                     #print("version error: ", e)
 

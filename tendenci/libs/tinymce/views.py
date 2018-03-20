@@ -2,18 +2,22 @@
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import logging
-from django.core import urlresolvers
+
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext, loader
+from django.template import loader
+#from django.urls import reverse
 from django.utils.translation import ugettext as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.tinymce.compressor import gzip_compressor
 from tendenci.libs.tinymce.widgets import get_language_config
+
 import json
 try:
     from django.views.decorators.csrf import csrf_exempt
 except ImportError:
     pass
+
 
 def textareas_js(request, name, lang=None):
     """
@@ -28,11 +32,10 @@ def textareas_js(request, name, lang=None):
     )
     template = loader.select_template(template_files)
 
-    vars = get_language_config(lang)
-    vars['content_language'] = lang
-    context = RequestContext(request, vars)
+    context = get_language_config(lang)
+    context['content_language'] = lang
 
-    return HttpResponse(template.render(context),
+    return HttpResponse(template.render(context=context, request=request),
             content_type="application/x-javascript")
 
 def spell_check(request):
@@ -88,7 +91,7 @@ def preview(request, name):
         '%s/tinymce_preview.html' % name,
     )
     template = loader.select_template(template_files)
-    return HttpResponse(template.render(RequestContext(request)),
+    return HttpResponse(template.render(request=request),
             content_type="text/html")
 
 
@@ -131,13 +134,12 @@ def render_to_js_vardef(var_name, var_value):
 
 def filebrowser(request):
 #     try:
-#         fb_url = request.build_absolute_uri(urlresolvers.reverse('fb_browse'))
+#         fb_url = request.build_absolute_uri(reverse('fb_browse'))
 #     except:
-#         fb_url = request.build_absolute_uri(urlresolvers.reverse('filebrowser:fb_browse'))
+#         fb_url = request.build_absolute_uri(reverse('filebrowser:fb_browse'))
 #
-#     return render_to_response('tinymce/filebrowser.js', {'fb_url': fb_url},
-#             context_instance=RequestContext(request),
+#     return render_to_resp(request=request, template_name='tinymce/filebrowser.js',
+#             context={'fb_url': fb_url},
 #             content_type="application/x-javascript")
-    return render_to_response('tinymce/filebrowser.js', {},
-            context_instance=RequestContext(request),
+    return render_to_resp(request=request, template_name='tinymce/filebrowser.js',
             content_type="application/x-javascript")

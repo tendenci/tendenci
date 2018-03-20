@@ -1,15 +1,15 @@
 import re
-import urllib2
+from six.moves.urllib.request import urlopen
 from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode
 from tagging.models import Tag
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulStoneSoup
 
 from django.utils.safestring import mark_safe
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.cache import cache
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -43,7 +43,7 @@ class GoogleCMapsURL(Node):
             origin = self.origin.resolve(context)
         else:
             origin = None
-        
+
         url = '{base_url}?center={lat}%2C{lng}&size={size}&markers={markers}%7C{lat}%2C{lng}'.format(
                                                     base_url=GOOGLE_SMAPS_BASE_URL,
                                                     lat=location.latitude,
@@ -52,7 +52,7 @@ class GoogleCMapsURL(Node):
                                                     markers=self.markers.replace(':', '%3A').replace('|', '%7C'))
         if self.zoom:
             url = url + '&zoom=' + self.zoom
-            
+
         if origin:
             url = url + '&markers={markers_origin}%7C{origin_lat}%2C{origin_lng}'.format(
                             markers_origin=self.markers_origin.replace(':', '%3A').replace('|', '%7C'),
@@ -62,7 +62,7 @@ class GoogleCMapsURL(Node):
         api_key = get_setting('module', 'locations', 'google_maps_api_key')
         if api_key:
             url = url + '&key=' + api_key
- 
+
             if settings.GOOGLE_SMAPS_URL_SIGNING_SECRET:
                 # sign url with signing secret
                 url = google_cmap_sign_url(url)
@@ -80,15 +80,15 @@ def google_cmaps_url(parser, token):
         <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=8 %}" />
         <img src="{% google_cmaps_url location origin size=200x200 markers=color:red|label:A markers_origin=color:green|label:B zoom=8 %}" />
     """
-    args, kwargs = [], {}
+    kwargs = {}
     bits = token.split_contents()
     if len(bits) < 2:
         message = "'%s' tag requires more than 1 argument" % bits[0]
         raise TemplateSyntaxError(_(message))
-    
+
     location = bits[1]
 
-    if not '=' in bits[2]:
+    if '=' not in bits[2]:
         origin = bits[2]
     else:
         origin = None
@@ -148,10 +148,10 @@ class FanCountNode(Node):
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
-                    xml = urllib2.urlopen(xml_path)
+                    xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
-                    nodes = soup.findAll('page')
+                    nodes = soup.find_all('page')
                     for node in nodes:
                         fancount = node.fan_count.string
                     cache.set(cache_key, fancount, cache_time)
@@ -165,10 +165,10 @@ class FanCountNode(Node):
             fancount = cache.get(cache_key)
             if not fancount:
                 try:
-                    xml = urllib2.urlopen(xml_path)
+                    xml = urlopen(xml_path)
                     content = xml.read()
                     soup = BeautifulStoneSoup(content)
-                    nodes = soup.findAll('user')
+                    nodes = soup.find_all('user')
                     for node in nodes:
                         fancount = node.followers_count.string
                     cache.set(cache_key, fancount, cache_time)

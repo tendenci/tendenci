@@ -23,7 +23,7 @@ class PageSecurityCheck(object):
 
             user_security_level = 'anonymous'
 
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 if request.user.profile.is_superuser:
                     user_security_level = 'superuser'
                 elif request.user.profile.is_staff:
@@ -45,10 +45,10 @@ class PageSecurityCheck(object):
                     boo = True
 
             if boo:
-                # if request.user.is_authenticated(), log an event here
+                # if request.user.is_authenticated, log an event here
                 return f(request, *args, **kwargs)
             else:
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     raise Http403
                 else:
                     # redirect to login page
@@ -114,7 +114,7 @@ def admin_required(view_method):
     def decorator(request, *args, **kwargs):
         admin = request.user.profile.is_superuser
 
-        if not request.user.profile.is_superuser:
+        if not admin:
             raise Http403
 
         return view_method(request, *args, **kwargs)

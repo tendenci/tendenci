@@ -2,6 +2,7 @@ import uuid
 
 from datetime import timedelta, datetime
 from django.db import models
+from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
@@ -12,7 +13,6 @@ from django.contrib.auth.models import AnonymousUser
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
-from tendenci.apps.base.utils import now_localized
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.jobs.managers import JobManager
@@ -25,7 +25,7 @@ from tendenci.apps.invoices.models import Invoice
 class Category(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('slug', 'parent',)
@@ -93,7 +93,7 @@ class BaseJob(TendenciBaseModel):
     contact_email = models.CharField(max_length=300, blank=True)
     contact_website = models.CharField(max_length=300, blank=True)
 
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
@@ -209,13 +209,11 @@ class Job(BaseJob):
         """
         return JobMeta().get_meta(self, name)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("job", [self.slug])
+        return reverse('job', args=[self.slug])
 
-    @models.permalink
     def get_approve_url(self):
-        return ("job.approve", [self.id])
+        return reverse('job.approve', args=[self.id])
 
 
 class JobPricing(models.Model):
@@ -274,7 +272,7 @@ class JobPricing(models.Model):
         super(JobPricing, self).save(*args, **kwargs)
 
     def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
-        if not user.is_anonymous() and user.profile.is_member:
+        if not user.is_anonymous and user.profile.is_member:
             if list_type == 'regular':
                 return self.regular_price_member
             else:

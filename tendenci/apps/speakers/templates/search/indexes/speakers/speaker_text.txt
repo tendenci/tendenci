@@ -2,7 +2,7 @@
 {% load base_filters %}
 
 {{ object.name }}
-{{ object.biography|striptags|stripentities }}
+{{ object.biography|striphtml }}
 {{ object.company }}
 {{ object.position }}
 {{ object.track }}

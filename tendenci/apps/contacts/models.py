@@ -1,12 +1,15 @@
 import uuid
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import ugettext_lazy as _
 
+from timezone_field import TimeZoneField
+
+from tendenci.apps.base.utils import get_timezone_choices
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from timezones.fields import TimeZoneField
 from tendenci.apps.contacts.managers import ContactManager
 
 
@@ -59,9 +62,9 @@ class Comment(models.Model):
     Contacts will fill out a form and leave a message.
     These comments are added later to help describe the contact.
     """
-    contact = models.ForeignKey('Contact', related_name='comments')
+    contact = models.ForeignKey('Contact', related_name='comments', on_delete=models.CASCADE)
     comment = models.TextField()
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
@@ -76,8 +79,8 @@ class Contact(TendenciBaseModel):
     further communication.
     """
     guid = models.CharField(max_length=40)
-    timezone = TimeZoneField()
-    user = models.ForeignKey(User, null=True, related_name='contact_user')
+    timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    user = models.ForeignKey(User, null=True, related_name='contact_user', on_delete=models.CASCADE)
 
     first_name = models.CharField(max_length=100, blank=True)
     middle_name = models.CharField(max_length=100, blank=True)
@@ -103,9 +106,8 @@ class Contact(TendenciBaseModel):
         permissions = (("view_contact", _("Can view contact")),)
         app_label = 'contacts'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("contact", [self.pk])
+        return reverse('contact', args=[self.pk])
 
     def save(self, *args, **kwargs):
         if not self.id:

@@ -72,19 +72,19 @@ div.forms{
     width: 100%;
 }
 #renewal_form label{
-	font-weight: normal !important;
+    font-weight: normal !important;
 }
 #renewal_form .field-label{
-	font-weight: bolder;
-	font-size: 1.3em;
-	margin: 1em 0 3px;
+    font-weight: bolder;
+    font-size: 1.3em;
+    margin: 1em 0 3px;
 }
 #renewal_form ul{
-	list-style: none;
-	margin: 5px 1.5em;
+    list-style: none;
+    margin: 5px 1.5em;
 }
 .submit-btn-wrap{
-	margin: 1em 0 1em;
+    margin: 1em 0 1em;
 }
 </style>
 {% endblock %}
@@ -102,9 +102,9 @@ div.forms{
         {% if corp_profile.address %}
             {{ corp_profile.address }}
             {% if corp_profile.address2 %}
-            	{{ corp_profile.address2 }}
-        	{% endif %}
-        	<br />
+                {{ corp_profile.address2 }}
+            {% endif %}
+            <br />
         {% endif %}
 
         {% if corp_profile.city or corp_profile.state or corp_profile.zip %}
@@ -145,7 +145,7 @@ div.forms{
         <div class="alert alert-danger" role="alert">
             {% for error in form.non_field_errors %}
             <p><a href="#" class="alert-link">{{ error }}</a></p>
-			{% endfor %}
+            {% endfor %}
 
             {% for field in form %}
                 {% if field.errors %}
@@ -284,7 +284,7 @@ div.forms{
                     </td>
                 </tr>
             </table>
-			<div class="text-danger" id="cap-error-msg"></div>
+            <div class="text-danger" id="cap-error-msg"></div>
             <noscript>
                 <div>
                     <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="{% trans 'Update Summary' %}" />
@@ -318,11 +318,11 @@ div.forms{
     <script type="text/javascript">
 
     function IndUpdateSummary(memb){
-    	var corp_type = $("input[name=corporate_membership_type]:checked");
-    	var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
-    	var total_individual_count = parseInt($("#ind-qty").data('total_individual_count'));
-    	
-    	var ind_qty = parseInt($("#ind-qty").html());
+        var corp_type = $("input[name=corporate_membership_type]:checked");
+        var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
+        var total_individual_count = parseInt($("#ind-qty").data('total_individual_count'));
+
+        var ind_qty = parseInt($("#ind-qty").html());
         var ind_price = parseFloat($("#ind-price").html());
         var ind_sub_total = parseFloat($("#ind-sub-total").html());
         var total_amount = parseFloat($("#total-amount").html());
@@ -332,59 +332,59 @@ div.forms{
         var above_cap_ind_sub_total = parseFloat($("#above-cap-ind-sub-total").html());
         $("#cap-error-msg").html("");
 
-    	
-    	if (cap_obj && cap_obj.apply_cap === "True"){
-    		if(memb.checked){
-    			total_individual_count = total_individual_count + 1;
-    			if (total_individual_count <= cap_obj.membership_cap || cap_obj.allow_above_cap === "False"){
-    				ind_qty = parseInt(ind_qty) + 1;
-    				if (isNaN(ind_price)==false && ind_price > 0){
+
+        if (cap_obj && cap_obj.apply_cap === "True"){
+            if(memb.checked){
+                total_individual_count = total_individual_count + 1;
+                if (total_individual_count <= cap_obj.membership_cap || cap_obj.allow_above_cap === "False"){
+                    ind_qty = parseInt(ind_qty) + 1;
+                    if (isNaN(ind_price)==false && ind_price > 0){
                         ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price);
                         total_amount = parseFloat(total_amount) + parseFloat(ind_price);
                     }
-    				if (total_individual_count > cap_obj.membership_cap){
-    					$("#cap-error-msg").html("Membership cap has been reached! Limit to " + cap_obj.membership_cap + " please!");
-    				}
-    			}else{
-    				if (cap_obj.allow_above_cap === "True"){
-    					$("#above-cap-ind").show();
-    					above_cap_ind_qty = above_cap_ind_qty + 1;
-    					if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
-    						above_cap_ind_sub_total = above_cap_ind_sub_total + above_cap_ind_price;
+                    if (total_individual_count > cap_obj.membership_cap){
+                        $("#cap-error-msg").html("Membership cap has been reached! Limit to " + cap_obj.membership_cap + " please!");
+                    }
+                }else{
+                    if (cap_obj.allow_above_cap === "True"){
+                        $("#above-cap-ind").show();
+                        above_cap_ind_qty = above_cap_ind_qty + 1;
+                        if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
+                            above_cap_ind_sub_total = above_cap_ind_sub_total + above_cap_ind_price;
                             total_amount = total_amount + above_cap_ind_price;
                         }
-    				}
-    			}
+                    }
+                }
 
             }else{
-            	total_individual_count = total_individual_count - 1;
-            	if (!isNaN(above_cap_ind_qty) && above_cap_ind_qty > 0){
-            		above_cap_ind_qty = above_cap_ind_qty -1;
-            		if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
-            			above_cap_ind_sub_total = above_cap_ind_sub_total - above_cap_ind_price;
+                total_individual_count = total_individual_count - 1;
+                if (!isNaN(above_cap_ind_qty) && above_cap_ind_qty > 0){
+                    above_cap_ind_qty = above_cap_ind_qty -1;
+                    if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
+                        above_cap_ind_sub_total = above_cap_ind_sub_total - above_cap_ind_price;
                         total_amount = total_amount - above_cap_ind_price;
                     }
-            	}else{
-            		ind_qty = ind_qty - 1;
-            		if (isNaN(ind_price)==false && ind_price > 0){
+                }else{
+                    ind_qty = ind_qty - 1;
+                    if (isNaN(ind_price)==false && ind_price > 0){
                         ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price);
                         total_amount = parseFloat(total_amount) - parseFloat(ind_price);
                     }
-            	}
+                }
 
             }
-    		
-    	}else{
+
+        }else{
 
             if(memb.checked){
-            	total_individual_count = total_individual_count + 1;
+                total_individual_count = total_individual_count + 1;
                 ind_qty = total_individual_count;
                 if (isNaN(ind_price)==false && ind_price > 0){
                     ind_sub_total = ind_sub_total + ind_price;
                     total_amount = total_amount + ind_price;
                 }
             }else{
-            	total_individual_count = total_individual_count - 1
+                total_individual_count = total_individual_count - 1
                 ind_qty = total_individual_count;
                 if (isNaN(ind_price)==false && ind_price > 0){
                     ind_sub_total = ind_sub_total - ind_price;
@@ -392,16 +392,16 @@ div.forms{
                 }
             }
 
-    	}
-    	
-    	$("#ind-qty").html(ind_qty);
-    	$("#ind-sub-total").html(ind_sub_total.toFixed(2));
+        }
+
+        $("#ind-qty").html(ind_qty);
+        $("#ind-sub-total").html(ind_sub_total.toFixed(2));
         $("#total-amount").html(total_amount.toFixed(2));
         $("#above-cap-ind-qty")
         $("#above-cap-ind-qty").html(above_cap_ind_qty);
-    	$("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
+        $("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
 
-    	$("#ind-qty").data('total_individual_count', total_individual_count);
+        $("#ind-qty").data('total_individual_count', total_individual_count);
     }
 
 
@@ -419,15 +419,15 @@ div.forms{
         var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
 
         if (cap_obj.apply_cap === "True"){
-        	var above_cap_ind_qty;
+            var above_cap_ind_qty;
         }
 
-		//console.log(cap_obj);
-		//console.log(cap_obj.apply_cap);
-		//console.log(cap_obj.membership_cap);
-		//console.log(cap_obj.allow_above_cap);
-		//console.log(cap_obj.above_cap_price);
-		
+        //console.log(cap_obj);
+        //console.log(cap_obj.apply_cap);
+        //console.log(cap_obj.membership_cap);
+        //console.log(cap_obj.allow_above_cap);
+        //console.log(cap_obj.above_cap_price);
+
         var new_corp_price = $(corp_type).parent().find(".type-corp-price").html();
         var new_ind_price = $(corp_type).parent().find(".type-ind-price").html();
 
@@ -455,37 +455,37 @@ div.forms{
         // update individual price and total
             $("#above-cap-ind-qty").html(0);
             $("#above-cap-ind-price").html("0.00");
-        	$("#above-cap-ind-sub-total").html("0.00");
-        	$("#above-cap-ind").hide();
-        	$("#cap-error-msg").html("");
-        	if (cap_obj && cap_obj.apply_cap === "True"){
-        		var membership_cap = parseInt(cap_obj.membership_cap);
-        		if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "True"){
-        			ind_sub_total = membership_cap * parseFloat(new_ind_price);
-        			if (cap_obj.allow_above_cap === "True"){
-        				$("#above-cap-ind").show();
-        				above_cap_ind_qty = total_individual_count - membership_cap;
-        				ind_qty = membership_cap;
-        				above_cap_ind_sub_total = above_cap_ind_qty * parseFloat(cap_obj.above_cap_price);
-        				$("#above-cap-ind-qty").html(above_cap_ind_qty);
-        				$("#above-cap-ind-price").html(parseFloat(cap_obj.above_cap_price).toFixed(2));
-        	        	$("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
-        	        	total_amount = above_cap_ind_sub_total;
-        			}
-        		}else{
-        			ind_qty = total_individual_count
+            $("#above-cap-ind-sub-total").html("0.00");
+            $("#above-cap-ind").hide();
+            $("#cap-error-msg").html("");
+            if (cap_obj && cap_obj.apply_cap === "True"){
+                var membership_cap = parseInt(cap_obj.membership_cap);
+                if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "True"){
+                    ind_sub_total = membership_cap * parseFloat(new_ind_price);
+                    if (cap_obj.allow_above_cap === "True"){
+                        $("#above-cap-ind").show();
+                        above_cap_ind_qty = total_individual_count - membership_cap;
+                        ind_qty = membership_cap;
+                        above_cap_ind_sub_total = above_cap_ind_qty * parseFloat(cap_obj.above_cap_price);
+                        $("#above-cap-ind-qty").html(above_cap_ind_qty);
+                        $("#above-cap-ind-price").html(parseFloat(cap_obj.above_cap_price).toFixed(2));
+                        $("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
+                        total_amount = above_cap_ind_sub_total;
+                    }
+                }else{
+                    ind_qty = total_individual_count
                     ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
-        			if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "False"){
-        				$("#cap-error-msg").html("Whoops! You'll need to de-select some member(s) because the limit of individual members is " + membership_cap);
-        			}
-        		}
-        	}else{
-        		ind_qty = total_individual_count
+                    if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "False"){
+                        $("#cap-error-msg").html("Whoops! You'll need to de-select some member(s) because the limit of individual members is " + membership_cap);
+                    }
+                }
+            }else{
+                ind_qty = total_individual_count
                 ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
-        	}
-        	$("#ind-qty").html(ind_qty);
-        	$("#ind-price").html(new_ind_price);
-        	$("#ind-sub-total").html(ind_sub_total);
+            }
+            $("#ind-qty").html(ind_qty);
+            $("#ind-price").html(new_ind_price);
+            $("#ind-sub-total").html(ind_sub_total);
             update_total = true;
 
         // update total amount
@@ -498,16 +498,16 @@ div.forms{
 
     $(document).ready(function()
     {
-    	if ($("input#id_select_all_members:checked").length > 0){
-    		$("#id_members").hide();
+        if ($("input#id_select_all_members:checked").length > 0){
+            $("#id_members").hide();
         }else{
             $("#id_members").show();
-    	}
-    	//$("input[name=members]").each(function()
+        }
+        //$("input[name=members]").each(function()
         //    {
-        //    	IndUpdateSummary(this);
+        //        IndUpdateSummary(this);
         //});
-    	
+
         $("#id_select_all_members").click(function()
         {
             var checked_status = this.checked;
@@ -521,9 +521,9 @@ div.forms{
             });
 
             if(checked_status){
-            	$("#id_members").hide();
+                $("#id_members").hide();
             }else{
-            	$("#id_members").show();
+                $("#id_members").show();
             }
         });
 

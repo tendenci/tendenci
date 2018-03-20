@@ -1,9 +1,10 @@
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import ImproperlyConfigured
 
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
 
 from .models import Newsletter
 

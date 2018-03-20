@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.emails.models import Email
@@ -38,7 +38,7 @@ class RecurringPaymentEmailNotices(object):
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
         self.email.reply_to = self.reply_to_email
-        self.email_footer = render_to_string("email_footer.html")
+        self.email_footer = render_to_string(template_name="email_footer.html")
 
         self.admin_emails = self.get_admin_emails()
 
@@ -70,8 +70,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_script_support_transaction.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -82,7 +82,7 @@ class RecurringPaymentEmailNotices(object):
                                                                             'dname':self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_transaction_result(self, payment_transaction, success=True, **kwargs):
@@ -97,8 +97,8 @@ class RecurringPaymentEmailNotices(object):
                 if payment_transaction.payment.state.lower() in ['texas', 'tx']:
                     user_in_texas = True
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url,
                                                 'user_in_texas': user_in_texas,
@@ -115,7 +115,7 @@ class RecurringPaymentEmailNotices(object):
                                                                                 'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_customer_transaction_result(self, payment_transaction, **kwargs):
@@ -125,15 +125,15 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_transaction.html"
             membership = kwargs.get('membership', None)
-            
+
             try:
-                email_content = render_to_string(template_name,
-                                               {'pt':payment_transaction,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url,
                                                 'membership': membership,
                                                 })
-                
+
                 self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 if payment_transaction.status:
@@ -145,7 +145,7 @@ class RecurringPaymentEmailNotices(object):
                             'desc': payment_transaction.recurring_payment.description})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_no_payment_profile(self, recurring_payment):
@@ -155,8 +155,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_no_payment_profile.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -167,7 +167,7 @@ class RecurringPaymentEmailNotices(object):
                                     'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_customer_no_payment_profile(self, recurring_payment):
@@ -177,8 +177,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_no_payment_profile.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
@@ -189,7 +189,7 @@ class RecurringPaymentEmailNotices(object):
                                     'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
     def email_admins_account_disabled(self, recurring_payment, user_by):
@@ -199,8 +199,8 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_account_disabled.html"
             try:
-                email_content = render_to_string(template_name,
-                                               {'rp':recurring_payment,
+                email_content = render_to_string(template_name=template_name,
+                                               context={'rp':recurring_payment,
                                                 'user_by': user_by,
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
@@ -213,7 +213,7 @@ class RecurringPaymentEmailNotices(object):
                        'dname': self.site_display_name})
 
                 self.email.send()
-            except TemplateDoesNotExist:
+            except (TemplateDoesNotExist, IOError):
                 pass
 
 
@@ -227,7 +227,7 @@ def run_a_recurring_payment(rp, verbosity=0):
     num_processed = 0
     if rp.status_detail == 'active':
         rp_email_notice = RecurringPaymentEmailNotices()
-        
+
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
         # check and store payment profiles in local db
@@ -254,7 +254,7 @@ def run_a_recurring_payment(rp, verbosity=0):
             require_payment_profile = True
             if rp.platform == 'stripe':
                 require_payment_profile = False
-                
+
             if require_payment_profile:
                 payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id,
@@ -270,7 +270,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                         membership = inv.object_type.get_object_for_this_type(id=inv.object_id)
                     else:
                         membership = None
-                        
+
                     # wait for 3 minutes (duplicate transaction window is 2 minutes) if this is not the first invoice,
                     # otherwise, the payment gateway would through the "duplicate transaction" error.
                     if i > 0: time.sleep(3*60)
@@ -292,17 +292,17 @@ def run_a_recurring_payment(rp, verbosity=0):
                     # make payment transaction and then update recurring_payment fields
                     if verbosity > 1:
                         if rp_invoice.billing_cycle_start_dt and rp_invoice.billing_cycle_end_dt:
-                            print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...' \
+                            print('...Making payment transaction for billing cycle (%s -%s) - amount: %s%.2f ...'
                                     % (rp_invoice.billing_cycle_start_dt.strftime('%m-%d-%Y'),
                                        rp_invoice.billing_cycle_end_dt.strftime('%m-%d-%Y'),
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
                         else:
-                            print('...Making payment transaction for invoice (id=%d) - amount: %s%.2f ...' \
+                            print('...Making payment transaction for invoice (id=%d) - amount: %s%.2f ...'
                                     % (rp_invoice.invoice.id,
                                        currency_symbol,
                                        rp_invoice.invoice.balance))
-                            
+
                     success = False
 
                     if payment_profile:
@@ -459,7 +459,7 @@ def api_rp_setup(data):
         u.is_superuser = False
         u.save()
 
-        profile = Profile.objects.create(
+        Profile.objects.create(
            user=u,
            creator=u,
            creator_username=u.username,

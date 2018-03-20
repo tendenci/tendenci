@@ -12,8 +12,8 @@ from django.utils.timezone import now as tznow
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.forms import TendenciBaseForm
 
-import compat, defaults, util
-from .models import Topic, Post, Attachment, PollAnswer, Category
+from . import compat, defaults, util
+from .models import Topic, Post, PollAnswer, Category
 
 
 User = compat.get_user_model()
@@ -85,7 +85,7 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Move args to kwargs
         if args:
-            kwargs.update(dict(zip(inspect.getargspec(super(PostForm, self).__init__)[0][1:], args)))
+            kwargs.update(dict(zip(inspect.getfullargspec(super(PostForm, self).__init__)[0][1:], args)))
         self.user = kwargs.pop('user', None)
         self.ip = kwargs.pop('ip', None)
         self.topic = kwargs.pop('topic', None)
@@ -119,7 +119,7 @@ class PostForm(forms.ModelForm):
         self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
 
         # add form-control class
-        for k in self.fields.keys():
+        for k in self.fields:
             self.fields[k].widget.attrs['class'] = 'form-control'
 
     def clean_body(self):
@@ -193,7 +193,7 @@ class AdminPostForm(PostForm):
 
     def __init__(self, *args, **kwargs):
         if args:
-            kwargs.update(dict(zip(inspect.getargspec(forms.ModelForm.__init__)[0][1:], args)))
+            kwargs.update(dict(zip(inspect.getfullargspec(forms.ModelForm.__init__)[0][1:], args)))
         if 'instance' in kwargs and kwargs['instance']:
             kwargs.setdefault('initial', {}).update({'login': getattr(kwargs['instance'].user, username_field)})
         super(AdminPostForm, self).__init__(**kwargs)

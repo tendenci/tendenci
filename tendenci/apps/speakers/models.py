@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -16,6 +17,7 @@ def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     return 'speakers/%s' % (filename)
 
+
 class Track(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -24,6 +26,7 @@ class Track(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Speaker(TendenciBaseModel):
     name = models.CharField(max_length=50)
@@ -65,9 +68,8 @@ class Speaker(TendenciBaseModel):
         get_latest_by = "-start_date"
         app_label = 'speakers'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("speaker.view", [self.slug])
+        return reverse('speaker.view', args=[self.slug])
 
     def professional_photo(self):
         try:
@@ -92,7 +94,7 @@ class SpeakerFile(File):
             (PHOTO_TYPE_FUN, 'Fun'),
     )
 
-    speaker = models.ForeignKey(Speaker)
+    speaker = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     photo_type = models.CharField(max_length=50, choices=PHOTO_TYPE_CHOICES)
     position = models.IntegerField(blank=True)
 

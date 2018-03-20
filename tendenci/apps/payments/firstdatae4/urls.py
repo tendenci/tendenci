@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.payments.firstdatae4.views',
-     url(r'^thankyou/$', 'thank_you', name="firstdatae4.thank_you"),
-     url(r'^silent-post/$', 'silent_post', name="firstdatae4.silent_post"),
-)
+urlpatterns = [
+     url(r'^thankyou/$', views.thank_you, name="firstdatae4.thank_you"),
+     url(r'^silent-post/$', views.silent_post, name="firstdatae4.silent_post"),
+]

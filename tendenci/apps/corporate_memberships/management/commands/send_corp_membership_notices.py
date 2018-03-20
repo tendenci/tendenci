@@ -4,11 +4,10 @@ import time
 import traceback
 
 from django.core.management.base import BaseCommand
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.template.loader import render_to_string
-from django.template import TemplateDoesNotExist
-from django.template import Context, Template
+from django.template import engines, TemplateDoesNotExist
 from django.conf import settings
 
 
@@ -66,8 +65,8 @@ class Command(BaseCommand):
                 template_name = "corporate_memberships/notices/email_recap.html"
                 try:
                     recap_email_content = render_to_string(
-                               template_name,
-                               {'notices': notices,
+                               template_name=template_name,
+                               context={'notices': notices,
                               'total_sent': total_sent,
                               'site_url': site_url,
                               'site_display_name': site_display_name,
@@ -82,7 +81,7 @@ class Command(BaseCommand):
 
                     notification.send_emails(recap_recipient, 'corp_memb_notice_email',
                                              email_context)
-                except TemplateDoesNotExist:
+                except (TemplateDoesNotExist, IOError):
                     pass
 
         def email_script_errors(err_msg):
@@ -208,8 +207,8 @@ class Command(BaseCommand):
 
             corp_app = CorpMembershipApp.objects.current_app()
             authentication_info = render_to_string(
-                'notification/corp_memb_notice_email/auth_info.html',
-                {'corp_membership': membership,
+                template_name='notification/corp_memb_notice_email/auth_info.html',
+                context={'corp_membership': membership,
                  'corp_app': corp_app})
             individuals_join_url = '%s%s' % (site_url,
                                              reverse('membership_default.corp_pre_add',
@@ -227,8 +226,8 @@ class Command(BaseCommand):
 
             if membership.renewal:
                 renewed_individuals_list = render_to_string(
-                    'notification/corp_memb_notice_email/renew_list.html',
-                    {'corp_membership': membership})
+                    template_name='notification/corp_memb_notice_email/renew_list.html',
+                    context={'corp_membership': membership})
                 total_individuals_renewed = membership.indivmembershiprenewentry_set.count()
             else:
                 renewed_individuals_list = ''
@@ -268,15 +267,14 @@ class Command(BaseCommand):
 
                 body = body + ' <br /><br />{% include "email_footer.html" %}'
 
-                context = Context(context)
-                template = Template(body)
-                body = template.render(context)
+                template = engines['django'].from_string(body)
+                body = template.render(context=context)
 
                 email_recipient = recipient.user.email
                 subject = notice.subject.replace('(name)',
                                             corp_profile.name)
-                template = Template(subject)
-                subject = template.render(context)
+                template = engines['django'].from_string(subject)
+                subject = template.render(context=context)
 
                 email_context.update({
                     'subject':subject,

@@ -14,7 +14,7 @@ templatetags/ticket_to_link.py - Used in ticket comments to allow wiki-style
 import re
 
 from django import template
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.helpdesk.models import Ticket
@@ -41,8 +41,6 @@ def num_to_link(text):
         matches.append(match)
 
     for match in ReverseProxy(matches):
-        start = match.start()
-        end = match.end()
         number = match.groups()[0]
         url = reverse('helpdesk_view', args=[number])
         try:

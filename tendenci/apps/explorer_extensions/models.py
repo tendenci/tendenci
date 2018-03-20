@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -19,7 +19,7 @@ class DatabaseDumpFile(models.Model):
         ("json", "json"),
         ("xml", "xml")
     )
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     start_dt = models.DateTimeField(auto_now_add=True)
     end_dt = models.DateTimeField(null=True, blank=True)
     dbfile = models.FileField(upload_to='dbdump')

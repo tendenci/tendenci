@@ -1,5 +1,6 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.tendenci_guide.views',
-    url(r'^guide/(?P<slug>[\w\-]+)/$', 'guide_page', name="tendenci_guide.guide_page"),
-)
+urlpatterns = [
+    url(r'^guide/(?P<slug>[\w\-]+)/$', views.guide_page, name="tendenci_guide.guide_page"),
+]

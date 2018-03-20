@@ -4,11 +4,11 @@ import math
 import time
 import subprocess
 from datetime import datetime, timedelta
+
 from django.db import models
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
-from django.template import RequestContext
-from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404, redirect, Http404
+from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
@@ -23,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 import simplejson
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
 from tendenci.libs.utils import python_executable
 
@@ -126,11 +128,11 @@ def index(request, username='', template_name="profiles/index.html"):
             can_auto_renew = True
             break
     if can_auto_renew:
-        if user_this.recurring_payments.filter(status=True, 
+        if user_this.recurring_payments.filter(status=True,
                                                  status_detail='active',
                                                  object_content_type__model='membershipdefault').exists():
             auto_renew_is_set = True
-        
+
     registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
 
     EventLog.objects.log(instance=profile)
@@ -163,7 +165,7 @@ def index(request, username='', template_name="profiles/index.html"):
     else:
         membership_apps = None
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
         "user_this": user_this,
         "profile": profile,
@@ -179,7 +181,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_reminders': membership_reminders,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
-        }, context_instance=RequestContext(request))
+        })
 
 
 def search(request, memberships_search=False, template_name="profiles/search.html"):
@@ -191,14 +193,14 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     if not request.user.profile.is_superuser:
         # block anon
-        if request.user.is_anonymous():
+        if request.user.is_anonymous:
             if not allow_anonymous_search:
                 raise Http403
             if not allow_user_search:
                 raise Http403
 
         # block member or user
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if request.user.profile.is_member:  # if member
                 if membership_view_perms == 'private':
                     if not allow_user_search:
@@ -214,7 +216,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         display_membership_type = True
     else:
         if membership_view_perms in ['all-members', 'member-type']:
-            if request.user.is_authenticated() and \
+            if request.user.is_authenticated and \
                 request.user.profile.is_member:
                 display_membership_type = True
     mt_ids_list = None
@@ -268,7 +270,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
-        if request.user.is_authenticated() and request.user.profile.is_member:
+        if request.user.is_authenticated and request.user.profile.is_member:
             if allow_member_search:
                 filters = (Q(status=True) & Q(status_detail='active'))
             else:
@@ -300,7 +302,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             if membership_view_perms != 'public':
                 # show non-members only
                 profiles = profiles.filter(member_number='')
-                
+
     # group
     if group:
         profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
@@ -344,13 +346,13 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'profiles': profiles,
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
-            'memberships_search': memberships_search},
-        context_instance=RequestContext(request))
+            'memberships_search': memberships_search})
 
 
 @login_required
@@ -425,11 +427,11 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                           user_this=None,
                           required_fields_list=required_fields_list)
     auto_pwd = request.POST.get('auto_pwd')
-    return render_to_response(template_name, {'form':form, 'user_this':None,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form, 'user_this':None,
                                               'required_fields_list': required_fields_list,
                                               'auto_pwd': auto_pwd
-                                              },
-        context_instance=RequestContext(request))
+                                              })
 
 
 @login_required
@@ -540,9 +542,9 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                           user_this=user_edit,
                           required_fields_list=required_fields_list)
 
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,
-                                              'required_fields_list':required_fields_list},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'user_this':user_edit, 'profile':profile, 'form':form,
+                                              'required_fields_list':required_fields_list})
 
 
 def delete(request, id, template_name="profiles/delete.html"):
@@ -574,8 +576,8 @@ def delete(request, id, template_name="profiles/delete.html"):
 
         return HttpResponseRedirect(reverse('profile.search'))
 
-    return render_to_response(template_name, {'user_this':user, 'profile': profile},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'user_this':user, 'profile': profile})
 
 
 @login_required
@@ -603,8 +605,8 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
 
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
 
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'user_this':user_edit, 'profile':profile, 'form':form})
 
 
 def _get_next(request):
@@ -649,15 +651,15 @@ def password_change(request, id, template_name='registration/custom_password_cha
         # an admin doesn't have to enter the old password
         if request.user.profile.is_superuser:
             del form.fields['old_password']
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'user_this': user_edit,
         'form': form,
-    }, context_instance=RequestContext(request))
+    })
 
 @login_required
 def password_change_done(request, id, template_name='registration/custom_password_change_done.html'):
     user_edit = get_object_or_404(User, pk=id)
-    return render_to_response(template_name, {'user_this': user_edit}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'user_this': user_edit})
 
 
 ### REPORTS ###########################################################################
@@ -753,7 +755,7 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
     else:
         is_reverse = False
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'users30days': users30days,
         'users60days': users60days,
         'users90days': users90days,
@@ -763,7 +765,7 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
         'is_ascending_first_name': is_ascending_first_name,
         'is_ascending_email': is_ascending_email,
         'is_ascending_events': is_ascending_events,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @staff_member_required
@@ -819,7 +821,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
         profiles = profiles.order_by('-phone')
         is_ascending_phone = True
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'profiles': profiles,
         'is_ascending_id': is_ascending_id,
         'is_ascending_username': is_ascending_username,
@@ -827,7 +829,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
         'is_ascending_first_name': is_ascending_first_name,
         'is_ascending_email': is_ascending_email,
         'is_ascending_phone': is_ascending_phone,
-        }, context_instance=RequestContext(request))
+        })
 
 @staff_member_required
 def user_access_report(request):
@@ -842,11 +844,11 @@ def user_access_report(request):
         count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).values('user_id').distinct().count()
         day_logins.append((days, count))
 
-    return render_to_response('reports/user_access.html', {
+    return render_to_resp(request=request, template_name='reports/user_access.html',
+                context={
                   'total_users': total_users,
                   'total_logins': total_logins,
-                  'day_logins': day_logins,},
-                context_instance=RequestContext(request))
+                  'day_logins': day_logins,})
 
 @login_required
 def admin_list(request, template_name='profiles/admin_list.html'):
@@ -856,8 +858,8 @@ def admin_list(request, template_name='profiles/admin_list.html'):
 
     admins = Profile.actives.filter(user__is_superuser=True).select_related()
 
-    return render_to_response(template_name, {'admins': admins},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'admins': admins})
 
 @login_required
 def users_not_in_groups(request, template_name='profiles/users_not_in_groups.html'):
@@ -872,11 +874,11 @@ def users_not_in_groups(request, template_name='profiles/users_not_in_groups.htm
     # exists for the user. This would be the self healing process.
     for usr in users:
         try:
-            profile = usr.profile
+            usr.profile
         except Profile.DoesNotExist:
             Profile.objects.create_profile(user=usr)
 
-    return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'users': users})
 
 @login_required
 def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
@@ -899,10 +901,10 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
     else:
         form = form_class(user, request.user, request)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
                             'user_this': user,
-                            }, context_instance=RequestContext(request))
+                            })
 
 @login_required
 def user_role_edit(request, username, membership_id, form_class=GroupMembershipEditForm, template_name="profiles/edit_role.html"):
@@ -929,10 +931,10 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
     else:
         form = form_class(instance=membership)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
                             'membership': membership,
-                            }, context_instance=RequestContext(request))
+                            })
 
 @login_required
 def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
@@ -945,9 +947,9 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
     user = get_object_or_404(User, username=username)
 
     try:
-        profile = Profile.objects.get(user=user)
+        Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        profile = Profile.objects.create_profile(user=user)
+        Profile.objects.create_profile(user=user)
 
     if not request.user.profile.is_superuser:
         raise Http403
@@ -962,10 +964,10 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             membership.populate_or_clear_member_id()
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
                             'user_this': user,
-                            }, context_instance=RequestContext(request))
+                            })
 
 
 @login_required
@@ -988,10 +990,10 @@ def user_education_edit(request, username, form_class=EducationForm, template_na
             messages.add_message(request, messages.SUCCESS, _('Successfully edited education for %(full_name)s' % { 'full_name' : user.get_full_name()}))
             return HttpResponseRedirect("%s" % (reverse('profile', args=[user.username])))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
                             'form': form,
                             'user_this': user,
-                            }, context_instance=RequestContext(request))
+                            })
 
 
 @login_required
@@ -1104,7 +1106,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                 email=email).order_by('-last_login')
             users_with_duplicate_email.append(users)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'users_with_duplicate_name': users_with_duplicate_name,
         'users_with_duplicate_email': users_with_duplicate_email,
         'curr_page': curr_page,
@@ -1113,7 +1115,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
         'num_pages': num_pages,
         'page_range': page_range,
         'user_this': None,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -1178,7 +1180,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
                             if getattr(master, field) == '':
                                 setattr(master, field, getattr(profile, field))
 
-                        for model, fields in valnames.iteritems():
+                        for model, fields in valnames.items():
                             # skip auth_user
                             if model is User:
                                 continue
@@ -1259,10 +1261,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
             return redirect("profile.search")
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'profiles': profiles,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -1291,7 +1293,7 @@ def profile_export(request, template_name="profiles/export.html"):
         return HttpResponseRedirect(reverse('profile.export_status', args=[identifier]))
 
     context = {'form': form}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @login_required
@@ -1313,7 +1315,7 @@ def profile_export_status(request, identifier, template_name="profiles/export_st
 
     context = {'identifier': identifier,
                'download_ready': download_ready}
-    return render_to_response(template_name, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context=context)
 
 
 @login_required
@@ -1353,9 +1355,9 @@ def user_import_upload(request, template_name='profiles/import/upload.html'):
             # redirect to preview page.
             return redirect(reverse('profiles.user_import_preview', args=[user_import.id]))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -1396,7 +1398,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
         max_num_in_group = 10
         if num_pages > start_num:
             # first group
-            page_range = range(1, max_num_in_group + 1)
+            page_range = list(range(1, max_num_in_group + 1))
             # middle group
             i = curr_page - int(max_num_in_group / 2)
             if i <= max_num_in_group:
@@ -1406,14 +1408,14 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
             j = i + max_num_in_group
             if j > num_pages - max_num_in_group:
                 j = num_pages - max_num_in_group
-            page_range.extend(range(i, j + 1))
+            page_range.extend(list(range(i, j + 1)))
             if j < num_pages - max_num_in_group:
                 page_range.extend(['...'])
             # last group
-            page_range.extend(range(num_pages - max_num_in_group,
-                                    num_pages + 1))
+            page_range.extend(list(range(num_pages - max_num_in_group,
+                                         num_pages + 1)))
         else:
-            page_range = range(1, num_pages + 1)
+            page_range = list(range(1, num_pages + 1))
 
         # slice the data_list
         start_index = (curr_page - 1) * num_items_per_page + 2
@@ -1437,9 +1439,9 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)
             if not fieldnames:
-                fieldnames = idata.row_data.keys()
+                fieldnames = list(idata.row_data.keys())
 
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name, context={
             'uimport': uimport,
             'users_list': users_list,
             'curr_page': curr_page,
@@ -1449,7 +1451,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
             'num_pages': num_pages,
             'page_range': page_range,
             'fieldnames': fieldnames,
-            }, context_instance=RequestContext(request))
+            })
     else:
         if uimport.status in ('processing', 'completed'):
                 return redirect(reverse('profiles.user_import_status',
@@ -1460,9 +1462,9 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
                               "users_import_preprocess",
                               str(uimport.pk)])
 
-            return render_to_response(template_name, {
+            return render_to_resp(request=request, template_name=template_name, context={
                 'uimport': uimport,
-                }, context_instance=RequestContext(request))
+                })
 
 
 @login_required
@@ -1507,9 +1509,9 @@ def user_import_status(request, uimport_id, template_name='profiles/import/statu
     if uimport.status not in ('processing', 'completed'):
         return redirect(reverse('profiles.user_import'))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'uimport': uimport,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -1630,10 +1632,8 @@ def activate_email(request):
                 rprofile = RegistrationProfile.objects.create_profile(u)
             # send email
             send_registration_activation_email(u, rprofile, next=request.GET.get('next', ''))
-            context = RequestContext(request)
             template_name = "profiles/activate_email.html"
-            return render_to_response(template_name,
-                              { 'email': email},
-                              context_instance=context)
+            return render_to_resp(request=request, template_name=template_name,
+                context={'email': email})
 
     raise Http404

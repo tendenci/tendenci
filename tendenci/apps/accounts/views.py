@@ -1,16 +1,15 @@
 from django.conf import settings
-from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
-from django.template import RequestContext
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
-from django.contrib.auth.views import password_reset as auth_password_reset
-from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetView
 from django.utils.translation import ugettext_lazy as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.registration.forms import RegistrationForm
-from forms import LoginForm
+from .forms import LoginForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import ssl_required
@@ -49,12 +48,12 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
     else:
         form = form_class()
 
-        if request.user.is_authenticated() and redirect_to:
+        if request.user.is_authenticated and redirect_to:
                 return HttpResponseRedirect(redirect_to)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         "form": form
-    }, context_instance=RequestContext(request))
+    })
 
 @ssl_required
 def register(request, success_url=None,
@@ -208,16 +207,15 @@ def register(request, success_url=None,
 
     if extra_context is None:
         extra_context = {}
-    context = RequestContext(request)
-    for key, value in extra_context.items():
-        context[key] = callable(value) and value() or value
-    return render_to_response(template_name,
-                              { 'form': form },
-                              context_instance=context)
+    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    context['form'] = form
+    return render_to_resp(request=request, template_name=template_name,
+                          context=context)
 
 def password_reset(request):
     from_registration = request.GET.get('registration', False)
     extra_context = {
         'from_registration': from_registration,
     }
-    return auth_password_reset(request, password_reset_form=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context= extra_context)
+    auth_password_reset = PasswordResetView.as_view()
+    return auth_password_reset(request, form_class=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context=extra_context)

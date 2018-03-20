@@ -1,25 +1,24 @@
+from builtins import str
 from datetime import datetime, timedelta
 from os.path import join, isdir
 from os import mkdir
 from PIL import Image
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.db.models import Count
 
-from tendenci.apps.base.http import render_to_403
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.registry.sites import site
 
-from tendenci.apps.event_logs.utils import day_bars, month_days,\
-    request_month_range
-from tendenci.apps.event_logs.models import EventLog, EventLogBaseColor, EventLogColor
+from tendenci.apps.event_logs.utils import day_bars, request_month_range
+from tendenci.apps.event_logs.models import EventLog, EventLogBaseColor
 from tendenci.apps.event_logs.forms import EventLogSearchForm, EventsFilterForm
 from tendenci.apps.event_logs.colors import non_model_event_logs, get_color
 
@@ -30,8 +29,8 @@ def index(request, id=None, template_name="event_logs/view.html"):
     event_log = get_object_or_404(EventLog, pk=id)
 
     if has_perm(request.user, 'event_logs.view_eventlog'):
-        return render_to_response(template_name, {'event_log': event_log},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'event_log': event_log})
     else:
         raise Http403
 
@@ -57,14 +56,14 @@ def search(request, template_name="event_logs/search.html"):
 
             # if they set the dates lets update the range
             start_dt = search_form.cleaned_data['start_dt']
-            if isinstance(start_dt, unicode):
+            if isinstance(start_dt, str):
                 start_dt = datetime.strptime(
                     start_dt,
                     '%Y-%m-%d %H:%M'
                 )
 
             end_dt = search_form.cleaned_data['end_dt']
-            if isinstance(end_dt, unicode):
+            if isinstance(end_dt, str):
                 end_dt = datetime.strptime(
                     end_dt,
                     '%Y-%m-%d %H:%M'
@@ -80,7 +79,8 @@ def search(request, template_name="event_logs/search.html"):
         event_logs = EventLog.objects.filter(**filters)
         event_logs = event_logs.order_by('-create_dt')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
         'event_logs': event_logs,
         'search_form': search_form,
         'date_range_query': date_range_query % (
@@ -89,16 +89,15 @@ def search(request, template_name="event_logs/search.html"):
             end_dt.strftime('%Y-%m-%d'),
             end_dt.strftime('%I:%M %p')
         )
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 def print_view(request, id, template_name="event_logs/print-view.html"):
     event_log = get_object_or_404(EventLog, pk=id)
 
     if has_perm(request.user, 'event_logs.view_eventlog'):
-        return render_to_response(template_name, {'event_log': event_log},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'event_log': event_log})
     else:
         raise Http403
 
@@ -184,11 +183,10 @@ def event_summary_report(request):
     mm = 2*m
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 
-    return render_to_response(
-                'reports/event_summary.html',
-                {'chart_data': chart_data, 'summary_data': summary_data,
-                 'form': form, 'date_range': (from_date, to_date)},
-                context_instance=RequestContext(request))
+    return render_to_resp(
+                request=request, template_name='reports/event_summary.html',
+                context={'chart_data': chart_data, 'summary_data': summary_data,
+                 'form': form, 'date_range': (from_date, to_date)})
 
 
 @superuser_required
@@ -215,12 +213,11 @@ def event_application_summary_report(request, application):
                 .order_by('-count')
     action_colors(summary_data)
 
-    return render_to_response(
-                'reports/event_application_summary.html',
-                {'chart_data': chart_data, 'summary_data': summary_data,
+    return render_to_resp(
+                request=request, template_name='reports/event_application_summary.html',
+                context={'chart_data': chart_data, 'summary_data': summary_data,
                  'form': form, 'date_range': (from_date, to_date),
-                 'application': application},
-                context_instance=RequestContext(request))
+                 'application': application})
 
 
 @superuser_required
@@ -254,11 +251,10 @@ def event_summary_historical_report(request):
     mm = 2*m
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 
-    return render_to_response(
-                'reports/event_summary_historical.html',
-                {'chart_data': chart_data, 'summary_data': summary_data,
-                 'form': form, 'date_range': (from_date, to_date)},
-                context_instance=RequestContext(request))
+    return render_to_resp(
+                request=request, template_name='reports/event_summary_historical.html',
+                context={'chart_data': chart_data, 'summary_data': summary_data,
+                 'form': form, 'date_range': (from_date, to_date)})
 
 
 @superuser_required
@@ -285,12 +281,11 @@ def event_source_summary_report(request, source):
                 .order_by('-count')
     event_colors(summary_data)
 
-    return render_to_response(
-                'reports/event_source_summary.html',
-                {'chart_data': chart_data, 'summary_data': summary_data,
+    return render_to_resp(
+                request=request, template_name='reports/event_source_summary.html',
+                context={'chart_data': chart_data, 'summary_data': summary_data,
                  'form': form, 'date_range': (from_date, to_date),
-                 'source': source},
-                context_instance=RequestContext(request))
+                 'source': source})
 
 
 @superuser_required
@@ -299,10 +294,10 @@ def info(request):
     logged_models = []
     for app in apps:
         if 'event_logs' in app:
-            for model in app['event_logs'].keys():
+            for model in app['event_logs']:
                 logs = app['event_logs'][model]
                 log_list = []
-                for log in logs.keys():
+                for log in logs:
                     log_list.append({
                         'label': log.replace('_', ' '),
                         'id': logs[log][0],
@@ -312,10 +307,10 @@ def info(request):
                     'label': model.replace('_', ' '),
                     'event_logs':sorted(log_list, key=lambda x: x['label']),
                 })
-    for model in non_model_event_logs.keys():
+    for model in non_model_event_logs:
         logs = non_model_event_logs[model]
         log_list = []
-        for log in logs.keys():
+        for log in logs:
             log_list.append({
                 'label': log.replace('_', ' '),
                 'id': logs[log][0],
@@ -326,6 +321,6 @@ def info(request):
             'label': model.replace('_', ' '),
             'event_logs':sorted(log_list, key=lambda x: x['label']),
         })
-    return render_to_response('event_logs/info.html', {
+    return render_to_resp(request=request, template_name='event_logs/info.html', context={
         'logged_models':sorted(logged_models, key=lambda x: x['label']),
-    }, context_instance=RequestContext(request))
+    })

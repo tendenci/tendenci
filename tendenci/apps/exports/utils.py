@@ -1,7 +1,7 @@
+from builtins import str
 import subprocess
 import datetime
 import csv
-from StringIO import StringIO
 from django.http import HttpResponse
 from django.conf import settings
 from tendenci.libs.utils import python_executable
@@ -48,7 +48,7 @@ def render_csv(filename, title_list, data_list):
     csv_writer.writerow(title_list)
 
     for row_item_list in data_list:
-        for i in xrange(0, len(row_item_list)):
+        for i in range(0, len(row_item_list)):
             if row_item_list[i]:
                 if isinstance(row_item_list[i], datetime.datetime):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
@@ -56,7 +56,7 @@ def render_csv(filename, title_list, data_list):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                 elif isinstance(row_item_list[i], datetime.time):
                     row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
-                elif isinstance(row_item_list[i], basestring):
+                elif isinstance(row_item_list[i], str):
                     row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
 
@@ -70,10 +70,10 @@ def run_export_task(app_label, model_name, fields):
     )
 
     if settings.USE_SUBPROCESS:
-        subprocess.Popen([python_executable(), 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
+        subprocess.Popen([python_executable(), 'manage.py', 'run_export_task', str(export.pk)] + fields)
     else:
         from django.core.management import call_command
-        args = [unicode(export.pk)] + fields
+        args = [str(export.pk)] + fields
         call_command('run_export_task', *args)
 
     return export.pk

@@ -3,7 +3,7 @@ import os
 import simplejson as json
 
 from django.conf import settings as django_settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting
 
@@ -106,7 +106,7 @@ class Command(BaseCommand):
         ]
         for setting in settings:
             # check the required fields
-            req_list = [k for k in setting.keys() if k in required_keys]
+            req_list = [k for k in setting if k in required_keys]
             if len(req_list) != len(required_keys):
                 print('Setting does not have the required fields ... skipping.')
                 continue

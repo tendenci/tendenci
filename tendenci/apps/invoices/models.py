@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -11,8 +12,7 @@ from django.db.models.signals import post_save
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
-from tendenci.apps.accountings.utils import (make_acct_entries,
-                                    make_acct_entries_reversing)
+from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing)
 from tendenci.apps.entities.models import Entity
 
 STATUS_DETAIL_CHOICES = (
@@ -22,7 +22,7 @@ STATUS_DETAIL_CHOICES = (
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
 
-    object_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.CASCADE)
     object_id = models.IntegerField(default=0, blank=True, null=True)
     _object = GenericForeignKey('object_type', 'object_id')
     title = models.CharField(max_length=200, blank=True, null=True)
@@ -169,13 +169,11 @@ class Invoice(models.Model):
             return u'%s' % split_title
         return self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('invoice.view', [self.id])
+        return reverse('invoice.view', args=[self.id])
 
-    @models.permalink
     def get_absolute_url_with_guid(self):
-        return ('invoice.view', [self.id, self.guid])
+        return reverse('invoice.view', args=[self.id, self.guid])
 
     def get_discount_url(self):
         from tendenci.apps.discounts.models import Discount
@@ -194,7 +192,7 @@ class Invoice(models.Model):
         """
         self.guid = self.guid or uuid.uuid1().get_hex()
 
-        if hasattr(user, 'pk') and not user.is_anonymous():
+        if hasattr(user, 'pk') and not user.is_anonymous:
             self.set_creator(user)
             self.set_owner(user)
 
@@ -292,7 +290,7 @@ class Invoice(models.Model):
         if self.guid == guid:
             return True
 
-        if user2_compare.is_authenticated():
+        if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \
                     user2_compare.email == self.bill_to_email:
                 return self.status

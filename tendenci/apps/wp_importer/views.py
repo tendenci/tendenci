@@ -1,15 +1,18 @@
 import os.path
 import subprocess
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import redirect
 from django.conf import settings
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.utils import python_executable
 from tendenci.apps.wp_importer.forms import BlogImportForm
 from tendenci.apps.wp_importer.tasks import WPImportTask
 from tendenci.apps.base.http import MissingApp
-from django.contrib import messages
-from django.utils.translation import ugettext as _
+
 from djcelery.models import TaskMeta
 
 
@@ -54,8 +57,8 @@ def index(request, template_name="wp_importer/index.html"):
     else:
         form = BlogImportForm()
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 @login_required
 def detail(request, task_id, template_name="wp_importer/detail.html"):
@@ -73,8 +76,7 @@ def detail(request, task_id, template_name="wp_importer/detail.html"):
             messages.INFO,
             _('Your blog has been imported!')
         )
-        return render_to_response(template_name, {},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name)
 
     messages.add_message(
         request,
@@ -82,5 +84,4 @@ def detail(request, task_id, template_name="wp_importer/detail.html"):
         _("Your site import is being processed. You will receive an email at %s when the import is complete." % request.user.email)
     )
 
-    return render_to_response(template_name, {},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)

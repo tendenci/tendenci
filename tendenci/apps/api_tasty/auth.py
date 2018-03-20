@@ -1,5 +1,4 @@
 from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import Authorization
 
 class DeveloperApiKeyAuthentication(ApiKeyAuthentication):
     """
@@ -19,7 +18,7 @@ class DeveloperApiKeyAuthentication(ApiKeyAuthentication):
             return self._unauthorized()
 
         try:
-            key = ApiKey.objects.get(user=user, key=api_key)
+            ApiKey.objects.get(user=user, key=api_key)
         except ApiKey.DoesNotExist:
             return self._unauthorized()
 

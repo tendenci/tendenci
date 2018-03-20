@@ -21,35 +21,35 @@
             <div class="label">
                 <label for="officer-table">{% trans 'OFFICERS' %}</label>
             </div>
-			<table id="officer-table">
-			    <thead>
-			        <tr>
-			            <th class="officer-position">{% trans 'Position' %}</th>
+            <table id="officer-table">
+                <thead>
+                    <tr>
+                        <th class="officer-position">{% trans 'Position' %}</th>
                         <th class="officer-name">{% trans 'Name' %}</th>
                         <th class="officer-phone">{% trans 'Phone' %}</th>
-			        </tr>
-			    </thead>
+                    </tr>
+                </thead>
 
-			    <tbody>
-			        {% for officer in officers %}
-			        <tr>
-			            <td class="officer-position">{{ officer.position }}</td>
+                <tbody>
+                    {% for officer in officers %}
+                    <tr>
+                        <td class="officer-position">{{ officer.position }}</td>
 
-			            <td class="officer-name">
-			                <a href="{{ officer.user.get_profile.get_absolute_url }}">
-			                    {% if officer.user.get_full_name %}
+                        <td class="officer-name">
+                            <a href="{{ officer.user.get_profile.get_absolute_url }}">
+                                {% if officer.user.get_full_name %}
                                 {{ officer.user.get_full_name }}
                                 {% else %}
                                 {{ officer.user }}
                                 {% endif %}
-			                </a>
-			            </td>
+                            </a>
+                        </td>
 
-			            <td class="officer-phone">{{ officer.phone }}</td>
-			        </tr>
-			        {% endfor %}
-			    </tbody>
-			</table>
+                        <td class="officer-phone">{{ officer.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
         {% if admin %}

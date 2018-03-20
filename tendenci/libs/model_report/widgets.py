@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 
 
 class RangeWidget(forms.MultiWidget):
     """
     Render 2 inputs with vDatepicker class in order to select a date range.
     """
+    template_name = 'model_report/widgets/range_widget.html'
+
     def __init__(self, widget, *args, **kwargs):
         widgets = (widget, widget)
         kwargs['attrs'] = {'class': 'vDatepicker'}
@@ -17,9 +18,11 @@ class RangeWidget(forms.MultiWidget):
     def decompress(self, value):
         return value
 
-    def format_output(self, rendered_widgets):
-        widget_context = {'min': rendered_widgets[0], 'max': rendered_widgets[1]}
-        return render_to_string('model_report/widgets/range_widget.html', widget_context)
+    def get_context(self, name, value, attrs):
+        context = super(RangeWidget, self).get_context(name, value, attrs)
+        widgets = context['widget']['subwidgets']
+        context['min'] = widgets[0]
+        context['max'] = widgets[1]
 
 
 class RangeField(forms.MultiValueField):
@@ -42,7 +45,7 @@ class RangeField(forms.MultiValueField):
                 widget=RangeWidget(widget),
                 *args, **kwargs
                 )
-        self.label = force_unicode(field_class().label)
+        self.label = force_text(field_class().label)
 
     def compress(self, data_list):
         if data_list:

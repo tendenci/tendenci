@@ -8,7 +8,7 @@ from django.utils.encoding import smart_str
 from django.contrib.contenttypes.models import ContentType
 import simplejson
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 from django.utils.translation import ugettext_lazy as _
@@ -211,7 +211,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
         inv.object_id = corp_memb.id
         inv.title = corp_memb.corp_profile.name
 
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             inv.bill_to = '%s %s' % (user.first_name, user.last_name)
             inv.bill_to_first_name = user.first_name
             inv.bill_to_last_name = user.last_name
@@ -405,8 +405,7 @@ def get_corpapp_default_fields_list():
 #    data = ''.join(fd.read())
 #    fd.close()
 
-    data = render_to_string('corporate_memberships/regular_fields.json',
-                               {}, context_instance=None)
+    data = render_to_string(template_name='corporate_memberships/regular_fields.json')
 
     if data:
         return simplejson.loads(data)
@@ -462,7 +461,7 @@ def csv_to_dict(file_path):
     data_list = []
 
     data = csv.reader(default_storage.open(file_path, 'rU'))
-    fields = data.next()
+    fields = next(data)
 
     fields = [smart_str(field) for field in fields]
 
@@ -478,7 +477,7 @@ def validate_import_file(file_path):
     """
     normalize_newline(file_path)
     data = csv.reader(default_storage.open(file_path, mode='rU'))
-    fields = data.next()
+    fields = next(data)
     fields = [smart_str(field) for field in fields]
 
     corp_memb_keys = [slugify(cm) for cm in fields]
@@ -524,7 +523,6 @@ def get_over_time_stats():
 
 def get_summary():
     from tendenci.apps.corporate_memberships.models import CorporateMembershipType, CorpMembership
-    now = datetime.now()
     summary = []
     types = CorporateMembershipType.objects.all()
     total_active = 0

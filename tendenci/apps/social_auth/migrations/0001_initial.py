@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 from django.conf import settings
 import tendenci.apps.social_auth.fields
 
@@ -41,7 +42,7 @@ class Migration(migrations.Migration):
                 ('provider', models.CharField(max_length=32)),
                 ('uid', models.CharField(max_length=255)),
                 ('extra_data', tendenci.apps.social_auth.fields.JSONField(blank=True)),
-                ('user', models.ForeignKey(related_name='social_auth', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(related_name='social_auth', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.AlterUniqueTogether(

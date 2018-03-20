@@ -55,7 +55,7 @@
             margin-top: 1em;
         }
         #import-wrap .form-control{
-        	width: 60%;
+            width: 60%;
         }
     </style>
 
@@ -75,7 +75,7 @@
     </div>
     {% endif %}
 
-	<div class="clearfix">
+    <div class="clearfix">
     <div id="import-instruction">
         <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
 
@@ -158,7 +158,7 @@
 
         <div class="fields-block">
 
-        	{% if form.upload_file.errors %}
+            {% if form.upload_file.errors %}
             <div class="error">
                 {% for error in form.upload_file.errors %}
                 <p>{{ error }}</p>
@@ -177,9 +177,9 @@
             {% endif %}
 
             <div class="form-group">
-			    <label for="id_override">{% trans 'Update' %}:</label>
-			      {{ form.override }}
-			 </div>
+                <label for="id_override">{% trans 'Update' %}:</label>
+                  {{ form.override }}
+             </div>
 
             {% if form.key.errors %}
             <div class="error">
@@ -189,10 +189,10 @@
             </div>
             {% endif %}
 
-			<div class="form-group">
-			    <label for="id_key">{% trans 'Identify duplicates by' %}:</label>
-			      {{ form.key }}
-			 </div>
+            <div class="form-group">
+                <label for="id_key">{% trans 'Identify duplicates by' %}:</label>
+                  {{ form.key }}
+             </div>
 
 
             {% if form.bind_members.errors %}
@@ -204,10 +204,10 @@
             {% endif %}
 
             <div class="checkbox">
-            	<label>
-			    {{ form.bind_members }} {{ form.bind_members.label }}
-			 	</label>
-			 </div>
+                <label>
+                {{ form.bind_members }} {{ form.bind_members.label }}
+                 </label>
+             </div>
 
             <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary"></div>
         </div>

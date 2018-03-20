@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.payments.paypal.views',
-     url(r'^thankyou/$', 'thank_you', name="paypal.thank_you"),
-     url(r'^ipn/', 'ipn', name="paypal.ipn"),
-)
+urlpatterns = [
+     url(r'^thankyou/$', views.thank_you, name="paypal.thank_you"),
+     url(r'^ipn/', views.ipn, name="paypal.ipn"),
+]

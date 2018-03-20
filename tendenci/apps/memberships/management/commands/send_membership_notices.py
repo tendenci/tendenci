@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 import time
 import traceback
 from django.core.management.base import BaseCommand
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
-from django.template import TemplateDoesNotExist
-from django.template import Context, Template
+from django.template import engines, TemplateDoesNotExist
 
 
 class Command(BaseCommand):
@@ -61,8 +60,8 @@ class Command(BaseCommand):
                 template_name = "memberships/notices/email_recap.html"
                 try:
                     recap_email_content = render_to_string(
-                               template_name,
-                               {'notices': notices,
+                               template_name=template_name,
+                               context={'notices': notices,
                               'total_sent': total_sent,
                               'site_url': site_url,
                               'site_display_name': site_display_name,
@@ -77,7 +76,7 @@ class Command(BaseCommand):
 
                     notification.send_emails(recap_recipient, 'membership_notice_email',
                                              email_context)
-                except TemplateDoesNotExist:
+                except (TemplateDoesNotExist, IOError):
                     pass
 
         def email_script_errors(err_msg):
@@ -202,7 +201,7 @@ class Command(BaseCommand):
                     if notice.notice_type == 'expiration' and membership.auto_renew and membership.has_rp():
                         # skip if auto renew is set up for this membership
                         continue
-                    
+
                     try:
                         email_member(notice, membership, global_context)
                         if memberships_count <= 50:
@@ -265,15 +264,14 @@ class Command(BaseCommand):
 
             body = body + ' <br /><br />{% include "email_footer.html" %}'
 
-            context = Context(context)
-            template = Template(body)
-            body = template.render(context)
+            template = engines['django'].from_string(body)
+            body = template.render(context=context)
 
             email_recipient = user.email
             subject = notice.subject.replace('(name)',
                                         user.get_full_name())
-            template = Template(subject)
-            subject = template.render(context)
+            template = engines['django'].from_string(subject)
+            subject = template.render(context=context)
 
             email_context.update({
                 'subject':subject,

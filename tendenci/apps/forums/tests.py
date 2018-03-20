@@ -7,31 +7,30 @@ from django.contrib.auth.models import Permission
 from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.test import TestCase, skipUnlessDBFeature
 from django.test.client import Client
 from django.test.utils import override_settings
 from django.utils import timezone
-import permissions, views as pybb_views
+from . import permissions, views as pybb_views
 from .templatetags.pybb_tags import pybb_is_topic_unread, pybb_topic_unread, pybb_forum_unread, \
     pybb_get_latest_topics, pybb_get_latest_posts
 
-import compat, util
-
-User = compat.get_user_model()
-username_field = compat.get_username_field()
+from . import compat, util
 
 try:
     from lxml import html
 except ImportError:
     raise Exception('PyBB requires lxml for self testing')
 
-import defaults
+from . import defaults
 from .models import Topic, TopicReadTracker, Forum, ForumReadTracker, Post, Category, PollAnswer
 
+
+User = compat.get_user_model()
+username_field = compat.get_username_field()
 
 Profile = util.get_pybb_profile_model()
 
@@ -184,7 +183,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         pybb_topic_unread([topic,], user_ann)
 
         #before correction, raised IndexError: list index out of range
-        last_post = topic.last_post
+        topic.last_post
 
         #post creation now.
         Post(topic=topic, user=self.user, body='one').save()
@@ -375,7 +374,7 @@ class FeaturesTest(TestCase, SharedTestModule):
 
         Post(topic=topic_2, user=self.user, body='one').save()
 
-        forum_1 = self.forum
+        #forum_1 = self.forum
         forum_2 = Forum(name='forum_2', description='bar', category=self.category)
         forum_2.save()
 
@@ -585,7 +584,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         post_1_2 = Post.objects.create(topic=topic_1, user=self.user, body='1_2')
         post_2_1 = Post.objects.create(topic=topic_2, user=self.user, body='2_1')
 
-        user_ann = User.objects.create_user('ann', 'ann@localhost', 'ann')
+        User.objects.create_user('ann', 'ann@localhost', 'ann')
         client_ann = Client()
         client_ann.login(username='ann', password='ann')
 
@@ -599,7 +598,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         self.assertRedirects(response, '%s?page=%d#post-%d' % (topic_2.get_absolute_url(), 1, post_2_1.id))
 
         post_1_3 = Post.objects.create(topic=topic_1, user=self.user, body='1_3')
-        post_1_4 = Post.objects.create(topic=topic_1, user=self.user, body='1_4')
+        Post.objects.create(topic=topic_1, user=self.user, body='1_4')
 
         response = client_ann.get(topic_1.get_absolute_url(), data={'first-unread': 1}, follow=True)
         self.assertRedirects(response, '%s?page=%d#post-%d' % (topic_1.get_absolute_url(), 1, post_1_3.id))
@@ -749,8 +748,8 @@ class FeaturesTest(TestCase, SharedTestModule):
     def test_user_blocking(self):
         user = User.objects.create_user('test', 'test@localhost', 'test')
         topic = Topic.objects.create(name='topic', forum=self.forum, user=user)
-        p1 = Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
-        p2 = Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
+        Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
+        Post.objects.create(topic=topic, user=user, body='bbcode [b]test[/b]')
         self.user.is_superuser = True
         self.user.save()
         self.login_client()
@@ -933,7 +932,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         orig_conf = defaults.PYBB_DISABLE_SUBSCRIPTIONS
         defaults.PYBB_DISABLE_SUBSCRIPTIONS = True
 
-        user2 = User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
+        User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
         user3 = User.objects.create_user(username='user3', password='user3', email='user3@someserver.com')
         client = Client()
 
@@ -956,7 +955,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         values['body'] = 'test subscribtion юникод'
         response = self.client.post(add_post_url, values, follow=True)
         self.assertEqual(response.status_code, 200)
-        new_post = Post.objects.order_by('-id')[0]
+        Post.objects.order_by('-id')[0]
 
         # there should be one email in the outbox (user3)
         #because already subscribed users will still receive notifications.
@@ -969,7 +968,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         orig_conf = defaults.PYBB_DISABLE_NOTIFICATIONS
         defaults.PYBB_DISABLE_NOTIFICATIONS = True
 
-        user2 = User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
+        User.objects.create_user(username='user2', password='user2', email='user2@someserver.com')
         user3 = User.objects.create_user(username='user3', password='user3', email='user3@someserver.com')
         client = Client()
 
@@ -991,7 +990,7 @@ class FeaturesTest(TestCase, SharedTestModule):
         values['body'] = 'test subscribtion юникод'
         response = self.client.post(add_post_url, values, follow=True)
         self.assertEqual(response.status_code, 200)
-        new_post = Post.objects.order_by('-id')[0]
+        Post.objects.order_by('-id')[0]
 
         # there should be no email in the outbox
         self.assertEqual(len(mail.outbox), 0)
@@ -1550,21 +1549,21 @@ class CustomPermissionHandler(permissions.DefaultPermissionHandler):
     """
 
     def filter_categories(self, user, qs):
-        return qs.filter(hidden=False) if user.is_anonymous() else qs
+        return qs.filter(hidden=False) if user.is_anonymous else qs
 
     def may_view_category(self, user, category):
-        return user.is_authenticated() if category.hidden else True
+        return user.is_authenticated if category.hidden else True
 
     def filter_forums(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(hidden=False) & Q(category__hidden=False))
         return qs
 
     def may_view_forum(self, user, forum):
-        return user.is_authenticated() if forum.hidden or forum.category.hidden else True
+        return user.is_authenticated if forum.hidden or forum.category.hidden else True
 
     def filter_topics(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(forum__hidden=False) & Q(forum__category__hidden=False))
         qs = qs.filter(closed=False)  # filter out closed topics for test
         return qs
@@ -1573,7 +1572,7 @@ class CustomPermissionHandler(permissions.DefaultPermissionHandler):
         return self.may_view_forum(user, topic.forum)
 
     def filter_posts(self, user, qs):
-        if user.is_anonymous():
+        if user.is_anonymous:
             qs = qs.filter(Q(topic__forum__hidden=False) & Q(topic__forum__category__hidden=False))
         return qs
 
@@ -2044,9 +2043,9 @@ class NiceUrlsTest(TestCase, SharedTestModule):
         defaults.PYBB_NICE_URL_SLUG_DUPLICATE_LIMIT = 200
 
         try:
-            for _ in iter(range(200)):
+            for _ in range(200):
                 Topic.objects.create(name='dolly', forum=self.forum, user=self.user)
-        except ValidationError as e:
+        except ValidationError:
             self.fail('Should be able to create "dolly", "dolly-1", ..., "dolly-199".\n')
         with self.assertRaises(ValidationError):
             Topic.objects.create(name='dolly', forum=self.forum, user=self.user)

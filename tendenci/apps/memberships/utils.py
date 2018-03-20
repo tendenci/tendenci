@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import csv
 import re
@@ -20,7 +21,7 @@ from django.core import exceptions
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -133,7 +134,6 @@ def get_selected_demographic_fields(membership_app, forms):
     demographic_field_dict = dict([(field.name, field)
                         for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField'])
-    demographic_field_names = demographic_field_dict.keys()
     app_fields = MembershipAppField.objects.filter(
                                 membership_app=membership_app,
                                 display=True
@@ -141,7 +141,7 @@ def get_selected_demographic_fields(membership_app, forms):
                         'label', 'field_name', 'required')
     selected_fields = []
     for app_field in app_fields:
-        if app_field['field_name'] in demographic_field_names:
+        if app_field['field_name'] in demographic_field_dict:
             field = forms.CharField(
                     widget=forms.TextInput({'size': 30}),
                     label=app_field['label'],
@@ -177,14 +177,14 @@ def get_ud_file_instance(demographics, field_name):
 
     try:
         pk = eval(data).get('pk')
-    except Exception as e:
+    except Exception:
         pk = 0
 
     file_id = 0
     if pk:
         try:
             file_id = int(pk)
-        except Exception as e:
+        except Exception:
             file_id = 0
 
     try:
@@ -468,7 +468,7 @@ def process_export(
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, basestring):
+                    elif isinstance(item, str):
                         item = item.encode("utf-8")
                     elif field_name == 'membership_type':
                         # display membership type name instead of id
@@ -510,11 +510,11 @@ def process_export(
             'corp_profile': corp_profile}
 
         subject = render_to_string(
-            'memberships/notices/export_ready_subject.html', parms)
+            template_name='memberships/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'memberships/notices/export_ready_body.html', parms)
+            template_name='memberships/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,
@@ -543,12 +543,12 @@ def csv_to_dict(file_path, **kwargs):
 
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
-    colnames = csv_file.next()  # row 1;
+    colnames = next(csv_file)  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
 
-    cols = xrange(len(colnames))
+    cols = range(len(colnames))
     lst = []
 
     # make sure colnames are unique
@@ -925,7 +925,7 @@ def memb_import_parse_csv(mimport):
     normalize_newline(mimport.upload_file.name)
     csv_reader = csv.reader(
         default_storage.open(mimport.upload_file.name, 'rb'))
-    fieldnames = csv_reader.next()
+    fieldnames = next(csv_reader)
     fieldnames = normalize_field_names(fieldnames)
 
     data_list = []
@@ -1078,7 +1078,6 @@ class ImportMembDefault(object):
                              'PST': 'US/Pacific',
                              'GMT': 'UTC'
                              }
-        self.t4_timezone_map_keys = self.t4_timezone_map.keys()
         # all membership types
         self.all_membership_type_ids = MembershipType.objects.values_list(
                                         'id', flat=True)
@@ -1109,10 +1108,10 @@ class ImportMembDefault(object):
                         self.membership_types_to_apps_map[
                                     mt_id][0].append(app.id)
         [self.default_membership_type_id] = [key for key in
-                    self.membership_types_to_apps_map.keys()
+                    self.membership_types_to_apps_map
             if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
         [self.default_membership_type_id_for_corp_indiv] = [key for key in
-                    self.membership_types_to_apps_map.keys()
+                    self.membership_types_to_apps_map
             if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
 
         apps = MembershipApp.objects.filter(
@@ -1274,7 +1273,7 @@ class ImportMembDefault(object):
         """
         Check if import has demographic fields.
         """
-        for field_name in self.membershipdemographic_fields.keys():
+        for field_name in self.membershipdemographic_fields:
             if field_name in field_names:
                 return True
 
@@ -1415,7 +1414,7 @@ class ImportMembDefault(object):
                     self.summary_d['update_insert'] += 1
                     idata.action_taken = 'update_insert'
 
-                self.field_names = self.memb_data.keys()
+                self.field_names = self.memb_data
                 # now do the update or insert
                 self.do_import_membership_default(user, self.memb_data, memb, user_display)
                 idata.save()
@@ -1509,9 +1508,9 @@ class ImportMembDefault(object):
         # membership_demographic
         if self.mimport.num_processed == 0:
             self.should_handle_demographic = self.has_demographic_fields(
-                                        self.memb_data.keys())
+                                        self.memb_data)
             self.should_handle_education = self.has_education_fields(
-                                        self.memb_data.keys())
+                                        self.memb_data)
 
         if self.should_handle_demographic:
             # process only if we have demographic fields in the import.
@@ -1523,7 +1522,7 @@ class ImportMembDefault(object):
 
         if self.should_handle_education:
             educations = user.educations.all().order_by('pk')[0:4]
-            for x in xrange(1, 5):
+            for x in range(1, 5):
                 school = memb_data.get('school%s' % x, '')
                 major = memb_data.get('major%s' % x, '')
                 degree = memb_data.get('degree%s' % x, '')
@@ -1659,10 +1658,9 @@ class ImportMembDefault(object):
             assign_to_fields =self.membershipdemographic_fields
         else:
             assign_to_fields = self.membership_fields
-        assign_to_fields_names = assign_to_fields.keys()
 
         for field_name in self.field_names:
-            if field_name in assign_to_fields_names:
+            if field_name in assign_to_fields:
                 if any([
                         action == 'insert',
                         self.mimport.override,
@@ -1676,9 +1674,9 @@ class ImportMembDefault(object):
                     setattr(instance, field_name, value)
 
         # if insert, set defaults for the fields not in csv.
-        for field_name in assign_to_fields_names:
+        for field_name in assign_to_fields:
             if field_name not in self.field_names and action == 'insert':
-                if field_name not in self.private_settings.keys():
+                if field_name not in self.private_settings:
                     value = self.get_default_value(assign_to_fields[field_name])
 
                     if value is not None:
@@ -1711,9 +1709,9 @@ class ImportMembDefault(object):
 
         if field_type == 'ForeignKey':
             try:
-                model = field.related.parent_model()
+                model = field.remote_field.parent_model()
             except AttributeError:
-                model = field.related.model
+                model = field.remote_field.model
             [value] = model.objects.all()[:1] or [None]
             return value
 
@@ -1733,7 +1731,7 @@ class ImportMembDefault(object):
                 value = value[:field.max_length]
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
-                    if value in self.t4_timezone_map_keys:
+                    if value in self.t4_timezone_map:
                         value = self.t4_timezone_map[value]
             try:
                 value = field.to_python(value)
@@ -1800,9 +1798,9 @@ class ImportMembDefault(object):
 
             if value:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
@@ -1813,9 +1811,9 @@ class ImportMembDefault(object):
             if not value and not field.null:
                 # if the field doesn't allow null, grab the first one.
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value
@@ -1826,7 +1824,7 @@ def get_membership_type_by_value(value):
         value = int(value)
     if isinstance(value, int):
         return get_membership_type_by_id(value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, str):
         return get_membership_type_by_name(value)
 
 

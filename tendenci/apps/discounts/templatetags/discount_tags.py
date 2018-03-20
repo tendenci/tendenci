@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.template import Library
+from django.utils.safestring import mark_safe
 
 
 register = Library()
@@ -53,4 +54,4 @@ def discount_expiration(obj):
     else:
         value = t % ('active', "Never Expires")
 
-    return value
+    return mark_safe(value)

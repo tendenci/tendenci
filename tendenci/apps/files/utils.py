@@ -1,13 +1,12 @@
 from __future__ import print_function
 from PIL import Image
 from os.path import exists
-from cStringIO import StringIO
+from io import BytesIO
 import os
-import httplib
-import urllib
-import urllib2
+from six.moves import http_client
+from six.moves.urllib.request import urlopen, Request
+from six.moves.urllib.parse import urlparse, quote, unquote
 import socket
-from urlparse import urlparse
 import mimetypes
 from django.db import connection
 from django.core.files.base import ContentFile
@@ -20,7 +19,6 @@ from tendenci.apps.base.utils import image_rescale
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.apps.files.models import File as TFile
-from tendenci.apps.files.models import file_directory
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -51,7 +49,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         binary = build_image(file, size, pre_key, **kwargs)
 
     try:
-        return Image.open(StringIO(binary))
+        return Image.open(BytesIO(binary))
     except:
         return ''
 
@@ -71,7 +69,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     if settings.USE_S3_STORAGE:
         content = read_media_file_from_s3(file)
-        image = Image.open(StringIO(content))
+        image = Image.open(BytesIO(content))
     else:
         if hasattr(file, 'path') and exists(file.path):
             image = Image.open(file.path)  # get image
@@ -116,7 +114,7 @@ def get_image_binary(image, **options):
     """
     image.format = image.format or 'JPEG'
 
-    output = StringIO()
+    output = BytesIO()
     image.save(output, image.format, **options)
     binary = output.getvalue()
     output.close()
@@ -265,9 +263,9 @@ class AppRetrieveFiles(object):
     """
     def __init__(self, **kwargs):
         self.site_url = kwargs.get('site_url')
-        self.site_domain = urllib2.Request(self.site_url).get_host()
+        self.site_domain = Request(self.site_url).get_host()
         self.src_url = kwargs.get('src_url')
-        self.src_domain = urllib2.Request(self.src_url).get_host()
+        self.src_domain = Request(self.src_url).get_host()
         self.p = kwargs.get('p')
         self.replace_dict = {}
         self.total_count = 0
@@ -385,7 +383,7 @@ class AppRetrieveFiles(object):
         # find and replace urls
         if self.replace_dict:
             updated = True
-            for url_find, url_repl in self.replace_dict.iteritems():
+            for url_find, url_repl in self.replace_dict.items():
                 content = content.replace(url_find, url_repl)
             count = self.replace_dict.__len__()
             print('...', count, 'link(s) replaced.')
@@ -423,7 +421,7 @@ class AppRetrieveFiles(object):
                     if self.link_exists(t4_relative_url, self.src_domain):
                         tfile.file.save(file_path,
                                         ContentFile(
-                                    urllib2.urlopen(t4_url).read()))
+                                    urlopen(t4_url).read()))
                         print(tfile.get_absolute_url(), 'file downloaded.')
                     else:
                         # t4_url not exist
@@ -446,7 +444,7 @@ class AppRetrieveFiles(object):
         # handle absolute url
         cleaned_link = link.replace('&amp;', '&')
         o = urlparse(cleaned_link)
-        relative_url = urllib.quote(urllib.unquote(o.path))
+        relative_url = quote(unquote(o.path))
         hostname = o.hostname
 
         # skip if link is external other than the src site.
@@ -477,7 +475,7 @@ class AppRetrieveFiles(object):
         example of a relative_link:
         /images/newsletter/young.gif
         """
-        conn = httplib.HTTPConnection(domain)
+        conn = http_client.HTTPConnection(domain)
         try:
             conn.request('HEAD', relative_link)
             res = conn.getresponse()
@@ -492,13 +490,13 @@ class AppRetrieveFiles(object):
         Append the broken link to the list.
         """
         key = kwargs['content_url']
-        if key not in self.broken_links.keys():
+        if key not in self.broken_links:
             self.broken_links[key] = [broken_link]
         else:
             self.broken_links[key].append(broken_link)
 
     def save_file_from_url(self, url, instance):
-        file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
+        file_name = os.path.basename(unquote(url).replace(' ', '_'))
         tfile = TFile()
         tfile.name = file_name
         tfile.content_type = ContentType.objects.get_for_model(instance)
@@ -513,7 +511,7 @@ class AppRetrieveFiles(object):
             tfile.owner_username = instance.owner_username
 
         #file_path = file_directory(tfile, tfile.name)
-        tfile.file.save(file_name, ContentFile(urllib2.urlopen(url).read()))
+        tfile.file.save(file_name, ContentFile(urlopen(url).read()))
         tfile.save()
         return tfile
 
@@ -545,10 +543,9 @@ def get_allowed_mimetypes(file_exts):
         return None
 
     types_map = mimetypes.types_map
-    exts = types_map.keys()
     allowed_mimetypes = []
     for ext in file_exts:
-        if ext in exts:
+        if ext in types_map:
             mime_type = types_map[ext]
             if mime_type not in allowed_mimetypes:
                 allowed_mimetypes.append(types_map[ext])

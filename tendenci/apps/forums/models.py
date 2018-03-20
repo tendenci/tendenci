@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models, transaction, DatabaseError
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
@@ -13,10 +13,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
 
-from compat import get_user_model_path, get_username_field, get_atomic_func, slugify
-import defaults
-from profiles import PybbProfile
-from util import unescape, FilePathGenerator, _get_markup_formatter
+from .compat import get_user_model_path, get_username_field, get_atomic_func, slugify
+from . import defaults
+from .profiles import PybbProfile
+from .util import unescape, FilePathGenerator, _get_markup_formatter
 
 from annoying.fields import AutoOneToOneField
 
@@ -61,9 +61,9 @@ class Category(TendenciBaseModel):
 
 @python_2_unicode_compatible
 class Forum(models.Model):
-    category = models.ForeignKey(Category, related_name='forums', verbose_name=_('Category'))
+    category = models.ForeignKey(Category, related_name='forums', verbose_name=_('Category'), on_delete=models.CASCADE)
     parent = models.ForeignKey('self', related_name='child_forums', verbose_name=_('Parent forum'),
-                               blank=True, null=True)
+                               blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(_('Name'), max_length=80)
     position = models.IntegerField(_('Position'), blank=True, default=0)
     description = models.TextField(_('Description'), blank=True)
@@ -140,11 +140,11 @@ class Topic(models.Model):
         (POLL_TYPE_MULTIPLE, _('Multiple answers')),
     )
 
-    forum = models.ForeignKey(Forum, related_name='topics', verbose_name=_('Forum'))
+    forum = models.ForeignKey(Forum, related_name='topics', verbose_name=_('Forum'), on_delete=models.CASCADE)
     name = models.CharField(_('Subject'), max_length=255)
     created = models.DateTimeField(_('Created'), null=True)
     updated = models.DateTimeField(_('Updated'), null=True)
-    user = models.ForeignKey(get_user_model_path(), verbose_name=_('Owner'))
+    user = models.ForeignKey(get_user_model_path(), verbose_name=_('Owner'), on_delete=models.CASCADE)
     views = models.IntegerField(_('Views count'), blank=True, default=0)
     sticky = models.BooleanField(_('Sticky'), blank=True, default=False)
     closed = models.BooleanField(_('Closed'), blank=True, default=False)
@@ -252,8 +252,8 @@ class RenderableItem(models.Model):
 
 @python_2_unicode_compatible
 class Post(RenderableItem):
-    topic = models.ForeignKey(Topic, related_name='posts', verbose_name=_('Topic'))
-    user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'))
+    topic = models.ForeignKey(Topic, related_name='posts', verbose_name=_('Topic'), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'), on_delete=models.CASCADE)
     created = models.DateTimeField(_('Created'), blank=True, db_index=True)
     updated = models.DateTimeField(_('Updated'), blank=True, null=True)
     user_ip = models.GenericIPAddressField(_('User IP'), default='0.0.0.0')
@@ -326,7 +326,7 @@ class Profile(PybbProfile):
     Profile class that can be used if you doesn't have
     your site profile.
     """
-    user = AutoOneToOneField(get_user_model_path(), related_name='pybb_profile', verbose_name=_('User'))
+    user = AutoOneToOneField(get_user_model_path(), related_name='pybb_profile', verbose_name=_('User'), on_delete=models.CASCADE)
 
     class Meta(object):
         verbose_name = _('Profile')
@@ -344,7 +344,7 @@ class Attachment(models.Model):
         verbose_name = _('Attachment')
         verbose_name_plural = _('Attachments')
 
-    post = models.ForeignKey(Post, verbose_name=_('Post'), related_name='attachments')
+    post = models.ForeignKey(Post, verbose_name=_('Post'), related_name='attachments', on_delete=models.CASCADE)
     size = models.IntegerField(_('Size'))
     file = models.FileField(_('File'),
                             upload_to=FilePathGenerator(to=defaults.PYBB_ATTACHMENT_UPLOAD_TO))
@@ -389,8 +389,8 @@ class TopicReadTracker(models.Model):
     """
     Save per user topic read tracking
     """
-    user = models.ForeignKey(get_user_model_path(), blank=False, null=False)
-    topic = models.ForeignKey(Topic, blank=True, null=True)
+    user = models.ForeignKey(get_user_model_path(), blank=False, null=False, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, blank=True, null=True, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(auto_now=True)
 
     objects = TopicReadTrackerManager()
@@ -427,8 +427,8 @@ class ForumReadTracker(models.Model):
     """
     Save per user forum read tracking
     """
-    user = models.ForeignKey(get_user_model_path(), blank=False, null=False)
-    forum = models.ForeignKey(Forum, blank=True, null=True)
+    user = models.ForeignKey(get_user_model_path(), blank=False, null=False, on_delete=models.CASCADE)
+    forum = models.ForeignKey(Forum, blank=True, null=True, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(auto_now=True)
 
     objects = ForumReadTrackerManager()
@@ -441,7 +441,7 @@ class ForumReadTracker(models.Model):
 
 @python_2_unicode_compatible
 class PollAnswer(models.Model):
-    topic = models.ForeignKey(Topic, related_name='poll_answers', verbose_name=_('Topic'))
+    topic = models.ForeignKey(Topic, related_name='poll_answers', verbose_name=_('Topic'), on_delete=models.CASCADE)
     text = models.CharField(max_length=255, verbose_name=_('Text'))
 
     class Meta:
@@ -464,8 +464,8 @@ class PollAnswer(models.Model):
 
 @python_2_unicode_compatible
 class PollAnswerUser(models.Model):
-    poll_answer = models.ForeignKey(PollAnswer, related_name='users', verbose_name=_('Poll answer'))
-    user = models.ForeignKey(get_user_model_path(), related_name='poll_answers', verbose_name=_('User'))
+    poll_answer = models.ForeignKey(PollAnswer, related_name='users', verbose_name=_('Poll answer'), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model_path(), related_name='poll_answers', verbose_name=_('User'), on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:

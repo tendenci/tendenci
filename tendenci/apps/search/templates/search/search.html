@@ -47,13 +47,13 @@
     <div class="search-results">
         {% if ppage.object_list %}
             {% for result in ppage.object_list %}
-            	{% if result.object.release_dt and user.is_anonymous  %}
-	            	{% if result.object.is_released %}
-	            		<div class="wrap-search-result clearfix">
-                    	{% search_result result %}
-                		</div>
-	            	{% endif %}
-            	{% else %}
+                {% if result.object.release_dt and user.is_anonymous  %}
+                    {% if result.object.is_released %}
+                        <div class="wrap-search-result clearfix">
+                        {% search_result result %}
+                        </div>
+                    {% endif %}
+                {% else %}
                 <div class="wrap-search-result clearfix">
                     {% search_result result %}
                 </div>

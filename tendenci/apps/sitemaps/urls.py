@@ -1,6 +1,6 @@
-from django.conf.urls import patterns
-from tendenci.apps.sitemaps import views
+#from django.conf.urls import url
+#from . import views
 
-urlpatterns = patterns('',
-    (r'^$', views.create_sitemap)
-)
+urlpatterns = [
+#    url(r'^$', views.create_sitemap)
+]

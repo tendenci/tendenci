@@ -1,9 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
-from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
+from .widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
                      AppFieldSelectionWidget)
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -72,7 +71,7 @@ class NoticeTimeTypeField(forms.MultiValueField):
 
 
 class PriceInput(forms.TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         if currency_symbol == u'':
             currency_symbol = '$'

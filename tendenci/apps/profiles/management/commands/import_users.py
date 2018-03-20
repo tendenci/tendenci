@@ -40,7 +40,7 @@ class Command(BaseCommand):
         for idata in data_list:
             try:
                 imu.process_user(idata)
-            except Exception as e:
+            except Exception:
                 print(traceback.format_exc())
 
             uimport.num_processed += 1

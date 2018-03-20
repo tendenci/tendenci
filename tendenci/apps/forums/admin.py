@@ -3,13 +3,15 @@ from __future__ import unicode_literals
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 from tendenci.apps.perms.utils import update_perms_and_save
 
 from .models import Category, Forum, Topic, Post, Profile, Attachment, PollAnswer
 from .forms import CategoryAdminForm
 
-import compat, util
+from . import compat, util
 username_field = compat.get_username_field()
 
 
@@ -166,14 +168,14 @@ class ProfileAdmin(admin.ModelAdmin):
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ['file', 'size', 'admin_view_post', 'admin_edit_post']
 
+    @mark_safe
     def admin_view_post(self, obj):
         return '<a href="%s">view</a>' % obj.post.get_absolute_url()
-    admin_view_post.allow_tags = True
     admin_view_post.short_description = _('View post')
 
+    @mark_safe
     def admin_edit_post(self, obj):
         return '<a href="%s">edit</a>' % reverse('admin:forums_post_change', args=[obj.post.pk])
-    admin_edit_post.allow_tags = True
     admin_edit_post.short_description = _('Edit post')
 
 

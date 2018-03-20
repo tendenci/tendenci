@@ -1,11 +1,11 @@
-from django.template.context import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import has_perm, get_query_filters, has_view_perm
+from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.videos.models import Video, Category, VideoType
 
 
@@ -17,7 +17,7 @@ def index(request, cat_slug=None, template_name="videos/list.html"):
     category = get_object_or_404(Category, slug=cat_slug)
     filters = get_query_filters(request.user, 'videos.view_video')
     videos = Video.objects.filter(filters).distinct()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         videos = videos.select_related()
     if cat_slug:
         videos = videos.filter(category__slug=cat_slug)
@@ -28,8 +28,8 @@ def index(request, cat_slug=None, template_name="videos/list.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())
 
 def search(request, cat_slug=None, template_name="videos/list.html"):
     """
@@ -46,7 +46,7 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
 
     filters = get_query_filters(request.user, 'videos.view_video')
     videos = Video.objects.filter(filters).distinct()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         videos = videos.select_related()
 
     if query:
@@ -73,8 +73,8 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, locals(),
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context=locals())
 
 
 def detail(request, slug, template_name="videos/details.html"):
@@ -87,7 +87,7 @@ def detail(request, slug, template_name="videos/details.html"):
     if has_perm(request.user, 'videos.view_video', video):
         EventLog.objects.log(instance=video)
 
-        return render_to_response(template_name, {'video': video,'categories': categories},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'video': video,'categories': categories})
     else:
         raise Http403

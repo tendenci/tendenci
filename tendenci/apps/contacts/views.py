@@ -1,17 +1,13 @@
 from __future__ import print_function
-import random, string
+from builtins import str
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.core.mail.message import EmailMessage
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
-from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
+from django.contrib.auth.models import User
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.site_settings.utils import get_setting
@@ -23,9 +19,9 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
 from tendenci.apps.event_logs.models import EventLog
 
-
 try: from tendenci.apps.notifications import models as notification
 except: notification = None
+
 
 @login_required
 def details(request, id=None, template_name="contacts/view.html"):
@@ -33,13 +29,13 @@ def details(request, id=None, template_name="contacts/view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
 def search(request, template_name="contacts/search.html"):
-    if request.user.is_anonymous():
+    if request.user.is_anonymous:
         raise Http403
     if not has_perm(request.user,'contacts.view_contact'):
         raise Http403
@@ -50,13 +46,13 @@ def search(request, template_name="contacts/search.html"):
     else:
         filters = get_query_filters(request.user, 'contacts.view_contact')
         contacts = Contact.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             contacts = contacts.select_related()
 
     contacts = contacts.order_by('-create_dt')
 
-    return render_to_response(template_name, {'contacts':contacts},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'contacts':contacts})
 
 
 def search_redirect(request):
@@ -67,8 +63,8 @@ def print_view(request, id, template_name="contacts/print-view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
     if has_view_perm(request.user,'contacts.view_contact',contact):
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
@@ -95,8 +91,8 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
             form = form_class()
             print(form_class())
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -109,8 +105,8 @@ def delete(request, id, template_name="contacts/delete.html"):
             contact.delete()
             return HttpResponseRedirect(reverse('contact.search'))
 
-        return render_to_response(template_name, {'contact': contact},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'contact': contact})
     else:
         raise Http403
 
@@ -152,7 +148,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 email__iexact=email,
             ).exists()
 
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 username = first_name.replace(' ', '')
                 if last_name:
                     username = username + '_' + last_name.replace(' ', '')
@@ -160,7 +156,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 try:
                     User.objects.get(username=username)
                     x = User.objects.filter(first_name=first_name).count()
-                    username = username + '_' + unicode(x)
+                    username = username + '_' + str(x)
                 except User.DoesNotExist:
                     pass
 
@@ -177,7 +173,7 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                                   address=address, country=country, city=city, state=state,
                                   url=url, phone=phone, zipcode=zipcode)
                 profile.save()
-                sf_id = create_salesforce_contact(profile)
+                create_salesforce_contact(profile)  # Returns sf_id
 
                 # if exists:
                 #     event_log_dict['description'] = 'logged-out submission as existing user'
@@ -279,13 +275,13 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
             return HttpResponseRedirect(reverse('form.confirmation'))
         else:
-            return render_to_response(template_name, {'form': form},
-                context_instance=RequestContext(request))
+            return render_to_resp(request=request, template_name=template_name,
+                context={'form': form})
 
     form = form_class()
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 def confirmation(request, form_class=SubmitContactForm, template_name="form-confirmation.html"):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)

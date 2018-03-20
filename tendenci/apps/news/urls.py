@@ -1,7 +1,8 @@
-from django.conf.urls import patterns, url
-from tendenci.apps.news.feeds import LatestEntriesFeed
-from tendenci.apps.site_settings.utils import get_setting
+from django.conf.urls import url
 from tendenci.apps.news.signals import init_signals
+from tendenci.apps.site_settings.utils import get_setting
+from . import views
+from .feeds import LatestEntriesFeed
 
 init_signals()
 
@@ -9,16 +10,16 @@ urlpath = get_setting('module', 'news', 'url')
 if not urlpath:
     urlpath = "news"
 
-urlpatterns = patterns('tendenci.apps.news.views',
-    url(r'^%s/$' % urlpath, 'search', name="news"),
-    url(r'^%s/(?P<release_year>\d{4})/$' % urlpath, 'search', name="news_by_release_year"),
-    url(r'^%s/search/$' % urlpath, 'search_redirect', name="news.search"),
-    url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="news.print_view"),
-    url(r'^%s/add/$' % urlpath, 'add', name="news.add"),
-    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="news.edit"),
-    url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, 'edit_meta', name="news.edit.meta"),
-    url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="news.delete"),
+urlpatterns = [
+    url(r'^%s/$' % urlpath, views.search, name="news"),
+    url(r'^%s/(?P<release_year>\d{4})/$' % urlpath, views.search, name="news_by_release_year"),
+    url(r'^%s/search/$' % urlpath, views.search_redirect, name="news.search"),
+    url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, views.print_view, name="news.print_view"),
+    url(r'^%s/add/$' % urlpath, views.add, name="news.add"),
+    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="news.edit"),
+    url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, views.edit_meta, name="news.edit.meta"),
+    url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, views.delete, name="news.delete"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='news.feed'),
-    url(r'^%s/export/$' % urlpath, 'export', name='news.export'),
-    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'detail', name="news.detail"),
-)
+    url(r'^%s/export/$' % urlpath, views.export, name='news.export'),
+    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, views.detail, name="news.detail"),
+]

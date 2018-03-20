@@ -11,7 +11,6 @@ The API documentation can be accessed by visiting http://helpdesk/api/help/
 through templates/helpdesk/help_api.html.
 """
 
-from django import forms
 from django.contrib.auth import authenticate
 try:
     from django.contrib.auth import get_user_model
@@ -19,8 +18,6 @@ try:
 except ImportError:
     from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import loader, Context
 import simplejson
 from django.views.decorators.csrf import csrf_exempt
 
@@ -29,6 +26,7 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk.forms import TicketForm
 from tendenci.apps.helpdesk.lib import send_templated_mail, safe_template_context
 from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp
@@ -56,13 +54,14 @@ def api(request, method):
     """
 
     if method == 'help':
-        return render_to_response('helpdesk/help_api.html')
+        return render_to_resp(request=request, template_name='helpdesk/help_api.html')
 
     if request.method != 'POST':
         return api_return(STATUS_ERROR_BADMETHOD)
 
     # TODO: Move away from having the username & password in every request.
     request.user = authenticate(
+        request=request,
         username=request.POST.get('user', False),
         password=request.POST.get('password'),
         )
@@ -273,7 +272,7 @@ class API:
         context = safe_template_context(ticket)
         context['resolution'] = f.comment
 
-        subject = '%s %s (Resolved)' % (ticket.ticket, ticket.title)
+        #subject = '%s %s (Resolved)' % (ticket.ticket, ticket.title)
 
         messages_sent_to = []
 

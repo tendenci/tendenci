@@ -1,5 +1,6 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
+from builtins import str
 import ast
 import re
 import os.path
@@ -11,11 +12,12 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.conf import settings
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.db.models import Max, Count
-from django.template import Context, Template
+from django.template import engines
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 import simplejson
@@ -32,7 +34,9 @@ from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
-from tendenci.apps.base.utils import format_datetime_range, UnicodeWriter
+from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
+    format_datetime_range, UnicodeWriter, get_salesforce_access,
+    create_salesforce_contact)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 
@@ -90,15 +94,13 @@ def render_event_email(event, email):
                             reverse('event', args=[event.id]),
                             event.title
                                                      )
-    context = Context(context)
-
-    template = Template(email.subject)
-    email.subject = template.render(context)
+    template = engines['django'].from_string(email.subject)
+    email.subject = template.render(context=context)
 
     email.body = email.body.replace('event_location', 'event_location|safe')
     email.body = email.body.replace('event_link', 'event_link|safe')
-    template = Template(email.body)
-    email.body = template.render(context)
+    template = engines['django'].from_string(email.body)
+    email.body = template.render(context=context)
 
     return email
 
@@ -109,8 +111,8 @@ def get_default_reminder_template(event):
     context = {}
     for token in EMAIL_AVAILABLE_TOKENS:
         context[token] = '{{ %s }}' % token
-    return render_to_string('events/default_email.html',
-                           context)
+    return render_to_string(template_name='events/default_email.html',
+                           context=context)
 
 
 def get_ACRF_queryset(event=None):
@@ -206,8 +208,6 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
 
 
 def get_ievent(request, d, event_id):
-    from django.conf import settings
-    from timezones.utils import adjust_datetime_to_timezone
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -267,8 +267,6 @@ def get_ievent(request, d, event_id):
 
 
 def get_vevents(user, d):
-    from django.conf import settings
-    from timezones.utils import adjust_datetime_to_timezone
     from tendenci.apps.events.models import Event
 
     site_url = get_setting('site', 'global', 'siteurl')
@@ -512,7 +510,7 @@ def get_prev_month(month, year):
 
 def email_registrants(event, email, **kwargs):
     site_url = get_setting('site', 'global', 'siteurl')
-    reg8ns = Registration.objects.filter(event=event)
+    #reg8ns = Registration.objects.filter(event=event)
 
     payment_status = kwargs.get('payment_status', 'all')
 
@@ -793,7 +791,7 @@ def add_registration(*args, **kwargs):
     }
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         reg8n_attrs['creator'] = request.user
         reg8n_attrs['owner'] = request.user
 
@@ -949,7 +947,7 @@ def create_registrant_from_form(*args, **kwargs):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
         user = form.get_user()
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             registrant.user = user
             entry.set_group_subscribers(user)
         registrant.initialize_fields()
@@ -1078,7 +1076,7 @@ def get_pricing(user, event, pricing=None):
                 continue
 
         # User permissions
-        if price.allow_user and not user.is_authenticated():
+        if price.allow_user and not user.is_authenticated:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price,
@@ -1407,7 +1405,7 @@ def copy_event(event, user, reuse_rel=False):
         )
         # copy addon options
         for option in addon.options.all():
-            new_option = AddonOption.objects.create(
+            AddonOption.objects.create(
                 addon = new_addon,
                 title = option.title,
             )
@@ -1486,7 +1484,7 @@ def event_import_process(import_i, preview=True):
     if preview=False.
     """
     #print("START IMPORT PROCESS")
-    data_dict_list = extract_from_excel(unicode(import_i.file))
+    data_dict_list = extract_from_excel(str(import_i.file))
 
     event_obj_list = []
     invalid_list = []
@@ -1506,8 +1504,8 @@ def event_import_process(import_i, preview=True):
             event_object_dict = {}
             data_dict = data_dict_list[r]
 
-            for key in data_dict.keys():
-                if isinstance(data_dict[key], basestring):
+            for key in data_dict:
+                if isinstance(data_dict[key], str):
                     event_object_dict[key] = data_dict[key].strip()
                 else:
                     event_object_dict[key] = data_dict[key]
@@ -1557,7 +1555,7 @@ def event_import_process(import_i, preview=True):
             import_i.save()
     except Exception as e:
         import_i.status = "failed"
-        import_i.failure_reason = unicode(e)
+        import_i.failure_reason = str(e)
         import_i.save()
 
     #print("END IMPORT PROCESS")
@@ -1584,7 +1582,7 @@ def do_event_import(event_object_dict):
                                     color_set=color_set
                                     )
             else:
-                field_type = Event._meta.get_field_by_name(field)[0]
+                field_type = Event._meta.get_field(field)
                 if isinstance(field_type, models.DateTimeField):
                     setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
                 elif isinstance(field_type, models.NullBooleanField):
@@ -1594,23 +1592,23 @@ def do_event_import(event_object_dict):
                         setattr(event, field, True)
                 else:  # assume its a string
                     if field_type.max_length:
-                        setattr(event, field, unicode(event_object_dict[field])[:field_type.max_length])
+                        setattr(event, field, str(event_object_dict[field])[:field_type.max_length])
                     else:
-                        setattr(event, field, unicode(event_object_dict[field]))
+                        setattr(event, field, str(event_object_dict[field]))
 
     for field in PLACE_FIELDS:
         if field in event_object_dict:
             p_field = field.replace('place__', '')
-            field_type = Place._meta.get_field_by_name(p_field)[0]
+            field_type = Place._meta.get_field(p_field)
             if isinstance(field_type, models.DateTimeField):
                 setattr(place, p_field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
             elif isinstance(field_type, models.NullBooleanField):
                 setattr(place, p_field, bool(ast.literal_eval(event_object_dict[field])))
             else:  # assume its a string
                 if field_type.max_length:
-                    setattr(place, p_field, unicode(event_object_dict[field])[:field_type.max_length])
+                    setattr(place, p_field, str(event_object_dict[field])[:field_type.max_length])
                 else:
-                    setattr(place, p_field, unicode(event_object_dict[field]))
+                    setattr(place, p_field, str(event_object_dict[field]))
 
     event_type.save()
     place.save()
@@ -1623,9 +1621,6 @@ def do_event_import(event_object_dict):
 
 
 def add_sf_attendance(registrant, event):
-
-    from django.conf import settings
-    from tendenci.apps.base.utils import get_salesforce_access, create_salesforce_contact
     from tendenci.apps.profiles.models import Profile
 
     if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
@@ -1732,8 +1727,8 @@ def create_member_registration(user, event, form):
                                     'is_primary': True,
                                     'amount': pricing.price,
                                     'pricing': pricing}
-                registrant = Registrant.objects.create(**registrant_attrs)
-                invoice = registration.save_invoice()
+                Registrant.objects.create(**registrant_attrs)
+                registration.save_invoice()
 
 
 def get_week_days(tgtdate, cal):
@@ -1853,7 +1848,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = event.type.name
             elif field in event_d:
                 value = event_d[field]
-            value = unicode(value).replace(os.linesep, ' ').rstrip()
+            value = str(value).replace(os.linesep, ' ').rstrip()
             data_row.append(value)
 
         if event.place:
@@ -1861,7 +1856,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             place_d = full_model_to_dict(event.place)
             for field in place_fields:
                 value = place_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
         if event.registration_configuration:
@@ -1873,7 +1868,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     value = value.values_list('human_name', flat=True)
                 else:
                     value = conf_d[field]
-                value = unicode(value).replace(os.linesep, ' ').rstrip()
+                value = str(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
 
         if event.speaker_set.all():
@@ -1882,7 +1877,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 speaker_d = full_model_to_dict(speaker)
                 for field in speaker_fields:
                     value = speaker_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the speaker columns
@@ -1897,7 +1892,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 organizer_d = full_model_to_dict(organizer)
                 for field in organizer_fields:
                     value = organizer_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the organizer columns
@@ -1916,7 +1911,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                         value = pricing.groups.values_list('name', flat=True)
                     else:
                         value = pricing_d[field]
-                    value = unicode(value).replace(os.linesep, ' ').rstrip()
+                    value = str(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
 
         # fill out the rest of the pricing columns
@@ -1970,11 +1965,11 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             'type': event_type}
 
         subject = render_to_string(
-            'events/notices/export_ready_subject.html', parms)
+            template_name='events/notices/export_ready_subject.html', context=parms)
         subject = subject.strip('\n').strip('\r')
 
         body = render_to_string(
-            'events/notices/export_ready_body.html', parms)
+            template_name='events/notices/export_ready_body.html', context=parms)
 
         email = Email(
             recipient=user.email,

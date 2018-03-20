@@ -4,8 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.photos.forms import PhotoSet, PhotoSetAddForm
 
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_save
-from tendenci.apps.notifications.context_processors import notification
+from tendenci.apps.perms.utils import update_perms_and_save
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'update_dt', 'create_dt', 'tags', 'position')
@@ -88,16 +87,16 @@ class PhotoAdmin(admin.ModelAdmin):
         instance = update_perms_and_save(request, form, instance)
 
         # notifications
-        if not request.user.profile.is_superuser:
-            # send notification to administrators
-            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': instance,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients, notice_type, extra_context)
+        #if not request.user.profile.is_superuser:
+        #    # send notification to administrators
+        #    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        #    if recipients:
+        #        if notification:
+        #            extra_context = {
+        #                'object': instance,
+        #                'request': request,
+        #            }
+        #            notification.send_emails(recipients, 'photo_added', extra_context)
 
         return instance
 

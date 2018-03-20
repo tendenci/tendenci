@@ -73,7 +73,7 @@ class DiscountForm(TendenciBaseForm):
         MODELS_WITH_DISCOUNT = ['registrationconfiguration',
                                 'membershipset']
         content_types = ContentType.objects.filter(model__in=MODELS_WITH_DISCOUNT)
-        if 'apps' in self.fields.keys():
+        if 'apps' in self.fields:
             self.fields['apps'].choices = ((c.id, c.app_label) for c in content_types)
 
     def clean_discount_code(self):

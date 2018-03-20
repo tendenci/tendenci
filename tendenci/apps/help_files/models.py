@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
@@ -8,7 +9,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.base.fields import SlugField
 from tendenci.libs.tinymce import models as tinymce_models
-from managers import HelpFileManager
+from .managers import HelpFileManager
 
 class Topic(models.Model):
     """Help topic"""
@@ -19,9 +20,8 @@ class Topic(models.Model):
         ordering = ['title']
         app_label = 'help_files'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("help_files.topic", [self.pk])
+        return reverse('help_files.topic', args=[self.pk])
 
     def __unicode__(self):
         return self.title
@@ -53,9 +53,8 @@ class HelpFile(TendenciBaseModel):
         permissions = (("view_helpfile",_("Can view help file")),)
         app_label = 'help_files'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("help_file.details", [self.slug])
+        return reverse('help_file.details', args=[self.slug])
 
     def __unicode__(self):
         return self.question

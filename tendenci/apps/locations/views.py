@@ -3,9 +3,8 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,7 +15,7 @@ from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
 from tendenci.apps.perms.decorators import admin_required
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.files.models import File
 from djcelery.models import TaskMeta
@@ -36,8 +35,8 @@ def detail(request, slug, template_name="locations/view.html"):
 
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
-        return render_to_response(template_name, {'location': location},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'location': location})
     else:
         raise Http403
 
@@ -47,7 +46,7 @@ def search(request, template_name="locations/search.html"):
     filters = get_query_filters(request.user, 'locations.view_location')
     locations = Location.objects.filter(filters).distinct()
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         locations = locations.select_related()
 
     data = {'country':request.POST.get('country', ''),
@@ -62,8 +61,8 @@ def search(request, template_name="locations/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'locations':locations, 'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'locations':locations, 'form':form})
 
 
 def search_redirect(request):
@@ -81,7 +80,7 @@ def nearest(request, template_name="locations/nearest.html"):
         lat, lng = get_coordinates(address=query)
 
     all_locations = Location.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         all_locations = all_locations.select_related()
 
     if all((lat,lng)):
@@ -93,10 +92,10 @@ def nearest(request, template_name="locations/nearest.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'locations':locations,
         'origin': {'lat':lat,'lng':lng},
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('locations')
@@ -106,8 +105,8 @@ def print_view(request, id, template_name="locations/print-view.html"):
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
 
-        return render_to_response(template_name, {'location': location},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'location': location})
     else:
         raise Http403
 
@@ -137,8 +136,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
         else:
             form = form_class(instance=location, user=request.user)
 
-        return render_to_response(template_name, {'location': location, 'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'location': location, 'form':form})
     else:
         raise Http403
 
@@ -166,8 +165,8 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
         else:
             form = form_class(user=request.user)
 
-        return render_to_response(template_name, {'form':form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form':form})
     else:
         raise Http403
 
@@ -185,8 +184,8 @@ def delete(request, id, template_name="locations/delete.html"):
 
             return HttpResponseRedirect(reverse('location.search'))
 
-        return render_to_response(template_name, {'location': location},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'location': location})
     else:
         raise Http403
 
@@ -222,10 +221,10 @@ def locations_import_upload(request, template_name='locations/import-upload-file
     else:
         form = UploadForm()
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
             'form': form,
             'now': datetime.now(),
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -249,22 +248,22 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
 
             # return the form to use it for the confirm view
             template_name = 'locations/import-preview.html'
-            return render_to_response(template_name, {
+            return render_to_resp(request=request, template_name=template_name, context={
                 'locations': locations,
                 'stats': stats,
                 'locport': locport,
                 'form': form,
                 'now': datetime.now(),
-            }, context_instance=RequestContext(request))
+            })
 
     else:
         form = ImportMapForm(locport=locport)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form': form,
         'locport': locport,
         'now': datetime.now(),
-        }, context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -289,11 +288,11 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
                 # evaluate the result and render the results page
                 result = ImportLocationsTask()
                 locations, stats = result.run(request.user, file_path, cleaned_data)
-                return render_to_response(template_name, {
+                return render_to_resp(request=request, template_name=template_name, context={
                     'locations': locations,
                     'stats': stats,
                     'now': datetime.now(),
-                }, context_instance=RequestContext(request))
+                })
             else:
                 result = ImportLocationsTask.delay(request.user, file_path, cleaned_data)
 
@@ -318,16 +317,16 @@ def locations_import_status(request, task_id, template_name='locations/import-co
 
         locations, stats = task.result
 
-        return render_to_response(template_name, {
+        return render_to_resp(request=request, template_name=template_name, context={
             'locations': locations,
             'stats':stats,
             'now': datetime.now(),
-        }, context_instance=RequestContext(request))
+        })
     else:
-        return render_to_response('memberships/import-status.html', {
+        return render_to_resp(request=request, template_name='memberships/import-status.html', context={
             'task': task,
             'now': datetime.now(),
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('locations')
@@ -365,8 +364,8 @@ def export(request, template_name="locations/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })
 
 
 @is_enabled('locations')

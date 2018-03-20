@@ -158,7 +158,7 @@ class LocationFilterForm(forms.Form):
 
     def update_field_choices(self, field_name, data={}):
         choices = Location.objects.exclude(**{'%s' % field_name: ''})
-        for key,value in data.iteritems():
+        for key,value in data.items():
             if value:
                 choices = choices.filter(**{'%s' % key:value})
         choices = choices.values_list(field_name, field_name).distinct().order_by(field_name)

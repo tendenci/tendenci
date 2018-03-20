@@ -15,7 +15,7 @@ class ObjectPermBackend(object):
     supports_object_permissions = True
     supports_anonymous_user = True
 
-    def authenticate(self, username=None, password=None, user=None):
+    def authenticate(self, request=None, username=None, password=None, user=None):
         """
             Modified version of django's authenticate.
 
@@ -24,7 +24,7 @@ class ObjectPermBackend(object):
         """
         if user:
             if hasattr(user, 'auto_login'):
-                if not user.is_anonymous() and user.auto_login:
+                if not user.is_anonymous and user.auto_login:
                     return user
         else:
             try:
@@ -59,7 +59,7 @@ class ObjectPermBackend(object):
         return user_obj._group_perm_cache
 
     def get_all_permissions(self, user_obj):
-        if user_obj.is_anonymous():
+        if user_obj.is_anonymous:
             return set()
         if not hasattr(user_obj, '_perm_cache'):
             user_obj._perm_cache = set([u"%s.%s" % (p.content_type.app_label, p.codename) for p in user_obj.user_permissions.select_related()])
@@ -105,7 +105,7 @@ class ObjectPermBackend(object):
         # check codename, return false if its a malformed codename
         try:
             perm_type = perm.split('.')[-1].split('_')[0]
-            codename = perm.split('.')[1]
+            perm.split('.')[1]  # codename
         except IndexError:
             return False
 
@@ -129,7 +129,7 @@ class ObjectPermBackend(object):
             if all([has_attr_aov, has_attr_auv, has_attr_amv]):
                 if obj.allow_anonymous_view:
                     return True
-                if user.is_authenticated() and obj.allow_user_view:
+                if user.is_authenticated and obj.allow_user_view:
                     return True
                 if user.profile.is_member and obj.allow_member_view:
                     return True
@@ -138,13 +138,13 @@ class ObjectPermBackend(object):
             has_attr_aue = hasattr(obj, "allow_user_edit")
             has_attr_ame = hasattr(obj, "allow_member_edit")
             if all([has_attr_aue, has_attr_ame]):
-                if user.is_authenticated() and obj.allow_user_edit:
+                if user.is_authenticated and obj.allow_user_edit:
                     return True
                 if user.profile.is_member and obj.allow_member_edit:
                     return True
 
         # no anonymous user currently
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
 
         # check creator and owner
@@ -165,7 +165,7 @@ class ObjectPermBackend(object):
                 from haystack import connections
                 site = connections['default'].unified_index()
 
-                index = site.get_index(obj.__class__)
+                site.get_index(obj.__class__)
                 if can_view(user, obj):
                     return True
             except AssertionError:

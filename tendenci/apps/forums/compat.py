@@ -1,6 +1,5 @@
 # coding=utf-8
 from __future__ import unicode_literals
-import django
 from django.conf import settings
 from django.utils.encoding import force_text
 from unidecode import unidecode
@@ -19,33 +18,22 @@ def get_image_field_full_name():
         from sorl.thumbnail import ImageField
         name = 'sorl.thumbnail.fields.ImageField'
     except ImportError:
-        from django.db.models import ImageField
+        from django.db.models import ImageField  # noqa:F401
         name = 'django.db.models.fields.files.ImageField'
     return name
 
 
 def get_user_model():
-    if django.VERSION[:2] >= (1, 5):
-        from django.contrib.auth import get_user_model
-        return get_user_model()
-    else:
-        from django.contrib.auth.models import User
-        User.get_username = lambda u: u.username  # emulate new 1.5 method
-        return User
+    from django.contrib.auth import get_user_model
+    return get_user_model()
 
 
 def get_user_model_path():
-    if django.VERSION[:2] >= (1, 5):
-        return getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
-    else:
-        return 'auth.User'
+    return getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
 def get_username_field():
-    if django.VERSION[:2] >= (1, 5):
-        return get_user_model().USERNAME_FIELD
-    else:
-        return 'username'
+    return get_user_model().USERNAME_FIELD
 
 
 def get_atomic_func():
@@ -74,19 +62,12 @@ def get_paginator_class():
 
 
 def is_installed(app_name):
-    if django.VERSION[:2] < (1, 7):
-        from django.db.models import get_apps
-        return app_name in get_apps()
-    else:
-        from django.apps import apps
-        return apps.is_installed(app_name)
+    from django.apps import apps
+    return apps.is_installed(app_name)
 
 
 def get_related_model_class(parent_model, field_name):
-    if django.VERSION[:2] < (1, 8):
-        return getattr(parent_model, field_name).related.model
-    else:
-        return parent_model._meta.get_field(field_name).related_model
+    return parent_model._meta.get_field(field_name).related_model
 
 
 def slugify(text):
@@ -95,9 +76,6 @@ def slugify(text):
     :param text: any unicode text
     :return: slugified version of passed text
     """
-    if django.VERSION[:2] < (1, 5):
-        from django.template.defaultfilters import slugify as django_slugify
-    else:
-        from django.utils.text import slugify as django_slugify
+    from django.utils.text import slugify as django_slugify
 
     return django_slugify(force_text(unidecode(text)))

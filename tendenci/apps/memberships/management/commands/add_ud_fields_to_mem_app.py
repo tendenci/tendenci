@@ -1,8 +1,4 @@
 from django.core.management.base import BaseCommand
-from django.db.models.loading import get_models
-from django.core.management import call_command
-from django.contrib.auth.models import User
-from django.conf import settings
 
 class Command(BaseCommand):
     """
@@ -19,7 +15,7 @@ class Command(BaseCommand):
 
         app_id = options['app_id']
         po = 92
-        for i in xrange(6, 31):
+        for i in range(6, 31):
             if not MembershipAppField.objects.filter(
                                 membership_app_id=app_id,
                                 field_name='ud%s' % i).exists():

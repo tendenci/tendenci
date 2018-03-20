@@ -49,6 +49,7 @@ Exceptions:
 """
 
 from __future__ import division
+from builtins import str
 
 import sys
 import socket
@@ -297,7 +298,7 @@ class MkdirFileLock(LockBase):
         """
         LockBase.__init__(self, path, threaded)
         if threaded:
-            tname = "%x-" % thread.get_ident()
+            tname = "%x-" % threading.current_thread().get_ident()
         else:
             tname = ""
         # Lock file itself is a directory.  Place the unique file name into
@@ -373,8 +374,8 @@ class SQLiteFileLock(LockBase):
 
     def __init__(self, path, threaded=True):
         LockBase.__init__(self, path, threaded)
-        self.lock_file = unicode(self.lock_file)
-        self.unique_name = unicode(self.unique_name)
+        self.lock_file = str(self.lock_file)
+        self.unique_name = str(self.unique_name)
 
         import sqlite3
         self.connection = sqlite3.connect(SQLiteFileLock.testdb)

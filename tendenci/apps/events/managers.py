@@ -1,5 +1,6 @@
 import operator
 from haystack.query import SearchQuerySet
+from functools import reduce
 
 from django.db.models import Manager
 from django.db.models import Q
@@ -43,14 +44,13 @@ class EventManager(TendenciBaseManager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
         groups = []
-        if user and user.is_authenticated():
+        if user and user.is_authenticated:
             groups = [g.pk for g in user.group_set.all()]
-        admin = user.profile.is_superuser
 
         # permission filters
         if user:
             if not user.profile.is_superuser:
-                if not user.is_anonymous():
+                if not user.is_anonymous:
                     # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
                     anon_query = Q(allow_anonymous_view=True)
                     user_query = Q(allow_user_view=True)

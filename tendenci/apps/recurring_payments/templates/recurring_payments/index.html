@@ -46,69 +46,69 @@
 
         {% if is_active %}
         {% if rp.platform == 'stripe' %}
-        	<div class="pull-right">
-	        	<form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
-				  <script
-				  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-				  data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
-				  data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
-				  data-panel-label="{% if rp.customer_profile_id %}Update Card Details{% else %}Add Card{% endif %}"
-				  data-label="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}"
-				  data-description="for membership auto renew"
-				  {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
-				  data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
-				  {% else %}
-				  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-				  {% endif  %}
-				  data-allow-remember-me=false
-				  data-locale="auto"
-				  data-email={{ rp.user.email }}
-				  data-zip-code="true">
-				  </script>
-				</form>
-				{% with rp.get_source_data as source_data %}
-				{% if source_data %}
-				<small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
-				{% endif %}
-				{% endwith %}
-			</div>
+            <div class="pull-right">
+                <form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
+                  <script
+                  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                  data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
+                  data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
+                  data-panel-label="{% if rp.customer_profile_id %}Update Card Details{% else %}Add Card{% endif %}"
+                  data-label="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}"
+                  data-description="for membership auto renew"
+                  {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
+                  data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
+                  {% else %}
+                  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                  {% endif  %}
+                  data-allow-remember-me=false
+                  data-locale="auto"
+                  data-email={{ rp.user.email }}
+                  data-zip-code="true">
+                  </script>
+                </form>
+                {% with rp.get_source_data as source_data %}
+                {% if source_data %}
+                <small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+                {% endif %}
+                {% endwith %}
+            </div>
         {% else %}
-	        <div id="btn-pm-wrap">
-	        <form method="GET" action="{% url 'recurring_payment.authnet.update_payment_info' rp.id %}">
-	        <input class="btn btn-primary" type="submit" value="{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}">
-	        </form>
-	        {% if payment_profile %}
-	        <div class="last-updated">{% trans 'Last updated by' %} {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
-	        {% endif %}
-	        </div>        
-	
-	        {% if not payment_profile %}
-	        <div class="rp-warning-wrap"><span class="bs-callout-warning">{% trans 'NOT complete yet!' %} <br />{% trans 'Please click the button at right to add a payment method.' %}</span></div>
-	        {% endif %}
+            <div id="btn-pm-wrap">
+            <form method="GET" action="{% url 'recurring_payment.authnet.update_payment_info' rp.id %}">
+            <input class="btn btn-primary" type="submit" value="{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}">
+            </form>
+            {% if payment_profile %}
+            <div class="last-updated">{% trans 'Last updated by' %} {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+            {% endif %}
+            </div>
+
+            {% if not payment_profile %}
+            <div class="rp-warning-wrap"><span class="bs-callout-warning">{% trans 'NOT complete yet!' %} <br />{% trans 'Please click the button at right to add a payment method.' %}</span></div>
+            {% endif %}
         {% endif %}
         {% endif %}
-        
+
         <div class="rp-dname">{% trans 'Name' %}: <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
         {% if rp.url %}
         <div class="rp-dname">{% trans 'URL' %}: {{ rp.url|urlize }}</div>
         {% endif %}
         <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
 
-        <div style="clear: right;"></div>    
+        <div style="clear: right;"></div>
 
         {% if num_accounts > 1 %}
         <div class="text-right"><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% if is_owner %}{% trans 'View All My RP Accounts' %}{% else %}{% blocktrans with name=rp.user.first_name %}View All {{ name }}'s RP Accounts{% endblocktrans %}{% endif %}</a></div>
           {% endif %}
 
       <div> <!-- Nav tabs -->
-      	  
-		  <ul class="nav nav-tabs" role="tablist">
-		    <li role="presentation" class="active"><a href="#rpview-overview" aria-controls="rpview-overview" role="tab" data-toggle="tab">{% trans "Overview" %}</a></li>
-		    <li role="presentation"><a href="#rpview-invoices" aria-controls="rpview-invoices" role="tab" data-toggle="tab">{% trans "Invoices" %}</a></li>
-		    <li role="presentation"><a href="#rpview-transactions" aria-controls="rpview-transactions" role="tab" data-toggle="tab">{% trans "Transaction History" %}</a></li>
-		  </ul>
-       
-	<div class="tab-content">
+
+          <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#rpview-overview" aria-controls="rpview-overview" role="tab" data-toggle="tab">{% trans "Overview" %}</a></li>
+            <li role="presentation"><a href="#rpview-invoices" aria-controls="rpview-invoices" role="tab" data-toggle="tab">{% trans "Invoices" %}</a></li>
+            <li role="presentation"><a href="#rpview-transactions" aria-controls="rpview-transactions" role="tab" data-toggle="tab">{% trans "Transaction History" %}</a></li>
+          </ul>
+
+    <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="rpview-overview">
           <div class="basic-info" style="margin-top: 1em;">
           {% trans 'Current account balance' %}: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
@@ -130,30 +130,30 @@
                   <br />
                   <br />
           {% endif %}
-		 </div>
+         </div>
 
-	{% if memberships %}
-		<div>
-		<table class="table">
-			<tr>
-				<th>{% trans "Membership type" %}</th>
-				<th>{% trans "Member Number" %}</th>
-				<th>{% trans "Expire date" %}</th>
-				<th>{% trans "Status detail" %}</th>
-			</tr>
-			{% for m in memberships %}
-			<tr>
-				<td>{{ m.membership_type.name }}</td>
-				<td><a href="{% url 'membership.details' m.id %}">{{ m.member_number }}</a></td>
-				<td>{{ m.expire_dt }}</td>
-				<td>{{ m.status_detail }}</td>
-			</tr>
-			{% endfor %}
-		</table>
-		</div>
+    {% if memberships %}
+        <div>
+        <table class="table">
+            <tr>
+                <th>{% trans "Membership type" %}</th>
+                <th>{% trans "Member Number" %}</th>
+                <th>{% trans "Expire date" %}</th>
+                <th>{% trans "Status detail" %}</th>
+            </tr>
+            {% for m in memberships %}
+            <tr>
+                <td>{{ m.membership_type.name }}</td>
+                <td><a href="{% url 'membership.details' m.id %}">{{ m.member_number }}</a></td>
+                <td>{{ m.expire_dt }}</td>
+                <td>{{ m.status_detail }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
 
-	{% else %}
-		<div>
+    {% else %}
+        <div>
           {% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
           <br />
           <br />
@@ -189,7 +189,7 @@
               </div>
 
           {% endif %}
-	{% endif %}
+    {% endif %}
     </div>
 
 
@@ -260,9 +260,9 @@
     {% endif %}
 
     </div>
-    
+
    </div>  <!-- End of tab-content -->
-   
+
    </div> <!-- End of nav tabs -->
 
 </div>
@@ -327,7 +327,7 @@
 
   AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }};
   //]]>
-  
+
   (function($) {
       AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
       if(action_result=="successfulSave"){
@@ -345,7 +345,7 @@
       }
       };
   }(jQuery));
-  
+
 </script>
 {% endif %}
 {% endif %}
@@ -425,7 +425,7 @@ $(document).ready(function(){
          });
      }); */
 
-    
+
 
 });
 

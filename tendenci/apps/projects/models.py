@@ -1,4 +1,6 @@
+from builtins import str
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
@@ -6,7 +8,7 @@ from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.projects.managers import ProjectManager as NewProjectManager
-from tendenci.apps.files.models import file_directory, File
+from tendenci.apps.files.models import File
 from tendenci.apps.files.managers import FileManager
 
 
@@ -22,9 +24,16 @@ class ClientList(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class CategoryPhoto(File):
+    class Meta:
+        app_label = 'projects'
+        manager_inheritance_from_future = True
+
+
 class Category(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
-    image = models.ForeignKey('CategoryPhoto', help_text=_('Photo that represents this category.'), null=True, default=None)
+    image = models.ForeignKey(CategoryPhoto, help_text=_('Photo that represents this category.'), null=True, default=None, on_delete=models.CASCADE)
     position = models.IntegerField(blank=True, default=0)
 
     def __unicode__(self):
@@ -51,6 +60,7 @@ class Category(models.Model):
             self.image = image  # set image
 
             self.save()
+
 
 class ProjectManager(models.Model):
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
@@ -88,7 +98,7 @@ class Project(TendenciBaseModel):
     project_name = models.CharField(
         _(u'Project Name'), max_length=300)
     project_manager = models.ForeignKey(ProjectManager, blank=True, null=True, on_delete=models.SET_NULL)
-    project_number = models.OneToOneField(ProjectNumber, blank=True, null=True)
+    project_number = models.OneToOneField(ProjectNumber, blank=True, null=True, on_delete=models.CASCADE)
     project_status = models.CharField(_(u'Project Status'),
         blank=True,
         max_length=50,
@@ -131,14 +141,13 @@ class Project(TendenciBaseModel):
     objects = NewProjectManager()
 
     def __unicode__(self):
-        return unicode(self.id)
+        return str(self.id)
 
     class Meta:
         permissions = (("view_project", "Can view project"),)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("projects.detail", [self.slug])
+        return reverse('projects.detail', args=[self.slug])
 
     @property
     def content_type(self):
@@ -146,7 +155,7 @@ class Project(TendenciBaseModel):
 
 
 class Photo(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
     title = models.CharField(_(u'title'), max_length=200, blank=True)
     photo_description = models.TextField(_(u'Photo Description'), null=True, blank=True)
 
@@ -156,7 +165,7 @@ class Photo(File):
         return self.title
 
 class TeamMembers(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
     last_name = models.CharField(_(u'Last Name'), max_length=200, blank=True)
     title = models.CharField(_(u'Title'), max_length=200, blank=True)
@@ -169,8 +178,8 @@ class TeamMembers(File):
         return self.title
 
 class Documents(File):
-    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related")
-    type = models.ForeignKey(DocumentType, blank=True)
+    project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
+    type = models.ForeignKey(DocumentType, blank=True, on_delete=models.CASCADE)
     other = models.CharField(_(u'other'), max_length=200, blank=True)
     document_dt = models.DateField(_(u'Document Date'), null=True, blank=True)
 
@@ -178,7 +187,3 @@ class Documents(File):
 
     def __unicode__(self):
         return self.type
-
-
-class CategoryPhoto(File):
-    pass

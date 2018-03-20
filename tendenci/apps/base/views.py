@@ -9,14 +9,13 @@ import mimetypes
 import shutil
 import subprocess
 import zipfile
-import xmlrpclib
 
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.template import RequestContext, TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.shortcuts import redirect
 from django.conf import settings
@@ -33,10 +32,9 @@ from tendenci.libs.utils import python_executable
 from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
-from tendenci.apps.base.models import UpdateTracker, ChecklistItem
-from tendenci.apps.base.managers import SubProcessManager
+from tendenci.apps.base.models import ChecklistItem
 from tendenci.apps.perms.decorators import superuser_required
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.utils import get_theme_info
 
@@ -90,10 +88,9 @@ def image_preview(request, app_label, model, id,  size):
     keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
     key = '.'.join(keys)
     response = cache.get(key)
-    original_size = size
 
     if not response:
-        from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
+        from tendenci.apps.base.utils import make_image_object_from_url, image_rescale
 
         # set sizes
         size_min = (30,30)
@@ -140,7 +137,7 @@ def image_preview(request, app_label, model, id,  size):
 
 
 def custom_error(request, template_name="500.html"):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def plugin_static_serve(request, plugin, path, show_indexes=False):
@@ -162,8 +159,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     import os
     import posixpath
     import stat
-    import urllib
-    from email.Utils import parsedate_tz, mktime_tz
+    from six.moves.urllib.request import unquote
 
     from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
     from django.utils.http import http_date
@@ -174,7 +170,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     document_root = os.path.join(settings.PROJECT_ROOT,'plugins',plugin,'media')
 
     # Clean up given path to only allow serving files below document_root.
-    path = posixpath.normpath(urllib.unquote(path))
+    path = posixpath.normpath(unquote(path))
     path = path.lstrip('/')
     newpath = ''
     for part in path.split('/'):
@@ -223,7 +219,7 @@ def memcached_status(request):
     except ImportError:
         raise Http404
 
-    if not request.user.is_authenticated() and request.user.is_superuser:
+    if not request.user.is_authenticated and request.user.is_superuser:
         raise Http404
 
     # get first memcached URI
@@ -260,7 +256,7 @@ def memcached_status(request):
 
     host.close_socket()
 
-    return render_to_response('base/memcached_status.html', {
+    return render_to_resp(request=request, template_name='base/memcached_status.html', context={
             'stats': stats,
             'hit_rate': 100 * stats.get_hits / stats.cmd_get,
             'time': datetime.datetime.now(), # server time
@@ -272,7 +268,7 @@ def feedback(request, template_name="base/feedback.html"):
     # overridden admin bar, so we are leaving it and just raising 404
     raise Http404
 
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def homepage(request, template_name="homepage.html"):
@@ -280,7 +276,7 @@ def homepage(request, template_name="homepage.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def robots_txt(request):
@@ -292,7 +288,7 @@ def robots_txt(request):
         template_name = robots_setting
 
     site_url = get_setting('site', 'global', 'siteurl')
-    return render_to_response(template_name, {'site_url': site_url}, context_instance=RequestContext(request), content_type="text/plain")
+    return render_to_resp(request=request, template_name=template_name, context={'site_url': site_url}, content_type="text/plain")
 
 
 def base_file(request, file_name):
@@ -306,10 +302,10 @@ def base_file(request, file_name):
 
     try:
         t = get_template(file_name.encode('ascii', 'ignore'))
-    except TemplateDoesNotExist:
+    except (TemplateDoesNotExist, IOError):
         raise Http404
 
-    return HttpResponse(t.render(RequestContext(request)))
+    return HttpResponse(t.render(request=request))
 
 
 def exception_test(request):
@@ -354,10 +350,10 @@ def password_again(request, template_name="base/password.html"):
     else:
         form = PasswordForm(user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'next': next,
         'form': form,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @superuser_required
@@ -378,9 +374,8 @@ def checklist(request, template_name="base/checklist.html"):
 
     percent = (Decimal(completed_count) / Decimal(total_count)) * 100
 
-    return render_to_response(template_name,
-                              {'checklist': checklist, "percent": percent},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'checklist': checklist, "percent": percent})
 
 
 @superuser_required
@@ -401,8 +396,8 @@ def addon_upload(request, template_name="base/addon_upload.html"):
 
             return redirect('addon.upload.preview', identifier)
 
-    return render_to_response(template_name, {'form': form},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'form': form})
 
 
 @superuser_required
@@ -428,8 +423,8 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
 
-    return render_to_response(template_name, {'addon_name': addon_name, 'sid':sid },
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'addon_name': addon_name, 'sid':sid })
 
 
 @superuser_required
@@ -444,8 +439,8 @@ def addon_upload_process(request, sid, template_name="base/addon_upload_process.
         del request.session[sid]
         return redirect('dashboard')
 
-    return render_to_response(template_name, {'sid': sid },
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'sid': sid })
 
 
 def addon_upload_check(request, sid):
@@ -470,20 +465,20 @@ def update_tendenci(request, template_name="base/update.html"):
         tos = request.POST.get('tos')
 
         if tos:
-            SubProcessManager.set_process([python_executable(), "manage.py", "auto_update",
-                                            "--user_id=%s" % request.user.id])
+            subprocess.Popen([python_executable(), "manage.py", "auto_update",
+                             "--user_id=%s" % request.user.id])
             return redirect('update_tendenci.confirmation')
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'latest_version': get_latest_version(),
         'version': version,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @superuser_required
 @password_required
 def update_tendenci_confirmation(request, template_name="base/update_confirmation.html"):
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 class AppsListView(TemplateView):

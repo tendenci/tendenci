@@ -12,7 +12,7 @@ from tendenci.apps.discounts.models import Discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.memberships.models import Membership
 
-from tendenci.apps.events.models import RegConfPricing, PaymentMethod, Registrant
+from tendenci.apps.events.models import PaymentMethod, Registrant
 from tendenci.apps.base.forms import CustomCatpchaField
 
 class RegistrationForm(forms.Form):
@@ -39,7 +39,7 @@ class RegistrationForm(forms.Form):
         super(RegistrationForm, self).__init__(*args, **kwargs)
 
         # no need for captcha if logged in
-        if user.is_authenticated():
+        if user.is_authenticated:
             self.fields.pop('captcha')
 
         # admin only price override field
@@ -99,7 +99,7 @@ class RegistrantForm(forms.Form):
 
         # make the fields in the subsequent forms as not required
         if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
+            for key in self.fields:
                 self.fields[key].required = False
 
         # initialize pricing options and reg_set field
@@ -212,7 +212,7 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data
         pricing = self.cleaned_data['pricing']
         user = self.get_user()
-        if not (user.is_anonymous() or pricing.allow_anonymous):
+        if not (user.is_anonymous or pricing.allow_anonymous):
             already_registered = Registrant.objects.filter(user=user)
             if already_registered:
                 if not user.profile.is_superuser:

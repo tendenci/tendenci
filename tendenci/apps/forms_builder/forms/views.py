@@ -2,17 +2,18 @@
 # non-ascii characters.
 # from __future__ import must occur at the beginning of the file
 from __future__ import unicode_literals
-import datetime, random, string
+import datetime
+import random
+import string
 import time
 import csv
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
-from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
@@ -21,16 +22,16 @@ from django.utils.translation import ugettext_lazy as _
 from djcelery.models import TaskMeta
 
 from tendenci.apps.perms.decorators import is_enabled
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.utils import template_exists
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
@@ -73,10 +74,10 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     else:
         form = form_class(user=request.user)
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'form':form,
         'formset': formset,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @is_enabled('forms')
@@ -87,6 +88,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         raise Http403
 
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
+    RecurringPaymentFormSet = inlineformset_factory(Form, RecurringPayment, form=RecurringPaymentForm, extra=2)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
@@ -113,11 +115,11 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             formset = RecurringPaymentFormSet(instance=form_instance)
         else:
             formset = PricingFormSet(instance=form_instance)
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name,context={
         'form':form,
         'formset':formset,
         'form_instance':form_instance,
-        },context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('forms')
@@ -141,8 +143,8 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
 
-    return render_to_response(template_name, {'form':form, 'form_instance':form_instance},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form, 'form_instance':form_instance})
 
 
 @is_enabled('forms')
@@ -160,8 +162,8 @@ def delete(request, id, template_name="forms/delete.html"):
         form_instance.delete()
         return HttpResponseRedirect(reverse('forms'))
 
-    return render_to_response(template_name, {'form': form_instance},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form_instance})
 
 
 @is_enabled('forms')
@@ -249,8 +251,8 @@ def entries(request, id, template_name="forms/entries.html"):
 
     EventLog.objects.log(instance=form)
 
-    return render_to_response(template_name, {'form':form,'entries': entries},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form,'entries': entries})
 
 
 @is_enabled('forms')
@@ -267,8 +269,8 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
         entry.delete()
         return HttpResponseRedirect(reverse('forms'))
 
-    return render_to_response(template_name, {'entry': entry},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'entry': entry})
 
 
 @is_enabled('forms')
@@ -284,10 +286,10 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     if not form_template or not template_exists(form_template):
         form_template = "forms/base.html"
 
-    return render_to_response(template_name, {'entry':entry,
+    return render_to_resp(request=request, template_name=template_name,
+        context={'entry':entry,
                                               'form': entry.form,
-                                              'form_template': form_template},
-        context_instance=RequestContext(request))
+                                              'form_template': form_template})
 
 
 @is_enabled('forms')
@@ -330,11 +332,11 @@ def entries_export_status(request, task_id, template_name="forms/entry_export_st
     except TaskMeta.DoesNotExist:
         task = None
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'task':task,
         'task_id':task_id,
         'user_this':None,
-    }, context_instance=RequestContext(request))
+    })
 
 def entries_export_check(request, task_id):
     try:
@@ -374,8 +376,8 @@ def search(request, template_name="forms/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'forms':forms},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'forms':forms})
 
 
 @is_enabled('forms')
@@ -392,7 +394,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     # If form has a recurring payment, make sure the user is logged in
     if form.recurring_payment:
         [email_field] = form.fields.filter(field_type__iexact='EmailVerificationField')[:1] or [None]
-        if request.user.is_anonymous() and not email_field:
+        if request.user.is_anonymous and not email_field:
             # anonymous user - if we don't have the email field, redirect to login
             response = redirect('auth_login')
             response['Location'] += '?next=%s' % form.get_absolute_url()
@@ -406,7 +408,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
     if form.custom_payment and not form.recurring_payment:
         billing_form = BillingForm(request.POST or None)
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             billing_form.initial = {
                         'first_name':request.user.first_name,
                         'last_name':request.user.last_name,
@@ -423,7 +425,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 if entry.get_email_address():
                     emailfield = entry.get_email_address()
                     firstnamefield = entry.get_first_name()
@@ -531,7 +533,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 price = entry.pricing.price or form_for_form.cleaned_data.get('custom_price')
 
                 if form.recurring_payment:
-                    if request.user.is_anonymous():
+                    if request.user.is_anonymous:
                         rp_user = entry.creator
                     else:
                         rp_user = request.user
@@ -600,7 +602,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         "form_for_form": form_for_form,
         'form_template': form.template,
     }
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 def form_sent(request, slug, template="forms/form_sent.html"):
@@ -613,7 +615,7 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     if not form.template or not template_exists(form.template):
         form.template = "default.html"
     context = {"form": form, "form_template": form.template}
-    return render_to_response(template, context, RequestContext(request))
+    return render_to_resp(request=request, template_name=template, context=context)
 
 
 @is_enabled('forms')
@@ -638,7 +640,7 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             # redirect to invoice page
             return redirect('invoice.view', invoice.id, invoice.guid)
     else:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             form = form_class(initial={
                         'first_name':request.user.first_name,
                         'last_name':request.user.last_name,
@@ -650,11 +652,11 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     if not form_template or not template_exists(form_template):
         form_template = "default.html"
     EventLog.objects.log(instance=entry)
-    return render_to_response(template, {
+    return render_to_resp(request=request, template_name=template, context={
             'payment_form':form,
             'form':entry.form,
             'form_template': form_template,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('forms')
@@ -669,8 +671,8 @@ def export(request, template_name="forms/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })
 
 
 @is_enabled('forms')

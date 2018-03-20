@@ -51,7 +51,7 @@
         </h3>
         {% if event.place %}
         <div class="place" itemprop="location">{{ event.place }}</div>
-		 {% endif %}
+         {% endif %}
 
         <div class="time-period">
             {% if event.all_day %}
@@ -69,11 +69,11 @@
 
 
         {% if event.groups.count > 0 %}
-	        <div><strong>{% trans "Group(s):" %}</strong>
-	        {% for group in event.groups.all %}
-	        	<a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
-	        {% endfor %}
-	        </div>
+            <div><strong>{% trans "Group(s):" %}</strong>
+            {% for group in event.groups.all %}
+                <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            </div>
         {% endif %}
 
         {% with event.organizers as organizers %}

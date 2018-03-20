@@ -52,7 +52,6 @@ class CorpMembershipImportProcessor(object):
                              'PST': 'US/Pacific',
                              'GMT': 'UTC'
                              }
-        self.t4_timezone_map_keys = self.t4_timezone_map.keys()
 
     def init_summary(self):
         return {
@@ -91,7 +90,7 @@ class CorpMembershipImportProcessor(object):
         if key == 'name':
             if not cmemb_data['company_name']:
                 error_msg.append("Missing key 'company_name'.")
-#         if 'status_detail' in cmemb_data.keys():
+#         if 'status_detail' in cmemb_data:
 #             if cmemb_data['status_detail'] in ['archive', 'archived']:
 #                 error_msg.append('No import for archived.')
 
@@ -111,7 +110,7 @@ class CorpMembershipImportProcessor(object):
                 del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
-        self.field_names = cmemb_data.keys()  # csv field names
+        self.field_names = cmemb_data  # csv field names
         corp_memb_display = {}
         corp_memb_display['error'] = ''
         corp_memb_display['user'] = None
@@ -342,12 +341,10 @@ class CorpMembershipImportProcessor(object):
             assign_to_fields = self.corp_profile_fields
         else:
             assign_to_fields = self.corp_membership_fields
-        # list of field names from the model
         # self.field_names is a list of field names from csv
-        assign_to_fields_names = assign_to_fields.keys()
 
         for field_name in self.field_names:
-            if field_name in assign_to_fields_names:
+            if field_name in assign_to_fields:
                 if any([
                         action == 'insert',
                         self.mimport.override,
@@ -362,9 +359,9 @@ class CorpMembershipImportProcessor(object):
                     #print field_name, value
 
         # if insert, set defaults for the fields not in csv.
-        for field_name in assign_to_fields_names:
+        for field_name in assign_to_fields:
             if field_name not in self.field_names and action == 'insert':
-                if field_name not in self.private_settings.keys():
+                if field_name not in self.private_settings:
                     if field_name not in ['creator', 'owner',
                                           'creator_username',
                                           'owner_username']:
@@ -372,9 +369,9 @@ class CorpMembershipImportProcessor(object):
                                         assign_to_fields[field_name])
                         if value is None:
                             setattr(instance, field_name, value)
-        
-        # for fields not in spreadsheet, assign default value 
-        if action == 'insert':                  
+
+        # for fields not in spreadsheet, assign default value
+        if action == 'insert':
             for field_name in assign_to_fields:
                 if field_name not in self.field_names:
                     value = self.get_default_value(assign_to_fields[field_name])
@@ -385,7 +382,7 @@ class CorpMembershipImportProcessor(object):
         # if allows null or has default, return None
         if field.null:
             return None
-        
+
         if field.has_default():
             return field.default
 
@@ -412,9 +409,9 @@ class CorpMembershipImportProcessor(object):
         if field_type == 'ForeignKey':
             if field.name not in ['creator', 'owner']:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.all()[:1] or [None]
                 return value
             return None
@@ -435,7 +432,7 @@ class CorpMembershipImportProcessor(object):
                 value = value[:field.max_length]
             if field.name == 'time_zone':
                 if value not in pytz.all_timezones:
-                    if value in self.t4_timezone_map_keys:
+                    if value in self.t4_timezone_map:
                         value = self.t4_timezone_map[value]
             try:
                 value = field.to_python(value)
@@ -509,9 +506,9 @@ class CorpMembershipImportProcessor(object):
 
             if value:
                 try:
-                    model = field.related.parent_model()
+                    model = field.remote_field.parent_model()
                 except AttributeError:
-                    model = field.related.model
+                    model = field.remote_field.model
                 [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
@@ -529,9 +526,9 @@ class CorpMembershipImportProcessor(object):
                 if field.name not in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
                     try:
-                        model = field.related.parent_model()
+                        model = field.remote_field.parent_model()
                     except AttributeError:
-                        model = field.related.model
+                        model = field.remote_field.model
                     [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value

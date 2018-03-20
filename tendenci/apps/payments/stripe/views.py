@@ -1,25 +1,26 @@
 #import os
 import math
 #from datetime import datetime
-from django.shortcuts import render_to_response, get_object_or_404
+
+from django.shortcuts import get_object_or_404
 #from django.http import HttpResponse
 from django.conf import settings
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-# from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+#from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.db import transaction
-# import simplejson
+#import simplejson
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.payments.models import Payment
-from forms import StripeCardForm, BillingInfoForm
+from .forms import StripeCardForm, BillingInfoForm
 import stripe
-from utils import payment_update_stripe
+from .utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
 from tendenci.apps.base.http import Http403
@@ -42,7 +43,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
 
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
-                
+
             # determine if we need to create a stripe customer (for membership auto renew)
             customer = False
             obj_user = None
@@ -54,7 +55,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                     obj_user = membership.user
                 else:
                     membership = None
-                    
+
             if obj_user:
                 try:
                     # Create a Customer:
@@ -91,8 +92,8 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                             message=message, status=e.http_status, code=code)
             except Exception as e:
                 charge_response = e.message
-               
-            # add a rp entry now 
+
+            # add a rp entry now
             if hasattr(charge_response,'paid') and charge_response.paid:
                 if customer and membership:
                     kwargs = {'platform': 'stripe',
@@ -114,11 +115,11 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
             # redirect to thankyou
             return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id]))
 
-    return render_to_response(template_name, {'form': form,
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'form': form,
                                               'billing_info_form': billing_info_form,
                                               'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_PUBLISHABLE_KEY,
-                                              'payment': payment},
-                              context_instance=RequestContext(request))
+                                              'payment': payment})
 
 
 @login_required
@@ -127,7 +128,7 @@ def update_card(request, rp_id):
     if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
         and not (rp.owner is request.user):
         raise Http403
-    
+
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
     token = request.POST.get('stripeToken')
     try:
@@ -158,18 +159,18 @@ def update_card(request, rp_id):
         # Something else happened, completely unrelated to Stripe
         message_status = messages.ERROR
         msg_string = 'Error updating payment method: {}'.format(e)
-    
+
     messages.add_message(request, message_status, _(msg_string))
     next_page = request.GET.get('next')
     if next_page:
         return HttpResponseRedirect(next_page)
     else:
         return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
-    
+
 
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))
     payment = get_object_or_404(Payment, pk=payment_id)
 
-    return render_to_response(template_name,{'payment':payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment':payment})

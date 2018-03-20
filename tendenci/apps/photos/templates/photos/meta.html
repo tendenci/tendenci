@@ -8,7 +8,7 @@
 {% if image %}
 
 <ul class="list-unstyled t-meta-data">
-	{% if image.tags %}
+    {% if image.tags %}
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in image.tags|tag_split %}
@@ -23,7 +23,7 @@
              <li><strong>{% trans 'Owned by you' %}</strong>{% if not image.status_detail == "active" %} - status: {{ image.obj_status }}{% endif %}</li>
         {% endif %}
         {% endif %}
-	
+
         {% if user.profile.is_superuser or user == image.creator or user == image.owner %}
             {% meta_creator_owner image %}
         {% endif %}

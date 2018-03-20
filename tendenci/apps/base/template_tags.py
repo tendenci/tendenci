@@ -1,14 +1,14 @@
+from builtins import str
 import random
 from operator import or_
+from functools import reduce
 
-from django.template import Node, Variable, Context, loader
+from django.template import Node, Variable
 from django.db import models
-from django.core.exceptions import FieldError
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 
-from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.utils import get_query_filters
 
 
@@ -83,7 +83,7 @@ class ListNode(Node):
         if 'tags' in self.kwargs:
             try:
                 tags = Variable(self.kwargs['tags'])
-                tags = unicode(tags.resolve(context))
+                tags = str(tags.resolve(context))
             except:
                 tags = self.kwargs['tags']
 
@@ -131,7 +131,7 @@ class ListNode(Node):
         if 'exclude' in self.kwargs:
             try:
                 exclude = Variable(self.kwargs['exclude'])
-                exclude = unicode(exclude.resolve(context))
+                exclude = str(exclude.resolve(context))
             except:
                 exclude = self.kwargs['exclude']
 
@@ -141,7 +141,7 @@ class ListNode(Node):
         if 'group' in self.kwargs:
             try:
                 group = Variable(self.kwargs['group'])
-                group = unicode(group.resolve(context))
+                group = str(group.resolve(context))
             except:
                 group = self.kwargs['group']
 
@@ -158,7 +158,7 @@ class ListNode(Node):
                 status_detail = self.kwargs['status_detail']
 
         # get the list of items
-        self.perms = getattr(self, 'perms', unicode())
+        self.perms = getattr(self, 'perms', str())
 
         # Only use the search index if there is a query passed
         if query:
@@ -171,7 +171,7 @@ class ListNode(Node):
         else:
             filters = get_query_filters(user, self.perms)
             items = self.model.objects.filter(filters)
-            if user.is_authenticated():
+            if user.is_authenticated:
                 items = items.distinct()
 
             if tags:  # tags is a comma delimited list
@@ -215,9 +215,10 @@ class ListNode(Node):
             items = items.order_by(order)
 
         if randomize:
-            objects = [item for item in random.sample(items, len(items))][:limit]
+            items = list(items)
+            objects = random.sample(items, min(len(items), limit))
         else:
-            objects = [item for item in items[:limit]]
+            objects = items[:limit]
 
         if query:
             objects = [item.object for item in objects]
@@ -227,11 +228,11 @@ class ListNode(Node):
         if 'template' in self.kwargs:
             try:
                 template = Variable(self.kwargs['template'])
-                template = unicode(template.resolve(context))
+                template = str(template.resolve(context))
             except:
                 template = self.kwargs['template']
 
-            t = loader.get_template(template)
-            return t.render(Context(context, autoescape=context.autoescape))
+            t = context.template.engine.get_template(template)
+            return t.render(context=context, autoescape=context.autoescape)
 
         return ""

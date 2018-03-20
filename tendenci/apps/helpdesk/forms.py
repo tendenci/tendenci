@@ -6,14 +6,8 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 forms.py - Definitions of newforms-based forms for creating and maintaining
            tickets.
 """
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
 from django import forms
-from django.forms import extras
-from django.core.files.storage import default_storage
+from django.forms import widgets
 from django.conf import settings
 from django.utils.translation import ugettext as _
 try:
@@ -68,7 +62,7 @@ class CustomFieldMixin(object):
         elif field.data_type == 'url':
             fieldclass = forms.URLField
         elif field.data_type == 'ipaddress':
-            fieldclass = forms.IPAddressField
+            fieldclass = forms.GenericIPAddressField
         elif field.data_type == 'slug':
             fieldclass = forms.SlugField
 
@@ -171,7 +165,7 @@ class TicketForm(CustomFieldMixin, forms.Form):
         )
 
     due_date = forms.DateTimeField(
-        widget=extras.SelectDateWidget,
+        widget=widgets.SelectDateWidget,
         required=False,
         label=_('Due on'),
         )
@@ -361,7 +355,7 @@ class PublicTicketForm(CustomFieldMixin, forms.Form):
         )
 
     due_date = forms.DateTimeField(
-        widget=extras.SelectDateWidget,
+        widget=widgets.SelectDateWidget,
         required=False,
         label=_('Due on'),
         )
@@ -386,7 +380,7 @@ class PublicTicketForm(CustomFieldMixin, forms.Form):
                     }
 
             self.customfield_to_field(field, instanceargs)
-        # add the captcha field here because it has to be the last field  
+        # add the captcha field here because it has to be the last field
         self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
     def save(self):

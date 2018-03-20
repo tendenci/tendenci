@@ -1,6 +1,7 @@
+from builtins import str
 import os
 import simplejson as json
-import urllib2
+from six.moves.urllib.request import urlopen
 import mimetypes
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
@@ -8,12 +9,11 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import (
     HttpResponseRedirect, HttpResponse, Http404, JsonResponse, HttpResponseForbidden)
 import simplejson
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 from django.forms.models import modelformset_factory
 from django.conf import settings
@@ -38,7 +38,7 @@ from tendenci.apps.perms.utils import (
     update_perms_and_save, has_perm, has_view_perm, get_query_filters)
 from tendenci.apps.categories.models import Category
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.models import File, FilesCategory
 from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_max_file_upload_size, get_allowed_upload_file_exts
@@ -51,7 +51,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     Return an image response after paramters have been applied.
     """
     file = get_object_or_404(File, pk=id)
-    
+
     cache_key = generate_image_cache_key(
         file=id,
         size=size,
@@ -75,11 +75,11 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # extra permission
     if not file.is_public:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             raise Http403
 
     # if string and digit convert to integer
-    if isinstance(quality, basestring) and quality.isdigit():
+    if isinstance(quality, str) and quality.isdigit():
         quality = int(quality)
 
     # get image binary
@@ -224,13 +224,13 @@ def search(request, template_name="files/search.html"):
     if layout == 'grid':
         base_template_path = "base-wide.html"
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'files': files,
             'form': form,
             'layout': layout,
             'base_template_path': base_template_path,
-        }, context_instance=RequestContext(request))
+        })
 
 
 def search_redirect(request):
@@ -245,10 +245,10 @@ def print_view(request, id, template_name="files/print-view.html"):
     if not has_view_perm(request.user, 'files.view_file', file):
         raise Http403
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'file': file
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('files')
@@ -297,11 +297,11 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
     else:
         form = form_class(instance=file, user=request.user)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'file': file,
             'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 class FileTinymceCreateView(CreateView):
@@ -331,7 +331,7 @@ class FileTinymceCreateView(CreateView):
 
     def form_valid(self, form):
         app_label = self.request.POST['app_label']
-        model = unicode(self.request.POST['model']).lower()
+        model = str(self.request.POST['model']).lower()
         try:
             object_id = int(self.request.POST['object_id'])
         except:
@@ -407,14 +407,14 @@ def bulk_add(request, template_name="files/bulk-add.html"):
             file_formset.save()
         else:
             # Handle formset errors
-            return render_to_response(template_name, {
+            return render_to_resp(request=request, template_name=template_name, context={
                 'file_formset': file_formset,
-            }, context_instance=RequestContext(request))
+            })
 
         formset_edit = True
 
         # Handle existing files.  Instance returned by file_formset.save() is not enough
-        for num in xrange(file_formset.total_form_count()):
+        for num in range(file_formset.total_form_count()):
             key = 'form-' + str(num) + '-id'
             if request.POST.get(key):
                 file_list.append(request.POST.get(key))
@@ -436,10 +436,10 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         # Handle json response
         file_qs = File.objects.filter(id__in=file_list)
         file_formset = FileFormSet(queryset=file_qs)
-        html = render_to_response(
-            'files/file-formset.html', {
+        html = render_to_resp(
+            request=request, template_name='files/file-formset.html', context={
                 'file_formset': file_formset,
-            }, context_instance=RequestContext(request)).content
+            }).content
 
         data = {'form_set': html}
         response = JSONResponse(data, {}, "application/json")
@@ -452,10 +452,10 @@ def bulk_add(request, template_name="files/bulk-add.html"):
             'form-MAX_NUM_FORMS': u'',
         })
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'file_formset': file_formset,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('files')
@@ -514,10 +514,10 @@ def add(request, form_class=FileForm,template_name="files/add.html"):
         if 'group' in form.fields:
             form.fields['group'].initial = Group.objects.get_initial_group_id()
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('files')
@@ -545,10 +545,10 @@ def delete(request, id, template_name="files/delete.html"):
         else:
             return HttpResponseRedirect(reverse('file.search'))
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'file': file
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('files')
@@ -583,15 +583,15 @@ def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     paginator = Paginator(files, 10)
     files = paginator.page(page_num)
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             "files": files,
             'q': query,
             'page_num': page_num,
             'page_range': paginator.page_range,
             'csrf_token': csrf_get_token(request),
             'can_upload_file': has_perm(request.user, 'files.add_file')
-        }, context_instance=RequestContext(request))
+        })
 
 
 @csrf_exempt
@@ -608,7 +608,7 @@ def tinymce_get_files(request):
 
         return_string = ''
         for file_item in files:
-            return_string += render_to_string('files/templates/tinymce_gallery.html', {'file': file_item})
+            return_string += render_to_string(template_name='files/templates/tinymce_gallery.html', context={'file': file_item})
 
         return JSONResponse({'content': return_string})
     raise Http404
@@ -617,10 +617,10 @@ def tinymce_get_files(request):
 @login_required
 def tinymce_upload_template(request, id, template_name="files/templates/tinymce_upload.html"):
     file = get_object_or_404(File, pk=id)
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'file': file
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('files')
@@ -658,11 +658,11 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name, {
+    return render_to_resp(
+        request=request, template_name=template_name, context={
             'form': form,
             'event_logs': event_logs
-        }, context_instance=RequestContext(request))
+        })
 
 
 def display_less(request, path):
@@ -672,7 +672,7 @@ def display_less(request, path):
     content = ''
     if path:
         full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, path)
-        url_obj = urllib2.urlopen(full_path)
+        url_obj = urlopen(full_path)
         content = url_obj.read()
     return HttpResponse(content, content_type="text/css")
 

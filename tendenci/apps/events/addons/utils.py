@@ -1,11 +1,10 @@
-from datetime import datetime
 import operator
+from functools import reduce
 from django.db.models import Q
 
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.events.models import Event, Addon, AddonOption
+from tendenci.apps.events.models import Addon, RegAddon
 
 def get_active_addons(event):
     """
@@ -44,7 +43,7 @@ def get_addon_access_filter(user, is_strict=False):
     filter_and, filter_or = None, None
 
     if is_strict:
-        if user.is_anonymous():
+        if user.is_anonymous:
             filter_or = {'allow_anonymous': True}
         elif not user.profile.is_member:
             filter_or = {'allow_anonymous': True,

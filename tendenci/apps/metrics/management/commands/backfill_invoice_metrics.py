@@ -1,11 +1,9 @@
 from __future__ import print_function
-import commands
-from datetime import date, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db.models import Sum
-from django.conf import settings
 
 from tendenci.apps.metrics.models import Metric
 

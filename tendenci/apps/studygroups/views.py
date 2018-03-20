@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.forms.models import modelformset_factory, inlineformset_factory
+from django.urls import reverse
+from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
@@ -15,17 +15,16 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
-from tagging.models import Tag, TaggedItem
-from tagging.utils import parse_tag_input
-from tendenci.apps.studygroups.models import StudyGroup, Officer, Position
-from tendenci.apps.studygroups.forms import StudyGroupForm, StudyGroupAdminForm, OfficerForm
-from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
+from tendenci.apps.studygroups.models import StudyGroup, Officer
+from tendenci.apps.studygroups.forms import StudyGroupForm, OfficerForm
+from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
 try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
+
 
 def detail(request, slug, template_name="studygroups/detail.html"):
     study_group = get_object_or_404(StudyGroup, slug=slug)
@@ -38,7 +37,7 @@ def detail(request, slug, template_name="studygroups/detail.html"):
         #group where the user is a member that has a view_studygroup permission.
         has_group_view_permission = False
         #Check user for group view permissions
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             groups = request.user.group_set.all()
             perms = has_groups_perms(study_group).filter(group__in=groups)
             for perm in perms:
@@ -50,14 +49,13 @@ def detail(request, slug, template_name="studygroups/detail.html"):
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=study_group.group).distinct()
 
-        return render_to_response(template_name,
-            {
+        return render_to_resp(request=request, template_name=template_name,
+            context={
                 'study_group': study_group,
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
-            },
-            context_instance=RequestContext(request))
+            })
     else:
         raise Http403
 
@@ -74,8 +72,8 @@ def search(request, template_name="studygroups/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'studygroups': studygroups},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'studygroups': studygroups})
 
 @login_required
 def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/add.html"):
@@ -152,13 +150,12 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 
-    return render_to_response(template_name,
-            {
+    return render_to_resp(request=request, template_name=template_name,
+            context={
                 'form':form,
                 'metaform':metaform,
                 'categoryform':categoryform,
-            },
-            context_instance=RequestContext(request))
+            })
 
 @login_required
 def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/edit.html"):
@@ -201,7 +198,7 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
             meta = metaform.save()
             study_group.meta = meta
 
-            officers = formset.save()
+            formset.save()
 
             ## update the category of the studygroup
             category_removed = False
@@ -247,15 +244,14 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         formset = OfficerFormSet(instance=study_group, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, study_group_group=study_group.group))
 
-    return render_to_response(template_name,
-        {
+    return render_to_resp(request=request, template_name=template_name,
+        context={
             'study_group': study_group,
             'form': form,
             'metaform': metaform,
             'categoryform': categoryform,
             'formset': formset,
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 @login_required
@@ -291,8 +287,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="studygroups/edit-
     else:
         form = form_class(instance=study_group.meta)
 
-    return render_to_response(template_name, {'study_group': study_group, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'study_group': study_group, 'form': form})
 
 
 @login_required
@@ -319,5 +315,5 @@ def delete(request, id, template_name="studygroups/delete.html"):
         study_group.delete()
         return HttpResponseRedirect(reverse('studygroups.search'))
 
-    return render_to_response(template_name, {'study_group': study_group},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'study_group': study_group})

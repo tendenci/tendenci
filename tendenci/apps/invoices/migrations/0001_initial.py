@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('tender_date', models.DateTimeField(null=True)),
                 ('arrival_date_time', models.DateTimeField(null=True, blank=True)),
                 ('is_void', models.BooleanField(default=False)),
-                ('status_detail', models.CharField(default=b'estimate', max_length=50, choices=[(b'estimate', 'Estimate'), (b'tendered', 'Tendered')])),
+                ('status_detail', models.CharField(default='estimate', max_length=50, choices=[('estimate', 'Estimate'), ('tendered', 'Tendered')])),
                 ('status', models.BooleanField(default=True)),
                 ('payments_credits', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),
                 ('balance', models.DecimalField(default=0, max_digits=15, decimal_places=2, blank=True)),
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('box_and_packing', models.DecimalField(default=0, max_digits=6, decimal_places=2)),
                 ('creator', models.ForeignKey(related_name='invoice_creator', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='invoices', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('object_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
+                ('object_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('owner', models.ForeignKey(related_name='invoice_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={

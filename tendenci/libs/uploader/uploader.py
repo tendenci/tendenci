@@ -31,9 +31,9 @@ import json
 
 from django.conf import settings
 
-from fine_uploader.views import make_response
-import fine_uploader.utils as utils
-from fine_uploader.forms import UploadFileForm
+from .fine_uploader import utils
+from .fine_uploader.views import make_response
+from .fine_uploader.forms import UploadFileForm
 
 settings.UPLOAD_DIRECTORY = os.path.join(settings.MEDIA_ROOT, 'uploads')
 

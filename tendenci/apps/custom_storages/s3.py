@@ -1,7 +1,7 @@
 from storages.backends.s3boto import S3BotoStorage
 from django.conf import settings
 
-from s3_folder_storage.s3 import DefaultStorage, StaticStorage
+from s3_folder_storage.s3 import DefaultStorage
 
 class ThemeStorage(S3BotoStorage):
     """

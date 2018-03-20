@@ -1,10 +1,11 @@
+from builtins import str
 import operator
+from functools import reduce
 
 from django import forms
-from django.db import models
+from django.apps import apps
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -51,7 +52,7 @@ def model_choices(site=None):
         if m._meta.model_name.lower() in registered_apps_names:
             if get_setting("module", m._meta.app_label, "enabled") is not False:
                 choices.append(("%s.%s" % (m._meta.app_label, m._meta.model_name),
-                                capfirst(unicode(m._meta.verbose_name_plural))))
+                                capfirst(str(m._meta.verbose_name_plural))))
 
     return sorted(choices, key=lambda x: x[1])
 
@@ -125,7 +126,7 @@ class SearchForm(forms.Form):
                 sqs = sqs.auto_query(sqs.query.clean(query))
                 if user:
                     if not is_an_admin:
-                        if not user.is_anonymous():
+                        if not user.is_anonymous:
                         # if b/w admin and anon
 
                             # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
@@ -156,7 +157,7 @@ class SearchForm(forms.Form):
                     if is_an_admin:
                         sqs = sqs.all()
                     else:
-                        if not user.is_anonymous():
+                        if not user.is_anonymous:
                             # (status+status_detail+anon OR who_can_view__exact)
                             sec1_query = Q(**{
                                 'status':1,
@@ -224,7 +225,7 @@ class ModelSearchForm(SearchForm):
         include_users = False
 
         if kwargs['user'].profile.is_superuser or get_setting('module', 'users', 'allowanonymoususersearchuser') \
-        or (kwargs['user'].is_authenticated() and get_setting('module', 'users', 'allowusersearch')):
+        or (kwargs['user'].is_authenticated and get_setting('module', 'users', 'allowusersearch')):
             include_users = True
 
         if include_users:
@@ -240,7 +241,7 @@ class ModelSearchForm(SearchForm):
                         registered_apps_models.pop(models_index)
                         names_index = registered_apps_names.index(app['model']._meta.model_name)
                         registered_apps_names.pop(names_index)
-                    except Exception as e:
+                    except Exception:
                         pass
 
         self.models = registered_apps_models
@@ -252,7 +253,7 @@ class ModelSearchForm(SearchForm):
         if self.cleaned_data.get('models', []):
             search_models = []
             for model in self.cleaned_data['models']:
-                class_model = models.get_model(*model.split('.'))
+                class_model = apps.get_model(*model.split('.'))
                 #if class_model._meta.model_name in INCLUDED_APPS:
                 search_models.append(class_model)
         return search_models

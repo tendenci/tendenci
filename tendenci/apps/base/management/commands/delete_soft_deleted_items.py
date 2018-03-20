@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db.models.loading import get_models
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from tendenci.apps.perms.models import TendenciBaseModel
-        models = get_models()
+        models = apps.get_models()
         for model in models:
             if TendenciBaseModel in model.__bases__:
                 if hasattr(model.objects, 'all_inactive'):

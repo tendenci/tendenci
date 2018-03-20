@@ -1,19 +1,18 @@
+from builtins import str
 import datetime
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response, render, redirect
-from django.template import RequestContext
-from django.template import Template as DTemplate
+from django.shortcuts import get_object_or_404, redirect
+from django.template import engines
 from django.template.loader import render_to_string
-from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import TemplateView, FormView, UpdateView, DetailView, ListView, DeleteView
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
 from tendenci.apps.emails.models import Email
 from tendenci.apps.event_logs.models import EventLog
@@ -31,7 +30,6 @@ from tendenci.apps.newsletters.forms import (
     )
 from tendenci.apps.newsletters.mixins import (
     NewsletterEditLogMixin,
-    NewsletterStatusMixin,
     NewsletterPermissionMixin,
     NewsletterPermStatMixin,
     NewsletterPassedSLAMixin
@@ -44,7 +42,7 @@ from tendenci.apps.newsletters.utils import (
     newsletter_events_list,
     newsletter_directories_list,
     newsletter_resumes_list)
-from tendenci.apps.perms.utils import has_perm, get_query_filters
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -267,7 +265,7 @@ class NewsletterCloneView(NewsletterPermissionMixin, DetailView):
         cloned_newsletter = newsletter.clone()
 
         EventLog.objects.log(instance=cloned_newsletter)
-        msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(unicode(newsletter))
+        msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(str(newsletter))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return redirect(reverse('newsletter.action.step4', kwargs={'pk': cloned_newsletter.pk}))
@@ -307,7 +305,7 @@ def generate(request):
 
     form = GenerateForm()
 
-    return render(request, 'newsletters/generate.html', {'form':form})
+    return render_to_resp(request=request, template_name='newsletters/generate.html', context={'form':form})
 
 @login_required
 def template_view(request, template_id, render=True):
@@ -326,14 +324,14 @@ def template_view(request, template_id, render=True):
     login_content = ""
     include_login = int(request.GET.get('include_login', 0))
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = int(request.GET.get('jump_links', 1))
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = int(request.GET.get('articles', 1))
@@ -410,9 +408,8 @@ def template_view(request, template_id, render=True):
         events_list = []
         events_type = None
 
-    text = DTemplate(apply_template_media(template))
-    context = RequestContext(request,
-            {
+    text = engines['django'].from_string(apply_template_media(template))
+    context = {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
                 "art_content":articles_content, # legacy usage in templates
@@ -432,19 +429,19 @@ def template_view(request, template_id, render=True):
                 "events_content":events_content,
                 "events_list":events_list,
                 "events_type":events_type
-            })
-    content = text.render(context)
+              }
+    content = text.render(context=context, request=request)
 
     if render:
         response = HttpResponse(content)
         return response
     else:
         template_name="newsletters/content.html"
-        return render_to_response(
-            template_name, {
+        return render_to_resp(
+            request=request, template_name=template_name,
+            context={
             'content': content,
-            'template': template},
-            context_instance=RequestContext(request))
+            'template': template})
 
 
 @login_required
@@ -452,7 +449,7 @@ def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
         raise Http404
-    return render(request, template_name)
+    return render_to_resp(request=request, template_name=template_name)
 
 
 def view_email_from_browser(request, pk):
@@ -466,5 +463,5 @@ def view_email_from_browser(request, pk):
         if key == "" or key != nl.security_key:
             raise Http403
 
-    return render_to_response("newsletters/viewbody.html", {'email': email},
-                                context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name="newsletters/viewbody.html",
+                                context={'email': email})

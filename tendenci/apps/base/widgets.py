@@ -2,7 +2,6 @@ from datetime import datetime
 from django.forms.widgets import MultiWidget, DateInput, TextInput
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from time import strftime
 
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -41,14 +40,16 @@ class SplitDateTimeWidget(MultiWidget):
         else:
             return (None, None)
 
-    def format_output(self, rendered_widgets):
+    def render(self, name, value, attrs=None, renderer=None):
         """
         Given a list of rendered widgets (as strings), it inserts an HTML
         linebreak between them.
 
         Returns a Unicode string representing the HTML for the whole lot.
         """
-        return "%s&nbsp;%s" % (rendered_widgets[0], rendered_widgets[1])
+        context = self.get_context(name, value, attrs)
+        widgets = context['widget']['subwidgets']
+        return mark_safe("%s&nbsp;%s" % (widgets[0], widgets[1]))
 
 
 class EmailVerificationWidget(MultiWidget):
@@ -100,7 +101,7 @@ class EmailVerificationWidget(MultiWidget):
 
 
 class PriceWidget(TextInput):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         currency_symbol = get_setting('site', 'global', 'currencysymbol') or '$'
         html = super(PriceWidget, self).render(name, value, attrs)
 

@@ -1,5 +1,5 @@
 from __future__ import print_function
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = 'A run once only script. Converts the old name \

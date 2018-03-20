@@ -1,5 +1,6 @@
-import os
 import csv
+from six.moves.urllib.parse import urlencode
+from six.moves.urllib.request import urlopen
 
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
@@ -8,7 +9,8 @@ from tendenci.apps.base.utils import normalize_newline
 from tendenci.apps.site_settings.utils import get_setting
 
 def geocode_api(**kwargs):
-    import simplejson, urllib
+    import simplejson
+
     GEOCODE_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
     kwargs['sensor'] = kwargs.get('sensor', 'false')
     api_key = get_setting('module', 'locations', 'google_maps_api_key')
@@ -16,9 +18,9 @@ def geocode_api(**kwargs):
         kwargs.update({
             'key': api_key
     })
-    url = '%s?%s' % (GEOCODE_BASE_URL, urllib.urlencode(kwargs))
+    url = '%s?%s' % (GEOCODE_BASE_URL, urlencode(kwargs))
 
-    return simplejson.load(urllib.urlopen(url))
+    return simplejson.load(urlopen(url))
 
 def get_coordinates(address):
     """
@@ -29,12 +31,12 @@ def get_coordinates(address):
     result = geocode_api(address=address)
 
     if result['status'] == 'OK':
-        return result['results'][0]['geometry']['location'].values()
+        return list(result['results'][0]['geometry']['location'].values())
 
     return (None, None)
 
 def distance_api(*args, **kwargs):
-    import simplejson, urllib
+    import simplejson
 
     output = kwargs.get('output', 'json')
     distance_base_url = 'https://maps.googleapis.com/maps/api/distancematrix/%s' & output
@@ -50,8 +52,8 @@ def distance_api(*args, **kwargs):
             'key': api_key
         })
 
-    url = '%s?%s' % (distance_base_url, urllib.urlencode(kwargs))
-    return simplejson.load(urllib.urlopen(url))
+    url = '%s?%s' % (distance_base_url, urlencode(kwargs))
+    return simplejson.load(urlopen(url))
 
 def distance_via_sphere(lat1, long1, lat2, long2):
     """
@@ -101,12 +103,12 @@ def csv_to_dict(file_path, **kwargs):
 
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
-    colnames = csv_file.next()  # row 1;
+    colnames = next(csv_file)  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
 
-    cols = xrange(len(colnames))
+    cols = range(len(colnames))
     lst = []
 
     # make sure colnames are unique

@@ -201,7 +201,7 @@ class PageForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
         self.fields['template'].choices = [('default.html',_('Default'))] + get_template_list()
 
     def clean_syndicate(self):

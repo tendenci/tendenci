@@ -4,11 +4,10 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.template.defaultfilters import slugify
-from django.core.urlresolvers import reverse
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
@@ -98,9 +97,8 @@ class NewsletterTemplate(models.Model):
     def content_type(self):
         return 'newslettertemplate'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("newsletter.template_render", [self.template_id])
+        return reverse('newsletter.template_render', args=[self.template_id])
 
     @classmethod
     def get_content_type(cls):
@@ -109,9 +107,8 @@ class NewsletterTemplate(models.Model):
             app_label=cls._meta.app_label,
             model=cls._meta.model_name)
 
-    @models.permalink
     def get_content_url(self):
-        return ("newsletter.template_content", [self.template_id])
+        return reverse('newsletter.template_content', args=[self.template_id])
 
     def get_zip_url(self):
         if self.zip_file:
@@ -134,7 +131,7 @@ class NewsletterTemplate(models.Model):
 
 
 class Newsletter(models.Model):
-    email = models.ForeignKey(Email, null=True)
+    email = models.ForeignKey(Email, null=True, on_delete=models.CASCADE)
 
     subject = models.CharField(max_length=255, null=True, blank=True)
     actiontype = models.CharField(max_length=30, choices=ACTIONTYPE_CHOICES, default='Distribution E-mail')
@@ -209,9 +206,8 @@ class Newsletter(models.Model):
     def __unicode__(self):
         return self.actionname or u"No Action Name"
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("newsletter.detail.view", [self.pk])
+        return reverse('newsletter.detail.view', args=[self.pk])
 
     def generate_newsletter(self, request, template):
         if self.default_template:
@@ -319,28 +315,28 @@ class Newsletter(models.Model):
     def generate_newsletter_contents(self, request):
         simplified = True if self.format == 0 else False
 
-        opening_txt = render_to_string('newsletters/opening_text.txt',
-                                            context_instance=RequestContext(request))
+        opening_txt = render_to_string(template_name='newsletters/opening_text.txt',
+                                            request=request)
 
-        footer_txt = render_to_string('newsletters/footer.txt',
-                                            {'newsletter': self },
-                                            context_instance=RequestContext(request))
+        footer_txt = render_to_string(template_name='newsletters/footer.txt',
+                                            context={'newsletter': self },
+                                            request=request)
 
-        unsubscribe_txt = render_to_string('newsletters/newsletter_unsubscribe.txt',
-                                            context_instance=RequestContext(request))
+        unsubscribe_txt = render_to_string(template_name='newsletters/newsletter_unsubscribe.txt',
+                                            request=request)
 
-        view_from_browser_txt = render_to_string('newsletters/view_from_browser.txt',
-                                            context_instance=RequestContext(request))
+        view_from_browser_txt = render_to_string(template_name='newsletters/view_from_browser.txt',
+                                            request=request)
 
         login_content = ""
         if self.include_login:
-            login_content = render_to_string('newsletters/login.txt',
-                                             context_instance=RequestContext(request))
+            login_content = render_to_string(template_name='newsletters/login.txt',
+                                             request=request)
 
         jumplink_content = ""
         if self.jump_links:
-            jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                                context_instance=RequestContext(request))
+            jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                                request=request)
 
         articles_content = ""
         articles_list =[]

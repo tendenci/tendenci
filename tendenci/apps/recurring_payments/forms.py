@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.recurring_payments.models import RecurringPayment
-from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectInput, BillingDateSelectWidget
+from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.recurring_payments.fields import BillingCycleField
 
 class RecurringPaymentForm(forms.ModelForm):

@@ -12,38 +12,32 @@ from __future__ import print_function
 
 from datetime import timedelta, date
 import getopt
-from optparse import make_option
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models import Q
 
 from tendenci.apps.helpdesk.models import EscalationExclusion, Queue
 
 
 class Command(BaseCommand):
-    def __init__(self):
-        BaseCommand.__init__(self)
-
-        self.option_list += (
-            make_option(
-                '--days', '-d',
-                help='Days of week (monday, tuesday, etc)'),
-            make_option(
-                '--occurrences', '-o',
-                type='int',
-                default=1,
-                help='Occurrences: How many weeks ahead to exclude this day'),
-            make_option(
-                '--queues', '-q',
-                help='Queues to include (default: all). Use queue slugs'),
-            make_option(
-                '--escalate-verbosely', '-x',
-                action='store_true',
-                default=False,
-                dest='escalate-verbosely',
-                help='Display a list of dates excluded'),
-            )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--days', '-d',
+            help='Days of week (monday, tuesday, etc)')
+        parser.add_argument(
+            '--occurrences', '-o',
+            type='int',
+            default=1,
+            help='Occurrences: How many weeks ahead to exclude this day')
+        parser.add_argument(
+            '--queues', '-q',
+            help='Queues to include (default: all). Use queue slugs')
+        parser.add_argument(
+            '--escalate-verbosely', '-x',
+            action='store_true',
+            default=False,
+            dest='escalate-verbosely',
+            help='Display a list of dates excluded')
 
     def handle(self, *args, **options):
         days = options['days']
@@ -55,7 +49,7 @@ class Command(BaseCommand):
         if options['escalate-verbosely']:
             verbose = True
 
-        # this should already be handled by optparse
+        # this should already be handled by argparse
         if not occurrences: occurrences = 1
         if not (days and occurrences):
             raise CommandError('One or more occurrences must be specified.')

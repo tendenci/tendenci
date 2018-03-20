@@ -1,19 +1,21 @@
+from builtins import str
 import datetime
-import os
 from datetime import timedelta
+
 from django.conf import settings
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext, TemplateDoesNotExist
-from django.template import Template as DTemplate
+from django.template import engines
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from createsend import CreateSend
+
 from createsend import Template as CST
 from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
+
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.campaign_monitor.models import Template, Campaign
 from tendenci.apps.campaign_monitor.forms import TemplateForm, CampaignForm
@@ -25,10 +27,12 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list
 
+
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 #CreateSend.api_key = api_key
 auth = {'api_key': api_key}
+
 
 @login_required
 def template_index(request, template_name='campaign_monitor/templates/index.html'):
@@ -37,8 +41,8 @@ def template_index(request, template_name='campaign_monitor/templates/index.html
 
     templates = Template.objects.all().order_by('name')
 
-    return render_to_response(template_name, {'templates':templates},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'templates':templates})
 
 @login_required
 def template_view(request, template_id, template_name='campaign_monitor/templates/view.html'):
@@ -47,8 +51,8 @@ def template_view(request, template_id, template_name='campaign_monitor/template
     if not has_perm(request.user,'campaign_monitor.view_template', template):
         raise Http403
 
-    return render_to_response(template_name, {'template':template},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'template':template})
 
 def template_html_original(request, template_id):
     template = get_object_or_404(Template, template_id=template_id)
@@ -74,14 +78,14 @@ def template_html(request, template_id):
     login_content = ""
     include_login = request.GET.get('include_login', False)
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = request.GET.get('jump_links', 1)
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = request.GET.get('articles', 1)
@@ -129,9 +133,8 @@ def template_html(request, template_id):
         events_list = []
         events_type = None
 
-    text = DTemplate(apply_template_media(template))
-    context = RequestContext(request,
-            {
+    text = engines['django'].from_string(apply_template_media(template))
+    context = {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
                 "art_content":articles_content, # legacy usage in templates
@@ -146,9 +149,9 @@ def template_html(request, template_id):
                 "events":events_list, # legacy usage in templates
                 "events_list":events_list,
                 "events_type":events_type
-            })
+              }
 
-    response = HttpResponse(text.render(context))
+    response = HttpResponse(text.render(context=context, request=request))
     response['Content-Disposition'] = 'attachment; file=page.html'
 
     return response
@@ -164,14 +167,14 @@ def template_render(request, template_id):
     login_content = ""
     include_login = request.GET.get('include_login', False)
     if include_login:
-        login_content = render_to_string('newsletters/login.txt',
-                                        context_instance=RequestContext(request))
+        login_content = render_to_string(template_name='newsletters/login.txt',
+                                        request=request)
 
     jumplink_content = ""
     jump_links = request.GET.get('jump_links', 1)
     if jump_links:
-        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(),
-                                        context_instance=RequestContext(request))
+        jumplink_content = render_to_string(template_name='newsletters/jumplinks.txt', context=locals(),
+                                            request=request)
 
     art_content = ""
     articles = request.GET.get('articles', 1)
@@ -219,9 +222,8 @@ def template_render(request, template_id):
         events_list = []
         events_type = None
 
-    text = DTemplate(apply_template_media(template))
-    context = RequestContext(request,
-            {
+    text = engines['django'].from_string(apply_template_media(template))
+    context = {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
                 "art_content":articles_content, # legacy usage in templates
@@ -236,14 +238,15 @@ def template_render(request, template_id):
                 "events":events_list, # legacy usage in templates
                 "events_list":events_list,
                 "events_type":events_type
-            })
+              }
 
-    response = HttpResponse(text.render(context))
+    response = HttpResponse(text.render(context=context, request=request))
 
     return response
 
 def template_text(request, template_id):
-    template = get_object_or_404(Template, template_id=template_id)
+    #template = get_object_or_404(Template, template_id=template_id)
+    get_object_or_404(Template, template_id=template_id)
 
     # return dummy data temporarily
     return HttpResponse("Lorem Ipsum")
@@ -284,14 +287,14 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
             except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
                 template.delete()
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
 
             #get campaign monitor details
             t = CST(auth=auth, template_id=t_id).details()
@@ -311,8 +314,8 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
     else:
         form = form_class()
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 @login_required
 def template_edit(request, template_id, form_class=TemplateForm, template_name='campaign_monitor/templates/edit.html'):
@@ -352,13 +355,13 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             except BadRequest as e:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
             except Exception as e:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
-                return render_to_response(template_name, {'form':form},
-                    context_instance=RequestContext(request))
+                return render_to_resp(request=request, template_name=template_name,
+                    context={'form':form})
 
             #get campaign monitor details
             t = t.details()
@@ -377,8 +380,8 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
     else:
         form = form_class(instance=template)
 
-    return render_to_response(template_name, {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 @login_required
 def template_update(request, template_id):
@@ -394,10 +397,9 @@ def template_update(request, template_id):
 
     #set up urls
     site_url = get_setting('site', 'global', 'siteurl')
-    html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+    html_url = str("%s%s"%(site_url, template.get_html_url()))
     html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
     try:
-        from tendenci.apps.events.models import Event, Type
         html_url += "&events=1"
         html_url += "&events_type="
         html_url += "&event_start_dt=%s" % datetime.date.today()
@@ -408,16 +410,16 @@ def template_update(request, template_id):
 
     if template.zip_file:
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_url = unicode(template.get_zip_url())
+            zip_url = str(template.get_zip_url())
         else:
-            zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+            zip_url = str("%s%s"%(site_url, template.get_zip_url()))
     else:
-        zip_url = unicode()
+        zip_url = str()
 
     #sync with campaign monitor
     try:
         t = CST(auth=auth, template_id = template.template_id)
-        t.update(unicode(template.name), html_url, zip_url)
+        t.update(str(template.name), html_url, zip_url)
     except BadRequest as e:
         msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
         messages.add_message(request, messages.ERROR, _(msg_string))
@@ -486,8 +488,8 @@ def campaign_index(request, template_name='campaign_monitor/campaigns/index.html
 
     campaigns = Campaign.objects.all().order_by('name')
 
-    return render_to_response(template_name, {'campaigns':campaigns},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'campaigns':campaigns})
 
 @login_required
 def campaign_view(request, campaign_id, template_name='campaign_monitor/campaigns/view.html'):
@@ -496,8 +498,8 @@ def campaign_view(request, campaign_id, template_name='campaign_monitor/campaign
     if not has_perm(request.user,'campaign_monitor.view_campaign', campaign):
         raise Http403
 
-    return render_to_response(template_name, {'campaign':campaign},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'campaign':campaign})
 
 @login_required
 def campaign_sync(request):
@@ -521,10 +523,9 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
 
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+            html_url = str("%s%s"%(site_url, template.get_html_url()))
             html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             try:
-                from tendenci.apps.events.models import Event, Type
                 html_url += "&events=%s" % form.cleaned_data.get('events')
                 html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
                 html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
@@ -542,16 +543,16 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
 
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                    zip_url = unicode(template.get_zip_url())
+                    zip_url = str(template.get_zip_url())
                 else:
-                    zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+                    zip_url = str("%s%s"%(site_url, template.get_zip_url()))
             else:
-               zip_url = unicode()
+               zip_url = str()
 
             #sync with campaign monitor
             try:
                 t = CST(auth=auth, template_id = template.template_id)
-                t.update(unicode(template.name), html_url, zip_url)
+                t.update(str(template.name), html_url, zip_url)
             except BadRequest as e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return redirect('campaign_monitor.campaign_generate')
@@ -563,9 +564,8 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
     else:
         form = form_class()
 
-    return render_to_response(template_name,
-        {'form':form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form})
 
 
 @login_required
@@ -592,5 +592,5 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
         messages.add_message(request, messages.SUCCESS, _('Successfully deleted campaign.'))
         return redirect("campaign_monitor.campaign_index")
 
-    return render_to_response(template_name, {'campaign': campaign},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'campaign': campaign})

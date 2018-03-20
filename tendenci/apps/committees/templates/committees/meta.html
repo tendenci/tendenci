@@ -10,7 +10,7 @@
 {% tags_for_object committee as tags %}
 
 <ul class="list-unstyled t-meta-data">
-	{% with committee.category_set as committee_cat %}
+    {% with committee.category_set as committee_cat %}
         {% if committee_cat %}
             <li>
                 <ul class="list-inline">
@@ -34,8 +34,8 @@
     {% endif %}
 
     {% if user.is_superuser %}
-    	<li>
-    		Created {{ committee.create_dt|date:"long" }} by
+        <li>
+            Created {{ committee.create_dt|date:"long" }} by
             <a href="{{ committee.creator.get_absolute_url }}">
                 {% if committee.creator.first_name %}
                     {{ committee.creator.first_name }} {{ committee.creator.last_name }}
@@ -43,9 +43,9 @@
                     {{ committee.creator }}
                 {% endif %}
             </a>
-    	</li>
-    	<li>
-    		Last updated {{ committee.update_dt|date:"long" }} by
+        </li>
+        <li>
+            Last updated {{ committee.update_dt|date:"long" }} by
             <a href="{{ committee.owner.get_absolute_url }}">
                 {% if committee.owner.first_name %}
                     {{ committee.owner.first_name }} {{ committee.owner.last_name }}
@@ -53,18 +53,18 @@
                     {{ committee.owner }}
                 {% endif %}
             </a>
-    	</li>
+        </li>
     {% endif %}
 </ul>
 
 
 {% if can_edit %}
-	<nav class="navbar navbar-default t-meta-editor-bar">
+    <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav t-meta-perm-status">
                     <li>{{committee.obj_perms }}</li>
-            		<li>{{committee.obj_status }}</li>
+                    <li>{{committee.obj_status }}</li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right t-meta-options-links">

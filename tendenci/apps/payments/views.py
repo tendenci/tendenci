@@ -1,17 +1,16 @@
 from django.conf import settings
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.authorizenet.utils import prepare_authorizenet_sim_form
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
-
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -67,9 +66,8 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
     else:
         form = None
         post_url = ""
-    return render_to_response(template_name,
-        {'form': form, 'post_url': post_url
-        }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={'form': form, 'post_url': post_url
+        })
 
 
 def view(request, id, guid=None, template_name="payments/view.html"):
@@ -78,8 +76,8 @@ def view(request, id, guid=None, template_name="payments/view.html"):
     if not payment.allow_view_by(request.user, guid):
         raise Http403
 
-    return render_to_response(template_name, {'payment': payment},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'payment': payment})
 
 
 def receipt(request, id, guid, template_name='payments/receipt.html'):
@@ -87,8 +85,8 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
     if payment.guid != guid:
         raise Http403
 
-    return render_to_response(template_name, {'payment': payment},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payment': payment})
 
 
 @login_required
@@ -120,5 +118,5 @@ def search(request, template_name='payments/search.html'):
         from django.db.models import Q
         payments = payments.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
 
-    return render_to_response(template_name, {'payments': payments, 'form': form},
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+                              context={'payments': payments, 'form': form})

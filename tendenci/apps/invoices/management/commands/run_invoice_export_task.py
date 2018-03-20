@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.db.models.loading import get_model
+from django.apps import apps
 
 
 class Command(BaseCommand):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
             self.stdout.write('Started compiling export file...')
 
-            model = get_model(export.app_label, export.model_name)
+            model = apps.get_model(export.app_label, export.model_name)
             result = InvoiceExportTask()
             file_name = export.model_name + '.csv'
             response = result.run(model, start_dt, end_dt, file_name)

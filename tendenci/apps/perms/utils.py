@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -20,7 +19,7 @@ def set_perm_bits(request, form, instance):
     """
     # owners and creators
     if not instance.pk:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
@@ -48,7 +47,7 @@ def update_perms_and_save(request, form, instance, **kwargs):
     # permissions bits
     instance = set_perm_bits(request, form, instance)
 
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         if not instance.pk:
             if hasattr(instance, 'creator'):
                 instance.creator = request.user
@@ -189,7 +188,7 @@ def has_view_perm(user, perm, obj=None):
     obj.status_detail = obj.status_detail.lower()
     active_status_details = ("active", 'published')
     if obj:
-        if user.is_anonymous():
+        if user.is_anonymous:
             if obj.status and obj.status_detail in active_status_details and obj.allow_anonymous_view:
                 return True
             else:
@@ -218,12 +217,12 @@ def get_query_filters(user, perm, **kwargs):
     user = getattr(user, 'impersonated_user', user)
 
     perms_field = kwargs.get('perms_field', True)
-    super_perm = kwargs.get('super_perm', False)
+    #super_perm = kwargs.get('super_perm', False)
 
     group_perm = Q()
     group_q = Q()
 
-    if not isinstance(user, User) or user.is_anonymous():
+    if not isinstance(user, User) or user.is_anonymous:
         anon_q = Q(allow_anonymous_view=True)
         status_q = Q(status=True)
         status_detail_q = Q(status_detail='active')

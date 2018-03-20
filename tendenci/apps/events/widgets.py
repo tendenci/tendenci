@@ -1,34 +1,11 @@
 from django import forms
-from django.core.urlresolvers import reverse
-from django.forms.widgets import RadioFieldRenderer
-from django.utils.html import format_html
+from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.encoding import smart_unicode
-import chardet
 
 
-class BootstrapChoiceFieldRenderer(RadioFieldRenderer):
-    """
-    An object used by RadioSelect to enable customization of radio widgets.
-    """
-
-    def render(self):
-        """
-        Outputs a <div> for this set of choice fields.
-        If an id was given to the field, it is applied to the <di> (each
-        item in the list will get an id of `$id_$i`).
-        """
-        id_ = self.attrs.get('id', None)
-        start_tag = format_html('<div id="{0}">', id_) if id_ else '<div>'
-        output = [start_tag]
-        for widget in self:
-            output.append(format_html('<div class="radio">{0}</div>', str(widget)))
-        output.append('</div>')
-        ret_value = '\n'.join(output)
-        encoding = chardet.detect(ret_value)['encoding']
-        if encoding not in ['ascii', 'utf-8']:
-            ret_value = smart_unicode(ret_value)
-        return ret_value
+class BootstrapRadioSelect(forms.RadioSelect):
+    template_name = 'widgets/bootstrap_radio.html'
+    option_template_name = 'widgets/bootstrap_radio_option.html'
 
 
 class UseCustomRegWidget(forms.MultiWidget):
@@ -50,21 +27,20 @@ class UseCustomRegWidget(forms.MultiWidget):
         self.widgets = (
             forms.CheckboxInput(),
             forms.Select(attrs={'class': 'form-control'}),
-            forms.RadioSelect(renderer=BootstrapChoiceFieldRenderer)
+            BootstrapRadioSelect(),
         )
 
         super(UseCustomRegWidget, self).__init__(self.widgets, attrs)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if not isinstance(value, list):
             value = self.decompress(value)
 
-        final_attrs = self.build_attrs(attrs)
-        id_ = final_attrs.get('id', None)
+        id_ = attrs.get('id', None)
         use_custom_reg_form_widget = self.widgets[0]
         rendered_use_custom_reg_form = self.render_widget(
             use_custom_reg_form_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             0, id_
         )
 
@@ -73,7 +49,7 @@ class UseCustomRegWidget(forms.MultiWidget):
         #reg_form_widget.attrs = {'size':'8'}
         rendered_reg_form = self.render_widget(
             reg_form_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             1, id_
         )
 
@@ -85,7 +61,7 @@ class UseCustomRegWidget(forms.MultiWidget):
 
         rendered_bind_reg_form_to_conf_only = self.render_widget(
             bind_reg_form_to_conf_only_widget,
-            name, value, final_attrs,
+            name, value, attrs,
             2, id_
         )
         rendered_bind_reg_form_to_conf_only = rendered_bind_reg_form_to_conf_only.replace(

@@ -1,10 +1,11 @@
+from builtins import str
 from datetime import timedelta, datetime
 import json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -27,9 +28,7 @@ from tendenci.apps.perms.utils import (
     has_perm,
     get_query_filters,
     has_view_perm)
-from tendenci.apps.categories.forms import CategoryForm, CategoryForm2
-from tendenci.apps.categories.models import Category
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.jobs.models import Job, JobPricing
 from tendenci.apps.jobs.models import Category as JobCategory
@@ -53,8 +52,8 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 
     if can_view:
         EventLog.objects.log(instance=job)
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -66,7 +65,7 @@ def search(request, template_name="jobs/search.html"):
 
     filters = get_query_filters(request.user, 'jobs.view_job')
     jobs = Job.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         jobs = jobs.select_related()
 
     form = JobSearchForm(request.GET)
@@ -87,7 +86,7 @@ def search(request, template_name="jobs/search.html"):
                 jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
     # filter for "my pending jobs"
-    if my_pending_jobs and not request.user.is_anonymous():
+    if my_pending_jobs and not request.user.is_anonymous:
         template_name = "jobs/my_pending_jobs.html"
         jobs = jobs.filter(
             creator_username=request.user.username,
@@ -98,10 +97,9 @@ def search(request, template_name="jobs/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'jobs': jobs, 'form': form},
-        context_instance=RequestContext(request)
+    return render_to_resp(
+        request=request, template_name=template_name,
+        context={'jobs': jobs, 'form': form}
     )
 
 
@@ -112,7 +110,7 @@ def search_redirect(request):
 @is_enabled('jobs')
 def my_jobs(request, template_name = "jobs/my_jobs.html"):
     query = request.GET.get('q', None)
-    if not request.user.is_anonymous():
+    if not request.user.is_anonymous:
         if get_setting('site', 'global', 'searchindex') and query:
             jobs = Job.objects.search(query, user=request.user)
         else:
@@ -124,8 +122,8 @@ def my_jobs(request, template_name = "jobs/my_jobs.html"):
 
         EventLog.objects.log()
 
-        return render_to_response(template_name, {'jobs': jobs},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'jobs': jobs})
     else:
         return HttpResponseRedirect(reverse('jobs'))
 
@@ -139,8 +137,8 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     if can_view:
         EventLog.objects.log(instance=job)
 
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -155,7 +153,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
     can_add_active = has_perm(request.user, 'jobs.add_job')
 
-    content_type = get_object_or_404(
+    get_object_or_404(
         ContentType,
         app_label=object_type._meta.app_label,
         model=object_type._meta.model_name
@@ -217,7 +215,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
             #save relationships
             job.save()
-            msg_string = u'Successfully added %s' % unicode(job)
+            msg_string = u'Successfully added %s' % str(job)
             messages.add_message(request, messages.SUCCESS,_(msg_string))
 
             # send notification to administrators
@@ -255,10 +253,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             messages.add_message(request, messages.WARNING, _(msg_string))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
-    return render_to_response(template_name,
-            {'form': form,
-             'require_payment': require_payment},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'form': form,
+             'require_payment': require_payment})
 
 
 @csrf_exempt
@@ -306,16 +303,16 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
 
             job = update_perms_and_save(request, form, job)
 
-            msg_string = u'Successfully updated {}'.format(unicode(job))
+            msg_string = u'Successfully updated {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(
                 reverse(success_redirect, args=[job.slug]))
 
-    return render_to_response(template_name, {
+    return render_to_resp(request=request, template_name=template_name, context={
         'job': job,
         'form': form,
-        }, context_instance=RequestContext(request))
+        })
 
 
 @is_enabled('jobs')
@@ -360,15 +357,15 @@ def edit_meta(request, id, form_class=MetaForm,
         if form.is_valid():
             job.meta = form.save()  # save meta
             job.save()  # save relationship
-            msg_string = u'Successfully updated meta for {}'.format(unicode(job))
+            msg_string = u'Successfully updated meta for {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
         form = form_class(instance=job.meta)
 
-    return render_to_response(template_name, {'job': job, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job': job, 'form': form})
 
 
 @is_enabled('jobs')
@@ -378,7 +375,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            msg_string = u'Successfully deleted {}'.format(unicode(job))
+            msg_string = u'Successfully deleted {}'.format(str(job))
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             # send notification to administrators
@@ -397,8 +394,8 @@ def delete(request, id, template_name="jobs/delete.html"):
 
             return HttpResponseRedirect(reverse('job.search'))
 
-        return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
     else:
         raise Http403
 
@@ -429,8 +426,8 @@ def pricing_add(request, form_class=JobPricingForm,
         if "_popup" in request.GET:
             template_name="jobs/pricing-add-popup.html"
 
-        return render_to_response(template_name, {'form': form},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'form': form})
     else:
         raise Http403
 
@@ -458,8 +455,8 @@ def pricing_edit(request, id, form_class=JobPricingForm,
     else:
         form = form_class(instance=job_pricing)
 
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form': form})
 
 
 @is_enabled('jobs')
@@ -469,8 +466,8 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
 
     if has_perm(request.user, 'jobs.view_jobpricing', job_pricing):
         EventLog.objects.log(instance=job_pricing)
-        return render_to_response(template_name, {'job_pricing': job_pricing},
-            context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=template_name,
+            context={'job_pricing': job_pricing})
     else:
         raise Http403
 
@@ -492,8 +489,8 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
 
         return HttpResponseRedirect(reverse('job_pricing.search'))
 
-    return render_to_response(template_name, {'job_pricing': job_pricing},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job_pricing': job_pricing})
 
 
 @is_enabled('jobs')
@@ -501,8 +498,8 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
     job_pricings = JobPricing.objects.all().order_by('duration')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {'job_pricings': job_pricings},
-        context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+        context={'job_pricings': job_pricings})
 
 
 @is_enabled('jobs')
@@ -516,8 +513,8 @@ def pending(request, template_name="jobs/pending.html"):
 
     EventLog.objects.log()
     jobs = Job.objects.filter(status_detail__contains='pending')
-    return render_to_response(template_name, {'jobs': jobs},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'jobs': jobs})
 
 
 @login_required
@@ -558,17 +555,17 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
-        msg_string = u'Successfully approved {}'.format(unicode(job))
+        msg_string = u'Successfully approved {}'.format(str(job))
         messages.add_message(request, messages.SUCCESS, _(msg_string))
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 
-    return render_to_response(template_name, {'job': job},
-            context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name,
+            context={'job': job})
 
 
 def thank_you(request, template_name="jobs/thank-you.html"):
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name)
 
 
 @is_enabled('jobs')
@@ -634,5 +631,5 @@ def export(request, template_name="jobs/export.html"):
         EventLog.objects.log()
         return redirect('export.status', export_id)
 
-    return render_to_response(template_name, {
-    }, context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name=template_name, context={
+    })

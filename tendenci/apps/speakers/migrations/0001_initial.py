@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('creator_username', models.CharField(max_length=50)),
                 ('owner_username', models.CharField(max_length=50)),
-                ('status', models.BooleanField(default=True, verbose_name=b'Active')),
-                ('status_detail', models.CharField(default=b'active', max_length=50)),
+                ('status', models.BooleanField(default=True, verbose_name='Active')),
+                ('status_detail', models.CharField(default='active', max_length=50)),
                 ('name', models.CharField(max_length=50)),
                 ('slug', models.SlugField(max_length=75)),
                 ('company', models.CharField(max_length=150, blank=True)),
@@ -41,10 +41,10 @@ class Migration(migrations.Migration):
                 ('facebook', models.CharField(max_length=100, blank=True)),
                 ('twitter', models.CharField(max_length=100, blank=True)),
                 ('linkedin', models.CharField(max_length=100, blank=True)),
-                ('get_satisfaction', models.CharField(max_length=100, verbose_name=b'GetSatisfaction', blank=True)),
+                ('get_satisfaction', models.CharField(max_length=100, verbose_name='GetSatisfaction', blank=True)),
                 ('flickr', models.CharField(max_length=100, blank=True)),
                 ('slideshare', models.CharField(max_length=100, blank=True)),
-                ('personal_sites', models.TextField(help_text=b'List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
+                ('personal_sites', models.TextField(help_text='List personal websites followed by a return', verbose_name='Personal Sites', blank=True)),
                 ('tags', tagging.fields.TagField(help_text='Tags separated by commas. E.g Tag1, Tag2, Tag3', max_length=255, blank=True)),
                 ('creator', models.ForeignKey(related_name='speakers_speaker_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='speakers_speaker_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
@@ -60,10 +60,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SpeakerFile',
             fields=[
-                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='files.File')),
-                ('photo_type', models.CharField(max_length=50, choices=[(b'professional', b'Professional'), (b'fun', b'Fun')])),
+                ('file_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, on_delete=django.db.models.deletion.CASCADE, to='files.File')),
+                ('photo_type', models.CharField(max_length=50, choices=[('professional', 'Professional'), ('fun', 'Fun')])),
                 ('position', models.IntegerField(blank=True)),
-                ('speaker', models.ForeignKey(to='speakers.Speaker')),
+                ('speaker', models.ForeignKey(to='speakers.Speaker', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
                 'ordering': ('position',),
@@ -80,6 +80,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='speaker',
             name='track',
-            field=models.ForeignKey(to='speakers.Track', null=True),
+            field=models.ForeignKey(to='speakers.Track', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

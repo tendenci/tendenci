@@ -1,5 +1,8 @@
+from builtins import str
 import uuid
+
 from django.db import models
+#from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
@@ -31,11 +34,10 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
     def __unicode__(self):
         return self.industry_name
 
-#    @models.permalink
 #    def get_absolute_url(self):
-#        return ("industry", [self.pk])
+#        return reverse('industry', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or unicode(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid1())
 
         super(Industry, self).save(*args, **kwargs)

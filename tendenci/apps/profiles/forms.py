@@ -5,7 +5,7 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 
@@ -85,7 +85,7 @@ class ProfileSearchForm(forms.Form):
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
-            
+
         # group choices
         filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
         group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
@@ -94,7 +94,6 @@ class ProfileSearchForm(forms.Form):
                             ).values_list('pk', 'name'))
         self.fields['group'].widget = forms.widgets.Select(
                                     choices=group_choices)
-        
 
 
 class ProfileForm(TendenciBaseForm):
@@ -174,7 +173,7 @@ class ProfileForm(TendenciBaseForm):
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     language = forms.ChoiceField(initial="en", choices=get_languages_with_local_name())
-    dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(1920, THIS_YEAR)))
+    dob = forms.DateField(required=False, widget=SelectDateWidget(None, list(range(1920, THIS_YEAR))))
 
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))

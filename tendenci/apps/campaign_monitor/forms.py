@@ -1,11 +1,10 @@
 import datetime
 from django import forms
 from django.conf import settings
-from django.forms.extras.widgets import SelectDateWidget
+from django.forms.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
-from tendenci.apps.campaign_monitor.models import Template, Campaign, ListMap
+from tendenci.apps.campaign_monitor.models import Template
 from createsend import CreateSend
-from createsend import Campaign as CSC
 
 THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
@@ -30,8 +29,8 @@ class CampaignForm(forms.Form):
     # module content
     jump_links = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
-    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
-    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(1920, THIS_YEAR+10)))
+    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
+    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, list(range(1920, THIS_YEAR+10))))
     events_type = forms.ChoiceField(initial='', choices=(), required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)

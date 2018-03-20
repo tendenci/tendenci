@@ -1,6 +1,6 @@
 from __future__ import print_function
+from builtins import str
 import os
-from optparse import make_option
 from random import randint
 from boto.s3.connection import S3Connection
 
@@ -13,14 +13,13 @@ from django.conf import settings
 class Command(BaseCommand):
     help = "Load the basic default data"
 
-    option_list = BaseCommand.option_list + (
-        make_option('--reset-nav',
+    def add_arguments(self, parser):
+        parser.add_argument('--reset-nav',
             action="store_true", dest='reset_nav', default=False,
-            help='Reset the navigation'),
-        make_option('--skip-media',
+            help='Reset the navigation')
+        parser.add_argument('--skip-media',
             action="store_true", dest='skip_media', default=False,
-            help='Skip downloading media files'),
-    )
+            help='Skip downloading media files')
 
     def handle(self, **options):
         """
@@ -156,13 +155,13 @@ class Command(BaseCommand):
         print('updating files')
         for f in files:
 
-            if 'box' in unicode(f.file):
+            if 'box' in str(f.file):
                 f.content_type = box_ct
-            if 'story' in unicode(f.file):
+            if 'story' in str(f.file):
                 f.content_type = story_ct
-            if 'setting' in unicode(f.file):
+            if 'setting' in str(f.file):
                 f.content_type = setting_ct
-            if 'staff' in unicode(f.file) and staff_installed:
+            if 'staff' in str(f.file) and staff_installed:
                 f.content_type = staff_ct
 
             f.save()

@@ -1,12 +1,8 @@
+# To automatically fix W291/W293:
+# python -m flake8 | egrep 'W291|W293' | awk -F : '{print $1}' | xargs perl -i -pe 's/ +$//'
+
 [flake8]
 ignore =
-  # Unused/undefined variables
-  F821,F841,
-  # Import issues
-  E401,E402,F401,
-  # Unnecessary lambdas
-  E731,
-
   # Inline statement after colon
   E701,
   # Indentation warnings

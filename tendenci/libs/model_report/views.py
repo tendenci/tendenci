@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.http import Http404
 from django.contrib.admin.views.decorators import staff_member_required
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.model_report.report import reports
 
 
@@ -15,8 +14,8 @@ def report_list(request):
     context = {
         'report_list': reports.get_reports()
     }
-    return render_to_response('model_report/report_list.html', context,
-                              context_instance=RequestContext(request))
+    return render_to_resp(request=request, template_name='model_report/report_list.html',
+                          context=context)
 
 
 @staff_member_required

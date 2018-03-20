@@ -1,4 +1,7 @@
+from builtins import str
+
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -21,7 +24,7 @@ class StudyGroup(BasePage):
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -30,15 +33,14 @@ class StudyGroup(BasePage):
     objects = StudyGroupManager()
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
     class Meta:
         permissions = (("view_studygroup", "Can view studygroup"),)
         app_label = 'studygroups'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("studygroups.detail", [self.slug])
+        return reverse('studygroups.detail', args=[self.slug])
 
     def get_meta(self, name):
         """
@@ -54,19 +56,19 @@ class StudyGroup(BasePage):
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)
-    group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True)
+    group = models.ForeignKey(Group, help_text='Group with associated permissions for this officer position.', null=True, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'studygroups'
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
 
 class Officer(models.Model):
-    study_group = models.ForeignKey(StudyGroup)
-    user = models.ForeignKey(User)
-    position = models.ForeignKey(Position)
+    study_group = models.ForeignKey(StudyGroup, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:

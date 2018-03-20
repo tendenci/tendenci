@@ -41,28 +41,28 @@
 <p>{% trans 'Please fill out the fields below' %}</p>
 
 
-    
+
 
 <form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
   <h3>{% trans 'Payment Information' %}</h3>
     <div class="form-group">
-	    <label for="card-element" class="col-sm-3 control-label">
-	      Credit or debit card:
-	    </label>
-	    <div id="card-element" class="col-sm-9">
-	      <!-- a Stripe Element will be inserted here. -->
-	    </div>
-	    <br />
-	    <div id="card-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
+        <label for="card-element" class="col-sm-3 control-label">
+          Credit or debit card:
+        </label>
+        <div id="card-element" class="col-sm-9">
+          <!-- a Stripe Element will be inserted here. -->
+        </div>
+        <br />
+        <div id="card-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
     </div>
-    
-    
+
+
     <div class="form-group">
         <label for="id_card_name" class="required col-sm-3  control-label">{% trans 'Name on Card' %}:</label>
         <div class="col-sm-9">
         <input class="card-name form-control" id="id_card_name" maxlength="100" type="text">
         <span class="error text-danger">{{ form.card_name.errors }}</span>
-        </div> 
+        </div>
     </div>
 
 
@@ -74,15 +74,15 @@
           {{ field }}
           <span class="error text-danger">{{ field.errors }}</span>
         </div>
-                  
+
     </div>
 
     {% endfor %}
 
-	<div class="col-sm-offset-3 col-sm-9">
+    <div class="col-sm-offset-3 col-sm-9">
     <button type="submit" class="submit-button btn btn-primary">{% trans 'Submit Payment' %}</button>
-	 </div>
-	 
+     </div>
+
     <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
       <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
     </div>
@@ -94,7 +94,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-    
+
 {% set_stripe_key %}
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/stripe_payment.js"></script>

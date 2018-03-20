@@ -1,5 +1,6 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.api',
-    url(r'^rp/$', 'views.api_rp'),
-)
+urlpatterns = [
+    url(r'^rp/$', views.api_rp),
+]

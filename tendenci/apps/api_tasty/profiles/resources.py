@@ -1,6 +1,5 @@
 from tastypie import fields
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.entities.models import Entity
 from tendenci.apps.api_tasty.validation import TendenciValidation
 from tendenci.apps.api_tasty.resources import TendenciResource
 from tendenci.apps.api_tasty.users.resources import UserResource

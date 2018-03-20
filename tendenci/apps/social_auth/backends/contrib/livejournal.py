@@ -4,7 +4,7 @@ LiveJournal OpenID support.
 This contribution adds support for LiveJournal OpenID service in the form
 username.livejournal.com. Username is retrieved from the identity url.
 """
-import urlparse
+from six.moves.urllib.parse import urlsplit
 
 from tendenci.apps.social_auth.backends import OpenIDBackend, OpenIdAuth, USERNAME
 
@@ -22,7 +22,7 @@ class LiveJournalBackend(OpenIDBackend):
         """Generate username from identity url"""
         values = super(LiveJournalBackend, self).get_user_details(response)
         values[USERNAME] = values.get(USERNAME) or \
-                           urlparse.urlsplit(response.identity_url)\
+                           urlsplit(response.identity_url)\
                                    .netloc.split('.', 1)[0]
         return values
 

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.utils.encoding import force_unicode
+from builtins import str
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
+
+from bs4 import BeautifulStoneSoup
+
+import cgi
 
 
 def is_numeric(value):
@@ -12,19 +17,12 @@ def is_numeric(value):
         return False
     return True
 
-try:
-    from BeautifulSoup import BeautifulStoneSoup
-except ImportError:
-    from bs4 import BeautifulStoneSoup
-
-import cgi
-
 
 def HTMLEntitiesToUnicode(text):
     """
     Converts HTML entities to unicode.  For example '&amp;' becomes '&'.
     """
-    text = unicode(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
+    text = str(BeautifulStoneSoup(text, convert_entities=BeautifulStoneSoup.ALL_ENTITIES))
     return text
 
 
@@ -33,8 +31,8 @@ def unicodeToHTMLEntities(text):
     Converts unicode to HTML entities.  For example '&' becomes '&amp;'.
     """
     if text is None:
-        text = force_unicode(_('None'))
-    if isinstance(text, unicode) or isinstance(text, str):
+        text = force_text(_('None'))
+    if isinstance(text, str):
         text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text
 
@@ -190,7 +188,7 @@ class HighchartRender(object):
             if len(serie_values) > max_length:
                 max_length = len(serie_values)
 
-        xAxis_categories = range(1, max_length + 1)
+        xAxis_categories = list(range(1, max_length + 1))
         self.model.chart.renderTo = 'chart-container'
         self.model.chart.type = 'line'
 
@@ -232,7 +230,7 @@ class HighchartRender(object):
         except ImportError:
             import json as simplejson
 
-        json = unicode(self.model)
+        json = str(self.model)
         json = simplejson.dumps(json)[1:-1]
         json = json.replace("'true'", 'true')
         json = json.replace("'false'", 'false')

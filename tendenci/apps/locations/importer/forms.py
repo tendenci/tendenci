@@ -1,8 +1,5 @@
-import os
-
 from django import forms
 from django.template.defaultfilters import slugify
-from django.conf import settings
 
 from tendenci.apps.locations.utils import csv_to_dict
 
@@ -27,9 +24,9 @@ class ImportMapForm(forms.Form):
         csv = csv_to_dict(file_path)
 
         # choices list
-        choices = csv[0].keys()
+        choices = csv[0]
         machine_choices = [slugify(c).replace('-','') for c in choices]
-        choice_tuples = zip(machine_choices, choices)
+        choice_tuples = list(zip(machine_choices, choices))
 
         choice_tuples.insert(0, ('',''))  # insert blank option; top option
         choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())

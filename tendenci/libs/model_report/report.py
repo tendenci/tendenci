@@ -1,28 +1,22 @@
 # -*- coding: utf-8 -*-
+from builtins import str
 import copy
-from xlwt import Workbook, easyxf
 from itertools import groupby
 
-import django
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.db.models import Q
 from django import forms
 from django.forms.models import fields_for_model
-try:
-    from django.db.models.fields.related import ForeignObjectRel
-except ImportError:  # Django < 1.8
-    from django.db.models.related import RelatedObject as ForeignObjectRel
+from django.db.models.fields.related import ForeignObjectRel
 from django.db.models import ForeignKey
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.forms import MultipleChoiceField
-from django.forms.widgets import SelectMultiple
 
+from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.libs.model_report.exporters.excel import ExcelExporter
 from tendenci.libs.model_report.exporters.pdf import PdfExporter
 from tendenci.libs.model_report.forms import ConfigForm, GroupByForm, FilterForm
@@ -64,8 +58,13 @@ def autodiscover(module_name='reports.py'):
             # Decide whether to bubble up this error. If the app just
             # doesn't have an admin module, we can ignore the error
             # attempting to import it, otherwise we want it to bubble up.
-            if module_has_submodule(mod, module_name):
-                raise
+            try:
+                if module_has_submodule(mod, module_name):
+                    raise
+            # Work-around for bug in Django <2.0 on Python >=3.4
+            # https://code.djangoproject.com/ticket/28241
+            except (ImportError, AttributeError):
+                pass
 
 
 class ReportClassManager(object):
@@ -90,7 +89,7 @@ class ReportClassManager(object):
 
     def get_reports(self):
         # return clasess
-        return self._register.values()
+        return list(self._register.values())
 
 
 reports = ReportClassManager()
@@ -124,11 +123,7 @@ def is_date_field(field):
 
 def get_model_name(model):
     """ Returns string name for the given model """
-    # model._meta.module_name is deprecated in django version 1.7 and removed in django version 1.8.
-    if django.VERSION < (1, 7):
-        return model._meta.module_name
-    else:
-        return model._meta.model_name
+    return model._meta.model_name
 
 
 class ReportAdmin(object):
@@ -243,26 +238,27 @@ class ReportAdmin(object):
                     base_model = self.model
                     for field_lookup in field.split("__"):
                         if not pre_field:
-                            pre_field, _, _, is_m2m = base_model._meta.get_field_by_name(field_lookup)
+                            is_m2m = base_model._meta.get_field(field_lookup).many_to_many
                             if is_m2m:
                                 m2mfields.append(pre_field)
                         elif isinstance(pre_field, ForeignObjectRel):
                             base_model = pre_field.model
-                            pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                            pre_field = base_model._meta.get_field(field_lookup)
                         else:
                             if is_date_field(pre_field):
                                 pre_field = pre_field
                             else:
-                                base_model = pre_field.rel.to
-                                pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                                base_model = pre_field.remote_field.model
+                                pre_field = base_model._meta.get_field(field_lookup)
                     model_field = pre_field
                 else:
                     if field in self.extra_fields:
                         model_field = self.extra_fields[field]
                     elif 'self.' not in field:
-                        model_field = self.model._meta.get_field_by_name(field)[0]
+                        model_field = self.model._meta.get_field(field)
                     else:
-                        get_attr = lambda s: getattr(s, field.split(".")[1])
+                        def get_attr(s):
+                            return getattr(s, field.split(".")[1])
                         get_attr.verbose_name = field
                         model_field = field
             except IndexError:
@@ -273,9 +269,9 @@ class ReportAdmin(object):
         self.model_fields = model_fields
         self.model_m2m_fields = model_m2m_fields
         if parent_report:
-            self.related_inline_field = [f for f, x in self.model._meta.get_fields_with_model() if f.rel and hasattr(f.rel, 'to') and f.rel.to is self.parent_report.model][0]
-            self.related_inline_accessor = self.related_inline_field.related.get_accessor_name()
-            self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, (str, unicode)) and  pfield.model == self.related_inline_field.rel.to]
+            self.related_inline_field = [f for f in self.model._meta.get_fields() if f.remote_field and f.remote_field.model is self.parent_report.model][0]
+            self.related_inline_accessor = self.related_inline_field.remote_field.get_accessor_name()
+            self.related_fields = ["%s__%s" % (get_model_name(pfield.model), attname) for pfield, attname in self.parent_report.model_fields if not isinstance(pfield, str) and  pfield.model == self.related_inline_field.remote_field.model]
             self.related_inline_filters = []
 
             for pfield, pattname in self.parent_report.model_fields:
@@ -284,7 +280,7 @@ class ReportAdmin(object):
                         if pattname in cattname:
                             if pfield.model == cfield.model:
                                 self.related_inline_filters.append([pattname, cattname, self.parent_report.get_fields().index(pattname)])
-                    except Exception as e:
+                    except Exception:
                         pass
 
     def _get_grouper_text(self, groupby_field, value):
@@ -293,11 +289,11 @@ class ReportAdmin(object):
         except:
             model_field = None
         value = self.get_grouper_text(value, groupby_field, model_field)
-        if value is None or unicode(value) == u'None':
-            if groupby_field is None or unicode(groupby_field) == u'None':
-                value = force_unicode(_('Results'))
+        if value is None or str(value) == u'None':
+            if groupby_field is None or str(groupby_field) == u'None':
+                value = force_text(_('Results'))
             else:
-                value = force_unicode(_('Nothing'))
+                value = force_text(_('Nothing'))
         return value
 
     def _get_value_text(self, index, value):
@@ -307,7 +303,7 @@ class ReportAdmin(object):
             model_field = None
 
         value = self.get_value_text(value, index, model_field)
-        if value is None or unicode(value) == u'None':
+        if value is None or str(value) == u'None':
             value = ''
         if value == [None]:
             value = []
@@ -315,7 +311,7 @@ class ReportAdmin(object):
 
     def get_grouper_text(self, value, field, model_field):
         try:
-            if not isinstance(model_field, (str, unicode)):
+            if not isinstance(model_field, str):
                 obj = model_field.model(**{field: value})
                 if hasattr(obj, 'get_%s_display' % field):
                     value = getattr(obj, 'get_%s_display' % field)()
@@ -329,7 +325,7 @@ class ReportAdmin(object):
 
     def get_value_text(self, value, index, model_field):
         try:
-            if not isinstance(model_field, (str, unicode)):
+            if not isinstance(model_field, str):
                 obj = model_field.model(**{model_field.name: value})
                 if hasattr(obj, 'get_%s_display' % model_field.name):
                     return getattr(obj, 'get_%s_display' % model_field.name)()
@@ -422,7 +418,7 @@ class ReportAdmin(object):
             if not self.model:
                 title = _('Unnamed report')
             else:
-                title = force_unicode(self.model._meta.verbose_name_plural).lower().capitalize()
+                title = force_text(self.model._meta.verbose_name_plural).lower().capitalize()
         return title
 
     def get_render_context(self, request, extra_context={}, by_row=None):
@@ -517,8 +513,8 @@ class ReportAdmin(object):
 
         if isinstance(context_or_response, HttpResponse):
             return context_or_response
-        return render_to_response(self.template_name, context_or_response,
-                                  context_instance=RequestContext(request))
+        return render_to_resp(request=request, template_name=self.template_name,
+                              context=context_or_response)
 
     def has_report_totals(self):
         return not (not self.report_totals)
@@ -574,7 +570,7 @@ class ReportAdmin(object):
 
     def check_for_widget(self, widget, field):
         if widget:
-            for field_to_set_widget, widget in widget.iteritems():
+            for field_to_set_widget, widget in widget.items():
                 if field_to_set_widget == field:
                     return (True, widget, MultipleChoiceField().__class__)
 
@@ -597,13 +593,13 @@ class ReportAdmin(object):
                                 if isinstance(pre_field, ForeignObjectRel):
                                     base_model = pre_field.model
                                 else:
-                                    base_model = pre_field.rel.to
-                            pre_field = base_model._meta.get_field_by_name(field_lookup)[0]
+                                    base_model = pre_field.remote_field.model
+                            pre_field = base_model._meta.get_field(field_lookup)
 
                         model_field = pre_field
                     else:
                         field_name = k.split("__")[0]
-                        model_field = opts.get_field_by_name(field_name)[0]
+                        model_field = opts.get_field(field_name)
 
                     if isinstance(model_field, (DateField, DateTimeField)):
                         form_fields.pop(k)
@@ -616,13 +612,13 @@ class ReportAdmin(object):
                         elif isinstance(model_field, ForeignKey):
                             field = model_field.formfield()
 
-                            if self.always_show_full_username and (model_field.rel.to == User):
+                            if self.always_show_full_username and (model_field.remote_field.model == User):
                                 field.label_from_instance = self.get_user_label
 
                             if self.list_filter_queryset:
-                                for query_field, query in self.list_filter_queryset.iteritems():
+                                for query_field, query in self.list_filter_queryset.items():
                                     if query_field == k:
-                                        for variable, value in query.iteritems():
+                                        for variable, value in query.items():
                                             field.queryset = field.queryset.filter(**{variable: value})
 
                         else:
@@ -636,7 +632,7 @@ class ReportAdmin(object):
                                     field.choices.insert(0, ('', '---------'))
                                     field.initial = ''
 
-                        field.label = force_unicode(_(field.label))
+                        field.label = force_text(_(field.label))
 
                 else:
                     if isinstance(v, (forms.BooleanField)):
@@ -652,7 +648,7 @@ class ReportAdmin(object):
                         setattr(field, 'as_boolean', True)
                     elif isinstance(v, (forms.DateField, forms.DateTimeField)):
                         field_name = k.split("__")[0]
-                        model_field = opts.get_field_by_name(field_name)[0]
+                        model_field = opts.get_field(field_name)
                         form_fields.pop(k)
                         field = RangeField(model_field.formfield)
                     # Change filter form fields specific to invoice reports
@@ -716,10 +712,10 @@ class ReportAdmin(object):
         # [ 1, model_field] ]
         for index, model_field in dot_model_fields:
             model_ids = set([row[index] for row in resources])
-            if isinstance(model_field, (unicode, str)) and 'self.' in model_field:
+            if isinstance(model_field, str) and 'self.' in model_field:
                 model_qs = self.model.objects.filter(pk__in=model_ids)
             else:
-                model_qs = model_field.rel.to.objects.filter(pk__in=model_ids)
+                model_qs = model_field.remote_field.model.objects.filter(pk__in=model_ids)
             div = {}
             method_name = dot_indexes[index].split('.')[1]
             for obj in model_qs:
@@ -795,7 +791,7 @@ class ReportAdmin(object):
         header_row = self.get_empty_row_asdict(self.get_fields(), ReportValue(''))
         for report_total_field, fun in row_config.items():
             if hasattr(fun, 'caption'):
-                value = force_unicode(fun.caption)
+                value = force_text(fun.caption)
             else:
                 value = '&nbsp;'
             header_row[report_total_field] = value
@@ -891,11 +887,15 @@ class ReportAdmin(object):
             groupby_field = groupby_data['groupby']
             if groupby_field in self.override_group_value:
                 transform_fn = self.override_group_value.get(groupby_field)
-                groupby_fn = lambda x: transform_fn(x[ffields.index(groupby_field)])
+
+                def groupby_fn(x):
+                    return transform_fn(x[ffields.index(groupby_field)])
             else:
-                groupby_fn = lambda x: x[ffields.index(groupby_field)]
+                def groupby_fn(x):
+                    return x[ffields.index(groupby_field)]
         else:
-            groupby_fn = lambda x: None
+            def groupby_fn(x):
+                return None
 
         qs_list.sort(key=groupby_fn)
         g = groupby(qs_list, key=groupby_fn)

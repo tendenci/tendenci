@@ -1,5 +1,5 @@
 import re
-import urllib2
+from six.moves.urllib.request import urlopen, Request
 from xml.etree import ElementTree as ET
 
 from django.conf import settings
@@ -66,7 +66,7 @@ class CIMBase(object):
         return payment_profiles_node
 
     def build_node_from_dict(self, parent_node, d, field_scope=None):
-        for key in d.keys():
+        for key in d:
             if not field_scope or key in field_scope:
                 value = d.get(key)
                 node = ET.SubElement(parent_node, key)
@@ -76,11 +76,11 @@ class CIMBase(object):
     def process_request(self, xml_root):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
         #print request_xml_str
-        request = urllib2.Request(self.cim_url,
+        request = Request(self.cim_url,
                                 request_xml_str,
                                 {'Content-Type': 'text/xml',
                                 'encoding': 'utf-8'})
-        response = urllib2.urlopen(request)
+        response = urlopen(request)
         data = response.read()
 
         return self.process_response(data)
@@ -167,18 +167,18 @@ class CIMCustomerProfileFromTransaction(CIMBase):
         existing successful transaction.
         Input fields:
             trans_id - required
-        
+
         Output fields:
             customer_profile_id
             customer_payment_profile_id_list
             customer_shippingaddress_id_list
-            
+
         Example call:
 
         >>> from recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
         >>> cp = CIMCustomerProfileFromTransaction()
         >>> success, response_d = cp.create(trans_id='621216786562')
-         
+
         Sample request:
         <?xml version="1.0" encoding="utf-8"?>
         <createCustomerProfileFromTransactionRequest xmlns="AnetApi/xml/v1/schema/
@@ -189,7 +189,7 @@ class CIMCustomerProfileFromTransaction(CIMBase):
            </merchantAuthentication>
            <transId>122</transId>
         </createCustomerProfileFromTransactionRequest>
-        
+
         Sample response:
         <?xml version="1.0" encoding="utf-8"?>
         <createCustomerProfileFromTransactionResponse xmlns:xsi="http://
@@ -212,7 +212,7 @@ class CIMCustomerProfileFromTransaction(CIMBase):
            </customerShippingAddressIdList>
            <validationDirectResponseList />
         </createCustomerProfileFromTransactionResponse>
-        
+
         """
         root_name = 'createCustomerProfileFromTransactionRequest'
         xml_root = self.create_base_xml(root_name)
@@ -846,7 +846,7 @@ class CIMHostedProfilePage(CIMBase):
         if hosted_profile_settings and type(hosted_profile_settings) is dict:
             hosted_profile_settings_node = ET.SubElement(xml_root, 'hostedProfileSettings')
             hosted_profile_settings = to_camel_case(hosted_profile_settings)
-            for key in hosted_profile_settings.keys():
+            for key in hosted_profile_settings:
                 setting_node = ET.SubElement(hosted_profile_settings_node, 'setting')
                 hosted_profile_setting = {'settingName': key}
                 setting_node = self.build_node_from_dict(setting_node,
