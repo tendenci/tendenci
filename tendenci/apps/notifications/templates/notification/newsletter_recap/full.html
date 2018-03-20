@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load email_tags %}
 
 {% blocktrans with action.creator.first_name as act_create and action.name as act_name and action.attempted as act_attempt and action.failed as act_fail and action.sent as act_sent %}Greetings {{ act_create }}: <br /><br />
 
@@ -17,5 +16,3 @@ For details of this submission, go to:{% endblocktrans %} {{ SITE_GLOBAL_SITEURL
 {{ SITE_GLOBAL_SITECONTACTEMAIL }} <br />
 {{ SITE_GLOBAL_SITEDISPLAYNAME }} <br />
 <p>{% trans "Time Submitted:" %} {% now "D d M Y P" %}</p>
-
-{% html_footer %}

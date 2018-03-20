@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from dateutil.relativedelta import relativedelta
-from tendenci.apps.emails import footers
+from tendenci.apps.base.utils import add_tendenci_footer
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
@@ -39,7 +39,6 @@ class RecurringPaymentEmailNotices(object):
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
         self.email.reply_to = self.reply_to_email
-        self.email_footer = footers.html_footer()
 
         self.admin_emails = self.get_admin_emails()
 
@@ -76,7 +75,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content + self.email_footer
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 self.email.priority = 1
                 self.email.subject = _('Recurring payment transaction error on %(dname)s' % {
@@ -105,7 +104,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'user_in_texas': user_in_texas,
                                                 'membership': membership,
                                                 })
-                self.email.body = email_content + self.email_footer
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 if not success:
                     self.email.subject = _('Recurring payment transaction failed on %(dname)s' % {
@@ -126,7 +125,7 @@ class RecurringPaymentEmailNotices(object):
         if self.email.recipient:
             template_name = "recurring_payments/email_customer_transaction.html"
             membership = kwargs.get('membership', None)
-            
+
             try:
                 email_content = render_to_string(template_name,
                                                {'pt':payment_transaction,
@@ -134,8 +133,8 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_url': self.site_url,
                                                 'membership': membership,
                                                 })
-                
-                self.email.body = email_content + self.email_footer
+
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 if payment_transaction.status:
                     self.email.subject = _('Payment Received ')
@@ -161,7 +160,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content + self.email_footer
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 self.email.subject = _('Payment method not setup for %(rp)s on %(dname)s' % {
                                     'rp': recurring_payment ,
@@ -183,7 +182,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content + self.self.email_footer
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
                                     'rp': recurring_payment.description,
@@ -206,7 +205,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content + self.email_footer
+                self.email.body = add_tendenci_footer(email_content)
                 self.email.content_type = "html"
                 self.email.subject = _('Recurring Payment Account (ID:%(id)d) Disabled by %(usr)s on %(dname)s' % {
                        'id':recurring_payment.id,
