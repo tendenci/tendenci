@@ -12,9 +12,9 @@ def encrypt(value):
     """
     cipher = AES.new(settings.SITE_SETTINGS_KEY.encode('utf-8'), AES.MODE_ECB)
     value = str(value).encode('utf-8')
-    padding = cipher.block_size - len(value) % cipher.block_size
+    padding = AES.block_size - len(value) % AES.block_size
     for i in range(padding):
-        value += '\0'
+        value += b'\0'
     ciphertext = cipher.encrypt(value)
     ciphertext = base64.b64encode(ciphertext) # make it database friendly
     return ciphertext.decode('utf-8')

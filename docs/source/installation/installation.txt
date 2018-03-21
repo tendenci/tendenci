@@ -130,11 +130,11 @@ with Tendenci.
 Prepare a virtualenv for Tendenci:
 ::
 
-    sudo mkdir /srv
+    sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3 -m virtualenv tendenci
-    sudo chown root:root /srv/
+    python3 -m virtualenv -p python3 tendenci
+    sudo chown root /srv/
 
 To use the virtualenv, you must "activate" it:
 ::
@@ -195,14 +195,14 @@ Create a new Django project based on the Tendenci template:
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
     django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
-    sudo chown root:root /var/www/
+    sudo chown root /var/www/
 
 The above step will download around 70MB of data, so it may take some time to complete.
 
 Set up some directories appropriately:
 ::
 
-    chmod -Rh -x+X /var/www/tendenci/media/
+    chmod -R -x+X /var/www/tendenci/media/
     mkdir /var/www/tendenci/index.whoosh
     sudo mkdir /var/log/tendenci
     sudo chown "$(id -u -n)" /var/log/tendenci/
@@ -251,6 +251,7 @@ Initialize the database and static media:
     cd /var/www/tendenci/
     python manage.py migrate
     python deploy.py
+    chmod -R -x+X /var/www/tendenci/media/
     python manage.py load_creative_defaults
 
 Set the "Site URL" setting appropriately:
@@ -283,11 +284,16 @@ Then open ``http://localhost:8000/`` in your browser to see your Tendenci site!
 
 Hit ``CTRL-C`` to exit from ``python manage.py runserver``
 
+If you only plan to use this Tendenci installation for demonstration / testing purposes, you can
+stop here.  If you intend to do development or run a live site, continue with one of the next two
+sections.
+
 
 Development Setup
 =================
 
-This section is optional and is only relevant if you plan to make changes to Tendenci itself.
+This section covers additional recommended setup if you plan to do development work on Tendenci
+itself.
 
 Install and configure git (replace the name and email with appropriate values):
 ::
@@ -352,7 +358,7 @@ Additional Installation
 Install additional system dependencies:
 ::
 
-    sudo apt-get install nginx memcached libmemcached-dev pylibmc
+    sudo apt-get install nginx memcached libmemcached-dev
 
 Install additional Python dependencies:
 ::
@@ -362,17 +368,45 @@ Install additional Python dependencies:
     pip install -r requirements/prod.txt
 
 
-SystemD Setup
--------------
+Permissions
+-----------
 
 When using the SystemD configuration below, Tendenci will run as the ``www-data`` user.  To ensure
 that Tendenci has appropriate permissions when running as ``www-data``:
 ::
 
+    chmod -R o+rX /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
-    sudo chmod -Rh g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    chmod -R g+rw /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    sudo chown -Rh www-data /var/log/tendenci/
+
+For security, you should also ensure that there are no unnecessary permissions:
+::
+
+    # Owner/group on /srv/tendenci/ should already be your normal user account
+    # Tendenci needs read/search/execute but not write
+    chmod -R o+rX-w /srv/tendenci/
+    # Owner on /var/www/tendenci/ should already be your normal user account,
+    # group should be www-data
+    # Tendenci needs read/search but not execute, write is only needed on media and index.whoosh,
+    # other users do not need any access
+    sudo chgrp -Rh www-data /var/www/tendenci/
+    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
+    chmod -R g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    # Owner on /var/log/tendenci/ should be www-data, group should be "adm", and your normal user
+    # account should be a member of this group
+    # Only Tendenci needs write, "adm" needs read/search but not write/execute, other users do not
+    # need any access
     sudo chown -Rh www-data:adm /var/log/tendenci/
-    sudo chmod -Rh 750 /var/log/tendenci/
+    sudo usermod -a -G adm "$(id -u -n)"
+    sudo chmod -R -x+X,g+r-w,o-rwx /var/log/tendenci/
+
+Note that these permissions should allow your normal user account to manage/upgrade Tendenci without
+using sudo, which is safer than performing management/upgrades using sudo.
+
+
+SystemD Setup
+-------------
 
 SystemD Unit files should be created in ``/etc/systemd/system/`` with a name of
 your choice (eg ``tendenci.service``). The contents of your unit file should
@@ -408,15 +442,15 @@ look like this:
     [Install]
     WantedBy=multi-user.target
 
-To start the service manually run:
+To start the service manually:
 ::
 
-    systemctl start tendenci-test
+    sudo systemctl start tendenci-test
 
 To start the service automatically on boot:
 ::
 
-    systemctl enable tendenci-test
+    sudo systemctl enable tendenci-test
 
 
 logrotate Setup
@@ -504,7 +538,7 @@ EMail Setup
 For a mail server, install postfix:
 ::
 
-    apt-get install postfix
+    sudo apt-get install postfix
 
 During installation, you will see 3 prompts which you must respond to in order to complete the
 installation. If the server is already configured with a domain name, enter that domain in the

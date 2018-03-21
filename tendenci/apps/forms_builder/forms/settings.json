@@ -1,13 +1,13 @@
 [
     {
-        "default_value": "true",
+        "default_value": true,
         "description": "Module is enabled or not.",
         "data_type": "boolean",
         "update_dt": "2010-08-13 09:33:29",
         "input_type": "select",
         "client_editable": false,
         "name": "enabled",
-        "value": "true",
+        "value": true,
         "label": "Enabled",
         "input_value": "true,false",
         "parent_id": 0,
@@ -51,14 +51,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "false",
+        "default_value": false,
         "description": "Use only one email field for forms with email.",
         "data_type": "boolean",
         "update_dt": "2014-02-20 00:00:00",
         "input_type": "select",
         "client_editable": false,
         "name": "one_email",
-        "value": "false",
+        "value": false,
         "label": "One Email Field",
         "input_value": "true,false",
         "parent_id": 0,

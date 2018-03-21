@@ -8,8 +8,8 @@
     "input_type": "file",
     "value": "5",
     "input_value": "",
-    "client_editable": "true",
-    "store": "true",
+    "client_editable": true,
+    "store": true,
     "scope": "module",
     "scope_category": "theme"
     }
