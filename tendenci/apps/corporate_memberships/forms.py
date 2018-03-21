@@ -810,12 +810,17 @@ class ReportByTypeForm(FormControlWidgetMixin, forms.Form):
                             choices=DAYS_CHOICES,)
     corp_membership_type = forms.ChoiceField(label=_('Type'),
                             required=False,
-                            choices=[(0, 'ALL')])
+                            choices= ())
 
     def __init__(self, *args, **kwargs):
         super(ReportByTypeForm, self).__init__(*args, **kwargs)
 
         self.fields['days'].widget.attrs.update({'onchange': 'this.form.submit();'})
+        self.fields['corp_membership_type'].choices = [(0, 'ALL')] + \
+                                [(t.id, t.name) for t in CorporateMembershipType.objects.filter(
+                                status=True,
+                                status_detail='active'
+                                ).order_by('name')]
         self.fields['corp_membership_type'].widget.attrs.update({'onchange': 'this.form.submit();'})
         self.fields['corp_membership_type'].choices = ([(0, 'ALL')] +
             [(t.id, t.name) for t in CorporateMembershipType.objects.filter(
