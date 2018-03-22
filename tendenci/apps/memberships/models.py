@@ -18,7 +18,6 @@ from django import forms
 from importlib import import_module
 from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
-from django.utils.encoding import smart_str
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
 
@@ -1336,7 +1335,7 @@ class MembershipDefault(TendenciBaseModel):
             user = User.objects.create_user(**{
                 'username': un or spawn_username(fn[:1], ln),
                 'email': em,
-                'password': pw or hashlib.sha1(em).hexdigest()[:6],
+                'password': pw or hashlib.sha1(em.encode()).hexdigest()[:6]
             })
 
             user.first_name = fn
@@ -2101,7 +2100,6 @@ class MembershipImport(models.Model):
                 data_dict = idata.row_data
                 row = [data_dict[k] for k in header_row if k in data_dict]
                 row.extend([idata.action_taken, idata.error])
-                row = [smart_str(s).decode('utf-8') for s in row]
                 recap_writer.writerow(row)
 
             f.close()

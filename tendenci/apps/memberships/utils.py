@@ -468,15 +468,12 @@ def process_export(
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif isinstance(item, str):
-                        item = item.encode("utf-8")
                     elif field_name == 'membership_type':
                         # display membership type name instead of id
                         item = membership_ids_dict[item]
                     elif field_name == 'app':
                         # display membership type name instead of id
                         item = app_ids_dict[item]
-                item = smart_str(item).decode('utf-8')
                 items_list.append(item)
             csv_writer.writerow(items_list)
 

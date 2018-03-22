@@ -426,7 +426,7 @@ def md5_gs(value, arg=None):
     hashdt = ''
     if arg and int(arg):
         timestamp = datetime.now() + timedelta(hours=int(arg))
-        hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0', ';')).hexdigest()
+        hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0', ';').encode()).hexdigest()
     return ''.join([value, hashdt])
 
 @register.filter

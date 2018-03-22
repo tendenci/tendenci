@@ -52,8 +52,9 @@ Also ensure that Ubuntu is configured to automatically install security updates:
 Install the required system dependencies:
 ::
 
-    sudo apt-get install python3-virtualenv
-    sudo apt-get install build-essential python3-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+    sudo apt-get install python3-virtualenv \
+      build-essential python3-dev libevent-dev libpq-dev \
+      libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
     sudo apt-get install curl wget
 
 System Preparation on OS X
@@ -211,7 +212,7 @@ Install Tendenci and its dependencies:
 ::
 
     cd /var/www/tendenci/
-    pip install -r requirements/dev.txt
+    pip install -r requirements/dev.txt --upgrade
 
 
 Tendenci Configuration
@@ -320,7 +321,7 @@ Run ``pip install`` again:
 
     source /srv/tendenci/bin/activate
     cd /var/www/tendenci/
-    pip install -r requirements/dev.txt
+    pip install -r requirements/dev.txt --upgrade
 
 Apply any database and static media updates that are in the development version of Tendenci but are
 not yet in the released version of Tendenci:
@@ -365,7 +366,7 @@ Install additional Python dependencies:
 
     source /srv/tendenci/bin/activate
     cd /var/www/tendenci/
-    pip install -r requirements/prod.txt
+    pip install -r requirements/prod.txt --upgrade
 
 
 Permissions
@@ -377,8 +378,9 @@ that Tendenci has appropriate permissions when running as ``www-data``:
 
     chmod -R o+rX /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R g+rw /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
-    sudo chown -Rh www-data /var/log/tendenci/
+    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    sudo chgrp -Rh www-data /var/log/tendenci/
+    chmod -R g+rwX /var/log/tendenci/
 
 For security, you should also ensure that there are no unnecessary permissions:
 ::
@@ -392,14 +394,14 @@ For security, you should also ensure that there are no unnecessary permissions:
     # other users do not need any access
     sudo chgrp -Rh www-data /var/www/tendenci/
     chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R g+w /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
-    # Owner on /var/log/tendenci/ should be www-data, group should be "adm", and your normal user
-    # account should be a member of this group
-    # Only Tendenci needs write, "adm" needs read/search but not write/execute, other users do not
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    # Owner on /var/log/tendenci/ should be www-data,
+    # group should be some group that includes your normal user account but not other inappropriate
+    # users (Ubuntu creates a dedicated group for each user by default, so this command uses that)
+    # Tendenci and the assigned group need read/write/search but not execute, other users do not
     # need any access
-    sudo chown -Rh www-data:adm /var/log/tendenci/
-    sudo usermod -a -G adm "$(id -u -n)"
-    sudo chmod -R -x+X,g+r-w,o-rwx /var/log/tendenci/
+    sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
+    sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
 
 Note that these permissions should allow your normal user account to manage/upgrade Tendenci without
 using sudo, which is safer than performing management/upgrades using sudo.

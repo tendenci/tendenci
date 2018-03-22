@@ -33,7 +33,7 @@ def prepare_firstdata_form(request, payment):
 
     # SHA1 hash
     #s = '%s%s%s%s%s' % (settings.MERCHANT_LOGIN, txndatetime, chargetotal, currency, settings.MERCHANT_TXN_KEY)
-    #hash = hashlib.sha1(s).hexdigest()
+    #hash = hashlib.sha1(s.encode()).hexdigest()
 
     if request.user.is_authenticated:
         userid = request.user.id

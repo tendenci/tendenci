@@ -117,7 +117,6 @@ urlpatterns += [
 
 handler500 = 'tendenci.apps.base.views.custom_error'
 
-
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += [
     # serve .less files - this is to resolve the cross domain issue for less js
@@ -132,7 +131,7 @@ if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             files_views.redirect_to_s3,
             {'file_type': 'themes'},
                 name='redirect_to_s3'),
-]
+    ]
 
 # serve static files
 if settings.DEBUG:
@@ -163,13 +162,6 @@ if settings.DEBUG:
     urlpatterns += [
         url(r'^tag-test/$', TemplateView.as_view(template_name='tag_test.html'), name="tag_test"),
     ]
-
-# Local url patterns for development
-try:
-    from conf.local_urls import extrapatterns
-    urlpatterns += extrapatterns
-except ImportError:
-    pass
 
 #PLUGINS:
 urlpatterns += get_url_patterns()

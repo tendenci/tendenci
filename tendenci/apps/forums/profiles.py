@@ -69,7 +69,7 @@ class PybbProfile(models.Model):
 
     def getMD5(self):
         m = hashlib.md5()
-        m.update(self.user.email)
+        m.update(self.user.email.encode())
         return m.hexdigest()
 
     def get_gravatar_url(self):

@@ -115,11 +115,10 @@ def render_to_theme(request, template_name, context={}, **kwargs):
     directory
     """
 
-    disable_theme = 'DISABLE_THEME' in context
     context['CUSTOM_THEME'] = False
     context['THEME_TEMPLATE'] = template_name
 
-    if disable_theme:
+    if 'disable_theme' in request.GET:
         if isinstance(template_name, (list, tuple)):
             t = select_default_template(template_name)
         else:

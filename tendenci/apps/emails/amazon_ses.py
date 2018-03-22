@@ -39,7 +39,7 @@ class AmazonSES:
         self._responseParser = AmazonResponseParser()
 
     def _getSignature(self, dateValue):
-        h = hmac.new(key=self._secretAccessKey, msg=dateValue, digestmod=hashlib.sha256)
+        h = hmac.new(key=self._secretAccessKey.encode(), msg=dateValue.encode(), digestmod=hashlib.sha256)
         return base64.b64encode(h.digest()).decode()
 
     def _getHeaders(self):

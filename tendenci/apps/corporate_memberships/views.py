@@ -186,7 +186,7 @@ def corpmembership_add_pre(request,
     if request.method == "POST":
         if form.is_valid():
             creator = form.save()
-            hash = md5('%d.%s' % (creator.id, creator.email)
+            hash = md5(('%d.%s' % (creator.id, creator.email)).encode()
                        ).hexdigest()
             creator.hash = hash
             creator.save()
@@ -1654,8 +1654,6 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                         elif isinstance(row_item_list[i], time):
                             row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
-                        elif isinstance(row_item_list[i], str):
-                            row_item_list[i] = row_item_list[i].encode("utf-8")
                 csv_writer.writerow(row_item_list)
 
             # log an event

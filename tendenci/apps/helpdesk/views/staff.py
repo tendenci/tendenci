@@ -750,7 +750,7 @@ def ticket_list(request):
         except ImportError:
             import pickle
         from tendenci.apps.helpdesk.lib import b64decode
-        query_params = pickle.loads(b64decode(str(saved_query.query)))
+        query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
     elif not (  'queue' in request.GET
             or  'assigned_to' in request.GET
             or  'status' in request.GET
@@ -865,7 +865,7 @@ def ticket_list(request):
     except ImportError:
         import pickle
     from tendenci.apps.helpdesk.lib import b64encode
-    urlsafe_query = b64encode(pickle.dumps(query_params))
+    urlsafe_query = b64encode(pickle.dumps(query_params)).decode()
 
     user_saved_queries = SavedSearch.objects.filter(Q(user=request.user) | Q(shared__exact=True))
 
@@ -1061,7 +1061,7 @@ def run_report(request, report):
         except ImportError:
             import pickle
         from tendenci.apps.helpdesk.lib import b64decode
-        query_params = pickle.loads(b64decode(str(saved_query.query)))
+        query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
         report_queryset = apply_query(report_queryset, query_params)
 
     from collections import defaultdict

@@ -36,7 +36,7 @@ from tendenci.apps.site_settings.utils import get_setting
 def file_directory(instance, filename):
     filename = correct_filename(filename)
     m = hashlib.md5()
-    m.update(filename)
+    m.update(filename.encode())
 
     hex_digest = m.hexdigest()[:8]
 

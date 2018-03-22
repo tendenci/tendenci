@@ -137,8 +137,8 @@ class RegistrationManager(models.Manager):
         username and a random salt.
 
         """
-        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
-        activation_key = hashlib.sha1(salt+user.username).hexdigest()
+        salt = hashlib.sha1(str(random.random()).encode()).hexdigest()[:5]
+        activation_key = hashlib.sha1((salt+user.username).encode()).hexdigest()
         return self.create(user=user,
                            activation_key=activation_key)
 

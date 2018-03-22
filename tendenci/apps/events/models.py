@@ -465,7 +465,7 @@ class Registration(models.Model):
 
     @property
     def hash(self):
-        return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
+        return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -830,7 +830,7 @@ class Registrant(models.Model):
 
     @property
     def hash(self):
-        return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
+        return md5(".".join([str(self.registration.event.pk), str(self.pk)]).encode()).hexdigest()
 
     def hash_url(self):
         return reverse('event.registration_confirmation', args=[self.registration.event.pk, self.hash])

@@ -116,11 +116,14 @@
                                         <a href="{% url 'profile.edit_groups' user_this.username %}">{% trans "Edit Groups" %}</a>
                                     </span>
                                 </li>
+
+                                {% if MODULE_EDUCATIONS_ENABLED %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'profile.edit_education' user_this.username %}">{% trans "Edit Education" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
                             {% endif %}
 
                             {% if user.profile.is_staff %}
@@ -132,6 +135,7 @@
                                     </span>
                                 </li>
 
+                                {% if MODULE_SOCIAL_SERVICES_ENABLED %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'user.skills' user_this.username %}">{% trans "View Skills" %}</a>
@@ -143,6 +147,7 @@
                                         <a href="{% url 'user.skills_edit' user_this.username %}">{% trans "Edit Skills" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
 
                                 <li class="content-item">
                                     <span class="app-name">

@@ -909,8 +909,8 @@ def membership_default_add(request, slug='', membership_id=None,
                     pass
 
             elif authentication_method == 'secret_code':
-                tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
-                            request.session.get('corp_hash_random_string', ''))
+                tmp_secret_hash = md5(('%s%s' % (corp_membership.corp_profile.secret_code,
+                            request.session.get('corp_hash_random_string', '')).encode())
                                       ).hexdigest()
                 if secret_hash == tmp_secret_hash:
                     is_verified = True
@@ -1628,7 +1628,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
                                     allowed_chars='abcdefghjkmnpqrstuvwxyz')
                     request.session['corp_hash_random_string'] = random_string
                     secret_code = form.cleaned_data['secret_code']
-                    secret_hash = md5('%s%s' % (secret_code, random_string)).hexdigest()
+                    secret_hash = md5(('%s%s' % (secret_code, random_string)).encode()).hexdigest()
                     return redirect(reverse('membership.add_via_corp_secret_code',
                                             args=[
                                                 corporate_membership_id,

@@ -34,11 +34,10 @@ def create_ics(user):
 
         ics_str += "END:VCALENDAR\n"
 
-        ics_str = ics_str.encode('UTF-8')
         file_name = 'ics-%s.ics' % (user.pk)
         file_path = os.path.join(absolute_directory, file_name)
-        destination = open(file_path, 'w+')
-        destination.write(ics_str)
+        destination = open(file_path, 'wb+')
+        destination.write(ics_str.encode())
         destination.close()
 
         return ics_str

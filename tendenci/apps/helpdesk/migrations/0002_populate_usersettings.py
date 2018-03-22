@@ -7,14 +7,14 @@ from django.db import migrations
 from tendenci.apps.helpdesk.settings import DEFAULT_USER_SETTINGS
 
 
-def picke_settings(data):
+def pickle_settings(data):
     """Pickling as defined at migration's creation time"""
     try:
         import six.moves.cPickle as pickle
     except ImportError:
         import pickle
     from tendenci.apps.helpdesk.lib import b64encode
-    return b64encode(pickle.dumps(data))
+    return b64encode(pickle.dumps(data)).decode()
 
 
 # https://docs.djangoproject.com/en/1.7/topics/migrations/#data-migrations
@@ -29,7 +29,7 @@ def populate_usersettings(apps, schema_editor):
     # Import historical version of models
     UserSettings = apps.get_model("helpdesk", "UserSettings")
 
-    settings_pickled = picke_settings(DEFAULT_USER_SETTINGS)
+    settings_pickled = pickle_settings(DEFAULT_USER_SETTINGS)
 
     for u in User.objects.all():
         try:
