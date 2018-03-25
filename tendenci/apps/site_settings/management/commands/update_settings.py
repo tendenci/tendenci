@@ -55,7 +55,7 @@ class Command(BaseCommand):
             "label": "enabled",
             "description": "Module is enabled or not.",
             "data_type": "boolean",
-            "default_value": "true",
+            "default_value": true,
             "input_type": "select",
             "input_value": "true, false",
             "client_editable": "1",
