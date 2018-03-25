@@ -1,14 +1,14 @@
 from django.conf import settings
-from tendenci.apps.theme.utils import (get_active_theme, is_builtin_theme,
-                                       get_builtin_theme_dir, get_theme_info)
+from tendenci.apps.theme.utils import (get_active_theme, get_theme,
+                                       is_builtin_theme, get_builtin_theme_dir,
+                                       get_theme_info)
 
 
 def theme(request):
     context = {}
 
     context['ACTIVE_THEME'] = get_active_theme()
-    theme = request.session.get('theme', context['ACTIVE_THEME'])
-    context['THEME'] = theme
+    context['THEME'] = theme = get_theme(context['ACTIVE_THEME'])
 
     if is_builtin_theme(theme):
         context['THEME_URL'] = '%sthemes/%s/' % (settings.STATIC_URL,

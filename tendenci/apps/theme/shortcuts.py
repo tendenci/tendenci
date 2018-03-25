@@ -130,7 +130,7 @@ def themed_response(request, template_name, context={}, **kwargs):
             template = get_template(template_name)
 
     context['TEMPLATE_NAME'] = template.origin.template_name
-    context['TEMPLATE_FROM_THEME'] = getattr(template.origin, 'template_from_theme', False)
+    context['TEMPLATE_THEME'] = getattr(template.origin, 'theme', None)
     # Not currently used, but might be useful if ?disable_cache ends up being used
     #context['CACHE_DISABLED'] = request.session.get('disable_cache', False)
 

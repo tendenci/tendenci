@@ -13,7 +13,9 @@ from django.utils._os import safe_join
 from django.core.cache import cache
 from django.core.exceptions import SuspiciousFileOperation
 
-from tendenci.apps.theme.utils import get_theme, is_builtin_theme, get_theme_root
+from tendenci.apps.theme.utils import (get_active_theme, get_theme,
+                                       get_theme_search_order, is_builtin_theme,
+                                       get_theme_root)
 from tendenci.apps.theme.middleware import get_current_request
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 
@@ -35,6 +37,7 @@ class Loader(Loader):
         # Reverted in daa0910b02 because it prevents theme changes without server
         # restart.
         #self.theme_root = get_theme_root()
+        self.cached_theme_search_info = (None, None)
         super(Loader, self).__init__(engine)
 
     def get_template_sources(self, template_name, template_dirs=None):
@@ -44,35 +47,46 @@ class Loader(Loader):
         Any paths that don't lie inside one of the template dirs are excluded
         from the result set for security reasons.
         """
-        theme_templates = []
-        theme = get_theme()
-        if is_builtin_theme(theme) or not settings.USE_S3_THEME:
-            theme_root = get_theme_root(theme)
-        else:
-            theme_root = theme
         current_request = get_current_request()
-        if current_request and current_request.mobile:
-            theme_templates.append(os.path.join(theme_root, 'mobile'))
-        theme_templates.append(os.path.join(theme_root, 'templates'))
+        mobile = (current_request and current_request.mobile)
 
-        for template_path in theme_templates:
-            if is_builtin_theme(theme) or not settings.USE_S3_THEME:
-                try:
-                    template_file = safe_join(template_path, template_name)
-                    use_s3_theme = False
-                except SuspiciousFileOperation:
-                    # The joined path was located outside of template_path,
-                    # although it might be inside another one, so this isn't
-                    # fatal.
-                    continue
-            else:
-                template_file = os.path.join(template_path, template_name)
-                use_s3_theme = True
-            origin = Origin(name=template_file, template_name=template_name,
-                loader=self)
-            origin.template_from_theme = True
-            origin.use_s3_theme = use_s3_theme
-            yield origin
+        active_theme = get_active_theme()
+        theme = get_theme(active_theme)
+        cached_theme, theme_search_info = self.cached_theme_search_info
+
+        # If the theme changed or the user is previewing a different theme,
+        # recalculate theme_search_info.
+        # Note that this Loader instance may be shared between multiple threads,
+        # so you must be careful when reading/writing
+        # self.cached_theme_search_info to ensure that writes in one thread
+        # cannot cause unexpected behavior in another thread that is
+        # reading/writing self.cached_theme_search_info at the same time.
+        if cached_theme != theme:
+            theme_search_info = []
+            for cur_theme in get_theme_search_order(theme):
+                if is_builtin_theme(cur_theme) or not settings.USE_S3_THEME:
+                    theme_search_info.append((cur_theme, get_theme_root(cur_theme), False))
+                else:
+                    theme_search_info.append((cur_theme, cur_theme, True))
+            if theme == active_theme:
+                self.cached_theme_search_info = (theme, theme_search_info)
+
+        for cur_theme, cur_theme_root, use_s3_theme in theme_search_info:
+            for template_path in (['mobile', 'templates'] if mobile else ['templates']):
+                if not use_s3_theme:
+                    try:
+                        template_file = safe_join(cur_theme_root, template_path, template_name)
+                    except SuspiciousFileOperation:
+                        # The joined path was located outside of template_path,
+                        # although it might be inside another one, so this isn't
+                        # fatal.
+                        continue
+                else:
+                    template_file = os.path.join(cur_theme_root, template_path, template_name)
+                origin = Origin(name=template_file, template_name=template_name, loader=self)
+                origin.theme = cur_theme
+                origin.use_s3_theme = use_s3_theme
+                yield origin
 
     def get_contents(self, origin):
         if not origin.use_s3_theme:
