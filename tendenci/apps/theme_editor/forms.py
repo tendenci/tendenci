@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
 
 # local
-from tendenci.apps.theme.utils import get_theme_root, get_theme, theme_choices
+from tendenci.apps.theme.utils import theme_choices
 from tendenci.apps.theme_editor.utils import archive_file
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 
@@ -41,14 +41,10 @@ class FileForm(forms.Form):
                            widget=forms.Textarea(attrs={'rows': 26, 'cols': 73}),
                            max_length=500000
                            )
-    rf_path = forms.CharField(widget=forms.HiddenInput())
 
-    def save(self, request, file_relative_path, ROOT_DIR=get_theme_root(), ORIG_ROOT_DIR=get_theme_root()):
+    def save(self, root_dir, theme, file_relative_path, request):
         content = self.cleaned_data["content"]
-        file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
-
-        if settings.USE_S3_THEME:
-            file_path = (os.path.join(ORIG_ROOT_DIR, file_relative_path)).replace("\\", "/")
+        file_path = os.path.join(root_dir, file_relative_path)
 
         # write the theme file locally in case it was wiped by a restart
         if settings.USE_S3_THEME and not os.path.isfile(file_path):
@@ -60,8 +56,8 @@ class FileForm(forms.Form):
             new_file.write('')
             new_file.close()
 
-        if os.path.isfile(file_path) and content != "":
-            archive_file(request, file_relative_path, ROOT_DIR=ORIG_ROOT_DIR)
+        if os.path.isfile(file_path) and content != '':
+            archive_file(root_dir, file_relative_path, request)
 
             # Save the file locally no matter the theme location.
             # The save to S3 reads from the local file, so we need to save it first.
@@ -72,13 +68,15 @@ class FileForm(forms.Form):
 
             if settings.USE_S3_THEME:
                 # copy to s3 storage
-                if os.path.splitext(file_path)[1] == '.html':
+                if os.path.splitext(file_relative_path)[1] == '.html':
                     public = False
                 else:
                     public = True
-                save_file_to_s3(file_path, public=public)
+                dest_path = os.path.join(theme, file_relative_path)
+                dest_full_path = os.path.join(settings.THEME_S3_PATH, dest_path)
+                save_file_to_s3(file_path, dest_path=dest_full_path, public=public)
 
-                cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
+                cache_key = '.'.join([settings.SITE_CACHE_KEY, 'theme', dest_path])
                 cache.delete(cache_key)
 
                 if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:

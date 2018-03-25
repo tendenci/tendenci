@@ -52,8 +52,9 @@ $(function() {
                 if ( is_valid ) {
                     // ajax submit form
                     $.post(
-                        '{% url "theme_editor.create_new_template" %}',
+                        '{% url "theme_editor.create_new_template" %}?theme_edit={{ current_theme }}',
                         {
+                            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
                             'template_name': tname.val()
                         },
                         function(data, textStatus, jqXHR){
@@ -61,8 +62,8 @@ $(function() {
                             if (json["created"]){
                                 $this.dialog( "close" );
                                 // redirect
-                                location = "{% url "theme_editor.editor"%}?file=templates/" +
-                                            json["template_name"];
+                                location = "{% url "theme_editor.editor" %}?file=templates/" +
+                                            json["template_name"]+"&theme_edit={{ current_theme }}";
                             }else{
                                 update_tips(json["err"]);
                             }

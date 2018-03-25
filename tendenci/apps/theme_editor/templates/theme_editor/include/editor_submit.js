@@ -1,7 +1,6 @@
 $("#editorForm").submit(function() {
     var data = {'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-                'content': editor.getCode(),
-                'rf_path': $('input#id_rf_path').val()};
+                'content': editor.getCode()};
     $.ajax({
         type: 'post',
         dataType: 'json',

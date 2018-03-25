@@ -42,6 +42,9 @@ def theme_options():
         options += ', '+theme
     return options[2:]  # Remove first ', '
 
+def is_valid_theme(theme):
+    return (theme in theme_choices())
+
 
 def prepend_file(filename, prep_text="[General]\n"):
     f = open(filename)
@@ -59,26 +62,29 @@ def get_theme_info(theme=None):
     A dict is preferred so we can loop through the fields.
 
     """
-
     if not theme:
         theme = get_theme()
-    theme_root = get_theme_root(theme)
-    keys = [settings.CACHE_PRE_KEY, str(theme)]
-    key = '.'.join(keys)
-    cached = cache.get(key)
-    if cached is None:
-        # Get a dict of the fields, not the object itself.
 
+    cache_key = '.'.join([settings.CACHE_PRE_KEY, str(theme)])
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    theme_info = {}
+
+    theme_info_file = os.path.join(get_theme_root(theme), 'theme.info')
+    if os.path.isfile(theme_info_file):
         config = configparser.ConfigParser()
         try:
-            config.read(os.path.join(theme_root, 'theme.info'))
+            config.read(theme_info_file)
         except configparser.MissingSectionHeaderError:
-            prepend_file(os.path.join(theme_root, 'theme.info'))
-            config.read(os.path.join(theme_root, 'theme.info'))
+            prepend_file(theme_info_file)
+            config.read(theme_info_file)
+        # Get a dict of the fields, not the object itself.
+        theme_info = config._sections
 
-        cached = config._sections
+    # Only cache if DEBUG is disabled.
+    if not settings.DEBUG:
+        cache.set(cache_key, theme_info)
 
-        # Only cache if DEBUG is disabled.
-        if not settings.DEBUG:
-            cache.set(key, cached)
-    return cached
+    return theme_info

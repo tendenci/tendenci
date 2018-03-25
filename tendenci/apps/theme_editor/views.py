@@ -5,10 +5,10 @@ import subprocess
 from django.shortcuts import redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 import simplejson as json
-from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
@@ -18,19 +18,18 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.base.models import UpdateTracker
 from tendenci.apps.base.utils import get_template_list, checklist_update
 from tendenci.apps.site_settings.models import Setting
-from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.theme.utils import (get_active_theme, get_theme, get_theme_root,
-                                       theme_choices as theme_choice_list)
+from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_root, is_valid_theme,
+                                       theme_choices)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import (FileForm,
                                               ThemeSelectForm,
                                               UploadForm,
                                               AddTemplateForm)
-from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
-from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
-from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
+from tendenci.apps.theme_editor.utils import (is_valid_path, ThemeInfo, app_templates,
+                                              get_dir_list, get_file_list, get_file_content,
+                                              get_all_files_list, copy_file_to_theme)
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 from tendenci.libs.uploader import uploader
 
@@ -40,18 +39,12 @@ DEFAULT_FILE = 'templates/homepage.html'
 @permission_required('theme_editor.change_themefileversion')
 def edit_file(request, form_class=FileForm, template_name="theme_editor/index.html"):
 
-    if not has_perm(request.user, 'theme_editor.view_themefileversion'):
-        raise Http403
-
     selected_theme = request.GET.get("theme_edit", get_theme())
-    original_theme_root = get_theme_root(selected_theme)
-    theme_root = original_theme_root
-    if settings.USE_S3_THEME:
-        theme_root = os.path.join(settings.THEME_S3_PATH, selected_theme)
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
 
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)
-
     if default_file:
         default_file = default_file.replace('\\', '/')
         default_file = default_file.strip('/')
@@ -59,9 +52,24 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         default_file = default_file.replace('///', '/')
         default_file = default_file.replace('//', '/')
 
-    is_file = qstr_is_file(default_file, ROOT_DIR=theme_root)
-    is_dir = qstr_is_dir(default_file, ROOT_DIR=theme_root)
+    theme_root = get_theme_root(selected_theme)
+    if not is_valid_path(theme_root, default_file):
+        raise Http403
 
+    if request.is_ajax() and request.method == "POST":
+        file_form = form_class(request.POST)
+        response_status = 'FAIL'
+        response_message = _('Cannot update file.')
+        if file_form.is_valid():
+            if file_form.save(theme_root, selected_theme, default_file, request):
+                response_status = 'SUCCESS'
+                response_message = str(_('Your changes have been saved.'))
+                EventLog.objects.log()
+        response = json.dumps({'status': response_status, 'message': response_message})
+        return HttpResponse(response, content_type='application/json')
+
+    is_file = os.path.isfile(os.path.join(theme_root, default_file))
+    is_dir = os.path.isdir(os.path.join(theme_root, default_file))
     if is_file:
         pass
     elif is_dir:
@@ -86,6 +94,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     pwd = os.path.dirname(default_file)
     if pwd == '/':
         pwd = ''
+    # make sure the path is still valid after stripping off the file name
+    if not is_valid_path(theme_root, pwd):
+        raise Http403
 
     current_file_path = os.path.join(pwd, current_file)
 
@@ -101,39 +112,24 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         prev_dir = ''
 
     # get the directory list
-    dirs = get_dir_list(pwd, ROOT_DIR=theme_root)
+    dirs = get_dir_list(theme_root, pwd)
 
     # get the file list
-    files, non_editable_files = get_file_list(pwd, ROOT_DIR=theme_root)
+    files, non_editable_files = get_file_list(theme_root, pwd)
 
-    all_files_folders = get_all_files_list(ROOT_DIR=theme_root)
+    all_files_folders = get_all_files_list(theme_root, selected_theme)
 
     # non-deletable files
     non_deletable_files = ['homepage.html', 'default.html', 'footer.html', 'header.html', 'sidebar.html', 'nav.html', 'styles.less', 'styles.css']
 
     # get the number of themes in the themes directory on the site
-    theme_choices = [i for i in theme_choice_list()]
-    theme_count = len(theme_choices)
+    theme_count = len([i for i in theme_choices()])
 
     # get a list of revisions
-    archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
+    archives = ThemeFileVersion.objects.filter(relative_file_path=current_file_path).order_by("-create_dt")
 
-    if request.is_ajax() and request.method == "POST":
-        file_form = form_class(request.POST)
-        response_status = 'FAIL'
-        response_message = _('Cannot update file.')
-        if file_form.is_valid():
-            if file_form.save(request, default_file, ROOT_DIR=theme_root, ORIG_ROOT_DIR=original_theme_root):
-                response_status = 'SUCCESS'
-                response_message = str(_('Your changes have been saved.'))
-                EventLog.objects.log()
-
-        response = json.dumps({'status': response_status, 'message': response_message})
-        return HttpResponse(response, content_type='application/json')
-
-    content = get_file_content(default_file,  ROOT_DIR=theme_root)
-    file_form = form_class({'content': content, 'rf_path': default_file})
-
+    content = get_file_content(theme_root, selected_theme, current_file_path)
+    file_form = form_class({'content': content})
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 
     return render_to_resp(request=request, template_name=template_name, context={
@@ -160,11 +156,14 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
 
 @permission_required('theme_editor.change_themefileversion')
-@csrf_exempt
 def create_new_template(request, form_class=AddTemplateForm):
     """
     Create a new blank template for a given template name
     """
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
+
     form = form_class(request.POST or None)
     ret_dict = {'created': False, 'err': ''}
 
@@ -174,7 +173,6 @@ def create_new_template(request, form_class=AddTemplateForm):
         existing_templates = [t[0] for t in get_template_list()]
         if template_full_name not in existing_templates:
             # create a new template and assign default content
-            selected_theme = get_theme()
             theme_root = get_theme_root(selected_theme)
             template_dir = os.path.join(theme_root, 'templates')
             template_full_path = os.path.join(template_dir,
@@ -198,9 +196,8 @@ def create_new_template(request, form_class=AddTemplateForm):
             with open(template_full_path, 'w') as f:
                 f.write(default_content)
             if settings.USE_S3_STORAGE:
-                # django default_storage not set for theme, that's why we cannot use it
-                save_file_to_s3(template_full_path)
-
+                s3_path = os.path.join(settings.THEME_S3_PATH, selected_theme, 'templates', template_full_name)
+                save_file_to_s3(template_full_path, dest_path=s3_path, public=False)
             ret_dict['created'] = True
             ret_dict['template_name'] = template_full_name
         else:
@@ -216,16 +213,26 @@ def get_version(request, id):
 
 @permission_required('theme_editor.change_themefileversion')
 def app_list(request, template_name="theme_editor/app_list.html"):
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
+
     app_list = []
     for app in app_templates:
         app_list.append((app, app_templates[app]))
     return render_to_resp(request=request, template_name=template_name, context={
+        'current_theme': selected_theme,
         'apps': sorted(app_list, key=lambda app: app[0]),
     })
 
 
 @permission_required('theme_editor.change_themefileversion')
 def original_templates(request, app=None, template_name="theme_editor/original_templates.html"):
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -253,21 +260,29 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
     if app:
         root = app_templates[app]
 
-    dirs = get_dir_list(current_dir, ROOT_DIR=root)
-    files, non_editable_files = get_file_list(current_dir, ROOT_DIR=root)
+    if not is_valid_path(root, current_dir):
+        raise Http403
+
+    dirs = get_dir_list(root, current_dir)
+    files, non_editable_files = get_file_list(root, current_dir)
     return render_to_resp(request=request, template_name=template_name, context={
+        'current_theme': selected_theme,
         'app': app,
         'current_dir': current_dir,
         'prev_dir_name': prev_dir_name,
         'prev_dir': prev_dir,
         'dirs': dirs,
         'files': files,
-        'non_editable_files': non_editable_files
+        'non_editable_files': non_editable_files,
     })
 
 
 @permission_required('theme_editor.change_themefileversion')
 def copy_to_theme(request, app=None):
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -289,25 +304,30 @@ def copy_to_theme(request, app=None):
     if app:
         root = app_templates[app]
 
+    if (not is_valid_path(root, current_dir) or
+        not is_valid_path(root, os.path.join(current_dir, chosen_file))):
+        raise Http403
+
     full_filename = os.path.join(root, current_dir, chosen_file)
 
     if not os.path.isfile(full_filename):
         raise Http404
 
-    copy(chosen_file, current_dir, full_filename)
+    copy_file_to_theme(full_filename, selected_theme, os.path.join('templates', current_dir), chosen_file)
 
-    msg_string = 'Successfully copied %s/%s to the theme root' % (current_dir, chosen_file)
+    msg_string = 'Successfully copied %s/%s to theme' % (current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()
     return redirect('theme_editor.editor')
 
 
+@permission_required('theme_editor.change_themefileversion')
 def delete_file(request):
 
-    # if no permission; raise 403 exception
-    if not has_perm(request.user, 'theme_editor.change_themefileversion'):
-        raise Http403
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -328,8 +348,12 @@ def delete_file(request):
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
 
-    selected_theme = get_theme()
     theme_root = get_theme_root(selected_theme)
+
+    if (not is_valid_path(theme_root, current_dir) or
+        not is_valid_path(theme_root, os.path.join(current_dir, chosen_file))):
+        raise Http403
+
     full_filename = os.path.join(theme_root, current_dir, chosen_file)
 
     if not os.path.isfile(full_filename):
@@ -338,7 +362,11 @@ def delete_file(request):
     os.remove(full_filename)
 
     if settings.USE_S3_STORAGE:
-        delete_file_from_s3(file=settings.AWS_LOCATION + '/' + 'themes/' + selected_theme + '/' + current_dir + chosen_file)
+        s3_path = selected_theme + '/' + current_dir + chosen_file
+        s3_full_path = settings.AWS_LOCATION + '/' + settings.THEME_S3_PATH + '/' + s3_path
+        delete_file_from_s3(file=s3_full_path)
+        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', s3_path])
+        cache.delete(cache_key)
 
     msg_string = 'Successfully deleted %s/%s.' % (current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
@@ -347,11 +375,12 @@ def delete_file(request):
     return redirect('theme_editor.editor')
 
 
-@login_required
+@permission_required('theme_editor.change_themefileversion')
 def upload_file(request):
 
-    if not has_perm(request.user, 'theme_editor.add_themefileversion'):
-        raise Http403
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
 
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
@@ -360,15 +389,18 @@ def upload_file(request):
             file_dir = form.cleaned_data['file_dir']
             overwrite = form.cleaned_data['overwrite']
 
-            def callback(file_path, uuid, file_dir=file_dir, overwrite=overwrite):
+            def callback(file_path, uuid, selected_theme=selected_theme, file_dir=file_dir, overwrite=overwrite):
+                theme_root = get_theme_root(selected_theme)
                 file_name = os.path.basename(file_path)
                 full_filename = os.path.join(file_dir, file_name)
-                if os.path.isfile(full_filename) and not overwrite:
+                if (not is_valid_path(theme_root, file_dir) or
+                    not is_valid_path(theme_root, full_filename)):
+                    raise Http403
+                if os.path.isfile(os.path.join(theme_root, full_filename)) and not overwrite:
                     msg_string = 'File %s already exists in that folder.' % (file_name)
                     raise uploader.CallbackError(msg_string)
-                else:
-                    handle_uploaded_file(file_path, file_dir)
-                    EventLog.objects.log()
+                copy_file_to_theme(file_path, selected_theme, file_dir, file_name)
+                EventLog.objects.log()
             return uploader.post(request, callback)
 
         else:  # not valid
@@ -384,12 +416,14 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         raise Http403
 
     themes = []
-    for theme in theme_choice_list():
+    for theme in theme_choices():
         theme_info = ThemeInfo(theme)
         themes.append(theme_info)
 
     if request.method == "POST":
         selected_theme = request.POST.get('theme')
+        if not is_valid_theme(selected_theme):
+            raise Http403
         call_command('set_theme', selected_theme)
         checklist_update('choose-theme')
         msg_string = "Your theme has been changed to %s." % selected_theme.title()
@@ -402,7 +436,7 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
     return render_to_resp(request=request, template_name=template_name, context={
         'themes': themes,
         'current_theme': active_theme,
-        'theme_choices': theme_choice_list(),
+        'theme_choices': theme_choices(),
     })
 
 

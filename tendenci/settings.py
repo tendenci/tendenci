@@ -10,6 +10,8 @@ AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
 AWS_STORAGE_BUCKET_NAME = ''
 USE_S3_STORAGE = False
+THEME_S3_PATH = 'themes'
+USE_S3_THEME = False
 
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.environ['TENDENCI_PROJECT_ROOT']
@@ -21,7 +23,6 @@ SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
-USE_S3_THEME = False
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
