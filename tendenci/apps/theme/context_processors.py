@@ -15,7 +15,6 @@ def theme(request):
             settings.AWS_STORAGE_BUCKET_NAME, settings.AWS_LOCATION, theme)
     else:
         context['THEME_URL'] = '/themes/' + theme + '/'
-
     context['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
 
     context['THEME_INFO'] = get_theme_info(theme)

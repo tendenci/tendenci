@@ -134,7 +134,6 @@ def themed_response(request, template_name, context={}, **kwargs):
     context['TEMPLATE_NAME'] = template.origin.template_name
     template_path = template.origin.name
     context['TEMPLATE_FROM_CUSTOM_THEME'] = template_path.startswith(get_theme_root())
-
     context['CACHE_DISABLED'] = request.session.get('disable_cache', False)
 
     rendered = _strip_content_above_doctype(template.render(context=context, request=request))

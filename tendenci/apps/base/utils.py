@@ -459,7 +459,7 @@ def filelog(*args, **kwargs):
     if 'path' in kwargs:
         path = kwargs['path']
     else:
-        path = getattr(settings,'PROJECT_ROOT','/var/log')
+        path = settings.PROJECT_ROOT
 
     if 'filename' in kwargs:
         filename = kwargs['filename']

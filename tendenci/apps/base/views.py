@@ -167,7 +167,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
 
     from django.conf import settings
 
-    document_root = os.path.join(settings.PROJECT_ROOT,'plugins',plugin,'media')
+    document_root = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin, 'media')
 
     # Clean up given path to only allow serving files below document_root.
     path = posixpath.normpath(unquote(path))

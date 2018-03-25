@@ -101,7 +101,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     elif not pwd_split[0]:
         prev_dir = ''
 
-    # get the direcory list
+    # get the directory list
     dirs = get_dir_list(pwd, ROOT_DIR=theme_root)
 
     # get the file list
@@ -113,7 +113,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     non_deletable_files = ['homepage.html', 'default.html', 'footer.html', 'header.html', 'sidebar.html', 'nav.html', 'styles.less', 'styles.css']
 
     # get the number of themes in the themes directory on the site
-    theme_choices = [ i for i in theme_choice_list()]
+    theme_choices = [i for i in theme_choice_list()]
     theme_count = len(theme_choices)
 
     # get a list of revisions
@@ -129,11 +129,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
                 response_message = str(_('Your changes have been saved.'))
                 EventLog.objects.log()
 
-        response = json.dumps({'status':response_status, 'message':response_message})
-        return HttpResponse(response, content_type="application/json")
+        response = json.dumps({'status': response_status, 'message': response_message})
+        return HttpResponse(response, content_type='application/json')
 
     content = get_file_content(default_file,  ROOT_DIR=theme_root)
-    file_form = form_class({"content": content, "rf_path": default_file})
+    file_form = form_class({'content': content, 'rf_path': default_file})
 
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 
@@ -156,7 +156,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'is_dir': is_dir,
         'all_files_folders': all_files_folders,
         'ext' : ext,
-        'stylesheets' : stylesheets
+        'stylesheets' : stylesheets,
     })
 
 
@@ -302,7 +302,7 @@ def copy_to_theme(request, app=None):
 
     copy(chosen_file, current_dir, full_filename)
 
-    msg_string = 'Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)
+    msg_string = 'Successfully copied %s/%s to the theme root' % (current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     EventLog.objects.log()

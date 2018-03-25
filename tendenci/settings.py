@@ -612,7 +612,7 @@ PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
 # PayPal
 PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
-#PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+PAYPAL_SANDBOX_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 
 # Stripe
 STRIPE_SECRET_KEY = ''

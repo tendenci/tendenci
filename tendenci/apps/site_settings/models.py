@@ -69,9 +69,9 @@ class Setting(models.Model):
 
     def save(self, *args, **kwargs):
         """The save method is overwritten because settings are referenced
-        in several different ways. This is the cental command if we
+        in several different ways. This is the central command if we
         want to incorporate a process applicable for all those ways.
-        Using signals is also feasable however there is a process order
+        Using signals is also feasible however there is a process order
         that must be followed (e.g. caching new value if not equal to old value)
         so we can leave that for a later time.
         """

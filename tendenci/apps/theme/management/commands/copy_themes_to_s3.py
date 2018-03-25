@@ -22,12 +22,12 @@ class Command(BaseCommand):
                 settings.AWS_SECRET_ACCESS_KEY,
                 settings.AWS_STORAGE_BUCKET_NAME,
                 settings.AWS_LOCATION]):
-            backet_name = settings.AWS_STORAGE_BUCKET_NAME
-            backet_site_folder_name = settings.AWS_LOCATION
+            bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+            bucket_site_folder_name = settings.AWS_LOCATION
 
             conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
                                    settings.AWS_SECRET_ACCESS_KEY)
-            bucket = conn.get_bucket(backet_name)
+            bucket = conn.get_bucket(bucket_name)
             k = Key(bucket)
 
             theme_root = settings.ORIGINAL_THEMES_DIR
@@ -36,7 +36,7 @@ class Command(BaseCommand):
                     for filename in filenames:
                         file_path = (os.path.join(dirpath, filename)
                                     ).replace('\\', '/')
-                        key = '%s/%s/%s' % (backet_site_folder_name,
+                        key = '%s/%s/%s' % (bucket_site_folder_name,
                                         dirpath.replace(theme_root, 'themes'),
                                         filename)
                         k.key = key
