@@ -70,6 +70,9 @@ def is_valid_theme(theme):
 def is_builtin_theme(theme):
     return theme.startswith('builtin/')
 
+def is_base_theme(theme):
+    return (get_theme_info(theme).get('General', {}).get('extends', None) == '')
+
 
 def get_theme_info(theme=None):
     """Returns a dict of the fields from the theme.info file for the theme.

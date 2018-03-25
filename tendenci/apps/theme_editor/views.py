@@ -21,7 +21,7 @@ from tendenci.apps.base.utils import get_template_list, checklist_update
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_root, is_valid_theme,
-                                       theme_choices)
+                                       is_base_theme, theme_choices)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm, ThemeSelectForm,
@@ -154,6 +154,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'is_file': is_file,
         'is_dir': is_dir,
         'theme_read_only': theme_read_only,
+        'can_copy_theme': (not is_base_theme(selected_theme)),
         'all_files_folders': all_files_folders,
         'ext' : ext,
         'stylesheets' : stylesheets,

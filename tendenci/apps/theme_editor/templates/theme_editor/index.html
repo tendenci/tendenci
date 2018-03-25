@@ -81,7 +81,9 @@
                 {% else %}
                 <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "View" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% endif %}
+                {% if can_copy_theme %}
                 <button class="btn btn-mini copy-theme-btn">{% trans 'Copy' %}</button>
+                {% endif %}
                 {% if not theme_read_only %}
                 <button class="btn btn-mini rename-theme-btn">{% trans 'Rename' %}</button>
                 <a id="delete-theme-btn" href="{% url "theme_editor.theme_delete" %}?theme_edit={{ current_theme }}" class="btn btn-mini">{% trans 'Delete' %}</a>
