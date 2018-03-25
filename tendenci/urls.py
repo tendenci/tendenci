@@ -1,6 +1,7 @@
 from os.path import join
 from django.conf.urls import url, include
 from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views import static
 from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
@@ -13,10 +14,14 @@ from tendenci.apps.user_groups import views as user_groups_views
 from tendenci.apps.files import views as files_views
 from tendenci.apps.pages import views as pages_views
 
+
 registry_autodiscover()
 
 # django model report
 report.autodiscover()
+
+handler500 = 'tendenci.apps.base.views.custom_error'
+
 
 # Admin Patterns
 urlpatterns = [
@@ -113,42 +118,54 @@ urlpatterns += [
     url(r'^', include('tendenci.apps.user_groups.urls')),
     url(r'^', include('tendenci.apps.files.urls')),
     url(r'^', include('tendenci.apps.newsletters.urls')),
+
+    url(r'^', include('tendenci.apps.committees.urls')),
+    url(r'^', include('tendenci.apps.case_studies.urls')),
+    url(r'^', include('tendenci.apps.donations.urls')),
+    url(r'^', include('tendenci.apps.speakers.urls')),
+    url(r'^', include('tendenci.apps.staff.urls')),
+    url(r'^', include('tendenci.apps.studygroups.urls')),
+    url(r'^', include('tendenci.apps.videos.urls')),
+    url(r'^', include('tendenci.apps.testimonials.urls')),
+    url(r'^', include('tendenci.apps.social_services.urls')),
+
+    url(r'^explorer/', include('explorer.urls')),
+    url(r'^explorer/', include('tendenci.apps.explorer_extensions.urls')),
 ]
 
-handler500 = 'tendenci.apps.base.views.custom_error'
-
-if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-    urlpatterns += [
-    # serve .less files - this is to resolve the cross domain issue for less js
-    url(r'^(?P<path>.*)\.less$',
-        files_views.display_less,  name='less_file'),
-    url(r'^static/(?P<path>.*)$',
-            files_views.redirect_to_s3,
-             {'file_type': 'static'},
-                name='redirect_to_s3'),
-    # this is basically for those images with relative urls in the theme .css files.
-    url(r'^themes/(?P<path>.*)$',
-            files_views.redirect_to_s3,
-            {'file_type': 'themes'},
-                name='redirect_to_s3'),
-    ]
-
-# serve static files
-if settings.DEBUG:
-    if not (hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE):
-        urlpatterns += [
-            url(r'^static/(?P<path>.*)$',
-                static.serve,
-                {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
-
+if not settings.USE_S3_STORAGE:
+    urlpatterns = [
+        url(r'^media/(?P<path>.*)$', static.serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+        url(r'^static/(?P<path>.*)$', static.serve, {
+            'document_root': settings.STATIC_ROOT,
+        }),
+        url(r'^themes/(?P<path>.*)$', static.serve, {
+            'document_root': settings.THEMES_DIR,
+        }),
+    ] + urlpatterns
+    if settings.DEBUG:
+        urlpatterns = [
             url(r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
                 base_views.plugin_static_serve),
-        ]
-        urlpatterns += [
-            url(r'^themes/(?P<path>.*)$',
-                static.serve,
-                {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
-        ]
+        ] + urlpatterns
+
+if settings.USE_S3_STORAGE:
+    urlpatterns = [
+        # serve .less files - this is to resolve the cross domain issue for less js
+        url(r'^(?P<path>.*)\.less$',
+            files_views.display_less,  name='less_file'),
+        url(r'^static/(?P<path>.*)$',
+                files_views.redirect_to_s3,
+                 {'file_type': 'static'},
+                    name='redirect_to_s3'),
+        # this is basically for those images with relative urls in the theme .css files.
+        url(r'^themes/(?P<path>.*)$',
+                files_views.redirect_to_s3,
+                {'file_type': 'themes'},
+                    name='redirect_to_s3'),
+    ] + urlpatterns
 
 # Favicon url to prevent 404 from some browsers.
 urlpatterns += [
@@ -181,3 +198,33 @@ pattern_pages = [
     url(r'^(?P<slug>[\w\-\/]+)/$', pages_views.index, name="page"),
 ]
 urlpatterns += pattern_pages
+
+
+# Allow custom URL patterns to be added between pre_urlpatterns and
+# post_urlpatterns, but include both in urlpatterns in case this file is used
+# by Django directly.
+pre_urlpatterns = staticfiles_urlpatterns()
+post_urlpatterns = urlpatterns
+urlpatterns = pre_urlpatterns + post_urlpatterns
+
+
+# Support removing URL patterns that have already been added.
+# Only the first matching URL will be removed.
+
+def remove_url_for_view(urlpatterns, view):
+    for i, p in enumerate(urlpatterns):
+        if hasattr(p, 'callback') and p.callback == view:
+            del urlpatterns[i]
+            break
+
+def remove_url_for_include(urlpatterns, module_name):
+    for i, p in enumerate(urlpatterns):
+        if hasattr(p, 'urlconf_name') and p.urlconf_name == module_name:
+            del urlpatterns[i]
+            break
+
+def remove_url_with_name(urlpatterns, name):
+    for i, p in enumerate(urlpatterns):
+        if p.name == name:
+            del urlpatterns[i]
+            break

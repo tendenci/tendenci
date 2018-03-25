@@ -26,7 +26,7 @@ from tendenci import __version__ as tendenci_version
 
 sys.path.append(os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath('.'))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tendenci.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "conf_settings")
 
 
 # -- General configuration -----------------------------------------------------
