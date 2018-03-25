@@ -21,7 +21,7 @@ from tendenci.apps.base.utils import get_template_list, checklist_update
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_root, is_valid_theme,
-                                       is_base_theme, theme_choices)
+                                       is_base_theme, theme_choices, get_theme_search_order)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm, ThemeSelectForm,
@@ -311,23 +311,24 @@ def app_list(request, template_name="theme_editor/app_list.html"):
     if is_theme_read_only(selected_theme):
         raise Http403
 
-    app_list = []
-    for app in app_templates:
-        app_list.append((app, app_templates[app]))
+    theme_list = get_theme_search_order(selected_theme)[1:]
+    app_list = app_templates.keys()
     return render_to_resp(request=request, template_name=template_name, context={
         'current_theme': selected_theme,
-        'apps': sorted(app_list, key=lambda app: app[0]),
+        'apps': theme_list + sorted(app_list, key=lambda app: app[0]),
     })
 
 
 @permission_required('theme_editor.change_themefileversion')
-def original_templates(request, app=None, template_name="theme_editor/original_templates.html"):
+def original_templates(request, template_name="theme_editor/original_templates.html"):
 
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
     if is_theme_read_only(selected_theme):
         raise Http403
+
+    app = request.GET.get("app", None)
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -351,9 +352,12 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
     elif not current_dir_split[0]:
         prev_dir = ''
 
-    root = os.path.join(settings.TENDENCI_ROOT, "templates")
-    if app:
+    if app in app_templates:
         root = app_templates[app]
+    elif is_valid_theme(app):
+        root = os.path.join(get_theme_root(app), 'templates')
+    else:
+        raise Http404(_('Specified theme or app does not exist'))
 
     if not is_valid_path(root, current_dir):
         raise Http403
@@ -373,13 +377,15 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
 
 
 @permission_required('theme_editor.change_themefileversion')
-def copy_to_theme(request, app=None):
+def copy_to_theme(request):
 
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
     if is_theme_read_only(selected_theme):
         raise Http403
+
+    app = request.GET.get("app", None)
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -397,9 +403,12 @@ def copy_to_theme(request, app=None):
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
 
-    root = os.path.join(settings.TENDENCI_ROOT, "templates")
-    if app:
+    if app in app_templates:
         root = app_templates[app]
+    elif is_valid_theme(app):
+        root = os.path.join(get_theme_root(app), 'templates')
+    else:
+        raise Http404(_('Specified theme or app does not exist'))
 
     if (not is_valid_path(root, current_dir) or
         not is_valid_path(root, os.path.join(current_dir, chosen_file))):
