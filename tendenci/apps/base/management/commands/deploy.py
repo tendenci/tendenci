@@ -7,7 +7,7 @@ class Command(BaseCommand):
     Deploy a new version of Tendenci.
     """
     def handle(self, *args, **options):
-        call_command('collectstatic', '--noinput')
+        call_command('collectstatic', '--link', '--noinput')
         call_command('update_settings')
         call_command('clear_theme_cache')
         call_command('populate_default_entity')
