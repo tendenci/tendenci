@@ -214,10 +214,18 @@ instructions can be found in the new urls.py file.
 If you made any changes to the new urls.py file, be sure to uncomment ``ROOT_URLCONF = 'conf.urls'``
 in the new settings.py file.
 
+If you are using NGINX, edit ``/etc/nginx/sites-available/tendenci`` and change
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {`` to
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/(media|static)/ {``
+
 Skip to Step 5 to continue.
 
 Step 4B: Update Existing Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are using NGINX, edit ``/etc/nginx/sites-available/tendenci`` and change
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {`` to
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/(media|static)/ {``
 
 Edit ``/var/www/tendenci/conf/local_settings.py``.
 

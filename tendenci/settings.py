@@ -20,6 +20,8 @@ LOCALE_PATHS = [os.path.join(TENDENCI_ROOT, 'locale')]
 
 SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 
+BUILTIN_THEMES_DIR = os.path.join(TENDENCI_ROOT, 'themes')
+
 THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
@@ -267,8 +269,20 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 ]
 # Additional paths to collect static files from when populating STATIC_ROOT
-STATICFILES_DIRS = [
-]
+STATICFILES_DIRS = []
+# Collect static files from builtin themes
+for theme in os.listdir(BUILTIN_THEMES_DIR):
+    # Ignore '.' '..' and hidden directories
+    if theme.startswith('.'):
+        continue
+    theme_path = os.path.join(BUILTIN_THEMES_DIR, theme)
+    if not os.path.isdir(theme_path):
+        continue
+    for static_dir in ['media', 'static']:
+        static_path = os.path.join(theme_path, static_dir)
+        if os.path.isdir(static_path):
+            prefix = os.path.join('themes', theme)
+            STATICFILES_DIRS += [(prefix, static_path)]
 
 CACHES = {
     'default': {

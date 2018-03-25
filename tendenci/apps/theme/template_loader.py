@@ -13,7 +13,7 @@ from django.utils._os import safe_join
 from django.core.cache import cache
 from django.core.exceptions import SuspiciousFileOperation
 
-from tendenci.apps.theme.utils import get_theme, get_theme_root
+from tendenci.apps.theme.utils import get_theme, is_builtin_theme, get_theme_root
 from tendenci.apps.theme.middleware import get_current_request
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 
@@ -46,7 +46,7 @@ class Loader(Loader):
         """
         theme_templates = []
         theme = get_theme()
-        if not settings.USE_S3_THEME:
+        if is_builtin_theme(theme) or not settings.USE_S3_THEME:
             theme_root = get_theme_root(theme)
         else:
             theme_root = theme
@@ -56,24 +56,39 @@ class Loader(Loader):
         theme_templates.append(os.path.join(theme_root, 'templates'))
 
         for template_path in theme_templates:
-            if settings.USE_S3_THEME:
-                template_file = os.path.join(template_path, template_name)
-            else:
+            if is_builtin_theme(theme) or not settings.USE_S3_THEME:
                 try:
                     template_file = safe_join(template_path, template_name)
+                    use_s3_theme = False
                 except SuspiciousFileOperation:
                     # The joined path was located outside of template_path,
                     # although it might be inside another one, so this isn't
                     # fatal.
                     continue
+            else:
+                template_file = os.path.join(template_path, template_name)
+                use_s3_theme = True
             origin = Origin(name=template_file, template_name=template_name,
                 loader=self)
             origin.template_from_theme = True
+            origin.use_s3_theme = use_s3_theme
             yield origin
 
     def get_contents(self, origin):
+        if not origin.use_s3_theme:
+            try:
+                with open(origin.name) as fp:
+                    return fp.read()
+            # Python 3 only
+            #except FileNotFoundError:
+            #    raise TemplateDoesNotExist(origin)
+            # Python 2 and 3
+            except IOError as e:
+                if e.errno == errno.ENOENT:
+                    raise TemplateDoesNotExist(origin)
+                raise
 
-        if settings.USE_S3_THEME:
+        else:
             cache_key = ".".join([settings.SITE_CACHE_KEY, "theme", origin.name])
 
             cached_template = cache.get(cache_key)
@@ -99,16 +114,3 @@ class Loader(Loader):
                 cache.set(cache_group_key, cache_group_list)
 
             return template
-
-        else:
-            try:
-                with open(origin.name) as fp:
-                    return fp.read()
-            # Python 3 only
-            #except FileNotFoundError:
-            #    raise TemplateDoesNotExist(origin)
-            # Python 2 and 3
-            except IOError as e:
-                if e.errno == errno.ENOENT:
-                    raise TemplateDoesNotExist(origin)
-                raise
