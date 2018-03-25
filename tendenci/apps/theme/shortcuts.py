@@ -5,8 +5,6 @@ from django.template.base import Template as DjangoBackendTemplate
 from django.template.backends.django import Template as DjangoLoaderTemplate, reraise
 from django.template.loaders.cached import Loader as CachedLoader
 
-from tendenci.apps.theme.utils import get_theme_root
-
 
 # Based on find_template() in django/template/engine.py but modified to skip any
 # CachedLoaders
@@ -132,9 +130,9 @@ def themed_response(request, template_name, context={}, **kwargs):
             template = get_template(template_name)
 
     context['TEMPLATE_NAME'] = template.origin.template_name
-    template_path = template.origin.name
-    context['TEMPLATE_FROM_CUSTOM_THEME'] = template_path.startswith(get_theme_root())
-    context['CACHE_DISABLED'] = request.session.get('disable_cache', False)
+    context['TEMPLATE_FROM_THEME'] = getattr(template.origin, 'template_from_theme', False)
+    # Not currently used, but might be useful if ?disable_cache ends up being used
+    #context['CACHE_DISABLED'] = request.session.get('disable_cache', False)
 
     rendered = _strip_content_above_doctype(template.render(context=context, request=request))
 

@@ -54,15 +54,12 @@ class Loader(Loader):
         for template_path in theme_templates:
             try:
                 if settings.USE_S3_THEME:
-                    yield Origin(
-                        name=os.path.join(template_path, template_name),
-                        template_name=template_name, loader=self,
-                    )
+                    template_file = os.path.join(template_path, template_name)
                 else:
-                    yield Origin(
-                        name=safe_join(template_path, template_name),
-                        template_name=template_name, loader=self,
-                    )
+                    template_file = safe_join(template_path, template_name)
+                origin = Origin(name=template_file, template_name=template_name, loader=self)
+                origin.template_from_theme = True
+                yield origin
             except SuspiciousFileOperation:
                 # The joined path was located outside of this particular
                 # template_dir (it might be inside another one, so this isn't
