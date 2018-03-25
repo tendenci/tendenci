@@ -74,6 +74,8 @@
                 </form>
                 {% if ACTIVE_THEME != current_theme %}
                 <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
+                {% else %}
+                <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "View" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% endif %}
                 <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}.
                 {% if theme_count > 1 %}
