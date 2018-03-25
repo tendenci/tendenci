@@ -17,11 +17,11 @@ from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.models import UpdateTracker
 from tendenci.apps.base.utils import get_template_list, checklist_update
-from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.theme.utils import get_theme, theme_choices as theme_choice_list
+from tendenci.apps.theme.utils import (get_active_theme, get_theme, get_theme_root,
+                                       theme_choices as theme_choice_list)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import (FileForm,
@@ -44,11 +44,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         raise Http403
 
     selected_theme = request.GET.get("theme_edit", get_theme())
-    original_theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
+    original_theme_root = get_theme_root(selected_theme)
+    theme_root = original_theme_root
     if settings.USE_S3_THEME:
         theme_root = os.path.join(settings.THEME_S3_PATH, selected_theme)
-    else:
-        theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
 
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)
@@ -175,14 +174,9 @@ def create_new_template(request, form_class=AddTemplateForm):
         existing_templates = [t[0] for t in get_template_list()]
         if template_full_name not in existing_templates:
             # create a new template and assign default content
-            use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
-            if use_s3_storage:
-                theme_dir = settings.ORIGINAL_THEMES_DIR
-            else:
-                theme_dir = settings.THEMES_DIR
-            template_dir = os.path.join(theme_dir,
-                                get_setting('module', 'theme_editor', 'theme'),
-                                'templates')
+            selected_theme = get_theme()
+            theme_root = get_theme_root(selected_theme)
+            template_dir = os.path.join(theme_root, 'templates')
             template_full_path = os.path.join(template_dir,
                                 template_full_name)
             # grab the content from the new-default-template.html
@@ -203,7 +197,7 @@ def create_new_template(request, form_class=AddTemplateForm):
                 default_content = ''
             with open(template_full_path, 'w') as f:
                 f.write(default_content)
-            if use_s3_storage:
+            if settings.USE_S3_STORAGE:
                 # django default_storage not set for theme, that's why we cannot use it
                 save_file_to_s3(template_full_path)
 
@@ -334,9 +328,9 @@ def delete_file(request):
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
 
-    full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
-        get_theme(), current_dir,
-        chosen_file)
+    selected_theme = get_theme()
+    theme_root = get_theme_root(selected_theme)
+    full_filename = os.path.join(theme_root, current_dir, chosen_file)
 
     if not os.path.isfile(full_filename):
         raise Http404
@@ -344,7 +338,7 @@ def delete_file(request):
     os.remove(full_filename)
 
     if settings.USE_S3_STORAGE:
-        delete_file_from_s3(file=settings.AWS_LOCATION + '/' + 'themes/' + get_theme() + '/' + current_dir + chosen_file)
+        delete_file_from_s3(file=settings.AWS_LOCATION + '/' + 'themes/' + selected_theme + '/' + current_dir + chosen_file)
 
     msg_string = 'Successfully deleted %s/%s.' % (current_dir, chosen_file)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
@@ -402,12 +396,12 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         messages.add_message(request, messages.SUCCESS, _(msg_string))
         return redirect('home')
 
-    current_theme = get_setting('module', 'theme_editor', 'theme')
+    active_theme = get_active_theme()
     themes = sorted(themes, key=lambda theme: theme.create_dt)
 
     return render_to_resp(request=request, template_name=template_name, context={
         'themes': themes,
-        'current_theme': current_theme,
+        'current_theme': active_theme,
         'theme_choices': theme_choice_list(),
     })
 

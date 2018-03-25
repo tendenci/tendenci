@@ -15,7 +15,6 @@ from tendenci.apps.theme.utils import get_theme_root, get_theme, theme_choices
 from tendenci.apps.theme_editor.utils import archive_file
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 
-THEME_ROOT = get_theme_root()
 FILE_EXTENTIONS = (
     '.html',
     '.js',
@@ -44,7 +43,7 @@ class FileForm(forms.Form):
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
 
-    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT, ORIG_ROOT_DIR=THEME_ROOT):
+    def save(self, request, file_relative_path, ROOT_DIR=get_theme_root(), ORIG_ROOT_DIR=get_theme_root()):
         content = self.cleaned_data["content"]
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
 

@@ -13,7 +13,7 @@ from django.utils._os import safe_join
 from django.core.cache import cache
 from django.core.exceptions import SuspiciousFileOperation
 
-from tendenci.apps.theme.utils import get_theme_root
+from tendenci.apps.theme.utils import get_theme, get_theme_root
 from tendenci.apps.theme.middleware import get_current_request
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 
@@ -45,26 +45,31 @@ class Loader(Loader):
         from the result set for security reasons.
         """
         theme_templates = []
+        theme = get_theme()
+        if not settings.USE_S3_THEME:
+            theme_root = get_theme_root(theme)
+        else:
+            theme_root = theme
         current_request = get_current_request()
-        self.theme_root = get_theme_root()
         if current_request and current_request.mobile:
-            theme_templates.append(os.path.join(self.theme_root, 'mobile'))
-        theme_templates.append(os.path.join(self.theme_root, 'templates'))
+            theme_templates.append(os.path.join(theme_root, 'mobile'))
+        theme_templates.append(os.path.join(theme_root, 'templates'))
 
         for template_path in theme_templates:
-            try:
-                if settings.USE_S3_THEME:
-                    template_file = os.path.join(template_path, template_name)
-                else:
+            if settings.USE_S3_THEME:
+                template_file = os.path.join(template_path, template_name)
+            else:
+                try:
                     template_file = safe_join(template_path, template_name)
-                origin = Origin(name=template_file, template_name=template_name, loader=self)
-                origin.template_from_theme = True
-                yield origin
-            except SuspiciousFileOperation:
-                # The joined path was located outside of this particular
-                # template_dir (it might be inside another one, so this isn't
-                # fatal).
-                pass
+                except SuspiciousFileOperation:
+                    # The joined path was located outside of template_path,
+                    # although it might be inside another one, so this isn't
+                    # fatal.
+                    continue
+            origin = Origin(name=template_file, template_name=template_name,
+                loader=self)
+            origin.template_from_theme = True
+            yield origin
 
     def get_contents(self, origin):
 

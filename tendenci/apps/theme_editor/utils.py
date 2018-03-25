@@ -20,8 +20,6 @@ from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3
 template_directory = "/templates"
 style_directory = "/media/css"
 
-THEME_ROOT = get_theme_root()
-TEMPLATES_ROOT = os.path.join(settings.PROJECT_ROOT, "templates")
 ALLOWED_EXTENSIONS = (
     '.html',
     '.css',
@@ -37,6 +35,7 @@ ALLOWED_EXTENSIONS = (
 )
 
 DEFAULT_THEME_INFO = 'theme.info'
+
 
 # Class to hold theme info details
 class ThemeInfo(object):
@@ -77,6 +76,7 @@ class ThemeInfo(object):
 
                     setattr(self, label, value)
 
+
 # At compile time, cache the directories to search.
 app_templates = {}
 for app in settings.INSTALLED_APPS:
@@ -89,7 +89,7 @@ for app in settings.INSTALLED_APPS:
         app_templates[app] = template_dir
 
 
-def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
+def copy(filename, path_to_file, full_filename, TO_ROOT=get_theme_root()):
     """Copies a file and all associated directories into TO_ROOT
     """
     try:
@@ -110,7 +110,7 @@ def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
         save_file_to_s3(full_filename, dest_path=dest_path, public=public)
 
 
-def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
+def qstr_is_dir(query_string, ROOT_DIR=get_theme_root()):
     """
     Check to see if the query string is a directory or not
     """
@@ -118,7 +118,7 @@ def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     return os.path.isdir(current_dir)
 
 
-def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
+def qstr_is_file(query_string, ROOT_DIR=get_theme_root()):
     """
     Check to see if the query string is a directory or not
     """
@@ -131,7 +131,7 @@ def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     return os.path.isfile(current_file)
 
 
-def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_dir_list(pwd, ROOT_DIR=get_theme_root()):
     """
     Get a list of directories from within
     the theme folder based on the present
@@ -150,7 +150,7 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     return sorted(dir_list)
 
 
-def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_file_list(pwd, ROOT_DIR=get_theme_root()):
     """
     Get a list of files from within
     the theme folder based on the present
@@ -172,7 +172,7 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     return file_list, others_list
 
 
-def get_all_files_list(ROOT_DIR=THEME_ROOT):
+def get_all_files_list(ROOT_DIR=get_theme_root()):
     """
     Get a list of files and folders from within
     the theme folder
@@ -264,7 +264,7 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
     return files_folders
 
 
-def get_file_content(file, ROOT_DIR=THEME_ROOT):
+def get_file_content(file, ROOT_DIR=get_theme_root()):
     """
     Get the content from the file that selected from
     the navigation
@@ -287,7 +287,7 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
     return content
 
 
-def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
+def archive_file(request, relative_file_path, ROOT_DIR=get_theme_root()):
     """
     Archive the file into the database if it is edited
     """
@@ -306,8 +306,8 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
 
 def handle_uploaded_file(file_path, file_dir):
     file_name = os.path.basename(file_path)
-    filecopy = os.path.join(THEME_ROOT, file_dir, file_name)
-    dest_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
+    filecopy = os.path.join(file_dir, file_name)
+    dest_path = os.path.join(get_theme_root(), filecopy)
 
     shutil.move(file_path, dest_path)
 
@@ -320,7 +320,7 @@ def handle_uploaded_file(file_path, file_dir):
         dest_path = "/themes/%s" % filecopy
         save_file_to_s3(file_path, dest_path=dest_path, public=public)
 
-        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(THEME_ROOT)):]])
+        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(get_theme_root())):]])
         cache.delete(cache_key)
 
         if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:

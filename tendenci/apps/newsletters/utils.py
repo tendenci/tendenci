@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.mail import get_connection
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.events.models import Type
+from tendenci.apps.theme.utils import get_theme_root
 
 
 def get_type_choices():
@@ -26,9 +27,8 @@ def get_type_choices():
 def get_default_template_choices():
     newsletters_relative_path = 'newsletters/templates/default/'
     path_in_core = os.path.join(settings.TENDENCI_ROOT,
-                'apps/newsletters/templates/', newsletters_relative_path)
-    path_in_theme = os.path.join(settings.THEMES_DIR,
-                    get_setting('module', 'theme_editor', 'theme'),
+                   'apps/newsletters/templates/', newsletters_relative_path)
+    path_in_theme = os.path.join(get_theme_root(),
                     'templates/', newsletters_relative_path)
     if os.path.isdir(path_in_theme):
         list_in_theme = os.listdir(path_in_theme)

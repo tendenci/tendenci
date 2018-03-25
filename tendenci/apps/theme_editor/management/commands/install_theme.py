@@ -34,7 +34,7 @@ class Command(BaseCommand):
         if not (theme_name or all_themes):
             raise CommandError('Specify a theme name, or add --all for all themes')
 
-        themes_dir_path = os.path.join(settings.PROJECT_ROOT, "themes")
+        themes_dir_path = settings.ORIGINAL_THEMES_DIR
         if theme_name:
             theme_path = os.path.join(themes_dir_path, theme_name)
 

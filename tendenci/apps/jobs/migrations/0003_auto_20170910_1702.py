@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import os
 from django.db import migrations
 from django.template.defaultfilters import slugify
-from django.conf import settings
 
 
 def migrate_customized_jobs_templates():
@@ -118,8 +117,8 @@ def migrate_customized_jobs_templates():
 
     """
     import re
-    from tendenci.apps.site_settings.utils import get_setting
-    dir_path = '{0}/{1}'.format(settings.THEMES_DIR, get_setting('module', 'theme_editor', 'theme'))
+    from tendenci.apps.theme.utils import get_theme_root
+    dir_path = get_theme_root()
 
     # jobs/add.html and edit.html
     files_list = ['{}/templates/jobs/add.html'.format(dir_path),

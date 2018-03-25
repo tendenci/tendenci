@@ -6,49 +6,41 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.middleware import get_current_request
 
 
+def get_active_theme():
+    return get_setting('module', 'theme_editor', 'theme')
+
 def get_theme():
     request = get_current_request()
     if request:
-        theme = request.session.get('theme', get_setting('module', 'theme_editor', 'theme'))
-    else:
-        theme = get_setting('module', 'theme_editor', 'theme')
-    return theme
-
+        return request.session.get('theme', get_active_theme())
+    return get_active_theme()
 
 def get_theme_root(theme=None):
     if theme is None:  # default theme
         theme = get_theme()
-    if settings.USE_S3_THEME:
-        theme_root = theme
-    else:
-        # local theme root
-        theme_root = (os.path.join(settings.ORIGINAL_THEMES_DIR, theme)).replace('\\', '/')
-    return theme_root
-
-
-def theme_options():
-    """
-    Returns a string of the available themes in THEMES_DIR
-    """
-    options = ''
-    themes = sorted(theme_choices())
-    themes.reverse()
-    for theme in themes:
-        options = '%s, %s' % (theme, options)
-    return options[:-2]
-
+    return os.path.join(settings.ORIGINAL_THEMES_DIR, theme)
 
 def theme_choices():
     """
     Returns a list of available themes in ORIGINAL_THEMES_DIR
     """
     themes_dir = settings.ORIGINAL_THEMES_DIR
-
     for theme in os.listdir(themes_dir):
+        # Ignore '.' '..' and hidden directories
+        if theme.startswith('.'):
+            continue
         if os.path.isdir(os.path.join(themes_dir, theme)):
-            # catch hidden directories
-            if not theme.startswith('.'):
-                yield theme
+            yield theme
+
+def theme_options():
+    """
+    Returns a string of the available themes, for use in the theme_editor
+    settings input_value.
+    """
+    options = ''
+    for theme in sorted(theme_choices()):
+        options += ', '+theme
+    return options[2:]  # Remove first ', '
 
 
 def prepend_file(filename, prep_text="[General]\n"):
@@ -61,7 +53,6 @@ def prepend_file(filename, prep_text="[General]\n"):
     # write the original contents
     f.write(text)
     f.close()
-
 
 def get_theme_info(theme=None):
     """Returns a dict of the fields from the theme.info file for the theme.

@@ -1,12 +1,11 @@
 from django.conf import settings
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.utils import get_theme_info
+from tendenci.apps.theme.utils import get_active_theme, get_theme_info
 
 
 def theme(request):
     context = {}
 
-    context['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
+    context['ACTIVE_THEME'] = get_active_theme()
     theme = request.session.get('theme', context['ACTIVE_THEME'])
     context['THEME'] = theme
 
