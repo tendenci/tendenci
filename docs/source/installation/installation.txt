@@ -251,7 +251,7 @@ Initialize the database and static media:
 
     cd /var/www/tendenci/
     python manage.py migrate
-    python deploy.py
+    python manage.py deploy
     chmod -R -x+X /var/www/tendenci/media/
     python manage.py load_creative_defaults
 
@@ -328,7 +328,7 @@ not yet in the released version of Tendenci:
 ::
 
     python manage.py migrate
-    python deploy.py
+    python manage.py deploy
 
 You can now edit files under /srv/tendenci-git/ and/or run ``git pull`` to retrieve the latest
 changes from GitHub.  Any python code changes will automatically be picked up when you restart the
@@ -338,7 +338,7 @@ run:
 
     source /srv/tendenci/bin/activate
     cd /var/www/tendenci/
-    python deploy.py
+    python manage.py deploy
 
 
 Live Site Setup

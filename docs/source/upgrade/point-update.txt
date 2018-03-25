@@ -26,7 +26,7 @@ Apply database and static media updates, then clear the cache:
 ::
 
     python manage.py migrate
-    python deploy.py
+    python manage.py deploy
     python manage.py clear_cache
 
 Verify that permissions are still set appropriately:
