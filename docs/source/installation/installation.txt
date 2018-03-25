@@ -246,7 +246,7 @@ Initialize the database and static files:
 ::
 
     cd /var/www/tendenci/
-    python manage.py migrate
+    python manage.py initial_migrate
     python manage.py deploy
     chmod -R -x+X /var/www/tendenci/media/
     python manage.py load_creative_defaults
