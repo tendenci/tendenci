@@ -24,31 +24,33 @@
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
-<div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> <span class="highlight">{{ current_file_path }}</span> in your theme <span class="highlight">{{ current_theme }}</span></big>
+<div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span> in theme <span class="highlight">{{ current_theme }}</span></big>
 {% endif %}
 <table id="file-editor" width="100%">
     <tr>
         <td width="80%" id="editor-td" >
             {% if is_file %}
+
             <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
-                {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
-           <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
-             {{ current_file_path }}
+              {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
+              <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
+              {{ current_file_path }}
+              <div id="fileupdatemessage"></div>
+              <div class="form_block">
+                {% if not theme_read_only %}
+                <input type="hidden" name="action" value="edit" />
+                <input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+                <span id="save_message" class="alert-message fade in"></span>
+                {% endif %}
+              </div>
+            </form>
 
-            <div id="fileupdatemessage"></div>
-            <div class="form_block">
-              <input type="hidden" name="action" value="edit" />
-                      <input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
-                        <span id="save_message" class="alert-message fade in"></span>
-                    </div>
-              </form>
+            {% if not theme_read_only %}
             {% if current_file not in non_deletable_files  %}
-
             <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ current_file_path }}&theme_edit={{ current_theme }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
             {% endif %}
             <div style="clear:both"></div>
-
-          <div id="file_version_box">
+            <div id="file_version_box">
               <h2>{% trans "Previous Versions" %} <span class="tooltip" title="{% trans 'Click a version below to load it in the editor. The version will not be restored until you save your changes.' %}"><sup><a href="#">?</a></sup></span></h2>
               {% if archives %}
                   <div id="file_versions">
@@ -62,13 +64,15 @@
                   <p>{% trans "No versions available." %}</p>
                 {% endif %}
             </div>
+            {% endif %}
+
             {% else %}
                 <p>{% trans "No file selected. Select a file or directory from the list on the right." %}</p>
             {% endif %}
         </td>
         <td width="20%" valign="top">
             <div class="theme-selection well well-small">
-                <h4>{% trans 'Currently editing' %}:</h4>
+                <h4>{% if theme_read_only %}{% trans 'Currently viewing' %}{% else %}{% trans 'Currently editing' %}{% endif %}:</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input class="btn btn-mini" type="submit" value="Change"/>
                 </form>
@@ -85,7 +89,7 @@
             </div>
             <div id="right_files_list">
             <div class="well well-small">
-                <h4>{% trans "Choose a folder or file to edit:" %}</h4>
+                <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>
                 <ul id="file-tree">
                 {% for key,value in all_files_folders.items %}
                     {% if value.items %}
@@ -157,6 +161,7 @@
 
                 {% endcomment %}
                 </div>
+                               {% if not theme_read_only %}
                                <div class="well well-small">
                                <h4>{% trans 'Customize more templates' %}:</h4>
                                {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
@@ -169,6 +174,7 @@
                                    {% trans 'Click the button below to add a new template.' %}
                                    <button class="btn btn-mini new-template-btn">{% trans 'New Template' %}</button>
                                </div>
+                               {% endif %}
 
            </div>
                    </td>
@@ -188,7 +194,6 @@
     </fieldset>
   </form>
 </div>
-
 
 
 {% endblock %}

@@ -23,13 +23,12 @@ from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_ro
                                        theme_choices)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import (FileForm,
-                                              ThemeSelectForm,
-                                              UploadForm,
+from tendenci.apps.theme_editor.forms import (FileForm, ThemeSelectForm, UploadForm,
                                               AddTemplateForm)
-from tendenci.apps.theme_editor.utils import (is_valid_path, ThemeInfo, app_templates,
-                                              get_dir_list, get_file_list, get_file_content,
-                                              get_all_files_list, copy_file_to_theme)
+from tendenci.apps.theme_editor.utils import (is_valid_path, is_theme_read_only, ThemeInfo,
+                                              app_templates, get_dir_list, get_file_list,
+                                              get_file_content, get_all_files_list,
+                                              copy_file_to_theme)
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 from tendenci.libs.uploader import uploader
 
@@ -56,7 +55,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     if not is_valid_path(theme_root, default_file):
         raise Http403
 
+    theme_read_only = is_theme_read_only(selected_theme)
+
     if request.is_ajax() and request.method == "POST":
+        if theme_read_only:
+            raise Http403
         file_form = form_class(request.POST)
         response_status = 'FAIL'
         response_message = _('Cannot update file.')
@@ -149,6 +152,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'archives': archives,
         'is_file': is_file,
         'is_dir': is_dir,
+        'theme_read_only': theme_read_only,
         'all_files_folders': all_files_folders,
         'ext' : ext,
         'stylesheets' : stylesheets,
@@ -163,6 +167,8 @@ def create_new_template(request, form_class=AddTemplateForm):
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     form = form_class(request.POST or None)
     ret_dict = {'created': False, 'err': ''}
@@ -217,6 +223,8 @@ def app_list(request, template_name="theme_editor/app_list.html"):
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     app_list = []
     for app in app_templates:
@@ -233,6 +241,8 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -283,6 +293,8 @@ def copy_to_theme(request, app=None):
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -328,6 +340,8 @@ def delete_file(request):
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -381,6 +395,8 @@ def upload_file(request):
     selected_theme = request.GET.get("theme_edit", get_theme())
     if not is_valid_theme(selected_theme):
         raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
 
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
