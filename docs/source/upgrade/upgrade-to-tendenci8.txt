@@ -60,7 +60,7 @@ Tendenci and Python upgrades):
 
     cd /var/www/tendenci/
     source /srv/tendenci/bin/activate
-    pip install -r requirements/prod.txt --upgrade
+    pip install --no-binary psycopg2 -r requirements/prod.txt --upgrade
 
 
 Step 3: Upgrade Tendenci
@@ -100,7 +100,7 @@ Upgrade Tendenci and its dependencies:
     sudo chown -Rh "$(id -u -n)": /srv/tendenci/
     source /srv/tendenci/venv/bin/activate  # For Python 2
     source /srv/tendenci/bin/activate  # For Python 3
-    pip install -r requirements/prod.txt --upgrade
+    pip install --no-binary psycopg2 -r requirements/prod.txt --upgrade
 
 
 Step 4: Upgrade Configuration

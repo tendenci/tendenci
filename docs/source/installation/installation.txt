@@ -217,7 +217,7 @@ Install Tendenci and its dependencies:
 ::
 
     cd /var/www/tendenci/
-    pip install -r requirements/dev.txt --upgrade
+    pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
 
 
 Tendenci Configuration
