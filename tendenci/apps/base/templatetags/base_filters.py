@@ -2,6 +2,7 @@ from builtins import str
 import re
 import os
 import pytz
+import codecs
 from PIL import Image
 from dateutil.parser import parse
 from datetime import datetime
@@ -267,11 +268,12 @@ def obfuscate_email(email, linktext=None, autoescape=None):
         def esc(x):
             return x
 
-    email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056',
-        esc(email))).encode('rot13')
+    email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056', esc(email)))
+    email = codecs.encode(email, 'rot13')
 
     if linktext:
-        linktext = esc(linktext).encode('unicode-escape').encode('rot13')
+        linktext = esc(linktext).encode('unicode-escape').decode()
+        linktext = codecs.encode(linktext, 'rot13')
     else:
         linktext = email
 
