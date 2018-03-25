@@ -75,8 +75,6 @@ class SearchResultNode(IncludeNode):
 
             return t.render(context=context)
         except:
-            if settings.TEMPLATE_DEBUG:
-                raise
             return ''
 
 
