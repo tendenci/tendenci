@@ -124,7 +124,7 @@ TEMPLATES = [
         ])
       ],
     },
-    'DIRS': []
+    'DIRS': [os.path.join(TENDENCI_ROOT, 'templates')]
   }
 ]
 def disable_template_cache():  # For use in site-specific settings.py

@@ -3,7 +3,6 @@ import os
 
 from django.template import TemplateSyntaxError, VariableDoesNotExist
 from django.template import Library, Variable
-from django.conf import settings
 from django.template.base import TextNode
 from django.template.loader_tags import (ExtendsNode, IncludeNode,
                                          BlockNode, BlockContext,

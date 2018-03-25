@@ -104,7 +104,7 @@ def themed_response(request, template_name, context={}, **kwargs):
         if ('theme' in request.session or
             'explicit_disable_cache' in request.session):
             request.session['disable_cache'] = True
-        else:
+        elif 'disable_cache' in request.session:
             del request.session['disable_cache']
 
     if isinstance(template_name, (list, tuple)):
