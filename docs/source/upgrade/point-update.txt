@@ -38,7 +38,7 @@ Verify that permissions are still set appropriately:
     chmod -R o+rX-w /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
     chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
     sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
     sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
 

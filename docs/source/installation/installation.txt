@@ -204,7 +204,7 @@ Set up some directories appropriately:
 ::
 
     chmod -R -x+X /var/www/tendenci/media/
-    mkdir /var/www/tendenci/index.whoosh
+    mkdir /var/www/tendenci/whoosh_index
     sudo mkdir /var/log/tendenci
     sudo chown "$(id -u -n)" /var/log/tendenci/
 
@@ -378,7 +378,7 @@ that Tendenci has appropriate permissions when running as ``www-data``:
 
     chmod -R o+rX /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
     sudo chgrp -Rh www-data /var/log/tendenci/
     chmod -R g+rwX /var/log/tendenci/
 
@@ -390,11 +390,11 @@ For security, you should also ensure that there are no unnecessary permissions:
     chmod -R o+rX-w /srv/tendenci/
     # Owner on /var/www/tendenci/ should already be your normal user account,
     # group should be www-data
-    # Tendenci needs read/search but not execute, write is only needed on media and index.whoosh,
+    # Tendenci needs read/search but not execute, write is only needed on media and whoosh_index,
     # other users do not need any access
     sudo chgrp -Rh www-data /var/www/tendenci/
     chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/index.whoosh/
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
     # Owner on /var/log/tendenci/ should be www-data,
     # group should be some group that includes your normal user account but not other inappropriate
     # users (Ubuntu creates a dedicated group for each user by default, so this command uses that)
