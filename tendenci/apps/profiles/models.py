@@ -356,8 +356,8 @@ class Profile(Person):
         # the first argument is the class, exclude it
         un = ''.join(args[1:])             # concat args into one string
         un =  un.lower()
-        un = re.sub('\s+', '', un)       # remove spaces
-        un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
+        un = re.sub(r'\s+', '', un)       # remove spaces
+        un = re.sub(r'[^\w.-]+', '', un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
 

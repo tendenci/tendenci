@@ -144,7 +144,7 @@ class CIMBase(object):
             name = re.sub(r'(\{.*?\})*(\w+)', r'\2', sub_e.tag)
 
             # convert camelCase to underscore
-            name = re.sub('([A-Z])', lambda match: "_" + match.group(1).lower(), name)
+            name = re.sub(r'([A-Z])', lambda match: "_" + match.group(1).lower(), name)
 
             children = sub_e.getchildren()
             if not children:

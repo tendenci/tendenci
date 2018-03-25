@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import DEFAULT_DB_ALIAS
 from django.utils.translation import ugettext as _
 
-RE_VALID_USERNAME = re.compile('[\w.@+-]+$')
+RE_VALID_USERNAME = re.compile(r'[\w.@+-]+$')
 
 EMAIL_RE = re.compile(
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom

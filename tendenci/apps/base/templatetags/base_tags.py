@@ -608,7 +608,7 @@ class NoWhiteSpaceNode(Node):
 
     def render(self, context):
         text = self.nodelist.render(context).strip()
-        return re.sub('\s{2,}', ' ', text)
+        return re.sub(r'\s{2,}', ' ', text)
 
 @register.tag
 def nowhitespace(parser, token):

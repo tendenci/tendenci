@@ -851,7 +851,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                 redirect_url = reverse('event.recurring', args=[event.pk])
 
             # make dict (i.e. speaker_bind); bind speaker with speaker image
-            pattern = re.compile('speaker-\d+-name')
+            pattern = re.compile(r'speaker-\d+-name')
             speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
             speaker_bind = {}
             for speaker_key in speaker_keys:  # loop through speaker form items
@@ -1260,7 +1260,7 @@ def add(request, year=None, month=None, day=None,
                     event.image = image
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
-                pattern = re.compile('speaker-\d+-name')
+                pattern = re.compile(r'speaker-\d+-name')
                 speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
                 speaker_bind = {}
                 for speaker_key in speaker_keys:  # loop through speaker form items

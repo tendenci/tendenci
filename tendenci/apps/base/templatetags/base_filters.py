@@ -146,7 +146,7 @@ def domain(link):
 
 @register.filter
 def strip_template_tags(string):
-    p = re.compile('{[#{%][^#}%]+[%}#]}')
+    p = re.compile(r'{[#{%][^#}%]+[%}#]}')
     return re.sub(p, '', string)
 
 @register.filter
@@ -268,7 +268,7 @@ def obfuscate_email(email, linktext=None, autoescape=None):
         def esc(x):
             return x
 
-    email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056', esc(email)))
+    email = re.sub(r'@', r'\\100', re.sub(r'\.', r'\\056', esc(email)))
     email = codecs.encode(email, 'rot13')
 
     if linktext:

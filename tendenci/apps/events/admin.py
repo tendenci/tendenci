@@ -249,7 +249,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         """
         urls = super(CustomRegFormAdmin, self).get_urls()
         extra_urls = [
-            url("^export/(?P<regform_id>\d+)/$",
+            url(r'^export/(?P<regform_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
                 name="customregform_export"),
         ]
@@ -266,7 +266,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         """
         urls = super(StandardRegFormAdmin, self).get_urls()
         extra_urls = [
-            url("^edit",
+            url(r'^edit',
                 self.admin_site.admin_view(self.edit_regform_view),
                 name="standardregform_edit"),
         ]

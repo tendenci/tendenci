@@ -46,8 +46,8 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.base.utils import UnicodeWriter
 
 # from south.modelsinspector import add_introspection_rules
-# add_introspection_rules([], ["^tinymce.models.HTMLField"])
-# add_introspection_rules([], ["^tendenci.apps.base.fields.SlugField"])
+# add_introspection_rules([], [r'^tinymce\.models\.HTMLField'])
+# add_introspection_rules([], [r'^tendenci\.apps\.base\.fields\.SlugField'])
 
 FIELD_CHOICES = (
     ("text", _("Text")),

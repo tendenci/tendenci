@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         pages = Page.objects.all()
         self.h = html_parser.HTMLParser()
-        pattern = re.compile('(&#\d+;)', re.IGNORECASE)
+        pattern = re.compile(r'(&#\d+;)', re.IGNORECASE)
 
         for page in pages:
             page.title = re.sub(pattern, self.unescape, page.title)

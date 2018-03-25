@@ -1462,13 +1462,13 @@ class Reg8nForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup_pattern = re.compile(r'<[^>]*?>', re.I and re.M)
         markup = markup_pattern.search(data)
         if markup:
             raise forms.ValidationError(_("Markup is not allowed in the name field"))
 
         # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern_string = r'\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
         pattern = re.compile(pattern_string, re.I and re.M)
         domain_extension = pattern.search(data)
         if domain_extension or "://" in data:
@@ -1695,13 +1695,13 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        pattern = re.compile('<[^>]*?>', re.I and re.M)
+        pattern = re.compile(r'<[^>]*?>', re.I and re.M)
         markup = pattern.search(data)
         if markup:
             raise forms.ValidationError(_("Markup is not allowed in the name field"))
 
         # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern_string = r'\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
         pattern = re.compile(pattern_string, re.I and re.M)
         domain_extension = pattern.search(data)
         if domain_extension or "://" in data:

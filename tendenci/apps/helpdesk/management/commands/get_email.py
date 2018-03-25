@@ -192,7 +192,7 @@ def ticket_from_message(message, queue, quiet):
                 return False
             return True
 
-    matchobj = re.match(r".*\["+queue.slug+"-(?P<id>\d+)\]", subject)
+    matchobj = re.match(r'.*\['+re.escape(queue.slug)+r'-(?P<id>\d+)\]', subject)
     if matchobj:
         # This is a reply or forward.
         ticket = matchobj.group('id')
@@ -322,7 +322,7 @@ def ticket_from_message(message, queue, quiet):
     for file in files:
         if file['content']:
             filename = file['filename'].encode('ascii', 'replace').replace(' ', '_')
-            filename = re.sub('[^a-zA-Z0-9._-]+', '', filename)
+            filename = re.sub(r'[^a-zA-Z0-9._-]+', '', filename)
             a = Attachment(
                 followup=f,
                 filename=filename,

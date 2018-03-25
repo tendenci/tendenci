@@ -6,7 +6,7 @@ from django.utils.encoding import smart_text
 # from south.modelsinspector import add_introspection_rules
 #
 # # introspection rules for south migration for the JSONField
-# add_introspection_rules([], ['^tendenci\.apps\.social_auth\.fields\.JSONField'])
+# add_introspection_rules([], [r'^tendenci\.apps\.social_auth\.fields\.JSONField'])
 
 
 class JSONField(models.TextField):

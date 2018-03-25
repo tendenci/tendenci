@@ -211,7 +211,7 @@ class RecurringPayment(models.Model):
                     self.save()
                 else:
                     if response_d["message_code"] == 'E00039':
-                        p = re.compile('A duplicate record with ID (\d+) already exists.', re.I)
+                        p = re.compile(r'A duplicate record with ID (\d+) already exists.', re.I)
                         match = p.search(response_d['message_text'])
                         if match:
                             self.customer_profile_id  = match.group(1)

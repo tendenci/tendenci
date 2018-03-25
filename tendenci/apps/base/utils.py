@@ -535,7 +535,7 @@ def url_exists(url):
 
 
 def parse_image_sources(string):
-    p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
+    p = re.compile(r'<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
 
@@ -607,7 +607,7 @@ def detect_template_tags(string):
         template tags in the system
         returns boolean
     """
-    p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
+    p = re.compile(r'{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
 
@@ -668,8 +668,8 @@ def fieldify(s):
                     will be converted to
                 "{{ first_name }}: Lisa"
     """
-    #p = re.compile('(\[([\w\d\s_-]+)\])')
-    p = re.compile('(\[(.*?)\])')
+    #p = re.compile(r'(\[([\w\d\s_-]+)\])')
+    p = re.compile(r'(\[(.*?)\])')
     return p.sub(slugify_fields, s)
 
 

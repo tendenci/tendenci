@@ -142,10 +142,10 @@ class FormAdmin(TendenciBaseModelAdmin):
         """
         urls = super(FormAdmin, self).get_urls()
         extra_urls = [
-            url("^export/(?P<form_id>\d+)/$",
+            url(r'^export/(?P<form_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
                 name="forms_form_export"),
-            url("^file/(?P<field_entry_id>\d+)/$",
+            url(r'^file/(?P<field_entry_id>\d+)/$',
                 self.admin_site.admin_view(self.file_view),
                 name="forms_form_file"),
         ]

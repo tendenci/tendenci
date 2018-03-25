@@ -399,7 +399,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url("^clone/(?P<pk>\d+)/$",
+            url(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='corporate_membership_notice.admin_clone'),
         ]

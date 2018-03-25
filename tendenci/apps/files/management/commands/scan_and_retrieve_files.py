@@ -50,7 +50,7 @@ class Command(BaseCommand):
                            'mpe', 'mpg', 'mpeg',
                            'wmv', 'xml', 'swf',
                            'flv', 'fla'])
-        p = re.compile('(src|href)=\"([^"]+.(%s))\"' % exts,
+        p = re.compile(r'(src|href)="([^"]+.(%s))"' % exts,
                        re.IGNORECASE)
 
         params = {

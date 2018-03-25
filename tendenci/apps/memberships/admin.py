@@ -453,16 +453,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
         extra_urls = [
-            url("^approve/(?P<pk>\d+)/$",
+            url(r'^approve/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
-            url("^renew/(?P<pk>\d+)/$",
+            url(r'^renew/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.renew),
                 name='membership.admin_renew'),
-            url("^disapprove/(?P<pk>\d+)/$",
+            url(r'^disapprove/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.disapprove),
                 name='membership.admin_disapprove'),
-            url("^expire/(?P<pk>\d+)/$",
+            url(r'^expire/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
         ]
@@ -781,7 +781,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url("^clone/(?P<pk>\d+)/$",
+            url(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
         ]
