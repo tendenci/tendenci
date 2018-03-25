@@ -118,7 +118,7 @@ TEMPLATES = [
         'tendenci.apps.forums.context_processors.processor',
         'tendenci.apps.base.context_processors.newrelic',
       ],
-      'loaders':  [
+      'loaders': [
         ('django.template.loaders.cached.Loader', [
           'app_namespace.Loader',
           'tendenci.apps.theme.template_loader.Loader',
@@ -126,6 +126,12 @@ TEMPLATES = [
           'django.template.loaders.app_directories.Loader',
         ])
       ],
+      'libraries': {
+        # tendenci.apps.theme.templatetags.static replaces these, so rename them
+        # to avoid conflicts
+        'django.static': 'django.contrib.staticfiles.templatetags.staticfiles',
+        'django.staticfiles': 'django.templatetags.static',
+      },
     },
     'DIRS': [os.path.join(TENDENCI_ROOT, 'templates')]
   }
