@@ -186,7 +186,7 @@
                 {% for form in registrant.forms %}
                     {% with forloop.counter as forloop_counter %}
                     <div id="registrant_{{ forloop.counter }}" class="registrant-form">
-                        <div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
+                        <div class="registrant-header{% if total_regt_forms == 1 %} hidden{% endif %}">
                             <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ forloop_counter }}</span>:
                         </div>
 

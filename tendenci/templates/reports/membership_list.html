@@ -8,10 +8,10 @@
 <div class="page-header">
   <h1>{% trans "Active Memberships Report" %}</h1>
 </div>
-{% if days = 0 %}
+{% if days == 0 %}
 <p>{% trans "Lists all memberships that are still active." %}</p>
 {% else %}
-{% if days = 1826 %}
+{% if days == 1826 %}
 <p>{% trans "Currently showing members who joined in the last 5 years." %}</p>
 {% else %}
 {% blocktrans with days=days %}
@@ -39,10 +39,10 @@
 <div class="page-header">
   <h1>{% trans "Expired Memberships Report" %}</h1>
 </div>
-{% if days = 0 %}
+{% if days == 0 %}
 {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
 {% else %}
-{% if days = 1826 %}
+{% if days == 1826 %}
 {% trans "Currently showing members who expired in the last 5 years." %}
 {% else %}
 {% blocktrans with days=days %}

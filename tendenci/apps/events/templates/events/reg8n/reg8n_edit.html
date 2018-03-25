@@ -36,7 +36,7 @@
         <div class="forms">
             {{ formset.management_form }}
             {% for form in formset.forms %}
-                <div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
+                <div class="registrant-header{% if total_regt_forms == 1 %} hidden{% endif %}">
                     {% trans "Registrant" %} #<span class="item-counter">{{ forloop.counter }}</span>:
                 </div>
 
