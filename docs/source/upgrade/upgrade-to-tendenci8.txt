@@ -1,0 +1,399 @@
+Upgrade 7.X to 8.0
+==================
+
+Among many other changes, Tendenci 8.0 adds support for Python 3, and allows for the use of a
+simplified configuration which should reduce the number of configuration changes that will be
+required during future upgrades.
+
+
+Step 1: Prepare for Upgrade
+---------------------------
+
+Back up your site and database!
+
+Make sure the required system dependencies are installed:
+::
+
+    sudo apt-get install \
+      build-essential python3-dev libevent-dev libpq-dev \
+      libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+    sudo apt-get install curl wget
+
+
+Shut down Tendenci:
+::
+
+    sudo service tendenci stop
+
+
+Step 2: Upgrade to Python 3
+---------------------------
+
+Upgrading to Python 3 is recommended but optional.  This involves rebuilding your virtualenv.  To
+run Tendenci 8.0 on Python 2, skip to Step 3.
+
+Move your old virtualenv out of the way:
+::
+
+    sudo mv /srv/tendenci /srv/tendenci.t7
+
+Prepare a new Python 3 virtualenv:
+::
+
+    sudo apt-get install python3-virtualenv
+    sudo chown "$(id -u -n)" /srv/
+    cd /srv/
+    python3 -m virtualenv -p python3 tendenci
+    sudo chown root /srv/
+    source /srv/tendenci/bin/activate
+    pip install "Django>=1.11,<2.0"
+
+In this new virtualenv, ``/srv/tendenci/venv/bin/`` has been moved to ``/srv/tendenci/bin/``.
+
+Update your SystemD Units, Upstart jobs, cron jobs, and any other scripts which reference
+``/srv/tendenci/venv/bin/`` to use ``/srv/tendenci/bin/`` instead.
+
+If you have already upgraded to Tendenci 8.0 on Python 2 and are upgrading to Python 3 as a separate
+process, run the following, then skip to Step 7 (Steps 7 and 8 should be followed after both the
+Tendenci and Python upgrades):
+::
+
+    cd /var/www/tendenci/
+    source /srv/tendenci/bin/activate
+    pip install -r requirements/prod.txt --upgrade
+
+
+Step 3: Upgrade Tendenci
+------------------------
+
+Make a backup of /var/www/tendenci/:
+::
+
+    cd /var/www/
+    cp -a tendenci tendenci.t7
+
+
+Upgrade files in /var/www/tendenci/:
+::
+
+    sudo chown -Rh "$(id -u -n)":www-data /var/www/tendenci/
+    cd /var/www/tendenci/
+    rm manage.py deploy.py README.md requirements.txt
+    rm conf/wsgi.py requirements/tendenci.txt requirements/prod.txt
+    rm -rf index.whoosh
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/manage.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/README.md
+    cd conf/
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/wsgi.py
+    cd ../requirements/
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/requirements/tendenci.txt
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/requirements/prod.txt
+    cd ..
+    mkdir whoosh_index
+    chgrp www-data whoosh_index
+    chmod g+w whoosh_index
+
+Upgrade Tendenci and its dependencies:
+::
+
+    cd /var/www/tendenci/
+    sudo chown -Rh "$(id -u -n)": /srv/tendenci/
+    source /srv/tendenci/venv/bin/activate  # For Python 2
+    source /srv/tendenci/bin/activate  # For Python 3
+    pip install -r requirements/prod.txt --upgrade
+
+
+Step 4: Upgrade Configuration
+----------------------------
+
+Tendenci 8.0 allows for the use of a simplified configuration which should reduce the number of
+configuration changes that will be required during future upgrades.  Upgrading to this new
+configuration is recommended but optional.
+
+To switch to the new configuration, continue with Step 4a.  To continue using your existing
+configuration, skip to Step 4b.
+
+Step 4a: Upgrade to New Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The old configuration files came pre-configured with a number of standard settings (for example,
+they included standard INSTALLED_APPS, urlpatterns, CACHES, a number of *_PATH settings, etc).
+Tendenci now configures all of those standard settings by default, so the new settings.py and
+urls.py files only need to contain site-specific changes to the default configuration.  Removing the
+old standard settings from your configuration will simplify your configuration, make your site
+specific changes easier to identify, understand, and track, and eliminate any need to update the
+standard settings during future Tendenci upgrades.
+
+Make sure you have a backup copy of your old configuration.  If you followed Step 3, there should be
+a copy in ``/var/www/tendenci.t7/conf/``
+
+Remove the old configuration and replace it with new configuration files:
+::
+
+    cd /var/www/tendenci/conf/
+    rm *
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/__init__.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/wsgi.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/settings.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/urls.py
+
+Copy any site specific settings from ``/var/www/tendenci.t7/conf/local_settings.py`` to
+``/var/www/tendenci/conf/settings.py``.  The new settings.py includes comments which explain
+how/where to configure most of the settings you are likely to need to change.  Avoid copying any
+standard/default settings.
+However, be sure to copy:
+  - SECRET_KEY
+  - SITE_SETTINGS_KEY
+  - The settings in DATABASES
+  - TIME_ZONE
+  - Payment Gateway Settings
+  - EMail Settings
+
+If you have made site specific changes to INSTALLED_APPS, Tendenci now adds the following apps to
+INSTALLED_APPS by default, so your ``INSTALLED_APPS += [...]`` setting no longer needs to include
+them:
+
+  - django.contrib.gis
+  - tendenci.apps.committees
+  - tendenci.apps.case_studies
+  - tendenci.apps.donations
+  - tendenci.apps.speakers
+  - tendenci.apps.staff
+  - tendenci.apps.studygroups
+  - tendenci.apps.videos
+  - tendenci.apps.testimonials
+  - tendenci.apps.social_services
+  - tendenci.apps.explorer_extensions
+  - explorer
+
+If you wish to remove the above apps from the default INSTALLED_APPS, instructions can be found in
+the "Custom Application Settings" section of the new settings.py.
+
+Next, review the comments and examples in settings.py to determine if there are any new settings
+that should be configured for your site.  In particular, ``ALLOWED_HOSTS`` and the settings under
+"HTTPS and Session Settings" should be configured appropriately even if you have not previously
+configured them.  Also note that Tendenci now enables logging by default.  Review the
+"Logging Settings" section of the new settings.py to determine whether you need to make any site
+specific changes to the default logging configuration.
+
+Copy any site specific URL patterns from ``/var/www/tendenci.t7/conf/local_urls.py`` to
+``/var/www/tendenci/conf/urls.py``.  Note that URL pattern in the new file must be wrapped with a
+``url()`` function call.
+
+As with INSTALLED_APPS above, Tendenci now includes URL patterns for the following apps by default,
+so your configuration no longer need to include them:
+
+  - explorer.urls
+  - tendenci.apps.explorer_extensions.urls
+  - tendenci.apps.committees.urls
+  - tendenci.apps.case_studies.urls
+  - tendenci.apps.donations.urls
+  - tendenci.apps.speakers.urls
+  - tendenci.apps.staff.urls
+  - tendenci.apps.studygroups.urls
+  - tendenci.apps.videos.urls
+  - tendenci.apps.testimonials.urls
+  - tendenci.apps.social_services.urls
+
+If you wish to remove the URL patterns for the above apps from the default configuration,
+instructions can be found in the new urls.py file.
+
+If you made any changes to the new urls.py file, be sure to uncomment ``ROOT_URLCONF = 'conf.urls'``
+in the new settings.py file.
+
+Skip to Step 5 to continue.
+
+Step 4B: Update Existing Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Edit ``/var/www/tendenci/conf/local_settings.py``.
+
+At the top of the file, you should see the following lines:
+::
+
+    def get_setting(setting):
+        import settings
+        return getattr(settings, setting)
+
+Replace those lines with:
+::
+
+    def get_setting(setting):
+        try:
+            from . import settings  # Python 3
+        except ImportError:
+            import settings  # Python 2
+        return getattr(settings, setting)
+
+Then remove the following from INSTALLED_APPS:
+
+  - django.contrib.gis
+  - tendenci.apps.committees
+  - tendenci.apps.case_studies
+  - tendenci.apps.donations
+  - tendenci.apps.speakers
+  - tendenci.apps.staff
+  - tendenci.apps.studygroups
+  - tendenci.apps.videos
+  - tendenci.apps.testimonials
+  - tendenci.apps.social_services
+  - tendenci.apps.explorer_extensions
+  - explorer
+
+The above apps are now included in INSTALLED_APPS by default.  If you wish to remove them from the
+default INSTALLED_APPS, you can add ``INSTALLED_APPS.remove('tendenci.apps.name')`` lines as
+shown in the "Custom Application Settings" section of the latest
+`settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci8/conf/settings.py>`_
+file.
+
+Tendenci now enables logging by default.  Review the "Logging Settings" section of the latest
+`settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci8/conf/settings.py>`_
+file to determine whether you need to make any site specific changes to the default logging
+configuration.
+
+Edit ``/var/www/tendenci/conf/settings.py``
+
+Change ``from local_settings import *`` to ``from .local_settings import *``
+
+Delete ``INSTALLED_APPS += ('gunicorn',)``
+
+Change ``MIDDLEWARE_CLASSES`` to ``MIDDLEWARE``
+
+In ``HAYSTACK_CONNECTIONS``, change ``'PATH': os.path.join(PROJECT_ROOT, 'index.whoosh'),`` to
+``'PATH': os.path.join(PROJECT_ROOT, 'whoosh_index', 'main'),``
+
+Delete the ``if DEBUG_TOOLBAR_INSTALLED:`` block near the bottom of the file.
+
+Replace the old urls.py file:
+::
+
+    cd /var/www/tendenci/conf/
+    rm urls.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci8/conf/urls.py
+
+Copy any site specific URL patterns from ``local_urls.py`` to ``urls.py``, ignoring the following:
+
+  - explorer.urls
+  - tendenci.apps.explorer_extensions.urls
+  - tendenci.apps.committees.urls
+  - tendenci.apps.case_studies.urls
+  - tendenci.apps.donations.urls
+  - tendenci.apps.speakers.urls
+  - tendenci.apps.staff.urls
+  - tendenci.apps.studygroups.urls
+  - tendenci.apps.videos.urls
+  - tendenci.apps.testimonials.urls
+  - tendenci.apps.social_services.urls
+
+The above URL patterns are now included by default.  If you wish to remove the URL patterns for the
+above apps from the default configuration, instructions can be found in the new urls.py file.
+
+Note that URL patterns in the new file must be wrapped with a ``url()`` function call.
+
+When finished, you can delete your old ``local_urls.py`` file.
+
+
+Step 5: Configure logging
+-------------------------
+
+If you are using the new default logging configuration, you should set up ``/var/log/tendenci`` and
+configure logrotate appropriately.
+
+Set up /var/log/tendenci:
+::
+
+    sudo mkdir /var/log/tendenci
+    sudo chown www-data:"$(id -u -n)" /var/log/tendenci/
+    chmod -R g+rwX /var/log/tendenci/
+
+The group configured above will enable your user account to run `python manage.py ...` without sudo,
+which is safer than performing management/upgrades using sudo.  The configured group should include
+your normal user account but not other inappropriate users.  Ubuntu creates a dedicated group for
+each user by default, so that is what is used here.
+
+Create ``/etc/logrotate.d/tendenci`` containing:
+::
+
+    /var/log/tendenci/*.log {
+      daily
+      minsize 100k
+      missingok
+      rotate 14
+      compress
+      create 0660 www-data www-data
+      sharedscripts
+      postrotate
+        service tendenci restart
+      endscript
+    }
+
+To ensure that the log files remain readable/writable by your normal user account, change the second
+`www-data` in `create 0660 www-data www-data` to a group that includes your normal user account but
+not other inappropriate users (Ubuntu creates a dedicated group for each user by default with the
+same name as the associated user, so you can use that here).
+
+
+Step 6: Update Database and Static Files
+----------------------------------------
+
+Configure some settings for the database account used by Tendenci:
+::
+
+    DB_USER=tendenci
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
+
+Work around some migration issues in djkombu:
+::
+
+    sudo -u postgres psql -c "DROP TABLE djkombu_message;"
+    sudo -u postgres psql -c "DROP TABLE djkombu_queue;"
+
+Run:
+::
+
+    cd /var/www/tendenci/
+    source /srv/tendenci/venv/bin/activate  # For Python 2
+    source /srv/tendenci/bin/activate  # For Python 3
+    python manage.py migrate
+    python manage.py deploy
+    python manage.py clear_cache
+
+
+Step 7: Update/Fix Permissions
+------------------------------
+
+Ensure that filesystem permissions are set appropriately:
+::
+
+    chmod -R o+rX-w /srv/tendenci/
+    sudo chgrp -Rh www-data /var/www/tendenci/
+    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
+    sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
+    sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
+
+For an explanation of these permissions, see the "Permissions" section in the latest version of the
+Installation instructions.
+
+
+Step 8: Rebuild Search Indexes
+------------------------------
+
+Run:
+::
+
+    sudo -u www-data -H -s
+    cd /var/www/tendenci/
+    source /srv/tendenci/venv/bin/activate  # For Python 2
+    source /srv/tendenci/bin/activate  # For Python 3
+    python manage.py rebuild_index
+
+
+Step 9: Restart Tendenci
+------------------------
+
+Run:
+::
+
+    sudo service tendenci restart

@@ -77,7 +77,10 @@ To remove the files
     rm -r jpeg-9
     rm jpegsrc.v9.tar.gz
 
-On Mac OS X 10.7 or higher you will also need Xcode 4.4.1 or higher (in the app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+On Mac OS X 10.7 or higher you will also need Xcode 4.4.1 or higher (in the app store) and will need
+to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode"
+menu item in the top left of the screen near the Apple logo, then click "Preferences", then click
+"Downloads". Then click install on the line next to Command Line Tools.
 
 
 Database Preparation
@@ -94,12 +97,13 @@ Install PostgreSQL and some required modules:
 
     sudo apt-get install --no-install-recommends postgresql postgresql-contrib postgis
 
-Create a database and user for Tendenci in PostgreSQL (Replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with your database name, user name, and password):
+Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB_PASS`` and
+``DB_NAME`` with an appropriate user name, password, and database name):
 ::
 
-    DB_USER=<DB_USER>
-    DB_PASS=<DB_PASS>
-    DB_NAME=<DB_NAME>
+    DB_USER=tendenci
+    DB_PASS=tendenci
+    DB_NAME=tendenci
     sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
     sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
     sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
@@ -168,7 +172,8 @@ To prepare a virtualenv for Tendenci:
 
     virtualenv -p venv
 
-If you have anaconda installed on your machine, you must specify the path to the version of Python that you would like to use:
+If you have anaconda installed on your machine, you must specify the path to the version of Python
+that you would like to use:
 ::
 
     virtualenv -p /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 venv
@@ -195,7 +200,7 @@ Create a new Django project based on the Tendenci template:
 
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/tendenci8.zip tendenci
     sudo chown root /var/www/
 
 The above step will download around 70MB of data, so it may take some time to complete.
@@ -206,7 +211,7 @@ Set up some directories appropriately:
     chmod -R -x+X /var/www/tendenci/media/
     mkdir /var/www/tendenci/whoosh_index
     sudo mkdir /var/log/tendenci
-    sudo chown "$(id -u -n)" /var/log/tendenci/
+    sudo chown "$(id -u -n)": /var/log/tendenci/
 
 Install Tendenci and its dependencies:
 ::
@@ -218,35 +223,26 @@ Install Tendenci and its dependencies:
 Tendenci Configuration
 ----------------------
 
-Edit ``/var/www/tendenci/conf/local_settings.py``
+Edit ``/var/www/tendenci/conf/settings.py``
 
-For testing, set ``DEBUG = True``
+For testing, uncomment ``DEBUG = True``
 
-Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to random strings 50 characters in length.  To
-change them automatically:
-::
+Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to random strings 50 characters in length.  Random
+strings are conveniently available from <https://www.grc.com/passwords.htm>
 
-    cd /var/www/tendenci/
-    curl https://gist.githubusercontent.com/jennyq/45de71a93cff774c593d/raw/30ede14eb133de66cc839cc0458a1e915368534e/setup_keys.sh | bash
-
-For public sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
+For live sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
 sufficient.
 
-In the ``DATABASES`` block, replace ``<DB_NAME>``, ``<DB_USER>`` and ``<DB_PASS>`` with the values
-you used when configuring the database.
+Configure the database settings using the user name, password, and database name you configured in
+the "Database Preparation" section above.
 
-Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci.  If you want to
-use a different time zone for Tendenci, you should configure PostgreSQL to match that time zone for
-connections from Tendenci:
-::
-
-    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET timezone TO 'US/Eastern';"
+Set ``TIME_ZONE`` to the local time zone configured on the system running Tendenci.
 
 
 Tendenci Preparation
 --------------------
 
-Initialize the database and static media:
+Initialize the database and static files:
 ::
 
     cd /var/www/tendenci/
@@ -331,14 +327,9 @@ not yet in the released version of Tendenci:
     python manage.py deploy
 
 You can now edit files under /srv/tendenci-git/ and/or run ``git pull`` to retrieve the latest
-changes from GitHub.  Any python code changes will automatically be picked up when you restart the
-server.  However, in order to pick up changes to static files under /srv/tendenci-git/, you must
-run:
-::
-
-    source /srv/tendenci/bin/activate
-    cd /var/www/tendenci/
-    python manage.py deploy
+changes from GitHub.  Depending on the type of change and the server configuration, changes may be
+picked up immediately by the server without a restart, or may require a server restart before they
+will take effect.
 
 
 Live Site Setup
@@ -351,6 +342,13 @@ You may want to check the
 and
 `PostgreSQL documentation <https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server>`_
 for database configuration/tuning suggestions.
+
+
+Additional Configuration
+------------------------
+
+Review the comments and examples in ``/var/www/tendenci/conf/settings.py`` to determine if any
+additional settings should be configured for your live site.
 
 
 Additional Installation
@@ -378,8 +376,9 @@ that Tendenci has appropriate permissions when running as ``www-data``:
 
     chmod -R o+rX /srv/tendenci/
     sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
-    sudo chgrp -Rh www-data /var/log/tendenci/
+    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/themes/
+    chmod -R g+rwX /var/www/tendenci/whoosh_index/
+    sudo chown -Rh www-data /var/log/tendenci/
     chmod -R g+rwX /var/log/tendenci/
 
 For security, you should also ensure that there are no unnecessary permissions:
@@ -390,16 +389,18 @@ For security, you should also ensure that there are no unnecessary permissions:
     chmod -R o+rX-w /srv/tendenci/
     # Owner on /var/www/tendenci/ should already be your normal user account,
     # group should be www-data
-    # Tendenci needs read/search but not execute, write is only needed on media and whoosh_index,
-    # other users do not need any access
+    # Tendenci needs read/search but not execute, write is only needed on media, themes, and
+    # whoosh_index, other users do not need any access
     sudo chgrp -Rh www-data /var/www/tendenci/
     chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/themes/
+    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/whoosh_index/
     # Owner on /var/log/tendenci/ should be www-data,
     # group should be some group that includes your normal user account but not other inappropriate
     # users (Ubuntu creates a dedicated group for each user by default, so this command uses that)
     # Tendenci and the assigned group need read/write/search but not execute, other users do not
-    # need any access
+    # need any access (The assigned group needs write access so your normal user account can run
+    # `python manage.py ...`)
     sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
     sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
 
@@ -447,12 +448,12 @@ look like this:
 To start the service manually:
 ::
 
-    sudo systemctl start tendenci-test
+    sudo systemctl start tendenci
 
 To start the service automatically on boot:
 ::
 
-    sudo systemctl enable tendenci-test
+    sudo systemctl enable tendenci
 
 
 logrotate Setup
@@ -467,12 +468,17 @@ Create ``/etc/logrotate.d/tendenci`` containing:
       missingok
       rotate 14
       compress
-      create 0640 www-data adm
+      create 0660 www-data www-data
       sharedscripts
       postrotate
         service tendenci restart
       endscript
     }
+
+To ensure that the log files remain readable/writable by your normal user account, change the second
+`www-data` in `create 0660 www-data www-data` to a group that includes your normal user account but
+not other inappropriate users (Ubuntu creates a dedicated group for each user by default with the
+same name as the associated user, so you can use that here).
 
 
 NGINX Setup
@@ -594,5 +600,5 @@ To install multiple sites on a single server:
 * Configure an additional SystemD Unit file and NGINX configuration file for each site, and
   configure additional cron jobs for each site.  Each site will need to run on a different port
   internally, so change ``8000`` in the example SystemD and NGINX configurations to a unique port
-  number for each site.
+  number for each site.  Also change the names of any log files in the configuration.
 * A separate memcached instance for each Tendenci site may optionally be used, but is not required.

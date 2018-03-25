@@ -22,7 +22,7 @@ See [https://tendenci.readthedocs.org](https://tendenci.readthedocs.org)
 
 ## License
 
-License information (GNU GPLv3+) can be found in [LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
+License information (GNU GPLv3+) can be found in [LICENSE](https://github.com/tendenci/tendenci/blob/master/LICENSE)
 
 
 ## Credits
