@@ -1,13 +1,10 @@
+{% extends "base.html" %}
 {% load cache %}
 {% load i18n %}
 {% load staticfiles %}
 {% load base_filters %}
 {% load base_tags %}
 {% load photo_tags %}
-{% load theme_tags %}
-
-
-{% theme_extends "base.html" %}
 
 
 {% block extra_head %}
@@ -20,7 +17,7 @@
     <div class="container">
         <header class="{% block header_classes %}page-header{% endblock %}">
             {% block header %}
-                {% spaceless %}{% theme_include "header.html" %}{% endspaceless %}
+                {% spaceless %}{% include "header.html" %}{% endspaceless %}
             {% endblock %}
         </header>
 
@@ -35,7 +32,7 @@
         <div class="row">
             <div class="{% block content_classes %}col-xs-12 col-sm-8 col-md-8 col-lg-9{% endblock %}">
                 {% block content_messages %}
-                    {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
+                    {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
                 {% endblock %}
 
                 {% block content %}
@@ -110,7 +107,7 @@
 
         <footer class="{% block footer_classes %}{% endblock %}">
             {% block footer %}
-                {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
+                {% spaceless %}{% include "footer.html" %}{% endspaceless %}
             {% endblock %}
         </footer>
     </div>

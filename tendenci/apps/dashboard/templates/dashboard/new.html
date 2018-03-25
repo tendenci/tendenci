@@ -1,3 +1,4 @@
+{% extends "dashboard/base.html" %}
 {% load cache %}
 {% load i18n %}
 {% load staticfiles %}
@@ -5,9 +6,6 @@
 {% load base_tags %}
 {% load dashboard_tags %}
 {% load perm_tags %}
-{% load theme_tags %}
-
-{% theme_extends "dashboard/base.html" %}
 
 
 {% has_perm user events.view_event as view_events %}

@@ -264,16 +264,13 @@ For the `homepage.html` and `default.html` templates, the following conventions 
 
 An example `homepage.html` should start like this:
 
-    {% load theme_tags %}
+    {% extends 'base.html' %}
+    
     {% load nav_tags %}
     {% load story_tags %}
     {% load base_tags %}
-    
-    {% theme_extends 'base.html' %}
 
 Each library loaded at the top will make more template tags available for use. You should only include tag libraries that are used on the page, as loading unused libraries can increase page load times.
-
-The `theme_tags` library is **required** as it allows us to extend the `base.html` template with the `theme_extends` tag. This is a bit different than other Django apps. This is done this way in Tendenci to allow for theme previewing.
 
 The load for `base_tags` is not required, but is almost always used, so it should be included.
 
@@ -321,9 +318,9 @@ For other files like javascript files, please follow this same pattern, like the
 
 ### Common Template tags
 
-These template tags are commonly used, and come from either the `base_tags` or the `theme_tags` library.
+These template tags are commonly used, and come from the `base_tags` library.
 
-`theme_include 'header.html'` - This tag is used to include other templates. In this example, it's including a `header.html` file, but this could be replaced with other included templates like `footer.html`, `sidebar.html`, or another template used in the theme.
+`include 'header.html'` - This tag is used to include other templates. In this example, it's including a `header.html` file, but this could be replaced with other included templates like `footer.html`, `sidebar.html`, or another template used in the theme.
 
 `{% image_url story.image size=954x386 crop=true quality=90 %}` - This tag is used to create a resized version of an image. The first argument, `story.image`, should be a `File` object. The other arguments include the size, option to crop or constrain, and the quaility.
 
@@ -337,14 +334,13 @@ Here are some conventions for designing a Tendenci theme. The code samples shown
 
 First, we start with our loaded tag libraries:
 
-    {% load theme_tags %}
+    <!-- Extends Tendenci Base Structure
+    ================================================== -->
+    {% extends 'base.html' %}
+    
     {% load nav_tags %}
     {% load story_tags %}
     {% load base_tags %}
-    
-    <!-- Extends Tendenci Base Structure
-    ================================================== -->
-    {% theme_extends 'base.html' %}
 
 Notice that we have a comment regarding the extends tag. We will use more of these comments in this style to aid developers that may be also working on our template.
 
@@ -412,13 +408,13 @@ Next is `{% block html_body %}`, which includes the bulk of our html for the hom
     <div class="wrapper">
     
       <div class="header">
-        {% theme_include "header.html" %}
+        {% include "header.html" %}
       </div> <!-- /.header -->
       
       ...
       
       <div class="footer">
-        {% theme_include "footer.html" %}
+        {% include "footer.html" %}
       </div> <!-- /.footer -->
       
     </div> <!-- /.wrapper -->
@@ -432,7 +428,7 @@ The middle will be filled with whatever html is necessary for our homepage. Noti
 - When we close elements, we add a comment indicating the class of the element that is being closed, like `<!-- /.header -->`
 - We have similar comments around our block tags.
 - We have our block name in our `{% endblock %}` tag. This is not required, but strongly recommended when there is lots of content between the start and end of the tag.
-- We are using the `theme_include` tag to bring in our header and footer templates. The names of these templates are wrapped with double quotes like `"header.html"`.
+- We are using the `include` tag to bring in our header and footer templates. The names of these templates are wrapped with double quotes like `"header.html"`.
 
 #### extra_body tag
 
@@ -489,7 +485,7 @@ This section differs from `homepage.html` enough that all of it's code is below.
     <div class="wrapper">
     
       <div class="header">
-        {% theme_include "header.html" %}
+        {% include "header.html" %}
       </div> <!-- /.header -->
       
       <div class="main-content {% block content_classes %}{% endblock %}">
@@ -498,12 +494,12 @@ This section differs from `homepage.html` enough that all of it's code is below.
       
       {% block sidebar %}
         <div class="sidebar">
-          {% theme_include "sidebar.html" %}
+          {% include "sidebar.html" %}
         </div> <!-- /.sidebar -->
       {% endblock sidebar %}
       
       <div class="footer">
-        {% theme_include "footer.html" %}
+        {% include "footer.html" %}
       </div> <!-- /.footer -->
       
     </div> <!-- /.wrapper -->
@@ -532,7 +528,7 @@ The header template does not include any `{% block %}` tags since it is included
 
 #### Libraries
 
-Because the `header.html` template is included on other templates, we don't need to extend another template with `theme_extends`.
+Because the `header.html` template is included on other templates, we don't need to extend another template with `extends`.
 
 We DO need to load any libraries we use. The most common ones used in headers are shown below
 
