@@ -118,7 +118,7 @@ TEMPLATES = [
       'loaders':  [
         ('django.template.loaders.cached.Loader', [
           'app_namespace.Loader',
-          'tendenci.apps.theme.template_loaders.Loader',
+          'tendenci.apps.theme.template_loader.Loader',
           'django.template.loaders.filesystem.Loader',
           'django.template.loaders.app_directories.Loader',
         ])
