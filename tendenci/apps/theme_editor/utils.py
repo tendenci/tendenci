@@ -14,7 +14,6 @@ from django.utils._os import safe_join
 from django.core.exceptions import SuspiciousFileOperation
 from importlib import import_module
 
-from tendenci.apps.theme.utils import get_theme_root, get_theme_info
 from tendenci.apps.theme.utils import get_theme_root, get_theme_info, is_builtin_theme
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3

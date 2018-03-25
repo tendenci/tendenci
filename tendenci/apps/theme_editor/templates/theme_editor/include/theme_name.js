@@ -1,8 +1,9 @@
 $(function() {
-    var tname = $( "#tname" ),
-    allFields = $( [] ).add( tname ),
-    tips = $( ".validateTips" );
-    $('#create-tform').css({'display': 'none'});
+    var themeName = $( "#theme-name" ),
+    allFields = $( [] ).add( themeName ),
+    tips = $( ".validateTips" ),
+    url = null;
+    $('#theme-name-form').css({'display': 'none'});
 
     function update_tips( t ) {
         tips
@@ -37,37 +38,35 @@ $(function() {
         }
     }
 
-    $('#create-tform').dialog({
+    $('#theme-name-form').dialog({
         autoOpen: false,
         height: 300,
         width: 450,
         modal: true,
         buttons: {
-            "Create a template": function() {
+            Save: function() {
                 var $this = $(this);
                 var is_valid = true;
                 allFields.removeClass( "ui-state-error" );
-                is_valid = is_valid && check_length( tname, "template name", 3, 16 );
-                is_valid = is_valid && check_regexp( tname, /^[a-z]([0-9a-z_-])+$/, "Template name must begin with a letter and contain only a-z, 0-9, underscores, and dashes." );
+                is_valid = is_valid && check_length( themeName, "theme name", 3, 64 );
+                is_valid = is_valid && check_regexp( themeName, /^[a-z]([0-9a-z_-])+$/, "Template name must begin with a letter and contain only a-z, 0-9, underscores, and dashes." );
                 if ( is_valid ) {
                     // ajax submit form
-                    $.post(
-                        '{% url "theme_editor.create_new_template" %}?theme_edit={{ current_theme }}',
+                    var newTheme = themeName.val();
+                    $.post(url,
                         {
                             'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
-                            'template_name': tname.val()
+                            'theme_name': newTheme
                         },
                         function(data, textStatus, jqXHR){
                             json = $.parseJSON(data);
-                            if (json["created"]){
+                            if (json["success"]){
                                 $this.dialog( "close" );
                                 // redirect
-                                location = "{% url "theme_editor.editor" %}?file=templates/" +
-                                            json["template_name"]+"&theme_edit={{ current_theme }}";
+                                location = '{% url "theme_editor.editor" %}?theme_edit='+newTheme;
                             } else {
                                 update_tips(json["err"]);
                             }
-
                         });
                 }
             },
@@ -80,8 +79,19 @@ $(function() {
         }
     });
 
-    $('.new-template-btn').click(function(){
-        $('#create-tform').dialog('open');
+    $('.copy-theme-btn').click(function(){
+        url = '{% url "theme_editor.theme_copy" %}?theme_edit={{ current_theme }}';
+        $('#theme-name-form').dialog({title: 'Copy to new theme'});
+        $('#theme-name-form').dialog('open');
+        $('.ui-dialog-buttonset .ui-state-default').first()
+                .css({'background': 'none'})
+                .css({'background-color': '#A84524'})
+                .css({'color': '#ffffff'});
+    });
+    $('.rename-theme-btn').click(function(){
+        url = '{% url "theme_editor.theme_rename" %}?theme_edit={{ current_theme }}';
+        $('#theme-name-form').dialog({title: 'Rename theme'});
+        $('#theme-name-form').dialog('open');
         $('.ui-dialog-buttonset .ui-state-default').first()
                 .css({'background': 'none'})
                 .css({'background-color': '#A84524'})

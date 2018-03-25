@@ -87,14 +87,21 @@ class FileForm(forms.Form):
             return False
 
 
+class ThemeNameForm(forms.Form):
+    theme_name = forms.RegexField(label=_("New theme name"),
+                                  regex=r'^[a-z][0-9a-z_-]+$',
+                                  max_length=64)
+
+
 class AddTemplateForm(forms.Form):
     template_name = forms.RegexField(label=_("Template Name"),
                                      regex=r'^[a-z][0-9a-z_-]+$',
-                                     max_length=20)
+                                     max_length=16)
 
 
 class ThemeSelectForm(forms.Form):
-    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[],
+        widget=forms.Select(attrs={'onchange': 'submit();'}))
 
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)

@@ -74,12 +74,17 @@
             <div class="theme-selection well well-small">
                 <h4>{% if theme_read_only %}{% trans 'Currently viewing' %}{% else %}{% trans 'Currently editing' %}{% endif %}:</h4>
                 <form method="GET" action="">
-                    {{ theme_form.theme_edit }}<input class="btn btn-mini" type="submit" value="Change"/>
+                    {{ theme_form.theme_edit }}
                 </form>
                 {% if ACTIVE_THEME != current_theme %}
                 <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
                 {% else %}
                 <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "View" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
+                {% endif %}
+                <button class="btn btn-mini copy-theme-btn">{% trans 'Copy' %}</button>
+                {% if not theme_read_only %}
+                <button class="btn btn-mini rename-theme-btn">{% trans 'Rename' %}</button>
+                <a id="delete-theme-btn" href="{% url "theme_editor.theme_delete" %}?theme_edit={{ current_theme }}" class="btn btn-mini">{% trans 'Delete' %}</a>
                 {% endif %}
                 <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}.
                 {% if theme_count > 1 %}
@@ -180,6 +185,19 @@
                    </td>
     </tr>
 </table>
+
+
+<div id="theme-name-form" title="{% trans 'Theme' %}">
+  <p class="validateTips">{% trans 'Please enter a new theme name.' %}</p>
+  <form>
+    <fieldset>
+    <div><label for="theme-name">{% trans 'Theme Name' %}:</label></div>
+    <div>
+    <input type="text" name="theme-name" id="theme-name" class="text ui-widget-content ui-corner-all" />
+    </div>
+    </fieldset>
+  </form>
+</div>
 
 
 <div id="create-tform" title="{% trans 'Create new template' %}">
@@ -283,6 +301,7 @@ window.onload = function() {
 </script>
 
 <script type="text/javascript">
+{% include 'theme_editor/include/theme_name.js' %}
 {% include 'theme_editor/include/new_template.js' %}
 {% include 'theme_editor/include/editor_submit.js' %}
 </script>
@@ -337,6 +356,18 @@ function open_archive(id)
     gravity: 's',
     live: true,
   });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#delete-theme-btn').click(function(){
+            if(window.confirm("{% trans 'Are you sure you want to delete this theme?' %}")){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
 </script>
 
 <script type="text/javascript">

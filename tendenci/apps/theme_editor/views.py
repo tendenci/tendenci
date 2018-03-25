@@ -1,5 +1,6 @@
 from builtins import str
 import os
+import shutil
 import subprocess
 
 from django.shortcuts import redirect
@@ -23,8 +24,8 @@ from tendenci.apps.theme.utils import (get_theme, get_active_theme, get_theme_ro
                                        theme_choices)
 from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.apps.theme_editor.forms import (FileForm, ThemeSelectForm, UploadForm,
-                                              AddTemplateForm)
+from tendenci.apps.theme_editor.forms import (FileForm, ThemeNameForm, ThemeSelectForm,
+                                              UploadForm, AddTemplateForm)
 from tendenci.apps.theme_editor.utils import (is_valid_path, is_theme_read_only, ThemeInfo,
                                               app_templates, get_dir_list, get_file_list,
                                               get_file_content, get_all_files_list,
@@ -157,6 +158,89 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'ext' : ext,
         'stylesheets' : stylesheets,
     })
+
+
+@login_required
+def theme_copy(request, form_class=ThemeNameForm):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
+    theme_root = get_theme_root(selected_theme)
+
+    form = form_class(request.POST or None)
+    ret_dict = {'success': False, 'err': ''}
+
+    if form.is_valid():
+        new_theme_name = form.cleaned_data['theme_name']
+        if is_valid_theme(new_theme_name):
+            ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+        if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
+            raise Http403
+        new_theme_root = get_theme_root(new_theme_name)
+        shutil.copytree(theme_root, new_theme_root, symlinks=False)
+        ret_dict['success'] = True
+        EventLog.objects.log()
+    #else:
+    #    ret_dict['err'] = form.errors.as_json()
+
+    return HttpResponse(json.dumps(ret_dict))
+
+
+@login_required
+def theme_rename(request, form_class=ThemeNameForm):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
+    theme_root = get_theme_root(selected_theme)
+
+    form = form_class(request.POST or None)
+    ret_dict = {'success': False, 'err': ''}
+
+    if form.is_valid():
+        new_theme_name = form.cleaned_data['theme_name']
+        if is_valid_theme(new_theme_name):
+            ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+        if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
+            raise Http403
+        new_theme_root = get_theme_root(new_theme_name)
+        shutil.move(theme_root, new_theme_root)
+        ret_dict['success'] = True
+        EventLog.objects.log()
+    #else:
+    #    ret_dict['err'] = form.errors.as_json()
+
+    return HttpResponse(json.dumps(ret_dict))
+
+
+@login_required
+def theme_delete(request):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    selected_theme = request.GET.get("theme_edit", get_theme())
+    if not is_valid_theme(selected_theme):
+        raise Http404(_('Specified theme does not exist'))
+    if is_theme_read_only(selected_theme):
+        raise Http403
+
+    shutil.rmtree(get_theme_root(selected_theme))
+
+    if settings.USE_S3_STORAGE:
+        delete_file_from_s3(file=settings.AWS_LOCATION + '/' + settings.THEME_S3_PATH + '/' + selected_theme)
+
+    msg_string = 'Successfully deleted %s.' % (selected_theme)
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    EventLog.objects.log()
+    return redirect('theme_editor.editor')
 
 
 @permission_required('theme_editor.change_themefileversion')
