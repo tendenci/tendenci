@@ -82,8 +82,6 @@ class ThemeConstantIncludeNode(IncludeNode):
         try:
             self.template = context.template.engine.get_template(self.template_path)
         except:
-            if settings.TEMPLATE_DEBUG:
-                raise
             self.template = None
         if self.template:
             return self.template.render(context=context)
@@ -98,8 +96,6 @@ class ThemeIncludeNode(IncludeNode):
             t = context.template.engine.get_template(template_name)
             return t.render(context=context)
         except:
-            if settings.TEMPLATE_DEBUG:
-                raise
             return ''
 
 
@@ -132,8 +128,6 @@ class SpaceIncludeNode(IncludeNode):
                     t = context.template.engine.get_template(template_name)
                     return t.render(context=context)
                 except:
-                    if settings.TEMPLATE_DEBUG:
-                        raise
                     return ''
         else:
             return ''
@@ -178,8 +172,6 @@ class ThemeSettingNode(IncludeNode):
             t = context.template.engine.get_template("%s/templates/%s" % (theme, template_name))
             return t.render(context=context)
         except:
-            if settings.TEMPLATE_DEBUG:
-                raise
             return ''
 
 

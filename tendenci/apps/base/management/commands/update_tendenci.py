@@ -58,14 +58,13 @@ class Command(BaseCommand):
         except subprocess.CalledProcessError as e:
             errors_list.append(e.output)
 
-        # run python deploy.py iff update_tendenci is successful
+        # run deploy iff update_tendenci is successful
         if pass_update_tendenci:
             try:
                 print("Updating tendenci site")
-                subprocess.check_output("%s deploy.py" % python_executable(), stderr=subprocess.STDOUT, shell=True)
+                call_command('deploy')
                 pass_update_tendenci_site = True
-
-            except subprocess.CalledProcessError as e:
+            except CommandError as e:
                 errors_list.append(e.output)
 
         # run reload if update is done

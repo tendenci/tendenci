@@ -5,7 +5,8 @@ import subprocess
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail.message import EmailMessage
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 
 from tendenci.libs.utils import python_executable
 
@@ -55,10 +56,8 @@ class Command(BaseCommand):
             print("Your version: {}".format(version))
             print("Start updating...")
 
-        # update some files - deploy.py, requirements/tendenci.txt
-        files_to_update = {'deploy.py': 'https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/deploy.py',
-                           'requirements/tendenci.txt': 'https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/tendenci.txt'
-                        }
+        # update requirements/tendenci.txt
+        files_to_update = {'requirements/tendenci.txt': 'https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/tendenci.txt'}
         for key, value in files_to_update.items():
             try:
                 subprocess.check_output('curl {0} > {1}/{2}'.format(value, project_root, key),
@@ -78,7 +77,7 @@ class Command(BaseCommand):
                 err_list.append(e.output)
 
         if not err_list:
-            # run migrate, collectstatic, etc via deploy.py
+            # run migrate
             try:
                 subprocess.check_output("cd {0}; {1} manage.py migrate".format(latest_version, python_executable()),
 
@@ -95,11 +94,10 @@ class Command(BaseCommand):
                     except subprocess.CalledProcessError as e:
                         err_list.append(e.output)
         if not err_list:
-            # run deploy.py
+            # run collectstatic, etc via deploy
             try:
-                subprocess.check_output("cd {0}; {1} deploy.py".format(latest_version, python_executable()),
-                                        stderr=subprocess.STDOUT, shell=True)
-            except subprocess.CalledProcessError as e:
+                call_command('deploy')
+            except CommandError as e:
                 err_list.append(e.output)
 
         if not err_list:

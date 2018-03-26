@@ -241,7 +241,7 @@ Security Awareness - YOU ARE RESPONSIBLE
 
 2. Tendenci is FOSS (Free/Open Source Software)
 
-  - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE.md
+  - Read the license here https://github.com/tendenci/tendenci/blob/master/LICENSE
   - Themes use a variety of licenses such as the Apache Open Source license, etc. Read them.
   - Components may use other similar open source licenses which are distributed in the code.
 

@@ -37,7 +37,7 @@ class Command(BaseCommand):
         print('Updating tendenci site')
         os.system('"%s" manage.py migrate %s --noinput' % (python_executable(), addon_name))
         os.system('"%s" manage.py update_settings %s' % (python_executable(), addon_name))
-        os.system('"%s" manage.py collectstatic --noinput' % (python_executable()))
+        os.system('"%s" manage.py collectstatic --link --noinput' % (python_executable()))
 
         print('Restarting Server')
         os.system('sudo reload "%s"' % os.path.basename(settings.PROJECT_ROOT))

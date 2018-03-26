@@ -1,27 +1,23 @@
-import re
-
 from django.http import HttpResponse
 from django.template import TemplateDoesNotExist, engines
-from django.template.loader import get_template, select_template
+from django.template.loader import get_template
 from django.template.base import Template as DjangoBackendTemplate
 from django.template.backends.django import Template as DjangoLoaderTemplate, reraise
 from django.template.loaders.cached import Loader as CachedLoader
 
-from tendenci.apps.theme.template_loaders import Loader as ThemeLoader
 from tendenci.apps.theme.utils import get_theme_root
 
 
 # Based on find_template() in django/template/engine.py but modified to skip any
-# Cached Loaders, to skip the Tendenci Theme Loader
-def find_default_django_template(loaders, name):
+# CachedLoaders
+def find_django_template_without_cache(loaders, name):
     tried = []
     for loader in loaders:
         try:
-            if isinstance(loader, ThemeLoader):
-                continue
             if isinstance(loader, CachedLoader):
-                # See django/template/loaders/cached.py
-                template, origin = find_default_django_template(loader.loaders, name)
+                # CachedLoader.loaders is the list of loaders managed by the
+                # CachedLoader (See django/template/loaders/cached.py)
+                template, origin = find_django_template_without_cache(loader.loaders, name)
                 return template, template.origin
             template = loader.get_template(name)
             return template, template.origin
@@ -30,12 +26,12 @@ def find_default_django_template(loaders, name):
     raise TemplateDoesNotExist(name, tried=tried)
 
 
-# Based on get_django_template() in django/template/backends/django.py and
+# Based on get_template() in django/template/backends/django.py and
 # django/template/engine.py but modified to override the find_template() call
-def get_default_django_template(backend, template_name):
+def get_django_template_without_cache(backend, template_name):
     engine = backend.engine
     try:
-        template, origin = find_default_django_template(engine.template_loaders, template_name)
+        template, origin = find_django_template_without_cache(engine.template_loaders, template_name)
         if not hasattr(template, 'render'):
             template = DjangoBackendTemplate(template, origin, template_name, engine=engine)
         return DjangoLoaderTemplate(template, backend)
@@ -43,54 +39,21 @@ def get_default_django_template(backend, template_name):
         reraise(exc, backend)
 
 
-# Based on the original methods in django/template/loader.py but modified to
-# override the 'django' engine
-def get_default_template(template_name):
+# Based on get_template() in django/template/loader.py and
+# django/template/engine.py but modified to override the 'django' engine
+def get_template_without_cache(template_name):
     chain = []
     for engine in engines.all():
         try:
             if engine.name == 'django':
-                return get_default_django_template(engine, template_name)
+                return get_django_template_without_cache(engine, template_name)
             return engine.get_template(template_name)
         except TemplateDoesNotExist as e:
             chain.append(e)
     raise TemplateDoesNotExist(template_name, chain=chain)
-def select_default_template(template_name_list):
-    chain = []
-    for template_name in template_name_list:
-        for engine in engines.all():
-            try:
-                if engine.name == 'django':
-                    return get_default_django_template(engine, template_name)
-                return engine.get_template(template_name)
-            except TemplateDoesNotExist as e:
-                chain.append(e)
-    if template_name_list:
-        raise TemplateDoesNotExist(', '.join(template_name_list), chain=chain)
-    else:
-        raise TemplateDoesNotExist("No template names provided")
 
 
-# This should be called instead of django.shortcuts.render() by using:
-# from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
-# instead of:
-# from django.shortcuts import render as render_to_resp
-# in all views
-def themed_response(*args, **kwargs):
-    """Returns a HttpResponse whose content is filled with the equivalent of the
-    result of calling django.template.loader.render_to_string() with the passed
-    arguments.
-    """
-    if 'content_type' in kwargs:
-        content_type = kwargs.pop('content_type')
-    elif 'mimetype' in kwargs:
-        content_type = kwargs.pop('mimetype')
-    else:
-        content_type = None
-    return HttpResponse(render_to_theme(*args, **kwargs), content_type=content_type)
-
-
-def strip_content_above_doctype(html):
+def _strip_content_above_doctype(html):
     """Strips any content above the doctype declaration out of the
     resulting template. If no doctype declaration, it returns the input.
 
@@ -106,29 +69,81 @@ def strip_content_above_doctype(html):
 
     return html
 
-def render_to_theme(request, template_name, context={}, **kwargs):
-    """Loads the given template_name and renders it with the given context.
-    The template_name may be a string to load a single template using
-    get_template, or it may be a tuple to use select_template to find one of
-    the templates in the list. Returns a string.
-    This shorcut prepends the template_name given with the selected theme's
-    directory
+
+# Render a response with optional template caching and with some extra
+# theme-related context.
+def themed_response(request, template_name, context={}, **kwargs):
+    """
+    This should be called instead of django.shortcuts.render() in all views, by
+    using:
+    from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+    Instead of:
+    from django.shortcuts import render as render_to_resp
+
+    ``template_name`` may be a string to render a single template, or a tuple or
+    list of strings to try each template in order and use the first that exists.
+
+    Returns an HttpResponse equivalent to the one that would be returned by
+    django.shortcuts.render() given the same arguments.
     """
 
-    context['CUSTOM_THEME'] = False
-    context['THEME_TEMPLATE'] = template_name
+    if (('theme' in request.GET or 'disable_cache' in request.GET or
+        'enable_cache' in request.GET) and request.user.profile.is_superuser):
 
-    if 'disable_theme' in request.GET:
-        if isinstance(template_name, (list, tuple)):
-            t = select_default_template(template_name)
+        if request.GET.get('theme'):
+            request.session['theme'] = request.GET.get('theme')
+        elif 'theme' in request.session:
+            del request.session['theme']
+
+        if 'disable_cache' in request.GET:
+            request.session['explicit_disable_cache'] = True
+        if 'enable_cache' in request.GET:
+            if 'explicit_disable_cache' in request.session:
+                del request.session['explicit_disable_cache']
+
+        if ('theme' in request.session or
+            'explicit_disable_cache' in request.session):
+            request.session['disable_cache'] = True
         else:
-            t = get_default_template(template_name)
+            del request.session['disable_cache']
+
+    if isinstance(template_name, (list, tuple)):
+        template_name_list = template_name
+        if not template_name_list:
+            raise TemplateDoesNotExist("No template names provided")
+        template = None
+        # Loosely based on select_template() in django/template/loader.py and
+        # django/template/engine.py
+        chain = []
+        for template_name in template_name_list:
+            try:
+                if 'disable_cache' in request.session:
+                    template = get_template_without_cache(template_name)
+                else:
+                    template = get_template(template_name)
+            except TemplateDoesNotExist as e:
+                chain += e.chain
+        if template is None:
+            raise TemplateDoesNotExist(', '.join(template_name_list), chain=chain)
     else:
-        if isinstance(template_name, (list, tuple)):
-            t = select_template(template_name)
+        if 'disable_cache' in request.session:
+            template = get_template_without_cache(template_name)
         else:
-            t = get_template(template_name)
-        if t.origin and re.search(r'^%s.+' % get_theme_root(), t.origin.name):
-            context['CUSTOM_THEME'] = True
+            template = get_template(template_name)
 
-    return strip_content_above_doctype(t.render(context=context, request=request))
+    context['TEMPLATE_NAME'] = template.origin.template_name
+    template_path = template.origin.name
+    context['TEMPLATE_FROM_CUSTOM_THEME'] = template_path.startswith(get_theme_root())
+
+    context['CACHE_DISABLED'] = request.session.get('disable_cache', False)
+
+    rendered = _strip_content_above_doctype(template.render(context=context, request=request))
+
+    if 'content_type' in kwargs:
+        content_type = kwargs.pop('content_type')
+    elif 'mimetype' in kwargs:
+        content_type = kwargs.pop('mimetype')
+    else:
+        content_type = None
+
+    return HttpResponse(rendered, content_type=content_type)

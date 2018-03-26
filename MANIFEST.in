@@ -1,5 +1,5 @@
 include README.md
-include LICENSE.md
+include LICENSE
 include THEMING.md
 include requirements.txt
 recursive-include tendenci/apps *

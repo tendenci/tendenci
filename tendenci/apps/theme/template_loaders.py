@@ -5,6 +5,7 @@ import os
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
+from django.template.base import Origin
 from django.template.loaders.base import Loader
 
 from django.utils._os import safe_join
@@ -58,63 +59,55 @@ class Loader(Loader):
         for template_path in theme_templates:
             try:
                 if settings.USE_S3_THEME:
-                    yield os.path.join(template_path, template_name)
+                    yield Origin(
+                        name=os.path.join(template_path, template_name),
+                        template_name=template_name, loader=self,
+                    )
                 else:
-                    yield safe_join(template_path, template_name)
+                    yield Origin(
+                        name=safe_join(template_path, template_name),
+                        template_name=template_name, loader=self,
+                    )
             except SuspiciousFileOperation:
                 # The joined path was located outside of this particular
                 # template_dir (it might be inside another one, so this isn't
                 # fatal).
                 pass
 
-    def load_template_source(self, template_name, template_dirs=None):
-        tried = []
+    def get_contents(self, origin):
 
-        for filepath in self.get_template_sources(template_name, template_dirs):
-            # First try to read from S3
-            if settings.USE_S3_THEME:
-                # first try to read from cache
-                cache_key = ".".join([settings.SITE_CACHE_KEY, "theme", filepath])
-                cached_template = cache.get(cache_key)
-                if cached_template == "tried":
-                    # Skip out of this on to the next template file
-                    continue
-                if cached_template:
-                    return (cached_template, filepath)
+        if settings.USE_S3_THEME:
+            # first try to read from cache
+            cache_key = ".".join([settings.SITE_CACHE_KEY, "theme", origin.name])
+            cached_template = cache.get(cache_key)
+            if cached_template == "tried":
+                # Skip out of this on to the next template file
+                raise TemplateDoesNotExist(origin)
+            if cached_template:
+                return cached_template
 
-                try:
-                    file = read_theme_file_from_s3(filepath)
-                    try:
-                        cache.set(cache_key, file)
-                        cache_group_key = "%s.theme_files_cache_list" % settings.SITE_CACHE_KEY
-                        cache_group_list = cache.get(cache_group_key)
+            try:
+                file = read_theme_file_from_s3(origin.name)
 
-                        if cache_group_list is None:
-                            cache.set(cache_group_key, [cache_key])
-                        else:
-                            cache_group_list += [cache_key]
-                            cache.set(cache_group_key, cache_group_list)
+                cache.set(cache_key, file)
+                cache_group_key = "%s.theme_files_cache_list" % settings.SITE_CACHE_KEY
+                cache_group_list = cache.get(cache_group_key)
 
-                        return (file, filepath)
-                    finally:
-                        pass
-                except:
-                    # Cache that we tried this file
-                    cache.set(cache_key, "tried")
+                if cache_group_list is None:
+                    cache.set(cache_group_key, [cache_key])
+                else:
+                    cache_group_list += [cache_key]
+                    cache.set(cache_group_key, cache_group_list)
 
-            # Otherwise, look on to local file system.
-            else:
-                #print filepath
-                try:
-                    file = open(filepath)
-                    try:
-                        return (file.read(), filepath)
-                    finally:
-                        file.close()
-                except IOError:
-                    tried.append(filepath)
-        if tried:
-            error_msg = "Tried %s" % tried
+                return file
+            except:
+                # Cache that we tried this file
+                cache.set(cache_key, "tried")
+                raise TemplateDoesNotExist(origin)
+
         else:
-            error_msg = "Your TEMPLATE_DIRS setting is empty. Change it to point to at least one template directory."
-        raise TemplateDoesNotExist(_(error_msg))
+            try:
+                with open(origin.name) as fp:
+                    return fp.read()
+            except FileNotFoundError:
+                raise TemplateDoesNotExist(origin)

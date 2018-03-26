@@ -109,7 +109,7 @@
          {% endif %}
 
         {% for page in page_range %}
-            {% if page = '...' %}
+            {% if page == '...' %}
                 {{ page }}
             {% else %}
                 {% if page == curr_page %}
