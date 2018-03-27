@@ -57,7 +57,6 @@ from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.files.models import File
-from tendenci.apps.base.utils import add_tendenci_footer
 from tendenci.apps.user_groups.models import Group
 
 
@@ -2007,7 +2006,7 @@ class Notice(models.Model):
         Return self.email_content with footer appended and replace shortcode
         (context) variables
         """
-        content = add_tendenci_footer(self.email_content)
+        content = self.email_content + '\n<br /><br />\n{% include "email_footer.html" %}'
         context = self.get_default_context(corporate_membership, recipient, **kwargs)
 
         return self.build_notice(content, context=context, **kwargs)
