@@ -106,7 +106,7 @@
                         {% endspaceless %}</a>
 
                         <ul class="dropdown-menu" role="menu">
-                            {% if page.statsu and can_delete_page %}
+                            {% if page.status and can_delete_page %}
                                 <li>
                                     <a class="t-meta-delete-link" href="{% url 'page.delete' page.pk %}">{% trans "Delete" %}</a>
                                 </li>
