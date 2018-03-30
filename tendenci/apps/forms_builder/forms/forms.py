@@ -592,6 +592,9 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
 
                 self.fields[field].widget.attrs.update({'class': class_attr})
 
+    def clean_tax_rate(self):
+        return self.cleaned_data.get('tax_rate') or 0
+
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
         if self.cleaned_data.get('billing_dt_select'):
