@@ -1,5 +1,7 @@
 """ANONYMOUS EVENT REGISTRATION VIEWS"""
 
+from builtins import str
+
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
@@ -293,7 +295,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                 for registrant in registrants:
                     #registrant.assign_mapped_fields()
                     if registrant.custom_reg_form_entry:
-                        registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                        registrant.name = str(registrant.custom_reg_form_entry)
                     else:
                         registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 

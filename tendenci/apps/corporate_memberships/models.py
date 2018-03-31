@@ -150,7 +150,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         verbose_name_plural = _("Corporate Membership Types")
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -275,7 +275,7 @@ class CorpProfile(TendenciBaseModel):
 
         super(CorpProfile, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.name)
 
     def get_absolute_url(self):
@@ -427,7 +427,7 @@ class CorpMembership(TendenciBaseModel):
             verbose_name_plural = _("Corporate Memberships")
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.corp_profile.name)
 
     def get_absolute_url(self):
@@ -663,7 +663,7 @@ class CorpMembership(TendenciBaseModel):
 
             for name, value in items.items():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__()
+                    items[name] = ', '.join([item.__str__()
                                              for item in value.all()])
         return items
 
@@ -1392,7 +1392,7 @@ class CorpMembershipApp(TendenciBaseModel):
         ordering = ('name',)
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -1546,7 +1546,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         ordering = ('position',)
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
@@ -1666,7 +1666,7 @@ class CorpMembershipRep(models.Model):
         unique_together = (("corp_profile", "user"),)
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
 
     def save(self, *args, **kwargs):
@@ -1798,7 +1798,7 @@ class CorpMembershipImport(models.Model):
     def get_file(self):
         return self.upload_file
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_file().file.name
 
 
@@ -1902,7 +1902,7 @@ class Notice(models.Model):
         verbose_name_plural = _("Member Notices")
         app_label = 'corporate_memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.notice_name
 
     def get_default_context(self, corporate_membership=None,

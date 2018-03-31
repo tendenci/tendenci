@@ -114,7 +114,7 @@ class File(TendenciBaseModel):
     def get_absolute_download_url(self):
         return reverse('file', args=[self.pk, 'download'])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_name()
 
     @property
@@ -422,5 +422,5 @@ class FilesCategory(models.Model):
         ordering = ('name',)
         app_label = 'files'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

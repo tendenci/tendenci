@@ -393,11 +393,8 @@ class BaseEffect(models.Model):
         im = self.post_process(im)
         return im
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
-        return self.__unicode__()
+        return self.name
 
     def save(self, *args, **kwargs):
         try:
@@ -502,11 +499,8 @@ class PhotoSize(models.Model):
         verbose_name_plural = _('photo sizes')
         app_label = 'photos'
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
-        return self.__unicode__()
+        return self.name
 
     def clear_cache(self):
         for cls in ImageModel.__subclasses__():
@@ -579,7 +573,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
 
     objects = PhotoSetManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -973,7 +967,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
     objects = PhotoManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 class License(models.Model):
@@ -989,7 +983,7 @@ class License(models.Model):
     class Meta:
         app_label = 'photos'
 
-    def __unicode__(self):
+    def __str__(self):
        return "%s" % (self.name)
 
 
@@ -1022,7 +1016,7 @@ class AlbumCover(models.Model):
     class Meta:
         app_label = 'photos'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.photo.title
 
 # Set up the accessor methods

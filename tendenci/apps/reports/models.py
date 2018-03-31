@@ -68,7 +68,7 @@ class Report(TendenciBaseModel):
         verbose_name = _('Report')
         verbose_name_plural = _('Reports')
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s " % (self.pk, str(self.type))
 
     def get_absolute_url(self):
@@ -163,7 +163,7 @@ class Run(models.Model):
         verbose_name = _('Run')
         verbose_name_plural = _('Runs')
 
-    def __unicode__(self):
+    def __str__(self):
         return "Run %s for report %s" % (self.pk, self.report.pk)
 
     def get_absolute_url(self):

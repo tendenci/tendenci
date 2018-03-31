@@ -18,5 +18,5 @@ class Robot(models.Model):
     class Meta:
         app_label = 'robots'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

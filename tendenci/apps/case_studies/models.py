@@ -25,7 +25,7 @@ class CaseStudy(TendenciBaseModel):
 
     objects = CaseStudyManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.client
 
     class Meta:
@@ -71,7 +71,7 @@ class Service(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -86,7 +86,7 @@ class Technology(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

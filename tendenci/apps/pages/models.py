@@ -56,7 +56,7 @@ class BasePage(TendenciBaseModel):
             else:
                 set_s3_file_permission(self.header_image.file, public=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_header_image_url(self):

@@ -32,7 +32,7 @@ class Committee(BasePage):
 
     objects = CommitteeManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.title)
 
     class Meta:
@@ -60,7 +60,7 @@ class Position(models.Model):
     class Meta:
         app_label = 'committees'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.title)
 
 
@@ -73,5 +73,5 @@ class Officer(models.Model):
     class Meta:
         app_label = 'committees'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.pk

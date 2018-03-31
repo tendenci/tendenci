@@ -128,7 +128,7 @@ class Category(models.Model):
 
     objects = CategoryManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -146,7 +146,7 @@ class CategoryItem(models.Model):
     class Meta:
         app_label = 'categories'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.category:
             return self.category.name
         return ""

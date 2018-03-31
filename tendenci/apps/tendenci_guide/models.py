@@ -19,7 +19,7 @@ class Guide(OrderingBaseModel):
     class Meta:
         permissions = (("view_guide",_("Can view guide")),)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):

@@ -52,7 +52,7 @@ class Location(TendenciBaseModel):
         permissions = (("view_location",_("Can view location")),)
         app_label = 'locations'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.location_name
 
     def get_absolute_url(self):
@@ -154,7 +154,7 @@ class LocationImport(models.Model):
         file = File.objects.get_for_model(self)[0]
         return file
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_file().file.path
 
 

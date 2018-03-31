@@ -47,7 +47,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
 
     objects = StaffManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -90,7 +90,7 @@ class Department(models.Model):
     class Meta:
         app_label = 'staff'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -103,7 +103,7 @@ class Position(models.Model):
     class Meta:
         app_label = 'staff'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

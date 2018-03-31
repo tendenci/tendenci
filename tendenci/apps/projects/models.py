@@ -15,13 +15,13 @@ from tendenci.apps.files.managers import FileManager
 class DocumentType(models.Model):
     type = models.CharField(_(u'type'), max_length=300)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.type
 
 class ClientList(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -36,7 +36,7 @@ class Category(models.Model):
     image = models.ForeignKey(CategoryPhoto, help_text=_('Photo that represents this category.'), null=True, default=None, on_delete=models.CASCADE)
     position = models.IntegerField(blank=True, default=0)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -66,14 +66,14 @@ class ProjectManager(models.Model):
     first_name = models.CharField(_(u'First Name'), max_length=200, blank=True)
     last_name = models.CharField(_(u'Last Name'), max_length=200, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         displayname = "%s %s" % (self.first_name, self.last_name)
         return displayname
 
 class ProjectNumber(models.Model):
     number = models.CharField(_(u'number'), max_length=200, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.number
 
 
@@ -140,7 +140,7 @@ class Project(TendenciBaseModel):
 
     objects = NewProjectManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.id)
 
     class Meta:
@@ -161,7 +161,7 @@ class Photo(File):
 
     objects = FileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 class TeamMembers(File):
@@ -174,7 +174,7 @@ class TeamMembers(File):
 
     objects = FileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 class Documents(File):
@@ -185,5 +185,5 @@ class Documents(File):
 
     objects = FileManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.type

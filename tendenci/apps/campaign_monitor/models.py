@@ -18,7 +18,7 @@ class ListMap(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     last_sync_dt = models.DateTimeField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.group:
             return self.group.name
         return ''
@@ -83,7 +83,7 @@ class Template(models.Model):
             return "%scampaign_monitor/%s" % (settings.MEDIA_URL, self.template_id)
         return ''
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -138,7 +138,7 @@ class Campaign(models.Model):
     def get_absolute_url(self):
         return reverse('campaign_monitor.campaign_view', args=[self.campaign_id])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 # create post_save and pre_delete signals to sync with campaign monitor

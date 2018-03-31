@@ -31,7 +31,7 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
         ordering = ('position','-update_dt')
         app_label = 'industries'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.industry_name
 
 #    def get_absolute_url(self):

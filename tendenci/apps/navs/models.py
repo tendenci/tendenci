@@ -26,7 +26,7 @@ class Nav(TendenciBaseModel):
         permissions = (("view_nav",_("Can view nav")),)
         app_label = 'navs'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):
@@ -57,7 +57,7 @@ class NavItem(OrderingBaseModel):
     class Meta:
         app_label = 'navs'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.nav.title, self.label)
 
     def get_url(self):

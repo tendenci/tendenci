@@ -51,7 +51,7 @@ class NoticeType(models.Model):
     # by default only on for media with sensitivity less than or equal to this number
     default = models.IntegerField(_('default'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
     class Meta:
@@ -155,7 +155,7 @@ class Notice(models.Model):
         verbose_name_plural = _("notices")
         app_label = 'notifications'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.message
 
     def archive(self):
@@ -208,7 +208,7 @@ class NoticeEmail(models.Model):
     class Meta:
         app_label = 'notifications'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):

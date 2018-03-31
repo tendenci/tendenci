@@ -18,7 +18,7 @@ class Category(OrderingBaseModel):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -34,7 +34,7 @@ class VideoType(models.Model):
     name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -63,7 +63,7 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
     objects = VideoManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
@@ -141,7 +141,7 @@ class OembedlyCache(models.Model):
     class Meta:
         app_label = 'videos'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.url
 
     @staticmethod

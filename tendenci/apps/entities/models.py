@@ -53,7 +53,7 @@ class Entity(models.Model):
     def get_absolute_url(self):
         return reverse('entity', args=[self.pk])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.entity_name
 
     def save(self, *args, **kwargs):

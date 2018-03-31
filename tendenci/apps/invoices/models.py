@@ -101,7 +101,7 @@ class Invoice(models.Model):
         permissions = (("view_invoice", _("Can view invoice")), )
         app_label = 'invoices'
 
-    def __unicode__(self):
+    def __str__(self):
         return "Invoice %s" % self.pk
 
     def set_creator(self, user):

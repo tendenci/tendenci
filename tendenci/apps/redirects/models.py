@@ -31,7 +31,7 @@ class Redirect(models.Model):
     class Meta:
         app_label = 'redirects'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.from_app:
             return "Redirect from App: %s" % self.from_app
         else:

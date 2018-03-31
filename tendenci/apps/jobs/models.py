@@ -33,7 +33,7 @@ class Category(models.Model):
         ordering = ('name',)
         app_label = 'jobs'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 #         full_path = [self.name]
 #         p = self.parent
@@ -133,7 +133,7 @@ class BaseJob(TendenciBaseModel):
 
         super(BaseJob, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     # Called by payments_pop_by_invoice_user in Payment model.
@@ -242,7 +242,7 @@ class JobPricing(models.Model):
         verbose_name_plural = _("Job Pricings")
         app_label = 'jobs'
 
-    def __unicode__(self):
+    def __str__(self):
         price = "%s/%s" % (self.regular_price, self.premium_price)
         return "%s: %s Days for %s" % (self.get_title(), self.duration, price)
 

@@ -25,5 +25,5 @@ class Export(models.Model):
     def get_absolute_url(self):
         return reverse('export.status', args=[self.app_label, self.model_name])
 
-    def __unicode__(self):
+    def __str__(self):
         return "Export for %s %s" % (self.app_label, self.model_name)

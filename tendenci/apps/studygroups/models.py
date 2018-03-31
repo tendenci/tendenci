@@ -32,7 +32,7 @@ class StudyGroup(BasePage):
 
     objects = StudyGroupManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.title)
 
     class Meta:
@@ -61,7 +61,7 @@ class Position(models.Model):
     class Meta:
         app_label = 'studygroups'
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.title)
 
 
@@ -74,7 +74,7 @@ class Officer(models.Model):
     class Meta:
         app_label = 'studygroups'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.pk
 
     def save(self, *args, **kwargs):

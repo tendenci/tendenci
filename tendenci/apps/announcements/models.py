@@ -23,5 +23,5 @@ class EmergencyAnnouncement(TendenciBaseModel):
         verbose_name = _('Emergency Announcement')
         verbose_name_plural = _('Emergency Announcements')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title

@@ -16,7 +16,7 @@ class Metric(models.Model):
     invoice_totals = models.DecimalField(_("sum of invoices' totals"), max_digits=12, decimal_places=2, null=True)
     create_dt = models.DateTimeField(_('create date/time'), auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Metrics: %d' % self.pk
 
     def delta(self, value):

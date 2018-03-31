@@ -37,7 +37,7 @@ class UpdateTracker(models.Model):
         self.__class__.objects.exclude(id=self.id).delete()
         super(UpdateTracker, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: status = %s" % (self.id, self.is_updating)
 
 
@@ -49,7 +49,7 @@ class ChecklistItem(OrderingBaseModel):
     class Meta:
         app_label = 'base'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -93,7 +93,7 @@ class BaseImport(models.Model):
     def get_file(self):
         return self.upload_file
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_file().file.name
 
 

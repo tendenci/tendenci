@@ -55,7 +55,7 @@ class Career(TendenciBaseModel):
         verbose_name = _("Career")
         verbose_name_plural = _("Careers")
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.company, self.user)
 
 #    def get_absolute_url(self):

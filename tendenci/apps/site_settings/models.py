@@ -45,7 +45,7 @@ class Setting(models.Model):
         return reverse("setting.permalink",
                 args=[self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
 
-    def __unicode__(self):
+    def __str__(self):
         return "(%s) %s" %(self.name, self.label)
 
     def set_value(self, value):

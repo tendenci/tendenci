@@ -58,7 +58,7 @@ class Group(TendenciBaseModel):
         ordering = ("name",)
         app_label = 'user_groups'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label or self.name
 
     def get_absolute_url(self):
@@ -180,7 +180,7 @@ class GroupMembership(models.Model):
     is_newsletter_subscribed = models.BooleanField(default=True)
     newsletter_key = models.CharField(max_length=50, null=True, blank=True) # will be the secret key for unsubscribe
 
-    def __unicode__(self):
+    def __str__(self):
         return self.group.name
 
     class Meta:

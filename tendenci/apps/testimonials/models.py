@@ -47,7 +47,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
         ordering = ['position']
         app_label = 'testimonials'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
 
     def get_absolute_url(self):

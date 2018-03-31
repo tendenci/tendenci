@@ -116,7 +116,7 @@ class Resume(TendenciBaseModel):
         self.guid = self.guid or uuid.uuid1()
         super(Resume, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def is_pending(self):

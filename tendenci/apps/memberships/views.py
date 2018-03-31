@@ -1,3 +1,4 @@
+from builtins import str
 import os
 import math
 from decimal import Decimal
@@ -1690,7 +1691,7 @@ def delete(request, id, template_name="memberships/applications/delete.html"):
         membership.owner = request.user
         membership.owner_username = request.user.username
         membership.save()
-        msg_deleted = '%s has been deleted.' % membership.__unicode__()
+        msg_deleted = '%s has been deleted.' % str(membership)
         membership.delete(log=True)
         messages.add_message(request, messages.SUCCESS, _(msg_deleted))
 
@@ -1722,7 +1723,7 @@ def expire(request, id, template_name="memberships/applications/expire.html"):
 
     if request.method == "POST":
         membership.expire(request_user=request.user)
-        msg_expired = '%s has been expired.' % membership.__unicode__()
+        msg_expired = '%s has been expired.' % str(membership)
         messages.add_message(request, messages.SUCCESS, _(msg_expired))
 
         # log an event

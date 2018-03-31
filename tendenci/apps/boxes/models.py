@@ -30,7 +30,7 @@ class Box(OrderingBaseModel, TendenciBaseModel):
         ordering = ['position']
         app_label = 'boxes'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def safe_content(self):

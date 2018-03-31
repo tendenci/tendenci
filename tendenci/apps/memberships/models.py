@@ -167,7 +167,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         permissions = (("view_membershiptype", _("Can view membership type")),)
         app_label = 'memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -571,7 +571,7 @@ class MembershipDefault(TendenciBaseModel):
         if not self.auto_renew:
             self.auto_renew = False
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Returns summary of membership object
         """
@@ -1838,8 +1838,7 @@ class MembershipDefault(TendenciBaseModel):
 
             for name, value in items.items():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__()
-                                             for item in value.all()])
+                    items[name] = ', '.join([str(item) for item in value.all()])
 
         return items
 
@@ -2077,7 +2076,7 @@ class MembershipImport(models.Model):
 
         return File.objects.get_for_model(self)[0]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_file().file.name
 
     def generate_recap(self):
@@ -2193,7 +2192,7 @@ class Notice(models.Model):
     class Meta:
         app_label = 'memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.notice_name
 
     def get_default_context(self, membership=None):
@@ -2475,7 +2474,7 @@ class MembershipApp(TendenciBaseModel):
         permissions = (("view_app", _("Can view membership application")),)
         app_label = 'memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -2567,7 +2566,7 @@ class MembershipAppField(OrderingBaseModel):
         ordering = ('position',)
         app_label = 'memberships'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label

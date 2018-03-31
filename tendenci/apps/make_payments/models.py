@@ -36,7 +36,7 @@ class MakePayment(models.Model):
         verbose_name = _("General Payment")
         verbose_name_plural = _("General Payments")
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Payment'
 
     def save(self, user=None):

@@ -101,7 +101,7 @@ class Profile(Person):
         verbose_name_plural = _("Users")
         app_label = 'profiles'
 
-    def __unicode__(self):
+    def __str__(self):
         if hasattr(self, 'user'):
             return self.user.username
         else:

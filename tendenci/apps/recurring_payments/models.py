@@ -109,7 +109,7 @@ class RecurringPayment(models.Model):
     class Meta:
         app_label = 'recurring_payments'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.user, self.description)
 
     def get_absolute_url(self):

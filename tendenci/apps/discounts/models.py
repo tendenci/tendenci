@@ -54,7 +54,7 @@ class Discount(TendenciBaseModel):
             return False
         return True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.discount_code
 
     def get_absolute_url(self):
@@ -86,5 +86,5 @@ class DiscountUse(models.Model):
     class Meta:
         app_label = 'discounts'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s" % (self.invoice, self.discount)
