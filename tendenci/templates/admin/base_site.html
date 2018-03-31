@@ -6,8 +6,8 @@
 {% block title %}{% blocktrans with t=title %}{{ t }}{% endblocktrans %} | {{ SITE_GLOBAL_SITEDISPLAYNAME }} Tendenci&reg;{% endblock %}
 
 {% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/admin.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/labels.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/labels.css' %}" />
 {% endblock %}
 
 {% block branding %}

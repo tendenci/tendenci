@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/locations.css">
+    <link rel="stylesheet" href="{% local_static 'css/locations.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
 
 <h2>{% trans "Download: " %}<span style="font-size:12px;font-weight:normal;text-transform:none;">{% trans "(**skip if you already have your spread sheet ready)" %}</span></h2>
 <div class="download-csv">
-<img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
+<img src="{% static 'images/icons/xls-icon.gif' %}" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
 <div class="item-right">
     <p><a href="{% url "locations.download_location_upload_template_csv" %}">{% trans ".csv Template" %}</a></p>
 </div>

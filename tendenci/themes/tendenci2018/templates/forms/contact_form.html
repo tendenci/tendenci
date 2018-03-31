@@ -3,7 +3,7 @@
 
 {% has_perm user forms.change_form form as can_edit %}
 
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
 
 <div class="page-header">
   <h1>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h1>

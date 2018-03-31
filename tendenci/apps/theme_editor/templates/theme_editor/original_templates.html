@@ -7,8 +7,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<link rel="stylesheet" href="{% static 'css/theme-editor.css' %}" />
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
 {% endblock %}
 
 {% block content %}

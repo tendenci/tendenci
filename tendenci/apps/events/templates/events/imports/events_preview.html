@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@
     <p>{% trans "You're almost done! To complete your import click 'Import Now.'" %}</p>
 
     <div class="csv-icon">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{{ import_i.file.name|truncatechars:123 }}" title="{{ import_i.file.name|truncatechars:123 }}" />
+        <img src="{% static 'images/icons/xls-icon.gif' %}" alt="{{ import_i.file.name|truncatechars:123 }}" title="{{ import_i.file.name|truncatechars:123 }}" />
         <p>{{ import_i.file.name }}<br /></p>
     </div>
 

@@ -4,7 +4,7 @@
 
 <head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
     <title>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
+    <link rel="stylesheet" href="{% static 'css/jobs.css' %}">
 </head>
 
 <body>
@@ -116,8 +116,8 @@
 {% block extra_body %}
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="/admin/jsi18n/"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/tax_fields.js"></script>
+<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"> </script>
+<script type="text/javascript" src="{% static 'js/tax_fields.js' %}"></script>
 {% endblock %}
 </html>

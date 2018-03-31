@@ -47,7 +47,7 @@ table tr.even {
 }
 
 td.attended-checkbox {
-	text-align: left;		
+	text-align: left;
 }
 td.attended-checkbox div {
 	text-align: left;
@@ -92,8 +92,8 @@ table#registrant-table a:hover {
 	border-top: 1px dotted #ccc !important;
 }
 .member{
-	background-image: url({{ STATIC_URL }}images/icons/member.gif);
-	/*background-image: url({{ STATIC_URL }}images/icons/member_16x16.png);*/
+	background-image: url({% static 'images/icons/member.gif' %});
+	/*background-image: url({% static 'images/icons/member_16x16.png' %});*/
 	background-repeat: no-repeat;
 	padding-left: 16px;
 }

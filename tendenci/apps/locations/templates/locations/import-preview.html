@@ -6,8 +6,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/memberships.css">
-    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/locations-import-preview.css">
+    <link rel="stylesheet" href="{% local_static 'css/memberships.css' %}">
+    <link rel="stylesheet" href="{% local_static 'css/locations-import-preview.css' %}">
 
 {% endblock %}
 

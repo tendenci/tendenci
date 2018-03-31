@@ -7,10 +7,10 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg.css" />
+<link rel="stylesheet" href="{% static 'css/events.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-registration.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-addons.css' %}" />
+<link rel="stylesheet" href="{% static 'css/events-reg.css' %}" />
 
 <style type="text/css">
   input.registrant-pricing {
@@ -400,7 +400,7 @@
 {% endblock %}
 
 {% block extra_body %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+<script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 <script type="text/javascript">
   {% include 'events/include/events-registration-summary.js' %}
   {% include 'events/reg8n/include/register-registrant.js' %}

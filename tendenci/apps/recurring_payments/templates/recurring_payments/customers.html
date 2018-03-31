@@ -9,8 +9,8 @@
 {% block extra_head %}
 {{ block.super }}
 
-<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />
-<link type="text/css" href="{{ STATIC_URL }}css/recurring_payments.css" rel="Stylesheet" />
+<link type="text/css" href="{% static 'tablesorter/sortthemes.css' %}" rel="Stylesheet" />
+<link type="text/css" href="{% static 'css/recurring_payments.css' %}" rel="Stylesheet" />
 {% endblock %}
 
 {% block content %}
@@ -86,7 +86,7 @@
 
 </div>
 </div>
-<img name="loading_img" style="display:none;" src="{{ STATIC_URL }}images/icons/loading.gif"  />
+<img name="loading_img" style="display:none;" src="{% static 'images/icons/loading.gif' %}"  />
 {% endblock %}
 
 {% block extra_body %}
@@ -99,8 +99,8 @@
         s.setAttribute('type', 'text/javascript');
         document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/csrf_proc.js"></script>
+<script type="text/javascript" src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/csrf_proc.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 

@@ -11,8 +11,8 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -144,7 +144,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
 <script type="text/javascript">
   $('.event-item').tipsy({
     gravity: 's',

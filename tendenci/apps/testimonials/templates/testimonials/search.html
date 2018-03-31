@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/testimonial.css">
+<link rel="stylesheet" href="{% static 'css/testimonial.css' %}">
 <link rel="alternate" type="application/rss+xml" title="Latest Testimonials" href="{% url 'testimonial.feed' %}" />
 {% endblock %}
 
@@ -36,7 +36,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
     <script type="text/javascript">
         var iconrow = new dropdown({
             container:    'more-options-wrap',

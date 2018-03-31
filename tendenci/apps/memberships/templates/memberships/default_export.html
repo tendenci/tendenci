@@ -6,8 +6,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{% static 'bootstrap3/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
 <style>#membership-export ul li {list-style: none;}</style>
 {% endblock %}
 

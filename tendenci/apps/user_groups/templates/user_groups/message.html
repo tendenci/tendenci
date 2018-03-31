@@ -9,9 +9,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/usergroups.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+<link rel="stylesheet" href="{% static 'css/popover.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -112,7 +112,7 @@
         });
     </script>
 
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
     <script>
         $(document).ready(function(){
             var options = {

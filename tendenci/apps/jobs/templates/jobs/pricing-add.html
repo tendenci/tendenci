@@ -24,5 +24,5 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/tax_fields.js"></script>
+<script type="text/javascript" src="{% static 'js/tax_fields.js' %}"></script>
 {% endblock %}

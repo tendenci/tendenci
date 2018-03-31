@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
@@ -23,7 +23,7 @@
     </div>
 
     <div class="loading-message">
-        <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" />
+        <img src="{% static 'images/loadingicon.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" />
     </div>
 
 </div>
@@ -32,7 +32,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-blockUI.js"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-blockUI.js' %}"></script>
     <script type="text/javaScript">
     {% include 'files/include/categories.js' %}
     </script>

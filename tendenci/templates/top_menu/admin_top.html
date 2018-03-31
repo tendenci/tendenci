@@ -4,7 +4,7 @@
 {% spaceless %}
 <div id="admin-bar">
     <ul>
-       <li class="visible-mobile"><a class="admin-logo" href="{% url 'dashboard' %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
+       <li class="visible-mobile"><a class="admin-logo" href="{% url 'dashboard' %}"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="24" /></a></li>
         <li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
             <div class="sub">
                 <div class="column">
@@ -204,7 +204,7 @@
 
         {% if THEME_INFO.SSU.color %}
         <li class="right" id="themecolor">
-            <a href="#"><img class="themecolorLogo" src="{{ STATIC_URL }}images/icons/color-palette-16x16.png">&nbsp;&nbsp;{% trans "Colors" %}</a>
+            <a href="#"><img class="themecolorLogo" src="{% static 'images/icons/color-palette-16x16.png' %}">&nbsp;&nbsp;{% trans "Colors" %}</a>
             <div class="sub themecolor">
                 <div class="column app-list">
                     {% include 'theme_editor/theme_color_admin.html' %}

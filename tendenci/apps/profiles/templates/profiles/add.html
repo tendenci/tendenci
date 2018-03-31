@@ -6,9 +6,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -549,7 +549,7 @@
 {% block extra_body %}
 {{ block.super }}
 {# dynamically load jquery #}
-<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+<script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 <script>
   if (!(window.jQuery)) {
     var s = document.createElement('script');

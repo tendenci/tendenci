@@ -62,7 +62,7 @@
 
         {% block extra_body %}
         {{ block.super }}
-        <script src="{{ STATIC_URL}}js/bootstrap-datepicker.js"></script>
+        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
         <script type="text/javascript">
           var nowTemp = new Date();
           var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);

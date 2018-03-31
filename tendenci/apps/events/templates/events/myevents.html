@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-my_events.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-my_events.css' %}">
 {% endblock %}
 
 {% block content %}

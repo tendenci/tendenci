@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/newsletters.css">
+<link rel="stylesheet" href="{% static 'css/newsletters.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -23,10 +23,10 @@
 {% endblock %}
 
 {% block extra_body %}
-<script src="{{ STATIC_URL }}js/zeroclipboard/ZeroClipboard.min.js"></script>
+<script src="{% static 'js/zeroclipboard/ZeroClipboard.min.js' %}"></script>
 <script language="JavaScript">
     var clip = new ZeroClipboard( document.getElementById("d_clip_button"), {
-        moviePath: "{{ STATIC_URL }}js/zeroclipboard/ZeroClipboard.swf"
+        moviePath: "{% static 'js/zeroclipboard/ZeroClipboard.swf' %}"
     });
     clip.on('complete', function (client, args) {
         alert("{% trans 'Successfully added HTML to clipboard' %}");

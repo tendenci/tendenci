@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link type="text/css" href="{{ STATIC_URL }}css/recurring_payments.css" rel="Stylesheet" />
+<link type="text/css" href="{% static 'css/recurring_payments.css' %}" rel="Stylesheet" />
 
 {% endblock %}
 

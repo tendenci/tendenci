@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -25,8 +25,8 @@
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_location_name',

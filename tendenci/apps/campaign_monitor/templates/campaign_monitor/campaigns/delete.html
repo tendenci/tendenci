@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/delete.css">
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
 {% endblock %}
 
 {% block content %}

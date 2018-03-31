@@ -10,8 +10,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-day-view.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-day-view.css' %}">
 <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 {% endblock %}
 
@@ -169,7 +169,7 @@
             });
         });
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
     <script type="text/javascript">
         var iconrow = new dropdown({
             container:    'more-options-wrap',

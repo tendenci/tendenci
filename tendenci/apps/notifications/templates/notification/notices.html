@@ -8,7 +8,7 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/atom+xml" title="Notices Feed" href="{% url 'notification_feed_for_user' %}" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/notification.css" />
+    <link rel="stylesheet" href="{% static 'css/notification.css' %}" />
 {% endblock %}
 
 {% block content %}

@@ -6,7 +6,7 @@
 {% block extra_head %}
 {{ block.super }}
 <script type="text/javascript" src="https://js.stripe.com/v3/"></script>
-<link rel="stylesheet" href="{{ STATIC_URL }}css/stripe.css">
+<link rel="stylesheet" href="{% static 'css/stripe.css' %}">
 
 {% endblock %}
 
@@ -83,7 +83,7 @@
      </div>
 
     <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
-      <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
+      <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
     </div>
 </form>
 </div>
@@ -96,5 +96,5 @@
 
 {% set_stripe_key %}
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/stripe_payment.js"></script>
+<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}"></script>
 {% endblock %}

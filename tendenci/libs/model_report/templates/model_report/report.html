@@ -5,7 +5,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link href="{{ STATIC_URL }}model_report/css/datepicker.css" type="text/css" media="screen" rel="stylesheet" />
+    <link href="{% static 'model_report/css/datepicker.css' %}" type="text/css" media="screen" rel="stylesheet" />
 
   <style type="text/css">
       .row-hidden {
@@ -42,11 +42,11 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script src="{{ STATIC_URL }}model_report/js/jquery-1.6.2.min.js" type="text/javascript"></script>
-    <script src="{{ STATIC_URL }}model_report/js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+    <script src="{% static 'model_report/js/jquery-1.6.2.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'model_report/js/jquery-ui-1.8.16.custom.min.js' %}" type="text/javascript"></script>
 
     {% if chart %}
-        <script type="text/javascript" src="{{ STATIC_URL }}model_report/js/highcharts/js/highcharts.js"></script>
+        <script type="text/javascript" src="{% static 'model_report/js/highcharts/js/highcharts.js' %}"></script>
         <script type="text/javascript">
             var chart;
             var subtitle_text_mouse = '{% trans "Click and drag in the plot area to zoom in" %}';

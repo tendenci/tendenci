@@ -5,9 +5,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}authnet_cim/paymentShipping.css">
+<link rel="stylesheet" href="{% static 'authnet_cim/paymentShipping.css' %}">
   <!--[if lte IE 6]>
-  <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
+  <link href="{% static 'authnet_cim/paymentShippingIELTE6.css' %}" rel="stylesheet" type="text/css" />
  <![endif]-->
 
 
@@ -57,7 +57,7 @@
     document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
 
-<script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup_custom.js"></script>
+<script type="text/javascript" src="{% static 'authnet_cim/popup_custom.js' %}"></script>
 
 <script type="text/javascript">
   //<![CDATA[

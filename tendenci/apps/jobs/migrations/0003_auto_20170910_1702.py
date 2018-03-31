@@ -22,10 +22,10 @@ def migrate_customized_jobs_templates():
      </fieldset>
 
     Replace:
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"> </script>
 
     With:
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"> </script>
     <script type="text/javascript">{% include 'jobs/include/get_subcategories.js' %} </script>
 
 
@@ -135,9 +135,9 @@ def migrate_customized_jobs_templates():
                 content = re.sub(p, '', content)
 
                 # add js link
-                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js">'),
+                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
                                         re.escape('</script>'))
-                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>',
+                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
                                                       '<script type="text/javascript">{% include \'jobs/include/get_subcategories.js\' %} </script>)'),
                                  content)
             with open(file_path, 'w') as f:

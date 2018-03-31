@@ -358,8 +358,8 @@ a.event-place-desc-toggle {
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/social_media_icons.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/social_media_icons.js' %}"></script>
 <script type="text/javascript">
   $(document).ready(function(){
   

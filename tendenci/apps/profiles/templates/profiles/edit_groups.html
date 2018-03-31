@@ -5,11 +5,11 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/admin/django-admin-widgets.css">
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/admin/django-admin.multiselect.js"></script>
+<script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function(){
       jQuery.each($("select[multiple]"), function () {
@@ -52,7 +52,7 @@
 
 </div>
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
 <script type="text/javascript">
 var iconrow = new dropdown({
   container:  'more-options-wrap',

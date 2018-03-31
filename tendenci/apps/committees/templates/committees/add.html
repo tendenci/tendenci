@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}chosen/chosen.css">
+<link rel="stylesheet" href="{% static 'chosen/chosen.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -38,10 +38,10 @@
 {% block extra_body %}
     {{ block.super }}
     {{ form.media }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}chosen/chosen.jquery.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/dynamic-formset.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/dynamic-formset.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation

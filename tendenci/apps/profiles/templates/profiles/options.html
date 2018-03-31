@@ -24,7 +24,7 @@
 
 
                 {% if not user_this.is_active %}
-                    <img class="non-interactive" src="{{ STATIC_URL }}images/icons/answer_incorrect.gif"
+                    <img class="non-interactive" src="{% static 'images/icons/answer_incorrect.gif' %}"
                     alt="{% trans 'Non-Interactive' %}" title="{% trans 'Non-Interactive' %}">
                 {% endif %}
 

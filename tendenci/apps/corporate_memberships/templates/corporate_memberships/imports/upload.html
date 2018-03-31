@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/corp-membership-import.css">
+    <link rel="stylesheet" href="{% static 'css/corporate_memberships.css' %}">
+    <link rel="stylesheet" href="{% static 'css/corp-membership-import.css' %}">
     <style>
         .error{
             color: red;
@@ -117,7 +117,7 @@
 
     <div class="template-download">
         <a href="{% url "corpmembership.download_template" %}">
-        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="{% trans 'Download CSV Template' %}"/>
+        <img src="{% static 'images/icons/xls-icon.gif' %}" alt="Download CSV Template" title="{% trans 'Download CSV Template' %}"/>
         </a>
 
         <div class="link">

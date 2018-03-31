@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
+<link rel="stylesheet" href="{% static 'css/event-logs.css' %}">
 {% endblock %}
 
 {% block content %}

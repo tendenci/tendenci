@@ -11,10 +11,10 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/events-roster.css">
-    <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/events-roster-screen.css">
-    <link rel="stylesheet" media="print" href="{{ STATIC_URL }}css/events-roster-print.css">
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    <link rel="stylesheet" href="{% static 'css/events-roster.css' %}">
+    <link rel="stylesheet" media="screen" href="{% static 'css/events-roster-screen.css' %}">
+    <link rel="stylesheet" media="print" href="{% static 'css/events-roster-print.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -354,7 +354,7 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
     <script type="text/javascript">
         var iconrow = new dropdown({
             container: 'more-options-wrap',

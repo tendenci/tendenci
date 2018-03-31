@@ -2,5 +2,5 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link href="{{ LOCAL_STATIC_URL }}css/theme-editor.css" rel="stylesheet" type="text/css" />
+    <link href="{% local_static 'css/theme-editor.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}

@@ -5,8 +5,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/social_services.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.jqplot.min.css" />
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+<link rel="stylesheet" href="{% static 'css/jquery.jqplot.min.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -53,8 +53,8 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jqplot.pieRenderer.min.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.jqplot.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jqplot.pieRenderer.min.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
   var values = {{ stats }};

@@ -1,7 +1,7 @@
 {% load base_filters %}
 
 {% if THEME_INFO.SSU.walkthrough %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}walkthrough/css/walkthrough.css" type="text/css" />
+    <link rel="stylesheet" href="{% static 'walkthrough/css/walkthrough.css' %}" type="text/css" />
 
     <div id="walkthrough">
       <div id="walkthrough-intro" class="walkthrough-item" style="display:none;">
@@ -84,7 +84,7 @@
       </div>
 
     </div>
-    <script src="{{ STATIC_URL }}walkthrough/js/walkthrough.js" type="text/javascript"></script>
+    <script src="{% static 'walkthrough/js/walkthrough.js' %}" type="text/javascript"></script>
     <script>
     $(document).ready(function(){
         $('#walkthrough').pagewalkthrough({

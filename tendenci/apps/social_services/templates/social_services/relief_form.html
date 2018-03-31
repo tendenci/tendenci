@@ -5,7 +5,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/social_services.css" />
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@
 {% block extra_body %}
 {{ block.super }}
 {{ form.media }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     ethnicity = $(".form-field .id_ethnicity li input:checked")

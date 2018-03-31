@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy-search.css">
+<link rel="stylesheet" href="{% static 'css/casestudy.css' %}">
+<link rel="stylesheet" href="{% static 'css/casestudy-search.css' %}">
 <link rel="alternate" type="application/rss+xml" title="Latest Case Studies" href="{% url "case_study.feed" %}" />
 {% endblock %}
 
@@ -52,7 +52,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-  <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+  <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
   <script type="text/javascript">
     var iconrow = new dropdown({
       container:  'more-options-wrap',

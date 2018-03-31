@@ -5,7 +5,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/make_payments.css">
+<link rel="stylesheet" href="{% static 'css/make_payments.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -26,5 +26,5 @@
 {% endblock %}
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 {% endblock %}

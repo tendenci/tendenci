@@ -8,10 +8,10 @@
 
 {% block extra_head %}
 {{ block.super }}
-<!--<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">-->
+<!--<link rel="stylesheet" href="{% static 'css/pages.css' %}">-->
 <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-<link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
+<link href="{% static 'css/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{% static 'css/popover.css' %}">
 
 {% endblock %}
 
@@ -64,11 +64,11 @@
 {% block extra_body %}
     {{ block.super }}
     {{ form.media }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="{{ STATIC_URL }}js/tag-it.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
+    <script src="{% static 'js/tag-it.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/gplus-helptexts.js' %}"></script>
     <script type="text/javascript">
         gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
 

@@ -4,13 +4,13 @@
 
 {% block extra_head %}
 {{ block.super }}
-  <link href="{{ STATIC_URL }}authnet_cim/manage.css" rel="stylesheet" type="text/css" />
+  <link href="{% static 'authnet_cim/manage.css' %}" rel="stylesheet" type="text/css" />
 
    <!--[if lte IE 6]>
-  <link href="{{ STATIC_URL }}authnet_cim/manageIELTE6.css" rel="stylesheet" type="text/css" />
+  <link href="{% static 'authnet_cim/manageIELTE6.css' %}" rel="stylesheet" type="text/css" />
   <![endif]-->
 
- <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
+ <script type="text/javascript" src="{% static 'authnet_cim/popup.js' %}"></script>
  <script type="text/javascript">
 
  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }};

@@ -2,7 +2,7 @@
 
 {% block extra_head %}
 <title>{% blocktrans with t=form.title  %}{{ t }}{% endblocktrans %}</title>
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
 {{ block.super }}
 {% endblock %}
 

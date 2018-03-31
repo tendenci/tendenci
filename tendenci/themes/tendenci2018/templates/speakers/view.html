@@ -47,7 +47,7 @@ speaker {{ speaker.name }}
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/speaker.css" />
+<link rel="stylesheet" href="{% static 'css/speaker.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -65,7 +65,7 @@ speaker {{ speaker.name }}
           {% if speaker.professional_photo %}
           <img class="img-responsive" src="{% url 'file' speaker.professional_photo.pk %}" title="{{ speaker.name }}"  />
           {% else %}
-          <img class="img-responsive" src="{{ STATIC_URL }}images/speakers-default.jpg" title="{{ speaker.name }}"  />
+          <img class="img-responsive" src="{% static 'images/speakers-default.jpg' %}" title="{{ speaker.name }}"  />
           {% endif %}
           {%  if speaker.position %}
           <p class="speaker-position">{{ speaker.position }}</p>
@@ -97,13 +97,13 @@ speaker {{ speaker.name }}
     
     <div class="speaker-media">
       {% if speaker.facebook %}
-      <a href="{{ speaker.facebook }}"><img src="{{ STATIC_URL }}images/icons/facebook-24x24.png" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
+      <a href="{{ speaker.facebook }}"><img src="{% static 'images/icons/facebook-24x24.png' %}" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
       {% endif %}
       {% if speaker.twitter %}
-      <a href="{{ speaker.twitter }}"><img src="{{ STATIC_URL }}images/icons/twitter-24x24.png" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
+      <a href="{{ speaker.twitter }}"><img src="{% static 'images/icons/twitter-24x24.png' %}" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
       {% endif %}
       {% if speaker.linkedin %}
-      <a href="{{ speaker.linkedin }}"><img src="{{ STATIC_URL }}images/icons/linkedin-24x24.png" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
+      <a href="{{ speaker.linkedin }}"><img src="{% static 'images/icons/linkedin-24x24.png' %}" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
       {% endif %}
       
       {% if speaker.get_satisfaction %}

@@ -8,8 +8,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships-no-renew.css">
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberships-no-renew.css' %}">
 {% endblock %}
 
 {% block content %}

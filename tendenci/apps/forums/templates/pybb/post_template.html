@@ -84,7 +84,7 @@
                 {% endif %}
                 <div class='attachments'>
                     {% for attachment in post.attachments.all %}
-                        <a href="{{ attachment.file.url }}"><img src="{{ STATIC_URL }}pybb/img/attachment.png"> {{ attachment.size_display }}</a>
+                        <a href="{{ attachment.file.url }}"><img src="{% static 'pybb/img/attachment.png' %}"> {{ attachment.size_display }}</a>
                     {% endfor %}
                 </div>
             </div>

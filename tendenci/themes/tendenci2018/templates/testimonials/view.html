@@ -31,7 +31,7 @@ testimonial {{ testimonial.first_last_name }}
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/testimonial.css">
+<link rel="stylesheet" href="{% static 'css/testimonial.css' %}">
 {% endblock %}
 
 {% block content %}

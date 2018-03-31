@@ -20,7 +20,7 @@
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li>
         <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">
-        <img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
+        <img border="0" src="{% static 'images/tendenci34x15.gif' %}"
         alt="{% trans 'Tendenci User Home' %}" title="{% trans 'Tendenci' %}" align="top" width="34" height="15"></a>
     </li>
     {% endif %}

@@ -5,7 +5,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans "Entries Export" %}</h1>
 
     <div id="wait">
-        <p>{% trans "Please wait." %}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="loading" title="loading"></p>
+        <p>{% trans "Please wait." %}. <img src="{% static 'images/ajax-loader.gif' %}" alt="loading" title="loading"></p>
     </div>
 
     <div id="done" style="display:none;">

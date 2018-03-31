@@ -4,7 +4,7 @@
 {% block title %}{% trans 'Payment Receipt' %} {{ block.super }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/payments-receipt.css">
+<link rel="stylesheet" href="{% static 'css/payments-receipt.css' %}">
 {{ block.super }}
 {% endblock %}
 

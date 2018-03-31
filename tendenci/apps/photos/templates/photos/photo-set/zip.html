@@ -10,7 +10,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@
 
     {% if task_id %}
         <div id="zip-wait">
-            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" ></p>
+            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" ></p>
         </div>
     {% endif %}
 

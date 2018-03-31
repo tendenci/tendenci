@@ -4,7 +4,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
 {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

@@ -8,7 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/video.css">
+<link rel="stylesheet" href="{% static 'css/video.css' %}">
 {% endblock %}
 
 {% block top_bar %}

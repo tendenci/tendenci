@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -28,8 +28,8 @@
 {% block extra_body %}
     {{ block.super }}
     {{ form.media }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_question',

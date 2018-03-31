@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/usergroups.css">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
     <style>
         .display-hide{
             display: none;

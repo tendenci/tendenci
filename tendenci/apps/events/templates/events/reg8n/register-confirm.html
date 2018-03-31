@@ -7,8 +7,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-register_confirm.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-register_confirm.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -172,7 +172,7 @@
                     {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
                     {{ registrant.amount|format_currency }}
                     {% if registrant.use_free_pass %}
-                    <img src="{{ STATIC_URL }}/images/icons/fp.png" title="{% trans "free pass used" %}" alt="{% trans "free pass used" %}" />
+                    <img src="{% static 'images/icons/fp.png' %}" title="{% trans "free pass used" %}" alt="{% trans "free pass used" %}" />
                     {% endif %}
                 </span>
                 {% endif %}

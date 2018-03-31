@@ -9,8 +9,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships-roster_search.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css">
+<link rel="stylesheet" href="{% static 'css/corporate_memberships-roster_search.css' %}">
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
 <style>
      #corp-info table td{
         border-top: none;

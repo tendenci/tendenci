@@ -2,7 +2,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />
+<link type="text/css" href="{% static 'tablesorter/sortthemes.css' %}" rel="Stylesheet" />
 <style>
     table.tablesorter{
         width: 500px;
@@ -52,7 +52,7 @@
         s.setAttribute('type', 'text/javascript');
         document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
 
 <script type="text/javascript">
 var cname_extraction = function(node)

@@ -7,7 +7,7 @@
 {% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
 {% endblock %}
 
 {% block content %}

@@ -3,7 +3,7 @@
 {% block body_ids %}editor{% endblock body_ids %}
 
 {% block extra_head %}
-    <link href="{{ LOCAL_STATIC_URL }}css/theme-editor.css" rel="stylesheet" type="text/css" />
+    <link href="{% local_static 'css/theme-editor.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block html_body %}

@@ -6,9 +6,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}jqueryupload/css/jquery.fileupload-ui.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}jqueryupload/css/style.css">
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
+<link rel="stylesheet" href="{% static 'jqueryupload/css/jquery.fileupload-ui.css' %}">
+<link rel="stylesheet" href="{% static 'jqueryupload/css/style.css' %}">
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 
@@ -53,9 +53,9 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}jqueryupload/js/vendor/jquery.ui.widget.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jqueryupload/js/jquery.iframe-transport.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="{% static 'jqueryupload/js/vendor/jquery.ui.widget.js' %}"></script>
+<script type="text/javascript" src="{% static 'jqueryupload/js/jquery.iframe-transport.js' %}"></script>
+<script type="text/javascript" src="{% static 'jqueryupload/js/jquery.fileupload.js' %}"></script>
 <script language="javascript" type="text/javascript">
     $(function () {
         $('#fileupload').fileupload({

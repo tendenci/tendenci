@@ -10,12 +10,12 @@
     <meta name="description" content="File Upload">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap styles -->
-    <link href="{{ STATIC_URL }}bootstrap3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
 
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}jqueryupload/css/jquery.fileupload-ui.css">
+    <link rel="stylesheet" href="{% static 'jqueryupload/css/jquery.fileupload-ui.css' %}">
     <!-- CSS adjustments for browsers with JavaScript disabled -->
-    <noscript><link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.fileupload-ui-noscript.css"></noscript>
+    <noscript><link rel="stylesheet" href="{% static 'css/jquery.fileupload-ui-noscript.css' %}"></noscript>
 
     <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -179,7 +179,7 @@
 
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/vendor/jquery.ui.widget.js"></script>
+<script src="{% static 'jqueryupload/js/vendor/jquery.ui.widget.js' %}"></script>
 
 <script type="text/javascript">
     {% include 'files/include/tinymce/load-image.min.js' %}
@@ -190,15 +190,15 @@
 <script type="text/javascript">
     {% include 'files/include/tinymce/canvas-to-blob.min.js' %}
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}bootstrap3/js/bootstrap.min.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.iframe-transport.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-process.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-image.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-audio.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-video.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-validate.js"></script>
-<script src="{{ STATIC_URL }}jqueryupload/js/jquery.fileupload-ui.js"></script>
+<script type="text/javascript" src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.iframe-transport.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-process.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-image.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-audio.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-video.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-validate.js' %}"></script>
+<script src="{% static 'jqueryupload/js/jquery.fileupload-ui.js' %}"></script>
 <!-- The main application script -->
 <script type="text/javascript">
     {% include 'files/include/tinymce/main.js' %}
@@ -213,7 +213,7 @@
 
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
 <!--[if gte IE 8]>
-<script src="{{ STATIC_URL }}js/cors/jquery.xdr-transport.js"></script>
+<script src="{% static 'js/cors/jquery.xdr-transport.js' %}"></script>
 <![endif]-->
 
 <script type="text/javascript" language="javascript">

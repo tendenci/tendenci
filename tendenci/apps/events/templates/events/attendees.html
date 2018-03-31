@@ -16,9 +16,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-attendees.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-attendees.css' %}">
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
 {% endblock %}
 
 {% block content %}

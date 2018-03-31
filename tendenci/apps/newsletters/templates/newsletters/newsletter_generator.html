@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/newsletters.css">
+<link rel="stylesheet" href="{% static 'css/newsletters.css' %}">
 <style>
     .third-party-newletter{
         margin: 2em 0;
@@ -50,7 +50,7 @@
        <h3>{% trans 'MailChimp' %}</h3>
        <div class="third-party-newletter">
           <a href="http://mailchimp.com" target="_blank">
-          <img src="{{ STATIC_URL }}images/newsletters/mailchimp_logo.jpg" class="provider-logo" alt="mailchimp logo" title="mailchimp" />
+          <img src="{% static 'images/newsletters/mailchimp_logo.jpg' %}" class="provider-logo" alt="mailchimp logo" title="mailchimp" />
            </a>
            {% url 'profile.export' as profile_export_url %}
            {% blocktrans with profile_export_url=profile_export_url %}
@@ -72,7 +72,7 @@
         <h3>{% trans 'Constant Contact' %}</h3>
        <div class="third-party-newletter">
           <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">
-          <img src="{{ STATIC_URL }}images/newsletters/constant_contact_logo.jpg" class="provider-logo" alt="constant contact logo" title="constant contact" />
+          <img src="{% static 'images/newsletters/constant_contact_logo.jpg' %}" class="provider-logo" alt="constant contact logo" title="constant contact" />
            </a>
            {% url 'profile.export' as profile_export_url %}
            {% blocktrans with profile_export_url=profile_export_url %}
@@ -92,7 +92,7 @@
        <h3>{% trans 'Campaign Monitor' %}</h3>
        <div class="third-party-newletter">
           <a href="http://www.campaignmonitor.com/" target="_blank">
-          <img src="{{ STATIC_URL }}images/newsletters/campaign_monitor_logo.jpg" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />
+          <img src="{% static 'images/newsletters/campaign_monitor_logo.jpg' %}" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />
            </a>
            <div class="tpn-detail">
              {% blocktrans %}

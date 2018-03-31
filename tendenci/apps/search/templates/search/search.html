@@ -10,9 +10,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" />
+<link rel="stylesheet" href="{% static 'css/search.css' %}" />
+<link rel="stylesheet" href="{% static 'css/uni-form.css' %}" />
+<link rel="stylesheet" href="{% static 'css/uni-form-generic.css' %}" />
 {% endblock %}
 
 {% block content %}
@@ -83,7 +83,7 @@
             toggle_adv_models();
         });
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
     <script type="text/javascript">
         var iconrow = new dropdown({
             container:    'more-options-wrap',

@@ -4,7 +4,7 @@
 
 <head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
     <title>{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+    <link rel="stylesheet" href="{% static 'css/directories.css' %}">
 </head>
 
 
@@ -103,7 +103,7 @@
 {% block extra_body %}
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="/admin/jsi18n/"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"> </script>
 {% endblock %}
 </html>

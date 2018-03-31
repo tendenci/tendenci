@@ -9,7 +9,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/navs.css">
+<link rel="stylesheet" href="{% static 'css/navs.css' %}">
 {% endblock %}
 
 {% block content %}

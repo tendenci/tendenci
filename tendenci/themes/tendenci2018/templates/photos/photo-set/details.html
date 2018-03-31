@@ -10,8 +10,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos-photo-set.css">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos-photo-set.css' %}">
 
 <meta property="og:title" content="{{ photo_set.name }}" />
 <meta property="og:type" content="image/jpeg" />

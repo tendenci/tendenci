@@ -7,9 +7,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
 <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events-reg-search.css">
+<link rel="stylesheet" href="{% static 'css/events-reg-search.css' %}">
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
 {% endblock %}
 
