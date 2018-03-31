@@ -1,0 +1,56 @@
+{% load testimonial_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user staff.delete_staff opt_object as can_delete %}
+
+<div class="tsm-search-item">
+  <h3 class="tsm-search-item-desc">
+    <a href="{{ testimonial.get_absolute_url }}" title="View testimonial by {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}">
+      {% filter truncatewords:"20" %}
+      {{ testimonial.testimonial|striptags|safe }}
+      {% endfilter %}
+    </a>
+  </h3>
+  
+  <div class="tsm-person-box">
+    <p class="tsm-person-info">
+      {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
+      <br />
+      {% if testimonial.title %}
+      <em> &nbsp;&ndash;&nbsp;{{ testimonial.title }}
+        {% endif %}
+        {% if testimonial.company %}
+        , {{ testimonial.company }} </em>
+      {% endif %}
+    </p>
+    <!--  REMOVED TO SIMPLIFY SEARCH RESULT DATA
+    ============================================
+    {% if testimonial.website %}
+    <p class="tsm-person-info">
+    {{ testimonial.website|urlize }}
+  </p>
+    {% endif %}
+    {%  if testimonial.country or testimonial.city or testimonial.state %}
+    <p class="tsm-person-info">
+    {% if testimonial.city %}
+    {{ testimonial.city }}
+    {% endif %}
+    {% if testimonial.state and testimonial.city %}
+    ,&nbsp;{{ testimonial.state }}
+    {% else %}
+    &nbsp;{{ testimonial.state }}
+    {% endif %}
+    {% if testimonial.country %}
+    &nbsp;{{ testimonial.country }}
+    {% endif %}  
+  </p>
+    {% endif %} 
+    -->
+  </div>
+  
+  {% if can_delete %}
+  {% testimonial_options request.user testimonial %}
+  {% endif %}
+  
+</div>

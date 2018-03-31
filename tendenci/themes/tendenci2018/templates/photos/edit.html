@@ -1,0 +1,71 @@
+{% extends "photos/base-wide.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load styled_forms %}
+
+{% load base_filters %}
+{% load smart_if %}
+
+{% block title %}{% blocktrans %}Editing Photo Details{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Edit photo</h1>
+</div>
+
+<form name="photo-edit" method="post" action="">{% csrf_token %}
+  <div class="forms">
+    
+    {{ photo_form|styled_form }}
+    
+    <div class="submit">
+      <input type="hidden" name="action" value="update" />
+      <input class="btn btn-default" type="submit" value="{% trans 'Save changes' %}" />
+    </div>
+    
+  </div>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
+<script type="text/javascript">
+  
+  // tooltip: black stylish ones
+  $('.photo-sets ul li').tipsy({
+  gravity: 's',
+  delayIn: 1
+  });
+  
+  // photoset: selectable
+  $('.photo-sets ul').selectable({
+  stop: function(event, ui){
+  var $selected_sets = $(event.target).children();
+  // enable/disable input fields
+  $.each($selected_sets, function(i, element){
+  $element = $(element); // jquerize it
+  if($element.is('.ui-selected')){ // selected
+  $element.children('input[name="photoset"]')
+  .removeAttr("disabled"); // enable input field
+  }
+  else { // not selected
+  $element.children('input[name="photoset"]')
+  .attr("disabled", true); // disable input field
+  }
+  });
+  }
+  });
+  
+</script>
+{% endblock %}

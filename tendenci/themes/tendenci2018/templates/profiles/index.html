@@ -1,0 +1,388 @@
+{% extends "profiles/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load profile_filters %}
+{% load contribution_tags %}
+{% load membership_tags %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{% trans 'Profile' %} {% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />
+<style>
+  .app-links{
+  margin: 3px 5em 1em 5em;
+  }
+  
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- you are here: templates/profiles/index.html -->
+
+<div id="profile-index-page">
+  <div>
+    
+    {% for message,link,label in membership_reminders %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <p>{{ message|safe }}</p>
+      <div class="alert-link">
+        <a class="btn" href="{{ link }}">{{ label }}</a>
+      </div>
+    </div>
+    {% endfor %}
+    
+    <div id="profile-view">
+      <div>
+        
+<!-- EDIT BTN -->
+<!-- END: EDIT BTN -->
+        
+        
+        <div class="page-header">
+          <div class="row">
+            <div class="col-sm-2">
+              {% if user_this == request.user %}
+              <a href="//gravatar.com/" target="_blank" title="Create / update your gravatar">
+                {% gravatar user_this 128 %}
+              </a>
+              {% else %}
+              {% gravatar user_this 128 %}
+              {% endif %}
+            </div>
+            
+            <div class="col-sm-10">
+              <a href="https://en.gravatar.com" class="btn btn-default pull-right">Edit Profile Picture</a>
+              {% if profile.display_name %}
+              <h1>{% firstof profile.display_name %}</h1>
+              <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
+              {% else %}
+              <h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+              {% endif %}
+              {% if profile.member_number %}
+              {% if profile|allow_edit_by:user %}
+              <div style="padding-bottom: 1em;">
+                <span class="member-icon">{% trans 'Member ID' %}: {{ profile.member_number}}</span>
+              </div>
+              {% endif %}
+              {% endif %}
+              
+              {% if profile.company %}
+              <h5><strong>{{ profile.company }}</strong> — 
+              {% endif %}
+              
+              {% if profile.position_title %}
+              {{ profile.position_title }}</h5>
+              {% endif %}
+              
+              {% if city_state %}
+              <h5>{{ city_state }}</h5>
+              {% endif %}
+              
+              {% if user_this.skillset and user_this.skillset.is_first_responder %}
+              <p class="capitalize">{% trans "first responder" %} - <a href="{% url 'user.skills' user_this.username %}">{% trans "see skills" %}</a></p>
+              {% endif %}
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      
+      <div class="col-md-4 well">
+        
+        <h3>{% trans 'Contact Information' %}</h3>
+        <div class="table-responsive">
+          <table class="table">
+            
+            <tr>
+              <td>{% trans 'Username' %}</td>
+              <td>{{ profile.user.username }}</td>
+            </tr>
+            
+            {% if can_edit or not profile.hide_email %}
+            <tr>
+              <td>{% trans 'Email' %}</td>
+              <td>{{ user_this.email }}</td>
+            </tr>
+            {% endif %}
+            
+            {% if can_edit or not profile.hide_phone %}
+            <tr>
+              <td>{% trans 'Phone' %}</td>
+              <td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
+            </tr>
+            {% endif %}
+            
+            <tr>
+              <td>{% trans 'Website' %}</td>
+              <td>{{ profile.url }}</td>
+            </tr>
+            
+            {% if can_edit or not profile.hide_address %}
+            <tr>
+              <td>{% trans 'Address' %}</td>
+              <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
+            </tr>
+            {% endif %}
+            
+          </table>
+        </div>
+        
+        
+        {% if request.user.profile.is_superuser %}
+        <h3> {% trans 'Admin Notes' %} </h3>
+        <p>
+          {% if profile.admin_notes %}
+          {{ profile.admin_notes }}
+          {% else %}
+          {% trans 'No admin notes' %}.
+          {% endif %}
+        </p>
+        {% endif %}
+        
+        {% if user_this.educations.all  %}
+        <h3>{% trans 'Education History' %}</h3>
+        <div class="table-responsive">
+          <table class="table">
+            {% for education in user_this.educations.all %}
+            <tr>
+              <td width="1%">{% trans 'School' %}:</td>
+              <td width="1%">{{ education.school }}</td>
+              <td width="1%">{% trans 'Major' %}:</td>
+              <td width="1%">{{ education.major }}</td>
+            </tr>
+            <tr>
+              <td width="1%">{% trans 'Degree' %}:</td>
+              <td width="1%">{{ education.degree }}</td>
+              <td width="1%">{% trans 'Graduation Date' %}:</td>
+              <td width="1%">{{ education.graduation_year }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        {% endif %}
+        
+        {% if request.user == user_this or request.user.profile.is_superuser %}
+        {% if MODULE_MEMBERSHIPS_ENABLED %}
+        
+        
+        <!-- GROUPS -->
+        <h3>{% trans 'Groups' %}
+          {% if request.user = user_this or admin %}
+          <a title="{% trans 'Join or leave group' %}" href="{% url "profile.edit_groups" user_this.username %}" class="glyph gears">S</a>
+          {% endif %}
+        </h3>
+        
+        {% if group_memberships %}
+        <div class="table-responsive">
+          <table class="table">
+            {% for gm in group_memberships %}
+            <tr>
+              <td>
+                {% if user.profile.is_superuser %}
+                <a href="{% url "group.edituser" gm.group.slug user_this.pk %}">
+                  {% firstof gm.role 'Member' %}
+                </a>
+                {% else %}
+                {% firstof gm.role 'Member' %}
+                {% endif %} of
+                
+                <a href="{% url "group.detail" gm.group.slug %}">
+                  {% firstof gm.group.label gm.group.name %}
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        {% else %}
+        <p>{% trans 'Not in any groups.' %}</p>
+        {% endif %}
+      </div>
+      
+      <div class="col-md-8">
+        {% if request.user == user_this or request.user.profile.is_superuser %}
+        <div>
+          
+                    
+          <!-- INVOICE BTN -->
+          <div class="invoice-btn pull-right">
+            
+            {% if request.user == user_this or admin %}
+            {% if content_counts.invoice > 0 %}
+            <a class="btn btn-primary" href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user_this.id }}&search_method=exact">{% trans "My Invoices" %} ({{ content_counts.invoice }})</a></p>
+            {% endif %}
+            {% endif %}
+            
+          </div>
+          <!-- END INVOICE BTN -->
+          
+          
+          <!-- MEMBERSHIPS -->
+          
+          <h3>{% trans 'Memberships' %}
+            {% if membership_apps %}
+            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            {% else %}
+            <a title="{% trans 'Create a membership application' %}" href="{% url "admin:memberships_membershipapp_add" %}" class="glyph plus">+</a>
+            {% endif %}
+          </h3>
+          
+          {% if multiple_apps %}
+          <div>
+            {% for app in membership_apps %}
+            <div>
+              <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
+              {{ app.name }}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
+          {% if memberships %}
+          <div class="table-responsive">
+            <table class="table">
+              {% for membership in memberships %}
+              <tr>
+                <td>
+                  {% if request.user.profile.is_superuser or request.user == membership.user %}
+                  <a href="{% url "membership.details" membership.pk %}">{{ membership.membership_type }}
+                  </a>
+                  {% else %}
+                  {{ membership.member_number }} {{ membership.membership_type }}
+                  {% endif %}
+                </td>
+                <td>
+                  {{ membership.join_dt|date:"M j, Y" }}
+                  
+                  {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                  
+                  &#43; (grace period:
+                  {{ membership.membership_type.expiration_grace_period }} days)
+                  
+                  {% endif %}
+                  
+                  <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
+                  
+                </td>
+                <td>
+                  {% with membership.get_invoice as invoice %}
+                  {% if invoice %}
+                  <a href="{% url "invoice.view" invoice.pk %}">
+                    {% trans 'Balance' %} {{ invoice.balance|format_currency }}
+                  </a>
+                  {% endif %}
+                  {% endwith %}
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% else %}
+          <p>{% trans 'Not a member.' %}</p>
+          {% endif %}
+          
+          {% endif  %}
+          {% endif %}
+          
+          
+          <!-- EVENTS -->
+          
+          <h3>{% trans "Upcoming Event Registrations" %}</h3>
+          
+          {% if registrations %}
+          <div class="table-responsive">
+            <table class="table">
+              {% for reg in registrations %}
+              <tr>
+                <td>
+                  <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
+                </td>
+                <td>
+                  {{ reg.reg8n_status }}
+                </td>
+                <td>
+                  <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+                </td>
+                <td>
+                  {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% else %}
+          {% trans "No upcoming event registrations." %}
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        
+        {% latest_contributions user_this as contributions %}
+        {% if  contributions %}
+        
+        
+        <h3>{% trans "Contributions" %}</h3>
+        <ul class="list-unstyled">
+          {% for contribution in contributions|slice:":5" %}
+          {% if contribution.object.status and contribution.object.get_absolute_url %}
+          <li><a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:15|slice:":-4" }}</a></li> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+          {% else %}
+          {{ contribution.title }}{{ contribution.headline }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+          {% endif %}
+          {% endfor %}
+        </ul>
+        <div class="pager">
+          <li class="next"> <a href="{% url "contribution.search" %}?q={{ user_this.username }}">{% trans 'View More' %} &rarr;</a></li>
+        </div>
+      </div>
+      
+      {% else %}
+      
+      {% if user.profile.is_superuser %}
+      <div>
+        {% firstof request.user.first_name request.user.username %}, {% trans 'this person has not made any contributions yet.' %}
+      </div>
+      {% endif %}
+      
+      {% endif %}
+      
+      {% profile_meta %}
+      
+    </div></div></div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+  var iconrow = new dropdown({
+  container:    'more-options-wrap',
+  trigger:    'more-options-trigger',
+  target:        'more-options-target'
+  });
+</script>
+<script type="text/javascript">
+  $(".app-links").hide();
+  
+  $(".toggle-app-links").click(function(e){
+  $(".app-links").toggle('slow');
+  e.preventDefault();
+  })
+</script>
+
+{% endblock %}
+

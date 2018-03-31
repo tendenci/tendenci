@@ -1,0 +1,115 @@
+{% extends "pages/base.html" %}
+{% load base_tags %}
+{% load page_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_PAGE_LABEL trans 'Page' %} {% trans 'Add' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<!--<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">-->
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
+
+{% endblock %}
+
+{% block content %}
+
+<div id="page-add">
+  <div class="page-header">
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Add" %}</h1>
+  </div>
+  
+  <div class="page-wrap">
+    <form action="{% url "page.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
+      
+      <div class="form-group">
+        {{ form|styled_form }}
+        <fieldset class="boxy-grey" >
+          <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+          <div id="category-form">
+            {{ categoryform|styled_form }}
+          </div>
+        </fieldset>
+        <fieldset class="boxy-grey">
+          <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
+          <div id="meta-form">
+            {{ metaform|styled_form }}
+          </div>
+        </fieldset>
+      </div>
+      
+      <div class="form-group">
+        <input class="btn btn-default" type="hidden" id="id_preview_for" name="preview_for"/>
+        <input class="btn btn-default" type="submit" value="{% trans 'Add' %} {% firstof MODULE_PAGES_LABEL trans 'Page' %}" />
+        <input class="btn btn-default" type="button" value="Preview"/>
+      </div>
+      
+    </form>
+  </div>
+  
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{   {{ form.media }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{ STATIC_URL }}js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
+
+<script type="text/javascript">
+  var slugit = new Slugify({
+  input_element : 'input#id_title',
+  slug_element : 'input#id_slug',
+  submit_element : 'input[type="submit"]',
+  help: false,
+  limit : 150
+  });
+  gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+</script>
+<script type="text/javascript">
+  {% include 'categories/include/add_categories.js' %}
+</script>
+<script type="text/javascript">
+  $('#meta-form').hide();
+  $('#category-form').hide();
+  $('#meta-title').click(function() {
+  $('#meta-form').slideToggle('fast');
+  if ($('#meta-title span').text() == '+') {
+  $('#meta-title span').text('-');}
+  else {$('#meta-title span').text('+');}
+  });
+  $('#category-title').click(function() {
+  $('#category-form').slideToggle('fast');
+  if ($('#category-title span').text() == '+') {
+  $('#category-title span').text('-');}
+  else {$('#category-title span').text('+');}
+  });
+  $("#id_tags").tagit({
+  availableTags: [{% all_tags_list %}],
+  allowSpaces: true
+  });
+  
+  //Set preview button
+  $('input.previewButton').click(function() {
+  var form = $('div.page-wrap > form');
+  var url = form.attr('action');
+  form.attr('action', "{% url "page.preview" %}");
+  form.attr('target', '_blank');
+  form.submit();
+  
+  form.attr('action', url);
+  form.attr('target', '');
+  });
+</script>
+{% include 'tags/autocomplete.html' %}
+{% endblock %}

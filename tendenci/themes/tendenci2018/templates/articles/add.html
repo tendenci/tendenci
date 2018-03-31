@@ -1,0 +1,100 @@
+{% extends "articles/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load article_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/popover.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}</h1>
+</div>
+
+    <form id="t-articles-article-form" class="form-horizontal" action="{% url 'article.add' %}" method="post">{% csrf_token %}
+        {{ form|styled_form }}
+
+        <fieldset id="t-articles-category">
+            <legend>{% trans "Category" %}</legend>
+            {{ categoryform|styled_form }}
+        </fieldset>
+
+        {% comment %}
+        <fieldset class="boxy-grey" >
+            <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+            <div id="category-form">
+                {{ categoryform|styled_form }}
+            </div>
+        </fieldset>
+        {% endcomment %}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_ARTICLES_LABEL %}
+                        {% blocktrans with module_articles_label=MODULE_ARTICLES_LABEL %}
+                            Add {{ module_articles_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Article" %}
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+   
+
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/gplus-helptexts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Slugify
+            var slugit = new Slugify({
+                input_element : '#id_headline',
+                slug_element : '#id_slug',
+                submit_element : 'button[type="submit"]',
+                help: false,
+                limit : 150
+            });
+
+            // Release Datetime
+            $('#id_release_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_release_dt_1').timepicker({'step': 15});
+
+            // G+ Help Texts
+            gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+        });
+    </script>
+    <script type="text/javascript">
+        {% include 'categories/include/add_categories.js' %}
+    </script>
+    <script type="text/javascript">
+        $('#category-form').hide();
+        $('#category-title').click(function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        });
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

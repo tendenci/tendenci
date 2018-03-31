@@ -1,0 +1,80 @@
+{% extends "studygroups/base.html" %}
+{% load studygroup_tags %}
+{% load i18n %}
+
+{% block content %}
+<div id="study-group-detail">
+  <div class="studygroup-wrap">
+    
+    <div class="page-header">
+      <h1>{{ study_group.title }}</h1>
+    </div>
+    
+    <div class="studygroup-mission">
+      <p>{{ study_group.mission|safe }}</p>
+    </div>
+    
+    <div class="studygroup-content">
+      <p>{{ study_group.content|safe }}</p>
+    </div>
+    
+    <div class="studygroup-officers">
+      
+      <h2>{% trans 'OFFICERS' %}</h2>
+      
+      <table class="table" id="officer-table">
+        <thead>
+          <tr>
+            <th class="officer-position">{% trans 'Position' %}</th>
+            <th class="officer-name">{% trans 'Name' %}</th>
+            <th class="officer-phone">{% trans 'Phone' %}</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          {% for officer in officers %}
+          <tr>
+            <td class="officer-position">{{ officer.position }}</td>
+            
+            <td class="officer-name">
+              <a href="{{ officer.user.get_profile.get_absolute_url }}">
+                {% if officer.user.get_full_name %}
+                {{ officer.user.get_full_name }}
+                {% else %}
+                {{ officer.user }}
+                {% endif %}
+              </a>
+            </td>
+            
+            <td class="officer-phone">{{ officer.phone }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    {% if admin %}
+    <div class="studygroup-notes">
+      {{ study_group.notes|safe }}
+    </div>
+    {% endif %}
+    
+    <div class="studygroup-files">
+      <h2>{% trans 'Files' %} {% if admin %}</h2>
+      
+      <a class="btn btn-default" href="{% url 'file.add' %}">{% trans 'Add a File' %}</a>
+      {% endif %}
+      
+      <ul class="file-list">
+        {% for file in files %}
+        <li class="file-list">
+          <a href="{% url 'file' file.pk %}">{{ file.get_name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+    {% include "studygroups/meta.html" %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load styled_forms %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user forms.change_form form as can_edit %}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+
+<div class="page-header">
+  <h1>{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</h1>
+</div>
+
+<p>{{ form.intro|safe }}</p>
+
+<div class="form-builder-wrap">
+  <form method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ form.get_absolute_url }}">
+    {% csrf_token %}
+    
+    {{ form_for_form|styled_form }}
+    <input class="btn btn-default" type="submit" value="{% trans 'Submit' %}" />
+    
+    {% if can_edit %}
+    <a class="btn btn-primary" href="{% url "admin:forms_form_change" form.pk %}?next={{ request.path }}">
+      {% trans 'Edit this form' %}
+    </a>
+    
+  </form>
+</div>
+
+<br /><br />
+{% endif %}

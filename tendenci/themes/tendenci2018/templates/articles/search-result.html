@@ -1,0 +1,27 @@
+{% load i18n %}
+
+<!-- UNCOMMENT TO APPLY PANELS -->
+
+<article>
+  <!-- <div class="panel panel-default"> -->
+  
+  <!--  <div class="panel-heading">
+  <h3 class="panel-title"> -->
+  <h3><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans "Untitled" %}</a></h3>
+  
+  <!-- </div> -->
+  
+  <!-- <div class="panel-body"> -->
+  <p class="item-content">
+    {% if article.summary %}
+    {% blocktrans with summary=article.summary|striptags|truncatewords:140|safe %}{{ summary }}{% endblocktrans %}
+    {% else %}
+    {% blocktrans with body=article.body|striptags|truncatewords:140|safe %}{{ body }}{% endblocktrans %}
+    {% endif %}
+  </p>
+  <!-- </div> -->
+  
+  {% include "articles/meta.html" %}
+  
+  <!-- </div> -->
+</article>

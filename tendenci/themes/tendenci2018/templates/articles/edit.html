@@ -1,0 +1,71 @@
+{% extends "articles/base.html" %}
+{% load staticfiles %}
+{% load article_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans trans 'Article' %} {% trans "Edit" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/popover.css">
+{% endblock %}
+
+{% block content %}
+<div id="edit-articles">
+  <div class="page-header">
+    <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit" %}</h1>
+  </div>
+  
+  <div class="article-wrap">
+    <form action="{% url "article.edit" article.pk %}" method="post">{% csrf_token %}
+      <div class="forms">
+        {{ form|styled_form }}
+        <fieldset class="boxy-grey" >
+          <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+          <div id="category-form">
+            {{ categoryform|styled_form }}
+          </div>
+        </fieldset>
+        <input class="btn btn-default" type="submit" value="{% trans "Save Article Changes" %}" />
+        <a class="btn btn-danger pull-right" title="{% trans "Link to delete confirmation page" %}" href="{% url "article.delete" article.pk %}">{% trans "Delete" %}</a>
+        <br /><br />
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{{ form.media }}
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/popover.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/gplus-helptexts.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+  $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+  $('.timepicker').timepicker({'step': 15});
+  });
+  gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+</script>
+<script type="text/javascript">
+  {% include 'categories/include/add_categories.js' %}
+</script>
+<script type="text/javascript">
+  $('#category-form').hide();
+  $('#category-title').click(function() {
+  $('#category-form').slideToggle('fast');
+  if ($('#category-title span').text() == '+') {
+  $('#category-title span').text('-');}
+  else {$('#category-title span').text('+');}
+  });
+</script>
+{% include 'tags/autocomplete.html' %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% load pagination_tags %}
+{% load case_study_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    
+    {% for img in case_study.featured_screenshots %}
+    {% if forloop.first %}
+    <a href="{{ case_study.get_absolute_url }}">
+      <img class="img-responsive" alt="{{ case_study.client }}" src="{% url "file" img.pk %}" />
+    </a>
+    {% endif %}
+    {% endfor %}
+    
+    <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">
+      {{ case_study.client }}
+      </a></h3>
+    
+    <a class="btn btn-primary" href="{{ case_study.slug }}">{% trans 'View this Study' %}</a>
+  
+  </div>
+  
+    {% include 'case_studies/meta.html' %}
+  
+</div>

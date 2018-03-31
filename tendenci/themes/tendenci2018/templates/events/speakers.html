@@ -1,0 +1,87 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+{% endblock %}
+
+{% block content %}
+<!-- you are here: templates/events/speakers.html -->
+
+<div id="event-speaker-list">
+    <div class="speakers-wrap">
+        <div class="info">
+          <div class="page-header">
+            <h1>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</h1>
+          </div>
+          <ul class="pager">
+            <li class="previous"><a href="{% url "event" event.pk %}">&larr; Back to {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} Event</a></li>
+          </ul>
+          
+            <h3>{% trans "Speakers" %}</h3>
+
+            {% for speaker in speakers %}
+                <div class="speaker-wrap panel panel-default">
+                  <div class="panel-body">
+                    {% if speaker.get_photo %}
+                    <div class="speaker-photo col-xs-3">
+                      <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url "file" speaker.get_photo.pk %}"  width="100" />
+                    </div>
+                    {% endif %}
+                    <div class="speaker">
+                        <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
+                    </div>
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <div class="speaker-desc-short">
+                        {% blocktrans with desc=speaker.description|striptags|safe|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+                    </div>
+                    <div class="speaker-desc-long">
+                        {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                    </div>
+                    {% else %}
+                        <div class="speaker-desc-short">
+                            {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                        </div>
+                    {% endif %}
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
+                    {% endif %}
+                    <div style="clear:both;"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div> <!-- end info -->
+    </div>
+
+</div>
+
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // speaker description toggle
+            $('a.speaker-desc-toggle').click(function() {
+                var _this = $(this);
+                var speaker_wrap = _this.parents('.speaker-wrap');
+
+                _this.hide();
+                speaker_wrap.find('div.speaker-desc-short').hide();
+                speaker_wrap.find('div.speaker-desc-long').show();
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

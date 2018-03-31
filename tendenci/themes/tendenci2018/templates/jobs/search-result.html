@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load base_tags %}
+{% load job_tags %}
+{% load perm_tags %}
+
+
+<article class="panel {% if job.list_type == 'premium'  %}panel-default{% else %}panel-success{% endif %} t-search-result t-jobs-search-result t-jobs-job-{{ job.list_type }}">
+  
+  <div class="panel-heading t-search-result-heading">
+    <h3 class="panel-title">
+      {% if job.list_type == 'premium'  %}<i class="fa fa-star"></i>{% endif %}
+      <a href="{{ job.get_absolute_url }}">{% firstof job.title trans "Untitled" %}</a>
+    </h3>
+  </div>
+  
+  <div class="panel-body t-search-result-body">
+    <p class="item-content">
+      {% blocktrans with d=job.description|striptags|truncatewords:20|safe %}{{ d }}{% endblocktrans %}
+    </p>
+  </div>
+  
+  {% include "jobs/meta.html" %}
+  
+</article>

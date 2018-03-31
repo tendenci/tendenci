@@ -1,0 +1,49 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
+{% endblock %}
+
+{% block content %}
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit" %}</h1>
+
+
+    <form class="form-horizontal" action="{% url "directory.edit" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="forms">
+        {{ form|styled_form }}
+        <input class="btn btn-primary" type="submit" value="{% trans 'Save Changes' %}" />
+    </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
+
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step':15});
+        });
+
+        $('#add_id_pricing').click(function(){
+            return showAddAnotherPopup(this);
+        });
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

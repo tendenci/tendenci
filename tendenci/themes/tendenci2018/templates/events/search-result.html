@@ -1,0 +1,148 @@
+{% load perm_tags %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load meta_tags %}
+
+<!-- you are here: templates/events/search-result.html -->
+
+<div class="panel panel-default" id="event-results" itemscope itemtype="http://schema.org/Event"> <!-- old class: event-wrap -->
+  
+  <!-- IMAGE -->
+  {% if event.image %}
+  <div class="panel-heading col-sm-4 col-xs-12">
+    <img class="img-responsive" itemprop="image" src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
+  </div>
+  {% endif %}
+  <!-- END: IMAGE -->
+  
+  <div class="panel-body">   
+    <!-- the above section sizes event-info to full width when no image is available -->
+    
+    
+    <!-- DATE AND TIME -->
+    <div class="time-period">
+      {% if event.all_day %}
+      <h4><span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"D, M j, Y" }}</span> 
+        <!-- END TIME - <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y" }}</span> -->
+        {% else %}
+        <span itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"D, M j, Y P" }}</span></h4> 
+      <!-- END TIME - <span itemprop="endDate" datetime="{{ event.end_dt|date:'c' }}">{{ event.end_dt|date:"l, M j, Y P" }}</span> -->
+      {% endif %}
+    </div>
+    <!-- END: DATE AND TIME -->
+    
+    
+    <!-- PANEL TITLE -->
+    
+    
+    <h1><a href="{% url "event" event.pk %}" itemprop="url"><span itemprop="name">
+      
+      {% if event.priority %}
+      <span><i class="fa fa-star events-feature"></i></span>
+      {% endif %}
+      
+      {% if event.is_recurring_event %}
+      <span><i class="fa fa-repeat events-feature"></i></span>
+      {% endif %}
+      
+      {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}
+      </span></a></h1>
+    
+    <!-- END PANEL TITLE -->
+    
+    
+    <!-- LOCATION -->
+    {% if event.place %}
+    <div class="place" itemprop="location">{{ event.place }}</div>
+    {% endif %}
+    <!-- END: LOCATION -->
+    
+    <!-- <div class="description" itemprop="description">
+    {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
+  </div> -->
+    
+    {% if event.groups.count > 0 %}
+    <div><strong>{% trans "Group(s):" %}</strong>
+      {% for group in event.groups.all %}
+      <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% with event.organizers as organizers %}
+    {% if organizers %}
+    <div><strong>{% trans "Organizer:" %}</strong>
+      {% for organizer in organizers %}
+      {{ organizer.name }}{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+  </div> <!-- END: PANEL-BODY -->
+  
+  <div class="panel-footer">
+    
+    {% if event.tags %}
+    {% for tag in event.tags|tag_split %}
+    <a class="label label-default pull-left" href="{% url 'news' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+    {% endfor %}
+    {% endif %}
+    
+    {% for addon in addons %}
+    {{ addon.price }}
+    {% endfor %}
+    
+    {% if event.registration_configuration.enabled %}
+    {% if now > event.end_dt or now > event.registration_configuration.end_dt %}
+    
+    <div class="text-right">
+      <div class="attend"><a href="">
+        <i class="fa fa-calendar" aria-hidden="true"> &nbsp; {% trans "Registration Closed" %}</i></a></div>
+      <div style="clear:both;"></div>
+    </div>
+    
+    {% else %}
+    
+    {% is_registered_user user event as registered_user %}
+    {% if registered_user %}
+    
+    <div class="text-right">
+      <div class="attend">
+        <a href="{% url "event.myevents" %}">
+          <i class="fa fa-plus active" aria-hidden="true"> &nbsp; {% trans "You're attending!" %} </i>
+        </a>
+      </div>
+      <div style="clear:both;"></div>
+    </div>
+    {% else %}
+    
+    {% endif %}
+    
+    {% endif %}
+    
+    {% else %}
+    
+    <div class="text-right">
+      <a href="{% url "event" event.pk %}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+      <div style="clear:both;"></div>
+    </div> 
+    
+    {% endif %}
+  </div>
+  
+  <div style="clear:both;"></div>
+  <div class="t-search-result-footer">
+    {% include 'events/meta.html' %}
+  </div>
+  <!-- delete-event form -->
+  <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+  </form>
+  
+</div> <!-- end: event wrap -->

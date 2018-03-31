@@ -1,0 +1,435 @@
+{% extends "theme_editor/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load styled_forms %}
+{% load base_filters %}
+{% load theme_editor_tags %}
+{% load theme_editor_filters %}
+{% load static from staticfiles %}
+{% load uploader %}
+
+{% block title %}{{ block.super }}Theme Editor{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+<link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
+{% uploader_head %}
+{% endblock %}
+
+{% block content %}
+<h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
+{% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+{% if current_file %}
+<div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> <span class="highlight">{{ pwd }}/{{ current_file }}</span> in your theme <span class="highlight">{{ current_theme }}</span></big>
+  {% endif %}
+  <table class="table" id="file-editor" width="100%">
+    <tr>
+      <td width="20%" valign="top">
+        {# if theme_count > 1 #}
+        <div class="theme-selection well well-small">
+          <h4>{% trans 'Currently editing' %}:</h4>
+          
+          <form method="GET" action="" class="form-inline">
+            <div class="form-group">
+              {{ theme_form.theme_edit }}
+            </div>
+            <input class="btn btn-mini" type="submit" value="Change"/>
+          </form>
+          
+          {% ifnotequal ACTIVE_THEME current_theme %}
+          <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
+          {% endifnotequal %}
+          <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="{% url "theme_editor.picker" %}">{% trans "Change?" %}</a></p>
+        </div>
+        {# endif #}
+      </div>
+        <div id="right_files_list">
+          <div class="well well-small">
+            <h4>{% trans "Choose a folder or file to edit:" %}</h4>
+            <ul id="file-tree">
+              {% for key,value in all_files_folders.items %}
+              {% if value.items %}
+              {% for key,value in value.items|sortcontents %}
+              {% if key == "contents" %}
+              {% for item in value %}
+              <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+                {% if item.editable %}
+                <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+                {% else %}
+                <span class="non-editable-file">{{ item.name|safe }}
+                  <span class="links"> <a href="{{ THEME_URL }}{{ item.path }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
+                {% endif %}
+              </li>
+              {% endfor %}
+              {% else %}
+              {% folder_structure value %}
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </ul>
+            
+            {% comment %}
+            
+            
+            {%  if pwd %}
+            <div class="pwd" title="{{ pwd }}">
+              {% if pwd|length > 20  %}
+              <p>{% blocktrans with pwd|slice:"-20:" as pslice %}in ...{{ pslice }}{% endblocktrans %}</p>
+              {% else %}
+              <p>{% blocktrans %}in {{ pwd }}{% endblocktrans %}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+            {% if prev_dir %}
+            <p class="prev_dir">
+              <a href="{% url "theme_editor.editor" %}?file={{ prev_dir }}&theme_edit={{ current_theme }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+            </p>
+            {% endif %}
+            {% if dirs %}
+            <ul class="dir_list">
+              {% for dir in dirs %}
+              <li class="dir_item"><a href="{% url "theme_editor.editor" %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
+              {% endfor %}
+            </ul>
+            {%  endif %}
+            {%  if files or non_editable_files %}
+            <ul class="files_list">
+              {% if files %}
+              {% for file in files %}
+              <li {% if current_file == file %}class="highlight"{% endif %}>
+                <a href="{% url "theme_editor.editor" %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
+              </li>
+              {% endfor %}
+              {% endif %}
+              {% if non_editable_files %}
+              <li style="border-top: solid 1px #111;">{% trans "Non-Editable Files" %}</li>
+              {% for file in non_editable_files %}
+              <li {% if current_file == file %}class="current_file"{% endif %}>
+                <a href="{{ THEME_URL }}{{ pwd }}/{{ file }}" target="_blank">{{ file|safe }}</a>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+            {% endif %}
+            {% if not files and not dirs and not non_editable_files %}
+            <p>{% trans "This folder is empty" %}</p>
+            {% endif %}
+            
+            {% endcomment %}
+          </div>
+          <div class="well well-small">
+            <h4>{% trans 'Customize more templates' %}:</h4>
+            {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
+            <a href="{% url "theme_editor.app_list" %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
+            
+          </div>
+          
+          <div class="well well-small">
+            <h4>{% trans 'Create a new template' %}:</h4>
+            {% trans 'Click the button below to add a new template.' %}
+            <button class="btn btn-mini new-template-btn">{% trans 'New Template' %}</button>
+          </div>
+          
+        </div>
+      </td>
+      <td width="80%" id="editor-td" >
+        {% if is_file %}
+        <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
+          {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
+          <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
+          {{ file_form.rf_path }}
+          
+          <div id="fileupdatemessage"></div>
+          <div class="form_block">
+            <input type="hidden" name="action" value="edit" />
+            <input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+            <span id="save_message" class="alert-message alert alert-success fade in"></span>
+          </div>
+        </form>
+        {% if current_file not in non_deletable_files  %}
+        
+        <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
+        {% endif %}
+        <div style="clear:both"></div>
+        
+        <div id="file_version_box">
+          <h2>{% trans "Previous Versions" %} <span class="tooltip" title="{% trans 'Click a version below to load it in the editor. The version will not be restored until you save your changes.' %}"><sup><a href="#">?</a></sup></span></h2>
+          {% if archives %}
+          <div id="file_versions">
+            {% for archive in archives %}
+            <div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt|date:'long' }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
+              <a href="#">{% blocktrans with archive.file_name as archname and archive.create_dt|date:"long" as archdate and archive.author as archauth %}Load {{ archname }}  versioned on {{ archdate }} by {{ archauth }}{% endblocktrans %}</a>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p>{% trans "No versions available." %}</p>
+          {% endif %}
+        </div>
+        {% else %}
+        <p>{% trans "No file selected. Select a file or directory from the list on the right." %}</p>
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+  
+  
+  <div id="create-tform" title="{% trans 'Create new template' %}">
+    <p class="validateTips">{% trans 'Please enter template name.' %}</p>
+    <form>
+      <fieldset>
+        <div><label for="tname">{% trans 'Template Name' %}:</label></div>
+        <div>
+          default-<input type="text" name="tname" id="tname" class="text ui-widget-content ui-corner-all" />
+          .html
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  
+  
+  
+  {% endblock %}
+  
+  {% block extra_body %}
+  
+  {{ block.super }}
+  <script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+  <div id="uploader"></div>
+  <script language="javascript" type="text/javascript">
+    window.onload = function() {
+    $('#uploader').dialog({
+    autoOpen: false,
+    height: 300,
+    width: 450,
+    modal: true,
+    buttons: [
+    {
+    text: "Close & Refresh",
+    icons: {
+    /*primary: "ui-icon-arrowrefresh-1-e"*/
+    },
+    click: function() {
+    $( this ).dialog( "close" );
+    // refresh the page
+    location.reload();
+    }
+    },
+    {
+    text: "Close",
+    icons: {
+    primary: "ui-icon-close"
+    },
+    click: function() {
+    $( this ).dialog( "close" );
+    }
+    }
+    ],
+    
+    
+    
+    close: function() {
+    }
+    });
+    
+    $(".upload-link .upload_btn").click(function() {
+    var file_dir = $(this).parent('.glyph').attr('path');
+    new qq.FineUploader({
+    
+    element: document.getElementById('uploader'),
+    template: 'qq-simple-thumbnails-template',
+    thumbnails: {
+    placeholders: {
+    waitingPath: '{% static "fine-uploader/waiting-generic.png" %}',
+    notAvailablePath: '{% static "fine-uploader/not_available-generic.png" %}'
+    }
+    },
+    
+    debug: false,
+    
+    validation: {
+    acceptFiles : "*.html,*.js,*.css,*.less,*.jpg,*.jpeg,*.gif,*.png,*.ico,*.txt,*.xml,*.kml,*.eot,*.ttf,*.woff,*.woff2,*.svg",
+    allowedExtensions: ['html', 'js', 'css', 'less', 'jpg', 'jpeg', 'gif', 'png', 'ico', 'txt', 'xml', 'kml', 'eot', 'ttf', 'woff', 'woff2', 'svg'],
+    sizeLimit: 20971520  // 20 MB
+    },
+    
+    request: {
+    endpoint: '{% url 'theme_editor.upload' %}',
+    params: {
+    "file_dir": file_dir,
+    "overwrite": "true",
+    "csrfmiddlewaretoken": "{{ csrf_token }}"
+    }
+    },
+    retry: { enableAuto: false }
+    
+    });
+    
+    $('#uploader').dialog('open');
+    $('#uploader').parent('div').find('.ui-dialog-buttonset .ui-state-default').first()
+    .css({'background': 'green'})
+    .css({'color': '#ffffff'});
+    $('#uploader').dialog('option', 'title', 'Upload files to ' + file_dir.substring(file_dir.lastIndexOf('/')+1) + '/');
+    });
+    };
+  </script>
+  
+  <script type="text/javascript">
+    {% include 'theme_editor/include/new_template.js' %}
+    {% include 'theme_editor/include/editor_submit.js' %}
+  </script>
+  
+  <script type="text/javascript">
+    var editor;
+    $(document).ready(function(){
+    editor = CodeMirror.fromTextArea('id_content', {
+    height: "500px",
+    parserfile: {% if ext in stylesheets %}"parsecss.js"{% elif ext == "js" %}["tokenizejavascript.js","parsejavascript.js"]{% else %}"parsexml.js"{% endif %},
+    stylesheet: {% if ext in stylesheets %}"{{ STATIC_URL }}codemirror/css/customcsscolors.css"{% elif ext == "js" %} "{{ STATIC_URL }}codemirror/css/jscolors.css" {% else %}"{{ STATIC_URL }}codemirror/css/xmlcolors.css"{% endif %},
+    path: "{{ STATIC_URL }}codemirror/js/",
+    continuousScanning: 500,
+    lineNumbers: true,
+    textWrapping: false
+    });
+    })
+    
+    function open_archive(id)
+    {
+    var classname = ".archived_file_" + id;
+    if (confirm("Open " + $(classname).attr('data-string') + "?"))
+    {
+    var myurl = "/theme-editor/get-version/" + id + "/";
+    var mydata = {};
+    mydata["id"] =id;
+    mydata["csrfmiddlewaretoken"] = "{{ csrf_token }}";
+    $.ajax({
+    type: "POST",
+    url: myurl,
+    data: mydata,
+    dataType: "html",
+    success: function(filecontent){
+    $("#id_content").val(filecontent);
+    editor.setCode(filecontent);
+    }
+    });
+    }
+    
+    }
+  </script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+  <script type="text/javascript">
+    $('table#file-editor div.pwd').tipsy({
+    gravity: 's',
+    live: true,
+    });
+  </script>
+  
+  <script type="text/javascript">
+    $('.tooltip').tipsy({
+    gravity: 's',
+    live: true,
+    });
+  </script>
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+    //bind the modified one
+    $('.delete').click(function(){
+    if(window.confirm("{% trans 'Are you sure you want to delete this file from your theme?' %}")){
+    return true;
+    } else {
+    return false;
+    }
+    });
+    });
+  </script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+    var options = {
+    success: showResponse,
+    error: showResponse,
+    dataType: 'json',
+    clearForm: false,
+    resetForm: false,
+    };
+    $('#upload_form').ajaxForm(options);
+    });
+    
+    function showResponse(response, status, xhr, $form)  {
+    if (response.error) {
+    //            if (response.error = "file already exists") {
+    //                if(window.confirm("The file '"+ response.file_name +"' exists already. Do you want to overwrite it?")){
+    //                    $form.find('#id_overwrite').val(true);
+    //                    $form.submit();
+    //                } else {
+    //                    return false;
+    //                }
+    // } else {
+    //     alert("An error occured. Please try again.");
+    // }
+    } else {
+    location.reload();
+    }
+    }
+  </script>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+    $('#file-tree ul li').hide();
+    var current_file = $('#file-tree ul li.highlight')
+    current_file.show();
+    current_file.siblings().show();
+    current_file.parents().show();
+    //current_file.parents().siblings().show();
+    current_file.closest('ul').parent().siblings().show();
+    
+    current_file.parent().parent().children(":first").addClass('open');
+    folder_text = current_file.parent().parent().children(":first").text();
+    current_file.parent().parent().children(":first").text(folder_text.replace('+ ', '– '));
+    
+    current_file.parent().parent().parent().parent().children(":first").addClass('open');
+    p_folder_text = current_file.parent().parent().parent().parent().children(":first").text();
+    current_file.parent().parent().parent().parent().children(":first").text(p_folder_text.replace('+ ', '– '));
+    
+    current_file.parent().parent().parent().parent().parent().parent().children(":first").addClass('open');
+    
+    if(current_file.parent().parent().parent().parent().parent().is('#file-tree ul')) {
+    p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().children(":first").text();
+    current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– '));
+    }
+    
+    if(current_file.parent().parent().parent().parent().parent().parent().parent().is('#file-tree ul')) {
+    p_p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text();
+    current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text(p_p_p_folder_text.replace('+ ', '– '));
+    }
+    });
+    
+    $('#file-tree li a.folder').click(function() {
+    if ($(this).hasClass('open')) {
+    $(this).text($(this).text().replace('– ', '+ '));
+    $(this).removeClass('open');
+    $(this).siblings().children().hide();
+    } else {
+    $(this).addClass('open');
+    $(this).text($(this).text().replace('+ ', '– '));
+    $(this).siblings().children().show();
+    }
+    });
+  </script>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+    
+    $('#delete-btn').click(function() {
+    return window.confirm(this.title || '{% trans "Are you sure you want to delete the following file?" %} {{ pwd }}/{{ current_file }}');
+    });
+  </script>
+  {% endblock %}
+  

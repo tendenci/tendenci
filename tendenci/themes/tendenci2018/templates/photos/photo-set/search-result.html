@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+<div class="grid-item-content panel panel-default">
+  
+  <!-- START: PANEL BODY -->
+  <div class="panel-body">
+    
+    <a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}"
+    href="{{ photo_set.get_absolute_url }}">
+      
+      {% if photo_set.get_cover_photo %}
+      <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
+      {% else %}
+      <img class="img-responsive" style="width:100%;" src="{{ photo_set.get_default_cover_photo }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
+      {% endif %}
+      
+    </a>
+    
+    <h4><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}
+      <span class="badge pull-right">{{ photo_set.image_set.count|intcomma }}</span></a></h4>
+    
+    <div class="description">
+      {% blocktrans with d=photo_set.description|striptags|truncatewords_html:25|safe %}{{ d }}{% endblocktrans %}
+    </div>
+    
+  </div>
+  <!-- END: PANEL BODY -->
+  
+  {% if user.profile.is_superuser %}
+  <!-- START: META/FOOTER -->
+  <nav class="navbar navbar-default">  
+    <div class="container-fluid">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a>{{ photo_set.obj_perms }}</a></li>
+        <li><a>{{ photo_set.obj_status }}</a></li>
+        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Options <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            {% photo_set_options request.user photo_set %}
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- END: META/FOOTER -->
+  {% endif %}
+  
+</div>

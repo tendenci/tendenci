@@ -1,0 +1,85 @@
+{% extends form_template %}
+{% load i18n %}
+{% load staticfiles %}
+{% load forms_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{{ form.title }}{% endblock %}
+{% block meta_description %}{{ form.intro }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{{ form.title }}</h1>
+</div>
+
+<section>
+  <h2>{{ form.intro_name }}</h2>
+  
+  {% if form.intro %}
+  {{ form.intro|safe }}
+  {% endif %}
+</section>
+
+<form id="t-forms-builder-form-form-{{ form.pk }}" class="form-horizontal t-forms-builder-form-form" method="post" enctype="multipart/form-data">{% csrf_token %}
+  <input type="hidden" name="entry_path" value="{{ request.path }}">
+  
+  {{ form_for_form|styled_form }}
+  <br />
+  <div class="form-group">
+    <button type="submit" class="btn btn-default text-capitalize">{% trans "Submit" %}</button>
+  </div>
+  <br />
+</form>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{# TODO: Update this #}
+<script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+  $('.custom-price').click(function() {
+  $(this).prev('input[type="radio"]').prop('checked', true);
+  });
+  $('.custom-price').focus(function() {
+  $(this).prev('input[type="radio"]').prop('checked', true);
+  });
+  $('.pricing-field').focus(function() {
+  $(this).next('.custom-price').focus();
+  });
+  
+  {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}
+  var introDiv = $("div#form-intro");
+  {% if intro_pos > pricing_pos and intro_pos > fields_pos%}
+  {% if pricing_pos > fields_pos %}
+  introDiv.detach().insertAfter($('.payment-field:last').parents('.form-field'));
+  {% else %}
+  introDiv.detach().insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
+  {% endif %}
+  {% elif intro_pos > pricing_pos and intro_pos < fields_pos %}
+  introDiv.detach().insertAfter($('.payment-field:last').parents('.form-field'));
+  {% elif intro_pos > fields_pos and intro_pos < pricing_pos %}
+  introDiv.detach().insertAfter($('.t .forms .formforform-field:last').parents('.form-field'));
+  {% endif %}
+  {% endwith %}
+  
+  var fieldsName = $("<h2>{{ form.fields_name }}</h2>");
+  var pricingName = $("<h2>{{ form.pricing_name }}</h2>");
+  
+  var fieldsOption = $('.formforform-field:first');
+  fieldsName.insertBefore(fieldsOption.parents('.form-field'));
+  var pricingOption = $('label[for="id_pricing_option_0"]:first');
+  pricingOption.text('');
+  pricingName.insertBefore(pricingOption.parents('.form-field'));
+  });
+  </script>
+  {% endblock %}
+  

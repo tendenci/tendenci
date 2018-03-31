@@ -1,0 +1,52 @@
+{% load i18n %}
+{% load box_tags %}
+{% load forms_tags %}
+
+<!-- ---------------------------------------------------------------
+NOTES: This Footer Template used 1 box to layout the Footer Links
+the Bootstrap Grid System is implemented inside the wysiwyg
+Modals called below are connected to btns also inside the wysiwyg. 
+----------------------------------------------------------------- --> 
+
+<div class="container">
+<!-- MAIN FOOTER LINKS INFO: -->     
+  {% box 10 %}
+
+<!-- FOOTER ADD-ONS, can be removed and stay with regular links in footer links box --> 
+  <!-- MODAL CONTACT -->          
+  <div id="myModal2" class="modal">  
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+          {% embed_form 1 %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>    
+  <!-- END MODAL CONTACT -->          
+  
+  <!-- MODAL NEWSLETTER -->          
+  <div id="myModal" class="modal">  
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div class="modal-body">
+          {% embed_form 3 %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>    
+  <!-- END MODAL NEWSLETTER -->          
+  
+</div>

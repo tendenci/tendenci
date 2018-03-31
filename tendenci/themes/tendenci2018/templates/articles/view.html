@@ -1,0 +1,40 @@
+{% extends "articles/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load article_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load meta_tags %}
+
+
+{% block title %}{% blocktrans with title=article.title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with description=article.description %}{{ description }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keywords=article.get_keywords %}{{ keywords }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+    {% meta_og_image article "body" %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <article id="t-articles-article-{{ article.pk }}" class="t-articles-article">
+        <div class="page-header">
+            <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if article.google_profile %}
+            {% if article.has_google_author %}
+                <a href="{{ article.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
+            {% elif article.has_google_publisher %}
+                <a href="{{ article.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="t-articles-article-body">
+            {% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}
+        </div>
+
+        {% include "articles/meta.html" with show_source=True show_fb_connect=True %}
+    </article>
+{% endblock %}

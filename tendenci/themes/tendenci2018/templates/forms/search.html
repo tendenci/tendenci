@@ -1,0 +1,37 @@
+{% extends "forms/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load forms_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
+{% endblock %}
+
+{% block content %}
+<div id="search-forms">
+  <div class="page-header">
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Search' %}</h1>
+  </div>
+  
+  {% forms_search %}
+  {% autopaginate forms 10 %}
+  
+  {% for form in forms %}
+  <div class="panel panel-default">
+    
+    <div class="panel-heading">
+      <h3><a href="{{ form.get_absolute_url }}">{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}</a></h3>
+    </div>
+    
+    {% forms_options request.user form %}
+  </div>
+  {% empty %}
+  <div>{% trans "0 Results Found" %}</div>
+  {% endfor %}
+  
+  {% paginate %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "forms/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load forms_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
+{% endblock %}
+
+{% block content %}
+
+<div id="forms-builder">
+  <div class="forms-builder-wrap">
+    <div class="page-header">
+      <h1>{% trans "Forms Export" %}</h1>
+    </div>
+    
+    <div class="container">
+      
+      <form action="." method="POST" >{% csrf_token %}
+        <input class="btn btn-default" type="submit" value="{% trans 'Download' %}" />
+      </form>
+      
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

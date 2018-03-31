@@ -1,0 +1,55 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% if user.profile.is_superuser %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    
+    <ul class="list-unstyled {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+      
+      {% if case_study.tags %}
+      
+      <span><small>
+        <strong>Tags: </strong>
+        {% for tag in case_study.tags|tag_split %}
+        <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>
+        {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        
+        
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+        {% if user.profile.is_superuser or user == case_study.creator or user == case_study.owner %}
+        {% meta_creator_owner case_study %}
+        {% endif %}       
+        {% endif %}
+       </small></span>
+      
+    </ul>
+    
+    <ul class="nav navbar-nav">
+      <li><a><u>Status:</u> </a></li>
+      <li><a> {{ case_study.obj_perms }} </a></li>
+      <li><a> {{ case_study.obj_status }} </a></li>
+      
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          {% trans "Options" %}<span class="caret"></span></a>
+        
+        <ul class="dropdown-menu">
+          <li><a class="delete" href="{% url "admin:case_studies_casestudy_delete" case_study.pk %}">
+            {% trans "Delete" %}</a></li>
+          <li><a href="{% url "event_log.search" %}?object_id={{ case_study.pk }}&source={{ case_study.opt_app_label }}">
+            {% trans "Eventlogs / Viewing History" %}</a></li>
+          <li><a href="{% url "admin:case_studies_casestudy_change" case_study.pk %}?next={{ request.path }}">
+            {% trans "Edit" %}</a></li>
+        </ul>
+      </li> <!-- close dropdown section -->
+    </ul> <!-- close navbar nav -->
+    
+  </div>
+</nav>
+
+{% endif %}
