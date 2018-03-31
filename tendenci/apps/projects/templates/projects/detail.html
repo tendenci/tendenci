@@ -57,8 +57,8 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
-<script src="{{ THEME_URL }}media/js/lightbox.js"></script>
+    <script src="{% static 'js/jquery.cycle.all.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/lightbox.js' %}"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {

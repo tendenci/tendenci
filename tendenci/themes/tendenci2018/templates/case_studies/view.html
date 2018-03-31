@@ -106,7 +106,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script src="{{ THEME_URL }}media/js/jquery.colorbox-min.js" type="text/javascript"></script>
+<script src="{% static 'js/jquery.colorbox-min.js' %}" type="text/javascript"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {

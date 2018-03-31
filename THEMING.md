@@ -308,13 +308,13 @@ Blocks are listed below in the order they typically appear in for a template.
 
 ### Referencing Theme media files
 
-Within the templates, when referencing files in the `media` directory, you will need to prepend the path with `{{ THEME_URL }}`. For example, to pull in the default stylesheet, the following link would be included in the `extra_head` block:
+Within the templates, when referencing files in the `media` directory, you will need to use `{% static 'path/to/file' %}`. For example, to pull in the default stylesheet, the following link would be included in the `extra_head` block:
 
-     <link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css"/>
+     <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css"/>
 
 For other files like javascript files, please follow this same pattern, like the example below:
 
-    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.cycle.all.min.js' %}" type="text/javascript"></script>
 
 ### Common Template tags
 
@@ -366,12 +366,12 @@ Next, we have `{% block extra_head %}` which includes our main stylesheet, our h
     
     <!-- Favicons
     ================================================== -->
-      <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
-      <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+      <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+      <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
     
       <!-- CSS
     ================================================== -->
-      <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css"/>
+      <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css"/>
     
     <!-- IE Specific Compatibility
     ================================================== -->
@@ -435,7 +435,7 @@ The middle will be filled with whatever html is necessary for our homepage. Noti
 In this example, we are using jQuery cycle to rotate our stories. The stories are wrapped in `<div id="stories">`, which is used by our javascript.
 
     {% block extra_body %}
-        <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+        <script src="{% static 'js/jquery.cycle.all.min.js' %}" type="text/javascript"></script>
 
         <script type="text/javascript">
         $(document).ready(function() {
@@ -540,7 +540,7 @@ If stories or boxes are included, please load those tags as well.
 
     <header>
       <div class="logo">
-        <img src="{{ THEME_URL }}media/images/logo.png" />
+        <img src="{% static 'images/logo.png' %}" />
       </div> <!-- /.logo -->
       
       <div class="search">

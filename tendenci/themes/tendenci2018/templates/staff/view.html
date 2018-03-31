@@ -134,7 +134,7 @@ staff {{ staff.name }}
 
 {% block extra_body %}
 {{ block.super }}
-<script src="{{ THEME_URL }}media/js/jquery.colorbox-min.js" type="text/javascript"></script>
+<script src="{% static 'js/jquery.colorbox-min.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
   $("a[rel='staff-photos']").colorbox({ height: '80%', width: '780' });
@@ -142,7 +142,7 @@ staff {{ staff.name }}
 </script>
 
 <!--[if lt IE 7 ]>
-<script src="{{ THEME_URL }}media/js/libs/dd_belatedpng.js"></script>
+<script src="{% static 'js/libs/dd_belatedpng.js' %}"></script>
 <script> DD_belatedPNG.fix('img, .png_bg');</script>
 <![endif]-->
 

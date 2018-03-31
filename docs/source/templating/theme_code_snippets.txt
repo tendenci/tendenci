@@ -538,7 +538,7 @@ Then add the following code snippet where you want to place your news feed:
            {% else %}
            <a href="{{ news_item.get_absolute_url }}">
          <div class="news-item-thumbnail-auto">
-         <img src="{{ THEME_URL }}/media/quince.jpg"
+         <img src="{% static 'quince.jpg' %}"
            style="width:100%;height:auto;"/>
          </div>
            </a>

@@ -36,8 +36,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
-    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
 
     <title>{% trans 'Theme Template for Bootstrap' %}</title>
 
@@ -45,18 +45,18 @@
 =========================================================== -->
     <!-- Bootstrap theme
 =========================================================== -->
-    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-theme.min.css' %}" rel="stylesheet">
 
 
 
     <!-- navigation dropdowns
 =========================================================== -->
-    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
-    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+    <link href="{% static 'css/nav.css' %}" rel="stylesheet">
+    <link href="{% static 'css/meanmenu.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template
 =========================================================== -->
-  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+  <link href="{% static 'css/custom.css' %}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
     media queries
@@ -162,7 +162,7 @@
       <div class="page-header">
         <h1>{% trans 'Thumbnails' %}</h1>
       </div>
-      <img src="{{ THEME_URL }}media/img/index.svg" class="img-thumbnail" alt="{% trans 'A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera' %}">
+      <img src="{% static 'img/index.svg' %}" class="img-thumbnail" alt="{% trans 'A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera' %}">
 
 
          <!-- Navigation Examples
@@ -551,12 +551,12 @@
  <!-- Theme Specific Javascript files
  ================================================== -->
     <!-- Respond JS for IE8 -->
-    <script src="{{ THEME_URL }}media/js/respond.min.js"></script>
+    <script src="{% static 'js/respond.min.js' %}"></script>
     <!-- HTML5 Support for IE -->
-    <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
+    <script src="{% static 'js/html5shiv.js' %}"></script>
     <!-- Custom JS -->
-    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
-    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script>
+    <script src="{% static 'js/jquery.meanmenu.js' %}"></script>
+    <script src="{% static 'js/responsiveCarousel.js' %}"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {
