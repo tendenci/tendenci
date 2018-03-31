@@ -132,6 +132,10 @@ TEMPLATES = [
         'django.static': 'django.contrib.staticfiles.templatetags.staticfiles',
         'django.staticfiles': 'django.templatetags.static',
       },
+      'builtins': [
+        'tendenci.apps.theme.templatetags.static',
+        'django.templatetags.i18n',
+      ],
     },
     'DIRS': [os.path.join(TENDENCI_ROOT, 'templates')]
   }
