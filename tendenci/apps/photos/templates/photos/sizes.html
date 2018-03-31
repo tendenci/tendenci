@@ -1,5 +1,4 @@
 {% extends "photos/base-wide.html" %}
-{% load i18n %}
 
 {% block meta_description %}{% blocktrans with d=photo.title|striptags|truncatewords:20 %}{{ d }}{% endblocktrans %}{% endblock %}
 {% block meta_keywords %}{% blocktrans with k=photo.meta_keywords %}{{ k }}{% endblocktrans %}{% endblock %}

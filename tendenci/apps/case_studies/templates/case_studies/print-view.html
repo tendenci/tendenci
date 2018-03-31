@@ -1,7 +1,6 @@
 {% extends "base-print.html" %}
 {% load base_filters %}
 {% load base_tags %}
-{% load i18n %}
 
 {% block title %}
         {{ case_study.client }} - {% for tech in case_study.technologies.all %}

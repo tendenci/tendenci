@@ -1,7 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load site_setting_tags %}
-{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user events.add_event as can_add_event %}

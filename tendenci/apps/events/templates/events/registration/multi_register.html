@@ -3,7 +3,6 @@
 {% load site_setting_tags %}
 {% load styled_forms %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% blocktrans with title=event.title dt=event.start_dt|date:"M j, Y" %}Registration {{ title }} {{ dt }}{% endblocktrans %}{% endblock %}
 

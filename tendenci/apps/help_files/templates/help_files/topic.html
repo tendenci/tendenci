@@ -1,7 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
 {% load perm_tags %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} - {% blocktrans with t=topic %}{{ t }} Topic{% endblocktrans %}{% endblock %}
 

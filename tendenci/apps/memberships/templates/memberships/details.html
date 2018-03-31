@@ -2,7 +2,6 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ mem_user }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=membership.get_description %}{{ d }}{% endblocktrans %}{% endblock %}

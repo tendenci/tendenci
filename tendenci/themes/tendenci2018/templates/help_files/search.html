@@ -2,7 +2,6 @@
 {% load bootstrap_pagination_tags %}
 {% load help_file_tags %}
 {% load search_tags %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Search" %}{% endblock %}
 

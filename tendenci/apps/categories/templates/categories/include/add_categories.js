@@ -1,4 +1,3 @@
-{% load i18n %}
 (function($){  		
     $('#t-categories-add-category-help-text button').click(function(){
         select_box = $(this).closest(".form-group").find('select#id_category');

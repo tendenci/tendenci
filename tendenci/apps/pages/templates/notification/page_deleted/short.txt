@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans with object.title as page %}Page ({{ page }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

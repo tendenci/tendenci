@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans %}Donation given by {{ donation.last_name }}, {{ donation.first_name }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

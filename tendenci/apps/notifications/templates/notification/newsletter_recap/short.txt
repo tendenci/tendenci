@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans %}Newsletter {{ subject }} submission recap {% endblocktrans %}

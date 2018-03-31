@@ -2,7 +2,6 @@
 {% load invoice_tags %}
 {% load perm_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}{% endblock %}
 

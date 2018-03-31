@@ -1,4 +1,4 @@
-{% load i18n %}{% blocktrans with site=current_site m=message  %}You have received the following notice from {{ site }}:
+{% blocktrans with site=current_site m=message  %}You have received the following notice from {{ site }}:
 
 {{ m }}
 

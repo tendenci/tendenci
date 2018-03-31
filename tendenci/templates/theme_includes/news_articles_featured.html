@@ -1,7 +1,6 @@
 {% load theme_tags %}
 {% load news_tags %}
 {% load article_tags %}
-{% load i18n %}
 {% list_news as featured_news limit=TEMPLATE_NEWS_ARTICLES_FEATURED_LIMIT %}
 {% list_articles as featured_articles limit=TEMPLATE_NEWS_ARTICLES_FEATURED_LIMIT %}
 <section id="news-featured">

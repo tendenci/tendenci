@@ -1,6 +1,5 @@
 {% load theme_tags %}
 {% load directory_tags %}
-{% load i18n %}
 {% list_directories as directories_list limit=TEMPLATE_DIRECTORIES_LIST_TITLE_LIMIT %}
 <section id="events-list">
     <h3>{% firstof TEMPLATE_DIRECTORIES_LIST_TITLE_TITLE trans "Directories" %}</h3>

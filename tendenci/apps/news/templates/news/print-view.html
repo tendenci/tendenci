@@ -1,7 +1,6 @@
 {% extends "news/base-print.html" %}
 {% load news_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}

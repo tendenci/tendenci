@@ -1,7 +1,6 @@
 {% extends "events/base-print.html" %}
 {% load event_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}Print - {{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}

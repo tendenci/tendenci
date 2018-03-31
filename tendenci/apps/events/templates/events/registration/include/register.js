@@ -1,4 +1,3 @@
-{% load i18n %}
 
 // user status check
 function getUserStatus(form){

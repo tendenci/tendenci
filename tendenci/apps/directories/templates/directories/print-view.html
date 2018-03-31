@@ -1,7 +1,6 @@
 {% extends "directories/base-print.html" %}
 {% load directory_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with title=directory.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with description=directory.get_description %}{{ description }}{% endblocktrans %}{% endblock %}

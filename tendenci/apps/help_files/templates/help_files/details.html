@@ -1,7 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{{ help_file.question|striptags|safe }} - {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}{% endblock %}
 {% block meta_description %}{{ help_file.answer|striptags|safe|truncatewords:40 }}{% endblock %}

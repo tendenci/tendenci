@@ -2,7 +2,6 @@
 {% load story_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load i18n %}
 {% list_stories as sponsor_stories tags=TEMPLATE_STORIES_SPONSORS_TAG limit=TEMPLATE_STORIES_SPONSORS_LIMIT random=true %}
 <section id="stories-sponsors">
     <h3>{% firstof TEMPLATE_STORIES_SPONSORS_TITLE 'Sponsors' %}</h3>

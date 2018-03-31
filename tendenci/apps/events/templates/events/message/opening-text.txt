@@ -1,4 +1,3 @@
-{% load i18n %}
 
 <div>
     <font color="#000000" face="Arial">{% trans "Hello" %} [firstname],

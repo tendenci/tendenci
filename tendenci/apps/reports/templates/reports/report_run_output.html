@@ -1,5 +1,4 @@
 {% extends 'base-print.html' %}
-{% load i18n %}
 
 {% block title %}{% trans "Invoices Financial Report" %} {% trans "for" %} {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}{% endblock title %}
 

@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans with object.headline as objname %}New directory ({{ objname }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

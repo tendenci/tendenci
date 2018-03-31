@@ -1,4 +1,4 @@
-{% extends "helpdesk/public_base.html" %}{% load i18n humanize %}
+{% extends "helpdesk/public_base.html" %}{% load humanize %}
 
 {% block helpdesk_body %}
 <h2>{% blocktrans with category.title as kbcat %}Knowledgebase Category: {{ kbcat }}{% endblocktrans %}</h2>

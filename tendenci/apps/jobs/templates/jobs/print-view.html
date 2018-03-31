@@ -1,7 +1,6 @@
 {% extends "jobs/base-print.html" %}
 {% load base_filters %}
 {% load job_tags %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with t=jobs.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=jobs.get_description %}{{ d }}{% endblocktrans %}{% endblock %}

@@ -4,7 +4,6 @@
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
-{% load i18n %}
 
 {% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}

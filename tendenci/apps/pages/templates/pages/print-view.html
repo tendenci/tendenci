@@ -1,6 +1,5 @@
 {% extends "base-print.html" %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}

@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans %}Corporate Membership Approved on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

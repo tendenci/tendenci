@@ -1,6 +1,5 @@
 {% load base_tags %}
 {% load perm_tags %}
-{% load i18n %}
 
 {% has_perm user speaker.change_speaker opt_object as can_edit %}
 {% has_perm user speaker.delete_speaker opt_object as can_delete %}

@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans with object.headline as objhead %}New news ({{ objhead }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

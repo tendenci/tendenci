@@ -1,4 +1,3 @@
-{% load i18n %}
 
 {{ site_name }} - {{ first_name }}
 

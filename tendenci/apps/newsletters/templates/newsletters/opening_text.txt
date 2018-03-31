@@ -1,4 +1,3 @@
-{% load i18n %}
 
 <font face=Arial size=2 color=#000000>
 {% blocktrans %}Hello [firstname]{% endblocktrans %}, <br><br>

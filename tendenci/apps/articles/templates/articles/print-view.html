@@ -1,7 +1,6 @@
 {% extends "articles/base-print.html" %}
 {% load article_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with title=article.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with description=article.get_description %}{{ description }}{% endblocktrans %}{% endblock %}

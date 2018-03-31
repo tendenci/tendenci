@@ -1,5 +1,4 @@
 {% load theme_tags %}
-{% load i18n %}
 
 <section id="box-{{ box.pk }}" class="boxes">
 {% blocktrans with c=box.content|safe %}{{ c }}{% endblocktrans %}

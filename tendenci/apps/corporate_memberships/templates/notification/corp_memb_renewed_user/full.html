@@ -1,4 +1,3 @@
-{% load i18n %}
 
 <p>{% blocktrans with object.corp_profile.name as objname and request.user.username as requser %}The corporate membership "{{ objname }}" has been renewed by {{ requser }}.{% endblocktrans %}
 </p>

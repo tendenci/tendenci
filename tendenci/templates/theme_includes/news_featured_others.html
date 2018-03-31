@@ -1,6 +1,5 @@
 {% load theme_tags %}
 {% load news_tags %}
-{% load i18n %}
 {% list_news as featured_news limit=TEMPLATE_NEWS_FEATURED_OTHERS_LIMIT %}
 <section id="news-featured">
     <h3>{% firstof TEMPLATE_NEWS_FEATURED_OTHERS_TITLE trans "News" %}</h3>

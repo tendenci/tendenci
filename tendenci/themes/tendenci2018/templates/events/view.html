@@ -6,7 +6,6 @@
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
-{% load i18n %}
 {% load meta_tags %}
 
 {% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}

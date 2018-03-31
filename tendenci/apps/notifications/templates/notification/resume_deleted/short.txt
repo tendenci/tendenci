@@ -1,3 +1,2 @@
-{% load i18n %}
 
 {% blocktrans with object.title as objtitle %}Resume (({{ objtitle }})) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

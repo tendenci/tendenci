@@ -1,6 +1,5 @@
 {% load base_tags %}
 {% load perm_tags %}
-{% load i18n %}
 
 {% has_perm user events.add_event as can_add %}
 {% has_perm user events.change_event opt_object as can_edit %}

@@ -3,7 +3,6 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
-{% load i18n %}
 
 {% has_perm user testimonials.change_testimonial testimonial as can_edit %}
 {% has_perm user testimonials.delete_testimonial testimonial as can_delete %}

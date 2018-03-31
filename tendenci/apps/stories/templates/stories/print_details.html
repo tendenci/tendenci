@@ -1,7 +1,6 @@
 {% extends "stories/base-print.html" %}
 {% load story_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}{% blocktrans with t=story.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{% blocktrans with d=story.get_description %}{{ d }}{% endblocktrans %}{% endblock %}

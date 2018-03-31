@@ -4,7 +4,6 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load base_filters %}
-{% load i18n %}
 
 {% block title %}
     {{ event.title }} - {{ event.start_dt|date:"F j, Y" }} - {% trans "Registrant Roster" %} {{ roster_view }}
