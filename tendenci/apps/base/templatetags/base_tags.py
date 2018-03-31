@@ -21,6 +21,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.utils import generate_image_cache_key
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 
 register = Library()
 
@@ -639,7 +640,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
+            return static(settings.DEFAULT_IMAGE_URL)
 
         cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
         cached_image_url = cache.get(cache_key)
@@ -727,7 +728,7 @@ class ImageURL(Node):
             return url
 
         # return the default image url
-        return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
+        return static(settings.DEFAULT_IMAGE_URL)
 
 
 @register.tag

@@ -18,6 +18,7 @@ from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -478,9 +479,8 @@ class Profile(Person):
             c.close()
 
         if not default:
-            default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
-                                   getattr(settings, 'STATIC_URL', ''),
-                                   settings.GAVATAR_DEFAULT_URL)
+            default = '%s%s%s'%(get_setting('site', 'global', 'siteurl'),
+                                static(settings.GAVATAR_DEFAULT_URL))
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urlencode({'d':default, 's':str(size)})

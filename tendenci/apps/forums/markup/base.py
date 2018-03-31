@@ -2,15 +2,15 @@
 from __future__ import unicode_literals
 
 import re
-from django.conf import settings
 from django.utils.html import escape
 from ..defaults import PYBB_SMILES, PYBB_SMILES_PREFIX
 from django.forms import Textarea
+from tendenci.apps.theme.templatetags.static import static
 
 
 def smile_it(s):
     for smile, url in PYBB_SMILES.items():
-        s = s.replace(smile, '<img src="%s%s%s" alt="smile" />' % (settings.STATIC_URL, PYBB_SMILES_PREFIX, url))
+        s = s.replace(smile, '<img src="%s" alt="smile" />' % static(PYBB_SMILES_PREFIX+url))
     return s
 
 

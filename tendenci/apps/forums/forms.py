@@ -115,8 +115,9 @@ class PostForm(forms.ModelForm):
             if not self.may_edit_topic_slug:
                 del self.fields['slug']
 
-        self.available_smiles = defaults.PYBB_SMILES
-        self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
+        self.available_smiles = {
+            smile: defaults.PYBB_SMILES_PREFIX+url for smile, url in defaults.PYBB_SMILES
+        }
 
         # add form-control class
         for k in self.fields:

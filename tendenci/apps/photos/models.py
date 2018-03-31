@@ -47,6 +47,7 @@ from tendenci.apps.photos.utils import EXIF
 from tendenci.apps.photos.utils.reflection import add_reflection
 from tendenci.apps.photos.utils.watermark import apply_watermark
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.theme.templatetags.static import static
 
 # max_length setting for the ImageModel ImageField
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)
@@ -591,10 +592,10 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
                     cache.delete("photos_cache_set.%s" % photo.pk)
 
     def get_default_cover_photo_small(self):
-        return settings.STATIC_URL + "images/default-photo-small.jpg"
+        return static('images/default-photo-small.jpg')
 
     def get_default_cover_photo(self):
-        return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
+        return static('images/default-photo-album-cover.jpg')
 
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
@@ -950,7 +951,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         return default_storage.exists(str(self.image))
 
     def default_thumbnail(self):
-        return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
+        return static('images/default-photo-album-cover.jpg')
 
     def get_file_from_remote_storage(self):
         return BytesIO(default_storage.open(self.image.file.name).read())
