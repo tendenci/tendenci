@@ -1,0 +1,96 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load megamenu_tags %}
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans "Community" %}</span><span class="caret"></span>
+    </a>
+
+    {% get_community_dropdown_column_size as col_size %}
+    <ul id="t-admin-megamenu-community-dd" class="dropdown-menu community-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-{{ col_size }} content-dropdown-col">
+                        <ul class="list-unstyled">
+                            <li class="content-head">
+                                <span>{% trans 'Member' %}</span>
+                            </li>
+
+                            {% if MODULE_MEMBERSHIPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'profile.search' %}?member_only=on"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members' %}</span>
+                                    </a>
+                                </li>
+                                {% if USER_IS_SUPERUSER %}
+                                <li class="content-item">
+                                    <a href="{% url 'admin:memberships_membershipdefault_changelist' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members (Admin)' %}</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if MODULE_GROUPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'groups' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/><span class="nav-label">{% trans 'Groups' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_COMMITTEES_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'committees.search' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/><span class="nav-label">{% trans 'Committees' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'corpmembership.mycorps' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'Corporate Membership' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% if MODULE_FORUMS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'pybb:index' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/comments.png' %}"/><span class="nav-label">{% trans 'Forums' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if SITE_ADMIN_EMAIL %}
+                                <li class="content-item">
+                                    <a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/email.png' %}"/><span class="nav-label">{% trans 'Email Administrators' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    {% if USER_IS_SUPERUSER %}
+                        <div class="col-sm-{{ col_size }} content-dropdown-col">
+                            <ul class="list-unstyled admin-col">
+                                <li class="content-head"><span>{% trans 'Administrator' %}</span></li>
+
+                                <li class="content-item">
+                                    <a href="#"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

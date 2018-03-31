@@ -1,0 +1,362 @@
+/*   
+Theme Name: Twenty-Thirteen
+Theme URI: 
+Description: Custom Tendenci Theme Design
+Designer: Kieu Tran
+Designer URI: http://schipul.com
+Developer: Kieu Tran
+Developer URI: http://schipul.com/
+Version: 1.0
+*/
+
+/* STYLES TABLE OF CONTENTS
+==================================================
+    Font-Face
+    Reset HTML
+    Base HTML
+    Site Base 
+    Header 
+     -Header Elements
+     -Navigation Elements
+    Homepage Content
+    -Rotator
+    -Home Body Content
+    -Home Carousel
+    -Home Sidebar
+    Home Feed Content
+    Footer
+    ----------------------
+    Media Queries
+    -Tablet Portrait
+    -Tablet Landscape
+    -Mobile Portrait + Landscape
+*/
+
+/* FONT FACE
+================================================== */
+@font-face {
+    font-family: 'HattoriHanzoLight';
+    src: url('../fonts/Hattori_Hanzo-webfont.eot');
+    src: url('../fonts/Hattori_Hanzo-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Hattori_Hanzo-webfont.woff') format('woff'),
+         url('../fonts/Hattori_Hanzo-webfont.ttf') format('truetype'),
+         url('../fonts/Hattori_Hanzo-webfont.svg#HattoriHanzoLight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'HattoriHanzoLightItalic';
+    src: url('../fonts/Hattori_Hanzo_Italic-webfont.eot');
+    src: url('../fonts/Hattori_Hanzo_Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.woff') format('woff'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.ttf') format('truetype'),
+         url('../fonts/Hattori_Hanzo_Italic-webfont.svg#HattoriHanzoLightItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/* RESET HTML
+================================================== */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section {
+  display: block;
+}
+
+/* BASE HTML
+================================================== */
+
+body  {  font-family: Helvetica, Arial, "sans-serif";  font:13px/1.25  sans-serif; *font-size: small; margin: 0;  background:  url('../images/body-bg.png') repeat-x top left;  background-color:  #ebebeb; }
+
+h1,  h1 a { font-size:  32px; line-height: 34px; text-decoration: none;  margin-bottom: 10px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #17ABB9; }
+h2, h2 a  { font-size: 24px;  line-height: 26px; text-decoration: none;  margin-bottom: 10px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #666; }
+h3, h3 a {  font-size: 20px;  line-height: 22px; text-decoration: none;  margin-bottom: 6px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #FAA141; }
+h4, h4 a  { font-size: 16px;  line-height: 20px;  text-decoration: none;  margin-bottom: 6px;  font-family: 'HattoriHanzoLight',arial, helvetica,  sans-serif; color:  #999; }
+
+a { font-family: arial, helvetica, sans-serif; color: #FAA141; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:visited, a:active { }
+a.readmore { text-decoration:  none; color: #faa141; font-family:Arial, Helvetica, sans-serif;  font-size: 13px;}
+a.readmore:hover { text-decoration: underline; }
+a.readmorelarge  {  background: #FAA141; border-radius: 4px; box-shadow: 1px 1px 2px  #666;  color: #fff; font-family: Arial,Helvetica,sans-serif;  font-size:  13px;padding: 6px; text-decoration: none; }
+a.readmorelarge:hover { text-decoration: underline; }
+
+a.edit-box { color: #17abb9; }
+p { margin-bottom: 10px; line-height: 18px; color: #666;font-family:Arial, Helvetica, sans-serif; }
+
+ul, ol { margin: 0 0 10px 24px; color: #666;font-family:Arial, Helvetica, sans-serif; }
+ol { list-style-type: decimal; color: #666;font-family:Arial, Helvetica, sans-serif; }
+
+select, input, textarea, button { font: 99% sans-serif; }
+pre, code, kbd, samp { font-family: monospace, sans-serif; margin-bottom: 10px; padding: 8px; }
+
+small { font-size: 85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align: top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+blockquote { margin: 0 0 10px 20px; }
+
+
+/* SITE BASE LAYOUT
+================================================== */
+section { width: 100%; margin: 0px auto; }
+
+
+/* HEADER STYLES
+================================================== */
+
+/* HEADER ELEMENTS */
+#header-container { height: 215px; background: url(../images/main-nav-bgx.png) repeat-x bottom left; }
+.logo h1, .logo h2 { color: transparent; }
+.logo p { margin: 0; }
+.logo .tagline { font-size: 18px; color: #666;font-family: arial, helvetica, sans-serif; margin-top: -22px; }
+#header { width: 100%; position: relative; height: 213px;}
+#header-cta {background: #faa141; width: 180px; height: 24px; padding: 10px; text-align: center; }
+#header  p  a { color: #fff; text-transform: uppercase; font-family:  arial,  helvetica, sans-serif; font-size: 14px; text-decoration: none; }
+#header p a:hover { text-decoration: underline; }
+#search  {  background:  url(../images/search-bg.png) no-repeat left  center;  border: none; width:  199px; height: 29px; margin-top: 10px;  position:  relative; }
+#header-links { margin-top: 10px; }
+
+/* MAIN NAVIGATION */
+.nav-mask { width: 1042px;  height: 14px; position: absolute; bottom: 65px; left: -41px; }
+#nav-left { float: left; width: 41px; height: 14px; background: #c5dce0; }
+#nav-right { float: right; width: 41px; height: 14px; background: #c5dce0; }
+#nav-middle { width: 100%; height: 14px; background: #c5dce0; }
+#nav-container  { position: absolute; bottom: 2px; left:-79px; width:  1120px;  height:  78px; z-index: 999; background:  url(../images/nav-bg.png) no-repeat  bottom center; }
+nav { height: 30px; padding: 20px 40px 10px; }
+nav .block .content { margin: 0; padding: 0; }
+nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
+nav ul, nav li { margin: 0; }
+nav h2 { display: none; }
+nav ul { list-style: none; padding: 0; margin: 0; }
+nav ul li { float: left;  position: relative; }
+nav  ul li a { float: left; font-family: 'HattoriHanzoLight',  arial,  sans-serif; font-size: 18px; text-transform: uppercase;  text-decoration:  none; color: #fff; padding: 9px 21px 4px; }
+nav ul li a:hover { background: #262626; text-decoration: none; }
+nav ul ul { display: none; position: absolute; top: 34px; left: 0; width: 160px; z-index: 999; }
+nav  ul ul a { width: 167px; background: #17abb9; border-top: 1px  solid  #14A5B3; /* Remember to subtract the padding width from line 8  from the  width you set on the ul */  }
+nav ul ul a:hover {background: #262626; }
+nav ul ul ul { position: absolute; top: 0; left: 160px; }
+nav ul ul ul, nav ul ul ul ul, nav ul li:hover ul ul { display: none; }
+nav ul li:hover ul, nav ul ul li:hover ul { display: block; }
+
+/* HOMEPAGE CONTENT
+================================================== */
+
+/* ROTATOR */
+#rotator-container  { position: relative; background: url(../images/rotator-bg.png)  repeat-x left top; height: 460px; margin-bottom: 20px; }
+#rotator-wrap, #rotator { width: 100%; height: 100%; }
+.rotator-item { width:100%; height: 100%; overflow: hidden; }
+.rotator-content  { top: 58%; height: auto; left: 4%; padding: 2%; position: absolute;  width: 60%; z-index: 2; background-color: rgba(255, 255, 255,  0.95); }
+.rotator-content  h2 a { font-family: 'HattoriHanzoLight', arial, sans-serif;  color:  #939393;  font-size: 22px; font-weight: bold; padding-top:  0px;  margin-bottom: 20px;  text-transform: uppercase; }
+.rotator-content p { width: 92%; font-family:Arial, Helvetica, sans-serif; color: #939393; font-size: 14px; line-height: 18px; }
+.rotator-content a.readmore { font-size: font-size: 14px; }
+.rotator-image { position: absolute; z-index: 0; width: 98%; height: auto; right: 0; top: 4%; }
+.rotator-image a img, .rotator-image img { width: 98% !important; height: auto !important;}
+#stories-pager { top: 70%; right: 34%; position: absolute; z-index: 4; width: 18px; }
+#stories-pager  a {display: block;  background:  url('../images/rotator-inactive.png')  no-repeat center  center; width: 16px; height: 16px; text-indent: -9999px; float: left; }
+#stories-pager  a.activeSlide { display: block;  background:  url('../images/rotator-active.png') no-repeat center  center;  width: 16px; height: 11px text-indent: -9999px; float: left;}
+
+/* HOMEPAGE BODY CONTENT */
+#home-body  { padding: 2% 0; background-color: rgba(255, 255,  255, 0.9);  box-shadow: 4px 6px 13px -3px rgba(0, 0, 0, 0.5); position: relative; }
+#home-body-shadow  { position: absolute; bottom: -40px; width: 100%; height: 40px;  background: url('../images/content-re-bg-shadow.png') no-repeat center  top; }
+.home-row { margin-left: 3%; margin-bottom: 2%; height: 370px; }
+.col .boxes p img { width: 100%; height: auto; color: #666; }
+.home-row  h3 { font-family: 'HattoriHanzoLight', arial, sans-serif; font-size:  20px; padding: 10px 0 0 46px; color: #939393; text-transform: uppercase;  }
+.home-row #box-4 h3 { background: url('../images/icon-cog.png') no-repeat left center; height: 28px;}
+.home-row #box-5 h3{ background: url('../images/icon-pig.png') no-repeat left center; height: 28px;}
+.home-row #box-6 h3 { background: url('../images/icon-people.png') no-repeat left center; height: 28px;}
+.home-row p { color: #4d4d4d; font-family: arial, helvetica, sans-serif; font-size: 13px; line-height: 16px; }
+.home-row  #single-event h3 { background:  url('../images/icon-book.png')  no-repeat left center; height: 28px; } /*  Featured Event Area on the  Homepage Main Content Area*/
+.home-row #single-event h4 { margin-top: 0 0 10px; }
+.home-row  #single-event h4 a { color: #17ABB9; text-transform:  uppercase;  font-family: arial, helvetica, sans-serif; font-size: 13px; }  
+.home-row #single-event h4 a:hover { text-decoration: underline; }
+.home-row #single-event p.event-date { color: #999; margin: 8px 0 0;}
+.home-row #single-event img { width: 100%; height: auto; }
+
+/* HOMEPAGE CAROUSEL */
+#carousel-container { width: 90%; height: 236px; margin: 0 auto 20px; position: relative; }
+#carousel-container  h3 { margin-bottom: 0; font-family: 'HattoriHanzoLight', arial,  sans-serif; font-size: 20px; padding: 10px 0 0 0; color: #939393;  text-transform: uppercase;}
+#carousel-wrap { width: 92%; margin:0 auto; overflow: hidden; position: absolute; z-index: 1; left: 22px; }
+.carousel-items ul { list-style: none; }
+.carousel-items ul li { float: left; width: 28%; margin: 15px; height: 170px; }
+.carousel-items ul li a img { width: 100%; height: auto; }
+.carousel-items  a { color: #17ABB9; font-family: arial,helvetica,sans-serif; font-size:  13px; text-transform: uppercase; text-decoration: none; }
+.carousel-items a:hover { text-decoration: underline; }
+#port-left  { background:url('../images/carousel-left.png') center left no-repeat;  width: 25px; height: 150px; left: 0; position: absolute; absolute;  z-index: 2; }
+#port-right {  background:url('../images/carousel-right.png') center left no-repeat;  width: 25px; height: 150px; right: 0; position: absolute; absolute;  z-index: 2; }
+
+/* HOMEPAGE SIDEBAR*/
+#home-sidebar  { margin-top: 3%; padding: 2% 4%; background-color: rgba(235, 235, 235,  0.9); box-shadow: 4px 6px 13px -3px rgba(0, 0, 0, 0.5); }
+#home-sidebar  h3 { background: url('../images/sidebar-title-bg.png') no-repeat left  center; height: 28px; padding: 20px 0 0 0; position: relative; width:  284px; right: -15px; text-align: center; color: #fff; font-size: 16px;  text-transform: uppercase; }
+#home-sidebar #sponsor-items img { width: 100%; height: auto; }
+#home-sidebar  #events-list h4 { background:  url('../images/icon-calendar.png')  no-repeat left top; padding: 0 0 0  38px; font-family: arial, helvetica, sans-serif; line-height: 12px; }
+#home-sidebar  #events-list .event-time { color:  #FAA141;  font-size:  13px;  line-height: 14px; font-family: arial,  helvetica,  sans-serif; }
+#home-sidebar h4 a { color: #17ABB9; font-family: arial,helvetica,sans-serif; font-size: 13px; text-transform: uppercase; }
+#home-sidebar h4 a:hover { text-decoration: underline; }
+#home-sidebar p { color: #999; font-size: 13px; font-family: arial, helvetica, sans-serif; }
+
+/* HOME FEED CONTENT  */
+#home-feed-content { position: relative; background: #646262; margin-top: 4%; }
+#home-feed-shadow  {  width: 100%; height: 30px; position: absolute; left: 0;  bottom:-30px;  background:url('../images/media-shadow.png') no-repeat  left center;}
+.feed-col { padding: 2%; }
+.feed-col h3 { color: #17ABB9; text-transform: uppercase; font-family: arial, helvetica, sans-serif; font-size: 13px; }
+.feed-col  h3 { margin-bottom: 2%; font-family: 'HattoriHanzoLight',  arial,  sans-serif; font-size: 20px; color: #fff; text-transform: uppercase; }
+#feed-col-1 h3 { background: url('../images/icon-suitcase.png') no-repeat left center; height: 28px; padding: 10px 0 0 34px; }
+#feed-col-2 h3 { background: url('../images/icon-eye.png') no-repeat left center; height: 28px; padding: 10px 0 0 40px; }
+#feed-col-3 h3 { background: url('../images/icon-camera.png') no-repeat left center; height: 28px; padding: 10px 0 0 40px; }
+
+/* JOBS */
+#feed-col-1  p { color: #FAA141; font-family: Arial,Helvetica,sans-serif;  font-size:  12px; text-transform: uppercase; margin: 0 0 8px; }
+#feed-col-1  h4 { font-family: arial,helvetica,sans-serif; font-size:  13px;  text-decoration: none; text-transform: uppercase; margin: 0; }
+#feed-col-1 h4 a { color: #17ABB9; }
+#feed-col-1 h4 a:hover { text-decoration: underline; }
+
+/* PHOTOS */
+#feed-col-2 ul { list-style: none; margin: 0 -2px; } 
+#feed-col-2 ul li { float: left; margin: 5px; }
+#feed-col-2 ul li a img { border: 4px #fff solid; }
+
+/* VIDEOS */
+#feed-col-3 ul { list-style: none; margin-left: 2px; } 
+#video-urls iframe, #video-urls embed, #video-urls object { position: relative; width: 100%; height: auto; }
+
+/* INTERIOR BODY CONTENT */
+#body-content  { padding: 1%; background-color: rgba(255, 255,  255, 0.9); box-shadow: 4px 6px 13px  -3px rgba(0, 0, 0, 0.5); }
+#body-content-left { float: left; padding: 10px; margin: 1% auto 2%; }
+#body-content-right { float: right; padding: 10px; margin: 1% auto 2%;}
+#body-content, #body-content-left, #body-content-right ul li { font-family: arial, helvetica, sans-serif; color: #999; }
+
+/* INTERIOR SIDEBARS */
+.sidebar { background-color: rgba(235, 235, 235, 0.9); box-shadow: 4px 6px 13px -3px rgba(0, 0, 0, 0.5); padding: 2%; }
+#sidebar-left { float: left; }
+#sidebar-right { float: right; }
+
+.sidebar  h4 a { color: #17ABB9; font-family: arial,helvetica,sans-serif; font-size:  13px; text-transform: uppercase; }
+.sidebar  h4 a:hover { text-decoration: underline;  }
+.sidebar  p { color: #999; font-size: 13px; font-family: arial, helvetica, sans-serif; }
+.sidebar  h3  { font-family: 'HattoriHanzoLight',  arial, sans-serif;  font-size:  20px; padding: 10px 0; color:  #939393; text-transform:  uppercase; }
+
+/* PHOTOS */
+.sidebar #photos ul { list-style: none; margin: 0 0 20px; height: 330px; } 
+.sidebar #photos ul li { float: left; margin: 2%; }
+.sidebar #photos ul li a img { border: 4px #fff solid; width: 100%; height: auto; }
+
+
+/* FOOTER STYLES */
+#footer { background-color: #17abb9; margin-top: 2%; }
+footer { width: 100%; padding: 2% !important;}
+footer  h3, footer h4 { color: #fff;  font-family:  'HattoriHanzoLight',arial,sans-serif; font-size: 20px;  text-transform:  uppercase; }
+footer p {color: #4D4D4D; font-family: arial,helvetica,sans-serif; font-size: 13px; line-height: 16px; }
+#footer-cols {width: 100%; margin: 0 auto; display: block;}
+.footer-col { width: 100%; float: left; margin: 0 1%;}
+.footer-col ul { margin: 0; list-style: none; }
+footer ul li { padding: 0 0 1%;}
+footer  ul li a { color: #4D4D4D; font-family:  arial,helvetica,sans-serif;  font-size: 13px; line-height: 16px;  text-decoration: none;  text-transform: uppercase; }
+footer ul li a:hover { text-decoration: underline; color: #FAA141; }
+#footer-links {width: 100%; margin: 0 auto; display: block; text-align: center }
+#footer-links  p, #footer-links a { color: #fff; font-size: 14px; font-family:  arial,  helvetica, sans-serif; padding:2% 0 0; text-decoration: none; }
+
+/* FOOTER NEWSLETTER SIGN UP FORM */
+#footer-col-4 .forms label { display: none; }
+#footer-col-4 .forms .form-field { margin-left: 0px !important; }
+#footer-col-4  .forms .form-field .field input[type="text"] {color: #999 !important;  font-size: 13px !important; padding: 3px !important; width: 100%  !important; }
+#footer-col-4 .forms .form-field { margin-bottom: 10px !important; }
+#footer-col-4  .forms input[type="submit"] { margin: 0 0 0 1%; width: 100%;  background: #FAA141; border: none; border-radius: 5px; box-shadow:  1px  1px 2px #666; color: #fff;  font-family:  Arial,Helvetica,sans-serif;font-size: 13px; padding: 1%;  text-decoration:  none; }
+ 
+
+/* MEDIA QUERIES
+================================================== */
+
+/* #TABLET ( PORTRAIT )
+================================================== */
+
+    /* Note: Design for a width of 768px */
+
+    @media only screen and (min-width: 768px) and (max-width: 959px) {
+     #header-container { background: none; height: auto; position: static; }
+     #header { height: 128px; }
+     #nav-container { width: 100%; left: 0; padding: 9px 12px 4px; margin: 0 auto; position: static;  }
+     .nav-mask { display: none; }
+     nav { padding: 20px 0 10px; }
+     nav ul li a { font-size: 15px; padding: 15px 10px 4px; }
+     #rotator-container { left: 2%; }
+     #rotator-wrap, #rotator { overflow: hidden; margin: 0 auto; }
+     .rotator-image a img, .rotator-image img { width: 78%; height: auto; }
+     .rotator-content { top: 69%; left: 3%; width: 92%; padding: 1%;}
+     #stories-pager { right: 4%; top: 78%; }
+     #home-sidebar h3 { width: 100%; background: url("../images/sidebar-title-bg.png") no-repeat center center; }
+     #home-body-shadow, #home-feed-shadow { display: none; }
+     #feed-col-1  h3, #feed-col-2 h3, #feed-col-3 h3 { height: auto; background:  url("../images/icon-suitcase.png") no-repeat left top; padding: 3px 0 0  34px; }  
+     .carousel-items ul li { margin: 11px; }
+     #home-sidebar { background: #c2dade; }
+}
+
+/* #TABLET ( LANDSCAPE )
+================================================== */
+   @media only screen  and (min-device-width : 768px) 
+   and (max-device-width : 1024px)  
+   and (orientation : landscape) { 
+   #home-sidebar { background: #c2dade; }
+   .rotator-content { top: 60%; }
+   #stories-pager {  top: 73%; }
+   
+    }
+
+/*  #MOBILE ( PORTRIAT & LANDSCAPE )
+================================================== */
+
+    /* Note: Design for a width of 320px */
+
+    @media only screen and (max-width: 767px) {
+      #header-container  { height: auto; background: #c2dce0; box-shadow: 4px 6px 13px -3px  rgba(0, 0, 0, 0.5); padding-bottom: 5%; margin-bottom: 5%; position: static; }
+      #header-container { background: none; height: auto; position: static; }
+      #header-right-container, #header-left-container { text-align: center; }
+      #header { height: 282px; position: static; }
+      #header-links { text-align: center; } 
+      #header-cta { margin: 0 auto; }
+      #search { margin: 4% auto; }
+      #rotator-container { display: none; }
+      #home-body { width: 106%; }
+      #home-feed-content { width: 106%; }
+      #home-body-shadow , #home-feed-shadow{ display: none; }
+      #body-content { background: none; box-shadow: none; } 
+      #nav-container { background: none; width: 100%; position: static; height: auto; }
+      nav { height: auto; padding: 0; }
+      nav  ul li { background: #4aa9bb; border-radius: 5px; box-shadow: 1px 1px  3px #999; float: none; text-align: center; margin: 1% 0; } 
+      nav ul li a { float: none; text-align: center; margin-bottom: 1%; display: block; }
+      nav ul li a:hover { background: #FAA141; }    
+      .nav-mask { display: none; }
+      #directories { display: none; }
+      #home-sidebar { background: #c2dade; width: 98%; margin: 4% auto; }
+      #home-sidebar h3 { margin: 0 auto; }
+      #sidebar-left, #sidebar-right { background: #c2dade; width: 98%; margin: 4% auto; }
+      #footer-cols .boxes { margin: 2% 0; }
+      #feed-col-3 ul { text-align: center; }
+      #body-content img { width: 100% !important; height: auto !important; margin: 0 auto; }
+      .side-bar .types .type a { width: 70% !important; }
+      .side-bar .types { margin: 0 !important; }
+    }
+

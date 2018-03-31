@@ -1,0 +1,50 @@
+{% load theme_tags %}
+
+<div id="footer" class="container">
+        
+       <hr> 
+        <div class="row">
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="footer-link space">
+              {% space_include MODULE_THEME_FOOTER_COL_1 %}
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="footer-link space">
+              {% space_include MODULE_THEME_FOOTER_COL_2 %}
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="footer-link">
+              <div class="login-form">
+                <h4>Log In</h4>
+                {% if request.user.is_authenticated %}
+                <p>Logged in as <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">Logout</a></p>
+                {% else %}
+                <form method="post" action="/accounts/login/?next={{ request.path }}">{% csrf_token %}
+                    <p><input id="id_username" name="username" type="text" title="Username" maxlength="30" /></p>
+                    <p><input type="password" title="password" name="password" id="id_password"  /></p>
+                    <input name="submit" type="submit" value="Log in" />
+                </form>
+                {% endif %}
+              </div>
+            </div>
+            <div class="footer-link space">
+              {% space_include MODULE_THEME_FOOTER_COL_3 %}
+            </div>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+        
+        
+        
+        <div class="row">
+          <div class="col-md-12">
+            
+            <hr>
+            <div class="copy text-center space">
+              {% space_include MODULE_THEME_FOOTER_LINKS_SPACE %}
+            </div>
+          </div>
+        </div>
+        
+      </div>

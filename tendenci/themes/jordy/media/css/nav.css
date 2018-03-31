@@ -1,0 +1,21 @@
+#admin-bar a, #user-bar a { text-transform: none; }
+/* MAIN NAVIGATION */
+#mainnav {}
+#nav-ul-1 { font-family: 'MiloOT', arial, sans-serif; }
+#nav-ul-1 { padding: 10px;}
+#nav-ul-1 ul li a:hover { text-decoration: underline; }
+#nav-ul-1 ul ul a:hover { text-decoration: underline; }
+nav .block .content { margin: 0; padding: 0; }
+nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
+nav ul, nav li { margin: 0; }
+nav h2 { display: none; }
+nav ul { list-style: none; padding: 0; margin: 0; }
+nav ul li { float: left;  position: relative; }
+nav ul li a { float: left; font-family: 'MiloOT',  arial,  sans-serif; font-size: 15px; text-decoration:  none; color: #838586; padding: 9px 21px 4px; }
+nav ul ul { display: none; position: absolute; top: 30px; left: 0; width: 160px; z-index: 999; }
+nav ul ul a { width: 167px; background: #fff; border-top: 1px  solid  #838586; /* Remember to subtract the padding width from line 8  from the  width you set on the ul */  }
+nav ul ul a:hover { background: #fff; text-decoration: underline; }
+nav ul ul ul { position: absolute; top: 0; left: 160px; }
+nav ul ul ul, nav ul ul ul ul, nav ul li:hover ul ul { display: none; }
+nav ul li:hover ul, nav ul ul li:hover ul { display: block; }
+.utility-navigation > li > a { font-size: 14px; }​

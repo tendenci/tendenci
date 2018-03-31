@@ -1,0 +1,34 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load photo_tags %}
+{% load box_tags %}
+{% load news_tags %}
+{% load i18n %}
+
+
+<div>
+  {% box 11 %}
+</div><!--/#box-11-->
+
+<div>
+  <h3>{% trans 'Our Photos' %}</h3>
+  {% list_photos as photos_list limit=12 random=True %}
+  <ul class="list-unstyled">
+    {% for photo in photos_list %}
+    <li class="col-sm-2 photo-thumb"><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=62x56 crop=True %}" /></a></li>
+    {% endfor %}
+  </ul>
+  <p><a href="/photos/">{% trans 'View More Photos' %} &raquo;</a></p>
+</div><!--/#photos-->
+
+<div>
+  <h3>{% trans 'Latest News' %}</h3>
+  {% list_news as news_list limit=2 %}
+  {% for news_item in news_list %}
+  <h4><a href="{{ news_item.get_absolute_url }}">{% blocktrans with h=news_item.headline %}{{ h }}{% endblocktrans %}</a></h4>
+  <p>{% blocktrans with c=news_item.summary|striptags|safe|truncatewords:"10" %}{{ c }}{% endblocktrans %}</p>
+  {% endfor %}
+  <p><a href="/news/">{% trans 'View More News' %} &raquo;</a></p>
+</div><!--/#news-list-->
+​

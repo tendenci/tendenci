@@ -1,0 +1,571 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load video_tags %}
+{% load video_filters %}
+{% load news_tags %}
+{% load photo_tags %}
+{% load news_tags %}
+{% load event_tags %}
+{% load directory_tags %}
+{% load job_tags %}
+{% theme_extends "base.html" %}
+{% load i18n %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== -->
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+    <title>{% trans 'Theme Template for Bootstrap' %}</title>
+
+    <!-- Bootstrap core CSS
+=========================================================== -->
+    <!-- Bootstrap theme
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+
+    <!-- navigation dropdowns
+=========================================================== -->
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+=========================================================== -->
+  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
+    media queries
+=========================================================== -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== -->
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+    <a class="sr-only" href="#content">{% trans 'Skip to main content' %}</a>
+
+
+
+      <!-- Header Starts
+=========================================================== -->
+      <header>
+      {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+      </header>
+      <!-- Header Ends -->
+
+
+ <div id="content" class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action. Jumbotron uses Responsive Carousel JS for rotation.
+=========================================================== -->
+        <div class="jumbotron">
+          <div class="crsl-items">
+          <div class="crsl-wrap">
+          {% list_stories as stories_list limit=6 tags="rotator" quality="90" %}
+          {% for story in stories_list %}
+          <div class="crsl-item">
+          <div class="col-sm-6">
+        <h1><a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a></h1>
+        <p>{% blocktrans with c=story.content|striptags|truncatewords_html:"32" %}{{ c }}{% endblocktrans %}</p>
+        <p><a href="{{ story.full_story_link }}" class="download">{% trans 'Read More' %}</a></p>
+          </div>
+        {% if story.image %}
+            <div class="col-sm-6">
+            <img src="{% image_url story.image size=500x300 crop=true quality=90 %}" alt="image for {{ story.title }}" class="img-responsive"/>
+            </div>
+        {% endif %}
+        </div>
+        {% endfor %}
+  </div>
+  </div><!-- Jumbotron Ends -->
+  </div>
+
+
+
+
+      <!-- Button Examples
+=========================================================== -->
+      <div class="page-header">
+        <h1>{% trans 'Buttons' %}</h1>
+      </div>
+      <p>
+        <button type="button" class="btn btn-lg btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-lg btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-lg btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-lg btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-lg btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-lg btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-lg btn-link">{% trans 'Link' %}</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-link">{% trans 'Link' %}</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-sm btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-sm btn-primary">{% trans 'Primary' %}</button>
+        <button type="button" class="btn btn-sm btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-sm btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-sm btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-sm btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-sm btn-link">{% trans 'Link' %}</button>
+      </p>
+      <p>
+        <button type="button" class="btn btn-xs btn-default">{% trans 'Default' %}</button>
+        <button type="button" class="btn btn-xs btn-primary">{% trans 'Primary' %]</button>
+        <button type="button" class="btn btn-xs btn-success">{% trans 'Success' %}</button>
+        <button type="button" class="btn btn-xs btn-info">{% trans 'Info' %}</button>
+        <button type="button" class="btn btn-xs btn-warning">{% trans 'Warning' %}</button>
+        <button type="button" class="btn btn-xs btn-danger">{% trans 'Danger' %}</button>
+        <button type="button" class="btn btn-xs btn-link">{% trans 'Link' %}</button>
+      </p>
+
+
+         <!-- Thumbnails Examples
+=========================================================== -->
+      <div class="page-header">
+        <h1>{% trans 'Thumbnails' %}</h1>
+      </div>
+      <img src="{{ THEME_URL }}media/img/index.svg" class="img-thumbnail" alt="{% trans 'A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera' %}">
+
+
+         <!-- Navigation Examples
+=========================================================== -->
+      <div class="page-header">
+        <h1>{% trans 'Dropdown menus' %}</h1>
+      </div>
+      <div class="dropdown theme-dropdown clearfix">
+        <a id="dropdownMenu1" href="#" role="button" class="sr-only dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+          <li class="active" role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Action' %}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Another action' %}</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Something else here' %}</a></li>
+          <li role="presentation" class="divider"></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{% trans 'Separated link' %}</a></li>
+        </ul>
+      </div>
+
+
+
+
+      <div class="page-header">
+        <h1>{% trans 'Navbars' %}</h1>
+      </div>
+
+      <div class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">{% trans 'Toggle navigation' %}</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">{% trans 'Project name' %}</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">{% trans 'Home' %}</a></li>
+              <li><a href="#about">{% trans 'About' %}</a></li>
+              <li><a href="#contact">{% trans 'Contact' %}</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">{% trans 'Action' %}</a></li>
+                  <li><a href="#">{% trans 'Another action' %}</a></li>
+                  <li><a href="#">{% trans 'Something else here' %}</a></li>
+                  <li class="divider"></li>
+                  <li class="dropdown-header">{% trans 'Nav header' %}</li>
+                  <li><a href="#">{% trans 'Separated link' %}</a></li>
+                  <li><a href="#">{% trans 'One more separated link' %}</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+
+      <div class="navbar navbar-inverse">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">{% trans 'Toggle navigation' %}</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">{% trans 'Project name' %}</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">{% trans 'Home' %}</a></li>
+              <li><a href="#about">{% trans 'About' %}</a></li>
+              <li><a href="#contact">{% trans 'Contact' %}</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Dropdown' %} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">{% trans 'Action' %}</a></li>
+                  <li><a href="#">{% trans 'Another action' %}</a></li>
+                  <li><a href="#">{% trans 'Something else here' %}</a></li>
+                  <li class="divider"></li>
+                  <li class="dropdown-header">{% trans 'Nav header' %}</li>
+                  <li><a href="#">{% trans 'Separated link' %}</a></li>
+                  <li><a href="#">{% trans 'One more separated link' %}</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+
+
+         <!-- Alerts Examples
+=========================================================== -->
+      {% blocktrans %}
+      <div class="page-header">
+        <h1>Alerts</h1>
+      </div>
+      <div class="alert alert-success">
+        <strong>Well done!</strong> You successfully read this important alert message.
+      </div>
+      <div class="alert alert-info">
+        <strong>Heads up!</strong> This alert needs your attention, but it's not super important.
+      </div>
+      <div class="alert alert-warning">
+        <strong>Warning!</strong> Best check yo self, you're not looking too good.
+      </div>
+      <div class="alert alert-danger">
+        <strong>Oh snap!</strong> Change a few things up and try submitting again.
+      </div>
+      {% endblocktrans %}
+
+
+            <!-- Progress Bar Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>{% trans 'Progress bars' %}</h1>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"><span class="sr-only">{% trans '60% Complete' %}</span></div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%"><span class="sr-only">40% Complete (success)</span></div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%"><span class="sr-only">20% Complete</span></div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%"><span class="sr-only">60% Complete (warning)</span></div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%"><span class="sr-only">80% Complete (danger)</span></div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width: 35%"><span class="sr-only">35% Complete (success)</span></div>
+        <div class="progress-bar progress-bar-warning" style="width: 20%"><span class="sr-only">20% Complete (warning)</span></div>
+        <div class="progress-bar progress-bar-danger" style="width: 10%"><span class='sr-only'>10% Complete (danger)</span></div>
+      </div>
+
+         <!-- List Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>List groups</h1>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item">Cras justo odio</li>
+            <li class="list-group-item">Dapibus ac facilisis in</li>
+            <li class="list-group-item">Morbi leo risus</li>
+            <li class="list-group-item">Porta ac consectetur ac</li>
+            <li class="list-group-item">Vestibulum at eros</li>
+          </ul>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <div class="list-group">
+            <a href="#" class="list-group-item active">
+              Cras justo odio
+            </a>
+            <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+            <a href="#" class="list-group-item">Morbi leo risus</a>
+            <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+            <a href="#" class="list-group-item">Vestibulum at eros</a>
+          </div>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <div class="list-group">
+            <a href="#" class="list-group-item active">
+              <h4 class="list-group-item-heading">List group item heading</h4>
+              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+            </a>
+            <a href="#" class="list-group-item">
+              <h4 class="list-group-item-heading">List group item heading</h4>
+              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+            </a>
+            <a href="#" class="list-group-item">
+              <h4 class="list-group-item-heading">List group item heading</h4>
+              <p class="list-group-item-text">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+            </a>
+          </div>
+        </div><!-- /.col-sm-4 -->
+      </div>
+
+         <!-- Panels Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Panels</h1>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <div class="panel panel-success">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+          <div class="panel panel-danger">
+            <div class="panel-heading">
+              <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+              Panel content
+            </div>
+          </div>
+        </div><!-- /.col-sm-4 -->
+      </div>
+
+         <!-- Wells Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Wells</h1>
+      </div>
+      <div class="well">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Cras mattis consectetur purus sit amet fermentum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Aenean lacinia bibendum nulla sed consectetur.</p>
+      </div>
+
+    <!-- Box Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Box Example</h1>
+      </div>
+      {% box 6 %}
+
+
+
+
+         <!-- Events Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Events</h1>
+      </div>
+
+   {% list_events as events_list limit=1 %}
+             <h3><a href="/events">Featured Event<span>Dynamically add new events to your homepage from your event calendar!</span></a></h3>
+             {% if events_list %}
+             {% for event in events_list %}
+               {% if event.image %}
+               <img alt="{{ event.title }}" src="{% image_url event.image size=310x154 crop=true %}"/>
+               {% endif %}
+               <p>{{ event.start_dt|date:"F d, Y" }}</p>
+               <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+               {% for speaker in event.speakers %}
+               <p>{{ speaker.name }}</p>
+               {% endfor %}
+               <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
+               <p><span><a class="readmore" href="{{ event.get_absolute_url }}">Read More &raquo;</a></span></p>
+
+             {% endfor %}
+             {% else %}
+
+              <img src="{%  if  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE  %}/files/{{  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE   }}/310x154/crop/90/{%  else  %}http://schipul.com/files/2369/310x154/crop/90/{%  endif %}"/>
+              <h4>Add an Event Today to See Something Here</h4>
+              <p class="event-date">{% now "F d, Y" %}</p>
+              <p>This is example of what your event description will look like.  Start adding Events to start adding your own content today!</p>
+              {% if request.user.is_authenticated %}<p>Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add an evennt photo!</p>{% endif %}
+              <p><span><a class="readmore" href="#">Read More &raquo;</a></span></p>
+
+             {% endif %}
+
+
+       <!-- Directories Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Directories Example</h1>
+      </div>
+      <ul>
+         {% list_directories as directories_list limit=3 tags="featured" %}
+         {% for directory in directories_list %}
+         <li>
+         <a href="{{ directory.get_absolute_url }}"><img src="{{ directory.get_logo_url }}" alt="{{ directory.headline }}"/></a><a href="{{ directory.get_absolute_url }}">{{ directory.headline }}</a>
+         </li>
+        {% endfor %}
+      </ul>
+
+       <!-- Jobs Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Jobs Example</h1>
+      </div>
+      {% list_jobs as jobs_list limit=4 %}
+             {% for job in jobs_list %}
+             <h4><a href="{{ job.get_absolute_url }}">{{ job.title }} &raquo;</a></h4>
+           <p>{{ job.location }}</p>
+             {% empty %}
+           <h4>{% if user.profile.is_superuser %}<a href="/jobs/add/">{Add your first job</a>{% else %}<a href="#">Great New Job</a>{% endif %}</h4>
+             <p>Houston: A new job opening is available...</p>
+             {% endfor %}
+
+       <!-- Photos Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Photos Example</h1>
+      </div>
+
+   {% list_photos as photos_list limit=6 random=True %}
+           <ul>
+             {% for photo in photos_list %}
+             <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=72x66 crop=True %}" /></a></li>
+             {% endfor %}
+           </ul>
+
+        <!-- Videos Examples
+=========================================================== -->
+
+      <div class="page-header">
+        <h1>Video Example</h1>
+      </div>
+            <ul>
+             {% list_videos as videos_list limit=1 tags="featured"  %}
+             {% for video in videos_list %}
+             <li>
+               <a href="{{ video.get_absolute_url }}">{{ video|video_embed:"500" }}</a>
+             </li>
+             {% endfor %}
+           </ul>
+
+
+          <!-- Footer starts
+      =========================================================== -->
+    <footer>
+      {% theme_include 'footer.html' %}
+    </footer>
+    <!-- Footer Ends -->
+
+    </div> <!-- /container -->
+
+
+{% endblock %} <!-- Ends the Body -->
+
+{% block extra_body %}
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <!-- Respond JS for IE8 -->
+    <script src="{{ THEME_URL }}media/js/respond.min.js"></script>
+    <!-- HTML5 Support for IE -->
+    <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('.mainnav nav').meanmenu();
+      $('.crsl-items').carousel({ speed: 1000, autoRotate: 6000 });
+    });
+    </script>
+
+{% endblock extra_body %}
+
+

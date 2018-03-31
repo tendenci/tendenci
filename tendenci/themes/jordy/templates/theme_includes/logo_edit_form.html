@@ -1,0 +1,26 @@
+{% load base_filters %}
+{% load i18n %}
+{% if user.profile.is_superuser %}
+<div class="admin-inline">
+    <div class="admin-links clear-block">
+      <a href="#" data-target="#upload-logo-modal" data-backdrop="true" data-toggle="modal" class="upload-logo">
+        {% trans "Upload Logo" %}
+      </a>
+  </div>
+</div>
+<div id="upload-logo-modal" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans 'Close' %}</span></button>
+        <h3>{% trans "Upload a Logo" %}</h3>
+      </div>
+      <div class="modal-body">
+        <form id="form_{{ setting_name }}" class="settings-form" action="/settings/module/theme/logo/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <p><strong>{% trans "Logo" %}</strong>: <input type="file" name="logo" id="id_logo"></p>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <a href="javascript:document.getElementById('form_{{ setting_name }}').submit();" class="btn success">{% trans "Upload Logo" %}</a>
+        <a href="{{ request.path }}" class="btn secondary">{% trans "Cancel" %}</a>
+      </div>
+</div>
+{% endif %}​​​​​​​​​​​​​​​​​​​​​​​

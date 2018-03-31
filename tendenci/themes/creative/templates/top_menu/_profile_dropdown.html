@@ -1,0 +1,128 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load megamenu_tags %}
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        {% spaceless %}
+            {% if USER_IS_SUPERUSER %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+            {% elif USER_IS_MEMBER_EXPIRED %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+            {% elif USER_IS_MEMBER_ACTIVE %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+            {% else %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+            {% endif %}
+            <span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
+        {% endspaceless %}
+    </a>
+
+    {% get_profile_dropdown_column_size as col_size %}
+    <ul id="t-admin-megamenu-profile-dd" class="dropdown-menu profile-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    {% comment %}{# this is to remove the avatar and upload link for the meantime #}
+                    <div class="col-sm-{{ col_size }} content-dropdown-col">
+                        <ul class="list-unstyled">
+                            <div class="profile-icon">
+                                {% avatar user 128 %}
+                            </div>
+                            <a class="update-avatar-link" href="{% url 'profile.change_avatar' user.pk %}">{% trans 'Update Photo' %}</a>
+                        </ul>
+                    </div>
+                    {% endcomment %}
+
+                    <div class="col-sm-{{ col_size }} content-dropdown-col">
+                        <ul class="list-unstyled">
+                            <li class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></li>
+
+                            <li class="content-item">
+                                <a href="{% url 'profile.index' %}">
+                                    {% spaceless %}
+                                        {% if USER_IS_SUPERUSER %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+                                        {% elif USER_IS_MEMBER_EXPIRED %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+                                        {% elif USER_IS_MEMBER_ACTIVE %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+                                        {% else %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+                                        {% endif %}
+                                        <span class="nav-label">{% trans 'Profile' %}</span>
+                                    {% endspaceless %}
+                                </a>
+                            </li>
+
+                            {% if MODULE_MEMBERSHIPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'profile.search' %}?member_only=on">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_GROUPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'groups' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/><span class="nav-label">{% trans 'Groups' %}</span></a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_COMMITTEES_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'committees.search' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/><span class="nav-label">{% trans 'Committees' %}</span></a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    {% if USER_IS_SUPERUSER or USER_IS_MEMBER %}
+                        <div class="col-sm-{{ col_size }} content-dropdown-col">
+                            <ul class="list-unstyled">
+                                <li class="content-head"><span>{% trans 'Activities' %}</span></li>
+
+                                <li class="content-item">
+                                    <a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/calendar_view_day.png' %}"/><span class="nav-label">{% trans 'Events' %}</span></a>
+                                </li>
+
+                                {% comment %}{# this is to remove Donations link for the meantime #}
+                                {% if MODULE_DONATIONS_ENABLED %}
+                                    <li class="content-item">
+                                        <a href="{% url 'donation.add' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/><span class="nav-label">{% trans 'Donate' %}</span></a>
+                                    </li>
+                                {% endif %}
+                                {% endcomment %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    {% if USER_IS_SUPERUSER %}
+                        <div class="col-sm-{{ col_size }} content-dropdown-col">
+                            <ul class="list-unstyled admin-col">
+                                <li class="content-head"><span>{% trans 'Administrator' %}</span></li>
+
+                                {% comment %}{# this is to remove the "View as..." link for the meantime #}
+                                <li class="content-item">
+                                    <a href="#">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/folder_user.png' %}"/>{% trans 'View as...' %}
+                                    </a>
+                                </li>
+                                {% endcomment %}
+
+                                <li class="content-item">
+                                    <a href="{% url 'settings.index' 'site' 'global' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"><span class="nav-label">{% trans 'Site Settings' %}</span></a>
+                                </li>
+
+                                <li class="content-item">
+                                    <a href="{% url 'settings' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/><span class="nav-label">{% trans 'Full Settings' %}</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

@@ -1,0 +1,74 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load page_tags %}
+
+
+<div id="t-admin-megamenu" class="navbar-inverse navbar-fixed-top yamm t-megamenu" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button id="t-admin-megamenu-toggle" class="navbar-toggle collapsed t-megamenu-toggle" type="button" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <a href="{% url 'dashboard' %}" class="navbar-brand">
+                <img src="{% static 'images/tendenci_white_small_100x51.gif' %}" class="nav-logo" height="24">
+            </a>
+        </div>
+
+        <div id="navbar-collapse" class="navbar-collapse collapse">
+            {# <div class="clearfix visible-sm-block"></div> #}
+            <ul class="nav navbar-nav inner-top-nav">
+                {% include 'top_menu/_profile_dropdown.html' %}
+
+                {% include 'top_menu/_community_dropdown.html' %}
+				
+				{% if USER_IS_SUPERUSER %}
+                {% include 'top_menu/_apps_dropdown.html' %}
+				
+                {% include 'top_menu/_support_dropdown.html' %}
+                {% endif %}
+
+                {# Block containing the navigation for the current app #}
+                {% block current_app %}
+                	{# This block should be overrided by top_nav.html for inner apps #}
+                	{# default to page because page templates don't inherit from pages/base.html #}
+	                {% if page %}
+	                	<li class="dropdown">
+					        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+					            <img class="nav-icon" src="{% static 'famfamfam/icons/page_white_stack.png' %}">
+					            <span class="nav-label">{% trans "Pages" %}</span>
+					            <span class="caret"></span>
+					        {% endspaceless %}</a>
+					
+					        {% if page %}
+					            {% page_current_app request.user page %}
+					        {% else %}
+					            {% page_current_app request.user %}
+					        {% endif %}
+					    </li>
+			        {% endif %}
+                {% endblock %}
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right inner-top-nav">
+                {% if USE_I18N %}
+                    {% include 'top_menu/change_lang-new.html' %}
+                {% else %}
+                    <li>
+                        <form class="navbar-form" action="{% url 'haystack_search' %}" method="get" id="t-megamenu-search-form" role="search">
+                            <div class="form-group">
+                                <input class="form-control" type="text" maxlength="255" value="" name="q" id="t-megamenu-search-form-input" x-webkit-speech speech onwebkitspeechchange="this.form.submit();" placeholder="{% trans 'Search' %}">
+                            </div>
+                        </form>
+                    </li>
+                {% endif %}
+
+                <li>
+                    <a href="{% url 'auth_logout' %}" id="t-megamenu-logout"><span class="glyph">&#88;</span><span class="nav-label">{% trans "Logout" %}</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

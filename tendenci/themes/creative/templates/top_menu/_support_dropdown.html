@@ -1,0 +1,82 @@
+{% load i18n %}
+{% load staticfiles %}
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        {% spaceless %}
+            <img width="16" height="16" class="nav-icon" src="{% static 'images/icons/tendenci_white.png' %}"/>
+            <span class="nav-label">{% trans "Support" %}</span>
+            <span class="caret"></span>
+        {% endspaceless %}
+    </a>
+
+    <ul id="t-admin-megamenu-support-dd" class="dropdown-menu support-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-12 content-dropdown-col">
+                        <ul class="list-unstyled">
+                          
+                          <li class="content-head">
+                            <span class="nav-label"><strong>{% trans 'My Site' %}</strong></span>
+                            </li>
+                          
+                          <li class="content-item">
+                                <a href="//github.com/tendenci/tendenci">
+                                    <span class="nav-label">{% blocktrans with version=TENDENCI_VERSION %}Current Version: {{ version }}{% endblocktrans %}</span>
+                                </a>
+                            </li>
+                          
+                          <li class="content-item">
+                                <a href="{% url 'clear_cache' %}"
+                                    ><img class="nav-icon" src="{% static 'famfamfam/icons/computer_delete.png' %}"/><span class="nav-label">{% trans 'Clear Cache' %}</span>
+                                </a>
+                            </li>
+
+                          <li class="content-head">
+                            <span class="nav-label"><strong>{% trans 'Request Help' %}</strong></span>
+                            </li>
+                                                    
+                            <li class="content-item">
+                              <a href="https://www.tendenci.com/forums/" target="_blank"
+                                    ><img class="nav-icon" src="{% static 'famfamfam/icons/application_get.png' %}"/><span class="nav-label">{% trans 'Community Forums' %}</span>
+                                </a>
+                            </li>
+                            
+                            <li class="content-item">
+                                <a href="https://www.tendenci.com/help-files/" target="_blank"
+                                    ><img class="nav-icon" src="{% static 'famfamfam/icons/help.png' %}"/><span class="nav-label">{% trans "Search Help Files" %}</span>
+                                </a>
+                            </li>
+
+                            <li class="content-item">
+                                <a href="//helpdesk.tendenci.com/" target="_blank"
+                                    ><img class="nav-icon" src="{% static 'famfamfam/icons/application_get.png' %}"/><span class="nav-label">{% trans 'Submit a Ticket' %}</span>
+                                </a>
+                            </li>
+
+                           <li class="content-head">
+                            <span class="nav-label"><strong>{% trans 'Contact Tendenci' %}</strong></span>
+                            </li>
+                          
+                            {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
+                                <li class="content-item">
+                                    <a href="https://www.tendenci.com/py/" target="_blank"
+                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/money_add.png' %}"/><span class="nav-label">{% trans "Make a Payment" %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li class="content-item">
+                                <a href="https://www.tendenci.com/contact/" target="_blank"
+                                    ><img class="nav-icon" src="{% static 'famfamfam/icons/telephone.png' %}"/><span class="nav-label">{% trans "Contact Form" %}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

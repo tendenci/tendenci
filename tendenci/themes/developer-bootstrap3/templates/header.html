@@ -1,0 +1,23 @@
+{% load nav_tags %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load i18n %}
+
+
+ <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a>
+        </div>
+           <div class="mainnav">
+
+    {% nav 1 %}
+
+          </div>
+      </div>
+    </div>
+
+
+
+

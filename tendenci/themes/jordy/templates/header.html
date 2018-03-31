@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load base_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load theme_tags %}
+
+
+{% comment %}
+ <nav id="topnav" class="navbar navbar-default" role="navigation">
+
+<!-- Utility navbar -->
+  <div class= "container utility-container">
+  <div class="row">
+   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
+             <div class="logo" id="logo">
+               <a href="/"> <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/{% else %}http://placehold.it/60x30{% endif %}" /> </a>
+        </div>
+        {% theme_include 'theme_includes/logo_edit_form.html' %}
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-9 jordy-utility-nav">
+    {% box 3 %}
+    </div>
+    </div>
+
+<!-- Fixed navbar -->
+
+  <div class="container pull-left col-lg-12 col-md-12 col-sm-12">
+    <div class="mainnav">
+      {% nav 1 %}
+    </div>
+  </div>
+</nav>
+{% endcomment %}
+
+
+
+<nav id="t-navbar" class="navbar navbar-default" role="navigation">
+    <!-- Utility navbar -->
+    <div class="container utility-container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-3">
+                <div class="logo" id="logo">
+                    {% theme_include "theme_includes/logo_edit_form.html" %}
+
+                    <a href="{% url 'home' %}" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}">
+                        <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/{% else %}http://placehold.it/60x30{% endif %}" alt="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-9 jordy-utility-nav">
+                {% box 3 %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed navbar -->
+    <div class="container">
+        <div id="t-main-navbar-collapse" class="mainnav">
+            <div class="clearfix">
+                {% nav 1 %}
+            </div>
+        </div>
+    </div>
+</nav>

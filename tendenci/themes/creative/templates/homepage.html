@@ -1,0 +1,344 @@
+<!--
+Attribution:
+Copyright 2013-2015 Iron Summit Media Strategies, LLC                                 
+Licensed under the Apache License, Version 2.0 (the "License");you may not use this file except in compliance with the License.
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0                                 
+Unless required by applicable law or agreed to in writing, software                                   
+distributed under the License is distributed on an "AS IS" BASIS,                                   
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                                   
+See the License for the specific language governing permissions andlimitations under the License.
+Alterations to this template have been made by Tendenci for use on the Tendenci Software.
+-->
+
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load staticfiles %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load news_tags %}
+{% load article_tags %}
+{% load photo_tags %}
+{% load event_tags %}
+{% load event_filters %}
+{% theme_extends "base.html" %}
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+    =========================================================== -->
+
+<!-- Meta Tags (for optimal SEO)
+    =========================================================== -->
+{% block title %}{{ block.super }} | {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
+<!-- Starts Tendenci Head Tag
+    =========================================================== -->
+{% block extra_head %}
+<!--<meta charset="utf-8">-->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="">
+<!-- Theme Global Style
+    =========================================================== -->
+<!-- Bootstrap theme
+    =========================================================== -->
+<!-- navigation dropdowns
+    =========================================================== -->
+<!-- Custom styles for this template
+    =========================================================== -->
+<link rel="stylesheet" href="{{ THEME_URL }}media/css/animate.min.css" type="text/css">
+<link rel="stylesheet" href="{{ THEME_URL }}media/css/creative.css" type="text/css">
+<link rel="stylesheet" href="{{ THEME_URL }}media/css/custom.css" type="text/css">
+<!-- Custom Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{{ THEME_URL }}media/css/font-awesome.css" type="text/css">
+
+{% endblock extra_head %}
+<!-- Start of the Body
+    =========================================================== -->
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+<!-- Header Starts
+    =========================================================== -->
+{% theme_include "header.html" %}<!-- Pulls in Header Include -->
+<!-- Header Ends -->
+<div id="page-top"> 
+
+<!-- Main jumbotron for a primary marketing message or call to action. Jumbotron uses Responsive Carousel JS for rotation.
+    =========================================================== -->
+{% list_stories as stories_list limit=4 tags="rotator" quality="90" %}
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+   
+    <div class="carousel-inner" id="rotator_inner" role="listbox">
+        <div class="item active">
+            {% for story in stories_list %}
+            <img class="img-responsive" src="{{ story.photo.url }}" alt="{{ story.title }}">
+            <div class="container-fluid">
+                <div class="carousel-caption">
+                    <h1><a href="{{ story.full_story_link }}">{{ story.title }}</a></h1>
+                    <p class="story-summary">{{ story.content|safe|truncatewords:50 }}</p>
+                    <p><a class="btn btn-lg btn-primary" href="{{ story.full_story_link }}" role="button">Read more</a></p>
+                </div>
+            </div>
+        </div>
+      <div class="item">
+            <!--<img class="second-slide" src="{{ story.photo.url }}" alt="Second slide">
+                <div class="container">
+                  <div class="carousel-caption">
+                    <h1><a href="{{ story.full_story_link }}">{{ story.title }}</a></h1>
+                    <p>{{ story.content|safe|truncatewords:50 }}</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                  </div>
+                </div>-->
+          {% endfor %}
+        </div>
+    </div>
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+</div>
+<!-- /.carousel -->
+   
+  <section id="services">
+        <div class="container">
+            <div class="row">
+                <!-- Dynamic feeds three across -->
+   
+                <div class="col-lg-4 col-md-4 text-center">
+                    <div class="service-box">
+                        <i class="fa fa-4x fa-calendar wow bounceIn text-primary"></i>
+                        <!--{% box 19 %}-->
+                        <div class="service">
+                            <h4>Upcoming Events</h4>
+                            <div class="desc">
+                                {% list_events as events_list limit=3 %}
+                                <ul class="list-unstyled">
+                                    {% for event in events_list %}
+                                    <li><a href="{{ event.get_absolute_url }}">
+                                        <strong>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong><br>
+                                        <em>{{ event.start_dt|date:"F j, Y - P" }}</em>
+                                        </a>
+                                    </li>
+                                    {% empty %}
+                                    <li>{% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% if event_list %}
+                                <a href="{% url 'event.search' %}">{% trans 'View more events' %} »</a>
+                                {% endif %}
+                            </div>
+                            <a class="read-more" href="/events/">View more events</a>
+                        </div>
+                    </div>
+                </div>
+               <div class="col-lg-4 col-md-4 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-newspaper-o wow bounceIn text-primary" data-wow-delay=".1s"></i>
+                    
+                    <div class="service">
+                      
+                        <h4>Subscribe Now</h4>
+                        <div class="desc">
+                            <p>Sign up for our newsletter and stay in the know with all the latest news. Networking events, great speakers, educational opportunities and more! 
+                                <br>
+                            </p>
+                        </div>
+                        <a class="read-more" href="/contact/">Sign up today</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-4 text-center">
+                <div class="service-box">
+                    <i class="fa fa-4x fa-file wow bounceIn text-primary" data-wow-delay=".3s"></i>
+                    {% box 22 %}                    
+                </div>
+                <div class="service">
+                   
+                    <h4>Latest News</h4>
+                    <div class="desc">
+                        <div>
+                            {% list_news as news_list limit=3 %}
+                            <ul class="list-unstyled">
+                                {% for news_item in news_list %}
+                              <li><a href="{{ news_item.get_absolute_url }}"><strong>{% blocktrans with h=news_item.headline %}{{ h }}{% endblocktrans %}</strong></a><br>
+                                    <em>{% blocktrans with c=news_item.summary|striptags|safe|truncatewords:"10" %}{{ c }}{% endblocktrans %}</em>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <!--/#news-list-->              
+                    </div>
+                    <!--/.desc-->
+                    <a class="read-more" href="/news/">View more news</a>
+                </div>
+            </div>
+  
+<!-- /Dynamic feeds three across -->
+            </div>
+        </div>
+  </section>     
+    
+  
+<!-- box -->     
+    <section class="bg-primary" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    {% box 17 %}
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- /box -->     
+    
+     <section class="photo-gallery-home slice relative animate-hover-slide bg-3">        
+       <div class="w-section">
+            <div class="container">
+              <h3 class="section-title"><a href="/photos/">{% trans 'Photos' %}</a></h3>
+                <div id="carouselWork" class="carousel carousel-3 slide animate-hover-slide">
+                    <div class="carousel-nav">
+                        <a data-slide="prev" class="left" href="#carouselWork"><i class="fa fa-angle-left"></i></a>
+                        <a data-slide="next" class="right" href="#carouselWork"><i class="fa fa-angle-right"></i></a>
+                    </div><!-- carousel-nav -->
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        {% list_photos as photos_list limit=8 random=True %}
+                        <div class="item active">
+                          <div><!-- class="row" -->
+                        {% for photo in photos_list %}
+                            <div class="col-md-3">
+                                <div class="w-box inverse">
+                                    <div class="figure">
+                                        <img alt="{{ photo.title }}" src="{% photo_image_url photo size=1000x700 crop=True %}" class="img-responsive">
+                                        <div class="figcaption bg-2"></div>
+                                        <div class="figcaption-btn">
+                                            <a href="{% photo_image_url photo size=1000x700 crop=True %}" class="btn btn-xs btn-one theater"><i class="fa fa-plus-circle"></i> {% trans 'Zoom' %}</a>
+                                            <a href="{{ photo.get_absolute_url }}" class="btn btn-xs btn-one"><i class="fa fa-link"></i> {% trans 'View' %}</a>
+                                        </div><!-- figcaption-btn -->
+                                    </div><!-- figure -->
+                                </div><!-- w-box inverse -->
+                            </div><!-- col-md-3 -->
+                          {% if forloop.counter|divisibleby:4 %}
+                          {% if not forloop.last %}
+                           
+                          </div><!-- class="/row" -->
+                        </div><!-- /item active -->
+                    
+                          <div class="item">
+                          </div>
+                          {% endif %}
+                          {% endif %}
+                            
+                        {% endfor %}
+                    </div><!-- carousel-inner -->
+                </div><!-- /#carouselWork -->
+
+            </div><!-- container -->
+        </div><!-- /w-section -->
+    </section>
+
+    <aside class="bg-dark">
+        <div class="container text-center">
+            <div class="col-md-4 call-to-action">
+                {% box 4 %} 
+            </div>
+          <div class="col-md-4 call-to-action">
+                {% box 5 %} 
+            </div>
+          <div class="col-md-4">
+            <div class="headline"><h3>Twitter Feed</h3></div>
+            <a class="twitter-timeline" 
+            href="https://twitter.com/tendenci" 
+            data-widget-id="647413367238340613">Tweets by @tendenci
+            </a>  
+            </div><!--/col-md-4-->
+        </div>
+    </aside>
+ <div id="clients-flexslider" class="flexslider home clients">  
+   <div class="container">
+     <div class="row">
+    <div class="headline text-center"><h2>Our Sponsors</h2></div>  
+        <div class="sponsors-item">
+          {% box 20%} 
+       </div>
+     </div>
+         </div>
+        </div>
+      <!--/flexslider-->
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    {% box 24 %}
+                </div>
+                <div class="col-lg-4 col-lg-offset-2 text-center">
+                    <i class="fa fa-phone fa-3x wow bounceIn"></i>
+                   {% box 18 %}
+                </div>
+                <div class="col-lg-4 text-center">
+                    <i class="fa fa-envelope-o fa-3x wow bounceIn" data-wow-delay=".1s"></i>
+                    {% box 19 %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- jQuery -->
+    <!-- <script src="{{ THEME_URL }}media/js/jquery.js"></script> -->
+    <!-- Bootstrap Core JavaScript -->
+   <!-- <script src="{{ THEME_URL }}media/js/bootstrap.min.js"></script>-->
+    <!-- Plugin JavaScript -->
+    
+    <script src="{{ THEME_URL }}media/js/jquery.easing.min.js"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.fittext.js"></script>
+    <script src="{{ THEME_URL }}media/js/wow.min.js"></script>
+    
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ THEME_URL }}media/js/creative.js"></script>
+
+<!-- Footer starts
+    =========================================================== -->
+<footer>
+{% theme_include 'footer.html' %}
+</footer>
+<!-- Footer Ends -->
+</div>
+{% endblock %} <!-- Ends the Body -->
+{% block extra_body %}
+{{ super.block }}
+<!-- Bootstrap core JavaScript
+    ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- Theme Specific Javascript files
+    ================================================== -->
+<!--[if lt IE 9]>
+<script src="js/html5shiv.js"></script>
+<script src="js/respond.min.js"></script>
+<![endif]-->
+<!-- Plugins -->
+<script>
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],
+  p=/^http:/.test(d.location)?'http':'https';
+  if(!d.getElementById(id)){
+  js=d.createElement(s);
+  js.id=id;js.src=p+"://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js,fjs);}}
+  (document,"script","twitter-wjs");
+</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+  //code below helps remove extra .item that is added. 
+  //#rotator_inner helps target which carousel
+    $('#rotator_inner > .item:last').remove();
+    });
+</script>
+{% endblock extra_body %}

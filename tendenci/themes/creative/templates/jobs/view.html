@@ -1,0 +1,173 @@
+{% extends "jobs/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load job_tags %}
+
+
+{% block title %}{% blocktrans with t=job.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=job.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=job.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}">{% endblock %}
+
+{% block content %}
+    <article id="t-jobs-job-{{ job.pk }}" class="t-jobs-job">
+        <div class="page-header">
+            <h1>{% blocktrans with title=job.title %}{{ title }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="t-jobs-job-body">
+            <section class="t-jobs-job-information">
+                <h2>
+                    {% if MODULE_JOBS_LABEL %}
+                        {% blocktrans with label=MODULE_JOBS_LABEL %}
+                            {{ label }} Information
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Job Information" %}
+                    {% endif %}
+                </h2>
+
+                <ul class="list-unstyled t-jobs-job-information-list">
+                    {% if job.description %}
+                        <li><strong>{% trans "Description:" %}</strong> <div>{% blocktrans with d=job.description|safe %}{{ d }}{% endblocktrans %}</div></li>
+                    {% endif %}
+
+                    {% if job.job_url %}
+                        <li><strong>{% trans "URL:" %}</strong> <span>{{ job.job_url|urlize }}</span></li>
+                    {% endif %}
+
+                    {% if job.level %}
+                        <li><strong>{% trans "Level:" %}</strong> <span>{{ job.level }}</span></li>
+                    {% endif %}
+
+                    {% if job.period %}
+                        <li><strong>{% trans "Period:" %}</strong> <span>{{ job.period }}</span></li>
+                    {% endif %}
+
+                    {% if job.position_reports_to %}
+                        <li><strong>{% trans "Position Reports To:" %}</strong> <span>{% blocktrans with job.position_reports_to as job_report %}{{ job_report }}{% endblocktrans %}</span></li>
+                    {% endif %}
+
+                    {% if job.location %}
+                        <li><strong>{% trans "Location:" %}</strong> <span>{{ job.location }}</span></li>
+                    {% endif %}
+
+                    {% if job.start_dt %}
+                        <li><strong>{% trans "Starts On:" %}</strong> <span>{% blocktrans with job.start_dt as job_start %}{{ job_start }}{% endblocktrans %}</span></li>
+                    {% endif %}
+
+                    {% if job.salary_from and job.salary_to %}
+                        <li><strong>{% trans "Salary:" %}</strong> <span>{% blocktrans with job.salary_from as job_sal_from and job.salary_to as job_sal_to %}{{ job_sal_from }} to {{ job_sal_to }}{% endblocktrans %}</span></li>
+                    {% endif %}
+
+                    {% if job.code %}
+                        <li><strong>{% trans "Code:" %}</strong> <span>{{ job.code }}</span></li>
+                    {% endif %}
+                </ul>
+            </section>
+
+            {% if job.experience or job.skills or job.computer_skills or job.education %}
+                <section class="t-jobs-job-requirements">
+                    <h2>
+                        {% if MODULE_JOBS_LABEL %}
+                            {% blocktrans with label=MODULE_JOBS_LABEL %}
+                                {{ label }} Requirements
+                            {% endblocktrans %}
+                        {% else %}
+                            {% trans "Job Requirements" %}
+                        {% endif %}
+                    </h2>
+
+                    <ul class="list-unstyled t-jobs-job-requirements-list">
+                        {% if job.experience %}
+                            <li><strong>{% trans "Experience:" %}</strong> <span>{% blocktrans with e=job.experience|striptags|linebreaks %}{{ e }}{% endblocktrans %}</span></li>
+                        {% endif %}
+
+                        {% if job.skills %}
+                            <li><strong>{% trans "Skills:" %}</strong> <span>{% blocktrans with s=job.skills|striptags|linebreaks %}{{ s }}{% endblocktrans %}</span></li>
+                        {% endif %}
+
+                        {% if job.computer_skills %}
+                            <li><strong>{% trans "Computer Skills:" %}</strong> <span>{% blocktrans with cs=job.computer_skills|striptags|linebreaks %}{{ cs }}{% endblocktrans %}</span></li>
+                        {% endif %}
+
+                        {% if job.education %}
+                            <li><strong>{% trans "Education Required:" %}</strong> <span>{% blocktrans with e=job.education|striptags|linebreaks %}{{ e }}{% endblocktrans %}</span></li>
+                        {% endif %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if job.contact_company or job.contact_address or job.contact_city or job.contact_state %}
+                <section class="t-jobs-job-company-information">
+                    <h2>{% trans "Company Information" %}</h2>
+
+                    <ul class="list-unstyled t-jobs-job-company-information-list">
+                        <li>
+                            <address>
+                                {% if job.contact_company %}
+                                    {{ job.contact_company }}<br>
+                                {% endif %}
+
+                                {% if job.contact_address %}
+                                    {{ job.contact_address }}<br>
+                                {% endif %}
+
+                                {% if job.contact_city or job.contact_state or job.contact_zip_code %}
+                                    {{ job.contact_city }} {{ job.contact_state }} {{ job.contact_zip_code }}<br>
+                                {% endif %}
+
+                                {% if job.contact_country %}
+                                    {{ job.contact_country }}<br>
+                                {% endif %}
+                            </address>
+                        </li>
+                    </ul>
+                </section>
+            {% endif %}
+
+            {% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website or job.contact_method or job.is_agency %}
+                <section class="t-jobs-job-contact-information">
+                    <h2>{% trans "Contact Information" %}</h2>
+
+                    <ul class="list-unstyled t-jobs-job-contact-information-list">
+                        <li>
+                            <address>
+                                {% if job.contact_name %}
+                                    {{ job.contact_name }}<br>
+                                {% endif %}
+
+                                {% if job.contact_phone %}
+                                    <strong>{% trans "Phone:" %}</strong> <span>{{ job.contact_phone|phonenumber }}</span><br>
+                                {% endif %}
+
+                                {% if job.contact_fax %}
+                                    <strong>{% trans "Fax:" %}</strong> <span>{{ job.contact_fax }}</span><br>
+                                {% endif %}
+
+                                {% if job.contact_email %}
+                                    {{ job.contact_email|obfuscate_email }}
+                                {% endif %}
+
+                                {% if job.contact_website %}
+                                    {{ job.contact_website|urlize }}
+                                {% endif %}
+                            </address>
+                        </li>
+
+                        {% if job.contact_method %}
+                            <li><strong>{% trans "Contact Method:" %}</strong> <span>{{ job.contact_method|striptags|linebreaks }}</span></li>
+                        {% endif %}
+
+                        {% if job.is_agency %}
+                            <li><strong>{% trans "Agency:" %}</strong> <span>{{ job.is_agency }}</span></li>
+                        {% endif %}
+                    </ul>
+                </section>
+            {% endif %}
+        </div>
+
+        {% include "jobs/meta.html" with show_fb_connect=True %}
+    </article>
+{% endblock %}

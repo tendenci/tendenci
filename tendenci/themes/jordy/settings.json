@@ -1,0 +1,16 @@
+[
+    {"_themename": "Jordy", "_filename": "settings.json"},
+    {
+    "name": "logo",
+    "label": "Logo",
+    "description": "The logo image used for the theme. Supports .jpg, .jpeg, and .png files.",
+    "data_type": "string",
+    "input_type": "file",
+    "value": "5",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+    }
+]

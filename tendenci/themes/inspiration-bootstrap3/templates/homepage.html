@@ -1,0 +1,232 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load video_tags %}
+{% load video_filters %}
+{% load news_tags %}
+{% load photo_tags %}
+{% load news_tags %}
+{% load event_tags %}
+{% load directory_tags %}
+{% load job_tags %}
+{% theme_extends "base.html" %}
+
+
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+=========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+
+
+<!-- Meta Tags (for optimal SEO)
+=========================================================== -->    
+{% block title %}{{ SITE_GLOBAL_SITENAME }} {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+
+
+<!-- Starts Tendenci Head Tag
+=========================================================== --> 
+{% block extra_head %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+    <title>Theme Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS
+=========================================================== --> 
+    <!-- Bootstrap theme
+=========================================================== --> 
+    <link href="{{ THEME_URL }}media/css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+
+    <!-- navigation dropdowns
+=========================================================== --> 
+    <link href="{{ THEME_URL }}media/css/nav.css" rel="stylesheet">
+    <link href="{{ THEME_URL }}media/css/meanmenu.css" rel="stylesheet">
+
+    <!-- Custom styles for this template
+=========================================================== --> 
+  <link href="{{ THEME_URL }}media/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and
+    media queries
+=========================================================== --> 
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+{% endblock extra_head %}
+
+
+    <!-- Start of the Body
+=========================================================== --> 
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+    <a class="sr-only" href="#content">Skip to main content</a>
+
+
+
+
+      <!-- Header Starts
+=========================================================== --> 
+      <header>
+      {% theme_include "header.html" %}<!-- Pulls in Header Include -->
+      </header>
+      <!-- Header Ends -->
+
+
+
+ <div id="content" class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action. Jumbotron uses Responsive Carousel JS for rotation.
+=========================================================== --> 
+        <div class="jumbotron">
+          <div class="crsl-items">
+          <div class="crsl-wrap">
+              {% list_stories as stories_list limit=6 tags="rotator" quality="90" %}
+          {% for story in stories_list %}
+    
+              <div class="crsl-item">
+                   
+          <div class="col-sm-4">
+        <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+        <p>{{ story.content|striptags|truncatewords_html:"32" }}</p>
+        <p><a href="{{ story.full_story_link }}" class="btn btn-default">Read More</a></p>
+                  </div>
+        {% if story.image %}
+            <div class="col-sm-8">
+            <img src="{% image_url story.image size=1000x700 crop=true quality=90 %}" alt="image for {{ story.title }}" class="img-responsive"/>
+            </div>
+        {% endif %}
+        </div>
+        {% endfor %}    
+  </div>
+  </div><!-- Jumbotron Ends -->
+  </div>
+<!-- Jumbotron Ends -->
+ 
+
+ <!-- row 1 -->
+                        <div class="clearfix visible-xs visible-lg>"></div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                    <div class="thumbnail"><div class="caption">
+                        {% box 5 %}
+                      </div>
+                  </div>
+                </div>
+               <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+                    <div class="thumbnail"><div class="caption">
+                        {% box 6 %}
+                      </div>
+                  </div>
+                </div>
+                <div class="clearfix visible-md visible-xs>"></div>
+
+              <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                    <div class="panel panel-primary">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">Calendar</h3>
+                      </div>
+                      <div class="panel-body">
+                       {% list_events as events_list limit=3 %}
+                          {% if events_list %}
+                          {% for event in events_list %}
+               {% if event.image %}
+               <img alt="{{ event.title }}" src="{% image_url event.image size=310x154 crop=true %}"/>
+               {% endif %}
+                        <h4>{{ event.start_dt|date:"F d, Y" }}</h4>
+               <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+               {% for speaker in event.speakers %}
+               <p>{{ speaker.name }}</p>
+               {% endfor %}
+               <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
+               
+             {% endfor %}
+             {% else %}
+             
+              <img src="{%  if  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE  %}/files/{{  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE   }}/310x154/crop/90/{%  else  %}http://schipul.com/files/2369/310x154/crop/90/{%  endif %}"/>
+              <h4>Add an Event Today to See Something Here</h4>
+              <p class="event-date">{% now "F d, Y" %}</p>
+              <p>This is example of what your event description will look like.  Start adding Events to start adding your own content today!</p>
+              {% if request.user.is_authenticated %}<p>Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add an evennt photo!</p>{% endif %}
+              <p><span><a class="readmore" href="#">Read More &raquo;</a></span></p>
+
+             {% endif %}
+                          
+                    </div>
+                  </div>
+                </div>
+            </div><!-- end row 1 -->
+   <!-- row 2 -->
+<div class="row">
+   {% list_photos as photos_list limit=6 random=True %}          
+             {% for photo in photos_list %}
+   <div class="col-lg-2 col-md-4 col-sm-4 col-xs-6">
+     <div class="thumbnail">
+       <a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=144x132 crop=True %}" /></a>
+     </div>
+   </div>             
+   {% endfor %}
+   </div>
+   <!-- end row 2 -->
+   <!-- row 3 -->
+   <div class="row">
+   <div class="col-lg-12 well well-sm">
+     {% box 4 %}
+   </div>
+   </div>
+   <!-- end row 3 -->
+   
+    <!-- Footer starts
+      =========================================================== -->
+    <footer>
+      {% theme_include 'footer.html' %}
+    </footer>
+    <!-- Footer Ends -->
+
+    </div> <!-- /container -->
+
+          
+{% endblock %} <!-- Ends the Body -->
+
+{% block extra_body %}
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+
+ <!-- Theme Specific Javascript files
+ ================================================== -->
+    <!-- Respond JS for IE8 -->
+    <script src="{{ THEME_URL }}media/js/respond.min.js"></script>
+    <!-- HTML5 Support for IE -->
+    <script src="{{ THEME_URL }}media/js/html5shiv.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ THEME_URL }}media/js/jquery.meanmenu.js"></script>
+    <script src="{{ THEME_URL }}media/js/responsiveCarousel.js"></script> 
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+      $('.mainnav nav').meanmenu();
+      $('.crsl-items').carousel({ speed: 1000, autoRotate: 6000 });
+    });
+    </script>
+
+{% endblock extra_body %}
+
+

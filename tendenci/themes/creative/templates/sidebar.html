@@ -1,0 +1,58 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load photo_tags %}
+{% load box_tags %}
+{% load news_tags %}
+{% load article_tags %}
+{% load event_tags %}
+{% load i18n %}
+<div>
+    <p>&nbsp;</p>
+</div>
+<div>
+    <h3>{% trans 'Upcoming Events' %}</h3>
+    {% list_events as events_list limit=3 %}
+    <ul class="list-unstyled">
+        {% for event in events_list %}
+        <li><a href="{{ event.get_absolute_url }}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a><br>
+            <em>{{ event.start_dt|date:"F j, Y - P" }}</em>
+        </li>
+        {% empty %}
+        {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}
+        {% endfor %}
+    </ul>
+    <p><a href="/events/month/">{% trans 'View More Events' %} &raquo;</a></p>
+</div>
+<div>
+    <hr>
+</div>
+<!--/#events-->
+<div class="photo-gallery">
+    <h3>{% trans 'Our Photos' %}</h3>
+    {% list_photos as photos_list limit=4 random=True %}
+    <ul class="list-unstyled">
+        {% for photo in photos_list %}
+        <li class="col-md-3 col-sm-6 col-xs-6 photo-thumb"><a href="{{ photo.get_absolute_url }}"><img class="img-responsive" alt="{{ photo.title }}" src="{% photo_image_url photo size=355x321 crop=True %}" /></a></li>
+        {% endfor %}
+    </ul>
+    <p><a href="/photos/">{% trans 'View More Photos' %} &raquo;</a></p>
+</div>
+<div>
+    <hr>
+</div>
+<!--/#photos-->
+<div>
+    <h3>{% trans 'Industry Articles' %}</h3>
+    {% list_articles as articles_list limit=3 %}
+    <ul class="list-unstyled">
+        {% for article in articles_list %}
+        <li><a href="{{ article.get_absolute_url }}"><strong>{% blocktrans with h=article.headline %}{{ h }}{% endblocktrans %}</strong></a><br>
+            <em>{% blocktrans with c=article.summary|striptags|safe|truncatewords:"6" %}{{ c }}{% endblocktrans %}</em>
+        </li>
+        {% endfor %}
+    </ul>
+    <p><a href="/articles/">{% trans 'View More Articles' %} &raquo;</a></p>
+</div>
+<!--/#articles-list-->
+
