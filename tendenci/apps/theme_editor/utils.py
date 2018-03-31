@@ -150,72 +150,73 @@ def get_all_files_list(root_dir, theme):
 
             # Hide hidden files
             if not f.startswith('.'):
-                subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
+                path = os.path.join(path[len(root_dir) + 1:], f)
+                subdir['contents'].append({'name': f, 'path': path, 'url': '/themes/'+theme+'/'+path, 'editable': editable})
 
         subdir['contents'] = sorted(subdir['contents'], key=itemgetter('name'))
         subdir['contents'].append({'folder_path': path})
         parent = reduce(dict.get, folders[:-1], files_folders)
         parent[folders[-1]] = subdir
 
-    if settings.USE_S3_THEME:
-        s3_files_folders = {'contents': []}
-        theme_folder = "%s/%s" % (settings.THEME_S3_PATH, theme)
-        conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
-                               settings.AWS_SECRET_ACCESS_KEY)
-        bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    if not settings.USE_S3_THEME:
+        return files_folders
 
-        for item in bucket.list(prefix=theme_folder):
+    s3_files_folders = {'contents': []}
+    theme_folder = "%s/%s" % (settings.THEME_S3_PATH, theme)
+    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                           settings.AWS_SECRET_ACCESS_KEY)
+    bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
 
-            editable = False
-            if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
-                editable = True
+    for item in bucket.list(prefix=theme_folder):
 
-            file_path = item.name.replace(theme_folder, '').lstrip('/')
-            path_split = file_path.split('/')
-            splits = len(path_split)
+        editable = False
+        if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
+            editable = True
 
-            if splits == 1:
-                s3_files_folders['contents'].append({
-                        'name': path_split[0],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 2:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+        file_path = item.name.replace(theme_folder, '').lstrip('/')
+        path_split = file_path.split('/')
+        splits = len(path_split)
 
-                s3_files_folders[path_split[0]]['contents'].append({
-                        'name': path_split[1],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 3:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+        if splits == 1:
+            s3_files_folders['contents'].append({
+                    'name': path_split[0],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 2:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            s3_files_folders[path_split[0]]['contents'].append({
+                    'name': path_split[1],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 3:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
-                        'name': path_split[2],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 4:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            if not path_split[1] in s3_files_folders[path_split[0]]:
+                s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
+                    'name': path_split[2],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 4:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
-                    s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            if not path_split[1] in s3_files_folders[path_split[0]]:
+                s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
-                        'name': path_split[3],
-                        'path': file_path,
-                        'editable': editable})
+            if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
+                s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-        return {theme: s3_files_folders}
+            s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
+                    'name': path_split[3],
+                    'path': file_path,
+                    'editable': editable})
 
-    return files_folders
+    return {theme: s3_files_folders}
 
 
 def get_file_content(root_dir, theme, filename):
