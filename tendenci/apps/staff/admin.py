@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.staff.models import Staff, Position, Department, StaffFile
 from tendenci.apps.staff.forms import StaffForm, FileForm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class FileAdmin(admin.StackedInline):
@@ -59,11 +59,11 @@ class StaffAdmin(TendenciBaseModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/staff-dynamic-sort.js' % settings.STATIC_URL,
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+            static('js/admin/staff-dynamic-sort.js'),
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/admin-list-reorder.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
     def years(self, obj):
         return obj.years()

@@ -2,7 +2,6 @@ from builtins import str
 from csv import writer
 from datetime import datetime
 
-from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
@@ -17,7 +16,7 @@ from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
-
+from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
 
@@ -102,13 +101,13 @@ class FormAdmin(TendenciBaseModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
-            '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
-            '%sjs/admin/form-position.js' % settings.STATIC_URL,
-            '%sjs/admin/tax_fields.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/form-fields-inline-ordering.js'),
+            static('js/admin/form-field-dynamic-hiding.js'),
+            static('js/admin/form-position.js'),
+            static('js/admin/tax_fields.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
     @mark_safe
     def export_all_link(self, obj):

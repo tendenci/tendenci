@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.theme.templatetags.static import static
 from .models import Speaker, SpeakerFile, Track
 from .forms import SpeakerForm, FileForm
 
@@ -67,12 +67,12 @@ class SpeakerAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/admin-list-reorder-ordering.js' % settings.STATIC_URL,
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/jquery-1.4.2.min.js'),
+            static('js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js'),
+            static('js/admin/admin-list-reorder-ordering.js'),
+            static('js/global/tinymce.event_handlers.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
     def save_formset(self, request, form, formset, change):
 

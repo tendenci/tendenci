@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.urls import reverse
@@ -10,6 +9,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.files.models import File, MultipleFile, FilesCategory
 from tendenci.apps.files.forms import MultiFileForm, FilewithCategoryForm, FileCategoryForm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class FileAdmin(TendenciBaseModelAdmin):
@@ -40,7 +40,7 @@ class FileAdmin(TendenciBaseModelAdmin):
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-            '%sjs/categories.js' % settings.STATIC_URL,
+            static('js/categories.js'),
         )
 
     def changelist_view(self, request, extra_context=None):

@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.projects.models import (
     Project,
     ProjectManager,
@@ -35,11 +35,11 @@ class CategoryAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/staff-dynamic-sort.js' % settings.STATIC_URL,
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+            static('js/admin/staff-dynamic-sort.js'),
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/admin-list-reorder.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
     @mark_safe
     def image_preview(self, obj):
@@ -155,7 +155,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
         )
 
     def save_formset(self, request, form, formset, change):
@@ -181,7 +181,7 @@ class ProjectAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def view_on_site(self, obj):
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('projects.detail', args=[obj.slug]),
             obj,

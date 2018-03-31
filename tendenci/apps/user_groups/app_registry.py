@@ -1,9 +1,9 @@
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.theme.templatetags.static import static
 
 
 class GroupRegistry(PeopleRegistry):
@@ -11,7 +11,7 @@ class GroupRegistry(PeopleRegistry):
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
     description = _('User Groups.')
-    icon = '%simages/icons/groups-color-64x64.png' % settings.STATIC_URL
+    icon = static('images/icons/groups-color-64x64.png')
 
     event_logs = {
         'group':{
