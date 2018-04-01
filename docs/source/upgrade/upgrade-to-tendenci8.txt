@@ -327,10 +327,10 @@ Set up /var/log/tendenci:
     sudo chown www-data:"$(id -u -n)" /var/log/tendenci/
     chmod -R g+rwX /var/log/tendenci/
 
-The group configured above will enable your user account to run `python manage.py ...` without sudo,
-which is safer than performing management/upgrades using sudo.  The configured group should include
-your normal user account but not other inappropriate users.  Ubuntu creates a dedicated group for
-each user by default, so that is what is used here.
+The group configured above will enable your user account to run ``python manage.py ...`` without
+sudo, which is safer than performing management/upgrades using sudo.  The configured group should
+include your normal user account but not other inappropriate users.  Ubuntu creates a dedicated
+group for each user by default, so that is what is used here.
 
 Create ``/etc/logrotate.d/tendenci`` containing:
 ::
@@ -349,12 +349,12 @@ Create ``/etc/logrotate.d/tendenci`` containing:
     }
 
 To ensure that the log files remain readable/writable by your normal user account, change the second
-`www-data` in `create 0660 www-data www-data` to a group that includes your normal user account but
-not other inappropriate users (Ubuntu creates a dedicated group for each user by default with the
-same name as the associated user, so you can use that here).
+``www-data`` in ``create 0660 www-data www-data`` to a group that includes your normal user account
+but not other inappropriate users (Ubuntu creates a dedicated group for each user by default with
+the same name as the associated user, so you can use that here).
 
 
-Step 6: Update Database and Static Files
+Step 6: Upgrade Database and Static Files
 ----------------------------------------
 
 Configure some settings for the database account used by Tendenci:
@@ -379,6 +379,15 @@ Run:
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
+
+Tendenci 8 makes significant changes to the layout of ``/var/www/tendenci/static/`` and may leave
+lots of abandoned files in that directory after the upgrade.  You can optionally clean these up
+using ``python manage.py collectstatic --clear --link --no-input``, however note that this will
+delete ALL of the files in that directory and then re-populate them from the installed Django apps.
+If you have manually added or modified any files in that directory (this is unsupported and
+discouraged, although there is nothing technically preventing you from doing it), then your
+files/changes will be lost.  Make sure you have a backup copy of that directory before attempting
+to clean it up.  If you followed Step 3, there should be a copy in ``/var/www/tendenci.t7/static/``
 
 
 Step 7: Update/Fix Permissions
