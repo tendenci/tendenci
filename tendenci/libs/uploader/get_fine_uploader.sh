@@ -5,6 +5,9 @@
 
 cd "$(dirname "$(readlink -e "$(which "$0")")")"  # This script's location
 
+TemplatePath='templates.t8/uploader/'
+StaticPath='static.t8/uploader/'
+
 TmpPath="$(mktemp -d --tmpdir update-fine-uploader.XXX)" || exit 2
 
 set +e    # Make sure the commands after this subshell block are always run,
@@ -37,22 +40,21 @@ set +e    # Make sure the commands after this subshell block are always run,
   popd >/dev/null  # "$TmpPath/"
 
   # Extract the relevant files, overwriting any existing files
-  mkdir -p static/ templates/
   unzip -o "$TmpPath/fine-uploader.zip" \
    LICENSE fine-uploader.min.js fine-uploader.min.js.map \
-   -d static/fine-uploader/
+   -d "$StaticPath"
   unzip -o "$TmpPath/fine-uploader.zip" \
    fine-uploader-new.min.css fine-uploader-new.min.css.map \
-   -d static/fine-uploader/
+   -d "$StaticPath"
   unzip -o "$TmpPath/fine-uploader.zip" \
    '*.gif' \
-   -d static/fine-uploader/
+   -d "$StaticPath"
   unzip -o -j "$TmpPath/fine-uploader.zip" \
    'placeholders/*' \
-   -d static/fine-uploader/
+   -d "$StaticPath"
   unzip -o -j "$TmpPath/fine-uploader.zip" \
    LICENSE templates/simple-thumbnails.html \
-   -d templates/fine-uploader/
+   -d "$TemplatePath"
   unzip -o -j "$TmpPath/server-examples.zip" \
    'FineUploader-server-examples-*/license.txt' \
    'FineUploader-server-examples-*/python/django-fine-uploader/fine_uploader/*' \
@@ -60,7 +62,7 @@ set +e    # Make sure the commands after this subshell block are always run,
 
   # Remove HTML comments from the Fine Uploader templates
   echo
-  for File in templates/fine-uploader/* ; do
+  for File in "$TemplatePath"* ; do
     echo "Removing HTML coments from $File"
     perl -0777 -i -p -e 's/<!--.*?-->\n?//sg' "$File"
   done

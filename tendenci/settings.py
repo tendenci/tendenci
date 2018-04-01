@@ -167,7 +167,6 @@ INSTALLED_APPS = [
     'timezone_field',
     'gunicorn',
 
-    'tendenci',
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
     'tendenci.libs.uploader',

@@ -1,0 +1,1 @@
+../../../../themes/t7-base/static/js/email-verification.js
