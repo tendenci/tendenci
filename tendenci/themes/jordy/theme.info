@@ -4,5 +4,6 @@ author = Schipul
 author uri = http://tendenci.com
 description = Generic Bootstrap3 Theme
 version = 1.0
+extends = t7-base
 
 

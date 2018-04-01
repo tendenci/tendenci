@@ -5,3 +5,4 @@ author = Schipul
 author uri = http://schipul.com
 version = 1.0
 create_dt = 2012-01-01
+extends = t7-base
