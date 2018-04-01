@@ -1,0 +1,89 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans "Edit" %}</h1>
+
+    <div class="job-wrap">
+    <form action="{% url "job.edit" job.id %}" class="form-horizontal" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+
+            <input type="submit" value="{% trans 'Save changes' %}" />
+        </div>
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+
+    <script type="text/javascript">
+    {% include 'jobs/include/get_subcategories.js' %}
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_job = confirm('{% trans "Permenantly delete" %} {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
+                if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step': 15});
+        });
+    </script>
+    {% if request.user.is_superuser %}
+        <script type="text/javascript">
+            {% include 'categories/include/add_categories.js' %}
+        </script>
+    {% endif %}
+    <script type="text/javascript">
+        $('#meta-form').hide();
+/*         $('#category-form').hide(); */
+        $('#meta-title').click(function() {
+            $('#meta-form').slideToggle('fast');
+            if ($('#meta-title span').text() == '+') {
+                $('#meta-title span').text('-');}
+            else {$('#meta-title span').text('+');}
+        });
+/*         $('#category-title').click(function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        }); */
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

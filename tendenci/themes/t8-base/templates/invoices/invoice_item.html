@@ -1,0 +1,34 @@
+{% load perm_tags %}
+{% load base_filters %}
+{% load invoice_tags %}
+
+{% if search_line_display %}
+{% blocktrans with d=search_line_display|safe %}{{ d }}{% endblocktrans %}
+{% else %}
+<table class="table table-tendenci-reports">
+  {% invoices_search_line_header request invoice '#000000' %}#}
+
+  {# display object info #}
+
+  <tr>
+    <td>{% trans "ID" %}</td>
+    <td>{% trans "First Name" %}</td>
+    <td>{% trans "Last Name" %}</td>
+    <td>{% trans "Date" %}</td>
+    <td>{% trans "Amount" %}</td>
+    <td>{% trans "Balance" %}</td>
+  </tr>
+  {% if obj %}
+  <tr>
+    <td><a href="{{ obj.get_absolute_url }}">{{obj.id}}</a></td>
+    <td>{{obj.creator.first_name}}</td>
+    <td>{{obj.creator.last_name}}</td>
+    <td>{{obj.create_dt|date:'long'}}</td>
+    <td><div {% if invoice.total > 100 %}class="body-big-unpaid"{% endif %}>{{invoice.total|format_currency}}</div></td>
+    <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+
+  </tr>
+  {% endif %}
+
+</table>
+{% endif %}

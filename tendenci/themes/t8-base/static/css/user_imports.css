@@ -1,0 +1,249 @@
+
+
+.imports {
+	background-color: white;
+}
+.imports h2{
+	font-size: 12pt;
+}
+.clear-both{
+	clear: both;
+}
+.clear-left{
+	clear: left;
+}
+.clear-both{
+	clear: both;
+	}
+
+label {
+	margin-bottom: 1px;
+	display: block;
+}
+label.block {
+	display: block;
+	margin-top: 10px;
+}
+
+div.wrap {
+	border-top: 1px solid silver;
+	border-top: 1px solid #EEE;
+}
+select {
+	margin-bottom: 5px;
+}
+
+/* =misc-settings
+--------------------------------------- */
+
+.user-settings {
+	/*border-right: 1px solid silver;*/
+	padding: 20px;
+}
+
+div.user-settings h2 {
+	margin: 5px;
+}
+div.user-settings ul {
+	margin:0; padding:0;
+	list-style-type: none;
+	margin-bottom: 10px;
+}
+div.user-settings li {
+	margin:0; padding:0;
+	list-style-type: none;
+}
+div.user-settings p {
+	margin: 0 5px 0 0;
+}
+div.user-settings label {
+	display: inline;
+}
+
+
+
+/* =download-csv
+--------------------------------------- */
+div.download-csv {
+	margin: 20px 10px 0 10px;
+}
+div.download-csv img {
+	float: left;
+	margin-right: 10px;
+	border: 0;
+}
+div.download-csv .item-right {
+	float: left;
+}
+div.download-csv p {
+	margin:0;
+}
+div.download-csv a {
+	font-size: 1.5em;
+}
+div.download-csv em {
+	font-size: .9em;
+	font-style: normal;
+	margin:0;
+	margin-top: 4px;
+	display: block;
+
+}
+form.import input.submit-btn {
+	font-size: 18px;
+	margin: 10px;
+	margin-top: 0;
+	float: right;
+	overflow: visible;
+	padding: 0 10px;
+}
+
+.interactive p {
+	margin: 0;
+}
+.interactive label {
+	display: inline;
+}
+
+div.usergroup {
+	clear: both;
+}
+div.usergroup label {
+	display: inline;
+}
+div.usergroup input {
+	margin:0; padding:0;
+}
+
+div.column1 {
+	float: left;
+	margin: 0 10px 10px;
+}
+
+div.column2 {
+	float: left;
+	margin: 0 10px 10px;
+}
+div.column2 h2 {
+	margin: 5px 0 0;
+}
+div.column2 p {
+	margin: 0 0 5px 0;
+}
+div.column2 select {
+	margin: 0;
+}
+
+.column2 .duplicates {
+	padding: 20px 0 26px;
+}
+
+div.column2 .reset-group{
+	margin: 8px 0 0;
+}
+
+/* =select-file
+--------------------------------------- */
+div.select-file input {
+	font-size: 16px;
+
+	margin: 10px 0 20px 10px;
+}
+
+/* =csv-icon */
+div.csv-icon {
+	margin-bottom: 10px;
+	height: 46px;
+}
+div.csv-icon img {
+	float: left;
+	margin-right: 10px;
+}
+div.csv-icon p {
+	margin:0;
+	font-size: 1.5em;
+}
+div.csv-icon ul {
+	margin:0; padding:0;
+	list-style-type: none;
+}
+div.csv-icon li {
+	font-size: .9em;
+	display: inline;
+	margin: 0; padding: 0 5px;
+	border-right: 1px solid gray;
+}
+div.csv-icon li.highlight {
+	background-color: #FFA;
+}
+div.csv-icon li.first {
+	padding-left: 0;
+}
+div.csv-icon li.last {
+	border-right: none;
+}
+
+/* =import-settings
+--------------------------------*/
+div.import-settings table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid silver;
+	width: 100%;
+}
+div.import-settings table tr td {
+	border-bottom: 1px solid silver;
+	padding: 5px;
+}
+div.import-settings table tr td.name {
+	width: 100px;
+	text-align: right;
+}
+div.import-settings table tr td.value {
+	background-color: #F7F7F7;
+	font-weight: bold;
+}
+
+form.import input.submit-btn {
+	font-size: 1.5em;
+	margin-top: 10px;
+}
+
+div.results {
+	overflow: auto;
+	height: 200px;
+	border: 1px solid silver;
+	margin: 10px auto;
+	padding: 10px;
+}
+
+/* =results */
+div.result-error {
+	background-color: #FFD;
+	border: 1px solid #FF9;
+	margin: 10px 0;
+}
+div.result-error p {
+	color: black;
+	font-size: 1.2em;
+	font-weight: bold;
+	margin: 20px;
+	margin-bottom: 0;
+}
+div.result-error em {
+	display: block;
+	font-style: normal;
+	margin: 5px auto 20px 20px;
+}
+.body-copy-yellow{
+	background-color: yellow;
+}
+.errorlist li{
+	list-style: none;
+}
+ul.errorlist{
+	border: 1px solid #FFF79F;
+	background-color: #FFEFEF;
+	color: red;
+	padding: 1em;
+}

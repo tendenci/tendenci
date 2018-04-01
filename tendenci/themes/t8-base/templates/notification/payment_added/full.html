@@ -1,0 +1,73 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Payment Generated Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>
+    {% blocktrans with request.user.get_full_name as requser %}The following payment was
+    added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+    Payments module by {{ requser }}:{% endblocktrans %}
+</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Payment ID:" %}</td>
+    <td width="75%"><b>{{ object.id }}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Status Detail:" %}</td>
+    <td width="75%"><b>{{ object.status_detail }}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Invoice:" %}</td>
+    <td width="75%"><b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.id %}">{{ object.invoice.id }}</a></b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Description:" %}</td>
+    <td width="75%">{{ object.description }}</td>
+  </tr>
+  <tr>
+    <td colspan="3">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Name:" %}</td>
+    <td width="75%">{{ object.first_name }} {{ object.last_name }}</td>
+  </tr>
+  {% if object.phone %}
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Phone:" %}</td>
+    <td width="75%">{{ object.phone }}</td>
+  </tr>
+  {% endif %}
+  {% if object.email %}
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Email:" %}</td>
+    <td width="75%">{{ object.email }}</td>
+  </tr>
+  {% endif %}
+
+</table>
+
+<p>
+{% blocktrans %}To view the details of this payment, go to:{% endblocktrans %}
+<b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">
+{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}
+</a></b>
+</p>
+
+<P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user directories.add_directorypricing as can_add_directory_pricing %}
+
+{% if nav_object %}
+    {% has_perm user directories.view_directorypricing nav_object as can_view_directory_pricing %}
+    {% has_perm user directories.change_directorypricing nav_object as can_edit_directory_pricing %}
+    {% has_perm user directories.delete_directorypricing nav_object as can_delete_directory_pricing %}
+{% else %}
+    {% has_perm user directories.view_directorypricing as can_view_directory_pricing %}
+    {% has_perm user directories.change_directorypricing as can_edit_directory_pricing %}
+    {% has_perm user directories.delete_directorypricing as can_delete_directory_pricing %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated  and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li><a href="{% url "directory.search" %}">{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}</a></li>
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Pricing" %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Pricings" %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            <li><a href="{% url "directory_pricing.search" %}">{% trans "All" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricings" %}</a></li>
+            {% if can_add_directory_pricing %}
+                <li><a href="{% url "directory_pricing.add" %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricings" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_directory_pricing or can_edit_directory_pricing %}
+            <ul>
+                <li class="heading">{% trans "This Price" %}</li>
+                <li class="divider"></li>
+                {% if can_view_directory_pricing %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></li>
+                {% endif %}
+                {% if can_edit_directory_pricing %}
+                    <li><a href="{% url "directory_pricing.edit" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></li>
+                {% endif %}
+                {% if can_delete_directory_pricing %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "directory_pricing.delete" nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Pricing" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+</ul>
+{% endif %}

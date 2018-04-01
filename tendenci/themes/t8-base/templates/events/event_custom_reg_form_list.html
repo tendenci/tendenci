@@ -1,0 +1,91 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% blocktrans with title=event.title %}{{ title }} - custom registration form(s){% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events-custom_form_list.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<div class="t">
+    <div id="reg-form-list">
+        <h1>{% trans 'Manage Custom Registration Form(s)' %}</h1>
+        <h3>{% trans 'Event' %}: <a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+        <div id="reg-form-list-body">
+
+            {% if reg_conf.use_custom_reg_form %}
+                {% if reg_conf.bind_reg_form_to_conf_only  %}
+                    <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">{% trans 'This event uses one custom registration form.' %}</div>
+                    <div class="reg-form-list-links">
+                        <div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
+                        <div class="reg-form-btns">
+                        <a href="javascript:;" class="preview-btn">{% trans 'Preview' %}</a>
+                        <a href="{% url 'admin:events_customregform_change' reg_conf.reg_form.id %}?next={% url 'event.event_custom_reg_form_list' event.id %}" class="edit-btn">{% trans 'Edit' %}</a></div>
+
+                        <div class="form-wrap" style="display: none;">
+                            <div class="form-builder-wrap">
+                                <div class="forms">
+                                    {{ reg_conf.reg_form.form_for_form|styled_form }}
+                                    <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
+                                </div>
+                            </div>
+                        </div>
+
+
+                        </div>
+                {% else %}
+                    <div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
+                    {% trans 'This event uses a separate custom registrations form for each pricing.' %}
+                        <div class="alert-actions">
+                            <a class="btn small" href="{% url 'event' event.id %}">{% trans 'View Event' %}</a>
+                            <a class="btn small" href="{% url 'event.edit' event.id %}">{% trans 'Edit Event' %}</a>
+                        </div>
+                    </div>
+                    {% for price in regconfpricings %}
+                    <div class="reg-form-list-links">
+                        <div class="reg-form-title">Pricing #{{ forloop.counter }}: {{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
+                        <div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
+                        <div class="reg-form-btns">
+                        <a href="javascript:;" class="preview-btn">{% trans 'Preview' %}</a>
+                        <a href="{% url 'admin:events_customregform_change' price.reg_form.id %}?next={% url 'event.event_custom_reg_form_list' event.id %}" class="edit-btn">{% trans 'Edit' %}</a></div>
+
+                        <div class="form-wrap" style="display: none;">
+                            <div class="form-builder-wrap">
+                                <div class="forms">
+                                    {{ price.reg_form.form_for_form|styled_form }}
+                                    <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            {% else %}
+                <p class="reg-form-list-notes">{% trans "This event doesn't use custom registration forms." %} </p>
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+     <script type="text/javascript">
+        $(document).ready(function() {
+            $('.preview-btn').click(function(){
+                $(this).closest('.reg-form-list-links').find('.form-wrap').toggle('slow');
+
+            });
+
+         });
+     </script>
+{% endblock %}

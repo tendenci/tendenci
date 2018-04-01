@@ -1,0 +1,29 @@
+{% load theme_tags %}
+{% load article_tags %}
+{% load bootstrap_pagination_tags %}
+{% list_articles as articles_list limit=500 %}
+
+<h1>{% firstof TEMPLATE_ARTICLES_BLOG_LIST_TITLE trans 'Latest Articles' %}</h1>
+    {% if TEMPLATE_ARTICLES_BLOG_LIST_LIMIT %}
+        {% autopaginate articles_list TEMPLATE_ARTICLES_BLOG_LIST_LIMIT %}
+    {% else %}
+        {% autopaginate articles_list 10 %}
+    {% endif %}
+<div class="articles-wrap" style="width:90%;">
+    {% for article in articles_list %}
+    <div class="wrap-search-item">
+        <div class="search-item article-search-item">
+        <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline 'Untitled'%}</a></h2>
+        <div class="item-content">
+        {% if article.summary %}
+            {% blocktrans with s=article.summary|striptags|truncatewords:40|safe %}{{ s }}{% endblocktrans %}
+        {% else %}
+            {% blocktrans with b=article.body|striptags|truncatewords:40|safe %}{{ b }}{% endblocktrans %}
+        {% endif %}</div>
+        </div>
+        {% include "articles/meta.html" %}
+    </div>
+    {% endfor %}
+</div>
+    {% paginate %}
+{% theme_setting setting_name %}

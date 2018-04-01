@@ -1,0 +1,58 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if nav_object %}
+    {% has_perm request.user make_payments.view_make_payment nav_object as can_view %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+    <ul id="primary">
+
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li>
+        <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">
+        <img border="0" src="{% static 'images/tendenci34x15.gif' %}"
+        alt="{% trans 'Tendenci User Home' %}" align="top" width="34" height="15"></a>
+    </li>
+    {% endif %}
+
+    <li>
+        <span>{% trans "Make Payments" %}</span>
+        <ul id="secondary">
+            <li><a href="{% url "make_payment.add" %}">{% trans "Make Payments:" %}</a></li>
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "invoices" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            {% if nav_object %}
+                <li><a href="{% url "make_payment.view" nav_object.pk %}">{% trans "View" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "make_payment.add" %}">{% trans "Add" %}</a></li>
+
+            <li role="presentation" class="active dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="true">
+                    {% trans "Make Payments" %} <span class="caret"></span>
+                </a>
+
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'make_payment.add' %}">{% trans "Make Payments" %}</a></li>
+
+                    {% if can_edit_setting %}
+                        <li><a href="{% url 'settings.index' 'module' 'invoices' %}">{% trans "Settings" %}</a></li>
+                    {% endif %}
+
+            {% if user.is_authenticated %}
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+            {% endif %}
+
+    </li>
+    {% if MODULE_INVOICES_ENABLED %}
+    <li><a href="{% url "invoices" %}">{{ MODULE_INVOICES_LABEL }}</a></li>
+    {% endif %}
+    {% if MODULE_NEWS_ENABLED %}
+    <li><a href="{% url "news" %}">{{ MODULE_NEWS_LABEL }}</a></li>
+    {% endif %}
+    </ul>
+{% endif %}

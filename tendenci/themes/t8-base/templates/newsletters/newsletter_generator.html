@@ -1,0 +1,124 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans '3rd Party Newsletter Generator'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/newsletters.css' %}">
+<style>
+    .third-party-newletter{
+        margin: 2em 0;
+        position: relative;
+    }
+    .provider-logo{
+        -moz-box-shadow: 0 0 3px #888;
+        -webkit-box-shadow: 0 0 3px #888;
+        box-shadow: 0 0 3px #888;
+     }
+     .tpn-detail{
+         position: absolute;
+         top: 0;
+         left: 365px;
+     }
+     .campaign-monitor-link{
+         margin-top: 2em;
+         font-size: 1.2em;
+     }
+     .campaign-monitor-msg{
+         margin-top: 2em;
+         font-weight: bold;
+     }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+ <div id="t-newsletters">
+        <h1>{% trans 'Email Newsletters'%}</h1>
+
+       {% if request.user.is_superuser %}
+       {% url 'admin:newsletters_newslettertemplate_changelist' as newsletter_changelist_url %}
+
+       {% blocktrans with newsletter_changelist_url=newsletter_changelist_url %}
+       <p>Tendenci supports generating HTML newsletters that can be copied into most 3rd party email newsletter providers. Go to Tendenci's <a href="{{ newsletter_changelist_url }}">Newsletter Templates</a> see your templates and generate new email newsletters.</p>
+       {% endblocktrans %}
+       {% endif %}
+
+       <h3>{% trans 'MailChimp' %}</h3>
+       <div class="third-party-newletter">
+          <a href="http://mailchimp.com" target="_blank">
+          <img src="{% static 'images/newsletters/mailchimp_logo.jpg' %}" class="provider-logo" alt="mailchimp logo" title="mailchimp" />
+           </a>
+           {% url 'profile.export' as profile_export_url %}
+           {% blocktrans with profile_export_url=profile_export_url %}
+           <div class="tpn-detail">
+               <a href="http://mailchimp.com" target="_blank">MailChimp</a> helps you to design email
+               campaigns, share them on social networks, integrate with
+               web services, manage subscribers, and track your results. <a href="" target="_blank">More...</a>
+
+               <br /><br />
+               MailChimp is not integrated with Tendenci. To start, you can
+               <a href="{{ profile_export_url }}">export users</a>
+               to MailChimp.
+           </div>
+           {% endblocktrans %}
+
+       </div>
+
+
+        <h3>{% trans 'Constant Contact' %}</h3>
+       <div class="third-party-newletter">
+          <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">
+          <img src="{% static 'images/newsletters/constant_contact_logo.jpg' %}" class="provider-logo" alt="constant contact logo" title="constant contact" />
+           </a>
+           {% url 'profile.export' as profile_export_url %}
+           {% blocktrans with profile_export_url=profile_export_url %}
+           <div class="tpn-detail">
+               <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">Constant Contact</a>'s email marketing is easy for you to connect with your customers,
+               and for customers to share your message with their networks. <a href="" target="_blank">More...</a>
+
+           <br /><br />
+               Constant Contact is not integrated with Tendenci. To start, you can
+               <a href="{{ profile_export_url }}">export users</a>
+               to Constant Contact.
+           </div>
+           {% endblocktrans %}
+
+       </div>
+
+       <h3>{% trans 'Campaign Monitor' %}</h3>
+       <div class="third-party-newletter">
+          <a href="http://www.campaignmonitor.com/" target="_blank">
+          <img src="{% static 'images/newsletters/campaign_monitor_logo.jpg' %}" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />
+           </a>
+           <div class="tpn-detail">
+             {% blocktrans %}
+               <a href="http://www.campaignmonitor.com/" target="_blank">Campaign Monitor</a>
+               makes it easy for your to send beautiful email newsletters and
+               manage your subscribers. <a href="" target="_blank">More...</a>
+           {% endblocktrans %}
+
+               {% if CAMPAIGNMONITOR_ENABLED %}
+               <div class="campaign-monitor-link">
+               <a href="{% url 'campaign_monitor.template_index' %}">{% trans "Go to Campaign Monitor" %}</a>
+                </div>
+                {% else %}
+                <div class="campaign-monitor-msg">
+                {% trans "To set up campaign monitor, please contact support at 281-497-6567 ext. 411." %}
+                </div>
+                {% endif %}
+
+
+           </div>
+       </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}

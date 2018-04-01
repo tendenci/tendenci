@@ -1,0 +1,37 @@
+{% load base_filters %}
+{% load base_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    <li>{% blocktrans with submit_date=entity.create_dt|date:"long" entity_creator=entity.creator %}Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</li>
+</ul>
+
+{% if user.profile.is_superuser %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-edit-link" href="{% url 'entity.edit' entity.pk  %}">{% trans "Edit" %}</a></li>
+                    <li><a class="t-meta-print-link" href="{% url 'entity.print_view' entity.pk %}">{% trans "Print" %}</a></li>
+
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'entity.delete' entity.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li><a href="#">{% trans "Review Reports" %}</a></li>
+                            <li><a href="#">{% trans "Optimize Meta Tags" %}</a></li>
+                            <li><a href="#">{% trans "Attach Files" %}</a></li>
+                            <li><a href="#">{% trans "View Revisions" %}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

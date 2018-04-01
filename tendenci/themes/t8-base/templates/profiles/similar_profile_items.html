@@ -1,0 +1,26 @@
+<div class="group">
+  <form method="POST" action="">{% csrf_token %}
+    <table class="table table-tendenci-reports">
+      <tr>
+        <th>{% trans "ID" %}</th>
+        <th>{% trans "Username" %}</th>
+        <th>{% trans "First Name" %}</th>
+        <th>{% trans "Last Name" %}</th>
+        <th>{% trans "Email" %}</th>
+      </tr>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td><a href="{% if user.username %}{% url 'profile' user.username %}{% else %}{% url "profile.edit" user.id  %}{% endif %}">{{ user.username }}</a></td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+      </tr>
+      <input name="id_users" type="hidden" value="{{ user.id }}">
+      {% endfor %}
+    </table>
+    {% if request.user.is_superuser %}
+    <input class="btn btn-success btn-sm" type="submit" value="{% trans 'Merge these users' %}" />
+    {% endif %}
+  </form>
+</div>

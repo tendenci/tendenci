@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load file_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/folder.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_FILES_LABEL trans "Files" %}{% endblock %}
+
+{% block current_app %}
+    {% if file %}
+        {% file_current_app request.user file %}
+    {% else %}
+        {% file_current_app request.user %}
+    {% endif %}
+{% endblock %}

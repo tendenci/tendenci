@@ -1,0 +1,114 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user news.add_news as can_add_news %}
+
+{% if app_object %}
+    {% has_perm user memberships.view_membership app_object as can_view_memb %}
+    {% has_perm user memberships.change_membership app_object as can_edit_memb %}
+    {% has_perm user memberships.delete_membership app_object as can_delete %}
+{% else %}
+    {% has_perm user memberships.view_membership as can_view_memb %}
+    {% has_perm user memberships.change_membership as can_edit_memb %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-memberships-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Members" %}</span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'membership.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'memberships' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:memberships_membershiptype_changelist' %}">{% trans "Types" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:memberships_notice_changelist' %}">{% trans "Notices" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'memberships.default_import' %}">{% trans "Import" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'memberships.default_export' %}">{% trans "Export" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.search' %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_memb or can_edit_memb or user == membership.user %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Member" %}</span>
+                            </li>
+
+                            {% if can_view_memb or allow_view or user == membership.user  %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.user.get_absolute_url }}">{% trans "View Profile" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_memb %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if member_can_edit_records and user == membership.user %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'membership_default.edit' membership.pk %}">{% trans "Edit Your Membership" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

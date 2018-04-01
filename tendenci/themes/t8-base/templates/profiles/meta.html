@@ -1,0 +1,77 @@
+{% load base_filters %}
+{% load base_tags %}
+
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
+    {% if detail_view %}
+    <div class="meta-left">
+        {% if user.profile.is_superuser or user.pk == profile.creator_id or user.pk == profile.owner_id %}
+        {% meta_creator_owner profile %}
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="meta-right">
+    </div>
+</div>
+{% if user.profile.is_superuser %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ profile.obj_perms }}</li>
+        <li>{{ profile.obj_status }}</li>
+        {% if profile.user.is_superuser %}
+        <li><span class="t-role-superuser">{% trans 'Superuser' %}</span></li>
+        {% else %}
+        {% if profile.user.is_staff %}
+        <li><span class="t-role-staff">{% trans 'Staff' %}</span></li>
+        {% endif %}
+        {% endif %}
+
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "profile.edit" profile.user_id %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if profile.user.username %}
+                <li>
+                    <a href="{% url "profile.edit_groups" profile.user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
+                </li>
+                {% if MODULE_EDUCATIONS_ENABLED %}
+                <li>
+                    <a href="{% url "profile.edit_education" profile.user.username %}" class="educations" title=="Edit Education">{% trans "Edit Education" %}</a>
+                </li>
+                {% endif %}
+                {% endif %}
+                <li>
+                    <a href="{% url 'auth_password_change' profile.user_id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
+                </li>
+                <li>
+                    <a href="{% url "invoice.search" %}?bill_to_email={{ user_this.email}}" title=="View invoices">{% trans "Invoices" %}</a>
+                </li>
+                <li>
+                    <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
+                </li>
+                {% if MODULE_SOCIAL_SERVICES_ENABLED %}
+                <li>
+                    <a href="{% url "user.skills_edit" profile.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
+                </li>
+                {% endif %}
+                {% if request.user.is_superuser and MODULE_IMPERSONATION_ENABLED %}
+                <li>
+                    <a href ="{{ request.path }}?_impersonate={{ profile.user.username }}" title="Impersonate">{% trans "Impersonate" %}</a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url "profile.delete" profile.user_id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
+                </li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,55 @@
+{% load base_filters %}
+
+<table class="table table-tendenci-reports">
+  {% if payment_method %}
+  <tr>
+    <td>{% trans "Method:" %}</td>
+    <td class="td-right">{{ payment_method }}</td>
+  </tr>
+  {% endif%}
+  {% if invoice.variance and invoice.variance != 0 %}
+  {% if invoice.total != tmp_total %}
+  <tr>
+    <td>{% trans "Adjustment" %}</td>
+    <td class="td-right">{{ invoice.variance|format_currency }}</td>
+  </tr>
+  {% endif%}
+  {% endif%}
+  <tr>
+    <td>{% trans "Sub Total:" %}</td>
+    <td class="td-right">{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
+  </tr>
+  {% if invoice.discount_amount > 0 %}
+  <tr>
+    <td>{% trans "Discount Applied (discount code" %}: <a href="{{ invoice.get_discount_url }}">{{ invoice.discount_code }}</a>):</td>
+    <td class="td-right">-{{ invoice.discount_amount|format_currency }}</td>
+  </tr>
+  {% endif %}
+  {% if invoice.tax %}
+  <tr>
+    <td>{% trans "Tax:" %}</td>
+    <td class="td-right">{{ invoice.tax|format_currency }}</td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td>{% trans "Total:" %}</td>
+    <td class="td-right">{{ invoice.total|format_currency }}</td>
+  </tr>
+  <tr>
+    <td>{% trans "Payments/Credits:" %}</td>
+    <td class="td-right">{{ invoice.payments_credits|format_currency }}</td>
+  </tr>
+  <tr class="invoice-total-balance">
+    <td>{% trans "Balance due:" %}</td>
+    <td class="td-right">{{ invoice.balance|format_currency }}</td>
+  </tr>
+  {% if invoice.balance > 0 and merchant_login %}
+  <tr>
+    <td colspan="2">
+      <a class="invoice-pay" href="{% url "payment.pay_online" invoice.id invoice.guid %}" title="{% trans 'Pay Invoice' %}">
+        {% trans "Pay Invoice" %}
+      </a>
+    </td>
+  </tr>
+  {% endif %}
+</table>

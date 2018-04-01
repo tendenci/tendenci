@@ -1,0 +1,141 @@
+{% extends "memberships/base-wide.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Import Memberships from CSV file - Status' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/membership-default-import.css' %}">
+    <style>
+        #error-msg{
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div id="import-wrap">
+
+        <h1>{% trans "Import Membership" %}</h1>
+         <h3 class="import-step">{% trans "Step 3/3 - Status" %}</h3>
+
+       <div class="dimport-settings">
+            <div>{% trans "Update" %}:
+                <strong>
+                {% if not mimport.override %}
+                {% trans 'Blank Fields' %}
+                {% else %}
+                {% trans 'All Fields (override)' %}
+                {% endif %}
+                </strong>
+                </div>
+            <div>{% trans "Identify Duplicates by" %}: <strong>{{ mimport.key }}</strong> </div>
+
+        </div> <!-- dimport settings -->
+
+        <div id="progressbar-container">
+
+        <div id="progressbar">
+        </div>
+
+        <div id="complete-rate">
+            <span id="num-processed">{{ mimport.num_processed}}</span>
+            /
+           <span id="total">{{ mimport.total_rows}}</span>
+           {% trans 'completed' %}
+        </div>
+
+        <div class="clear-left"></div>
+         </div>
+
+         <div id="summary">
+             <div><strong>{% trans 'Done' %}.</strong></div>
+             <div>&nbsp;</div>
+             <div>{% trans 'Total Processed' %}: <strong>{{ mimport.total_rows}}</strong></div>
+             <div>{% trans 'Inserts' %}: <strong><span id="num-insert"></span></strong></div>
+             <div>{% trans 'Updates' %}: <strong><span id="num-update"></span></strong></div>
+             <div>{% trans 'Mixed (user update, membership insert)' %}:
+                 <strong><span id="num-update-insert"></span></strong></div>
+             <div class="status-invalid">{% trans 'Invalid' %}: <strong><span id="num-invalid"></span></strong></div>
+
+            <div>&nbsp;</div>
+            <div><a href="{% url "memberships.default_import_download_recap" mimport.id %}">{% trans 'Download Recap' %}</a> (appended 2 extra fields: action and error)</div>
+             <div>&nbsp;</div>
+             <div><a href="{% url "memberships.default_import" %}">{% trans 'Import more memberships' %}</a></div>
+        </div>
+
+        <div id="error-msg">
+            {% trans 'Oops, an error occurred. Please review your data and try again later.' %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+     // http://jqueryui.com/progressbar/#animated
+     $this_bar = $("#progressbar");
+     $this_bar.progressbar({ value: Math.ceil(100 * {{ mimport.num_processed }}/{{ mimport.total_rows }} ) });
+    var value;
+    var status_check_intval;
+
+    var status_check = function(){
+        $.ajax({
+           type: "POST",
+           url: "{% url "memberships.default_import_get_status" mimport.id %}",
+           success: function(status_data){
+               var obj = $.parseJSON(status_data);
+               //var obj = status_data;
+
+               value = Math.ceil(100*parseInt(obj.num_processed)/parseInt(obj.total_rows));
+               $this_bar.progressbar("option", "value", value);
+               $('#num-processed').html(obj.num_processed);
+
+               if (obj.status == 'completed' || obj.status == 'error'){
+                   clearInterval(status_check_intval);
+
+                   if (obj.status == 'completed'){
+                       $('#summary').css({'display': 'block'});
+                       $('#num-insert').html(obj.num_insert);
+                       $('#num-update').html(obj.num_update);
+                       $('#num-update-insert').html(obj.num_update_insert);
+                       $('#num-invalid').html(obj.num_invalid);
+                       $('.status-invalid').css({'color': 'red'});
+
+                       setTimeout(function(){
+                                $('#progressbar').progressbar( "destroy" );
+                                $('#complete-rate').remove();
+                            }, 2000);
+                   }else{
+                       $('#error-msg').css({'display': 'block'});
+                       $('#error-msg').css({'color': 'red'});
+                   }
+
+               }
+           },
+           error: function(data){
+               clearInterval(status_check_intval);
+               $('#summary').css({'display': 'block', 'color': 'red'});
+               $('#summary').html('Sorry, but an error occurred.')
+           }
+         });
+    }
+
+    status_check();
+    status_check_intval = setInterval(function() {
+        status_check();  // check every 5 seconds
+    }, 5000);
+
+  });
+</script>
+{% endblock %}

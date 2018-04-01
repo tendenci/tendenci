@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+{% load perm_tags %}
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
+
+<head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
+    <title>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+    <link rel="stylesheet" href="{% static 'css/jobs.css' %}">
+</head>
+
+<body>
+{% block html_body  %}
+<div class="t">
+
+    <h1>{% blocktrans %}Add a New Price: {% endblocktrans %}{% firstof MODULE_JOBS_LABEL 'Job' %} </h1>
+    <p>{% trans "To add a new job price, complete the fields below and press Submit." %}</p>
+
+    <div class="jobpricing">
+
+    {% if form.errors %}
+    <div class="errors">
+        <p>{% trans "Please review the fields below. Thank you." %}</p>
+        <ul>
+        {% for field in form %}
+            {% if field.errors %}
+                <li><a href="javascript:;">{{ field.label_tag }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="jobpricing-wrap">
+    <form action="" method="post">{% csrf_token %}
+        <div class="forms">
+            <div class="pricing-item">
+                <div class="errs">{{ form.duration.errors }}</div>
+                <div class="label">{{ form.duration.label_tag }}:</div>
+                <div class="field">{{ form.duration }}</div>
+                <div class="help">{{ form.duration.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.regular_price.errors }}</div>
+                <div class="label">{{ form.regular_price.label_tag }}:</div>
+                <div class="field">{{ form.regular_price }}</div>
+                <div class="help">{{ form.regular_price.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.premium_price.errors }}</div>
+                <div class="label">{{ form.premium_price.label_tag }}:</div>
+                <div class="field">{{ form.premium_price }}</div>
+                <div class="help">{{ form.premium_price.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.regular_price_member.errors }}</div>
+                <div class="label">{{ form.regular_price_member.label_tag }}:</div>
+                <div class="field">{{ form.regular_price_member }}</div>
+                <div class="help">{{ form.regular_price_member.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.premium_price_member.errors }}</div>
+                <div class="label">{{ form.premium_price_member.label_tag }}:</div>
+                <div class="field">{{ form.premium_price_member }}</div>
+                <div class="help">{{ form.premium_price_member.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.include_tax.errors }}</div>
+                <div class="label">{{ form.include_tax.label_tag }}</div>
+                <div class="field">{{ form.include_tax }}</div>
+                <div class="help">{{ form.include_tax.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.tax_rate.errors }}</div>
+                <div class="label">{{ form.tax_rate.label_tag }}</div>
+                <div class="field">{{ form.tax_rate }}</div>
+                <div class="help">{{ form.tax_rate.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            <div class="pricing-item">
+                <div class="errs">{{ form.show_member_pricing.errors }}</div>
+                <div class="label">{{ form.show_member_pricing.label_tag }}</div>
+                <div class="field">{{ form.show_member_pricing }}</div>
+                <div class="help">{{ form.show_member_pricing.help_text }}</div>
+                <div class="clear-left"></div>
+            </div>
+
+            </div>
+
+        </div>
+
+        <div id="pricing-submit">
+            <input type="submit" value="{% trasn 'Submit' %}" />
+        </div>
+        <div class="clear"></div>
+    </form>
+
+    </div>
+
+
+</div>
+{% endblock %}
+</body>
+
+{% block extra_body %}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"> </script>
+<script type="text/javascript" src="{% static 'js/tax_fields.js' %}"></script>
+{% endblock %}
+</html>

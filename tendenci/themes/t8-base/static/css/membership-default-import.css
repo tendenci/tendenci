@@ -1,0 +1,105 @@
+
+
+/* upload */
+div.import-field{
+    margin: 1em 0;
+
+}
+div.fields-block{
+    margin-top: 2em;
+}
+.error{
+    font: red;
+}
+#upload-form-wrap{
+    border-top: 1px dashed #ccc;
+    margin-top: 2em;
+    padding-top: 1em;
+}
+#upload-form-wrap input[type=file]{
+    font-size: 1.2em;
+}
+
+/* preview */
+ul#import-preview-total li{
+    list-style: inline;
+    float: left;
+    padding-right: 1em;
+}
+.import-preview table{
+    border: 1px solid #d4d4d4;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+.import-preview th,
+.import-preview td{
+    border: 1px solid #b2d1ff;
+    padding: 5px 7px 3px;
+}
+.import-preview th{
+    background-color: #5c85ff;
+    color: #ffffff;
+}
+tr.row-update{
+    background-color: #fff;
+}
+tr.row-insert{
+    /*background-color: #ffffcc;*/
+}
+tr.row-skip{
+    background-color: #ffebe6;
+}
+#import-paginate{
+    margin: 1em 0;
+}.action-update{
+    color: #39B54A;
+}
+.action-skip{
+    color: red;
+}
+.action-insert{
+    color: #e65c00;
+}
+.action-mixed{
+    color: #006b24;
+}
+.dimport-settings{
+    background-color: #FFF8E7;
+    border-radius: 3px;
+    padding: 10px;
+    width: 400px;
+    margin: 1em 0;
+}
+
+/* status */
+ div#progressbar{
+    width: 400px;
+    font-size: 10px;
+    float: left;
+}
+div#complete-rate{
+    float: left;
+    padding-left: 1em;
+    font-size: 0.8em;
+}
+div#progressbar-container{
+    margin: 2em 0;
+}
+#num-processed{
+    color: #39B54A;
+}
+div#summary{
+    display: none;
+}
+.clear-left{
+    clear: left;
+}
+.ui-progressbar .ui-progressbar-value {
+    background-image: url(../images/pbar-ani.gif);
+}
+#summary div{
+    margin: 5px 0;
+}
+
+

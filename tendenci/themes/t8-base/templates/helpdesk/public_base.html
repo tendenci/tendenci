@@ -1,0 +1,48 @@
+{% extends "base-wide.html" %}
+{% load load_helpdesk_settings %}
+
+{% block title %}Help Desk{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel='stylesheet' href='{% static "helpdesk/helpdesk-extend.css" %}' type='text/css' />
+
+ {% block helpdesk_head %}{% endblock %}
+{% endblock %}
+
+{% block body_classes %}{{ block.super }} helpdesk-body{% endblock body_classes %}
+
+{% block top_bar %}
+{% with request|load_helpdesk_settings as helpdesk_settings %}
+    {% if request.user.is_authenticated %}
+        {% include "helpdesk/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endwith %}
+{% endblock %}
+
+
+{% block content %}
+{% with request|load_helpdesk_settings as helpdesk_settings %}
+<div class="row">
+    <!-- Put your logo here if necessary: -->
+    <!-- <img class="brand pull-right" src="/media/logo.png"> -->
+    <h1>{% trans "Helpdesk" %}</h1>
+</div>
+
+<div id='body' class="row">
+    {% include "helpdesk/navigation.html" %}
+    {% block helpdesk_body %}{% endblock %}
+</div>
+<div id='footer' class="row">
+    <p>{% include "helpdesk/attribution.html" %}</p>
+</div>
+
+{% include "helpdesk/debug.html" %}
+
+{% endwith %}
+{% endblock %}

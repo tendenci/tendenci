@@ -1,0 +1,34 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+{% load forms_tags %}
+
+{% block title %}{{ block.super }} {% trans 'Contact Us' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+{% if SITE_GLOBAL_CONTACT_FORM %}
+    {% embed_form SITE_GLOBAL_CONTACT_FORM "forms/contact_form_new.html" %}
+{% else %}
+    <h1>{% trans "Contact Us" %}</h1>
+
+    <div class="contact-form-wrap">
+
+        {% blocktrans %}
+        <p>Please fill out the form below.</p>
+        {% endblocktrans %}
+
+        <form action="{% url 'form' %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Contact' %} {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
+        </div>
+        </form>
+    </div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+<form class="search-form" action="{% url "event.registrant.search" event.id %}" method="get">
+{% trans 'Search By'%}: {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
+<input type="hidden" name="status" value="{{ request.GET.status }}"/>
+<input type="submit" value="{% trans "Search" %}" />
+</form>

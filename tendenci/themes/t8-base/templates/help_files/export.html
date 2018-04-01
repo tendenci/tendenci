@@ -1,0 +1,21 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+     <div class="help-files-wrap">
+        <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Export" %}</h1>
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

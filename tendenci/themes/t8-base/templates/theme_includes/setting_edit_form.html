@@ -1,0 +1,49 @@
+{% load base_filters %}
+
+{% if user.profile.is_superuser %}
+<div class="admin-inline">
+    <div class="admin-border admin-border-top"></div>
+    <div class="admin-border admin-border-right"></div>
+    <div class="admin-border admin-border-bottom"></div>
+    <div class="admin-border admin-border-left"></div>
+    <div class="admin-links clear-block">
+    <a href="#" data-controls-modal="modal_{{ setting_name }}" data-backdrop="true">{% blocktrans with t=setting_name|underscore_space|title %} Edit {{ t }}{% endblocktrans %}</a>
+    </div>
+</div>
+
+
+<div id="modal_{{ setting_name }}" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close">&times;</a>
+        <h3>{% blocktrans with t=setting_name|underscore_space|title %}Change {{ t }} Content {% endblocktrans %}</h3>
+    </div>
+    <div class="modal-body">
+        <form id="change_form_{{ setting_name }}" class="settings-form" action="/settings/module/{{ scope_category }}/{{ setting_name }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in setting_form %}
+            {{ field }}
+        {% endfor %}
+        <p>{% blocktrans %}You can change this space's content by choosing one of the content options or any <a href="/boxes/add/?next={{ request.path }}">boxes</a> you have added.{% endblocktrans %}</p>
+        </form>
+        <a href="{{ request.path }}" class="btn secondary">{% trans 'Cancel' %}</a>
+        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn success">{% blocktrans with t=setting_name|underscore_space|title %}Update {{ t }}{% endblocktrans %}</a>
+    </div>
+
+    {% if setting_value_form.fields %}
+    <div class="modal-header modal-middle-header">
+        <h3>{% blocktrans with t=setting_value|underscore_space|title %}Configure {{ t }}{% endblocktrans %}</h3>
+    </div>
+    <div class="modal-body">
+        <form id="config_form_{{ setting_name }}" class="settings-form" action="/settings/template/{{ setting_value }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in setting_value_form %}
+            <p><strong>{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</strong>: {{ field }}</p>
+        {% endfor %}
+        </form>
+        <a href="{{ request.path }}" class="btn secondary">{% trans 'Cancel' %}</a>
+        <a href="javascript:document.getElementById('config_form_{{ setting_name }}').submit();" class="btn success">{% blocktrans with t=setting_value|underscore_space|title %}Update {{ t }}{% endblocktrans %}</a>
+    </div>
+    <div class="modal-footer"></div>
+    {% endif %}
+</div>
+
+
+{% endif %}

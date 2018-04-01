@@ -1,0 +1,83 @@
+.image-wrap img {
+	background-color: white;
+	float: left;
+	margin-right: 10px;
+	padding: 2px;
+	border: 1px solid gray;
+}
+
+.event-wrap-search h2 {
+	margin-bottom: 0;
+}
+.canceled {
+	float: right;
+}
+
+#wrap {
+	/*width: 100%;*/
+}
+#event-wrap {
+	vertical-align: top;
+	background-color: #EEE;
+	padding: 10px;
+	width: 20%;
+	border-right: 1px solid silver;
+}
+#registrant-wrap {
+	vertical-align: top;
+	padding-left: 10px;
+	
+}
+.event-title {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #CCC;
+	margin-bottom: 10px;
+}
+
+.t .speaker-wrap,
+.t .organizer-wrap,
+.t .filter-wrap {
+	margin: 10px 0;
+	padding: 10px;
+}
+.t .speaker,
+.t .organizer {
+	margin-bottom: 5px;
+}
+
+.hr {
+	height: 1px;
+	background-color: #CCC;
+	margin: 10px 0;
+}
+
+.global-reg-search .registrant-wrap {
+    border: 1px solid silver;
+    margin: 10px 0;
+}
+
+.global-reg-search .registrant-wrap>div{
+    margin: 10px;
+}
+
+.global-reg-search .registrant-wrap h2{
+    margin: 0;
+}
+
+.global-reg-search .search-form fieldset {
+    padding: 5px;
+    margin-bottom: 15px;
+    border: 1px solid silver;
+}
+
+.global-reg-search .search-form fieldset.event-filters input {
+    width: 70px;
+}
+
+.global-reg-search .search-form fieldset.registrant-filters input {
+    width: 180px;
+}
+
+.global-reg-search .search-form fieldset.registrant-filters input#id_user_id {
+    width: 70px;
+}

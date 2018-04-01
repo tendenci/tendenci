@@ -1,0 +1,10 @@
+
+
+{% blocktrans %}
+Please click here to activate your account: {{ site_url }}/accounts/activate/{{ activation_key }}/?next={{ next }}. There are {{ expiration_days  }} days left to do it.
+{% endblocktrans %}
+{% if event_url %}
+{% blocktrans %}
+To get back to your event, click here: {{ site_url }}{{ event_url }}
+{% endblocktrans %}
+{% endif %}

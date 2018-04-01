@@ -1,0 +1,71 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user campaign_monitor.add_template as can_add_template %}
+{% has_perm user campaign_monitor.add_campaign as can_add_campaign %}
+
+{% has_perm user campaign_monitor.change_template as can_change %}
+{% has_perm user campaign_monitor.delete_template as can_delete %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Templates' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Templates" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            <li><a href="{% url "campaign_monitor.template_index" %}">{% trans "Search Templates" %}</a></li>
+            {% if can_add_template %}
+                <li><a href="{% url "campaign_monitor.template_add" %}">{% trans "Add Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_sync" %}">{% trans "Sync Templates" %}</a></li>
+            {% endif %}
+        </ul>
+        {% comment %}
+        {% if nav_object %}
+            <ul>
+                <li class="heading">{% trans "This Template" %}</li>
+                <li class="divider"></li>
+                <li><a href="{{ nav_object.cm_preview_url }}">{% trans "Preview Template" %}</a></li>
+                {% if can_change %}
+                <li><a href="{% url "campaign_monitor.template_edit" nav_object.template_id %}">{% trans "Edit Template" %}</a></li>
+                {% endif %}
+                {% if can_delete %}
+                <li><a href="{% url "campaign_monitor.template_delete" nav_object.template_id %}">{% trans "Delete Template" %}</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+        {% endcomment %}
+
+        </div>
+    </li>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Campaigns" %}</a>
+        <ul class="dropdown-menu">
+            <li><a href="{% url "campaign_monitor.campaign_index" %}">{% trans "Search Campaigns" %}</a></li>
+            {% if can_add_campaign %}
+                <li><a href="{% url "campaign_monitor.campaign_generate" %}">{% trans "Add Campaign" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_sync" %}">{% trans "Sync Campaigns" %}</a></li>
+                {% if cm_url %}
+                <li class="divider"></li>
+                <li><a href="{{ cm_url }}" target="_blank">{% trans "Go to Campaign Monitor" %}</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </li>
+</ul>
+{% endif %}

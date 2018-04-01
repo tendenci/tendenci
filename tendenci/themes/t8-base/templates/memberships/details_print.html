@@ -1,0 +1,467 @@
+{% extends 'base-print.html' %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ mem_user }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=membership.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=membership.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ membership.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="membership-detail-wrap membership-detail-print">
+
+        <fieldset>
+            <div class="membership-details-inner-wrap">
+                <div class="membership-details-name">
+                    <h1>{% blocktrans with membership.user.get_full_name as memname %}
+                    {{ memname }}{% endblocktrans %}</h1>
+
+                    <div class="membership-detail-nav">
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url "profile" membership.user.username %}">
+                            {% trans "Profile" %}</a>
+                        {% endif %}
+
+                        {% if membership.get_invoice %}
+                        <a href="{% url "invoice.view" membership.get_invoice.pk membership.get_invoice.guid %}">
+                            {% trans "Invoice" %}</a>
+                        {% endif %}
+
+                        {% if user.is_superuser %}
+                        <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
+                            {% trans "Edit Membership" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="membership-details-info">
+                    <p>{% trans 'Member' %} <strong>{{ membership.member_number }}</strong></p>
+
+                    <p>{% trans 'Group' %} <strong>{{ membership.membership_type }}</strong></p>
+
+                    <p title="{{ membership.get_since_dt|timesince }} ago">
+                        {% trans 'Since' %} <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
+
+                    {% if membership.renewal %}
+                    <p title="{{ membership.subscribe_dt|timesince }} ago">
+                        {% trans 'Renewed' %} <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
+                    {% endif %}
+
+                    {% if membership.is_approved %}
+                        {% if membership.is_forever %}
+                            <p>{% trans "Never expires" %}</p>
+                        {% else %}
+                            <p>{% trans 'Expires' %} <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                        {% endif %}
+
+                    {% else %}
+                        {% if membership.is_expired %}
+                            <p>{% trans 'Expired' %} <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> ({% trans 'grace period' %}: {{ membership.membership_type.expiration_grace_period }} {% trans 'days' %})</p>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if membership.get_renewal_period_dt %}
+                        <p>{% trans 'Renew between' %} {{ membership.get_renewal_period_dt.0|date:"N j, Y" }} {% trans 'and' %} {{ membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
+                    {% else %}
+                        <p>{% trans 'Membership type does not allow renewals.' %}</p>
+                    {% endif %}
+
+                    <div class="membership-details-status">
+
+                        <p class="status-label {{ membership.get_status }}">
+                            {{ membership.get_status|capfirst }} {% trans 'Membership' %}</p>
+
+                        <p class="status-label">
+                            {% trans 'Balance Due' %}: ${{ membership.get_invoice.balance|floatformat:"2" }}</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>{% trans 'Contact Information' %}</legend>
+
+            {% if membership.user.email %}
+            <div class="field">
+                <div class="label">{% trans 'Email' %}</div>
+                <div class="value">{{ membership.user.email }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.phone %}
+            <div class="field">
+                <div class="label">{% trans 'Phone' %}</div>
+                <div class="value">{{ membership.user.profile.phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.work_phone %}
+            <div class="field">
+                <div class="label">{% trans 'Work Phone' %}</div>
+                <div class="value">{{ membership.user.profile.work_phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.home_phone %}
+            <div class="field">
+                <div class="label">{% trans 'Home Phone' %}</div>
+                <div class="value">{{ membership.user.profile.home_phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.mobile_phone %}
+            <div class="field">
+                <div class="label">{% trans 'Mobile Phone' %}</div>
+                <div class="value">{{ membership.user.profile.mobile_phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.url %}
+            <div class="field">
+                <div class="label">{% trans 'Website' %}</div>
+                <div class="value">{{ membership.user.profile.url }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.get_address %}
+            <div class="field">
+                <div class="label">{% trans 'Address' %}</div>
+                <div class="value">{{ membership.user.profile.get_address }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.user.profile.company %}
+            <div class="field">
+                <div class="label">{% trans 'Company' %}</div>
+                <div class="value">{{ membership.user.profile.company }}</div>
+            </div>
+            {% endif %}
+
+        </fieldset>
+
+        <fieldset>
+            <legend>{% trans 'More Details' %}</legend>
+
+            {% if membership.certifications %}
+            <div class="field">
+                <div class="label">{% trans 'Certifications' %}</div>
+                <div class="value">{{ membership.certifications }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.work_experience %}
+            <div class="field">
+                <div class="label">{% trans 'Work Experience' %}</div>
+                <div class="value">{{ membership.work_experience }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source %}
+            <div class="field">
+                <div class="label">{% trans 'Referral Source' %}</div>
+                <div class="value">{{ membership.referral_source }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_other %}
+            <div class="field">
+                <div class="label">{% trans 'Referral Source (other)' %}</div>
+                <div class="value">{{ membership.referral_source_other }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_member_name %}
+            <div class="field">
+                <div class="label">{% trans 'Referral Source Member Name' %}</div>
+                <div class="value">{{ membership.referral_source_member_name }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_member_number %}
+            <div class="field">
+                <div class="label">{% trans 'Referral Source Member Number' %}</div>
+                <div class="value">{{ membership.referral_source_member_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.affiliation_member_number %}
+            <div class="field">
+                <div class="label">{% trans 'Affiliation Member Number' %}</div>
+                <div class="value">{{ membership.affiliation_member_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.primary_practice %}
+            <div class="field">
+                <div class="label">{% trans 'Primary Practice' %}</div>
+                <div class="value">{{ membership.primary_practice }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.how_long_in_practice %}
+            <div class="field">
+                <div class="label">{% trans 'How Long in Practice' %}</div>
+                <div class="value">{{ membership.how_long_in_practice }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.notes %}
+            <div class="field">
+                <div class="label">{% trans 'Notes' %}</div>
+                <div class="value">{{ membership.notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.admin_notes %}
+            <div class="field">
+                <div class="label">{% trans 'Admin Notes' %}</div>
+                <div class="value">{{ membership.admin_notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.newsletter_type %}
+            <div class="field">
+                <div class="label">{% trans 'Newsletter Type' %}</div>
+                <div class="value">{{ membership.newsletter_type }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.directory_type %}
+            <div class="field">
+                <div class="label">{% trans 'Directory Type' %}</div>
+                <div class="value">{{ membership.directory_type }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.app %}
+            <div class="field">
+                <div class="label">{% trans 'Application' %}</div>
+                <div class="value">{{ membership.app }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_complete_dt %}
+            <div class="field">
+                <div class="label">{% trans 'Application Complete Date &amp; Time' %}</div>
+                <div class="value">{{ membership.application_complete_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_approved_dt %}
+            <div class="field">
+                <div class="label">{% trans 'Application Approved Date &amp; Time' %}</div>
+                <div class="value">{{ membership.application_approved_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.personnel_notified_dt %}
+            <div class="field">
+                <div class="label">{% trans 'Personnel Notified Date' %}</div>
+                <div class="value">{{ membership.personnel_notified_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.payment_received_dt %}
+            <div class="field">
+                <div class="label">{% trans 'Payment Received Date &amp; Time' %}</div>
+                <div class="value">{{ membership.payment_received_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.payment_method %}
+            <div class="field">
+                <div class="label">{% trans 'Payment Method' %}</div>
+                <div class="value">{{ membership.payment_method }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.override %}
+            <div class="field">
+                <div class="label">{% trans 'Override' %}</div>
+                <div class="value">{{ membership.override }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.override_price %}
+            <div class="field">
+                <div class="label">{% trans 'Override Price' %}</div>
+                <div class="value">{{ membership.override_price }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.exported %}
+            <div class="field">
+                <div class="label">{% trans 'Exported' %}</div>
+                <div class="value">{{ membership.exported }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.chapter %}
+            <div class="field">
+                <div class="label">{% trans 'Chapter' %}</div>
+                <div class="value">{{ membership.chapter }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.areas_of_expertise %}
+            <div class="field">
+                <div class="label">{% trans 'Areas of Expertise' %}</div>
+                <div class="value">{{ membership.areas_of_expertise }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.get_corporate_membership %}
+            <div class="field">
+                <div class="label">{% trans 'Corporate Membership' %}</div>
+                {% if request.user.profile.is_superuser %}
+                <div class="value"><a href="{{ membership.get_corporate_membership.get_absolute_url }}">
+                    {{ membership.get_corporate_profile.name }} - {{ membership.get_corporate_membership.corporate_membership_type.name }}</a></div>
+                {% else %}
+                <div class="value">
+                    {{ membership.get_corporate_profile.name }} - {{ membership.get_corporate_membership.corporate_membership_type.name }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if membership.home_state %}
+            <div class="field">
+                <div class="label">{% trans 'Home State' %}</div>
+                <div class="value">{{ membership.home_state }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.year_left_native_country %}
+            <div class="field">
+                <div class="label">{% trans 'Year Left Native Country' %}</div>
+                <div class="value">{{ membership.year_left_native_country }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.network_sectors %}
+            <div class="field">
+                <div class="label">{% trans 'Network Sectors' %}</div>
+                <div class="value">{{ membership.network_sectors }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.networking %}
+            <div class="field">
+                <div class="label">{% trans 'Networking' %}</div>
+                <div class="value">{{ membership.networking }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.government_worker %}
+            <div class="field">
+                <div class="label">{% trans 'Government Worker' %}</div>
+                <div class="value">{{ membership.government_worker }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.government_agency %}
+            <div class="field">
+                <div class="label">{% trans 'Government Agency' %}</div>
+                <div class="value">{{ membership.government_agency }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.license_number %}
+            <div class="field">
+                <div class="label">{% trans 'License Number' %}</div>
+                <div class="value">{{ membership.license_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.license_state %}
+            <div class="field">
+                <div class="label">{% trans 'License State' %}</div>
+                <div class="value">{{ membership.license_state }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.industry %}
+            <div class="field">
+                <div class="label">{% trans 'Industry' %}</div>
+                <div class="value">{{ membership.industry }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.region %}
+            <div class="field">
+                <div class="label">{% trans 'Region' %}</div>
+                <div class="value">{{ membership.region }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.company_size %}
+            <div class="field">
+                <div class="label">{% trans 'Company Size' %}</div>
+                <div class="value">{{ membership.company_size }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.promotion_code %}
+            <div class="field">
+                <div class="label">{% trans 'Promotion Code' %}</div>
+                <div class="value">{{ membership.promotion_code }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.directory %}
+            <div class="field">
+                <div class="label">{% trans 'Directory' %}</div>
+                <div class="value">{{ membership.directory }}</div>
+            </div>
+            {% endif %}
+
+        </fieldset>
+
+        {% if membership.get_demographics %}
+        <fieldset>
+            <legend>{% trans 'Even More Details (custom fields)' %}</legend>
+            {% for label, value in membership.get_demographics %}
+                {% if value %}
+                <div class="field">
+                    <div class="label">{{ label }}</div>
+                    <div class="value">{{ value }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </fieldset>
+        {% endif %}
+
+        {% if membership.get_archived_memberships %}
+        <fieldset>
+            <div class="fieldset-label">{% trans 'Archived Memberships' %}</div>
+            <div style="clear:both;"></div>
+
+            {% for archive in membership.get_archived_memberships %}
+                <div class="field">
+                    <div class="label">
+                        {% firstof archive.join_dt|date:"F Y" archive.create_dt|date:"F Y" %} - {% firstof archive.expire_dt|date:"F Y" "Forever" %}
+
+                        {% if membership == archive %}
+                            {% trans '(you are here)' %}
+                        {% endif %}
+
+                    </div>
+                    <div class="value"><a href="{% url "membership.details" archive.pk %}">{{ archive.membership_type.name }}</a></div>
+                </div>
+            {% endfor %}
+        </fieldset>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

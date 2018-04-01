@@ -1,0 +1,18 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load profile_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/user.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_USERS_LABEL trans 'People' %}{% endblock %}
+
+{% block current_app %}
+    {% if profile %}
+        {% profile_current_app request.user profile %}
+    {% else %}
+        {% if user_this %}
+            {% profile_current_app request.user user_this %}
+        {% else %}
+            {% profile_current_app request.user %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

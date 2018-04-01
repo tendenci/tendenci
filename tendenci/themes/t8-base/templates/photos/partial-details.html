@@ -1,0 +1,63 @@
+{% load humanize %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load bootstrap_pagination_tags %}
+{% load smart_if %}
+
+<div class="photo-instance">
+    <div class="photo-title-wrap">
+        <h2>{% firstof photo.title "Untitled" %}</h2>
+    </div>
+    <div class="photo-nav">
+        <div class="photo-back"><a href="{% url "photoset_details" set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
+    </div>
+    <div class="photo-traverse">
+        <ul>
+            {% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+            {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>{% endif %}
+        </ul>
+    </div>
+    <div class="hr"></div>
+    <div class="photo-wrap">
+        <div class="photo">
+            </a>
+            <br>
+            <div about="{{ photo.get_medium_640_url }}"
+                xmlns:dct="http://purl.org/dc/terms/"
+                xmlns:cc="http://creativecommons.org/ns#">
+                <a id="image-photo-next" href="{{ photo_next_url }}">
+                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}" />
+                </a>
+                <br />
+                <span property="dct:title">{{ photo.title }}</span>
+                by
+                {% if photo.photographer %}
+                    {{ photo.photographer }}
+                {% else %}
+                <a href="{{ photo.creator.get_absolute_url }}"
+                    property="cc:attributionName"
+                    rel="cc:attributionURL dct:creator">{{ photo.creator.get_full_name }}</a>.
+                {% endif %}
+                {% if photo.get_license == photo.default_license %}
+                    {{ photo.default_license.name }}.
+                {% else %}
+                    {% blocktrans with photo.get_license.deed as phodeed and photo.get_license.name as phoname %}Licensed under
+                    <a rel="license" href="{{ phodeed }}">
+                        {{ phoname }}</a>.{% endblocktrans %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="photo-caption-wrap">
+        {% blocktrans with c=photo.caption|safe %}{{ c }}{% endblocktrans %}
+    </div>
+    <div class="hr"></div>
+    <div class="photo-options">
+        {% photo_options request.user photo %}
+    </div>
+    {% if tags %}
+    <div class="photo-tags">
+        {% trans 'Tags' %}: {% for tag in tags %} {{ tag }} {% endfor %}
+    </div>
+    {% endif %}
+</div><!-- END .photo-instance -->

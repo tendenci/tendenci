@@ -1,0 +1,66 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Membership Reports" %}</h1>
+</div>
+<div class="report_list_wrap clearfix">
+  <div class="report_column">
+    <h2>{% trans "Current Members" %}</h2>
+    <ol>
+      <li><a href="{% url "reports-member-roster" %}">{% trans "Current Members Roster" %}</a></li>
+      <li><a href="{% url "reports-members-quick-list" %}">{% trans "Current Members Quick List" %}</a></li>
+      <li><a href="{% url "reports-members-by-company" %}">{% trans "Current Member Totals by Company" %}</a></li>
+    </ol>
+
+    <h2>{% trans "Membership Trends" %}</h2>
+    <ol>
+      <li><a href="{% url "reports-members-over-time" %}">{% trans "Memberships Over Time" %}</a></li>
+      <li><a href="{% url "reports-active-members-ytd" %}">{% trans "Active Members YTD" %}</a></li>
+      <li><a href="{% url "reports-members-ytd-type" %}">{% trans "Members YTD by Type" %}</a></li>
+    </ol>
+
+    <h2>{% trans "Member Data" %}</h2>
+    <ol>
+      <li><a href='{% url "reports-memberships-joins" %}'>{% trans "Membership Joins Report Summary" %}</a></li>
+      <li><a href='{% url "reports-active-members" %}'>{% trans "Active Memberships, filterable by join date" %}</a></li>
+      <li><a href='{% url "reports-expired-members" %}'>{% trans "Expired Memberships, filterable by expire date" %}</a></li>
+      <li><a href='{% url "reports-renewed-members" %}'>{% trans "Renewed Members, filterable by renew date" %}</a></li>
+      <li><a href='{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending'>{% trans "Pending Memberships" %}</a></li>
+      <li><a href='{% url "reports-renewal-period-members" %}'>{% trans "Members in Renewal Period" %}</a></li>
+      <li><a href='{% url "reports-grace-period-members" %}'>{% trans "Expired Members in Grace Period" %}</a></li>
+      <li><a href='{% url "reports-members-stats" %}'>{% trans "Active, Pending & Expired Members by Type" %}</a></li>
+        </ol>
+
+        <h2>{% trans "Financial Reporting" %}</h2>
+        <ol>
+          <li><a href="{% url 'invoices' %}?invoice_type=memberships">{% trans "Membership Invoices" %}</a></li>
+          <li><a href="{% url 'reports-members-donated' %}">{% trans "Members Donated On Signup/Renewal" %}</a></li>
+        </ol>
+        </div>
+
+        <div class="report_column end">
+          <h2>{% trans "User Reports" %}</h2>
+          <ol>
+            <li><a href="{% url "reports-admin-users" %}">{% trans "Administrators" %}</a></li>
+            <li><a href="{% url "reports-user-added" %}">{% trans "Site Users Added" %}</a></li>
+            <li><a href="{% url "reports-user-activity" %}">{% trans "User Activity Summary" %}</a></li>
+            <li><a href="{% url "reports-user-access" %}">{% trans "User Access" %}</a></li>
+            <li><a href="{% url "reports-contacts-referral" %}">{% trans "Contacts Report" %}</a></li>
+            <li><a href="{% url "corp_membership.overview" %}">{% trans "Corporate Memberships Overview" %}</a></li>
+            <li><a href="{% url "reports-top-spenders" %}">{% trans "Top Spenders" %}</a></li>
+            <li><a href="{% url "reports-users-not-in-groups" %}">{% trans "Users not in Groups" %}</a></li>
+          </ol>
+
+          <h2>{% trans "Management Tools" %}</h2>
+          <ol>
+            <li><a href="{% url "profile.similar" %}">{% trans "Similar Users List" %}</a></li>
+            <li><a href="{% url "profiles.user_import" %}">{% trans "User Import" %}</a></li>
+            <li><a href="{% url "profile.export" %}">{% trans "User Export" %}</a></li>
+            <li><a href="{% url "memberships.default_import" %}">{% trans "Membership Import" %}</a></li>
+            <li><a href="{% url "memberships.default_export" %}">{% trans "Membership Export" %}</li>
+              </ol>
+              </div>
+
+              </div><br /><br />
+              {% endblock content %}

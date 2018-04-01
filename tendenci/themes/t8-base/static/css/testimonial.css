@@ -1,0 +1,112 @@
+.t {
+	width: 90%;
+}
+
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* options */
+.t div.quick-options {
+    position: absolute;
+	margin-right: 5px;
+    right: 0;
+    top: 12px;
+}
+
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+/* search form */
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+    margin-bottom: 10px;
+	cursor: pointer;
+}
+
+/* search */
+.t .tsm-search-wrap {
+    width: 90%;
+}
+
+.t .tsm-search-item {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0 10px 0;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.t .tsm-search-item p.tsm-search-item-desc {
+    padding-top: 10px;
+    margin-bottom: 10px;
+}
+
+.t .tsm-search-item p.tsm-person-info {
+    font-style: italic;
+    margin: 0 !important;
+    padding: 2px;
+}
+
+.t .tsm-search-item div.tsm-person-box {
+    background-color: #f2f2f2;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* view */
+.t .tsm-view {
+    width: 100%;
+    position: relative;
+}
+
+.t .tsm-view h1 {
+    font-size: 18px;
+}
+
+.t .tsm-view span.tsm-quotation {
+    font-size: 7em;
+    padding: 5px;
+    float: left;
+    color: #777;
+    height: 15px;
+    display: block;
+}
+
+.t .tsm-view div.tsm-testimonial {
+    float: left;
+    padding: 5px;
+    font-size: 1.5em;
+    width: 70%;
+}
+
+.t .tsm-view p.tsm-person-info {
+    font-style: italic;
+    clear: both;
+    padding-left: 50px;
+    padding-bottom: 5px;
+    margin: 0 !important;
+}

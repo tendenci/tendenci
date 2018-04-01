@@ -1,0 +1,57 @@
+{% extends "contributions/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load contribution_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_CONTRIBUTIONS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_CONTRIBUTIONS_LABEL_PLURAL }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Contributions Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_CONTRIBUTIONS_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_CONTRIBUTIONS_LABEL_PLURAL }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Contributions Search" %}
+        {% endif %}
+    </h1>
+
+    {% contribution_search %}
+    {% autopaginate contributions 10 %}
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_CONTRIBUTIONS_LABEL_PLURAL and MODULE_CONTRIBUTIONS_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Contribution Found
+                {% plural %}
+                    {{ obj_count }} Contributions Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for contribution in contributions %}
+            {% search_result contribution %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

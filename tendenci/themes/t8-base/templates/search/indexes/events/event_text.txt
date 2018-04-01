@@ -1,0 +1,28 @@
+{% load tagging_tags %}
+
+{% firstof object.title "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.profile.display_name }}
+{{ object.description }}
+
+{% if object.place %}
+{{ object.place.name }}
+place:{{ object.place.name }}
+{{ object.place.address }}
+{{ object.place.city }}
+city:{{ object.place.city }}
+{{ object.place.state }}
+{{ object.place.zip }}
+{% endif %}
+
+start_day:{{ object.start_dt.day }}
+start_month:{{ object.start_dt.month }}
+start_year:{{ object.start_dt.year }}
+
+type_id:{{ object.type.pk }}
+type:{{ object.type.slug }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }}
+{% endfor %}

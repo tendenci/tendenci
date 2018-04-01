@@ -1,0 +1,18 @@
+{% load base_filters %}
+
+<tr>
+    <td>
+        {% if obj %}
+            {% trans 'Payment #' %}<a href="{% url "make_payment.view" obj.id %}" title="{% trans 'Payment' %}">{{ obj.pk }}</a> made by {{ obj.first_name }} {{obj.last_name}}
+        {% else %}
+            {{ invoice.title }}
+        {% endif%}
+        {% if obj and obj.reference_number  %}
+         <br />
+        {% if MODULE_MAKE_PAYMENT_REFERENCENUMBERLABEL %}{{ MODULE_MAKE_PAYMENT_REFERENCENUMBERLABEL }}{% else %}{% trans "Reference #" %}{% endif %}: {{ obj.reference_number }}
+         {% endif%}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
+</tr>

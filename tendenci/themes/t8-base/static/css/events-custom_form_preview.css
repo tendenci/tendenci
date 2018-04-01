@@ -1,0 +1,16 @@
+.id_captcha input[type="text"]{
+	width: 160px !important;
+}
+.t .form-wrap {
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+.preview-reminder{
+	background-color: #FEFBF3;
+	color: #666;
+	margin: 1em 0;
+	padding: 1em;
+	width: 90%;
+	border: 1px solid #ee5;
+}

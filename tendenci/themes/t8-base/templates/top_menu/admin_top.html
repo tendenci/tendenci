@@ -1,0 +1,218 @@
+{% load pluginmanager_tags %}
+{% list_plugins as plugins %}
+
+{% spaceless %}
+<div id="admin-bar">
+    <ul>
+       <li class="visible-mobile"><a class="admin-logo" href="{% url 'dashboard' %}"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="24" /></a></li>
+        <li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+            <div class="sub">
+                <div class="column">
+                <h4><a href="{% url 'dashboard' %}">{% trans "Apps" %}</a></h4>
+                    <div class="column app-list">
+                        {% for app in registered_apps.core %}
+                            {% if app.enabled %}
+                            <ul>
+                                <li class="app">
+                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
+                                </li>
+                                {% if app.has_settings and app.url.settings %}
+                                <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                                {% endif %}
+                                {% if app.url.search %}
+                                <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans
+                                'Search' %} {{ app|title }}">&#76;</a></li>
+                                {% endif %}
+                                {% if app.url.add %}
+                                <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
+                                {% endif %}
+                            </ul>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if registered_apps.addons %}
+                <div class="column app-list">
+                    <h4><a href="{% url 'dashboard' %}">{% trans "Add-ons" %}</a></h4>
+                    {% for app in registered_apps.addons %}
+                        {% if app.enabled %}
+                        <ul>
+                            <li class="app">
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
+                            </li>
+                            {% if app.has_settings and app.url.settings %}
+                            <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                            {% endif %}
+                            {% if app.url.search %}
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans 'Search' %} {{ app|title }}">&#76;</a></li>
+                            {% endif %}
+                            {% if app.url.add %}
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </li>
+        <li><a href="{% url "profile.search" %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+            <div class="sub">
+               {% if registered_apps.people %}
+                <div class="column app-list">
+                    {% for app in registered_apps.people %}
+                        {% if app.enabled %}
+                        <ul>
+                            <li class="app">
+                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">{{ app|title }}</a>
+                            </li>
+                            {% if app.has_settings and app.url.settings %}
+                            <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                            {% endif %}
+                            {% if app.url.search %}
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="{% trans 'Search' %} {{ app|title }}">&#76;</a></li>
+                            {% endif %}
+                            {% if app.url.add %}
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="{% trans 'Add' %} {{ app|title }}">&#43;</a></li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    {% endfor %}
+                    <ul>
+                        <li class="app"><a href="{% url "reports-user-activity" %}">{% trans "Activity Report" %}</a></li>
+                        <li><a href="{% url "reports-user-activity" %}" class="glyph heading">&#117;</a></li>
+                    </ul>
+                    <ul>
+                        <li class="app"><a href="{% url "profile.admins" %}">{% trans "Administrators" %}</a></li>
+                        {% if SITE_ADMIN_EMAIL %}
+                        <li><a href="mailto:{{ SITE_ADMIN_EMAIL }}" title="{% trans 'Email Administrators' %}"><i class="fa fa-envelope"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </li>
+        {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
+        <li><a href="{% url 'settings' %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "theme_editor.picker" %}">
+                            {% trans "Change Theme From: " %}
+                            {{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
+                        <li><a href="/settings/module/theme/">
+                            {% trans "Theme Settings" %}</a></li>
+                        <li><a href="{% url "theme_editor.editor" %}">
+                            {% trans "Theme Editor" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% endif %}
+        <li><a href="#"><span class="glyph heading">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url 'report_list' %}">{% trans "Invoice Reports" %}</a></li>
+                        <li><a href="{% url "reports-events-summary" %}">{% trans "Event logs Summary" %}</a></li>
+                        <li><a href="{% url "reports-admin-users" %}">{% trans "Administrators" %}</a></li>
+                        <li><a href="{% url "reports-user-added" %}">{% trans "Site Users Added" %}</a></li>
+                        <li><a href="{% url "reports-user-activity" %}">{% trans "User Activity Summary" %}</a></li>
+                        <li><a href="{% url "reports-user-access" %}">{% trans "Active User Logins" %}</a></li>
+                        <li><a href="{% url "reports-contacts-referral" %}">{% trans "Contacts Report" %}</a></li>
+                        <li><a href="{% url "reports-memberships" %}">{% trans "Membership Reports" %}</a></li>
+                        <!--<li><a href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li> -->
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                        <li><a href="{% url "corp_membership.summary_report" %}">{% trans "Corporate Membership Summary" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url "reports-top-spenders" %}">{% trans "Top Spenders" %}</a></li>
+                        <li><a href="{% url "reports-users-not-in-groups" %}">{% trans "Users not in Groups" %}</a></li>
+                        <li><a href="{% url "reports-404-count" %}">{% trans "404 Tracker" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="#"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "Quick Links" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="/settings/site/global/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Site Settings" %}</a></li>
+                        <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
+                        <li><a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a></li>
+                        <li><a href="{% url "admin:index" %}">{% trans "Admin Backend" %}</a></li>
+                        <li><a href="{% url "theme_editor.editor" %}">{% trans "Theme Editor" %}</a></li>
+                        {% if THEME_INFO.SSU.walkthrough %}
+                        <li><a id="walkthrough-quicklink" href="/">{% trans "Homepage Walkthrough" %}</a></li>
+                        {% endif %}
+                        {% if THEME_INFO.SSU.checklist %}
+                        <li><a href="{% url 'completion_checklist' %}">{% trans "Completion Status" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url "addon.upload" %}">{% trans "Module Upload" %}</a></li>
+                        <li><a href="/newsletter_generator/">{% trans "Newsletter Generator" %}</a></li>
+                        <li><a href="{% url "event_log.search" %}">{% trans "Event Logs" %}</a></li>
+                        <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
+                        <li><a href="/">{% trans "Home" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="#"><span class="glyph heading">&#87;</span><strong>&nbsp;&nbsp;{% trans "Support" %}</strong></a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "tendenci_guide.guide_page" "getting-started-with-tendenci" %}">{% trans 'Tendenci Guide' %}</a></li>
+                        <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Help Files" %}</a></li>
+                        <li><a href="http://support.tendenci.com" target="_blank">{% trans "Contact Tendenci Support" %}</a></li>
+                        {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
+                            <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
+                        {% endif %}
+                        <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: {{ TENDENCI_VERSION }}</a></li>
+
+                        {# <li><a href="{% url 'update_tendenci' %}">{% trans "Update Tendenci" %}</a></li> #}
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% if TEMPLATE_THEME %}
+            <li><a href="#">{% trans "Using Custom Theme" %}</a>
+                <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "setting.permalink" 'module' 'theme_editor' 'theme' %}">{% trans "Theme" %}: {{ THEME }}</a></li>
+                        <li><a href="{% url "theme_editor.editor" %}?file=templates/{{ TEMPLATE_NAME }}&theme_edit={{ THEME }}">{% trans 'Template' %}: {{ TEMPLATE_NAME }}</a></li>
+                    </ul>
+                </div>
+                </div>
+            </li>
+        {% endif %}
+
+        <li class="right visible-mobile"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+        <li class="right"><a href="/profiles">{{ user.username }}</a></li>
+
+        {% if USE_I18N %}
+        <li class="right visible-mobile">
+            {% include 'top_menu/change_lang.html' %}
+        </li>
+        {% endif %}
+
+        {% if not USE_I18N %}
+        <li class="right visible-mobile">
+            <form action="/search/" method="get" name="search" id="admin-search-box">
+           <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
+        </li>
+        {% endif %}
+
+        {% if THEME_INFO.SSU.color %}
+        <li class="right" id="themecolor">
+            <a href="#"><img class="themecolorLogo" src="{% static 'images/icons/color-palette-16x16.png' %}">&nbsp;&nbsp;{% trans "Colors" %}</a>
+            <div class="sub themecolor">
+                <div class="column app-list">
+                    {% include 'theme_editor/theme_color_admin.html' %}
+                </div>
+            </div>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+{% endspaceless %}

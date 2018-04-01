@@ -1,0 +1,6 @@
+
+<font face=Arial size=2 color=#000000>
+{% blocktrans %}Hello [firstname]{% endblocktrans %}, <br><br>
+{% blocktrans %}Welcome to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} newsletter of upcoming
+events, articles, jobs and more from our membership.{% endblocktrans %}<br><br>
+</font>

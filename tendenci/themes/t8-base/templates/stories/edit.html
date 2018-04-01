@@ -1,0 +1,43 @@
+{% extends "stories/base.html" %}
+{% load story_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }} {% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/stories.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_STORIES_LABEL trans "Story" %} {% trans "Edit" %}</h1>
+
+    <div class="story-wrap">
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans "Save Story Changes" %}" />
+            <div class="form-delete-link"><a class="delete" title="{% trans "Link to delete confirmation page" %}" href="{% url "story.delete" story.pk %}">{% trans "Delete" %}</a></div>
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step':15});
+        });
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

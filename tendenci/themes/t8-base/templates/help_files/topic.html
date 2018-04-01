@@ -1,0 +1,31 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} - {% blocktrans with t=topic %}{{ t }} Topic{% endblocktrans %}{% endblock %}
+
+{% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% help_file_search %}
+    <div class="breadcrumbs"><p><a href="{% url "help_files" %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a> >{{ topic }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</p></div>
+    <h2>{{ topic|title }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</h2>
+    {% if topic.content %}
+        <p>{{ topic.content|safe }}</p>
+    {% endif %}
+    {% if help_files %}
+        <ul>
+        {% for help_file in help_files %}
+            {% has_perm user help_files.change_helpfile help_file as can_edit %}
+            <li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if user.profile.is_superuser %} {{ help_file.obj_perms }}{% endif %}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

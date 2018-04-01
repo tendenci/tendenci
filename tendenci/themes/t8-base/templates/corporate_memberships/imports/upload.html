@@ -1,0 +1,219 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Import Corporate Memberships from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/corporate_memberships.css' %}">
+    <link rel="stylesheet" href="{% static 'css/corp-membership-import.css' %}">
+    <style>
+        .error{
+            color: red;
+        }
+        .template-download{
+            float: left;
+            margin-top: 3em;
+            width: 15%;
+        }
+        .template-download .link{
+            margin-top: 1em;
+        }
+        #import-instruction{
+            margin: 1em 1em 0 0;
+            padding: 1em;
+            width: 65%;
+            background-color: #F7F7F9;
+            float: left;
+        }
+        #import-instruction li{
+            padding: 3px 0;
+            list-style: circle;
+        }
+        .alert{
+            background-color: #fcf8e3;
+            border: 1px solid #FBEED5;
+            border-radius: 4px 4px 4px 4px;
+            color: #c09853;
+            padding: 1em;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+            width: 70%;
+            margin: 1em 0;
+        }
+        #fk-list{
+            margin: 3px 2em;
+            line-height: 1.1em;
+            color: #39B54A;
+            font-size: 0.9;
+            font-family:"Courier New", Courier, monospace;
+        }
+        #fk-list-wrap{
+            margin-top: 1em;
+        }
+        #import-wrap .form-control{
+            width: 60%;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div id="import-wrap">
+    <h1>{% trans "Import Corporate Memberships" %}</h1>
+
+    {% if not corp_memb_type_exists %}
+    <div class="alert">
+        {% url "admin:corporate_memberships_corporatemembershiptype_add"  as corp_add %}
+        {% blocktrans %}
+        Please <a href="{{ corp_add }}">set up corporate membership types</a> before proceeding.
+        {% endblocktrans %}
+    </div>
+    {% endif %}
+
+    <div class="clearfix">
+    <div id="import-instruction">
+        <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
+
+
+        <h3>{% trans 'How to prepare the spreadsheet (.csv file)?' %}</h3>
+        <ul>
+           <li>
+               {% trans 'The required fields are the field(s) in the selected key (see the second field below).' %}
+           </li>
+           <li>
+            {% blocktrans %}
+               Both <strong>authorized_domains</strong> and <strong>dues_rep</strong> are comma separated. Use username for <strong>dues_rep</strong>.
+            {% endblocktrans %}
+           </li>
+           <li>
+            {% blocktrans %}
+               If the <strong>corporate_membership_type</strong> is not present in the spreadsheet, the first corporate membership type
+               in the system will be used.
+            {% endblocktrans %}
+           </li>
+           <li>
+           {% blocktrans %}
+               The data type of ForeignKey fields (ex: corporate_membership_type) is <strong>integer</strong>. So, please fill the ForeignKey fields with IDs.
+            {% endblocktrans %}
+           </li>
+            <li>
+            {% blocktrans %}
+               Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
+            {% endblocktrans %}
+           </li>
+        </ul>
+        <div id="fk-list-wrap">
+            <h3>{% trans 'List of ForeignKey Fields' %}:</h3>
+            <div id="fk-list">
+                {{ foreign_keys}}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="template-download">
+        <a href="{% url "corpmembership.download_template" %}">
+        <img src="{% static 'images/icons/xls-icon.gif' %}" alt="Download CSV Template" title="{% trans 'Download CSV Template' %}"/>
+        </a>
+
+        <div class="link">
+            <a href="{% url "corpmembership.download_template" %}">{% trans "Download Template" %}</a>
+
+        </div>
+    </div>
+
+    </div>
+
+    <div class="clear"></div>
+
+    <form method='post' enctype="multipart/form-data">
+    {% csrf_token %}
+    <div id="upload-form-wrap">
+        <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
+
+        {% if form.errors.values %}
+        <div class="alert alert-danger">
+        {% trans 'There were some problems in the form. Please review. Thanks!' %}
+        {% for error in form.non_field_errors %}
+            <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
+        {% endfor %}
+
+        {% for field in form %}
+            {% if field.errors %}
+                  {% for error in field.errors %}
+                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+                    {{ field.label }} - {{ error }}
+                    </a></p>
+                  {% endfor %}
+            {% endif %}
+        {% endfor %}
+
+        </div>
+        {% endif %}
+
+        <div class="fields-block">
+
+            {% if form.upload_file.errors %}
+            <div class="error">
+                {% for error in form.upload_file.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+             <div class="form-group">{{ form.upload_file }}</div>
+
+            {% if form.override.errors %}
+            <div class="error">
+                {% for error in form.override.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_override">{% trans 'Update' %}:</label>
+                  {{ form.override }}
+             </div>
+
+            {% if form.key.errors %}
+            <div class="error">
+                {% for error in form.key.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_key">{% trans 'Identify duplicates by' %}:</label>
+                  {{ form.key }}
+             </div>
+
+
+            {% if form.bind_members.errors %}
+            <div class="error">
+                {% for error in form.bind_members.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="checkbox">
+                <label>
+                {{ form.bind_members }} {{ form.bind_members.label }}
+                 </label>
+             </div>
+
+            <div class="prev-btn"><input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary"></div>
+        </div>
+
+     </div>
+    </form>
+
+</div>
+</div>
+{% endblock %}

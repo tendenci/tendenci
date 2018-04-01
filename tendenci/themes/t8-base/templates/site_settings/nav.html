@@ -1,0 +1,46 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Settings' %}</a>
+        <ul class="dropdown-menu">
+            <li><a href="/settings/site/global/">{% trans "Global Site Settings" %}</a></li>
+            <li><a href="/settings/">{% trans "Full Settings List" %}</a></li>
+        </ul>
+    </li>
+    {% if scope_category %}
+        {% if scope_category == 'events' %}
+               {% if MODULE_EVENTS_ENABLED %}
+            <li><a href="{% url "events" %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a></li>
+            {% endif %}
+           {% endif %}
+           {% if scope_category == 'articles' %}
+               {% if MODULE_ARTICLES_ENABLED %}
+            <li><a href="{% url "articles" %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+            {% endif %}
+        {% endif %}
+        {% if scope_category == 'news' %}
+            {% if MODULE_NEWS_ENABLED %}
+            <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+            {% endif %}
+        {% endif %}
+        {% if scope_category == 'pages' %}
+            {% if MODULE_PAGES_ENABLED %}
+            <li><a href="{% url "pages" %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</ul>
+{% endif %}

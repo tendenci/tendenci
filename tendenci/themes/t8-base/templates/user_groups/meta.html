@@ -1,0 +1,71 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
+{% has_perm user user_groups.add_groupmembership as can_add_member %}
+
+<ul class="list-unstyled t-meta-data">
+    {% if user.is_authenticated %}
+        <li>{% blocktrans with group.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+        by:{% endblocktrans %} <a href="{{ group.creator.get_absolute_url }}">
+        {% if group.creator.first_name %}{{ group.creator.first_name }} {{ group.creator.last_name }}
+        {% else %}
+        {{ group.creator }}
+        {% endif %}</a>
+        </li>
+        <li>{% blocktrans with group.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+        by:{% endblocktrans %} <a href="{{ group.owner.get_absolute_url }}">
+        {% if group.owner.first_name %}{{ group.owner.first_name }} {{ group.owner.last_name }}
+        {% else %}
+        {{ group.owner }}
+        {% endif %}</a>
+        </li>
+    {% endif %}
+</ul>
+
+{% if can_edit %}
+ <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ group.obj_perms }}</li>
+                    <li>{{ group.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ group.pk }}&source={{ group.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="edit-link" href="{% url "group.edit" group.slug %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                             {% if can_delete and group.type != 'system_generated' %}
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url "group.delete" group.pk %}">{% trans "Delete" %}</a>
+                            </li>
+                            {% endif %}
+                            <li><a href="{% url "group.edit_perms" group.id %}" class="option-link permissions" title="Edit Permissions">{% trans "Permissions" %}</a></li>
+                            {% if can_add_member %}
+                                <li><a href="{% url "group.adduser" group.slug %}" class="option-link addmember" title="Add new member">{% trans "Add Member" %}</a></li>
+                            {% endif %}
+                            {% if user|in_group:group.id %}
+                                {% if group.allow_self_remove and user.is_authenticated or can_add_member %}
+                                    <li><a href="{% url "group.selfremove" group.slug user.id %}" title="Remove myself from group">{% trans "Remove myself from group" %}</a></li>
+                                {% endif %}
+                                {% else %}
+                                    {% if group.allow_self_add and user.is_authenticated or can_add_member %}
+                                        <li><a href="{% url "group.selfadd" group.slug user.id %}" class="option-link addmember" title="Add myself to group">{% trans "Add Myself to Group" %}</a></li>
+                                    {% endif %}
+                            {% endif %}
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+</nav>
+{% endif %}

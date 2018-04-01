@@ -1,0 +1,39 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Edit Meta Information' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %} {% blocktrans with resume.title as resume_title %}Meta Information for<br />
+    {{ resume_title }}{% endblocktrans %}</h1>
+
+    <div class="resume-wrap">
+        <form action="{% url "resume.edit.meta" resume.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+{% endblock %}

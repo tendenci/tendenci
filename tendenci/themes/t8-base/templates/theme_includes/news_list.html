@@ -1,0 +1,33 @@
+{% load theme_tags %}
+{% load news_tags %}
+{% list_news as featured_news limit=TEMPLATE_NEWS_LIST_LIMIT %}
+<section id="news-list-featured">
+    <h3>{% firstof TEMPLATE_NEWS_LIST_TITLE trans 'News' %}</h3>
+
+    {% if featured_news %}
+    {% for news_item in featured_news|slice:":1" %}
+        <h4><a href="{{ news_item.get_absolute_url }}">{% blocktrans with h=news_item.headline %}{{ h }}{% endblocktrans %}</a></h4>
+        <p>{% blocktrans with b=news_item.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ news_item.get_absolute_url }}">{% trans 'Read more' %}</a>
+    {% endfor %}
+    {% else %}
+        <p>{% trans 'Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. '%} {% if request.user.is_authenticated %}{% blocktrans %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endblocktrans %}{% endif %}</p> <a class="readmore" href="/">{% trans 'Read more' %}</a>
+    {% endif %}
+</section>
+<section id="news-list-others">
+    <ul id="news-items">
+        {% if featured_news|length > 1 %}
+        {% for news_item in featured_news %}
+            {% if forloop.first %}
+            {% else %}
+            <li><a href="{{ news_item.get_absolute_url }}">{% blocktrans with h=news_item.headline|truncatewords:4|safe %}{{ h }}{% endblocktrans %}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        {% blocktrans %}
+        <li>Another top story in the news</li>
+        <li>Even more great news updates</li>
+        {% endblocktrans %}
+        {% endif %}
+    </ul>
+</section>
+{% theme_setting setting_name %}

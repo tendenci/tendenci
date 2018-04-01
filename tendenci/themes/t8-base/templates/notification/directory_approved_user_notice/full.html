@@ -1,0 +1,19 @@
+
+<p>{% blocktrans with object.headline as obj_headline %}Your directory posting "{{ obj_headline }}" has been approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}To view this directory, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'directory' object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url 'directory' object.slug  %}</a>
+</p>
+
+{% if object.invoice %}
+<p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}</a>
+</p>
+{% endif %}
+
+
+<p>{% trans "Thanks!" %}</p>
+
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+<p>{% now "D d M Y P" %}</p>

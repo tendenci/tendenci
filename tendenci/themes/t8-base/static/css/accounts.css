@@ -1,0 +1,26 @@
+#registration_form table {
+    margin-top: 15px;
+}
+#registration_form table td {
+    padding: 8px;
+}
+#registration_form div.errors {
+    color: #990000;
+    padding: 10px;
+    font-weight: bold;
+    border: 1px solid #CCC;
+    margin: 10px 0 10px 0;
+    color: #F76868;
+}
+#registration_form .create-button {
+    cursor: pointer;
+    padding: 5px;
+}
+#registration_form .required {
+	font-weight: bold;
+}
+
+#login-form { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+#login-form label { display: inline-block; width: 120px; }
+#login-form input[type="text"], #login-form input[type="password"] { padding: 4px; }
+#login-form #id_username { width: 200px; }

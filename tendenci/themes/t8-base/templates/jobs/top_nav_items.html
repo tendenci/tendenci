@@ -1,0 +1,141 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user jobs.add_job as can_add_job %}
+{% has_perm user jobs.add_jobpricing as can_add_jobpricing %}
+
+{% if app_object %}
+    {% has_perm user jobs.view_job app_object as can_view_job %}
+    {% has_perm user jobs.change_job app_object as can_edit_job %}
+    {% has_perm user jobs.delete_job app_object as can_delete_job %}
+{% else %}
+    {% has_perm user jobs.view_job as can_view_job %}
+    {% has_perm user jobs.change_job as can_edit_job %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-jobs-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'jobs' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'jobs' %}">{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
+                        </span>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'job.add' %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'myjobs' %}">{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'jobs' %}?my_pending_jobs=True">{% trans "My Pending" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'job.pending' %}">{% trans "Pending" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'job.export' %}">{% trans "Export" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_job %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'job_pricing.search' %}">{% trans "Pricing" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:jobs_category_changelist' %}">{% trans "Manage Categories" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_job or can_edit_job %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</span>
+                            </li>
+
+                            {% if can_view_job %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_job %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'job.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'job.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                            {% endif %}
+
+                            {% if can_delete_job %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'job.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load directory_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/folder_page_white.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %}{% endblock %}
+
+{% block current_app %}
+    {% if directory %}
+        {% directory_current_app request.user directory %}
+    {% else %}
+        {% directory_current_app request.user %}
+    {% endif %}
+{% endblock %}

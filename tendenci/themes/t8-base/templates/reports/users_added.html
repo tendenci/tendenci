@@ -1,0 +1,64 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+
+<h1>{{ report_title }}</h1>
+
+{% trans "Site:" %} {{site}}
+<br>
+{% trans "URL:" %} {{ site.domain }}
+
+
+<div>
+    <a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
+    {{ date_range.0|date:"M Y" }}
+    <a href="./?{% month_url next %}">{% trans "Next" %}</a>
+    <br>
+    {{ date_range.0|date:"M d, Y" }}:{{ date_range.1|date:"M d, Y" }}
+</div>
+
+<form>{% csrf_token %}
+{% trans "Entity:" %}
+<select name='entity'>
+    <option></option>
+    {% for e in entities %}
+        <option value="{{e.pk}}">{{e}}</option>
+    {% endfor %}
+</select>
+<input type="submit" value="{% trans 'Submit' %}">
+</form>
+
+<table class="users-added-chart">
+<tr>
+{% for day, items in chart_data.items %}
+    <td>
+        {% for item in items %}
+            <a href="#" title="{{ item.event_id }} ({{ item.count }})">
+                <div style="width: 12px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+            </a>
+        {% endfor %}
+        {{ day.day }}
+        <div style="font-size: 10px;">{{ day|date:"D" }}</div>
+    </td>
+{% endfor %}
+</tr>
+</table>
+
+<h3>{% trans "User Groups (Referral) report" %}</h3>
+
+<table>
+<tr>
+    <td>{% trans "#" %}</td>
+    <td>{% trans "Group" %}</td>
+    <td>{% trans "# Users" %}</td>
+</tr>
+{% for item in data %}
+<tr class="{% cycle 'odd' '' %}">
+    <td>{{ forloop.counter }}</td>
+    <td>{{ item.headline }}</td>
+    <td>{{ item.count }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}

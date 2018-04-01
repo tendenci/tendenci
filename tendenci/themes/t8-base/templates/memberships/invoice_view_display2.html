@@ -1,0 +1,45 @@
+{% load base_filters %}
+
+{% with obj.membershipdefault_set.all as memberships %}
+    {% if memberships %}
+        {% for membership in memberships %}
+            {% if forloop.first %}
+    <tr>
+        <td>
+            {% trans "Payment via " %} {{ membership.payment_method.human_name }}
+
+            {% if invoice.bill_to_first_name or invoice.bill_to_last_name or invoice.bill_to_email %}
+                &nbsp;&ndash;&nbsp;{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }} {{ invoice.bill_to_email }}
+            {% endif %}
+        </td>
+    </tr>
+            {% endif %}
+    <tr>
+        <td>
+            {% if membership %}
+                {% trans "Membership #" %}<a href="{%if request.user.is_superuser %}{% url "admin:memberships_membershipdefault_change" membership.pk %}{% else %}{% url "membership.details" membership.pk %}{% endif %}" title="Membership">{{ membership.member_number }}</a>
+                {{ membership.membership_type.name|truncatewords:30 }}
+                {% if membership.first_name or membership.last_name or membership.email %}
+                    &nbsp;&ndash;&nbsp;{{ membership.first_name }} {{ membership.last_name }} {{ membership.email }}
+                {% endif %}
+            {% else %}
+                {% trans "Membership information not available" %}
+            {% endif %}
+        </td>
+        <td class="td-right">
+            {{ membership.get_price|format_currency }}
+        </td>
+    </tr>
+        {% endfor %}
+       {% if obj.donation_amount %}
+           <tr>
+            <td>
+                {% trans "Donation Amount " %}
+            </td>
+            <td class="td-right">
+                {{ obj.donation_amount }}
+            </td>
+        </tr>
+       {% endif %}
+    {% endif %}
+{% endwith %}

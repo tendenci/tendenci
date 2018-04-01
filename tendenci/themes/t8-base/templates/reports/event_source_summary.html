@@ -1,0 +1,46 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+<h1>{% trans "Tendenci&reg; Event Log Summary Report" %} ({{ source }})</h1>
+
+<div>
+    <a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
+    {{ date_range.0|date:"M Y" }}
+    <a href="./?{% month_url next %}">{% trans "Next" %}</a>
+</div>
+
+<table class="events-summary-chart">
+<tr>
+{% for day, items in chart_data.items %}
+    <td>
+        {% for item in items %}
+            <a href="./?event_id={{ item.event_id }}" title="{{ item.event_id }} ({{ item.count }})">
+                <div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+            </a>
+        {% endfor %}
+        {{ day.day }}
+        <div style="font-size: 10px;">{{ day|date:"D" }}</div>
+    </td>
+{% endfor %}
+</tr>
+</table>
+
+<ul class="events-summary">
+{% for item in summary_data %}
+    <li>
+    <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+    &nbsp;
+    <a href="./?event_id={{ item.event_id }}">{{ item.description }} ({{ item.count }})</a>
+    </li>
+{% endfor %}
+</ul>
+
+<div style="clear: both;"></div>
+
+<form>{% csrf_token %}
+<table>{{ form }}</table>
+<input type="submit" value="submit">
+</form>
+
+{% endblock content %}

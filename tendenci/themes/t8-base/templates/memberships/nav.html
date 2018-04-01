@@ -1,0 +1,75 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user memberships.change_notice as can_edit_notice %}
+
+{% if nav_object %}
+    {% has_perm user memberships.view_membership nav_object as can_view_memb %}
+    {% has_perm user memberships.change_membership nav_object as can_edit_memb %}
+    {% has_perm user memberships.delete_membership nav_object as can_delete %}
+{% else %}
+    {% has_perm user memberships.view_membership as can_view_memb %}
+    {% has_perm user memberships.change_membership as can_edit_memb %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_MEMBERSHIPS_LABEL trans 'Memberships' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Members" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+
+            <li><a href="{% url "membership.search" %}">{% trans "Search" %}</a></li>
+
+            {% if can_edit_setting %}
+            <li><a href="{% url "settings.index" "module" "memberships" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+
+            {% if user.profile.is_superuser %}
+            <li class="divider"></li>
+            <li><a href="{% url "admin:memberships_membershiptype_changelist" %}">{% trans "Types" %}</a></li>
+            <li><a href="{% url "admin:memberships_notice_changelist" %}">{% trans "Notices" %}</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url "memberships.default_import" %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url "memberships.default_export" %}">{% trans "Export" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_memb or can_edit_memb or user == membership.user %}
+            <ul>
+                <li class="heading">{% trans "This Member" %}</li>
+                <li class="divider"></li>
+                {% if can_view_memb or allow_view or user == membership.user  %}
+                    <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View Profile" %}</a></li>
+                {% endif %}
+                {% if can_edit_memb %}
+                    <li><a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a></li>
+                {% endif %}
+                {% if member_can_edit_records and user == membership.user %}
+                    <li><a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url "corpmembership.search" %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
+</ul>
+{% endif %}

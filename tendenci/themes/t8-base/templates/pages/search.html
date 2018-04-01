@@ -1,0 +1,57 @@
+{% extends "pages/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load page_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_PAGES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Pages Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Pages' %}" href="{% url 'page.feed' %}">
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_PAGES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Pages Search" %}
+        {% endif %}
+    </h1>
+
+    {% page_search %}
+    {% autopaginate pages 10 %}
+
+    <h4 class="capitalize">
+        {% if MODULE_PAGES_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Pages Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
+
+    <section>
+        {% for page in pages %}
+            {% search_result page %}
+        {% empty %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

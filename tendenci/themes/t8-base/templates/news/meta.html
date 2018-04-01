@@ -1,0 +1,131 @@
+{% load base_filters %}
+{% load base_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    {% if news.slug %}<li class="pull-right"><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
+    {% if news.groups.count > 0 %}
+        <li><strong>{% trans "Group(s):" %}</strong>
+        {% if request.user.is_superuser %}
+        {% for group in news.groups.all %}
+        <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% else %}
+        {% for group in news.groups.all %}
+        {{ group.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% endif %}
+        </li>
+    {% endif %}
+
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe news.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% if show_source|default:False and news.source %}
+        <li><strong>{% trans "Source:" %}</strong> <a href="{% url 'news' %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></li>
+    {% endif %}
+
+    <li><strong>{% trans "Released:" %}</strong> <span>{{ news.release_dt|date:"long" }}</span></li>
+
+    {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %}
+        {% if news.first_name or news.last_name %}
+            <li><strong>{% trans "Author:" %}</strong> <span>{{ news.first_name }} {{ news.last_name }}</span></li>
+        {% endif %}
+
+        {% if news.phone %}
+            <li><strong>{% trans "Phone:" %}</strong> <span>{{ news.phone|phonenumber }}</span></li>
+        {% endif %}
+
+        {% if news.fax %}
+            <li><strong>{% trans "Fax:" %}</strong> <span>{{ news.fax }}</span></li>
+        {% endif %}
+
+        {% if news.email %}
+            <li><strong>{% trans "Email:" %}</strong> <span>{{ news.email|obfuscate_email }}</span></li>
+        {% endif %}
+
+        {% if news.website %}
+            <li><strong>{% trans "Website:" %}</strong> <span>{{ news.website|urlize }}</span></li>
+        {% endif %}
+    {% endif %}
+
+    {% with news.category_set as news_cat %}
+        {% if news_cat.category %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'news' %}?q=category:{{ news_cat.category }}">{{ news_cat.category }}</a></li>
+                    {% if news_cat.sub_category %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'news' %}?q=sub_category:{{ news_cat.sub_category }}">{{ news_cat.sub_category }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if news.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in news.tags|tag_split %}
+                <a class="label label-default" href="{% url 'news' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+           {% endfor %}
+        </li>
+    {% endif %}
+
+    {% comment %}
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
+            {% if user == news.creator or user == news.owner %}
+                <li><strong>{% trans "Owned by you" %}</strong></li>
+                {% if not news.status_detail == "active" %}
+                    <li><strong>{% trans "Status:" %}</strong> <span>{{ news.obj_status }}</span></li>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if user.profile.is_superuser or user == news.creator or user == news.owner %}
+            {% meta_creator_owner news %}
+        {% endif %}
+    {% endif %}
+    {% endcomment %}
+
+</ul>
+
+{% if user.profile.is_superuser %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ news.obj_perms }}</li>
+                    <li>{{ news.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ news.pk }}&source={{ news.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'news.edit' news.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'news.delete' news.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'news.edit.meta' news.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category.update' news.opt_app_label news.opt_module_name news.pk %}">{% trans "Edit Categories" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

@@ -1,0 +1,45 @@
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+
+<div class="photo-set">
+<table><tr>
+
+    <td class="image">
+        <a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}"
+            href="{{ photo_set.get_absolute_url }}">
+
+            {% if photo_set.get_cover_photo %}
+                <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
+            {% else %}
+                <img src="{{ photo_set.get_default_cover_photo }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
+            {% endif %}
+
+            <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
+        </a>
+    </td>
+
+    <td class="info">
+        <h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
+        <div class="description">
+        {% blocktrans with d=photo_set.description|striptags|truncatewords_html:25|safe %}{{ d }}{% endblocktrans %}
+        </div>
+
+
+        <div class="extra-info">
+        {% if user.profile.is_superuser %}
+        <div class="visibility">
+            {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            {% photo_set_options request.user photo_set %}
+        </div>
+        </div>
+
+    </td>
+</tr></table>
+</div>

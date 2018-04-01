@@ -1,0 +1,34 @@
+{% load base_filters %}
+
+{% firstof object.title "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.profile.display_name }}
+{{ object.description|striptags }}
+
+{{ object.code }}
+{{ object.location }}
+{{ object.level }}
+{{ object.period }}
+{{ object.contact_company }}
+{{ object.contact_name }}
+{{ object.contact_city }}
+
+location:{{ object.location }}
+is:{{ object.status_detail }}
+is:{{ object.list_type }}
+
+{% if object.cat %}
+category:{{ object.cat }}
+category:{{ object.cat.pk }}
+{% endif %}
+
+{% if object.sub_cat %}
+sub_category:{{ object.sub_cat }}
+sub_category:{{ object.sub_cat.pk }}
+{% endif %}
+
+{% if object.tags %}
+{% for tag in object.tags|tag_split %}
+tag:{{ tag }}
+{% endfor %}
+{% endif %}

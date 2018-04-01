@@ -1,0 +1,25 @@
+{% load theme_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+<section id="rss-feed-list">
+    <h3>{% firstof TEMPLATE_RSS_FEED_LIST_TITLE 'From the Blog' %}</h3>
+    <div class="rss-items clearfix">
+      {% if TEMPLATE_RSS_FEED_LIST_RSS_FEED %}
+        {% get_rss TEMPLATE_RSS_FEED_LIST_RSS_FEED as rss %}
+      {% else %}
+        {% get_rss "http://blog.schipul.com/feed/" as rss %}
+      {% endif %}
+        {% with ":"|add:TEMPLATE_RSS_FEED_LIST_LIMIT as slice_limit %}
+        {% for entry in rss.entries|slice:slice_limit %}
+            {{ THEME_RSS_FEED_LIST_LIMIT }}
+            <div class="rss-item">
+                <h4><a href="{{ entry.link }}">{% blocktrans with t=entry.title|truncatewords:"6" %}{{ t }}{% endblocktrans %}</a></h4>
+                <p>{% blocktrans with s=entry.summary|striptags|safe|truncatewords:"15" %}{{ s }}{% endblocktrans %}</p>
+                <p><span><a class="readmore" href="{{ entry.link }}">{% trans 'Read More …' %}</a></span></p>
+            </div>
+        {% endfor %}
+        {% endwith %}
+    </div>
+</section>
+{% theme_setting setting_name %}

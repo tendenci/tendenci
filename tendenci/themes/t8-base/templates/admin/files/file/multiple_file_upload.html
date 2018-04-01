@@ -1,0 +1,98 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+
+{% block extrahead %}
+{{ block.super }}
+<script type="text/javaScript">
+    {% include 'files/include/categories.js' %}
+</script>
+{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+<li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+<li>{% trans 'Multiple File Upload' %}</li>
+</ul>
+{% endblock %}
+{% endif %}
+
+{% block title %}{% trans 'Multiple File Upload' %}{{ block.super }}{% endblock %}
+
+{% block content_title %}
+<a class="navbar-brand">{% trans 'Multiple File Upload' %}</a>
+{% endblock %}
+
+{% block content %}
+
+<form class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}{% block form_top %}{% endblock %}
+    <div class="alert alert-warning">{% blocktrans %}Fields in <strong>bold</strong> are required.{% endblocktrans %}</div>
+    {% if errors %}
+    <div class="alert alert-danger">
+        {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        {{ adminform.form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+    <div id="content-main">
+        {% for fieldset in adminform.fieldsets %}
+            <fieldset class="_module _aligned" id="fieldset-{{ forloop.counter }}" style="background:transparent">
+                {% if fieldset.name %}
+                <legend>
+                    {% if 'collapse' in fieldset.classes %}
+                    <a data-toggle="collapse" data-target="#fieldset-{% if stacked_prefix %}{{ stacked_prefix }}-{% endif %}{{ forloop.counter }} .fields">
+                    {{ fieldset.name }}
+                    &nbsp;<span class="btn btn-xs btn-default"><span class="glyphicon glyphglyphicon glyphicon-resize-full"></i></span>
+                    </a>
+                    {% else %}
+                    {{ fieldset.name }}
+                    {% endif %}
+                </legend>
+                {% endif %}
+                <div class="fields {% if not errors %}{{ fieldset.classes }}{% endif %}">
+                    {% if fieldset.description %}
+                        <div class="description">{{ fieldset.description|safe }}</div>
+                    {% endif %}
+                    {% for field in fieldset %}
+                        <div class="row"><div class="control-group {% if field.errors %} error{% endif %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}">
+                            <div class="col-md-12 form-group{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}">
+                                {% if field.is_checkbox %}
+                                    <div class="control-label col-md-3">
+                                        {{ field.label_tag }}
+                                    </div>
+                                    <div class="controls col-md-9">
+                                        <div class="checkbox">
+                                            {% dab_field_rendering field %} {% if field.field.help_text %}<span class="help-block">{{ field.field.help_text|safe }}</span>{% endif %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="control-label col-md-3">
+                                        {{ field.label_tag }}
+                                    </div>
+                                    <div class="controls col-md-9">
+                                        {% if field.is_readonly %}
+                                            <p>{{ field.contents }}</p>
+                                        {% else %}
+                                            {% dab_field_rendering field %}
+                                        {% endif %}
+                                        {% if not field.is_readonly and field.errors %}<span class="text-danger">{{ field.errors|striptags }}</span>{% endif %}
+                                        {% if field.field.help_text %}
+                                            <span class="help-block">{{ field.field.help_text|safe }}</span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div></div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+        {% endfor %}
+    </div>
+    <div class="form-actions">
+        <div class="pull-left">
+            <input type="submit" value="{% trans 'Upload' %}" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+{% endblock %}

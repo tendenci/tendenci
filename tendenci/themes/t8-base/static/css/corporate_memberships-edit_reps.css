@@ -1,0 +1,13 @@
+.corp-reps h3, .corp-reps .forms{
+    margin: 1em 0;
+}
+.corp-reps table{
+    margin: 1em 0 2em;
+}
+.corp-reps table tr td{
+    padding: 3px;
+}
+.corp-reps table tr td.header{
+    background-color: #e5ecf9;
+    border-bottom: 1px dotted #ccc;
+}

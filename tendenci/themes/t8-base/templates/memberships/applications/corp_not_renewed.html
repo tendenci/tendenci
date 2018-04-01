@@ -1,0 +1,37 @@
+{% extends "memberships/base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.padding15 p{
+    padding: 15px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h2>{{ app.name }} - {% trans "Renewal" %}</h2>
+
+    <div class="padding15">
+    <p class="bg-warning">
+    {% trans "Sorry, we can't process your membership renewal at the moment." %}
+    </p>
+
+    {% if is_admin or is_rep %}
+    <h4>Admin or Dues Representative: </h4>
+     <p>
+    Please <a href="{{ corp_membership_renew_link }}">{% trans "Renew corporate membership" %} "{{ corp_membership.corp_profile.name }}"</a> before renewing this individual membership.
+    </p>
+    <div>
+    <a role="button"  href="{{ corp_membership_renew_link }}"><button class="btn btn-primary">{% trans "Renew corporate membership" %}</button></a>
+    </div>
+    {% else %}
+    <p>
+    {% trans "Please contact your company membership coordinator or representative to ensure your membership is being renewed." %}
+    </p>
+    {% endif %}
+
+    </div>
+</div>
+{% endblock %}

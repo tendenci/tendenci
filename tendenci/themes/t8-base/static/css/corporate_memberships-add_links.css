@@ -1,0 +1,35 @@
+.add-links-all-wrapper{
+    position: relative !important;
+}
+.add-links-all-wrapper a{
+    cursor: pointer;
+    font-size: 11px;
+    text-decoration:none;
+}
+.add-links-all-target{
+    display: block;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-color: silver #666666 #666666 silver;
+    border-style: solid;
+    border-width: 1px;
+    position: absolute !important;
+    left: 0px !important;
+    top: 16px !important;
+    z-index: 9999;
+}
+.add-links-all-target ul{
+    width: 160px;
+}
+.add-links-all-target ul li{
+    list-style: none;
+    cursor: pointer;
+    text-align: left;
+}
+.add-links-all-target ul li a{
+     display: block;
+     padding: 2px !important;
+     text-align: left !important;
+     text-decoration: none !important;
+     line-height: 1em !important;
+     float: none !important;
+}

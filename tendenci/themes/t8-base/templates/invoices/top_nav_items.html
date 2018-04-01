@@ -1,0 +1,86 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm request.user invoices.view_invoice app_object as can_view_invoice %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-invoices-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Invoices" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'invoices' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'invoice.search' %}">{% trans "Search Invoices" %}</a>
+                        </span>
+                    </li>
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'invoice.export' %}">{% trans "Export Invoices" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'reports-top-spenders' %}">{% trans "Top Spenders Report" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_invoice %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Invoice" %}</span>
+                            </li>
+
+                            {% if can_view_invoice %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'invoice.view' app_object.pk %}">{% trans "View Invoice" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'invoice.print_view' app_object.id guid %}">{% trans "Print Invoice" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if invoice.is_tendered %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'invoice.adjust' app_object.id %}">{% trans "Adjust Invoice" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

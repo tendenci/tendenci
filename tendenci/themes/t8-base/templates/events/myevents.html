@@ -1,0 +1,40 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-my_events.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class='t search-view'>
+    <div class="header" style="margin-bottom: 20px;">
+        <h1>{% trans "My Upcoming Events" %}</h1>
+        {% if show %}
+            <a class="show-all-link" href="{% url "event.myevents" %}?all=true">{% trans "Show all my registered and attended events." %}</a>
+        {% else %}
+            <a class="show-all-link" href="{% url "event.myevents" %}">{% trans "Show upcoming events only." %}</a>
+        {% endif %}
+    </div>
+
+    {% autopaginate events 10 %}
+
+    <div class="events-wrap">
+        {% for event in events %}
+            {% search_result event %}
+        {% empty %}
+            {% trans "You're not registered for any upcoming events." %}<a href="{% url 'events' %}">{% trans "View our upcoming events!" %}</a>
+        {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+
+{% endblock %}

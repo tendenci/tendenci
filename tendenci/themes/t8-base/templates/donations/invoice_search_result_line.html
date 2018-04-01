@@ -1,0 +1,82 @@
+{% load base_filters %}
+{% load invoice_tags %}
+{% load perm_tags %}
+
+{% invoices_search_line_header request invoice '#663300' %}
+
+{% if obj %}
+
+<tr>
+  <!-- Date -->
+  <td>
+    {% if invoice.create_dt %}
+    {{ invoice.create_dt|date:"F j, Y"}}
+    {% else  %}
+    &nbsp;
+    {% endif %}
+  </td>
+
+  <!-- No. -->
+  <td>
+    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}</a>
+  </td>
+
+  <!-- Member -->
+  <td>{{obj.first_name}} {{obj.last_name}}</td>
+
+  <!-- Item -->
+  <td><a href="{% url 'donation.view' obj.id %}">Donation #{{obj.id}}</a></td>
+
+  <!-- Amount -->
+  <td>{{obj.donation_amount|format_currency}}</td>
+
+  <!-- Status -->
+  <td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>
+    {% if invoice.balance == 0 %}
+    Paid
+    {% else %}
+    <span class="text-danger">Balance:
+      {{ invoice.balance }}</span>
+    {% endif %}
+  </td>
+
+  <!-- Action -->
+  <td>
+    {% if request.user.is_superuser %}
+      {% if invoice.balance == 0 %}
+      <a href="{% url "invoice.view" invoice.pk %}">View Invoice</a>
+      {% else %}
+      <a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      {% endif %}
+    {% else %}
+    <a href="{% url "invoice.view" invoice.pk %}">View Invoice</a>
+    {% endif %}
+
+    {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
+    <span class="dropdown pull-right" style="border-left: 1px solid #cccccc;">
+      &nbsp;&nbsp;&nbsp;
+      <a type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="fa fa-caret-down"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+        <li><a href="{% url "invoice.view" invoice.pk %}">View Invoice</a></li>
+        {% if invoice.balance > 0 and can_pay %}
+        {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
+        <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></li>
+        {% endif %}
+        {% endif %}
+        {% if invoice.is_tendered %}
+        <li><a class="admin-option" href="{% url 'invoice.adjust' invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
+        {% endif %}
+        {% if invoice.payments_credits > 0 %}
+        <li><a class="admin-option" href="{% url 'invoice.void_payment' invoice.id %}"> {% trans "Void Payment" %}</a></li>
+        {% endif %}
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
+      </ul>
+    </span>
+  </td>
+
+</tr>
+
+{% endif %}

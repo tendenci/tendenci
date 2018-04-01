@@ -1,0 +1,28 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Export is Ready" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+    {% blocktrans with date_today=date_today|date:"D d M Y P" %}
+    <p>
+        Hello {{ user.first_name }},<br /><br />
+        Your articles export is ready.
+        <br /><br />
+
+        To download the export file, go to: <br />
+        <a href="{{ site_url }}{{ download_url }}">{{ site_url }}{{ download_url }}</a>
+        <br /><br />
+        Note that the download link will expire in one week.
+        <br /><br />
+        Thanks,<br />
+        {{ site_display_name }}
+        <br /><br />
+    </p>
+    <P>Time submitted:  {{ date_today }}</P>
+    {% endblocktrans %}
+</body>
+</html>

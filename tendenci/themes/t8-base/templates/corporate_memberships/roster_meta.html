@@ -1,0 +1,61 @@
+{% load base_filters %}
+{% load base_tags %}
+
+{% if request.user.is_superuser or is_rep %}
+<div class="editor-bar">
+    <div class="perm-status">
+    <ul>
+        <li>{{ membership.obj_status }}</li>
+        {% if m_user.is_superuser %}
+        <li><span class="t-role-superuser">{% trans 'Superuser' %}</span></li>
+        {% else %}
+            {% if m_user.is_staff %}
+            <li><span class="t-role-staff">{% trans 'Staff' %}</span></li>
+            {% endif %}
+        {% endif %}
+
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        {% if membership.get_status == 'active' and not membership.is_expired %}
+        <li><a class="expire" href="{% url "membership.expire" membership.id %}" style="text-decoration: none;">{% trans "Active --> Expire" %}</a></li>
+        {% endif %}
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if request.user.is_superuser %}
+                    {% if profile.user.username %}
+                    <li>
+                        <a href="{% url "profile.edit_groups" m_user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'auth_password_change' m_user.id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
+                    </li>
+                    {% with membership.get_invoice as invoice %}
+                    {% if invoice %}
+                    <li>
+                        <a href="{% url "invoice.view" invoice.id %}" title=="View invoices">{% trans "Invoices" %}</a>
+                    </li>
+                    {% endif %}
+                    {% endwith %}
+                    <li>
+                        <a href="{% url "profile.edit_perms" m_user.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
+                    </li>
+                    {% if MODULE_SOCIAL_SERVICES_ENABLED %}
+                    <li>
+                        <a href="{% url "user.skills_edit" m_user.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                <li>
+                    <a href="{% url "membership.delete" membership.id %}" class="delete" title="Delete membership">{% trans "Delete" %}</a>
+                </li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

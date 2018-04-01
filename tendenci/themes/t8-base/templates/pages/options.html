@@ -1,0 +1,45 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user pages.change_page opt_object as can_edit %}
+{% has_perm user pages.delete_page opt_object as can_delete %}
+
+<div class="t-iconrow">
+
+    {% if can_edit %}
+    <span>{{ opt_object.status_detail|capfirst }}</span>
+    {% endif %}
+
+    <a class="option-link print" href="{% url "page.print_view" opt_object.slug %}">{% trans "Print" %}</a>
+
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url "page.edit" opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
+
+ {% if can_edit %}
+      <div class="more-options-wrap">
+        <a href="javascript:;" class="more-options-trigger">{% trans "More options" %} <small>&#9660;</small></a>
+        <div class="more-options-target">
+            <ul>
+                <li class="divider">
+                  <a href="{% url "page.edit.meta" opt_object.pk %}">{% trans "Edit Meta" %}</a>
+                </li>
+
+                <li>
+                {% if opt_object.object %}
+                    <a href="{% url "category.update" opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                {% else %}
+                    <a href="{% url "category.update" opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                {% endif %}
+                </li>
+
+                {% if can_delete %}
+                    <li>
+                        <a class="option-link delete" href="{% url "page.delete" opt_object.pk %}">{% trans "Delete" %}</a>
+                    </li>
+                {% endif %}
+             </ul>
+            </div>
+      </div>
+  {% endif %}
+</div>

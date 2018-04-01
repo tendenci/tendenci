@@ -1,0 +1,79 @@
+{% load base_filters %}
+
+{% trans "Greetings:" %}<br /><br />
+{% trans 'A transaction was processed' %} {% if pt.status %}{% trans 'successfully' %}{% endif %}{% if not pt.status %}{% trans 'but failed' %}{% endif %}
+
+{% if membership %}
+{% trans 'for membership auto renew' %} ({{ pt.recurring_payment }})
+{% else %}
+{% trans 'for the recurring payment' %} ({{ pt.recurring_payment }})
+{% endif %}
+on <a href="{{ site_url }}">{{ site_display_name }}</a>.
+<br /><br />
+
+<div><h2>{% trans "Transaction details:" %}</h2></div>
+
+<div>
+<table border="0" width="90%">
+
+    <tr>
+        <td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Result code' %}:</td><td>{{ pt.result_code }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Message code' %}:</td><td>{{ pt.message_code }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Message text' %}:</td><td>{{ pt.message_text }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Transaction date' %}:</td><td>{{ pt.create_dt|date }}</td>
+    </tr>
+    {% if user_in_texas %}
+    <tr>
+        <td style="color: red;">{% trans 'State' %}:</td><td style="color: red;">{{ pt.payment.state }}</td>
+
+    </tr>
+    {% endif %}
+</table>
+
+</div>
+
+
+<br />
+<div><h2>{% trans "More info for this recurring cycle:" %}</h2></div>
+
+<div>
+<table border="0" width="90%">
+    <tr>
+        <td>{% trans 'Customer' %}:</td><td>{{ pt.recurring_payment.user.get_full_name }} ({{ pt.recurring_payment.user.email }})</td>
+    </tr>
+    {% if membership %}
+    <tr>
+        <td>{% if membership.status_detail == 'active' %}{% trans 'Membership renewed:' %}{% else %}{% trans 'Membership renewal pending:' %}{% endif %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td>{% trans 'Guid' %}:</td><td>{{ pt.recurring_payment.guid }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Current cycle start' %}:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_start_dt|date }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Current cycle end' %}:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
+    </tr>
+    {% endif %}
+
+
+</table>
+
+</div>
+
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+

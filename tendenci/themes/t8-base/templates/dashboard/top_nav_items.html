@@ -1,0 +1,43 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user profiles.view_profile as can_view_user %}
+{% has_perm user profiles.change_profile as can_edit_user %}
+{% has_perm user profiles.add_profile as can_add_user %}
+
+
+<ul id="t-admin-megamenu-dashboard-dd" class="dropdown-menu dashboard-dropdown" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <div class="col-sm-12 content-dropdown-col">
+                    <ul class="list-unstyled">
+                        {% if can_edit_setting %}
+                            <li class="content-item">
+                                <a href="{% url 'settings.index' 'module' 'dashboard' %}"><span class="nav-label">{% trans "Settings" %}</span></a>
+                            </li>
+                        {% endif %}
+
+                        <li class="content-item">
+                            <a href="{% url 'profile.search' %}"><span class="nav-label">{% trans "Search Users" %}</span></a>
+                        </li>
+
+                        {% if can_add_user %}
+                            <li class="content-item">
+                                <a href="{% url 'profile.add' %}"><span class="nav-label">{% trans "Add User" %}</span></a>
+                            </li>
+                        {% endif %}
+
+                        {% if user.profile.is_superuser %}
+                            <li class="content-item">
+                                <a href="{% url 'profiles.user_import' %}"><span class="nav-label">{% trans "Import" %}</span></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>

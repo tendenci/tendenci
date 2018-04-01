@@ -1,0 +1,94 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+{% load humanize %}
+
+{% block content %}
+{% url "reports-events-summary-historical" as hist_logs_url %}
+{% url "event_log.search" as logs_search %}
+<div class="page-header">
+  <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}</h1>
+</div>
+{% blocktrans %}
+<div>
+  <p>You can <a href="{{ hist_logs_url }}">view historical reports</a> or go to the <a href="{{ logs_search }}">Event log search</a> to see the latest event logs.</p>
+</div>
+{% endblocktrans %}
+
+<nav class="event-log-summary-nav" aria-label="previous and next month navigation">
+  <ul class="list-inline text-center">
+    <li class="pull-left"><h2><a href="./?{% month_url previous %}"><i class="fa fa-angle-left"></i></a></h2></li>
+    <li><h2 class="text-center">{{ date_range.0|date:"M Y" }}</h2></li>
+    <li class="pull-right" ><h2><a href="./?{% month_url next %}"><i class="fa fa-angle-right"></i></a></h2></li>
+  </ul>
+</nav>
+
+<table class="events-summary-chart">
+  <tr>
+    {% for day, items in chart_data.items %}
+    <td>
+      {% for item in items %}
+      {% if item.application %}
+      <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}" title="{{ item.application }} ({{ item.count|intcomma }})">
+        <div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+      </a>
+      {% endif %}
+      {% endfor %}
+      {{ day.day }}
+      <div style="font-size: 10px;">{{ day|date:"D" }}</div>
+    </td>
+    {% endfor %}
+  </tr>
+</table>
+<br />
+
+<div class="events-summary-wrapper container">
+  <ul class="events-summary col-sm-4">
+    {% for item in summary_data.0 %}
+    {% if item.application %}
+    <li>
+      <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+      &nbsp;
+      {% if item.application %}
+      <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+      {% endif %}
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+
+  <ul class="events-summary col-sm-4">
+    {% for item in summary_data.1 %}
+    {% if item.application %}
+    <li>
+      <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+      &nbsp;
+      <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+
+  <ul class="events-summary col-sm-4">
+    {% for item in summary_data.2 %}
+    {% if item.application %}
+    <li>
+      <span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
+      &nbsp;
+      <a href="{% url "reports-events-application" item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count|intcomma }})</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+<br />
+
+<div style="clear: both;"></div>
+{% comment %}
+<form>{% csrf_token %}
+  <table>{{ form }}</table>
+  <input type="submit" value="submit">
+</form>
+{% endcomment %}
+
+{% endblock content %}

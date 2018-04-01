@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load video_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/camera.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Videos' %}{% endblock %}
+
+{% block current_app %}
+    {% if video %}
+        {% video_current_app request.user video %}
+    {% else %}
+        {% video_current_app request.user %}
+    {% endif %}
+{% endblock %}

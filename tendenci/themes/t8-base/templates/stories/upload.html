@@ -1,0 +1,46 @@
+{% extends "stories/base.html" %}
+{% load story_tags %}
+
+{% block title %}{{ block.super }}{% blocktrans with h=story.headline %}{{ h }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/stories.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="story-wrap">
+
+        <div class="options">
+            <div class="quick-options">
+               {% stories_options request.user story %}
+            </div>
+        </div>
+
+
+        <h2>{% trans "Upload a Story Image" %}</h2>
+        <p>
+            {% trans "Title:" %} <a href="{% url "stories.views.index" story.pk%}">{%blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
+            <br />
+            <br />
+            {% trans "To upload image to this story, browse to your document and click Upload Image." %}
+        </p>
+
+        <form method="post" enctype="multipart/form-data" action="" class="add-image">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <p>
+            {% if form.file.errors %}<div class="error">{{ form.errors }}</div>{% endif %}
+            {{ form.file.label_tag }}
+            {{ form.file }}
+            <div class="help_text">{{ form.help_text|safe }}</div>
+            </p>
+            <p class="submit">
+                <input type="submit" value="{% trans 'Upload Image' %}"/>
+            </p>
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}

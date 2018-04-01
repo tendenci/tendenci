@@ -1,0 +1,73 @@
+{% extends "projects/base.html" %}
+{% load project_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block content %}
+<div class="t">
+  <div class="project-wrap">
+    <h1>{{ project.project_name }}</h1>
+
+    {% if project.end_dt  %}
+    <h3>{% trans "Year Completed:" %}</h3> <p>{{ project.end_dt }}</p>
+    {% endif %}
+
+    {% if project.client %}
+    <h3>{% trans "Client:" %}</h3> <p>{{ project.client|safe}}</p>
+    {% endif %}
+
+    {% if project.project_description %}
+    <h3>{% trans "Project Description:" %}</h3>
+    {{ project.project_description|safe }}
+    {% endif %}
+
+    {% if project_photos %}
+    <div class="project-inline clearfix">
+      <h2>{% trans "Pictures" %}</h2>
+      {% for picture in project_photos %}
+      <div class="project-picture">
+        <a href="{% image_url picture %}" rel="lightbox"><img src="{% image_url picture size=150x150 crop=True %}" /></a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if project.video_title %}
+    <h2>{{ project.video_title }}</h2>
+    {% endif %}
+
+    {% if project.video_description %}
+       {{ project.video_description|safe }}
+    {% endif %}
+
+    {% if project.video_embed_code %}
+      {{ project.video_embed_code|safe }}
+    {% endif %}
+
+    <div class="view-all"><p><a href="/projects">View All Projects</a></p></div>
+
+    <div class="view-all"><p><a href="javascript:history.back()">Go Back</a></p></div>
+
+    {% include "projects/meta.html" %}
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script src="{% static 'js/jquery.cycle.all.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/lightbox.js' %}"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $("#project-photos").cycle({
+            timeout: 2000,
+            speed: 2000,
+            next: '.right-arrow',
+            prev: '.left-arrow'
+        });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_LOCATIONS_LABEL trans 'Location' %} {% trans "Edit" %}</h1>
+
+    <div class="location-wrap">
+        <form action="{% url "location.edit" location.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript">
+        var slugit = new Slugify({
+            input_element : 'input#id_location_name',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+    </script>
+{% endblock %}

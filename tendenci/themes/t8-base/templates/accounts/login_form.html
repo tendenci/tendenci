@@ -1,0 +1,9 @@
+
+<form method="post" action="{% url "auth_login" %}">{% csrf_token %}
+<div class="login-fields">
+{{form.as_p}}
+</div>
+<div class="login-submit-button">
+    <input type="submit" name="submit" value="{% firstof login_button_value trans 'Log In' %}" />
+</div>
+</form>

@@ -1,0 +1,94 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Register" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-register.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% trans "Register for Event" %}</h1>
+    <div class='event-title'>{{ event.title }}</div>
+
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        {% if field.errors %}
+            <li><a href="javascript:;">{{ field.label_tag }}</a></li>
+        {% endif %}
+    {% endfor %}
+
+    <div class="form-wrap">
+        <form action="{% url "event.register" event.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+
+            {{ form.price }}
+
+            {% if form.first_name %}
+            <div class="form-field">
+                <div class="error">{{ form.first_name.errors }}</div>
+                <div class="label required">{% trans "First Name" %}</div>
+                <div class="field">{{ form.first_name }}</div>
+            </div>
+            {% endif %}
+
+            {% if form.last_name %}
+            <div class="form-field">
+                <div class="error">{{ form.last_name.errors }}</div>
+                <div class="label required">{% trans "Last Name" %}</div>
+                <div class="field">{{ form.last_name }}</div>
+            </div>
+            {% endif %}
+
+            {% if form.company_name %}
+            <div class="form-field">
+                <div class="error">{{ form.company_name.errors }}</div>
+                <div class="label required">{% trans "Company" %}</div>
+                <div class="field">{{ form.company_name }}</div>
+            </div>
+            {% endif %}
+
+            {% if form.phone %}
+            <div class="form-field">
+                <div class="error">{{ form.phone.errors }}</div>
+                <div class="label required">{% trans "Phone" %}</div>
+                <div class="field">{{ form.phone }}</div>
+            </div>
+            {% endif %}
+
+            {% if form.email %}
+            <div class="form-field">
+                <div class="error">{{ form.email.errors }}</div>
+                <div class="label required">{% trans "Email" %}</div>
+                <div class="field">{{ form.email }}</div>
+            </div>
+            {% endif %}
+
+            <div class="price">Price ${{ event.registration_configuration.price|floatformat:2 }}</div>
+
+            <div class="form-field">
+                <div class="error">{{ form.payment_methods.errors }}</div>
+                <div class="label required">{% trans "Payment Methods Available" %}</div>
+                <div class="field">{{ form.payment_method }}</div>
+            </div>
+
+            {% if not request.user.is_authenticated %}
+                <div class="form-field">
+                    <div class="error">{{ form.captcha.errors }}</div>
+                    <div class="label required">{{ form.captcha.label}}</div>
+                    <div class="field">{{ form.captcha }}</div>
+                </div>
+            {% endif %}
+
+               <input type="submit" value="{% trans "Register for this Event" %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

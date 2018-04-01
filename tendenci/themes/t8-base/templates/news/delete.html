@@ -1,0 +1,27 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Delete Page" %}</h1>
+    <div class="delete-prompt">
+        {% trans "Are you sure you want to permanently delete this news?" %}
+    </div>
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <h2><a href="{{ news.get_absolute_url }}">{% firstof news.headline "Untitled" %}</a></h2>
+        <div style="margin: 10px 0px 10px 0px;">
+            {% if news.summary %}
+                {% blocktrans with s=news.summary|striptags|safe %}{{ s }}{% endblocktrans %}
+            {% else %}
+                {% blocktrans with s=news.body|striptags|safe %}{{ s }}{% endblocktrans %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="delete-form">
+        <form name="news-delete" method="POST" action="{% url "news.delete" news.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+</div>
+{% endblock %}

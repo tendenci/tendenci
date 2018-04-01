@@ -1,0 +1,28 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+
+{% block content %}
+
+<style>
+    .membership-application-list {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="t">
+    <h1>{% trans 'Membership Applications' %}</h1>
+    <p>{% trans 'A list of all membership applications' %}</p>
+
+    <div class="membership-application-list">
+    <ol>
+    {% for app in apps %}
+        <li>
+            <h3><a href="{{ app.get_absolute_url }}">{{ app }}</a></h3>
+            <p>{% firstof app.description|safe "No Description" %}</p>
+        </li>
+    {% endfor %}
+    </ol>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "events/base.html" %}
+{% load styled_forms %}
+{% load event_tags %}
+
+{% block title %}{{ form.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events-custom_form_preview.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<div class="t">
+    <div class="form-wrap">
+
+        <h1>{{ form.name }}</h1>
+        {% blocktrans %}
+        <p class="preview-reminder">This is just the <span style="color:#000;">preview</span>.
+            The real look can only be viewed through the event registration
+             if it is
+            associated with an event.</p>
+        {% endblocktrans %}
+
+        <div class="form-builder-wrap">
+            <form method="post">{% csrf_token %}
+
+            <div class="forms">
+                {{ form_for_form|styled_form }}
+                <input type="submit" value="{% trans 'Submit' %}" disabled="true" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

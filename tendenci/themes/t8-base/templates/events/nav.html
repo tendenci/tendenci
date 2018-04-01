@@ -1,0 +1,170 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load site_setting_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user events.add_event as can_add_event %}
+{% has_perm user events.view_registrant as can_view_registrant %}
+{% get_setting module events minimaladdform as can_request_event %}
+
+{% if nav_object %}
+    {% has_perm user events.view_event nav_object as can_view_event %}
+    {% has_perm user events.change_event nav_object as can_edit_event %}
+    {% has_perm user events.delete_event nav_object as can_delete_event %}
+{% else %}
+    {% has_perm user events.view_event as can_view_event %}
+    {% has_perm user events.change_event as can_edit_event %}
+    {% has_perm user events.delete_event as can_delete_event %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Events" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "events" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "event.search" %}">{% trans "Event List" %}</a></li>
+            {% if request.user.is_superuser %}
+            <li><a href="{% url "event.global.registrant.search" %}">{% trans "Registrant List" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "event.month" %}">{% trans "Monthly Calendar" %}</a></li>
+            <li><a href="{% url "event.week" %}">{% trans "Weekly Calendar" %}</a></li>
+            <li class="divider"></li>
+            {% if request.user.is_authenticated %}
+            <li><a href="{% url "event.myevents" %}">{% trans "My Events" %}</a></li>
+            {% endif %}
+            {% if can_add_event %}
+                <li><a href="{% url "event.add" %}">{% trans "Add an Event" %}</a></li>
+            {% else %}
+                {% if can_request_event %}
+                    <li><a href="{% url "event.minimal_add" %}">{% trans "Submit an Event" %}</a></li>
+                {% endif %}
+            {% endif %}
+            {% if request.user.is_superuser %}
+                <li><a href="{% url "event.pending" %}">{% trans "Pending Events" %}</a></li>
+            {% endif %}
+            {% if can_edit_event %}
+                <li><a href="{% url "event.types" %}">{% trans "Event Types" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "event.ics" %}" id="event_export_link">{% trans "Events ICS" %}</a></li>
+            {% if request.user.is_superuser %}
+                <li><a href="{% url "event.create_ics" %}">{% trans "Precreate Event ICS" %}</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url "event.export" %}">{% trans "Export" %}</a></li>
+                <li><a href="{% url "event.import_add" %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url "event.reports.financial" %}">{% trans "Events Financial Report" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            <ul>
+                <li class="heading">{% trans "This Event" %}</li>
+                <li class="divider"></li>
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
+            {% if nav_object.is_recurring_event %}
+                    <li><a href="{% url "event.recurring" nav_object.pk %}">{% trans "View Recurring Event List" %}</a></li>
+            {% endif %}
+                    <li><a href="{% url "event.print_view" nav_object.pk %}">{% trans "Print Event" %}</a></li>
+            {% if can_view_attendees %}
+                    <li><a href="{% url "event.attendees" nav_object.pk %}">{% trans "View Attendees" %}</a></li>
+            {% endif %}
+                    <li><a href="{% url "event.ics_single" nav_object.pk %}">{% trans "Add Event to my Calendar" %}</a></li>
+            {% if can_view_event or can_edit_event %}
+                {% if can_edit_event %}
+                    <li><a href="{% url "event.edit" nav_object.pk %}">{% trans "Edit Event" %}</a></li>
+                    <li><a href="{% url "event.edit.meta" nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url "event.list_addons" nav_object.pk %}">{% trans "Edit Addons" %}</a></li>
+                    <li><a href="{% url "event.add_addon" nav_object.pk %}">{% trans "Add Addon" %}</a></li>
+                    {% if nav_object.registration_configuration.use_custom_reg_form %}
+                    <li><a href="{% url "event.event_custom_reg_form_list" nav_object.pk %}">{% trans "Manage Custom Registration Form" %}</a></li>
+                    {% endif %}
+                     {% if nav_object.registration_configuration.send_reminder %}
+                    <li><a href="{% url "event.edit.email" nav_object.pk %}">{% trans "Edit Reminder Email" %}</a></li>
+                    {% endif %}
+                {% endif %}
+                {% if can_add_event %}
+                    <li><a href="{% url "event.copy" nav_object.pk %}">{% trans "Clone Event" %}</a></li>
+                {% endif %}
+                {% if request.user.is_superuser and event.status == 0 %}
+                    <li><a href="{% url "event.approve" nav_object.pk %}">{% trans "Approve" %}</a></li>
+                {% endif %}
+                {% if can_edit_event or can_view_registrant %}
+                    <li class="divider"></li>
+                    <li><a href="{% url "event.registrant.search" nav_object.pk %}">{% trans "Search Registrants" %}</a></li>
+                    <li><a href="{% url "event.registrant.roster" nav_object.pk %}">{% trans "Roster Report" %}</a></li>
+                {% endif %}
+                {% if can_edit_event %}
+                    <li><a href="{% url "event.message" nav_object.pk %}">{% trans "E-mail Registrants" %}</a></li>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                    <li class="divider"></li>
+                    <li><a href="{% url "event.member_register" nav_object.pk %}">{% trans "Register Members" %}</a></li>
+                {% endif %}
+                {% if can_delete_event %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "event.delete" nav_object.pk %}">{% trans "Delete Event" %}</a></li>
+                    {% if nav_object.is_recurring_event %}
+                    <li><a class="delete" href="{% url "event.delete_recurring" nav_object.pk %}">{% trans "Delete Recurring Events" %}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            </ul>
+        {% endif %}
+        </div>
+    </li>
+    {% if request.user.is_superuser %}
+    {% if MODULE_DISCOUNTS_ENABLED %}
+    <li><a href="{% url "discounts" %}">{% firstof MODULE_DISCOUNTS_LABEL trans 'Discounts' %}</a></li>
+    {% endif %}
+    {% else %}
+    {% if MODULE_NEWS_ENABLED and MODULE_EVENTS_SHOW_NEWS_TAB %}
+    <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+    {% endif %}
+    {% if MODULE_ARTICLES_ENABLED and MODULE_EVENTS_SHOW_ARTICLE_TAB %}
+    <li><a href="{% url "articles" %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
+    {% endif %}
+    {% endif %}
+</ul>
+{% endif %}
+
+<div id="event_export_dialog" title="Export Events" style="display:none;">
+<p>{% blocktrans %}You can export all the upcoming events
+ to any calendar application such as MS Outlook, Google calendar, Apple iCal with the following link.{% endblocktrans %}</p>
+<p ><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}">{{ SITE_GLOBAL_SITEURL }}{% url "event.ics" %}</a>
+</div>
+<script type="text/javascript">
+  // Dialog
+  $('#event_export_dialog').dialog({
+    autoOpen: false,
+    width: 600,
+    buttons: {
+      "Close": function() {
+        $(this).dialog("close");
+      }
+    }
+  });
+  // Dialog Link
+  $('#event_export_link').click(function(){
+    $('#event_export_dialog').show();
+    $('#event_export_dialog').dialog('open');
+    return false;
+  });
+</script>

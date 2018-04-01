@@ -1,0 +1,95 @@
+div.admin-links {
+  margin:0px;
+  padding:0px;
+  border:0px;
+  outline:0px;
+  font-size:100%;
+  vertical-align:baseline;
+  line-height:inherit;
+  text-align:left;
+}
+
+
+div.boxes { position:relative; }
+div.boxes div.view { position:static; }
+div.admin-inline { display:none; }
+div.admin-border {
+  opacity:.25;
+  position:absolute;
+  left:0px;
+  right:0px;
+  top:0px;
+  bottom:0px;
+  height:5px;
+  width:5px;
+  background:#666;
+  }
+
+  div.admin-border-top {
+    left:5px; right:5px;
+    width:auto;
+    bottom:auto;
+    }
+
+  div.admin-border-bottom {
+    left:5px; right:5px;
+    width:auto;
+    top:auto;
+    }
+
+  div.admin-border-left {
+    height:auto;
+    right:auto;
+
+    -moz-border-radius-topleft:5px;
+    -moz-border-radius-bottomleft:5px;
+    -webkit-border-top-left-radius:5px;
+    -webkit-border-bottom-left-radius-:5px;
+    }
+
+  div.admin-border-right {
+    height:auto;
+    left:auto;
+
+    -moz-border-radius-topright:5px;
+    -moz-border-radius-bottomright:5px;
+    -webkit-border-top-right-radius:5px;
+    -webkit-border-bottom-right-radius-:5px;
+    }
+
+div.admin-links {
+  -moz-border-radius-topleft:5px;
+  -moz-border-radius-topright:5px;
+  -webkit-border-top-left-radius:5px;
+  -webkit-border-top-right-radius:5px;
+
+  font:normal 11px/20px "Lucida Grande",Verdana,sans-serif !important;
+  background:#444 !important;
+
+  position:absolute;
+  top:-20px;
+  right:0px;
+
+  z-index:100;
+  height:20px;
+  line-height:20px;
+  overflow:hidden;
+  }
+
+  div.boxes:hover div.admin-inline { display:block; }
+
+div.admin-links a,
+div.admin-links a:hover {
+  background-color:transparent !important;
+
+  color:#fff !important;
+  text-transform:none !important;
+  font-weight:normal !important;
+  font-style:normal !important;
+  float:left !important;
+  padding:0px 10px 0px 25px;
+  line-height:25px !important;
+  }
+
+
+  div.admin-links a.edit-box { background-position:-215px -180px; }

@@ -1,0 +1,19 @@
+<form class="search-form" action="{% url "files" %}" method="get">
+    <div class="fieldWrapper">
+        <label for="id_q">{% trans 'Search' %}</label>
+        {{ form.q }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_category">{% trans 'Category' %}</label>
+        {{ form.file_cat }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_subcategory">{% trans 'Sub Category' %}</label>
+        {{ form.file_sub_cat }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_group">{% trans 'Group' %}</label>
+        {{ form.group }}
+    </div>
+    <input class="btn" type="submit" value="{% trans 'Search Files' %}" />
+</form>

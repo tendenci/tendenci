@@ -1,0 +1,19 @@
+
+
+{% block messages %}
+    {% if request.impersonation_message %}
+        <div class="alert alert-warning alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+            {% blocktrans with msg=request.impersonation_message|safe %}{{ msg }}{% endblocktrans %}
+        </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible fade in{% if message.tags %} {{ message.tags }}{% endif %}" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>
+                <p>{% blocktrans with msg=message|safe %}{{ msg }}{% endblocktrans %}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

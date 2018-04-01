@@ -1,0 +1,19 @@
+
+<p>{% blocktrans with object.title as obj_title %}Your job posting "{{ obj_title }}" has been approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}To view this job, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>
+</p>
+
+{% if object.invoice %}
+<p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" object.invoice.pk %}</a>
+</p>
+{% endif %}
+
+
+<p>{% trans "Thanks!" %}</p>
+
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+<p>{% now "D d M Y P" %}</p>

@@ -1,0 +1,74 @@
+{% extends "directories/base-pricing.html" %}
+{% load bootstrap_pagination_tags %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans "Directory Pricing List" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/directories.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Directory Pricing List" %}</h1>
+
+    {% autopaginate directory_pricings 10 %}
+
+    <div class="directories-wrap">
+    {% for dp in directory_pricings %}
+        {% has_perm user directories.view_directorypricing dp as can_view %}
+        {% if can_view %}
+        <div class="directory-wrap-search">
+            <h2><a href="{% url "directory_pricing.view" dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
+
+            <div>{% trans "Regular Price:" %} {{ dp.regular_price|format_currency }}</div>
+            <div>{% trans "Premium Price:" %} {{ dp.premium_price|format_currency }}</div>
+            <div>{% trans "Member Regular Price:" %} {{ dp.regular_price_member|format_currency }}</div>
+            <div>{% trans "Member Premium Price:" %} {{ dp.premium_price_member|format_currency }}</div>
+            <div>{% trans "Show Member Pricing:" %} {{ dp.show_member_pricing }}</div>
+            <div>{% trans "Status:" %} <b>{% if dp.status %}Active{%else%}Inactive{%endif%}</b></div>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with dp.create_dt|date:"long" as create_date and dp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
+            </div>
+
+            <div class="options options-search text-right">
+                <div class="quick-options">
+                    {% directory_pricing_options request.user dp %}
+                </div>
+            </div>
+
+            <!-- delete-directory form -->
+            <form name="directory-pricing-delete" method="POST" action="{% url "directory_pricing.delete" dp.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+        </div>
+        {% endif %}
+
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_directory_pricing = confirm("{% trans 'Permenantly delete this directory price?' %}");    // confirm
+                if(delete_directory_pricing) $(this).parents('.directory-wrap-search').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+
+{% endblock %}

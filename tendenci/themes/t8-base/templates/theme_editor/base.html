@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block body_ids %}editor{% endblock body_ids %}
+
+{% block extra_head %}
+    <link href="{% local_static 'css/theme-editor.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block html_body %}
+<div id="container" style="background: none; background-color: white; color: black; padding: 10px; min-width: 980px;">
+    <div id="body">
+    {% block content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

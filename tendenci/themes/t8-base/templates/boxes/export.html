@@ -1,0 +1,19 @@
+{% extends "boxes/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_BOXES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_BOXES_LABEL_PLURAL %}{{ label_plural }} Export{% endblocktrans %}
+        {% else %}
+            {% trans "Boxes Export" %}
+        {% endif %}
+    </h1>
+
+    <form id="t-boxes-export-form" class="form-inline t-export-form" action="." method="POST" >{% csrf_token %}
+        <button type="submit" class="btn btn-primary">{% trans "Download" %}</button>
+    </form>
+{% endblock %}

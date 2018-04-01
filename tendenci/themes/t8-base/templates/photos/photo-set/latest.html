@@ -1,0 +1,50 @@
+{% extends "photos/base-wide.html" %}
+
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load search_tags %}
+{% load humanize %}
+
+{% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos-photo-set.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url "photo.feed.latest-albums" %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div id="photo-sets-header-wrap">
+        <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
+    </div>
+
+
+    {% photo_set_search %}
+    <span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
+    {% autopaginate photo_sets %}
+
+    {% if photo_sets %}
+
+        {% for photo_set in photo_sets %}
+            {% search_result photo_set %}
+        {% endfor %}
+
+        {% paginate %}
+    {% else %}
+    {% endif %}
+
+</div>
+
+{% endblock %}
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+
+    // photo: delete confirmation
+    $('.photo-set .info .actions .delete-set').click(function(){
+        var delete_photo = confirm('{% trans "Permenantly delete photo set?" %}'); // confirm
+        if(!delete_photo) return false; // do not delete
+    });
+</script>
+{% endblock %}

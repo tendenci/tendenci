@@ -1,0 +1,496 @@
+.t {
+    width: 90%;
+}
+.t h2 {
+    margin: 0 auto 10px 0;
+}
+
+.t ul.directories-nav {
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+.t ul.directories-nav li {
+    display: inline;
+}
+
+.t .directories-wrap {
+    margin-bottom: 20px;
+}
+
+.t .directory-wrap {
+    padding: 10px;
+    position: relative;
+}
+
+.t .directories-wrap .directory-wrap h2 {
+    width: 85%;
+}
+.t .directories-wrap .directory-wrap .content {
+    margin-bottom: 10px;
+}
+.t .options {
+    text-align: right;
+    position: absolute;
+    top: -30px; right: 0;
+    padding: 5px;
+    white-space: nowrap;
+}
+.t .options-search {
+    position: static;
+}
+.t .quick-options {
+    float: right;
+    margin-right: 5px;
+}
+.t .quick-options ul {
+    margin: 0; padding: 0;
+    list-style-type: none;
+}
+
+.t .dropdown-options {
+    float: right;
+    display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+    font-size: .7em;
+}
+.t .dropdown-options ul {
+    display: none;
+}
+
+.t h1 {
+    margin: 0;
+}
+.t .back-to-search {
+    margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+    width: 60%;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.t .search-form .first-row span,
+.t .search-form .first-row .search-category,
+.t .search-form .first-row .q,
+.t .search-form input[type='submit'] {
+    float: left;
+}
+
+.t .search-form .first-row #id_search_category {
+    height: 29px;
+    margin-right: 10px;
+    padding-top: 7px;
+}
+
+.t .search-form .first-row .search-category .errorlist {
+    color: red;
+    margin-left: 3px;
+    margin-top: 5px;
+}
+
+.t .search-form .first-row .q .errorlist{
+    color: red;
+    margin-left: 3px;
+    margin-top: 5px;
+}
+
+.t .search-form .first-row #id_q {
+    width: 170px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+.t .search-form input[type="submit"] {
+    width: 60px;
+}
+
+.t .search-form #form-row {
+    margin-bottom: 10px;
+}
+
+.t .search-form {
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.t .search-form .first-row span {
+    padding-top: 10px;
+    padding-right: 5px;
+}
+
+/* id_activation_dt */
+div.forms div.form-field
+div.id_activation_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field
+div.id_activation_dt .field input#id_activation_dt_1 {
+    width: 80px;
+}
+
+/* id_expiration_dt */
+div.forms div.form-field
+div.id_expiration_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field
+div.id_expiration_dt .field input#id_expiration_dt_1 {
+    width: 80px;
+}
+
+/* Directory View
+ ------------------------- */
+.t .directory-wrap .fb-connect {
+    margin-top: 10px;
+}
+
+.t .directory-image img {max-width: 500px;}
+
+/* form */
+div.forms div.form-field div.id_first_name .field input {
+    width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+    width: 30%;
+}
+div.forms div.form-field div.id_address .field input {
+    width: 30%;
+}
+div.forms div.form-field div.id_address2 .field input {
+    width: 30%;
+}
+div.forms div.form-field div.id_phone .field input {
+    width: 18%;
+}
+div.forms div.form-field div.id_phone2 .field input {
+    width: 18%;
+}
+div.forms div.form-field div.id_fax .field input {
+    width: 18%;
+}
+
+/* Directory Print View
+ ------------------------- */
+.t-print .directory-wrap {
+    width: 8in;
+    padding: .25in;
+    margin: 20px 0;
+    border: 1px solid silver;
+}
+.t-print .hide-this {
+    width: 8.5in;
+    margin: 20px 0;
+    position: relative;
+}
+.t-print .guide {
+    position: absolute;
+    top: 0; right: 0;
+}
+.t-print object {
+    visibility: hidden;
+}
+
+@media print {
+    .hide-this {
+        display: none;
+    }
+    .t-print .directory-wrap {
+        width: 100%;
+        border: none;
+        padding: 0; margin: 0;
+    }
+}
+
+/* Directory Add/Edit
+ ------------------------- */
+
+.errors {
+    border: 2px solid #FF8B78;
+    background-color: #FFEBE8;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 110px;
+    width: 75%;
+}
+.clear {
+    clear: both;
+}
+.wrap {
+    white-space: pre-wrap;
+}
+.item-text {
+    font-size: 1.4em;
+    border-bottom: 1px solid silver;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+/* label:field item */
+.item {
+    margin-bottom: 10px;
+}
+.item .errs {
+    color: red;
+    margin-left: 110px;
+}
+.item .label {
+    float: left;
+    font-size: 1.4em;
+    text-align: right;
+    width: 100px;
+    white-space: nowrap;
+}
+.item .label-wrap {
+    white-space: normal;
+}
+
+
+.item .field,
+.item .help {
+    margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+    width: 100%;
+}
+.item .field .mceLayout {
+    /* WYSIWYG; .1 keeps border intact */
+    width: 100.1% !important;
+}
+.item .field-short input,
+.item .field-short select {
+    width: 40%;
+}
+
+/* date-time item */
+.item-dt {
+    margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+    color: red;
+}
+.item-dt .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-dt .field input {
+    float: left;
+    width: 15%;
+    margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+    margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-checkbox .field input {
+    float: left;
+    margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+    height: 1px;
+    background-color: silver;
+    margin: 10px 0 10px 110px;
+    width: 85%;
+}
+/* horizontal rule long item */
+.item-hr-long {
+    height: 1px;
+    background-color: silver;
+    margin: 20px 0 20px 0;
+    width: 100%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+    height: 10px;
+    width: 100%;
+}
+
+div.forms fieldset.contact {
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+    padding: 5px;
+}
+
+div.forms fieldset.payment_method {
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+div.forms fieldset.payment_method legend {
+    padding: 5px;
+}
+
+/* pricing */
+.directory-pricing{
+    padding: 1em;
+    border: 1px solid silver;
+    width: 500px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.pricing-item{
+    margin-bottom: 0.8em;
+}
+.pricing-item .label{
+    float: left;
+    width: 35%;
+    text-align: right;
+    margin-right: 1em;
+    white-space: nowrap;
+}
+#pricing-submit{
+    float: right;
+}
+.directory-pricing-details{
+    width: 500px;
+}
+.sep-line{
+    height: 1px;
+    border-bottom: 1px dotted #ccc;
+    margin-bottom: 1em;
+}
+
+/* embeded pricing table
+.pricing-table-block{
+    margin-left: 120px;
+    margin-bottom: 1em;
+}
+table.directory-pricing-rate{
+    width: 320px;
+    border: 1px solid #809d89;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+table.directory-pricing-rate tr td{
+    text-align: right;
+}
+.directory-pricing-rate .header-row{
+    font-weight: bold;
+}
+.directory-pricing-rate .header-row td{
+    color: #fff;
+    background-color: #809DB9;
+    font-weight: bold;
+
+}
+.directory-pricing-rate .row2{
+    background-color: #d3d9e5;
+}
+ */
+
+/* users */
+div.pricing-table-block {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+div.pricing-table-block h4 {
+    margin: 5px 0 5px 0;
+    padding: 0;
+    text-transform: none;
+    font-size: 13px;
+}
+
+div.pricing-table-block table {
+    text-align: left;
+    border: 1px solid #DDD;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+div.pricing-table-block table tr.alt {
+    background-color: #FFFFFF;
+}
+
+div.pricing-table-block table td {
+    padding: 5px;
+}
+
+div.pricing-table-block table tr.header-row td {
+    width: 180px;
+    background-color: #EFEFEF;
+}
+
+/* payment method */
+div.id_payment_method ul{
+    padding: 0px;
+}
+div.id_payment_method ul li{
+    list-style: none;
+}
+div.id_payment_method input{
+    width: 1em !important;
+}
+
+.pricing-wrap{
+    margin-bottom: 1em;
+    width: 400px;
+}
+.pricing-wrap th{
+    text-align: left;
+    border-bottom: 1px dashed #ccc;
+}
+
+/* export page */
+#directory-export .alert {
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+#directory-export .alert {
+    color: #c09853;
+}
+#directory-export ul li {
+    list-style: none;
+}
+#directory-export .display-hide{
+    display: none;
+}
+#directory-export input[type="submit"] {
+    padding: 4px 12px;
+}
+#directory-export select {
+    width: 220px;
+    border: 1px solid #CCC;
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+}
+

@@ -1,0 +1,22 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit Meta Information" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with article.headline as article_headline %}Meta Information for<br />
+    {{ article_headline }}{% endblocktrans %}</h1>
+
+    <div class="article-wrap">
+        <form action="{% url "article.edit.meta" article.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

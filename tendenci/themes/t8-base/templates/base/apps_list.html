@@ -1,0 +1,25 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}{%trans 'Full App List' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans 'Full App List' %}</h1>
+
+        <ul>
+            {% for app in registered_apps.all_apps %}
+                {% if app.enabled %}
+                    {% if app.url.list or app.url.search %}
+                        <li><a href="{% firstof app.url.list app.url.search %}">{{ app|title }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+    </div>
+{% endblock %}

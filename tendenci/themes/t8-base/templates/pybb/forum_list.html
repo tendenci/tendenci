@@ -1,0 +1,48 @@
+{% load pybb_tags %}
+
+{% if forum_list %}
+    <table class="table table-hover {% if category %}category-table{% elif parent_forum %}child-forums-table{% endif %}">
+        <thead>
+            <tr class="forum-row head-row">
+                <th class="forum-name">
+                    {% trans "Forum" %}
+                </th>
+                <th class="forum-topic-count">
+                    {% trans "Topics" %}
+                </th>
+                <th class="forum-post-count">
+                    {% trans "Posts" %}
+                </th>
+                <th class="forum-last-post">
+                    {% trans "Last posts" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for forum in forum_list|pybb_forum_unread:user %}
+            <tr class="forum-row">
+                <td class="forum-name {% if forum.unread %} forum-unread{% endif %}">
+                    <div class="state-indicator"></div>
+                    <div>
+                        <a href="{{ forum.get_absolute_url }}">{{ forum.name }}</a> {% if forum.hidden %}[{% trans "Hidden" %}]{% endif %}
+                    </div>
+                </td>
+                <td class="forum-topic-count">
+                    {{ forum.topic_count }}
+                </td>
+                <td class="forum-post-count">
+                    {{ forum.post_count }}
+                </td>
+                <td class="forum-last-post">
+                    {% include "pybb/forum_last_update_info.html" %}
+                </td>
+            </tr>
+        {% empty %}
+            {% if category %}
+                <h3>{% trans "No forums created" %}</h3>
+                <a href="{% url 'admin:forums_forum_add' %}">{% trans "Add forum now" %}</a>
+            {%  endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

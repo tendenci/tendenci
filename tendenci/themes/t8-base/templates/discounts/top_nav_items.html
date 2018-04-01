@@ -1,0 +1,89 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user discounts.add_discount as can_add_discount %}
+
+{% if app_object %}
+    {% has_perm user discounts.view_discount app_object as can_view_discount %}
+    {% has_perm user discounts.change_discount app_object as can_edit_discount %}
+    {% has_perm user discounts.delete_discount app_object as can_delete_discount %}
+{% else %}
+    {% has_perm user discounts.view_discount as can_view_discount %}
+    {% has_perm user discounts.change_discount as can_edit_discount %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-discounts-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Discounts" %}</span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'discounts' %}">{% trans "Search Discounts" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_discount %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'discount.add' %}">{% trans "Add Discount" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'discount.export' %}">{% trans "Export Discounts" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_discount or can_edit_discount %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Discount" %}</span>
+                            </li>
+
+                            {% if can_view_discount %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Discount" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_discount %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'discount.edit' app_object.pk %}">{% trans "Edit Discount" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_discount %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'discount.delete' app_object.pk %}">{% trans "Delete Discount" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

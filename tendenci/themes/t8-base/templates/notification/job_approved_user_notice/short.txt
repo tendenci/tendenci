@@ -1,0 +1,2 @@
+
+{% blocktrans with object.title as obj_title %}Your Job Posting "{{ obj_title }}" Approved on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

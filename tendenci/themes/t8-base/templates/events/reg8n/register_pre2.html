@@ -1,0 +1,80 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Registration Pre" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-registration.css' %}" />
+<link rel="stylesheet" href="{% static 'css/events-register_pre2.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div>
+        <div class="event-title"><a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
+        <div class="event-time">
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line">
+            {% if not event.all_day %}
+            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+            </div>
+        </div>
+         {% include "events/include/spots_status.html" %}
+    </div>
+
+    <div class="pricing-info-wrap">
+        <h2>Pricing Information</h2>
+
+    {% if individual_pricings %}
+        {% if table_pricings %}
+        <div style="font-weight: bold; font-size: 1.2em;">{% trans "For Individuals" %}:</div>
+        {% endif %}
+        <div class="pricing-list">
+            {% for pricing in individual_pricings %}
+            <div class="pricing-item clearfix {% cycle '' 'alt' %}">
+                <p class="pricing-header">
+                    <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
+                <div class="pricing-info">
+                    <p><strong>{% trans "Available Before" %}:</strong>
+                       {{ pricing.end_dt|date:'M j g:i A' }}</p>
+                    <p>{{ pricing.description|safe }}</p>
+                    <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
+                </div>
+                <form action="{% url "event.register_individual" event.id pricing.id %}" method="get">
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if table_pricings %}
+        {% if individual_pricings %}
+        <div style="font-weight: bold; font-size: 1.2em;">{% trans "For Table/Team" %}:</div>
+        {% endif %}
+        <div class="pricing-list">
+            {% for pricing in table_pricings %}
+            <div class="pricing-item clearfix {% cycle '' 'alt' %}">
+                <p class="pricing-header">
+                    <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
+                <div class="pricing-info">
+                    <p><strong>{% trans "Available Before" %}:</strong>
+                       {{ pricing.end_dt|date:'M j g:i A' }}</p>
+                    <p>{{ pricing.description|safe }}</p>
+                    <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
+                </div>
+                <form action="{% url "event.register_table" event.id pricing.id %}" method="get">
+                    <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    </div>
+</div>
+{% endblock %}

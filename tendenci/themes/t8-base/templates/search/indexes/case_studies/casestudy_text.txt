@@ -1,0 +1,12 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.client }}
+{{ object.overview|striphtml }}
+{{ object.execution|striphtml }}
+{{ object.results|striphtml }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }}
+{% endfor %}

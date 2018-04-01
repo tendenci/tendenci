@@ -1,0 +1,60 @@
+{% extends "user_groups/base-wide.html" %}
+{% load user_group_tags %}
+
+
+{% block title %}{% trans 'Edit Group Permissions' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            jQuery.each($("select[multiple]"), function () {
+            // "Locations" can be any label you want
+            SelectFilter.init(this.id, "Permissions", 0, "/media/");
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <div class="t-group">
+            <div class="t-perm">
+                <h1>{% trans "Add/Remove Permissions" %}</h1>
+                <h2>{% trans "Group" %}: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+
+                <div class="clear-right"></div>
+                <div class="quick-options">
+                    {% user_group_options request.user group %}
+                 </div>
+
+                <div class="profile-wrap edit-group-perms" style="margin-top:1em;">
+                    <form action="" method="post">{% csrf_token %}
+                        <div class="field-wrapper">
+                            {% if form.permissions.errors %}
+                                {{ form.permissions.errors }}
+                            {% endif %}
+                            <label for="id_permissions" style="float:left; padding-right: 1em;">
+                                <b>{% trans "Group Permissions" %}:</b>
+                            </label>
+
+                            {{ form.permissions }}
+
+                            <div style="clear:left;"></div>
+                        </div>
+
+                        <div style="display:block">
+                            <input type="submit" value="{% trans 'Save' %}" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

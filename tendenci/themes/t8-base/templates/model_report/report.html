@@ -1,0 +1,121 @@
+{% extends base_template_name %}
+
+{% block title %}{% trans "Report" %}: {{ report.get_title }}{% endblock %}
+{% block body_class %}report {{ report.slug }}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link href="{% static 'model_report/css/datepicker.css' %}" type="text/css" media="screen" rel="stylesheet" />
+
+  <style type="text/css">
+      .row-hidden {
+        display: none;
+      }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+{% include "model_report/includes/report_title.html" %}
+{% include "model_report/includes/form_report.html" %}
+
+{% if report_rows %}
+<div id="data_container" style="clear:both; width: 100%; padding-top: 1.5em;">
+
+    {% include "model_report/includes/report_chart.html" %}
+
+    {% if report_anchors %}
+        <select id="anchors">
+            <option>{% trans "Go to..." %}</option>
+            {% for anchor in report_anchors %}
+                <option value="{{ anchor|slugify }}">{{ anchor }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    {% include "model_report/includes/report_table.html" %}
+
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block extra_body %}
+{{ block.super }}
+    <script src="{% static 'model_report/js/jquery-1.6.2.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'model_report/js/jquery-ui-1.8.16.custom.min.js' %}" type="text/javascript"></script>
+
+    {% if chart %}
+        <script type="text/javascript" src="{% static 'model_report/js/highcharts/js/highcharts.js' %}"></script>
+        <script type="text/javascript">
+            var chart;
+            var subtitle_text_mouse = '{% trans "Click and drag in the plot area to zoom in" %}';
+            var subtitle_text_touch = '{% trans "Drag your finger over the plot to zoom in" %}';
+            $(document).ready(function() {
+                chart = new Highcharts.Chart({{ chart.options|safe }});
+            });
+        </script>
+    {% endif %}
+    <script type="text/javascript">
+    Number.prototype.formatMoney = function(c, d, t) {
+
+        var n = this,
+            c = isNaN(c = Math.abs(c)) ? 2 : c,
+            d = d == undefined ? "," : d,
+            t = t == undefined ? "." : t,
+            s = n < 0 ? "-" : "",
+
+            i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+            j = (j = i.length) > 3 ? j % 3 : 0;
+
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t)
+
+        + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+
+    };
+
+    function fm(v) {
+        return roundVal(v).formatMoney(0, '.', ',');
+    }
+
+    function roundVal(val){
+        var dec = 2;
+        var result = Math.round(val*Math.pow(10,dec))/Math.pow(10,dec);
+        return result;
+    }
+
+    // restore the jquery variables to the first version loaded
+    jq162 = jQuery.noConflict( true );
+
+    jq162(document).ready(function($) {
+        $('.vDatepicker').datepicker({
+            {% include "model_report/includes/datepicker_options.html" %}
+        });
+        $('.form_filter fieldset .row:last-child').addClass('last');
+        $('#anchors').change(function () {
+            var anchor = $(this).val();
+            if(!anchor) { return; }
+            var anchor_offset = $("#"+anchor).offset();
+            var anchor_top = anchor_offset.top;
+            $('html, body').animate({scrollTop:anchor_top}, 250);
+        });
+        $('.result-collapsable').click(function () {
+            if ($(this).hasClass('expanded')) {
+                $(this).removeClass('expanded');
+                $(this).addClass('colapsed');
+                $(this).text('+');
+                $('.object_list_data').find('.'+$(this).attr('row')).addClass('row-hidden');
+            }
+            else {
+                $(this).addClass('expanded');
+                $(this).removeClass('colapsed');
+                $(this).text('-');
+                $('.object_list_data').find('.'+$(this).attr('row')).removeClass('row-hidden');
+            }
+        })
+    });
+
+
+  </script>
+
+{% endblock %}

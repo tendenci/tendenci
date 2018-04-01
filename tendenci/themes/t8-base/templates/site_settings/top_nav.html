@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load site_setting_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_green.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_SETTINGS_LABEL trans 'Settings' %}{% endblock %}
+
+{% block current_app %}
+    {% if scope_category %}
+        {% settings_current_app request.user scope_category %}
+    {% else %}
+        {% settings_current_app request.user %}
+    {% endif %}
+{% endblock %}

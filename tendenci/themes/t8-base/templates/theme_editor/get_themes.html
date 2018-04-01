@@ -1,0 +1,34 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <img src="{% static 'images/loadingicon.gif' %}" alt="loading" title="loading" />
+    <p>{% trans 'Downloading themes. Please wait...' %}</p>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function() {
+    var status_check = function(){
+        $.ajax({
+           url: "{% url "theme_editor.get_themes" %}",
+           success: function(status_data){
+               console.log(status_data)
+               if (status_data == 'False') {
+                  window.location = "{% url "theme_editor.picker" %}";
+               }
+           }
+         });
+    }
+    status_check_intval = setInterval(function() {
+        status_check();  // check every 30 seconds
+    }, 30000);
+  });
+</script>
+{% endblock %}

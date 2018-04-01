@@ -1,0 +1,72 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+{% has_perm request.user help_files.add_helpfile as can_add %}
+<div class="t">
+    <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</h1>
+
+    {% help_file_search %}
+
+    <div class="left-col">
+        <div class="topics">
+            <h3>{% trans "Topics" %}</h3>
+            <div class="col">
+            {% for topic in topics.0 %}
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
+                <br>
+            {% endfor %}
+            </div>
+            <div class="col">
+            {% for topic in topics.1 %}
+                <a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a>
+                <br>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="right-col">
+        <div>
+            <ul class="request-help-file">
+                <li><a href="{% url "help_files.request" %}">{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+            </ul>
+        </div>
+        <div class="sub-column">
+            <div class="featured">
+                <h3>{% trans "Featured" %}</h3>
+                <ul>
+                {% for hfile in featured %}
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="faq">
+                <h3>{% trans "FAQ" %}</h3>
+                <ul>
+                {% for hfile in faq %}
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="most_viewed">
+                <h3>{% trans "Most viewed" %}</h3>
+                <ul>
+                {% for hfile in most_viewed %}
+                    <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+</div>
+{% endblock %}

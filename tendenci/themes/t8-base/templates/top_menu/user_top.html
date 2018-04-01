@@ -1,0 +1,142 @@
+{% load perm_tags %}
+
+{% spaceless %}
+<div id="user-bar">
+    <ul>
+       <li><a class="admin-logo" href="/"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="24" /></a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        {% if SITE_GLOBAL_SEARCHINDEX %}
+                            <li><a href="/search"><span class="glyph search">&#76;</span>&nbsp;&nbsp;{% trans "Search All Content" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_ARTICLES_ENABLED %}
+                            <li><a href="{% url "article.search" %}">{% trans "Articles" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_DIRECTORIES_ENABLED %}
+                            <li><a href="{% url "directory.search" %}">{% trans "Directories" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_EVENTS_ENABLED %}
+                            <li><a href="{% url "event.month" %}">{% trans "Events" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_HELP_FILES_ENABLED %}
+                            <li><a href="{% url "help_files.search" %}">{% trans "Help Files" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_JOBS_ENABLED %}
+                            <li><a href="{% url "job.search" %}">{% trans "Jobs" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_LOCATIONS_ENABLED %}
+                            <li><a href="{% url "location.search" %}">{% trans "Locations" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_NEWS_ENABLED %}
+                            <li><a href="{% url "news.search" %}">{% trans "News" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_PHOTOS_ENABLED %}
+                            <li><a href="{% url 'photoset_latest' %}">{% trans "Photo Albums" %}</a></li>
+                        {% endif %}
+                        {% if MODULE_RESUMES_ENABLED %}
+                            <li><a href="{% url "resume.search" %}">{% trans "Resumes" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% comment %}
+                {% if registered_apps.addons %}
+                <div class="column app-list">
+                    <h4>{% trans "Add-ons" %}</h4>
+                    {% for app in registered_apps.addons %}
+                        <ul>
+                            <li>
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     {{ app|title }}
+                                 </a>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% endcomment %}
+            </div>
+        </li>
+        {% if MODULE_MEMBERSHIPS_ENABLED %}
+        {% has_perm user memberships.approve_membership as can_approve_membership %}
+        {% if can_approve_membership %}
+        <li><a href="{% url "profile.search" %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "membership.search" %}">{% trans "Memberships" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% endif %}
+        {% endif %}
+        {% if MODULE_USERS_ALLOWUSERSEARCH %}
+        <li><a href="{% url "profile.search" %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "profile.search" %}">{% trans "Users Search" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {% endif %}
+        <li><a href="{% url 'profile' request.user.username %}"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "My Links" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url 'profile' request.user.username %}">{% trans "My User Profile" %}</a></li>
+                        <li><a href="{% url "invoice.search" %}?bill_to_email={{ request.user.email }}">{% trans "My Invoices" %}</a></li>
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                            <li><a href="{% url "corpmembership.mycorps" %}">{% trans "My Corporate Memberships" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'profile' request.user.username %}">{% trans "My Memberships" %}</a></li>
+                        <li><a href="{% url "contribution.search" %}">{% trans "My Content" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="#"><span class="glyph heading">&#87;</span>&nbsp;&nbsp;{% trans "Support" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                        <li><a href="{% url "help_files.search" %}">{% trans 'Help Files' %}</a></li>
+                        <li><a href="/contact/">{% trans "Contact" %}</a></li>
+                        <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Tendenci Help Files" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+
+        {% if request.user.is_staff %}
+        <li><a href="/admin/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
+        {% endif %}
+
+        <li class="right"><a href="/accounts/logout/"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+        <li class="right"><a href="/profiles/">{{ user.username }}</a></li>
+
+        {% if USE_I18N %}
+        <li class="right visible-mobile">
+            {% include 'top_menu/change_lang.html' %}
+        </li>
+        {% endif %}
+
+        <li class="right">
+            <form action="/search/" method="get" name="search" id="admin-search-box">
+                            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
+        </li>
+    </ul>
+
+</div>
+{% endspaceless %}

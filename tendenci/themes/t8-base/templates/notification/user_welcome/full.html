@@ -1,0 +1,20 @@
+
+{% autoescape off %}
+<div style="margin-bottom:10px">{% trans "Your new account has been created." %}</div>
+
+{% blocktrans %}
+<div style="margin-bottom:10px">Your username is {{ username }}</div>
+{% endblocktrans %}
+
+<div style="margin-bottom:10px">
+{% trans "Clicking the link below allows you to reset your password and log in." %}<br />
+{{ site_url }}{% url 'auth_password_reset_confirm' uidb64=uid token=token %}
+</div>
+
+<div style="margin-bottom:10px">
+{% trans "Thank you!" %}<br />
+{{ site_name }}<br />
+{{ site_url }}<br />
+</div>
+
+{% endautoescape %}

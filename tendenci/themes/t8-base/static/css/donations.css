@@ -1,0 +1,148 @@
+.donation-add{
+	width: auto;
+}
+.body-copy-alert{
+	color: red;
+}
+.errors {
+	border: 1px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
+.field-wrapper .errs {
+	color: red;
+	margin-left: 1em;
+}
+.field-wrapper .field-label{
+    float: left;
+    width: 11em;
+    margin-right: 1em;
+    text-align:left;
+ }
+
+#id_captcha_1 {
+	margin-left: 13em;
+	margin-top: 0.5em;
+}
+input[id="id_captcha_1"] {
+    width: auto;
+}
+ .field-wrapper{
+    margin: 5px 0;
+ }
+ .clear-left{
+ 	clear:left;
+ }
+ .clear-right{
+ 	clear: right;
+ }
+ .clear-both{
+ 	clear: both;
+ }
+ .submitbutton{
+    margin: 1em 0 1em 12em;
+    float: right;
+ }
+ .errorlist{
+ 	color: red;
+ 	list-style: none;
+ 	font-size: 0.8em;
+ 	margin: 0 0 0 11em;
+ }
+ .required{
+ 	font-weight: bold;
+ }
+
+.errorlist{
+	color: red;
+}
+.payment-method-list{
+	float: left;
+}
+.payment-method-list ul{
+	margin-left: 0;
+	padding-left: 0;
+}
+.payment-method-list ul li{
+	list-style: none;
+}
+.field-wrapper span{
+	color: #8A1F11;
+	font-size: 0.8em;
+}
+.section-header{
+	border-bottom: 1px solid silver;
+	font-size: 1.4em;
+	font-weight:bold;
+	margin:20px 0;
+}
+
+/* view */
+.donation-view .label{
+	float: left;
+	text-align: right;
+	width: 10em;
+	padding-right: 1em;
+}
+
+/* search */
+.t .donations-wrap {
+	margin-bottom: 20px;
+}
+
+.t .donation-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .donations-wrap .donation-wrap-search {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .donations-wrap .donation-wrap h2 {
+	width: 85%;
+}
+.t .donations-wrap .donation-wrap .content {
+	margin-bottom: 10px;
+}
+
+.t .donation-wrap .meta, .t .donation-wrap-search .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .donation-wrap .meta .tags {
+	margin-bottom: 5px;
+}
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+	cursor: pointer;
+}
+.donation-item-left{
+	float: left;
+	padding-right:2em;
+}
+
+#donation-receipt{
+	margin:2em auto;
+	padding:1em;
+	text-align: center;
+	width: 400px;
+	border: 1px solid #9F0909;
+	background-color: #f0f0ee;
+}

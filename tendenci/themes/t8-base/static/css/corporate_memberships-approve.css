@@ -1,0 +1,70 @@
+#indiv-entries{
+    margin: 5px 0 1em 2em;
+    display: none;
+}
+#indiv-entries table{
+    border: 1px dotted #ccc;
+}
+#indiv-entries table td{
+    padding: 3px;
+}
+.indiv-header{
+    font-weight: bold;
+    border-bottom: 1px dotted #ccc;
+    background-color: #ecf4fd;
+}
+
+#disapprove-btn, #approve-btn  {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    -moz-transition: all 0.1s linear 0s;
+    background-repeat: no-repeat;
+    border-color: #CCCCCC #CCCCCC #BBBBBB;
+    border-radius: 4px 4px 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 13px;
+    line-height: normal;
+    padding: 5px 14px 6px;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+    }
+
+    #approve-btn {
+        background-color: #BBE8ED;
+        background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #BBE8ED);
+        color: #034580;
+        font-weight: bold;
+    }
+    #disapprove-btn {
+        background-color: #E6E6E6;
+        background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #E6E6E6);
+    }
+    #approve-btn:hover, #disapprove-btn:hover{
+        background-position: 0 -15px;
+        color: #333;
+        text-decoration: none;
+    }
+    dl{
+        border-top: 1px dashed #ccc;
+        margin-top: 1em;
+        padding-top: 1em;
+    }
+    dt{
+        font-weight: bold;
+    }
+    dd{
+        padding-left: 2em;
+    }
+    .corp-approv-form{
+        margin-top: 1em;
+    }
+    .corp-approv-form li{
+        list-style: none;
+    }

@@ -1,0 +1,3 @@
+{% load pybb_tags %}
+{% pybb_get_profile user=obj.user as profile %}
+{{ profile.get_display_name }}: {{ obj.topic.name }} @ {{ obj.topic.forum.name }}

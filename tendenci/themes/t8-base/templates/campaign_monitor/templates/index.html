@@ -1,0 +1,49 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+
+
+{% block title %}{% trans "Templates Index" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+    {% template_nav request.user %}
+
+    <h1>{% trans "Campaign Monitor Templates" %}</h1>
+
+    {% autopaginate templates 5 %}
+
+    <h4 class="capitalize">
+        <em>{% blocktrans with count=paginator.count %}
+            {{ count }} Templates Found
+        {% endblocktrans %}</em>
+    </h4>
+
+    <section>
+        {% for template in templates %}
+            <div class="template-wrap">
+                <div class="options options-search">
+                    <div class="quick-options">
+                        {% template_options request.user template %}
+                    </div>
+                </div>
+                <h2><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h2>
+                {% if template.cm_screenshot_url %}
+                    <div class="screenshot">
+                        <p><b>{% trans "Screenshot:" %}</b></p>
+                        <a href="{{ template.cm_preview_url }}">
+                            <img src="{{ template.cm_screenshot_url }}" alt="{{ template.name|truncatechars:123 }}" title="{{ template.name|truncatechars:123 }}">
+                        </a>
+                    </div>
+                {% else %}
+                    <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>
+                {% endif %}
+                <p><a href="{{ template.cm_preview_url }}">{% trans "Preview" %}</a></p>
+            </div>
+        {% empty %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

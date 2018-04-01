@@ -1,0 +1,72 @@
+{% extends "jobs/base-pricing.html" %}
+{% load bootstrap_pagination_tags %}
+{% load job_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans "Job Pricing List" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Job Pricing List" %}</h1>
+
+    {% autopaginate job_pricings 10 %}
+
+    <div class="jobs-wrap">
+    {% for jp in job_pricings %}
+        {% has_perm user jobs.view_jobpricing jp as can_view %}
+        {% if can_view %}
+        <div class="job-wrap-search">
+
+            <h2><a href="{% url "job_pricing.view" jp.pk %}">{% if jp.get_title %}{{ jp.get_title }} - {% endif %}{% trans "Duration:" %} {{ jp.duration }}</a></h2>
+
+            <div>{% trans "Regular Price:" %} {{ jp.regular_price|format_currency }}</div>
+            <div>{% trans "Premium Price:" %} {{ jp.premium_price|format_currency }}</div>
+            <div>{% trans "Member Regular Price:" %} {{ jp.regular_price_member|format_currency }}</div>
+            <div>{% trans "Member Premium Price:" %} {{ jp.premium_price_member|format_currency }}</div>
+            <div>{% trans "Include Tax:" %} {{ jp.include_tax }}</div>
+            <div>{% trans "Tax Rate:" %} {{ jp.tax_rate }}</div>
+            <div>{% trans "Show Member Pricing:" %} {{ jp.show_member_pricing }}</div>
+            <div>{% trans "Status:" %} <b>{% if jp.status %}Active{%else%}Inactive{%endif%}</b></div>
+            <div class="meta">
+                <div class="submitted">{% blocktrans with jp.create_dt|date:"long" as create_date and jp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
+            </div>
+
+            <div class="options options-search text-right">
+                <div class="quick-options">
+                    {% job_pricing_options request.user jp %}
+                </div>
+            </div>
+
+            <!-- delete-job form -->
+            <form name="job-pricing-delete" method="POST" action="{% url "job_pricing.delete" jp.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+        </div>
+        {% endif %}
+
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_job_pricing = confirm('Permenantly delete this job price?');    // confirm
+                if(delete_job_pricing) $(this).parents('.job-wrap-search').find('form[name="job-pricing-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+
+{% endblock %}

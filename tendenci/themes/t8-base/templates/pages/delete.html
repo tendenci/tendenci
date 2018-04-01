@@ -1,0 +1,30 @@
+{% extends "pages/base.html" %}
+{% load page_tags %}
+
+{% block title %}{% blocktrans with t=page.get_title %}Delete Page - {{ t }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="page-wrap">
+        <h1>{% trans "Delete a Page" %}</h1>
+        <h2>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %} - <a href="{{ page.get_absolute_url }}">{{ page.get_absolute_url }}</a></h2>
+        <div class="content">{% blocktrans with c=page.content|safe|truncatewords_html:"60" %}{{ c }}{% endblocktrans %}</div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this page?" %}
+        </div>
+        <div class="delete-form">
+            <form name="page-delete" method="POST" action="{% url "page.delete" page.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans "Confirm Delete" %}">
+            </form>
+        </div>
+        <div class="back-item"><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to page" %} {{ page.title }}</a></div>
+        <div class="back-search"><a href="{% url "page.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_PAGES_LABEL trans 'pages' %} </a></div>
+    </div>
+</div>
+{% endblock %}

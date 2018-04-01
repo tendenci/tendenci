@@ -1,0 +1,33 @@
+
+.basic-info div{
+	margin: 5px 0;
+}
+#total-amount{
+	font-weight: bold;
+	margin-top: 1em;
+	font-size: 1.2em;
+}
+.well{
+	width: 90%;
+}
+#card-element {
+  background: white;
+  box-sizing: border-box;
+  font-weight: 400;
+  border: 1px solid #CFD7DF;
+  /*border-radius: 24px;*/
+  color: #32315E;
+  outline: none;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 20px;
+  cursor: text;
+ /* width: 76%;*/
+  width: 450px;
+}
+#card-errors{
+	color: red;
+}
+#payment-form .text-danger{
+	color: red;
+}

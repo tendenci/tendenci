@@ -1,0 +1,211 @@
+{% extends "event_logs/base-wide.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_log_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/event-logs.css' %}">
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
+<style>
+  .field, .new-help-text { display: inline; }
+  .new-help-text { cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{% firstof MODULE_EVENT_LOGS_LABEL trans 'Event Logs' %} {% trans "Search" %}</h1>
+  </div>
+
+  {% event_log_search search_form %}
+  {% autopaginate event_logs 10 %}
+  <p>
+    {% blocktrans with paginator.count as pag_count %} Found <strong>{{ pag_count }}</strong> results{% endblocktrans %}
+  </p>
+
+  <div class="event-logs-wrap">
+    {% for event_log in event_logs %}
+    <div class="event-log-search-wrap">
+      <div class="el-search-header">
+        <table class="table table-tendenci-reports" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="el-sh-pk"><strong><a href="{{ event_log.get_absolute_url }}">{{ event_log.pk }}</a></strong></td>
+            <td class="el-sh-elid">
+              {% if event_log.event_id > 0 %}
+              <a href="{% url "event_log.search" %}?event_id={{ event_log.event_id }}{{ date_range_query }}">
+                <img border="0" src="{% url "event_log.colored_image" event_log.color %}" width="40" height="20" alt="{{ event_log.event_id }}" title="{{ event_log.event_id }}" />&nbsp;
+                {{ event_log.event_id }}
+              </a>
+              <a href="{% url "event_log.search" %}?event_id={{ event_log.event_id }}{{ date_range_query }}">()</a>
+              {% else %}
+              <a href="{% url "event_log.search" %}?application={{ event_log.application }}">{{ event_log.application }}</a> : <a href="{% url "event_log.search" %}?action={{ event_log.action }}">{{ event_log.action }}</a>
+              {% endif %}
+            </td>
+            <td class="el-sh-source">
+              {% if event_log.source %}
+              <a href="{% url "event_log.search" %}?source={{ event_log.source|urlencode }}{{ date_range_query }}#advanced">{{ event_log.source }}</a>
+              {% else %}
+              &nbsp;
+              {% endif %}
+            </td>
+            <td class="el-sh-dt">
+              {{ event_log.create_dt|date:"short" }}
+              <a href="{% url "event_log.search" %}?start_dt_0={{ event_log.create_dt|datedelta:'-minutes=30'|date:"Y-m-d" }}&start_dt_1={{ event_log.create_dt|datedelta:'-minutes=30'|date:"h:i A" }}&end_dt_0={{ event_log.create_dt|datedelta:'+minutes=30'|date:"Y-m-d" }}&end_dt_1={{ event_log.create_dt|datedelta:'+minutes=30'|date:"h:i A" }}">()</a>
+            </td>
+          </tr>
+          <tr>
+            {% if event_log.user %}
+            <td class="el-sh-user">
+              {% trans "User: " %}<a href="{% url "profile" event_log.username %}">{{ event_log.username }}</a>
+              <a href="{% url "event_log.search" %}?user_name={{ event_log.username|urlencode }}#advanced">
+                <img border="0" src="{% static 'images/icons/crosscheck12x12.gif' %}" alt="crosscheck 12x12" title="crosscheck 12x12" />
+              </a>
+            </td>
+            {% else %}
+            <td class="el-sh-user">
+              {% trans "User: " %}{{ event_log.username }}
+              <a href="{% url "event_log.search" %}?user_name={{ event_log.username|urlencode }}#advanced">
+                <img border="0" src="{% static 'images/icons/crosscheck12x12.gif' %}" alt="crosscheck 12x12" title="crosscheck 12x12" />
+              </a>
+            </td>
+            {% endif %}
+            <td>
+              {% if event_log.user %}
+              {% trans "User ID: " %}<a href="{% url "event_log.search" %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
+              {% else %}
+              {% trans "User ID: " %}<a href="{% url "event_log.search" %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">0</a>
+              {% endif %}
+            </td>
+            <td colspan="2">{{ event_log.description }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="el-meta">
+        <div class="el-meta-request">{{ event_log.request_method }} - {{ event_log.http_user_agent }}</div>
+        <div class="el-meta-url">URL: <a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">{{ event_log.url }}</a></div>
+        {% if event_log.query_string %}
+        <div class="el-query-string">{% trans "Query String: " %}{{ event_log.query_string }}</div>
+        {% endif %}
+        {% if event_log.entity %}
+        <div class="el-meta-entity">
+          {% trans "Entity: " %}{{ event_log.entity.pk }}
+        </div>
+        {% endif %}
+        <div class="el-meta-ips">
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+              {% if event_log.user %}
+              <td colspan="2">
+                {% trans "Creator: " %}<a href="{% url "profile" event_log.username %}">{{ event_log.username }}</a>
+                <a href="{% url "event_log.search" %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
+              </td>
+              {% else %}
+              <td colspan="2">
+                {% trans "Creator: " %}{{ event_log.username }}
+                <a href="{% url "event_log.search" %}?user_name={{ event_log.username }}{{ date_range_query }}">0</a>
+              </td>
+              {% endif %}
+              <td>
+                {% if event_log.entity %}
+                {% trans "Entity: " %}<a href="{% url "entity" event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
+                {% else %}
+                {% trans "Entity: N/A" %}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <img height="12" width="12" alt="Cookie" src="{% static 'images/icons/cookie12x12.gif' %}" title="Cookie">
+                {% if event_log.session_id %}
+                <a href="{% url "event_log.search" %}?session_id={{ event_log.session_id }}{{ date_range_query }}#advanced">
+                  {{ event_log.session_id }}
+                </a>
+                {% else %}
+                {% if event_log.username == 'anonymous' %}
+                <a href="{% url "event_log.search" %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">
+                  {{ event_log.username }}
+                </a>
+                {% else %}
+                {% trans "No session available" %}
+                {% endif %}
+                {% endif %}
+              </td>
+              <td>{% trans "User IP: " %}
+                <a href="{% url "event_log.search" %}?user_ip_address={{ event_log.user_ip_address|urlencode }}{{ date_range_query }}#advanced">
+                  {{ event_log.user_ip_address }}
+                </a>
+              </td>
+              <td>{% trans "Server IP: " %}{{ event_log.server_ip_address }}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="el-event-data">
+        {% if event_log.headline %}
+        <p>{% trans "Headline: " %}{{ event_log.headline }}</p>
+        {% endif %}
+        {{ event_log.event_data }}
+        {% if event_log.content_type %}
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">(view)</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="event-log-search-wrap">
+      <div>{% trans "0 Results Found" %}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+  $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+  $('.timepicker').timepicker({'step': 15});
+  });
+
+  var adv_opt_legend = $('fieldset legend');
+  var adv_opt = adv_opt_legend.parent();
+  var adv_opt_fields = adv_opt.find('.form-field');
+
+  // hide the user form fields
+  adv_opt_fields.hide();
+  adv_opt_legend.html('<a href="#">' + adv_opt_legend.html() + '</a>');
+  adv_opt_legend.click(function() {
+  adv_opt_fields.toggle();
+  return false;
+  });
+
+  if (window.location.hash == '#advanced') {
+  adv_opt_legend.trigger('click');
+  }
+
+  $('.form-field > div >.help-text').each(function() {
+  var title_text = $(this).text();
+  $(this).hide();
+  $(this).parent().append('<div class="new-help-text" title="' + title_text +'">' +
+  '<i style="font-size:16px" class="fa fa-question-circle"></i></div>');
+  });
+  $('.new-help-text').tipsy({
+  gravity: 's',
+  live: true
+  });
+</script>
+{% endblock %}

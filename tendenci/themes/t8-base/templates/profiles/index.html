@@ -1,0 +1,390 @@
+{% extends "profiles/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load profile_filters %}
+{% load contribution_tags %}
+{% load membership_tags %}
+{% load humanize %}
+
+{% block title %}{% trans 'Profile' %} {% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+
+<link type="text/css" href="{% static 'css/jquery-ui/tabs/ui-1.8.tabs.css' %}" rel="stylesheet" />
+<style>
+    .app-links{
+        margin: 3px 5em 1em 5em;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t"><div id="t-profile">
+
+    {% for message,link,label in membership_reminders %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <p>{{ message|safe }}</p>
+      <div class="alert-link">
+          <a class="btn" href="{{ link }}">{{ label }}</a>
+      </div>
+    </div>
+    {% endfor %}
+
+<div id="t-view">
+
+    <div class="intro info">
+        <div class="profile-icon">
+            {% if user_this == request.user %}
+            <a href="//gravatar.com/" target="_blank" title="Create / update your gravatar">
+                {% gravatar user_this 128 %}
+            </a>
+            {% else %}
+            {% gravatar user_this 128 %}
+            {% endif %}
+        </div>
+
+        {% if profile.display_name %}
+        <h1>{% firstof profile.display_name %}</h1>
+        <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
+        {% else %}
+        <h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+        {% endif %}
+
+        {% if profile.member_number %}
+        {% if profile|allow_edit_by:user %}
+        <div style="padding-bottom: 1em;">
+        <span class="member-icon">{% trans 'Member ID' %}: {{ profile.member_number}}</span>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <p><strong>{% trans 'Username' %}:</strong> {{ profile.user.username }}</p>
+
+        {% if profile.company %}
+        <p>{{ profile.company }}</p>
+        {% endif %}
+
+        {% if profile.position_title %}
+        <p>{{ profile.position_title }}</p>
+        {% endif %}
+
+        {% if city_state %}
+        <p>{{ city_state }}</p>
+        {% endif %}
+
+        {% if user_this.skillset and user_this.skillset.is_first_responder %}
+        <p class="capitalize">{% trans "first responder" %} - <a href="{% url 'user.skills' user_this.username %}">{% trans "see skills" %}</a></p>
+        {% endif %}
+
+        {% if request.user == user_this or admin %}
+        {% if content_counts.invoice > 0 %}
+        <p><a href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user_this.id }}&search_method=exact">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
+        {% endif %}
+        {% endif %}
+
+        <div class="clear"></div>
+    </div>
+
+    <div class="contact info">
+
+        <h2>{% trans 'Contact Information' %}</h2>
+
+        <table>
+
+            {% if can_edit or not profile.hide_email %}
+            <tr>
+                <td>{% trans 'Email' %}</td>
+                <td>{{ user_this.email }}</td>
+            </tr>
+            {% endif %}
+
+            {% if can_edit or not profile.hide_phone %}
+            <tr>
+                <td>{% trans 'Phone' %}</td>
+                <td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
+            </tr>
+            {% endif %}
+
+            <tr>
+                <td>{% trans 'Website' %}</td>
+                <td>{{ profile.url }}</td>
+            </tr>
+
+            {% if can_edit or not profile.hide_address %}
+            <tr>
+                <td>{% trans 'Address' %}</td>
+                <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
+            </tr>
+            {% endif %}
+
+        </table>
+
+    </div>
+
+    {% if request.user.profile.is_superuser %}
+    <div class="admin_notes info">
+        <h2> {% trans 'Admin Notes' %} </h2>
+        <p>
+            {% if profile.admin_notes %}
+            {{ profile.admin_notes }}
+            {% else %}
+            {% trans 'No admin notes' %}.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    {% if user_this.educations.all  %}
+    <div class="education info">
+        <h2>{% trans 'Education History' %}</h2>
+        <table>
+            {% for education in user_this.educations.all %}
+            <tr>
+                <td width="1%">{% trans 'School' %}:</td>
+                <td width="1%">{{ education.school }}</td>
+                <td width="1%">{% trans 'Major' %}:</td>
+                <td width="1%">{{ education.major }}</td>
+            </tr>
+            <tr>
+                <td width="1%">{% trans 'Degree' %}:</td>
+                <td width="1%">{{ education.degree }}</td>
+                <td width="1%">{% trans 'Graduation Date' %}:</td>
+                <td width="1%">{{ education.graduation_year }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    {% if request.user == user_this or request.user.profile.is_superuser %}
+    {% if MODULE_MEMBERSHIPS_ENABLED %}
+    <div class="membership info">
+
+        <h2>{% trans 'Memberships' %}
+            {% if membership_apps %}
+            <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+            {% else %}
+            <a title="{% trans 'Create a membership application' %}" href="{% url "admin:memberships_membershipapp_add" %}" class="glyph plus">+</a>
+            {% endif %}
+        </h2>
+
+        {% if multiple_apps %}
+          <div class="app-links">
+              {% for app in membership_apps %}
+              <div>
+                  <a title="{% trans 'Join membership' %}" href="{% url "membership_default.add" app.slug %}?username={{ user_this.username }}">{% trans 'Join' %}</a>
+                  {{ app.name }}
+              </div>
+              {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if memberships %}
+
+        {% if can_auto_renew %}
+        <div class="text-right">
+        <a href="{% url "memberships.auto_renew_setup" profile.user.id %}"><span class="glyphicon glyphicon-edit"></span> {% if auto_renew_is_set %}{% trans 'Update Auto Renew' %}{% else %}{% trans 'Set Up Auto Renew' %}{% endif %}</a>
+        </div>
+        {% endif %}
+
+        <table>
+            {% for membership in memberships %}
+            <tr>
+                <td valign="top">
+                    {% if request.user.profile.is_superuser or request.user == membership.user %}
+                    <a href="{% url "membership.details" membership.pk %}">{{ membership.membership_type }}
+                    </a>
+                    {% else %}
+                    {{ membership.member_number }} {{ membership.membership_type }}
+                    {% endif %}
+
+                </td>
+                <td valign="top">
+                    {{ membership.join_dt|date:"M j, Y" }}
+
+                    {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+
+                    &#43; (grace period:
+                    {{ membership.membership_type.expiration_grace_period }} days)
+
+                    {% endif %}
+
+                    <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
+
+                    {% if membership.can_renew %}
+                    {% if membership.corporate_membership_id %}
+                    <a href="{% url "membership_default.renew_under_corp" membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
+                    {% else %}
+                    {% if membership.app %}
+                    <a href="{% url "membership_default.renew" membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Renew' %}</a>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+
+                    {% if user.is_superuser and membership.past_renewal %}
+                    {% if membership.corporate_membership_id %}
+                    <a href="{% url "membership_default.renew_under_corp" membership.corporate_membership_id membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
+                    {% else %}
+                    {% if membership.app %}
+                    <a href="{% url "membership_default.renew" membership.app.slug membership.id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">{% trans 'Admin Renew' %}</a>
+                    {% endif %}
+                    {% endif %}
+                    {% endif %}
+
+                    {% if auto_renew_is_set and membership.auto_renew %}
+                    {% with membership.next_auto_renew_date as next_auto_renew_date %}
+                    {% if next_auto_renew_date %}
+                    <br /><span class="text-info">{% trans 'Auto Renews' %} {{ next_auto_renew_date|date:'m/d/Y' }}</span>
+                    {% endif %}
+                    {% endwith %}
+                    {% endif %}
+
+                </td>
+                <td valign="top">
+                    {% with membership.get_invoice as invoice %}
+                    {% if invoice %}
+                    <a href="{% url "invoice.view" invoice.pk %}">
+                        {% trans 'Balance' %} {{ invoice.balance|format_currency }}
+                    </a>
+                    {% endif %}
+                    {% endwith %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>{% trans 'Not a member.' %}</p>
+        {% endif %}
+
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="group info">
+
+        <h2>{% trans 'Groups' %}
+        {% if request.user == user_this or admin %}
+        <a title="{% trans 'Join or leave group' %}" href="{% url "profile.edit_groups" user_this.username %}" class="glyph gears">S</a>
+        {% endif %}
+        </h2>
+
+        {% if group_memberships %}
+        <table>
+            {% for gm in group_memberships %}
+            <tr>
+                <td>
+                    {% if user.profile.is_superuser %}
+                    <a href="{% url "group.edituser" gm.group.slug user_this.pk %}">
+                        {% firstof gm.role 'Member' %}
+                    </a>
+                    {% else %}
+                    {% firstof gm.role 'Member' %}
+                    {% endif %} of
+
+                    <a href="{% url "group.detail" gm.group.slug %}">
+                        {% firstof gm.group.label gm.group.name %}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>{% trans 'Not in any groups.' %}</p>
+        {% endif %}
+
+    </div>
+
+    {% if request.user == user_this or request.user.profile.is_superuser %}
+    <div class="events info">
+    <h2>{% trans "Upcoming Event Registrations" %}</h2>
+    <a href="{% url 'event.myevents' %}?all=true">{% trans "View All Event Registrations" %}</a>
+    {% if registrations %}
+    <table>
+        {% for reg in registrations %}
+        <tr>
+            <td>
+            <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
+            </td>
+            <td>
+            {{ reg.reg8n_status }}
+            </td>
+            <td>
+            <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+            </td>
+            <td>
+            {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    {% trans "No upcoming event registrations." %}
+    {% endif %}
+    </div>
+    {% endif %}
+
+    {% latest_contributions user_this as contributions %}
+    {% if  contributions %}
+
+    <div class="contribution info">
+
+    <h2>{% trans "Contributions" %}</h2>
+    <span class="more"> <a href="{% url "contribution.search" %}?q={{ user_this.username }}">{% trans 'more' %} &raquo;</a></span>
+    <div class="clear"></div>
+
+    {% for contribution in contributions|slice:":5" %}
+    <div class="item">
+        {% if contribution.object.status and contribution.object.get_absolute_url %}
+        <a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+        {% else %}
+        {{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    {% if user.profile.is_superuser %}
+    <div class="contribution info no-contribs">
+        {% firstof request.user.first_name request.user.username %}, {% trans 'this person has not made any contributions yet.' %}
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+    {% profile_meta %}
+
+</div></div></div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+    container:    'more-options-wrap',
+    trigger:    'more-options-trigger',
+    target:        'more-options-target'
+});
+</script>
+<script type="text/javascript">
+    $(".app-links").hide();
+
+    $(".toggle-app-links").click(function(e){
+        $(".app-links").toggle('slow');
+        e.preventDefault();
+    })
+</script>
+
+{% endblock %}

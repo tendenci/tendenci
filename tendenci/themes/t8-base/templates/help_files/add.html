@@ -1,0 +1,44 @@
+{% extends "articles/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Add" %}</h1>
+
+    <div class="article-wrap">
+        <form action="{% url "help_files.add" %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript">
+        var slugit = new Slugify({
+            input_element : 'input#id_question',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+    </script>
+{% endblock %}

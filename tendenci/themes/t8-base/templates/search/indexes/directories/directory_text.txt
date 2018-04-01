@@ -1,0 +1,35 @@
+{% load base_filters %}
+
+{% firstof object.headline "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.profile.display_name }}
+{{ object.body }}
+
+is:{{ object.status_detail }}
+
+{{ object.first_name }}
+{{ object.last_name }}
+{{ object.city }}
+{{ object.state }}
+{{ object.zip_code }}
+{{ object.website }}
+
+state:{{ object.state }}
+
+{% with object.category_set as obj_cats %}
+{% if obj_cats.category %}
+category:{{ obj_cats.category }}
+category:{{ obj_cats.category.pk }}
+{% endif %}
+
+{% if obj_cats.sub_category %}
+sub_category:{{ obj_cats.sub_category }}
+sub_category:{{ obj_cats.sub_category.pk }}
+{% endif %}
+{% endwith %}
+
+{% if object.tags %}
+{% for tag in object.tags|tag_split %}
+tag:{{ tag }}
+{% endfor %}
+{% endif %}

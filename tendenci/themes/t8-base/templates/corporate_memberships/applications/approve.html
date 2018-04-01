@@ -1,0 +1,184 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+
+{% block title %}{% trans "Corporate Membership Approve / Disapprove" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/corporate_memberships-approve.css' %}">
+<style>
+    .block-inline{
+        display: inline-block;
+        vertical-align: top;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+     <h1>{% trans "Corporate Membership Submission" %}</h1>
+
+     <div>
+         <div class="field-label block-inline">
+             {{ field_labels.name }}:
+         </div>
+         <div class="block-inline">
+             <strong><a href="{% url "corpmembership.view" corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
+             {% if corporate_membership.is_pending %}
+             <span class="text-danger">({% trans 'Pending' %})</span>
+             {% endif %}
+         </div>
+     </div>
+     <div>
+         <div class="field-label block-inline">
+             {{ field_labels.address }}:
+         </div>
+         <div class="block-inline">
+            {% if corporate_membership.corp_profile.address %}
+                    {{ corporate_membership.corp_profile.address }}
+                {% endif %}
+                {% if corporate_membership.corp_profile.address2 %}
+                    {{ corporate_membership.corp_profile.address2 }}
+                {% endif %}
+                <br />
+                {% if corporate_membership.corp_profile.city %}
+                    {{ corporate_membership.corp_profile.city }}
+                {% endif %}
+                {% if corporate_membership.corp_profile.state %}
+                    {{ corporate_membership.corp_profile.state }}
+                {% endif %}
+                {% if corporate_membership.corp_profile.zip %}
+                    {{ corporate_membership.corp_profile.zip }}
+                {% endif %}
+         </div>
+     </div>
+
+     {% if corporate_membership.corp_profile.phone %}
+     <div>
+         <div class="field-label block-inline">
+             {{ field_labels.phone }}:
+         </div>
+         <div class="block-inline">
+            <strong>{{ corporate_membership.corp_profile.phone }}</strong>
+         </div>
+     </div>
+     {% endif %}
+
+     {% if corporate_membership.corp_profile.email %}
+     <div>
+         <div class="field-label block-inline">
+             {{ field_labels.email }}:
+         </div>
+         <div class="block-inline">
+           <strong> {{ corporate_membership.corp_profile.email }}</strong>
+         </div>
+     </div>
+     {% endif %}
+     <br />
+    <div>
+         <div class="field-label block-inline">
+             <strong>{% trans "Join Date"%}</strong>:
+         </div>
+         <div class="block-inline">
+            <strong>{{ corporate_membership.join_dt }}</strong>
+         </div>
+     </div>
+
+     <div>
+         <div class="field-label block-inline">
+             <strong>{% trans "Expiration Date"%}</strong>:
+         </div>
+         <div class="block-inline">
+           <strong> {{ corporate_membership.expiration_dt }}</strong>
+            {% if corporate_membership.is_expired %}
+                {% if corporate_membership.is_in_grace_period %}
+                    <span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
+                {% else %}
+                    <span style="color:red">{% trans "(expired)" %}</span>
+                {% endif %}
+            {% endif %}
+         </div>
+     </div>
+
+
+   {% if corporate_membership.renewal %}
+       <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+       <div>
+        {% blocktrans with corporate_membership.renew_dt|date:"d-M-Y" as renew_date %}Renewed on {{ renew_date }} by:{% endblocktrans %} <a href="{% url "profile" corporate_membership.creator.username %}">{{ corporate_membership.creator.get_full_name }}</a>
+        <br />
+        <a href="{% url "invoice.view" corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>
+        <br />
+        {% trans "New expiration date upon approval: " %}<b>{{ new_expiration_dt }}</b>
+
+        <br /><br />
+        {% trans "The number of individual memberships renewed in this transaction: " %}<b>{{ indiv_renew_entries.count }}</b>
+        {% if indiv_renew_entries.count > 0 %}
+
+           <small>(<span id="toggle-indiv-entries"><a href="javascript:;">{% trans "Show Details" %}</a></span>)</small>
+           <div id="indiv-entries">
+               <table width="70%">
+                <tr><td width="50%" class="indiv-header">{% trans "Name" %}</td><td width="50%" class="indiv-header">{% trans "Member Number" %}</td></tr>
+                {% for indiv_renew_entry in indiv_renew_entries %}
+                    <tr>
+                    <td><a href="{% url "profile" indiv_renew_entry.membership.user.username %}">{{ indiv_renew_entry.membership.user.get_full_name }}</a></td>
+                    <td>{{ indiv_renew_entry.membership.member_number }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+           </div>
+        {% endif %}
+
+       </div>
+   {% else %}
+      {% if corporate_membership.anonymous_creator  %}
+      <dl class="">
+      <dt>{% blocktrans %}This corporate membership was submitted by: {% endblocktrans %}</dt>
+        <dd>
+        {{ corporate_membership.anonymous_creator.first_name }}
+        {{ corporate_membership.anonymous_creator.last_name }}
+        {{ corporate_membership.anonymous_creator.email }} (not logged in)
+        </dd>
+      </dl>
+      {% endif %}
+   {% endif %}
+
+<div class="corp-approv-form">
+<form action="" method="post">{% csrf_token %}
+    {{ approve_form.as_p }}
+<input type="submit" class="btn btn-primary" name="approve" value="Approve" />&nbsp;&nbsp; or &nbsp;&nbsp;
+<input type="submit" class="btn btn-default" name="disapprove" value="Disapprove" />
+</form>
+</div>
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+
+    $(document).ready(function()
+    {
+        $("#toggle-indiv-entries").click(function()
+        {
+            if ($('#indiv-entries').is(':hidden')){
+                $('#toggle-indiv-entries a').html("Hide Details");
+            }else{
+                $('#toggle-indiv-entries a').html("Show Details");
+            }
+            $("#indiv-entries").toggle();
+        });
+
+
+    });
+
+
+
+    </script>
+
+
+
+{% endblock %}

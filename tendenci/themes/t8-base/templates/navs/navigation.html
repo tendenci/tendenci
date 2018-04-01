@@ -1,0 +1,65 @@
+{% load nav_tags %}
+{% comment %}<style type="text/css">
+    /* Standard Nav organization for a dropdown
+    The ul li a line-height and the top of ul li ul need to match
+    colors, heights, and borders can be overridden */
+    nav {
+      display: block;
+    }
+    nav ul {
+      list-style: none;
+    }
+    nav ul li {
+      float: left;
+      position: relative;
+    }
+    nav ul li a {
+      line-height: 30px;
+      padding: 0 12px;
+      background-color: transparent;
+      display: block;
+      color: #999;
+    }
+    nav ul li a:hover {
+      color: #999;
+    }
+    nav ul li ul {
+      display: none;
+      float: left;
+      margin: 0;
+      position: absolute;
+      top: 30px;
+      width: 148px;
+      z-index: 99999;
+    }
+    nav ul li ul a {
+      height: auto;
+      line-height: 20px;
+      padding: 10px;
+      width: 120px;
+    }
+    nav ul li ul ul {
+      left: 100%;
+      top: 0;
+    }
+    nav ul li:hover > a, nav ul a:focus {
+      /* background-color: transparent; */
+    }
+    nav ul li:hover > ul {
+      display: block;
+    }
+</style>{% endcomment %}
+
+<nav class="clearfix navigation">
+<ul class="t-nav-ul" id="nav-ul-{{ nav.id }}">
+{% for item in items %}
+    {% nav_item item %}
+{% endfor %}
+</ul>
+
+{% if user.profile.is_superuser %}
+<div class="admin-inline">
+  <div class="admin-links clear-block"><a href="{% url "navs.edit_items" nav.id %}?next={{ request.path }}" title="{% trans 'Edit Nav' %}" class="edit-nav">{% blocktrans with t=nav.title|title %}Edit {{ t }}{% endblocktrans %}</a></div>
+</div>
+{% endif %}
+</nav>

@@ -1,0 +1,386 @@
+#container { width: 8.5in; }
+
+.invoice-view-display{
+	width: 95%;
+	max-width: 650px;
+}
+.invoice-view-wrap{
+	/*font-family: arial, Helvetica, sans-serif;*/
+	font-size: 12px;
+	border: 1px solid #ccc;
+	padding: 5px;
+	width: 100%;
+	margin: 1em 0;
+}
+.invoice-view-payment-wrap{
+	/*font-family: arial, Helvetica, sans-serif;*/
+	font-size: 12px;
+	border: 1px solid #FF6666;
+	width: 100%;
+	margin-top: 1em;
+	padding: 3px;
+}
+.invoice-view-box{
+	border: 2px solid #666;
+	margin-bottom: 1em;
+	padding: 3px;
+}
+.invoice-view-detail-left{
+	float: left;
+	width: 3em;
+}
+.invoice-view-detail-middle{
+	float: left;
+	width: 60%;
+}
+.invoice-view-detail-right{
+	float: right;
+	text-align: right;
+}
+.invoice-view-totals{
+	float: right;
+	text-align: right;
+}
+.invoice-view-totals .amounts{
+	float:right;width:6em;
+}
+.invoice-view-payonline{
+	float: right;
+}
+.clear-both{
+	clear: both;
+}
+.clear-right{
+	clear: right;
+}
+.clear-left{
+	clear: left;
+}
+.invoice-item{
+	padding-bottom: 2px;
+}
+.invoice-view-totals td{
+	padding: 0;
+	margin: 0;
+}
+
+.body_copy_yellow, .body-copy-yellow{
+	/*background-color: #F9FF9A;*/
+	background-color: yellow;
+}
+.body_copy_gray{
+	background-color: gray;
+}
+.body_copy_alerts{
+	color: red;
+}
+.errorlist{
+		color: red;
+	}
+
+/* invoice search*/
+.t .t-invoice .t-search .invoice-row{
+	width: 95%;
+	max-width: 620px;
+	border: 1.5px solid #333;
+	padding: .5px 1px 1px .5px;
+	margin-bottom: 1em;
+}
+.invoice-row-inner{
+	border: 1.5px solid #333;
+}
+
+
+.body-big-unpaid{color: red;}
+.body-copy-yellow{background-color: yellow;}
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:500px;
+}
+
+
+/* New invoices styles start here */
+/* Hopefully the ones above can be deleted soon */
+td.td-right {
+	text-align: right;
+}
+
+div.invoice-meta-wrapper {
+    width: 90%;
+ }
+
+div.invoice-meta {
+	margin: 20px 20px 20px 0;
+	width: 500px;
+	float: left;
+}
+
+div.invoice-meta table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+div.invoice-meta table td {
+	padding: 3px 3px 3px 5px;
+}
+
+div.invoice-meta table tr.invoice-meta-amount {
+	background-color: #E5E5E5;
+	border: 1px solid #CCC;
+	font-weight: bold;
+}
+
+div.invoice-meta table tr.invoice-meta-amount td {
+	padding: 5px;
+}
+
+div.invoice-meta-logo {
+    margin: 20px 0 20px 0;
+    width: 300px;
+    float: right;
+}
+
+div.invoice-meta-logo.print-view {
+    width: 295px;
+    float: left;
+}
+
+div.invoice-meta-logo img {
+    width: 100%;
+}
+
+div.invoice-meta-clear {
+    clear: both;
+}
+
+div.invoice-table {
+	width: 100%;
+	margin-bottom: 15px;
+    clear: both;
+}
+
+div.invoice-table table {
+	width: 90%;
+}
+
+div.invoice-table table td {
+	padding: 5px;
+}
+
+div.invoice-table table tr {
+	border-bottom: 1px solid #E2E2E2;
+}
+
+div.invoice-table table tr.invoice-table-header {
+	background-color: #E5E5E5;
+	border: 1px solid #CCC;
+	font-weight: bold;
+}
+
+div.invoice-options {
+	margin: 20px 0 20px 0;
+	float: left;
+}
+
+div.invoice-options ul {
+	list-style-type: none;
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+
+div.invoice-options ul li {
+	float: left;
+	margin-right: 10px;
+}
+
+div.invoice-options ul li a {
+  background: #eee;
+  background: -moz-linear-gradient(top, #eee 0%, #ccc 100%);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eee), to(#ccc));
+  border: 1px solid #ccc;
+  border-bottom: 1px solid #bbb;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  color: #333;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 8px;
+  text-align: center;
+  text-shadow: 0 1px 0 #eee;
+  display: block;
+}
+
+div.invoice-options ul li a:hover {
+  background: #ddd;
+  background: -moz-linear-gradient(top, #ddd 0%, #bbb 100%);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#bbb));
+  border: 1px solid #bbb;
+  border-bottom: 1px solid #999;
+  cursor: pointer;
+  text-shadow: 0 1px 0 #ddd;
+}
+
+div.invoice-options a.admin-option {
+	color: #000;
+}
+
+div.invoice-options .invoice-options-header {
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #555;
+}
+
+div.invoice-total-wrap {
+	width: 90%;
+}
+
+a.invoice-pay {
+  background: #7fbf4d;
+  background: -moz-linear-gradient(top, #7fbf4d 0%, #63a62f 100%);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#7fbf4d), to(#63a62f));
+  border: 1px solid #63a62f;
+  border-bottom: 1px solid #5b992b;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -moz-box-shadow: inset 0 1px 0 0 #96ca6d;
+  -webkit-box-shadow: inset 0 1px 0 0 #96ca6d;
+  box-shadow: inset 0 1px 0 0 #96ca6d;
+  color: #fff;
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  padding: 7px 0 8px 0;
+  text-align: center;
+  text-shadow: 0 -1px 0 #4c9021;
+  width: 150px;
+  display: block;
+}
+
+a.invoice-pay:hover {
+  background: #76b347;
+  background: -moz-linear-gradient(top, #76b347 0%, #5e9e2e 100%);
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#76b347), to(#5e9e2e));
+  -moz-box-shadow: inset 0 1px 0 0 #8dbf67;
+  -webkit-box-shadow: inset 0 1px 0 0 #8dbf67;
+  box-shadow: inset 0 1px 0 0 #8dbf67;
+  cursor: pointer;
+  display: block;
+}
+
+div.invoice-total {
+	float: right;
+}
+
+div.invoice-total table td {
+	padding: 5px;
+}
+
+div.invoice-total table tr.invoice-total-balance {
+	background-color: #E5E5E5;
+	border: 1px solid #CCC;
+	font-weight: bold;
+}
+
+td.invoice-status {
+	font-weight: bold;
+}
+
+td.invoice-status-red {
+	font-weight: bold;
+	color: orange;
+}
+
+div.invoice-admin-notes {
+	clear: both;
+	padding: 8px;
+	border: 1px solid #CCC;
+	margin: 20px 0 0 10px;
+	width: 80%;
+	display: none;
+}
+
+div.invoice-admin-notes p {
+	padding: 0;
+	margin: 0;
+}
+
+div.invoice-admin-notes textarea {
+	border: 1px solid #CCC;
+	width: 99%;
+}
+
+div.payment-table {
+	width: 100%;
+	margin-bottom: 15px;
+}
+
+div.payment-table table {
+	width: 90%;
+}
+
+div.payment-table table td {
+	padding: 5px;
+}
+
+div.payment-table table tr {
+	border-bottom: 1px solid #E2E2E2;
+}
+
+div.payment-table table tr.payment-table-header {
+	background-color: #E5E5E5;
+	border: 1px solid #CCC;
+	font-weight: bold;
+}
+
+p.payment-history-header {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+div.payment-details {
+	display: none;
+}
+
+.invoice-adjust .field-wrapper .field-label{
+	float: left;
+	text-align: right;
+	width: 15em;
+	padding-right: 1em;
+}
+.invoice-adjust #adjust-sumit-button{
+	margin: 1em 0 0 15em;
+}
+
+.entry1 {
+	background-color: #ccc;
+}
+.entry2 {
+	background-color: #fff;
+}
+#total-by-account{
+	margin-top: 1em;
+}
+
+#offline-payment-form-wrap .field-label {
+    width: 150px;
+    text-align: right;
+    padding-right: 10px;
+    vertical-align: middle;
+}
+
+#offline-payment-form-wrap .field-widget .datepicker,
+#offline-payment-form-wrap .field-widget .timepicker {
+    width: 80px;
+}
+
+#offline-payment-form-wrap .field-submit {
+    margin-top: 10px;
+}
+

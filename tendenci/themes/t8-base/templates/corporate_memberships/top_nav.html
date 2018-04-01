@@ -1,0 +1,16 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load corporate_memberships_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/user_suit.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_CORPORATE_MEMBERSHIPS_LABEL trans "Corporate Memberships" %}{% endblock %}
+
+{% block current_app %}
+    {% if corp_membership %}
+        {% corpmemb_current_app request.user corp_membership %}
+    {% elif corporate_membership %}
+        {% corpmemb_current_app request.user corporate_membership %}
+    {% else %}
+        {% corpmemb_current_app request.user %}
+    {% endif %}
+{% endblock %}

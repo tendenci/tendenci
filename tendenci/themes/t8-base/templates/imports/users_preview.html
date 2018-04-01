@@ -1,0 +1,121 @@
+{% extends "imports/base.html" %}
+{% load dashboard_tags %}
+
+{% block title %}{% trans 'Import Users' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/user_imports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="imports">
+<h1>{% trans "Preview Your Import" %}</h1>
+
+<p>{% trans "You're almost done!  Please review your settings.  To complete your import click 'Import Now.'" %}</p>
+
+<div class="csv-icon">
+<img src="{% static 'images/icons/xls-icon.gif' %}" alt="{{ file_name }}" title="xls icon" />
+<p>{{ file_name }}<br /></p>
+
+<ul>
+    <li class="first">{{ total }} {% trans "Total Users" %}</li>
+    <li>{{ count_insert }} {% trans "Insert" %}</li>
+    <li>{{ count_update }} {% trans "Update" %}</li>
+    <li class="last highlight">{{ count_invalid}} {% trans "Invalid Users" %}</li>
+</ul>
+
+</div>
+
+<div style="clear: both; "></div>
+
+<div class="import-settings">
+<table>
+<tr>
+    <td class="name">{% trans "ID Duplicates by:" %}</td>
+    <td class="value">{{ key }}</td>
+</tr>
+<tr>
+    <td class="name">{% trans "Interactive Status:" %}</td>
+    <td class="value">{{ interactive }}</td>
+</tr>
+<tr>
+    <td class="name">{% trans "User Group:" %}</td>
+    <td class="value">{{ group.name }}</td>
+</tr>
+<tr>
+    <td class="name">{% trans "Update: " %}</td>
+    <td class="value">{{ str_update }}</td>
+</tr>
+</table>
+
+</div> <!-- import settings -->
+
+    <form class="import" method="post" action="{% url "import.user_upload_process" id %}">{% csrf_token %}
+
+    <div class="results">
+    {% for u in users_list %}
+        {%if not u.IS_VALID %}
+            <div class="result-error">
+                <p>{% trans "Row" %} {{ u.ROW_NUM }} - {{ u.ERROR }}</p>
+                <em>{% trans "This user will be ignored (not added or updated)" %}</em>
+            </div>
+        {% else %}
+            {% if u.ACTION == 'insert' %}
+                <div class="body-copy-yellow">
+                    {% trans "INSERT:" %}
+                </div>
+            {% else %}
+                {% trans "UPDATE" %}
+            {% endif %}
+
+            <table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#CCCCCC">
+              <tr>
+                 <td>
+                   <table width="100%" border="0" cellspacing="1" cellpadding="1">
+                     <tr bgcolor="#F2F2F2">
+                       <td width="5%" bgcolor="#F2F2F2" class="body_copy">&nbsp;</td>
+                       <td width="61%" class="body_copy">
+                            <font face="Arial, Helvetica, sans-serif" size="2" class="subtitles">
+                                {% if u.ACTION == 'update' %}
+                                    <a href="{% url "profile" u.username %}">{{ u.first_name }} {{u.last_name }}</a>
+                                {% else %}
+                                    {{ u.first_name }} {{u.last_name }}
+                                {% endif %}
+                                {% if u.username %}
+                                    ({{ u.username }})
+                                {% endif %}
+                            </font>
+
+                        </td>
+                       <td width="34%" class="body_copy"> &nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td width="5%" class="body_copy">&nbsp;</td>
+                       <td width="61%">
+                            <font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">{% trans "Email: " %}
+                            <a href="mailto:{{ u.email }}" class="links">
+                            {{ u.email }}</a></font>
+                       </td>
+                       <td width="34%" class="body_copy"><font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">
+                      &nbsp;
+                        </font></td>
+                     </tr>
+                   </table>
+             </td>
+               </tr>
+         </table>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    <div align="right">
+    <input type="submit" class="submit-btn" name="submit" value="{% trans 'Import Users' %}" >
+    </div>
+
+    </form>
+
+</div>
+</div>
+{% endblock %}

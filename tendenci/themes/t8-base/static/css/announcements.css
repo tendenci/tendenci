@@ -1,0 +1,18 @@
+#announcement-bar {
+    background-color: white;
+}
+#announcement-bar .announcement-wrap {
+    padding: 20px;
+}
+#announcement-bar .announcement-wrap h1,
+#announcement-bar .announcement-wrap h2,
+#announcement-bar .announcement-wrap h3,
+#announcement-bar .announcement-wrap h4,
+#announcement-bar .announcement-wrap h5,
+#announcement-bar .announcement-wrap h6,
+#announcement-bar .announcement-wrap ul,
+#announcement-bar .announcement-wrap ol,
+#announcement-bar .announcement-wrap p,
+#announcement-bar .announcement-wrap table {
+    color: red;
+}

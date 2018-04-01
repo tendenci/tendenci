@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load contribution_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_green.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_CONTRIBUTIONS_LABEL trans "Contributions" %}{% endblock %}
+
+{% block current_app %}
+    {% if contribution %}
+        {% contribution_current_app request.user contribution %}
+    {% else %}
+        {% contribution_current_app request.user %}
+    {% endif %}
+{% endblock %}

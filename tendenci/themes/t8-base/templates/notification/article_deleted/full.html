@@ -1,0 +1,34 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Article Delete Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}A record has been deleted
+  from the {{ display_name }} module{% endblocktrans %}{% firstof MODULE_ARTICLES_LABEL 'Articles' %}.  {% trans "The details are given below:" %}</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
+    <td width="75%"><b>{% blocktrans with headline=object.headline %}{{ headline }}{% endblocktrans %}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% blocktrans with request.user.get_full_name as requser %}Deleted
+      by:</td>
+    <td width="75%"><b>{{ requser }}{% endblocktrans %}</b></td>
+  </tr>
+</table>
+<p>{% trans "If you would like view all recently deleted articles, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=433000">{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=433000</a></b><br>
+  <br>
+  </p>
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+
+</body>
+</html>

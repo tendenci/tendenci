@@ -1,0 +1,2 @@
+
+{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} {% trans "notice from" %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}

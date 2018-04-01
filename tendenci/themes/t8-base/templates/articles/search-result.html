@@ -1,0 +1,37 @@
+
+
+<article class="panel panel-info t-articles-search-result t-search-result">
+    <div class="panel-heading t-search-result-heading">
+        <h3 class="panel-title"><a href="{{ article.get_absolute_url }}">{% firstof article.headline trans "Untitled" %}</a></h3>
+    </div>
+
+    <div class="panel-body t-search-result-body">
+        <p class="item-content">
+            {% if article.summary %}
+                {% blocktrans with summary=article.summary|striptags|truncatewords:140|safe %}{{ summary }}{% endblocktrans %}
+            {% else %}
+                {% blocktrans with body=article.body|striptags|truncatewords:140|safe %}{{ body }}{% endblocktrans %}
+            {% endif %}
+        </p>
+    </div>
+
+
+       {% with article.category_set as article_cat %}
+          {% if article_cat %}
+      <div class="panel-footer">
+         <ul class="list-inline" style="margin-bottom: 0px;">
+           <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'articles' %}?category={{ article_cat.category.name }}">{{ article_cat.category }}</a></li>
+           {% if article_cat.sub_category %}
+           <li>&#124;</li>
+           <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.name }}">{{ article_cat.sub_category }}</a></li>
+           {% endif %}
+         </ul>
+
+      </div>
+        {% endif %}
+       {% endwith %}
+
+
+
+
+</article>

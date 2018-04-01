@@ -1,0 +1,8 @@
+
+<p>{% trans "Thank you for your payment!" %}</p>
+<h3>{% trans "What would you like to do now?" %}</h3>
+<ul>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'job' obj.slug %}" class="links">{% trans "View Job" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "job.search" %}" class="links">{% trans "Search Job Bank" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "job.add" %}" class="links">{% trans "Add a Job" %} </a></li>
+</ul>

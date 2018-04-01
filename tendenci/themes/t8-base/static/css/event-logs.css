@@ -1,0 +1,247 @@
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.event-logs-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.event-logs-nav li {
+	display: inline;
+}
+
+.t .event-logs-wrap {
+	margin-bottom: 20px;
+}
+
+.t .event-logs-wrap .event-log-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .event-logs-wrap .event-log-wrap h2 {
+	width: 85%;
+}
+.t .event-logs-wrap .event-log-wrap .content {
+	margin-bottom: 10px;
+}
+.t .event-logs-wrap .event-log-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+
+
+/* event logs search */
+.t .event-log-search-wrap {
+	margin-top: 25px;
+}
+.t .event-log-search-wrap a {
+	text-decoration: none;
+}
+
+.t div.el-search-header table {
+	width: 98%;
+}
+
+.t div.el-search-header table td {
+	text-align: left;
+	padding: 5px;
+}
+
+.t div.el-search-header table td.el-sh-pk {
+	width: 10%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-elid {
+	width: 20%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-elid img {
+	vertical-align:text-bottom;
+}
+
+.t div.el-search-header table td.el-sh-source {
+	width: 15%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-dt {
+	text-align: right;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-user {
+	width: 20%;
+}
+
+.t div.el-meta {
+	width: 98%;
+	margin: 5px 0 5px 5px;
+	font-size: 14px;
+	color: #777;
+}
+
+.t div.el-meta table td {
+	width: 40%;
+}
+
+.t div.el-event-data {
+	margin: 5px 0 5px 5px;
+}
+
+.t div.el-meta-ips table {
+	width: 98%;
+	margin: 5px 0 5px 0;
+}
+
+.t div.el-meta-ips table td {
+	margin: 2px 0 2px 0;
+}
+
+/* search form */
+div.forms {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #CCC;	
+}
+
+form#search-form input#id_start_dt_0 {
+	width: 95px;
+}
+
+form#search-form input#id_start_dt_1 {
+	width: 75px;
+}
+
+form#search-form input#id_end_dt_0 {
+	width: 95px;
+}
+
+form#search-form input#id_end_dt_1 {
+	width: 75px;
+}
+
+div.id_start_dt {
+	float: left;
+}
+
+div.id_end_dt {
+	float: left;
+	margin-left: 20px;
+}
+
+div.id_request_method {
+	width: 170px;
+	padding-top: 20px;
+	float: left;
+	clear: both;
+}
+
+form#search-form div.id_request_method select {
+	width: 150px;
+}
+
+div.id_event_id {
+	width: 200px;
+	float: left;
+	padding-top: 20px;
+}
+
+div.id_user_id {
+	padding-top: 20px;
+	margin: 0;
+	float: left;
+}
+
+div.id_user_name {
+	padding-top: 20px;
+	margin: 0 0 0 10px;
+	float: left;
+}
+
+div.id_user_ip_address {
+	padding-top: 20px;
+	margin: 0 0 0 10px;
+	float: left;
+}
+
+div.id_session_id {
+	padding-top: 10px;	
+	clear: both;
+}
+
+div.id_source {
+	padding-top: 10px;	
+	clear: both;
+}
+
+div.id_object_id {
+	padding-top: 10px;
+	clear:both;
+}
+
+form#search-form input#id_user_id {
+	width: 75px;
+}
+
+form#search-form input#id_user_name {
+	width: 125px;
+}
+
+form#search-form input#id_user_ip_address {
+	width: 225px;
+}
+
+form#search-form legend {
+	font-size: 1.1em;
+	font-weight: normal;
+	padding-top: 10px;
+	clear: both;
+}
+
+form#search-form .form-field {
+	margin: 0;
+	padding: 0;
+}

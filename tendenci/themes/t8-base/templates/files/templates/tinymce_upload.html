@@ -1,0 +1,27 @@
+
+<div class="photo-wrapper">
+    <input type="hidden" name="icon_url" value="{{ file.icon }}" />
+    <input type="hidden" name="filename" value="{{ file.name }}" />
+    <input type="hidden" name="file_url" value="{{ file.get_absolute_url }}" />
+    <input type="hidden" name="file_download_url" value="{{ file.get_absolute_download_url }}" />
+    <input type="hidden" name="file_width" id="file_{{ file.pk }}_width" value="{{ file.image_dimensions|first }}" />
+    <input type="hidden" name="file_height" id="file_{{ file.pk }}_height" value="{{ file.image_dimensions|last }}" />
+
+    <div class="badge">
+        <div class="icon"><img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" /></div>
+        <div class="details">
+            <div class="title">{{ file.name }}</div>
+            <input class="file-url" type="text" value="{{ SITE_GLOBAL_SITEURL }}{{ file.get_absolute_url }}" />
+        </div>
+    </div>
+    <div class="actions">
+        {% if file.type == 'image' %}
+        <a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">{% trans "Insert Image" %}</a>
+        {% endif %}
+        <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">{% trans "Insert Attachment" %}</a>
+        {% if delete %}
+        <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">{% trans "Delete" %}</a>
+        {% endif %}
+    </div>
+
+</div> <!-- END photo-wrapper -->

@@ -1,0 +1,15 @@
+{% extends 'reports/report_base.html' %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Create a Report' %}{% endblock title %}
+
+{% block content %}
+<h1>{% trans 'Create a Report' %}</h1>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form|styled_form }}
+
+    <input type="submit" value="{% trans 'Create Report' %}" />
+</form>
+
+{% endblock content %}

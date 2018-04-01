@@ -1,0 +1,35 @@
+{% extends "social_services/base-wide.html" %}
+
+{% block title %}{{ block.super }}{% trans 'Map' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <h1 class="capitalize">{% trans "social services map" %}</h1>
+    <p class="capitalize"><strong>{% trans "legend" %}:</strong></p>
+    <ul>
+        <li class="capitalize">{% trans "red dot" %} --- {% trans "disaster areas" %}</li>
+        <li class="capitalize">{% trans "blue dot" %} --- {% trans "first responders" %}</li>
+        {% if user.is_authenticated %}
+        <li class="capitalize">{% trans "blue star" %} --- {% trans "you" %}</li>
+        {% endif %}
+    </ul>
+    <div id="map" class="smallmap"></div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/openlayers.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/social_service_map.js' %}"></script>
+<script type="text/javascript">
+$(window).load(function(){
+    profile_redirect = "{% url 'profile.index' %}";
+    responder_redirect = "{% url 'social-services.responders' %}";
+    disaster_redirect = "{% url 'social-services.relief_areas' %}";
+    window.parent.setTimeout(plotpoints({{ b_points }}, {{ r_points }}, {{ center }}), 0);
+});
+</script>
+{% endblock %}

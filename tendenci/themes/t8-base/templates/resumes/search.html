@@ -1,0 +1,60 @@
+{% extends "resumes/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load resume_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_RESUMES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Resumes Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url 'resume.feed' %}">
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_RESUMES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Resumes Search" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate resumes 10 %}
+    {% resume_search %}
+
+    <h4 class="capitalize">
+        {% if MODULE_RESUMES_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Resumes Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
+
+    <section>
+        {% for resume in resumes %}
+            {% search_result resume %}
+        {% empty %}
+
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

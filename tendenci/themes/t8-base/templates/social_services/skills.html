@@ -1,0 +1,50 @@
+{% extends "profiles/base.html" %}
+{% load base_filters %}
+{% load profile_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'User Skills'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+{% if edit_mode %}
+    <h1 class="capitalize">{% trans "edit user skills" %}</h1>
+{% else %}
+    <h1 class="capitalize">{% trans "user skills" %}</h1>
+{% endif %}
+
+<h3 class="capitalize">{% trans "first responder information" %}</h3>
+<p class="responder_check"><span class="capitalize">{% trans "first responder" %}:</span>
+<input id="fr_checkbox" type="checkbox" disabled="True" {% if user_this.skillset.is_first_responder %}checked{% endif %}/>
+<label class="capitalize" for="fr_checkbox">({% trans "priority recipient of communications" %})</label></p>
+
+<h4 class="capitalize">{% trans "who you are" %}</h4>
+<span class="capitalize">{% trans "name" %}:</span> <a href="{{ user_this.profile.get_absolute_url }}">{{ user_this.profile.get_name }}</a><br>
+{% if user_this.profile.company %}
+<span class="capitalize">{% trans "company" %}:</span> {{ user_this.profile.company }}<br>
+{% endif %}
+{% if user_this.profile.phone %}
+<span class="capitalize">{% trans "phone" %}:</span> {{ user_this.profile.phone|phonenumber }}<br>
+{% endif %}
+
+{% if edit_mode %}
+    <form action="" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ forms|styled_multi_forms }}
+            <input type="submit" value="{% trans 'Submit Information!' %}"/>
+        </div>
+    </form>
+{% else %}
+    <span class="capitalize">{% trans "address" %}:</span> {{ user_this.profile.get_address }}<br><br>
+    <p><a class="capitalize" href="{% url 'user.skills_edit' user_this.username %}">{% trans "edit this information" %}</a></p>
+    <div class="forms">
+        {{ skills_form|styled_form }}
+    </div>
+{% endif %}
+
+{% endblock %}

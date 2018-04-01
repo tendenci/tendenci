@@ -1,0 +1,211 @@
+{% extends "photos/base-wide.html" %}
+
+{% load humanize %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load bootstrap_pagination_tags %}
+{% load smart_if %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block meta_description %}{% blocktrans with d=photo.title|striptags|truncatewords:20 %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=photo.meta_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ photo.get_canonical_url }}" />{% endblock %}
+
+{% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}Photo{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<meta property="og:title" content="{{ photo.title }}"/>
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_medium_640_url }}"/>
+<meta property="og:description" content="{{ photo.caption|striptags }} {{ photo.get_license.name }}"/>
+<meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}" />
+<meta property="og:site_name" content="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+{% endblock %}
+
+{% block content %}
+{% tags_for_object photo as tags %}
+
+    <div id="photo-instance">
+        <div class="photo-title-wrap">
+            <h2>{% firstof photo.title "Untitled" %}</h2>
+        </div>
+        <div class="photo-nav">
+            {% if set_id > 0 %}
+            <div class="photo-back"><a href="{% url "photoset_details" set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
+            {% endif %}
+        </div>
+        <div class="photo-traverse">
+            <ul>
+                {% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+                {% if photo_set_count %}<li>({{ photo_position }} {% trans "of" %} {{ photo_set_count }})</li>{% endif %}
+                {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>
+                {% else %}
+                    {% if photo_first_url %}<li><a id="photo-next" href="{{ photo_first_url }}">{% trans "Go to First" %} &raquo;</a></li>{% endif %}
+                {% endif %}
+            </ul>
+        </div>
+        <div class="hr"></div>
+        <div class="photo-wrap">
+            <div class="photo">
+                </a>
+                <br>
+                <div about="{% photo_image_url photo size=640x640 constrain=True %}"
+                    xmlns:dct="http://purl.org/dc/terms/"
+                    xmlns:cc="http://creativecommons.org/ns#">
+
+                    {% if photo_next_url %}
+                    <a id="image-photo-next" href="{{ photo_next_url }}">
+                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" /></a>
+                    {% else %}
+                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
+                    {% endif %}
+
+                    <br />
+                    <div id="photo-rights">
+                    <span property="dct:title">{% blocktrans with t=photo.title %}{{ t }}{% endblocktrans %}</span>
+                    {% if photo.photographer %}
+                        {% blocktrans with p=photo.photographer %}taken by {{ p }}{% endblocktrans %}
+                    {% else %}
+                    {% trans 'uploaded by' %} <a href="{{ photo.creator.get_absolute_url }}"
+                        property="cc:attributionName"
+                        rel="cc:attributionURL dct:creator">{% if photo.creator.get_full_name %}{{ photo.creator.get_full_name }}{% else %}{{ photo.creator.username }}{% endif %}</a>.
+                    {% endif %}
+                    {% if photo.get_license == photo.default_license %}
+                        {{ photo.default_license.name }}.
+                    {% else %}
+                        {% blocktrans with photo.get_license.deed as photo_deed and photo.get_license.name as photo_name %}Licensed under
+                        <a rel="license" href="{{ photo_deed }}">
+                            {{ photo_name }}</a>.{% endblocktrans %}
+                    {% endif %}
+                    <br />{% fb_like_button_iframe photo.get_absolute_url %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="photo-caption-wrap">
+            {% blocktrans with c=photo.caption|safe|urlize %}{{ c }}{% endblocktrans %}
+        </div>
+        {% if photo.exif_data %}
+
+        {% with photo.exif_data.DateTimeOriginal|exif_to_date|date:'F j, Y' as taken_dt %}
+        {% if taken_dt %}
+        <div>
+            <stong>{% trans "Taken on:" %} </stong> {{ taken_dt }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if photo.exif_data.Make or photo.exif_data.Model %}
+        <div>
+            {% trans "Camera:" %}
+            {% if photo.exif_data.Model %}
+                {{ photo.exif_data.Model }}
+            {% else %}
+                {{ photo.exif_data.Make }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if photo.exif_data.location %}
+        <div>
+            {% trans "Location:" %}
+            {{ photo.exif_data.location }}
+        </div>
+        {% endif %}
+
+        {% endif %}
+        <div class="hr"></div>
+        <div class="photo-options">
+            {% photo_options request.user photo %}
+        </div>
+        {% if tags %}
+        <div class="photo-tags">
+            <strong>{% trans "Tags:" %}</strong> {% for tag in tags %}<a href="{% url "photos_search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}{% endfor %}
+        </div>
+        {% endif %}
+    </div><!-- END .photo-instance -->
+
+<!-- delete photo form -->
+<form name="photo-delete" method="POST" action="{% url "photo_destroy" photo.pk set_id %}">{% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
+</form>
+
+{% endblock %}
+
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/tendenci5.api.client.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.tools.min.js' %}"></script>
+<script type="text/javascript">
+
+// photo: delete confirmation
+$('.photo-options .photo-delete').click(function(){
+    var delete_photo = confirm('Permenantly delete photo?');    // confirm
+    if(delete_photo) $('form[name="photo-delete"]').submit();    // delete: if OK
+    return false;    // cancel
+});
+
+// keyboard shorcut (left, right)
+$(document).keyup(function(event){
+  if(event.target.tagName == 'INPUT') return false; // avoid input fields
+  if(event.keyCode == 37) window.location = '{{ photo_prev_url }}'; // left arrow
+  else if(event.keyCode == 39) window.location = '{{ photo_next_url }}'; // right arrow
+});
+
+// // keyboard shorcut (left, right)
+// $(document).keyup(function(event){
+//     if(event.target.tagName == 'INPUT') return false; // avoid input fields
+//     if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
+//     else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
+// });
+
+// function supports_history_api() {
+//   return !!(window.history && history.pushState);
+// }
+
+// function setupHistoryClicks() {
+//     addClicker(document.getElementById("image-photo-next"));
+//     addClicker(document.getElementById("photo-next"));
+//     addClicker(document.getElementById("photo-prev"));
+// }
+
+// function addClicker(link) {
+//     $(link).click(function(e){
+//         swapPhoto(link.href);
+//         history.pushState(null, null, link.href);
+//         e.preventDefault();
+//     });
+// }
+
+// function swapPhoto(href) {
+//   var req = new XMLHttpRequest();
+//   req.open("GET",
+//            "/photos/partial/" +
+//              href.split("/").slice(4).join("/"),
+//            false);
+//   req.send(null);
+
+//   if (req.status == 200) {
+//     document.getElementById("photo-instance").innerHTML = req.responseText;
+//     setupHistoryClicks();
+//     return true;
+//   }
+//   return false;
+// }
+
+// window.onload = function() {
+//   if (!supports_history_api()) { return; }
+//   setupHistoryClicks();
+//   window.setTimeout(function() {
+//     window.addEventListener("popstate", function(e) {
+//       swapPhoto(location.href);
+//     }, false);
+//   }, 1);
+// }
+
+</script>
+{% endblock %}

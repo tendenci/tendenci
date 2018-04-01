@@ -1,0 +1,20 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user discounts.change_discount opt_object as can_edit %}
+{% has_perm user discounts.delete_discount opt_object as can_delete %}
+
+<ul class="list-inline t-meta-options-links">
+    {% if can_edit %}
+        <li><a href="{% url 'discount.edit' opt_object.pk %}">{% trans "Edit" %}</a></li>
+    {% endif %}
+
+    {% if can_edit and can_delete %}
+        <li>|</li>
+    {% endif %}
+
+    {% if can_delete %}
+        <li><a class="t-meta-delete-link" href="{% url 'discount.delete' opt_object.pk %}">{% trans "Delete" %}</a>
+    {% endif %}
+</ul>

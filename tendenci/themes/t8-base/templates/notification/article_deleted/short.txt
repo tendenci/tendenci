@@ -1,0 +1,2 @@
+
+{% blocktrans with object.headline as article %}Article ({{ article }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

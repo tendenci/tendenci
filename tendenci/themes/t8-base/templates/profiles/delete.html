@@ -1,0 +1,21 @@
+{% extends "profiles/base.html" %}
+{% load profile_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+<h2>{% trans "Are you sure you want to delete this user?" %}</h2>
+<h3>{% trans "User:" %} <a href="{% url 'profile' user_this.username %}">{{ user_this.first_name }} {{ user_this.last_name }} ({{ user_this.username }})</a></h3>
+<form action="{% url "profile.delete" user_this.id %}" method="post">{% csrf_token %}
+<input type="hidden" name="id" value="{{user_this.id}}" />
+<input type="submit" value="{% trans 'Delete User' %}" />
+</form>
+
+</div>
+{% endblock %}

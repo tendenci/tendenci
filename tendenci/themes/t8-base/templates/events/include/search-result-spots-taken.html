@@ -1,0 +1,21 @@
+{% if user.profile.is_superuser or event.registration_configuration.display_registration_stats %}
+<div class="spots-taken">
+
+    {% if user.profile.is_superuser %}
+        <a href="{% url "event.registrant.roster" event.pk %}">{{ event.get_spots_status.0 }}
+        {% if event.registration_configuration.payment_required %}{% trans "Paid" %}{% endif %}
+        {% trans "Attendee" %}{{ event.get_spots_status.0|pluralize }} {% trans "Registered" %}</a>
+    {% else %}
+        {{ event.get_spots_status.0 }}
+        {% if event.registration_configuration.payment_required %}{% trans "Paid" %}{% endif %}
+        {% trans "Attendee" %}{{ event.get_spots_status.0|pluralize }} {% trans "Registered" %}
+    {% endif %}
+
+    {% if user.profile.is_superuser %}
+    {% if event.money_collected %}
+    <div>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ event.money_collected }} {% trans "Collected" %}</div>
+    {% endif %}
+    {% endif %}
+
+</div>
+{% endif %}

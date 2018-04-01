@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load dashboard_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_green.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_DASHBOARDS_LABEL trans "Dashboards" %}{% endblock %}
+
+{% block current_app %}
+    {% if dashboard %}
+        {% dashboard_current_app request.user dashboard %}
+    {% else %}
+        {% dashboard_current_app request.user %}
+    {% endif %}
+{% endblock %}

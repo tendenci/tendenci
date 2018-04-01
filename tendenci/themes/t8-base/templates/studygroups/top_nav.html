@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load studygroup_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/medal_gold_1.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Study Groups' %}{% endblock %}
+
+{% block current_app %}
+    {% if study_group %}
+        {% studygroup_current_app request.user study_group %}
+    {% else %}
+        {% studygroup_current_app request.user %}
+    {% endif %}
+{% endblock %}

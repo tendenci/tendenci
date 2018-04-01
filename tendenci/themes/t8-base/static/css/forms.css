@@ -1,0 +1,301 @@
+div.forms .errors {
+	color: #990000;
+	margin: 10px 0 10px 0;
+	font-weight: bold;
+}
+
+div.forms .form-label {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 35px 0 10px 0;
+	font-weight: bold;
+}
+
+div.forms .formset-label {
+	font-size: 1.2em;
+	margin: 35px 0 10px 0;
+	font-weight: normal;
+}
+
+div.forms .form-field {
+	margin-bottom: 15px;
+}
+
+div.forms .form-field .label {
+	font-size: 16px;
+	margin-bottom: 2px;
+	color: #555;
+}
+
+div.forms .form-field .error {
+	color: #990000;
+}
+
+div.forms .form-field .help-text {
+	color: #777;
+}
+
+div.forms .form-field .field input[type="text"] {
+	padding: 3px;
+	font-size: 16px;
+	width: 70%;
+	color: #777;
+}
+
+div.forms .form-field .field input[readonly="readonly"] {
+	color: #AAA;
+}
+
+div.forms .form-field .field input[type="password"] {
+	padding: 3px;
+	font-size: 16px;
+	width: 70%;
+	color: #777;
+}
+
+div.forms .form-field .field select {
+	padding: 3px;
+	font-size: 16px;
+	width: 50%;
+	color: #777;
+}
+
+div.forms .form-field .field textarea {
+	width: 70%;
+	font-size: 16px;
+	color: #777;
+}
+
+div.forms input[type="submit"] {
+	margin-top: 15px;
+	padding: 5px;
+	cursor: pointer;
+}
+
+div.forms li {
+    list-style-type: none;
+    margin: 3px 0;
+}
+
+div.forms div.checkbox-input {
+	float: left;
+}
+
+div.forms div.checkbox-input .field {
+	float: left;
+}
+
+div.forms div.checkbox-input .label {
+	float: left;
+	margin-left: 5px;
+}
+
+div.forms div.checkbox-input .help-text {
+	clear: both;
+}
+
+div.forms fieldset {
+	border: 0;
+}
+
+div.forms fieldset legend {
+  font-size:1.4em;
+  font-weight:bold;
+}
+
+div.forms div.form-grouping {
+	margin-bottom: 15px;
+	padding: 5px 0 5px 10px;
+}
+
+div.forms div.alt {
+	background-color: #EFEFEF;
+}
+
+
+div.forms div.formset-functions {
+	margin-bottom: 15px;
+}
+
+div.forms div.formset-add {
+	display: none;
+}
+
+div.forms div.formset-delete {
+	display: none;
+}
+
+div.forms fieldset.permissions {
+    overflow: hidden;
+}
+
+.id_allow_anonymous_view {
+    margin-bottom: 5px;
+}
+
+.required {
+	font-weight: bold;
+}
+
+img.captcha {
+	display: block;
+}
+
+/* groups */
+table#id_group_perms {
+	text-align: left;
+	border: 1px solid #DDD;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+table#id_group_perms tr.alt {
+	background-color: #FFFFFF;
+}
+
+table#id_group_perms td {
+	padding: 5px;
+}
+
+table#id_group_perms td input {
+	cursor: pointer;
+}
+
+table#id_group_perms th.header-col-1 {
+	width: 150px;
+}
+
+table#id_group_perms th.header-col-2 {
+	width: 70px;
+}
+
+table#id_group_perms th.header-col-3 {
+	width: 70px;
+}
+
+
+/* users and members*/
+table#id_user_perms, table#id_member_perms {
+	text-align: left;
+	border: 1px solid #DDD;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+table#id_user_perms tr.alt, table#id_member_perms tr.alt {
+	background-color: #FFFFFF;
+}
+
+table#id_user_perms td, table#id_member_perms td {
+	padding: 5px;
+}
+
+table#id_user_perms td input, table#id_member_perms td input {
+	cursor: pointer;
+}
+
+table#id_user_perms th.header-col-1, table#id_member_perms th.header-col-1 {
+	width: 150px;
+}
+
+table#id_user_perms th.header-col-2, table#id_member_perms th.header-col-2 {
+	width: 70px;
+}
+
+table#id_user_perms th.header-col-3, table#id_member_perms th.header-col-3 {
+	width: 70px;
+}
+
+/* admin-only section */
+div.forms fieldset.admin-only {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.admin-only legend {
+	padding: 5px;
+}
+
+/* boxy-grey stuff */
+div.forms fieldset.boxy-grey {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.boxy-grey legend {
+	padding: 5px;
+}
+
+
+/* capctha section */
+div.forms fieldset.captcha {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.captcha legend {
+	padding: 5px;
+}
+
+/* permission section */
+
+div.id_group_perms {
+	padding-top: 10px;
+	border-top: 1px solid #CCC;
+}
+
+div.id_user_perms, div.id_member_perms {
+	padding-top: 10px;
+	border-top: 1px solid #CCC;
+}
+
+div.forms fieldset.permissions {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.forms fieldset.permissions legend {
+	padding: 5px;
+}
+
+/* Forms delete links */
+.form-delete-link {
+	text-align: right;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+/* Custom Price Input Fields */
+div.forms div.form-field div.field input.custom-price {
+	width: 50px;
+}
+
+.id_captcha input[type="text"]{
+	width: 160px !important;
+}
+.t .form-wrap {
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}

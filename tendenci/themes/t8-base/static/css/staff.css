@@ -1,0 +1,117 @@
+.t {
+	width: 90%;
+}
+
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* options */
+.t div.quick-options {
+    position: absolute;
+	margin-right: 5px;
+    right: 0;
+    top: 15px;
+}
+
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+/* search form */
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+    margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.t .staff-search-wrap {
+    width: 90%;
+}
+
+.t .staff-search-member {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0 10px 0;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.t .staff-search-member table td.member-photo {
+    width: 128px;
+    height: 128px;
+    padding: 10px;
+    background-color: #F2F2F2;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.t .staff-search-member table td.member-photo p {
+    margin-top: 10px;
+}
+
+.t .staff-search-member table td.member-info {
+    padding: 10px;
+}
+
+.t .staff-search-member table td.member-info p {
+    margin-top: 10px;
+}
+
+.t .view-staff-member {
+    width: 100%;
+    position: relative;
+}
+
+.t .view-staff-member .member-photo {
+    padding: 5px 15px 15px 5px;
+    float: left;
+    text-align: center;
+}
+
+.t .view-staff-member .member-photo img {
+    border: 6px solid #f2f2f2;
+}
+
+.t .view-staff-member .member-photo p {
+    margin-top: 5px;
+}
+
+.t .view-staff-member .member-photo .staff-position {
+    font-style: italic;
+    font-size: 12px;
+}
+
+.t .view-staff-member h1 {
+    color: #888;
+    font-size: 18px;
+    padding: 10px;
+}
+
+.t .staff-search-wrap {width: 100%}
+
+.t #staff-bio { margin-bottom: 20px; }

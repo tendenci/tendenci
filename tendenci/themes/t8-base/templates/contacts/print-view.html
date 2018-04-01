@@ -1,0 +1,29 @@
+{% extends "contacts/base.html" %}
+{% load base_filters %}
+{% load contact_tags %}
+
+
+{% block title %}{{ block.super }}{% trans "Print" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} {% trans "Print" %}</h1>
+
+    <div class="contact-wrap">
+
+        <div class="options">
+            <div class="quick-options">
+                {% contact_options request.user contact %}
+            </div>
+        </div>
+
+
+        <h2>{% blocktrans with h=contact.headline %}{{ h }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with b=contact.body|safe %}{{ b }}{% endblocktrans %}</div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date and contact.creator as contact_creator%}Submitted on {{ create_date }} by {{ contact_creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

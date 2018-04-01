@@ -1,0 +1,180 @@
+.event-info {
+    padding: 10px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: left;
+    margin: 1em 0;
+    width: 61%;
+}
+.event-title {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+.event-time {
+    font-size: 1.1em;
+}
+.event-price {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.event-msg {
+    padding: 10px;
+    color: #777;
+}
+.hidden {
+    display: none;
+}
+.registrant-header{
+    border-bottom: 1px dotted #ccc;
+    margin: 2em 0 1em;
+    padding: 5px 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+.odd-registrant, .even-registrant{
+    background-color: #f5f5f5;
+    padding: 10px;
+}
+
+#reg-form-box{
+    border: 1px solid #ccc;
+    background-color: #fff;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    width: 200px;
+
+}
+#reg-form-box input[type="text"]{
+    width: 150px;
+}
+#reg-form-wrap{
+    float: right;
+    width: 200px;
+    margin:2px;
+}
+#registrant-forms .form-label{
+	display: inline;
+	inline-height: 1;
+	padding: 0.5em;
+}
+#registrant-forms .form-field{
+	margin-top: 0.7em;
+}
+
+#registrant-forms .required{
+	font-weight: bold;
+}
+#registrant-forms .error{
+	color:#FF0000;
+}
+#registrant-forms{
+    width: 70%;
+}
+
+#reg-summary{
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid silver;
+}
+#summary-total-price{
+    border-top: 1px solid #ccc;
+    margin-bottom: 1em;
+}
+#total-label,#total-amount{
+    font-weight: bold;
+}
+#summary-price, #summary-total-price{
+    width: 90%;
+}
+#summary-price td, #summary-total-price td{
+    padding: 3px;
+}
+#summary-discounted-price{
+    margin-bottom: 1em;
+    width: 90%;
+}
+.line-on-top{
+    border-top: 1px solid #ccc;
+}
+#register-button {
+    font-size: 1.2em;
+    padding: 5px;
+}
+div.delete-button-wrap{
+    display: none;
+}
+
+#update_summary{
+    margin-bottom: 1em;
+    padding: 3px;
+}
+
+.errors-box{
+    background-color: #FFEBE8;
+    border: 2px solid #FF8B78;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 61%;
+}
+.deleted-item td{
+    text-decoration: line-through;
+}
+.clear{
+    clear: both;
+}
+.delete-button{
+    padding: 6px 10px 6px 15px;
+    background: url("/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    color: darkred;
+    background-color: #fff;
+}
+
+.extra-registrants {
+    width: 50px;
+}
+
+.add-registrants-button {
+    padding: 3px;
+    margin-left: 5px;
+}
+
+.add-registrants-link {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.add-registrants-text {
+    padding-top: 20px;
+    padding: 20px 0;
+}
+
+.summary-total {
+    font-weight: bold;
+    font-size: 1.7em;
+    margin-bottom: 10px;
+}
+
+.summary-payment {
+    margin-bottom: 15px;
+}
+
+.admin {color: #800; font-weight: bold;}
+.discount-summary {display: none;}
+.showhide {font-size: 18px;}
+
+.addon-wrap{
+    background-color: #f5f5f5;
+    padding:10px;
+    margin: 2em 0;
+    width: 68%;
+}
+
+.event-registration-hidden {
+    display: none !important;
+}

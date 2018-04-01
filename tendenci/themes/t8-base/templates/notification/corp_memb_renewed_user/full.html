@@ -1,0 +1,37 @@
+
+<p>{% blocktrans with object.corp_profile.name as objname and request.user.username as requser %}The corporate membership "{{ objname }}" has been renewed by {{ requser }}.{% endblocktrans %}
+</p>
+
+{% if invoice.balance <= 0 %}
+    <p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
+    </p>
+{% else %}
+    {% if object.payment_method.is_online %}
+    <p>
+        {% blocktrans %}To make online credit card payment, go to invoice view page and make online payment from there:{% endblocktrans %}
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
+
+    </p>
+    {% endif %}
+{% endif %}
+
+<p>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
+</p>
+{% if object.status_detail == "pending" %}
+    <p>
+    {% trans "Note that the dues representative(s) will be notified by email when your corporate membership renewal is approved." %}
+    </p>
+{% endif %}
+
+{% if corpmembership_app.authentication_method == 'secret_code' %}
+<p>
+{% trans "The <b>secret code</b> for individuals to join under your corporate membership:" %}<br />
+<b>{{ corp_profile.secret_code }}</b>
+</p>
+{% endif %}
+
+<p>{% trans "Thanks!" %}</p>
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+ <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

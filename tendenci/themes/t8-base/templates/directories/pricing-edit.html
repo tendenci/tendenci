@@ -1,0 +1,23 @@
+{% extends "directories/base-pricing.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Edit Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %} {% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Edit Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %}</h1>
+
+    <p>{% trans "To edit the directory price, complete the fields below and press Submit." %}</p>
+
+    <form action="." class="form-horizontal" method="post">{% csrf_token %}
+        {{ form|styled_form }}
+
+        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+
+
+    </form>
+
+</div>
+{% endblock %}

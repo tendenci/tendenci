@@ -1,0 +1,47 @@
+{% extends "memberships/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberships-no-renew.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+
+    <h1 style="margin-bottom:15px;">{% trans "Membership Application" %}</h1>
+    {% blocktrans with c=memberships.count %}
+    <p>You are a member of every ({{ c }}) membership type available in this application.</p>
+    <p>This application will be available starting at your next renewal period.</p>
+    {% endblocktrans %}
+
+
+    {% for membership in memberships %}
+
+        <div class="membership-wrap">
+
+            <div><strong><a href="{% url "membership.details" membership.pk %}">
+                {{ membership.member_number }} {{ membership.membership_type }}
+            </a></strong></div>
+
+            <div class="membership-period">{{ membership.subscribe_dt|date:"N n, Y" }} - {% firstof membership.expire_dt|date:"N n, Y" "Forever" %}</div>
+
+            {% if membership.get_renewal_period_dt.1 %}
+            <div class="renew-period">Renew between {{ membership.get_renewal_period_dt.0|date:"N n, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N n, Y" }}</div>
+            {% else %}
+            <div class="renew-period">{% trans 'This membership never expires. There is no renewal period' %}.</div>
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+{% endblock %}

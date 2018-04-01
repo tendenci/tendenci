@@ -1,0 +1,44 @@
+{% extends "photos/base-wide.html" %}
+{% load photo_tags %}
+{% load uploader %}
+
+
+{% block title %}{% blocktrans %}Manual Upload Form{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+    {{ block.super }}
+    {% uploader_head %}
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans "Upload photos" %}</h1>
+
+        <a href="{% url 'photos_batch_edit' photoset_id %}">{% trans "When finished, click here to edit photos" %}</a>
+        {% if image_slot_left > 0 %}
+        <p>{% blocktrans with slots=image_slot_left %}
+            Image slots left: {{ slots }}
+        {% endblocktrans %}</p>
+        {% uploader %}
+            debug: false,
+
+            validation: {
+                acceptFiles : "*.jpg,*.jpeg,*.gif,*.png,*.tif,*.tiff,*.JPG,*.JPEG",
+                allowedExtensions: ['jpg', 'jpeg', 'gif', 'png', 'tif', 'tiff'],
+                sizeLimit: 20971520,  // 20 MB
+                itemLimit: {{ image_slot_left }}
+            },
+
+            request: {
+                endpoint: '{% url 'photos_batch_add' photoset_id %}',
+                params: { "csrfmiddlewaretoken": "{{ csrf_token }}" }
+            },
+            retry: { enableAuto: true }
+        {% end_uploader %}
+        {% else %}
+            <h2>{% blocktrans with slots=MODULE_PHOTOS_PHOTOLIMIT %}
+                Sorry but you have uploaded the max number ( {{ slots }} ) of images available for this photo set.
+            {% endblocktrans %}</h2>
+        {% endif %}
+
+    </div>
+{% endblock %}

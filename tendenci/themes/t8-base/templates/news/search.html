@@ -1,0 +1,73 @@
+{% extends "news/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load category_tags %}
+{% load news_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+    {% else %}
+        {% trans "News List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest News' %}" href="{% url 'news.feed' %}" />
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_NEWS_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+        {% else %}
+            {% trans "News List" %}
+        {% endif %}
+        {% if release_year %}
+        - {{ release_year }}
+        {% endif %}
+    </h1>
+
+    {% autopaginate search_news 10 %}
+    {% news_search %}
+
+{% if release_years_list %}
+<div class="pull-right">
+    {% for year in release_years_list %}
+   <span><a href="{% url 'news_by_release_year' year %}">{{ year }}</a></span>
+    &vert;
+    {% endfor %}
+    <span><a href="{% url 'news' %}">All</a></span>
+</div>
+{% endif %}
+
+    <h4 class="capitalize">
+        {% if MODULE_NEWS_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} News Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
+
+    <section>
+        {% for news in search_news %}
+            {% search_result news %}
+        {% empty %}
+
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

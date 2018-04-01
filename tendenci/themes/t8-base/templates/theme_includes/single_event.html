@@ -1,0 +1,32 @@
+{% load theme_tags %}
+{% load base_tags %}
+{% load event_tags %}
+{% list_events as events_list limit=1 %}
+<section id="single-event" class="clearfix">
+    <h3>{% firstof TEMPLATE_SINGLE_EVENT_TITLE 'Next Event' %}</h3>
+    {% if events_list %}
+        {% for event in events_list %}
+        <div class="event-info">
+        {% if event.image %}
+            <img alt="{% blocktrans with t=event.title %}{{ t }}{% endblocktrans %}" src="{% image_url event.image size=170x200 crop=true %}"/>
+        {% else %}
+            <img src="{% if TEMPLATE_SINGLE_EVENT_DEFAULT_FILE %}/files/{{ TEMPLATE_SINGLE_EVENT_DEFAULT_FILE }}/170x200/crop/90/{% else %}http://schipul.com/files/2369/170x200/crop/90/{% endif %}"/>
+        {% endif %}
+            <h4><a href="{{ event.get_absolute_url }}">{% blocktrans with t=event.title %}{{ t }}{% endblocktrans %}</a></h4>
+            <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
+            <p>{% blocktrans with d=event.description|striptags|truncatewords:"30"|safe %}{{ d }}{% endblocktrans %}</p>
+            <p><span><a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More …' %}</a></span></p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="event-info">
+            <img src="{% if TEMPLATE_SINGLE_EVENT_DEFAULT_FILE %}/files/{{ TEMPLATE_SINGLE_EVENT_DEFAULT_FILE }}/170x200/crop/90/{% else %}http://schipul.com/files/2369/170x200/crop/90/{% endif %}"/>
+            <h4><a href="#">{% trans 'Our Next Event' %}</a></h4>
+            <p class="event-date">{% now "F d, Y" %}</p>
+            <p>{% trans 'Come join us at our next event!' %}</p>
+            {% if request.user.is_authenticated %}<p>{% blocktrans %}Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add a speaker photo!{% endblocktrans %}</p>{% endif %}
+            <p><span><a class="readmore" href="#">{% trans 'Read More …' %}</a></span></p>
+        </div>
+    {% endif %}
+</section>
+{% theme_setting setting_name %}

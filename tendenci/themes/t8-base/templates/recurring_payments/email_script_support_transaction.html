@@ -1,0 +1,64 @@
+{% load base_filters %}
+
+{% trans "Greetings:" %}<br /><br />
+{% blocktrans with rp=pt.recurring_payment %}
+A transaction
+was failed for the recurring payment ({{ rp }})
+on <a href="{{ site_url }}">{{ site_display_name }}</a>.
+{% endblocktrans %}
+<br /><br />
+
+<div><h2>{% trans "Transaction details:" %}</h2></div>
+
+<div>
+<table border="0" width="90%">
+
+    <tr>
+        <td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Result code' %}:</td><td>{{ pt.result_code }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Error code' %}:</td><td>{{ pt.message_code }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Error text' %}:</td><td>{{ pt.message_text }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Transaction date' %}:</td><td>{{ pt.create_dt|date }}</td>
+    </tr>
+</table>
+
+</div>
+
+
+<br />
+<div><h2>{% trans "More info for this recurring cycle:" %}</h2></div>
+
+<div>
+<table border="0" width="90%">
+    <tr>
+        <td>{% trans 'Customer' %}:</td><td>{{ pt.recurring_payment.user.get_full_name }}({{ pt.recurring_payment.user.email }})</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Guid' %}:</td><td>{{ pt.recurring_payment.guid }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Recurring cycle start date' %}:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_start_dt|date }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Recurring cycle end date' %}:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
+    </tr>
+
+
+</table>
+
+</div>
+
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+

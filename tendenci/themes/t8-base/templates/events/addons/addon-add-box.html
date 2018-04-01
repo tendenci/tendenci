@@ -1,0 +1,34 @@
+
+<h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+<div id="addon-choices" >
+    <table>
+    {% for addon in addons %}
+    <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>
+    <td>
+        <input type="checkbox" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{% blocktrans with title=addon.title %}{{ title }}{% endblocktrans %}" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
+        {% blocktrans with title=addon.title %}{{ title }}{% endblocktrans %} ({% blocktrans with keys=SITE_GLOBAL_CURRENCYSYMBOL %}{{ keys }}{% endblocktrans %}{{ addon.price }})
+    </td>
+    <td>
+        <strong>{% trans "Quantity" %}:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="0" {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
+    </td>
+    </tr>
+    <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>
+        <td>
+        <ul id="addon-options">
+            {% for option in addon.options.all %}
+                <li>
+                <input {% if forloop.first %}checked="checked"{% endif %} type="radio" name="add-addon-option-{{ addon.pk }}"
+                    value="{{ option.pk }}" title="{% blocktrans with title=option.title %}{{ title }}{% endblocktrans %}"
+                    {% if anon_pricing and not addon.allow_anonymous %}{% trans "DISABLED" %}{% endif %} />
+                {% blocktrans with title=option.title %}{{ title }}{% endblocktrans %}
+                </li>
+            {% endfor %}
+        </ul>
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+</div>
+<div>
+    <input id="add-addons-button" type="button" value="{% trans "Add Addons" %}"/>
+</div>

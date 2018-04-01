@@ -1,0 +1,26 @@
+<form class="search-form" action="{% url "event.global.registrant.search" %}" method="get">
+
+<fieldset class="event-filters">
+    <legend>{% trans "Event Details" %}</legend>
+    <strong>{{ form.event.label }}:</strong>
+    {{ form.event }}
+    <strong>{{ form.start_dt.label }}:</strong>
+    {{ form.start_dt }}
+    <strong>{{ form.end_dt.label }}:</strong>
+    {{ form.end_dt }}
+</fieldset>
+
+<fieldset class="registrant-filters">
+    <legend>{% trans "Registrant Details" %}</legend>
+    <strong>{{ form.user_id.label }}:</strong>
+    {{ form.user_id }}
+    <strong>{{ form.first_name.label }}:</strong>
+    {{ form.first_name }}
+    <strong>{{ form.last_name.label }}:</strong>
+    {{ form.last_name }}
+    <strong>{{ form.email.label }}:</strong>
+    {{ form.email }}
+</fieldset>
+
+<input class="btn" type="submit" value="{% trans "Search" %}" />
+</form>

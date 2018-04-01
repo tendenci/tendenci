@@ -1,0 +1,36 @@
+{% extends "photos/base-wide.html" %}
+
+{% load humanize %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load styled_forms %}
+
+{% load base_filters %}
+{% load smart_if %}
+
+{% block title %}{% blocktrans %}Editing Photo Details{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h1>Edit photo</h1>
+
+<form name="photo-edit" method="post" action="">{% csrf_token %}
+    <div class="forms">
+
+        {{ photo_form|styled_form }}
+
+        <div class="submit">
+            <input type="hidden" name="action" value="update" />
+            <input type="submit" value="{% trans 'Save changes' %}" />
+        </div>
+
+    </div>
+</form>
+
+{% endblock %}
+

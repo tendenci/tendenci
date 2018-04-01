@@ -1,0 +1,9 @@
+from_url:{{ object.from_url }}
+to_url:{{ object.to_url }}
+http_status:{{ object.http_status }}
+{% if object.status %}
+status:active
+{% else %}
+status:inactive
+{% endif %}
+uses_regex:{{ object.uses_regex }}

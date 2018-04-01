@@ -1,0 +1,123 @@
+{% extends "speakers/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load speaker_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ speaker.name }}
+        {% if speaker.position %}
+            &nbsp;&ndash;&nbsp;{{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            &nbsp;&ndash;&nbsp;{{ speaker.company }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        speaker {{ speaker.name }}
+        {% if speaker.position %}
+            {{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            {{ speaker.company }}
+        {% endif %}
+        {% if speaker.tags %}
+            {{ speaker.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ speaker.name }}
+        {% if speaker.position %}
+            ,{{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            ,{{ speaker.company }}
+        {% endif %}
+        {{ speaker.biography|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/speaker.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="view-speaker-member">
+        <div class="quick-options">
+            {% speaker_options request.user speaker %}
+        </div>
+        <div class="member-photo">
+            {% if speaker.professional_photo %}
+            <img src="{% url 'file' speaker.professional_photo.pk %}128x128/" title="{{ speaker.name }}"  />
+            {% else %}
+            <img src="{% static 'images/speakers-default.jpg' %}" height="128" width="128" title="{{ speaker.name }}"  />
+            {% endif %}
+            <p>{{ speaker.name }}</p>
+            {%  if speaker.position %}
+            <p class="speaker-position">{{ speaker.position }}</p>
+            {% endif %}
+        </div>
+        <h1>
+            {{ speaker.name }}
+            {% if speaker.position %}
+                {{ speaker.position }}
+            {% endif %}
+            {% if speaker.company %}
+                {{ speaker.company }}
+            {% endif %}
+        </h1>
+        {% if speaker.biography %}
+        <p class="speaker-bio">
+            {{ speaker.biography|safe }}
+        </p>
+        {% endif %}
+        {% if speaker.email %}
+        <div>
+            {% trans 'Send email to ' %}{{ speaker.email|obfuscate_email:speaker.name }}
+        </div>
+        {% endif %}
+
+         <div class="speaker-media">
+             {% if speaker.facebook %}
+                <a href="{{ speaker.facebook }}"><img src="{% static 'images/icons/facebook-24x24.png' %}" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
+            {% endif %}
+            {% if speaker.twitter %}
+                <a href="{{ speaker.twitter }}"><img src="{% static 'images/icons/twitter-24x24.png' %}" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
+            {% endif %}
+            {% if speaker.linkedin %}
+                <a href="{{ speaker.linkedin }}"><img src="{% static 'images/icons/linkedin-24x24.png' %}" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
+            {% endif %}
+
+            {% if speaker.get_satisfaction %}
+                 <div>
+                {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>
+                </div>
+            {% endif %}
+            {% if speaker.flickr %}
+                 <div>
+                {% trans 'Flickr:' %} <a href="{{ speaker.flickr }}">{{ speaker.flickr }}</a>
+                </div>
+            {% endif %}
+            {% if speaker.slideshare %}
+                 <div>
+                {% trans 'SlideShare:' %} <a href="{{ speaker.slideshare }}">{{ speaker.slideshare }}</a>
+                </div>
+            {% endif %}
+        </div>
+        <div>&nbsp;</div>
+        <div class="speaker-meta">
+            <a href="{% url 'speaker.search' %}">&laquo;&nbsp;{% trans 'Search other speakers' %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

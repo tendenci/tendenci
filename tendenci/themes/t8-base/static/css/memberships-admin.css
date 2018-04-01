@@ -1,0 +1,9 @@
+.select-field{
+    width: 150px;
+}
+.fields-section{
+    margin: 1em;
+}
+.dynamic-fields td.field-admin_only{
+    cursor: pointer;
+}

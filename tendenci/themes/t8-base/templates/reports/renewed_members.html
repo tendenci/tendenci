@@ -1,0 +1,67 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Renewed Members" %}</h1>
+</div>
+<div>
+  <p>
+    {% if days == 1826 %}
+    {% trans "Currently showing members who renewed in the last 5 years." %}
+    {% else %}
+    {% blocktrans with days=days %}
+    Currently showing members who renewed in the last {{ days }} days.
+    {% endblocktrans %}
+    {% endif %}
+  </p>
+  <form class="search-form form-inline pull-right" action="{% url "reports-renewed-members" %}" method="get">
+    <div class="form-group">
+      <label for="id_days" class="control-label">{% trans "Filter by renew date" %}: &nbsp;</label>
+      <select class="form-control" name="days" id="id_days" onchange="this.form.submit();">
+        <option value="" selected="selected">-----------</option>
+        <option value="30">{% trans 'Last 30 days' %}</option>
+        <option value="60">{% trans 'Last 60 days' %}</option>
+        <option value="90">{% trans 'Last 90 days' %}</option>
+        <option value="180">{% trans 'Last 180 days' %}</option>
+        <option value="365">{% trans 'Last 365 days' %}</option>
+        <option value="1826">{% trans 'Last 5 years' %}</option>
+      </select>
+    </div>
+  </form>
+
+  {% if members %}
+  <p>
+
+    <a class="btn btn-default" href="{% url "reports-renewed-members" %}?output=csv&days={{ days }}">
+      {% trans 'Download CSV File' %}</a>
+
+  </p>
+  <table class="table table-tendenci-reports">
+    <tr>
+      <th>{% trans 'ID' %}</th>
+      <th>{% trans 'Member Number' %}</th>
+      <th>{% trans 'Name' %}</th>
+      <th>{% trans 'City' %}</th>
+      <th>{% trans 'State' %}</th>
+      <th>{% trans 'Country' %}</th>
+      <th>{% trans 'Renew Date' %}</th>
+    </tr>
+    {% for member in members %}
+    <tr class="{% cycle 'even' 'odd' %}">
+      <td>{{ member.id }}</td>
+      <td>{{ member.member_number }}</td>
+      <td>{{ member.user.last_name }}, {{ member.user.first_name }}</td>
+      <td>{{ member.user.profile.city }}</td>
+      <td>{{ member.user.profile.state }}</td>
+      <td>{{ member.user.profile.country }}</td>
+      <td>{{ member.renew_dt }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  {% trans "No members in this date range." %}
+  {% endif %}
+  <br /><br />
+</div>
+{% endblock content %}

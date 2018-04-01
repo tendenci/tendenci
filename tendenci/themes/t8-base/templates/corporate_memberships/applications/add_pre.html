@@ -1,0 +1,86 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Corporate Membership Add - Starting" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+     <h1>{% trans corp_app.name %}</h1>
+     <div class="well">
+     <p class="muted">
+        {% blocktrans %}
+        Let's get started... The contact e-mail address will only be used to
+        send you email notifications
+        once your corporate membership gets approved. Please make sure it's correct.
+        Thank you!
+        {% endblocktrans %}
+     </p>
+     </div>
+
+    <div class="clearfix">
+        <form action="" method="post" class="form-horizontal">{% csrf_token %}
+
+        {% if form.errors.values %}
+            <div class="alert alert-danger">
+            There were some problems in the form. Please review. Thanks!
+
+            {% for error in form.non_field_errors %}
+                <div><a href="#"><span class="text-danger">{{ error }}</span></a></div>
+            {% endfor %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <div>
+                        <a href="{{ request.get_full_path }}#{{ field.auto_id }}"><span class="text-danger">{{ field.label }} - {{ error }}</span></a>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="id_first_name" class="col-sm-4  control-label">{{ form.first_name.label }}: </label>
+            <div class="col-sm-6">
+                {{ form.first_name }}
+               </div>
+         </div>
+
+         <div class="form-group">
+            <label for="id_last_name" class="col-sm-4  control-label">{{ form.last_name.label }}: </label>
+            <div class="col-sm-6">
+                {{ form.last_name }}
+               </div>
+         </div>
+
+         <div class="form-group">
+            <label for="id_email" class="col-sm-4  control-label">{{ form.email.label }}: </label>
+            <div class="col-sm-7">
+                {{ form.email }}
+               </div>
+         </div>
+
+
+         <div class="form-group required">
+            <label for="id_captcha" class="col-sm-4  control-label">{{ form.captcha.label }} </label>
+            <div class="col-sm-3">
+                {{ form.captcha }}
+               </div>
+         </div>
+
+
+          <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+            <input type="submit" class="btn btn-primary" value="{% trans 'Continue to add corporate membership' %}" />
+            </div>
+          </div>
+        </form>
+    </div>
+
+
+
+
+</div>
+{% endblock %}

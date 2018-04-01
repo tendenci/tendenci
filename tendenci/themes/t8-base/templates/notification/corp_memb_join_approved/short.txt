@@ -1,0 +1,2 @@
+
+{% blocktrans %}Corporate Membership Approved on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

@@ -1,0 +1,36 @@
+{% extends "stories/base.html" %}
+{% load base_tags %}
+
+{% block title %}{% trans "Delete Story" %} {% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/stories.css' %}">
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="story-wrap">
+        <h1>{% trans "Delete a Story" %}</h1>
+        {% if story.image %}
+        <div class="photo">
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"  alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
+        </div>
+        {% endif %}
+        <div class="content">
+        <h2>{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</h2>
+        {% blocktrans with t=story.content|safe %}{{ t }}{% endblocktrans %}
+        </div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this story?" %}
+        </div>
+        <div class="delete-form">
+            <form action="{% url "story.delete" story.id %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans "Confirm Delete" %}" />
+            </form>
+        </div>
+        <div class="back-search"><a href="{% url "story.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_STORIES_LABEL 'stories' %} </a></div>
+    </div>
+</div>
+{% endblock %}

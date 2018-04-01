@@ -1,0 +1,55 @@
+.posts {
+}
+
+.post {
+    margin: 3px 0 5px 0;
+}
+
+.post-header {
+   padding: 3px 0 3px 20px;
+   font-size: @font-size-base - 2;
+   background-color: @table-bg-hover;
+}
+
+.post tbody tr:hover td {
+    background-color: inherit; // Cancel bootstrap's on-hover highlight
+}
+
+.post-info {
+    width: 200px;
+    padding: 10px;
+
+    .avatar {
+
+    }
+
+    .post-author {
+        font-size: @font-size-base + 1;
+        padding: 5px 0;
+    }
+
+    .post-extra-info {
+        font-size: @font-size-base - 2;
+        color: @gray-light;
+    }
+
+    .post-controls {
+        font-size: @font-size-base - 2;
+    }
+}
+
+.post-content {
+    vertical-align: top;
+    padding: 10px;
+}
+
+.post-signature {
+    color: #CCC;
+    margin-top: 15px;
+    border-top: 1px dotted #CCC;
+    display: block;
+}
+
+.post-related {
+    margin-top: 20px;
+}

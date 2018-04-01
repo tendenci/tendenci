@@ -1,0 +1,39 @@
+{% extends page.template %}
+
+{% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="page-wrap">
+        {% if page.header_image %}<div class="page-header">
+            <img src="{{ page.get_header_image_url }}" alt="page header" title="page header" />
+        </div>{% endif %}
+
+        {% if page.title %}
+        <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
+        {% endif %}
+
+        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+
+        <form action="{% if edit_button %}{% url "page.edit" page.pk %}{% else %}{% url "page.add" %}{% endif %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div style="display:none;">
+                {{ form.as_p }}
+                {{ metaform.as_p }}
+                {{ categoryform.as_p }}
+            </div>
+            {% if edit_button %}
+                <input type="submit" value="{% trans 'Save Page Changes' %}" />
+            {% else %}
+                <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_PAGES_LABEL trans 'Page' %}" />
+            {% endif %}
+        </form>
+        <div id="preview-close"><a href="JavaScript:window.close()">{% trans "Close and Return to Edit" %}</a></div>
+    </div>
+</div>
+{% endblock %}

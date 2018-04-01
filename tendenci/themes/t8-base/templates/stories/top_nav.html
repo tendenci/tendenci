@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load story_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/book_open.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}{% endblock %}
+
+{% block current_app %}
+    {% if story %}
+        {% story_current_app request.user story %}
+    {% else %}
+        {% story_current_app request.user %}
+    {% endif %}
+{% endblock %}

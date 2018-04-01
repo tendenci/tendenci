@@ -1,0 +1,15 @@
+id:{{ object.pk }}
+hash:{{ object.hash }}
+application:{{ object.app.name }}
+type:{{ object.membership_type }}
+status:{{ object.status_msg }}
+name:{{ object.name }}
+email:{{ object.email }}
+
+{% for field in object.fields.all %}
+{{ field.field.label }}:{{ field.value }}
+{{ field.value }}
+{% endfor %}
+
+{{ object.name }}
+{{ object.email }}

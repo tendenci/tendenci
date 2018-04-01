@@ -1,0 +1,154 @@
+{% extends "recurring_payments/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load recurring_payments_tags %}
+
+{% block title %}{% trans 'Recurring Payment Customers' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<link type="text/css" href="{% static 'tablesorter/sortthemes.css' %}" rel="Stylesheet" />
+<link type="text/css" href="{% static 'css/recurring_payments.css' %}" rel="Stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div id="t-search">
+    <h1>{% trans 'Recurring Payment Customers' %}</h1>
+
+    <div id="rp-totals">
+        <table width="100%">
+            <tr>
+                <th>{% trans 'Total # of accounts' %}</th>
+                <th>{% trans 'Total amount received' %}</th>
+                <th>{% trans 'Total amount unpaid' %}</th>
+                <th>{% trans 'Total amount past due' %}</th>
+            </tr>
+            <tr>
+                <td align="center">{{ total_customers }}</td>
+                <td align="center" id="total-amount-received">{{ total_amount_received|format_currency }}</td>
+                <td align="center">{{ total_amount_unpaid|format_currency }}</td>
+                <td align="center">{{ total_amount_past_due|format_currency }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if SITE_GLOBAL_SEARCHINDEX %}
+    <div class="rp-search-box">
+    <form class="search-form" action="" method="get">
+    <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    <input type="submit" name="search" value="{% trans 'Search' %}" />
+    </form>
+    {% if query %}
+    <div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
+    {% endif %}
+    </div>
+    {% endif %}
+
+    <div style="clear: both"></div>
+
+    {% if recurring_payments %}
+        <table width="100%" class="tablesorter">
+            <thead>
+            <tr>
+                <th class="iheader" width="12%">{% trans 'Name' %}</th>
+                <th class="iheader" width="34%">{% trans 'Description' %}</th>
+                <th class="iheader" width="9%">{% trans 'Amount' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+                <th class="iheader" width="9%">{% trans 'Start Date' %} &nbsp;</th>
+                <th class="iheader" width="10%">{% trans 'Total Paid' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+                <th class="iheader" width="9%">{% trans 'Balance' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+                <th class="iheader" width="11%">{% trans 'Status Detail' %} &nbsp;</th>
+                <th width="6%">&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for rp in recurring_payments %}
+            {% with rp|get_object as rp %}
+                <tr>
+                    <td><a href="{% url "recurring_payment.view_account" rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
+                    <td>{% blocktrans with d=rp.description %}{{ d }}{% endblocktrans %}</td>
+                    <td>{{ rp.payment_amount }}</td>
+                    <td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
+                    <td class="total-paid">{{ rp.total_paid }}</td>
+                    <td class="balance">{{ rp.get_outstanding_balance }}</td>
+                    <td {% if rp.status_detail != 'active' %}class="not-active"{% endif %}>{{ rp.status_detail }} </td>
+                    <td id="rp_{{ rp.id }}">{% if rp.status_detail == 'active' %}<a href="javascript:;" class="run-now" onclick="run_now({{ rp.id }})" title="{% trans 'Make payment immediately for any due invoices' %}">run now</a>{% endif %}</td>
+                </tr>
+            {% endwith %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No customers available yet.
+    {% endif %}
+
+</div>
+</div>
+<img name="loading_img" style="display:none;" src="{% static 'images/icons/loading.gif' %}"  />
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+    if (!(window.jQuery)) {
+        var s = document.createElement('script');
+        s.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js');
+        s.setAttribute('type', 'text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/csrf_proc.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+    // extend the default setting to always include the zebra widget.
+        $.tablesorter.defaults.widgets = ['zebra'];
+        // extend the default setting to always sort on the first column
+        $.tablesorter.defaults.sortList = [[0,1]];
+        // call the tablesorter plugin
+        $("table").tablesorter({
+             headers: {
+            // assign the first column (we start counting zero)
+            7: {
+                // disable it by setting the property sorter to false
+                sorter: false
+                }
+            }
+        });
+
+});
+
+function run_now(id){
+    var loading_img_clone = $('img[name=loading_img]').clone().show();
+    $('td#rp_'+id).html('');
+    $('td#rp_'+id).append(loading_img_clone);
+
+    $.ajax({
+           type: "POST",
+           url: "{% url "recurring_payment.run_now" %}",
+           data: {rp_id : id },
+           success: function(result_data){
+                var obj = $.parseJSON(result_data);
+             $('td#rp_'+id).html(obj.reason);
+             if (obj.processed){
+                 $('td#rp_'+id).closest('tr').find('.total-paid').html(obj.total_paid);
+                 $('td#rp_'+id).closest('tr').find('.balance').html(obj.balance);
+                 $('#total-amount-received').html(obj.total_amount_received);
+
+            }
+
+           },
+           error: function(){
+               $('td#rp_'+id).html('error');
+               $('td#rp_'+id).css({'color': 'red'});
+               }
+    });
+}
+
+
+</script>
+
+{% endblock %}

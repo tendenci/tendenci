@@ -1,0 +1,17 @@
+{% extends "user_groups/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Choose option to add users to a group' %}{% endblock %}
+
+{% block content %}
+<div>
+    <p>
+        {% trans 'You have too many users to use the bulk add for group members. You can:' %}
+        <ul>
+            <li><a href="{% url "profile.search" %}">{% trans 'Search for the user' %}</a> {% trans 'and add them to specific groups' %}.</li>
+            <li><a href="{% url "profiles.user_import" %}">{% trans 'Bulk import users' %}</a> {% trans 'into a specific group' %}.</li>
+        </ul>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% load base_filters %}
+
+<tr>
+    <td>
+        {% if obj %}
+
+            {% trans "Membership #" %}<a href="{% url "admin:memberships_membershipdefault_change" obj.pk %}" title="Membership">
+            {{ obj.member_number }}</a>
+
+            {{ obj.membership_type.name|truncatewords:30 }}
+            {% if obj.payment_method %}
+            ({{ obj.payment_method.human_name }})
+            {% endif%}
+
+            {% if invoice.bill_to_first_name or invoice.bill_to_last_name or invoice.bill_to_email %}
+                &nbsp;&ndash;&nbsp;{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }} {{ invoice.bill_to_email }}
+            {% endif %}
+
+        {% else %}
+            {% trans "Membership information not available" %}
+        {% endif%}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
+</td>

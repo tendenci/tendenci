@@ -1,0 +1,32 @@
+{{ object.first_name }}
+{{ object.last_name }}
+{{ object.mail_name }}
+{{ object.address }}
+{{ object.city }}
+{{ object.zip }}
+{{ object.country }}
+{{ object.phone }}
+{{ object.email }}
+{{ object.company_name }}
+{% if object.custom_reg_form_entry %}
+{% for entry in object.custom_reg_form_entry.get_field_entry_list %}
+{{ entry.label }}:{{ entry.value }}
+{% endfor %}
+{% endif %}
+
+{% if object.cancel_dt %}
+is:canceled
+is:cancelled
+{% else %}
+is:active
+{% endif %}
+
+{% if object.registration.invoice.balance <= 0 %}
+is:paid
+{% else %}
+is:non-paid
+{% endif %}
+
+hash:{{ object.hash }}
+
+is:registrant

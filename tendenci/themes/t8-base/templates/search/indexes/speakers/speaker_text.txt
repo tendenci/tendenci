@@ -1,0 +1,14 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.name }}
+{{ object.biography|striphtml }}
+{{ object.company }}
+{{ object.position }}
+{{ object.track }}
+{{ object.ordering }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }}
+{% endfor %}

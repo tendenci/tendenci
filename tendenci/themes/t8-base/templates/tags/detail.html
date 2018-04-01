@@ -1,0 +1,28 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{ tag.name }} {% trans "Tag" %} {{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans 'Tag' %}: {{ tag.name }}</h1>
+
+    <div class="tags-wrap">
+        {% for item in tagged_items %}
+            {% ifchanged item.content_type.name %}
+            {% if not forloop.first %}</ul>{% endif %}
+            <h3>{{ item.content_type.name|title }}</h3>
+            <ul>
+            {% endifchanged %}
+
+            {% if item.object %}
+                <li><a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

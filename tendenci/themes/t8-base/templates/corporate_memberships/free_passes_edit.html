@@ -1,0 +1,35 @@
+{% extends "corporate_memberships/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Corporate Membership Edit Free Passes" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+    input[name='total_passes_allowed']{
+        width: 21% !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="corp-reps">
+     <h1>{% trans "Corporate Membership Edit Free Passes" %}</h1>
+     <div><a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></div>
+    <p>
+    <form action="" method="post">{% csrf_token %}
+    <div class="forms">
+        {{ form|styled_form }}
+        <input type="submit" name="submit" value="{% trans 'Save' %}" />
+    </div>
+
+    </form>
+    </p>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% load profile_tags %}
+{% load megamenu_tags %}
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        {% spaceless %}
+            {% if USER_IS_SUPERUSER %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+            {% elif USER_IS_MEMBER_EXPIRED %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+            {% elif USER_IS_MEMBER_ACTIVE %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+            {% else %}
+                <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+            {% endif %}
+            <span class="nav-label">{{ DISPLAY_NAME }}</span><span class="caret"></span>
+        {% endspaceless %}
+    </a>
+
+    <ul id="t-admin-megamenu-profile-dd" class="dropdown-menu profile-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-4 content-dropdown-col">
+                        <ul class="list-unstyled">
+                            <div class="profile-icon">
+                                <a href="{% url 'profile' user.username %}">{% gravatar user 100 %}</a>
+                            </div>
+                            <a class="update-avatar-link" href="//gravatar.com/">{% trans 'Update Photo' %}</a>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-8 content-dropdown-col">
+                        <ul class="list-unstyled">
+                            <li class="content-head"><a href="{% url 'profile.index' %}">{% trans 'Welcome' %} {{ DISPLAY_NAME }}</a></li>
+
+                            <li class="content-item">
+                                <a href="{% url 'profile.index' %}">
+                                    {% spaceless %}
+                                        {% if USER_IS_SUPERUSER %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_orange.png' %}">
+                                        {% elif USER_IS_MEMBER_EXPIRED %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_red.png' %}">
+                                        {% elif USER_IS_MEMBER_ACTIVE %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user_go.png' %}">
+                                        {% else %}
+                                            <img class="nav-icon" src="{% static 'famfamfam/icons/user.png' %}">
+                                        {% endif %}
+                                        <span class="nav-label">{% trans 'Profile' %}</span>
+                                    {% endspaceless %}
+                                </a>
+                            </li>
+
+
+                            <li class="content-item">
+                                <a href="{% url "invoice.search" %}?search_criteria=owner_id&search_text={{ user.id }}&search_method=exact"><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span></a>
+                            </li>
+
+                            {% if MODULE_MEMBERSHIPS_ENABLED %}
+                            {% with user.profile.membership as membership %}
+                            {% if membership %}
+                            <li class="content-item">
+                                <a href="{% url 'membership.details' membership.id %}"><img class="nav-icon " src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'My Membership' %}</span></a>
+                            </li>
+                            {% endif %}
+                            {% endwith %}
+                            {% endif %}
+
+                            {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                            {% if user.corpmembershiprep_set.count > 0 %}
+                            <li class="content-item">
+                                <a href="{% url 'corpmembership.mycorps' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'My Corp. Membership' %}</span></a>
+                            </li>
+                            {% endif %}
+                             {% endif %}
+
+                            <li class="content-item">
+                                <a href="{% url 'event.myevents' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/><span class="nav-label">{% trans 'Events' %}</span></a>
+                            </li>
+
+                            <li class="content-item">
+                                <a href="{% url 'contribution.search' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Content' %}</span></a>
+                            </li>
+
+                            {% if USE_I18N %}
+                            {% with request.user.profile.lang as user_lang %}
+                             <li>
+                                <img class="nav-icon" src="{% static 'famfamfam/icons/world.png' %}"/>
+                                <span class="nav-label">{% trans 'Language:' %} {% get_language_info for user_lang as l %}{{ l.name_local }}</span>
+                                <a href="#" data-toggle="modal" data-target="#myModalL">{% trans "Change" %}</a>
+                                <!-- Modal -->
+                                <div id="myModalL" class="modal fade" role="dialog">
+                                  <div class="modal-dialog modal-sm">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Select a Language</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                        <ul id="t-megamenu-lang-dd">
+                                            {% get_language_info_list for LANGUAGES as languages %}
+
+                                            {% for language in languages %}
+                                                <li{% if language.code == user_lang %} class="active"{% endif %}>
+                                                    <a href="javascript:void(0);" data-lang="{{ language.code }}">{{ language.name_local }} ({{ language.code }})</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+
+                                        <form id="t-megamenu-lang-form" class="hidden" action="{% url 'base.set_language' %}" method="post">
+                                            {% csrf_token %}
+                                            <input name="next" type="hidden" value="{{ redirect_to }}" />
+                                            <input id="t-megamenu-lang-input" name="language" type="hidden" value="{{ user_lang }}">
+                                        </form>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>
+
+
+                            </li>
+                            {% endwith %}
+                            {% endif %}
+
+                            <li class="content-item">
+                                <a href="{% url 'auth_logout' %}"><span class="glyph">&#88;</span><span class="nav-label">{% trans "Logout" %}</span></a>
+                            </li>
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

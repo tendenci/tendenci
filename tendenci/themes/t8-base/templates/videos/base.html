@@ -1,0 +1,54 @@
+{% extends "site_base.html" %}
+{% load video_tags %}
+{% load perm_tags %}
+
+{% has_perm user videos.add_video as can_add_video %}
+
+{% block title %}{% trans 'Videos' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/video.css' %}">
+{% endblock %}
+
+{% block top_bar %}
+{% if request.user.is_authenticated %}
+    {% include "videos/top_nav.html" %}
+    {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block video_sidebar %}
+<div id="videos-sidebar">
+
+    {% if can_add_video %}
+        <div><a href="{% url 'admin:videos_video_add' %}">{% trans 'Add Video' %}</a></div>
+    {% endif %}
+
+    {% if SITE_GLOBAL_SEARCHINDEX %}
+    <form class="search" action="{% url 'video.search' %}" method="get">
+    <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    <input type="submit" value="{% trans 'Search' %}" />
+    </form>
+
+    <ul>
+        <li>
+            <h2>{% trans 'Categories' %}</h2>
+            <ul>
+                <li><a href="{% url 'video' %}">{% trans 'All' %}</a></li>
+                {% for cat in categories %}
+                    <li><a class="{% ifequal cat video.category %}active{% endifequal %}{% ifequal cat category %}active{% endifequal %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    </ul>
+    {% endif %}
+
+</div>
+
+{{ block.super }}
+{% endblock video_sidebar %}

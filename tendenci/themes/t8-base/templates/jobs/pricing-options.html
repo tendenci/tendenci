@@ -1,0 +1,14 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user jobs.change_jobpricing opt_object as can_edit %}
+{% has_perm user jobs.delete_jobpricing opt_object as can_delete %}
+
+<div class="t-iconrow">
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url "job_pricing.edit" opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
+    {% if can_delete %}
+        <a class="option-link delete" href="{% url "job_pricing.delete" opt_object.pk %}">{% trans "Delete" %}</a>
+    {% endif %}
+</div>

@@ -1,0 +1,9 @@
+
+<p>{{ user.username }},</p>
+
+<p>{% trans "The following directory has been edited:" %}</p>
+
+<div>{% trans "Headline:" %} {% blocktrans with headline=object.headline %}{{ headline }}{% endblocktrans %}</div>
+<div>{% blocktrans with object.get_absolute_url as objurl %}To view this directory go to: {{ SITE_GLOBAL_SITEURL }}{{ objurl }}{% endblocktrans %}</div>
+
+<p>{% trans "Thanks!" %}</p>

@@ -1,0 +1,8 @@
+
+{% if corp_membership.indivmembershiprenewentry_set.all|slice:":50" %}
+<ol>
+{% for entry in corp_membership.indivmembershiprenewentry_set.all %}
+    <li><a href="{% url "profile" entry.membership.user.username %}">{{ entry.membership.user.get_full_name }}</a> # {{ entry.membership.member_number }}</li>
+{% endfor %}
+</ol>
+{% endif %}

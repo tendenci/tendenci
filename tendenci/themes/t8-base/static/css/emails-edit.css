@@ -1,0 +1,19 @@
+.field-wrapper{
+	margin: 5px 0;
+}
+.field-wrapper .field-label{
+	float: left;
+	width: 9em;
+	text-align: right;
+	padding-right: 1em;
+}
+.submitbutton{
+	margin-left: 10em;
+}
+
+.clear-left{
+	clear: left;
+}
+.errorlist{
+	color: red;
+}

@@ -1,0 +1,37 @@
+{% extends "reports/base.html" %}
+{% load base_filters %}
+{% load article_tags %}
+
+{% block content %}
+<div class="t">
+{% article_nav request.user %}
+
+<h1>{% trans "Article Reporting Options" %}</h1>
+
+{% trans "Article times read. Click the article headline to view the article. Click the numbers on the left to view those specific views. Blank headlines means the article was probably deleted but the view records are still kept for accurate reporting." %}"
+
+<table>
+<tr>
+    <th><a href="{% url "reports-articles" %}?sort=viewed" >{% trans "Viewed" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=name" >{% trans "Name" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=day" >{% trans "Views / Day" %}</a></th>
+    <th><a href="{% url "reports-articles" %}?sort=created" >{% trans "Created" %}</a></th>
+</tr>
+{% for item in stats %}
+<tr>
+    <td><a href="{% url "event_log.search" %}?application=articles&action=detail&object_id={{item.object_id}}">{{ item.count }}</a></td>
+{% if item.article %}
+    <td><a href="{% url 'article' item.article.slug %}">{{ item.article }}</a></td>
+    <td>{{ item.per_day|floatformat:2 }}</td>
+    <td>{{ item.article.create_dt|date:"short" }}</td>
+{% else %}
+    <td>{{ item.headline }}</td>
+    <td><small>&lt;deleted&gt;</small></td>
+    <td><small>&lt;deleted&gt;</small></td>
+{% endif %}
+</tr>
+{% endfor %}
+</table>
+
+</div>
+{% endblock content %}

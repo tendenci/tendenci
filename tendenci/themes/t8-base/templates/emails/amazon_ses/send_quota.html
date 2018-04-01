@@ -1,0 +1,47 @@
+{% extends "emails/base.html" %}
+{% load email_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Amazon SES - Sending Limits" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/amazon_ses.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t amazon-ses">
+<h1>{% trans "Amazon SES - Sending Limits" %}</h1>
+<div style="margin: 1em 0;">
+{% if send_quota %}
+    <table width="100%">
+        <tr>
+            <th width="33%">{% trans "Sent Last 24 Hours" %}</th>
+            <th width="33%">{% trans "Max 24 Hour Send" %}</th>
+            <th width="34%">{% trans "Max Send Rate" %}</th>
+        </tr>
+        <tr>
+            <td>{{ send_quota.sentLast24Hours }}</td>
+            <td>{{ send_quota.max24HourSend  }}</td>
+            <td>{{ send_quota.maxSendRate  }}/sec</td>
+        </tr>
+    </table>
+{% else %}
+    {% trans "No data available." %}
+{% endif %}
+</div>
+<p class="notices">
+{% blocktrans %}
+Per Amazon, "Each user has a unique set of sending limits, which are calculated by Amazon SES
+on an ongoing basis. As you continue to send high-quality email, Amazon SES learns more about your particular usage patterns, and gradually adjusts your sending limits upward - as high as
+you need them to go."<br />
+If you think this wouldn't work for the site, you can request to increase the sending limits
+by <a href="https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/SESExtendedAccess">contacting amazon.com</a>.
+{% endblocktrans %}
+</p>
+<br />
+<div style="margin: 1em 0;"><a href="{% url "email.amazon_ses_verify_email" %}">{% trans "Verify Email Addresses" %}</a></div>
+<div style="margin: 1em 0;"><a href="{% url "email.amazon_ses_list_verified_emails" %}">{% trans "View Verified Email Addresses" %}</a></div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "ics/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'ICS Status' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% if ics.status == "failed" %}
+        <h1>{% trans "ICS Creation Failed!" %}</h1>
+        <p class="timestamp">{{ datetime.now }}</p>
+        <p class="msg">{% trans "Please try again." %}</p>
+    {% else %}
+        {% if ics.status == "completed" %}
+            <h1>{% trans "ICS Creation Completed!" %}</h1>
+            <p class="timestamp">{{ datetime.now }}</p>
+            <p class="msg">{% trans "Download" %} <a href="{% url "ics.download" ics.pk %}">{% trans "here" %}</a></p>
+        {% else %}
+            <h1>{% trans "Processing ICS Creation!" %}</h1>
+            <p class="timestamp">{{ datetime.now }}</p>
+            <p class="msg">{% trans "We're not done yet!" %} <img src="{% static 'images/ajax-loader.gif' %}" /></p>
+            <p class="msg">{% trans "Please wait while we finish processing your ics file." %}</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% if ics.status == "pending" %}
+    <script type="text/javascript">
+        //reload every 10 seconds
+        setInterval(function(){
+            window.location.reload();
+        }, 10000);
+    </script>
+{% endif %}
+{% endblock %}

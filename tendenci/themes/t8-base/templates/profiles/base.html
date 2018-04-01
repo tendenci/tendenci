@@ -1,0 +1,29 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}{% firstof MODULE_USERS_LABEL trans 'Profile' %} - {% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block top_bar %}
+{% if request.user.is_authenticated %}
+    {% include "profiles/top_nav.html" %}
+    {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container: 'more-options-wrap',
+            trigger: 'more-options-trigger',
+            target: 'more-options-target'
+        });
+    </script>
+{% endblock %}

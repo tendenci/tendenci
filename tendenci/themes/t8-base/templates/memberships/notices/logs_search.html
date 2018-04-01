@@ -1,0 +1,71 @@
+{% extends "memberships/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Membership Notice Log Search' %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Membership Notice Log Search" %}</h1>
+    <div class="notice-log-form">
+  <form action="" method="get">
+      <p>{% trans "Sent Start Date/Time:" %} {{ form.start_dt }}</p>
+      <p>{% trans "Sent End Date/Time:" %} &nbsp;&nbsp;{{ form.end_dt }}</p>
+      <p>{{ form.notice_id }}
+        <input type="submit" value="{% trans 'Search' %}" /></p>
+  </form>
+  </div>
+
+    {% autopaginate logs 10 %}
+
+    <div class="notice-logs-wrap">
+
+    {% for log in logs %}
+
+        <div class="notice-log-wrap">
+    <h2><a href="{% url "membership.notice.log.view" log.id%}" title="{% trans 'View log recap' %}">{{ log.id }}</a>
+    <a href="{% url "admin:memberships_notice_change" log.notice.id %}" title="{% trans 'View notice' %}">{{ log.notice.notice_name }}</a></h2>
+          <div class="notice-log">
+              <div><b>{% trans "Sent Date" %}</b>: {{ log.notice_sent_dt|date }}</div>
+              <div>{% trans "Number emails sent: " %}<b>{{ log.num_sent }}</b></div>
+              <div><a href="{% url "membership.notice.log.view" log.id%}" title="{% trans 'View log recap' %}">{% trans "View recap of emails sent" %}</a></div>
+          </div>
+
+        </div>
+
+    {% empty %}
+        <div>{% trans "0 Logs Found" %}</div>
+    {% endfor %}
+    </div>
+
+
+
+    <div style="clear:both;"></div>
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+  <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+      $('.timepicker').timepicker({'step':15});
+    });
+  </script>
+{% endblock %}

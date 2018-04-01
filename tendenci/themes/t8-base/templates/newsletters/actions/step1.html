@@ -1,0 +1,101 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Marketing Action'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="t-newsletters">
+    <div class="page-header">
+      <h1>{% trans 'Edit Newsletter' %}</h1>
+    </div>
+    <form action='' method="POST">{% csrf_token %}
+      <div class='step-section cf'>
+        <div class="step-contents">
+          <div class="form-group">
+            <p><label>{% trans 'Newsletter Type: ' %}</label> &nbsp; {{ form.actiontype }}</p>
+          </div>
+          {% if form.actiontype.errors %}
+          <div class="step-content-item body-copy-alerts">
+            {{ form.actiontype.errors }}
+          </div>
+          {% endif %}
+          {% if form.actionname.errors %}
+          <div class="step-content-item body-copy-alerts">
+            {{ form.actionname.errors }}
+          </div>
+          {% endif %}
+          <div class="step-content-item">
+            <p><label>Action Name:</label> {{ form.actionname }}</p>
+          </div>
+          <div class="step-content-item">
+            <input class="btn btn-primary btn-lg pull-right" type="submit" value="{% trans 'Continue' %}&nbsp; &rarr;" />
+          </div>
+        </div>
+      </div>
+      <!-- <div class='step-section cf'>
+      <div class="step-number"><a href="{% url 'newsletter.action.step2' object.pk %}">{% trans 'Step 2' %}</a></div>
+      <div class="step-contents">
+      <div>
+      {% trans 'E-mail to bind to this Marketing Action.' %}
+    </div>
+      <div class="step-content-item">
+      {% trans 'Sender' %} : <a href="mailto:{{ object.email.sender }}">{{ object.email.sender }}</a>&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.viewbody' object.email.pk %}">{% trans 'View Email' %}</a>&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'email.edit' object.email.pk %}?next={% url 'newsletter.action.step1' object.pk %}">{% trans 'Edit Email' %}</a>
+    </div>
+      <div class="step-content-item">
+      <strong>{{ object.email.subject }}</strong>
+    </div>
+
+    </div>
+    </div>
+      <div class='step-section cf'>
+      <div class="step-number"><a href="{% url 'newsletter.action.step3' object.pk %}">{% trans 'Step 3' %}</a></div>
+      <div class="step-contents">
+      <div>
+      {% if object.member_only %}
+      {% trans 'Members Only' %}
+      {% else %}
+      {% trans 'Select a Group' %}
+      {% endif %}
+    </div>
+      {% if not object.member_only %}
+      <div class="step-content-item">
+      <strong>{{ object.group }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;<a class="body-copy-yellow" href="{% url 'groups' %}">{% trans 'Search UserGroup' %}</a>
+    </div>
+      {% endif %}
+    </div>
+    </div>
+      <div class='step-section cf'>
+      <div class="step-number"><a href="{% url 'newsletter.action.step4' object.pk %}">{% trans 'Step 4' %}</a></div>
+      <div class="step-contents">
+      <div>
+      {% trans 'Confirm acceptance of site policies and common sense.' %}
+    </div>
+      <div class="step-content-item body-copy-alerts">
+      {% if object.member_only %}
+      {% blocktrans %}
+      I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+      {% endblocktrans %}
+      {% else %}
+      {% blocktrans with group=object.group.name %}
+      I agree that I have permission from all users of the <strong>{{ group }}</strong> user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+      {% endblocktrans %}
+      {% endif %}
+    </div>
+    </div>
+    </div>-->
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}

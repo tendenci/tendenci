@@ -1,0 +1,183 @@
+.event-info {
+    padding: 10px;
+    background-color: #F5F5F5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: left;
+    margin-bottom: 10px;
+    width: 61%;
+}
+.event-title {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+.event-time {
+    font-size: 1.1em;
+}
+.event-price {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.event-msg {
+    padding: 10px;
+    color: #777;
+}
+.hidden {
+    display: none;
+}
+.registrant-header{
+    border-bottom: 1px dotted #ccc;
+    margin-top: 5px;
+    padding: 5px 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+}
+.even-registrant, .odd-registrant{
+    background-color: #f5f5f5;
+    padding: 10px;
+}
+#reg-form-box{
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 1em;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    width: 200px;
+
+}
+#reg-form-box input[type="text"]{
+    width: 150px;
+}
+#reg-form-wrap{
+    float: right;
+    width: 200px;
+    margin:2px;
+}
+#registrant-forms{
+    width: 70%;
+}
+
+#reg-summary{
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid silver;
+}
+#summary-total-price{
+    border-top: 1px solid #ccc;
+    margin-bottom: 1em;
+}
+#total-label,#total-amount{
+    font-weight: bold;
+}
+#summary-price, #summary-total-price{
+    width: 90%;
+}
+#summary-price td, #summary-total-price td{
+    padding: 3px;
+}
+#summary-discounted-price{
+    margin-bottom: 1em;
+    width: 90%;
+}
+.line-on-top{
+    border-top: 1px solid #ccc;
+}
+#register-button {
+    font-size: 1.2em;
+    padding: 5px;
+}
+div.delete-button-wrap{
+    display: none;
+}
+
+#update_summary{
+    margin-bottom: 1em;
+    padding: 3px;
+}
+
+.errors-box{
+    background-color: #FFEBE8;
+    border: 2px solid #FF8B78;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 80%;
+}
+.deleted-item td{
+    text-decoration: line-through;
+}
+.clear{
+    clear: both;
+}
+.delete-button{
+    padding: 6px 10px 6px 15px;
+    background: url("/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    color: darkred;
+}
+.delete-addon{
+    padding: 6px 10px 6px 15px;
+    background: url("/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    color: darkred;
+}
+
+.extra-registrants {
+    width: 50px;
+}
+
+.add-registrants-box {
+    padding-top: 20px;
+}
+
+.add-registrants-box h3 {
+    margin-bottom: 5px;
+}
+
+.add-registrants-box input{
+    margin: 5px;
+}
+
+.summary-total {
+    font-weight: bold;
+    font-size: 1.7em;
+    margin-bottom: 10px;
+}
+
+.summary-payment {
+    margin-bottom: 15px;
+}
+
+.registrant-set{
+    border:1px solid black;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+
+.admin {color: #800; font-weight: bold;}
+.discount-summary {display: none;}
+.showhide {font-size: 18px;}
+.gray-text {color: #777; }
+
+.error {
+    color: #722;
+    padding: 5px;
+}
+
+.notice {
+    color: #992;
+    padding: 5px;
+}
+.addon-forms {
+    width: 70%;
+}
+
+.addon-forms .addon-form{
+    padding-top: 10px;
+    border-top: 1px dotted #CCC;
+}

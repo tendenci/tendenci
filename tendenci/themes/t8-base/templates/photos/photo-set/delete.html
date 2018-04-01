@@ -1,0 +1,38 @@
+{% extends "photos/base.html" %}
+{% load photo_tags %}
+{% load humanize %}
+{% load bootstrap_pagination_tags %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_PHOTOS_LABEL 'Photo Set' %} {% trans "Delete Page" %}</h1>
+    <div class="delete-prompt">
+        {% trans "Are you sure you want to permanently delete this photo set?" %}
+    </div>
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
+        <div style="margin: 10px 0px 10px 0px;">
+            <div class="cover-photo">
+            {% if photo_set.get_cover_photo %}
+                <a href="{% url "photo" photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" /></a>
+            {% else %}
+                <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
+            {% endif %}
+            </div>
+
+            <div class="set-description">
+            {% blocktrans with d=photo_set.description|safe|urlize|linebreaks %}{{ d }}{% endblocktrans %}
+            </div>
+        </div>
+    </div>
+    <div class="delete-form">
+        <form name="photo_set-delete" method="POST" action="{% url "photoset_delete" photo_set.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+</div>
+{% endblock %}

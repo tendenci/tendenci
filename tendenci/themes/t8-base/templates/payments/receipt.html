@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+{% load payments_tags %}
+
+{% block title %}{% trans 'Payment Receipt' %} {{ block.super }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/payments-receipt.css' %}">
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% payment_thankyou_display request payment %}
+
+     <p>&nbsp;</p>
+     <p>&nbsp;</p>
+</div>
+{% endblock %}

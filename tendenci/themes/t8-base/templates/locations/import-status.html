@@ -1,0 +1,40 @@
+{% extends "locations/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Import Locations from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="import-wrap" class="finished">
+    {% if task.status == "FAILED" or task.status == "REVOKED" %}
+    <h1>{% trans "Location Import Failed!" %}</h1>
+    <p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
+
+    <p class="msg">{% blocktrans %}Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>{% endblocktrans %}
+    {% else %}
+    <h1>{% trans "Processing Location Import!" %}</h1>
+    <p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
+
+    <p class="msg">{% trans "We're not done yet! Come back and check on us again later. Thanks!" %}</p>
+    {% endif %}
+
+    <p class="link"><a href="{% url "locations" %}">{% trans "Back to location search page." %}</a></p>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+    //reload every 60 seconds
+    setInterval(function(){
+            window.location.reload();
+        }, 60000);
+</script>
+{% endblock %}

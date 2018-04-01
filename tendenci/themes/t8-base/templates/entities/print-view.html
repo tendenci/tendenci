@@ -1,0 +1,20 @@
+{% extends "entities/base.html" %}
+{% load entity_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Print' %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entity' %} {% trans "Print" %}</h1>
+
+    <div class="entities-wrap">
+        <h2>{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with n=entity.entity_name|safe %}{{ n }}{% endblocktrans %}</div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+
+{% blocktrans %}A new help file has been requested on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

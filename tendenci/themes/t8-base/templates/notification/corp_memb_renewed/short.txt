@@ -1,0 +1,2 @@
+
+{% blocktrans with object.corp_profile.name as objname %}Corporate Membership Renewal - {{ objname }}{% endblocktrans %}

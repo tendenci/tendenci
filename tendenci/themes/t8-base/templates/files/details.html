@@ -1,0 +1,65 @@
+{% extends "files/base.html" %}
+{% load file_tags %}
+{% load tagging_tags %}
+{% load base_filters %}
+
+{% tags_for_object file as tags %}
+
+{% block title %}{{ block.super }}{{ file.headline }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
+<style type="text/css">
+    .t h2 {
+        margin-bottom: 0;
+    }
+    .t .file {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+    <h1>{% trans "View File" %}</h1>
+
+    <div class="file-wrap">
+
+        <div class="options">
+            <div class="quick-options">
+               {% file_options request.user file %}
+            </div>
+        </div>
+
+
+        <h2>{% firstof file.name "Untitled" %}</h2>
+        <div class="icon"><img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" /></div>
+        <div class="file"><a href="{{ file.file.url }}">{{ file.file }}</a></div>
+        <div class="content">{% blocktrans with d=file.description %}{{ d }}{% endblocktrans %}</div>
+        <div class="meta">
+            {% with file.category_set as file_cat %}
+            {% if file_cat %}
+            <div class="categories">
+                <strong>{% trans "Category:" %} </strong><a href="{% url "files" %}?q=category:{{ file_cat.category }}">{{ file_cat.category }}</a>
+            {% if file_cat.sub_category %}
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url "files" %}?q=sub_category:{{ file_cat.sub_category }}">{{ file_cat.sub_category }}</a>
+            {% endif %}
+            </div>
+            {% endif %}
+            {% endwith %}
+                {% if tags %}
+                <div class="tags">
+                    <strong>Tags: </strong>
+                {% for tag in tags %}
+                    <a href="{% url "files" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </div>
+                {% endif %}
+            <div class="submitted">{% blocktrans with file.create_dt|date:"long" as create_date and file.creator as file_creator %}Created on {{ create_date }} by {{ file_creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user events.add_event as can_add %}
+{% has_perm user events.change_event opt_object as can_edit %}
+{% has_perm user events.delete_event opt_object as can_delete %}
+
+{% if opt_object %}
+
+<div class="t-iconrow">
+
+    <a class="option-link print" href="{% url "event.print_view" opt_object.pk %}">{% trans "Print" %}</a>
+
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url "event.edit" opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
+
+    {% if can_edit %}
+        <div class="more-options-wrap">
+        <a href="javascript:;" class="more-options-trigger">{% trans "More" %} <small>&#9660;</small></a>
+        <div class="more-options-target">
+            <ul>
+                <li><a href="{% url "event.registrant.search" opt_object.pk %}">{% trans "Registrants" %}</a></li>
+                <li><a href="{% url "event.registrant.roster" opt_object.pk %}">{% trans "Registrant Roster" %}</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url "event.edit.meta" opt_object.pk %}">{% trans "Edit Meta" %}</a></li>
+
+                <li class="divider"></li>
+
+                <li><a href="{% url "event.ics_single" opt_object.pk %}">{% trans "Export" %}</a></li>
+                {% if can_add %}
+                    <li>
+                        <a class="option-link copy" href="{% url "event.copy" opt_object.pk %}">{% trans "Copy" %}</a>
+                    </li>
+                {% endif %}
+
+                {% if can_delete %}
+                <li>
+                    <a class="option-link delete" href="{% url "event.delete" opt_object.pk %}">{% trans "Delete" %}</a>
+                </li>
+                {% endif %}
+
+            </ul>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endif %}

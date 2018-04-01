@@ -1,0 +1,115 @@
+{% extends "files/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load file_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Most Viewed' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="t most-viewed">
+  <div class="page-header">
+    <h1>{% trans "Most Viewed Files" %}</h1>
+  </div>
+
+  <form class="form-inline" action="{% url "file.report_most_viewed" %}" method="POST">
+
+    {% for field in form %}
+    {{ field.errors }}
+    {% endfor %}
+
+    {% csrf_token %}
+    {{ form.start_dt }}
+    {{ form.end_dt }}
+    {{ form.file_type }}
+    <input class="btn btn-primary" type="submit" value="{% trans 'Filter Files' %}" />
+    <div id="results">{{ event_logs|length }} {% trans 'Results' %}</div>
+  </form>
+
+  {% autopaginate event_logs 10 %}
+
+  <div class="files-wrap">
+
+    <table>
+      <tr>
+        <th>{% trans "Clicks" %}</th>
+        <th>{% trans "Type" %}</th>
+        <th>{% trans "File Name" %}</th>
+        <th colspan="2">{% trans "Actions" %}</th>
+      </tr>
+
+      {% for event_log in event_logs %}
+      {% most_viewed_result %}
+      {% endfor %}
+
+    </table>
+
+  </div>
+
+  {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+  // url exists
+  url_exists = function(url){
+  var http = new XMLHttpRequest();
+  http.open('HEAD', url, false);
+  http.send();
+  return http.status!=404;
+  }
+
+  // delete confirmation
+  $('.delete').click(function(){
+  var delete_file = confirm('{% trans "Permenantly delete file?" %}');    // confirm
+  if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
+  return false;    // cancel
+  });
+
+  // if url is broken; add 'broken' class
+  $('.t .file-wrap h2 a').each(function(){
+  if(!url_exists(this.href)){
+  $(this).addClass('broken');
+  }
+  });
+
+  $(function() {
+  var dates = $( "#id_start_dt, #id_end_dt" ).datepicker({
+  defaultDate: "-60d",
+  changeMonth: true,
+  numberOfMonths: 3,
+  onSelect: function( selectedDate ) {
+  var option = this.id == "id_start_dt" ? "minDate" : "maxDate",
+  instance = $( this ).data( "datepicker" ),
+  date = $.datepicker.parseDate(
+  instance.settings.dateFormat ||
+  $.datepicker._defaults.dateFormat,
+  selectedDate, instance.settings );
+  dates.not( this ).datepicker( "option", option, date );
+  }
+  });
+  });
+
+  });
+</script>
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+<script type="text/javascript">
+  var iconrow = new dropdown({
+  container:    'more-options-wrap',
+  trigger:    'more-options-trigger',
+  target:        'more-options-target'
+  });
+</script>
+{% endblock %}

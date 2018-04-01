@@ -1,0 +1,26 @@
+{% extends "photos/base-wide.html" %}
+{% load styled_forms %}
+{% load photo_tags %}
+
+{% block head_title %}{% blocktrans %}Edit Photo Set{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/photos.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>{{ MODULE_PHOTOS_LABEL }} {% trans "Set Edit" %}</h1>
+    <div class="forms">
+    <form method="POST" action="">{% csrf_token %}
+        {{ photoset_form|styled_form }}
+        <input type="hidden" name="action" value="edit" />
+        <input type="submit" value="{% trans 'Edit' %}"/>
+    </form>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

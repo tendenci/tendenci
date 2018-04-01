@@ -1,0 +1,62 @@
+{% extends "emails/base.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_EMAILS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_EMAILS_LABEL_PLURAL }} List{% endblocktrans %} {% else %}
+        {% trans "Emails List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_EMAILS_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_EMAILS_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Emails List" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate emails 10 %}
+
+    <h4 class="capitalize">
+        {% if MODULE_EMAILS_LABEL_PLURAL %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} {{ MODULE_EMAILS_LABEL_PLURAL }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Emails Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
+
+    <section>
+        {% for email in emails %}
+            {% search_result email %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_email = confirm('{% trans "Permenantly delete email?" %}');    // confirm
+                if(delete_email) $(this).parents('.email-wrap').find('form[name="email-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+{% endblock %}

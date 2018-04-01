@@ -1,0 +1,118 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Registration Pre" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-registration.css' %}" />
+<link rel="stylesheet" href="{% static 'css/event-register_pre.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Registration" %}</h1>
+    <div class="event-info">
+        <div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
+        <div class="event-time">
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+            <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+        </div>
+         {% include "events/include/spots_status.html" %}
+    </div>
+
+   {% if not table_only %}
+   <div class="well">
+       {% trans "The event you have chosen allows individual and table/team registrations. Please choose one below to proceed." %}
+   </div>
+   {% endif %}
+
+    {% if form.errors.values %}
+        <div class="errors-box">
+            <ul>
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="form-wrap">
+        <form action="" method="post">{% csrf_token %}
+        <div class="forms regpre-form-wrap">
+
+            {% if not table_only %}
+            <div class="form-field is-table-choice">
+                <div class="error">{{ form.is_table.errors }}</div>
+                <div class="field">{{ form.is_table }}</div>
+                {% if form.is_table.help_text %}
+                <div class="help-text">{{ form.is_table.help_text }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="form-field table-pricing-choice">
+                {% if table_only %}
+                <div class="required">{% trans "Please select a price:" %}</div>
+                {% endif %}
+                <div class="field">{{ form.pricing }}</div>
+                {% if form.pricing.help_text %}
+                <div class="help-text">{{ form.pricing.help_text }}</div>
+                {% endif %}
+            </div>
+
+
+
+            <input type="submit" value="Continue" />
+        </div>
+        </form>
+    </div>
+
+    <div id="individual-pricings" >
+        <ul style="list-style: square;">
+            {% for pricing in individual_pricings %}
+            <li>
+                {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    $(document).ready(function(){
+        {% if not table_only %}
+        var individual_list = $('div#individual-pricings');
+        $('div.is-table-choice li:first').append(individual_list);
+        $(individual_list).show();
+        $(individual_list).css({'margin-left': '2em'});
+
+        // make sure the Table registration is checked when selecting a table option
+        var table_reg_radio = $('div.is-table-choice input[type=radio]:last');
+        $('.table-pricing-choice input[type=radio]').click(function(){
+            if ($(table_reg_radio).attr('checked') !== true){
+                $(table_reg_radio).attr('checked', true);
+            }
+        })
+        {% endif %}
+    });
+
+</script>
+
+{{ block.super }}
+{% endblock %}

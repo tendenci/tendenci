@@ -1,0 +1,37 @@
+{% extends "photos/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load search_tags %}
+{% load humanize %}
+
+{% block title %}{% blocktrans %}Photos{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t t-search-view">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
+
+    {% autopaginate photos 10 %}
+    {% photo_search %}
+    <span><em>{{  paginator.count  }} {% firstof MODULE_PHOTOS_LABEL trans 'Photos' %} {% trans "Found" %}</em></span>
+
+    <div class="photos-wrap">
+    {% for photo in photos %}
+        {% with photo as image %}
+            {% search_result image %}
+        {% endwith %}
+    {% empty %}
+
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

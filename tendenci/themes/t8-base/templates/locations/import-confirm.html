@@ -1,0 +1,26 @@
+{% extends "locations/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Import Locations from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="import-wrap" class="finished">
+
+    <h1>{% trans "Location Import Finished!" %}</h1>
+    <p class="timestamp">{% trans "Step 4/4" %} &middot; {{ now }}</p>
+
+    <p class="msg">{% trans 'We attempted' %} <em>{{ stats.all }}</em> import{{ stats.all|pluralize }};
+    <em>{{ stats.added }}</em> {{ stats.added|pluralize:"was,were" }} added,
+    and <em>{{ stats.skipped }}</em> {{ stats.skipped|pluralize:"was,were" }} skipped.</p>
+
+    <p class="link"><a href="{% url "locations" %}">{% trans "Back to location search page." %}</a></p>
+
+</div>
+{% endblock %}

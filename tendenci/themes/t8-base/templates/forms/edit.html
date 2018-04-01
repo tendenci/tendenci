@@ -1,0 +1,72 @@
+{% extends "forms/base.html" %}
+{% load styled_forms %}
+{% load forms_tags %}
+
+{% block title %}{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Edit' %}{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Forms' %} {% trans 'Edit' %}</h1>
+
+    <div class="form-builder-wrap">
+        <form action="{% url 'form_edit' form_instance.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <fieldset id='pricing-options'>
+                <legend>{% trans 'Pricing Options' %}</legend>
+                {{ formset.management_form }}
+                {{ formset|styled_form_set }}
+            </fieldset>
+            <input type="submit" value="{% trans 'Apply Change(s)' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+
+{{ block.super }}
+
+<script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% if form_instance.pricing_set.exists %}
+            $('#id_custom_payment').attr('checked', 'checked');
+        {% else %}
+            $('#pricing-options').hide();
+            $('.id_payment_methods').hide();
+        {% endif %}
+        $('#id_custom_payment').change(function(){
+            pricings = $(this).attr('checked');
+            if(pricings=='checked'){
+                $('#pricing-options').show();
+                $('.id_payment_methods').show();
+                $('.id_recurring_payment').show();
+            }else{
+                $('#pricing-options').hide();
+                $('.id_payment_methods').hide();
+                $('.id_recurring_payment').hide();
+            }
+        });
+
+        $('#id_recurring_payment').change(function(){
+            recurring_payment = $(this).attr('checked');
+            if(recurring_payment=='checked') {
+                $('.recurring-payment').closest('div.form-field').show();
+            }else{
+                $('.recurring-payment').closest('div.form-field').hide();
+            }
+        });
+    });
+    var slugit = new Slugify({
+        input_element : 'input#id_title',
+        slug_element : 'input#id_slug',
+        submit_element : 'input[type="submit"]',
+        help: false,
+        limit : 150
+    });
+</script>
+{% endblock %}

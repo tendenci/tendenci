@@ -1,0 +1,29 @@
+{% extends "default.html" %}
+
+
+{% block title %}{% trans 'Dashboard' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "dashboard/top_nav.html" %}
+       {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {# TODO: Inspect why {{ block.super }} duplicates the imported static files #}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+{% endblock %}

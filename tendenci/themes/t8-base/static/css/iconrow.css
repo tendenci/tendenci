@@ -1,0 +1,112 @@
+.t-iconrow {
+    height: 12px;
+    padding: 0;
+    margin: 0;
+    font-size: 11px;
+    font-family: arial;
+}
+.t-iconrow a {font-size: 11px;}
+
+.t-iconrow a.t-statusdetail {
+    padding: 1px 4px;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.t-iconrow a.option-link {
+    padding-left: 15px;
+    padding-right: 3px;
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+.t-iconrow a.add {background-image: url('../images/icons/add12x12.gif');}
+.t-iconrow a.breadcrumb {background-image: url('../images/icons/breadcrumb-12x12.gif');}
+.t-iconrow a.cart{background-image: url('../images/icons/cart12x12.gif');}
+.t-iconrow a.cctadmin{background-image: url('../images/icons/CCT_add12x12.gif');}
+.t-iconrow a.close{background-image: url('../images/icons/tickets/close12x12.gif');}
+.t-iconrow a.committees{background-image: url('../images/icons/joincommittees12x12.gif');}
+.t-iconrow a.compare {background-image: url('../images/icons/diff.gif');}
+.t-iconrow a.console {background-image: url('../images/icons/rygb12x12.gif');}
+.t-iconrow a.copy {background-image: url('../images/icons/clone12x12.gif');}
+.t-iconrow a.courses{background-image: url('../images/icons/course_attempt_add12x12.gif');}
+.t-iconrow a.delete {background-image: url('../images/icons/trash12x12.gif');}
+.t-iconrow a.designnotes {background-image: url('../images/icons/designnotes12x12.gif');}
+.t-iconrow a.directories{background-image: url('../images/icons/directory_add12x12.gif');}
+.t-iconrow a.donations{background-image: url('../images/icons/donation_add12x12.gif');}
+.t-iconrow a.edit {background-image: url('../images/icons/edit12x12.gif');}
+.t-iconrow a.emailfriend {background-image: url('../images/icons/email12x12.gif');}
+.t-iconrow a.fax{background-image: url('../images/icons/fax12x12.gif');}
+.t-iconrow a.firstresponder {background-image: url('../images/icons/firstresponder12x12-red.gif');}
+.t-iconrow a.history {background-image: url('../images/icons/history12x12.gif');}
+.t-iconrow a.icalendar{background-image: url('../images/icons/vcalendar12x12.gif');}
+.t-iconrow a.images{background-image: url('../images/icons/imageassign12x12.gif');}
+.t-iconrow a.interests{background-image: url('../images/icons/myinterests12x12.gif');}
+.t-iconrow a.invoices{background-image: url('../images/icons/cepricing12x12.gif');}
+.t-iconrow a.memberships{background-image: url('../images/icons/membership_add12x12.gif');}
+.t-iconrow a.metatags {background-image: url('../images/icons/meta12x12.gif');}
+.t-iconrow a.myevents{background-image: url('../images/icons/myevents12x12.gif');}
+.t-iconrow a.permissions{background-image: url('../images/icons/permissions12x12.gif');}
+.t-iconrow a.podcast {background-image: url('../images/icons/filetypes/mp3.gif');}
+/* .t-iconrow a.print {background-image: url('../images/icons/printer.gif');} */
+.t-iconrow a.recurring{background-image: url('/en/calendarevents/images/icons/recurring.gif');}
+.t-iconrow a.reporting{background-image: url('../images/icons/reports12x12.gif');}
+.t-iconrow a.rss {background-image: url('../images/icons/feed-icon-12x12.gif');}
+.t-iconrow a.shipping{background-image: url('../images/icons/shipping12x12.gif');}
+.t-iconrow a.trends {background-image: url('../images/icons/trendreport12x12.gif');}
+.t-iconrow a.upload {background-image: url('../images/icons/upload12x12.gif');}
+.t-iconrow a.usergroups{background-image: url('../images/icons/usergroups12x12.gif');}
+.t-iconrow a.vcard{background-image: url('../images/icons/vcard12x12.gif');}
+.t-iconrow a.xml{background-image: url('../images/icons/xml12x12.gif');}
+.t-iconrow a.changepassword {background-image: url('../images/icons/password.png');}
+.t-iconrow a.addmember {background-image: url('../images/icons/add.png');}
+
+.t-iconrow img.non-interactive{vertical-align: baseline;}
+
+.t-iconrow .more-options-wrap {display: inline;}
+
+.t-iconrow .more-options-trigger {
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.t-iconrow .more-options-target {
+    display: none;
+    position: absolute;
+    background: #FFFFFF;
+    border: solid 1px silver;
+    border-right-color: #666;
+    border-bottom-color: #666;
+    top: 16px;
+    width: 140px;
+    left:0;
+    z-index: 9999;
+}
+
+.t-iconrow .more-options-target ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.t-iconrow .more-options-target ul li{
+    padding: 2px 3px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.t-iconrow .more-options-target ul li.divider{border-top: solid 1px silver;}
+
+.t-iconrow .more-options-target ul li a{
+    text-decoration: none;
+    padding-left: 20px;
+    display: block;
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+.t-iconrow .more-options-target ul li:hover{background: #DFEBFF;}
+.body-copy-alerts{
+	color: red;
+}

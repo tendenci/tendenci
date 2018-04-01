@@ -1,0 +1,2 @@
+
+{% blocktrans with object.username as objname %}User ({{ objname }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

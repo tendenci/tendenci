@@ -1,0 +1,105 @@
+{% load base_filters %}
+
+<div class="row invoice-resultset">
+    <div class="span6">
+        <h2>{% trans 'Totals' %}</h2>
+        <table>
+            <tr>
+                <th>{% trans 'App' %}</th>
+                <th>{% trans 'Count' %}</th>
+                <th>{% trans 'Total' %}</th>
+                <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Balance' %}</th>
+            </tr>
+            {% for item in results %}
+            <tr class="totals {% cycle "even" "odd" %}">
+                <td class="title"><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></td>
+                <td>{{ item.count }} invoices</td>
+                <td>{{ item.total__sum|format_currency }}</td>
+                <td>{{ item.payments_credits__sum|format_currency }}</td>
+                <td>{{ item.balance__sum|format_currency }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <th>{% trans 'TOTAL' %}</th>
+                <th>{{ totals.count }} invoices</th>
+                <th>{{ totals.total|format_currency }}</th>
+                <th>{{ totals.payments_credits|format_currency }}</th>
+                <th>{{ totals.balance|format_currency }}</th>
+            </tr>
+        </table>
+    </div> <!-- /.span6 -->
+    <div class="span6">
+        <p>{% trans 'The following apps had data for the selected date range and are included in this report. Click to jump to a specific section' %}:</p>
+        <ol>
+            {% for item in results %}
+            <li><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+{% for item in results %}
+<div class="row invoice-resultset{% if forloop.last %} last{% endif %}">
+    <div class="span12">
+        <h3 id="app-{{ forloop.counter }}">{{ forloop.counter }}. {{ item.object_type }} <a class="back-to-top no-print" href="#top">{% trans 'Back to Top' %}</a></h3>
+
+        <table class="">
+            <tr>
+                <th>{% trans 'Count' %}</th>
+                <th>{% trans 'Total' %}</th>
+                <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Balance' %}</th>
+            </tr>
+            <tr class="summary-labels">
+                <th>{{ item.count }} {% trans 'invoices' %}</th>
+                <th>{{ item.total__sum|format_currency }}</th>
+                <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.balance__sum|format_currency }}</th>
+            </tr>
+        </table>
+
+        <p>{% blocktrans with t=item.object_type %}Invoices for {{ t }} sorted by Date{% endblocktrans %}</p>
+
+        <table class="invoice-list">
+            <tr>
+                <th>{% trans 'Title' %}</th>
+                <th>{% trans 'Total' %}</th>
+                <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Balance' %}</th>
+            </tr>
+        {% for summary in item.summary %}
+            {% with summary.invoices.0 as invoice %}
+            <tr class="{% cycle "even" "odd" %} {% if invoice.payments_credits > invoice.total %} pay-extra{% endif %} {% if invoice.payments_credits == invoice.total and invoice.balance == invoice.total and invoice.total > 0 %} all-match{% endif %}">
+                <td><a href="{{ invoice.get_absolute_url }}">
+                    {% if invoice.get_object.event.pk %}
+                    <a href="{% url 'event' invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}
+
+                    {% elif invoice.get_object.membership_type %}
+                    {{ invoice.get_object.membership_type }}
+
+                    {% elif invoice.title %}{{ invoice.title }}{% endif %}</a></td>
+                <td class="inv-total">{{ summary.total|format_currency }}</td>
+                <td class="inv-payments-credits">{{ summary.payments_credits|format_currency }}</td>
+                <td class="inv-balance">{{ summary.balance|format_currency }}</td>
+            </tr>
+            {% endwith %}
+        {% endfor %}
+            <tr>
+                <th>{% trans 'Title' %}</th>
+                <th>{% trans 'Total' %}</th>
+                <th>{% trans 'Payments' %}</th>
+                <th>{% trans 'Balance' %}</th>
+            </tr>
+            <tr class="summary-labels">
+                <th>{% trans 'Summary' %}</th>
+                <th>{{ item.total__sum|format_currency }}</th>
+                <th>{{ item.payments_credits__sum|format_currency }}</th>
+                <th>{{ item.balance__sum|format_currency }}</th>
+            </tr>
+        </table>
+    </div> <!-- /.span12 -->
+</div>
+
+
+{% endfor %}

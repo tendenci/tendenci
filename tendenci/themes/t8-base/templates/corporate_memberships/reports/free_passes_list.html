@@ -1,0 +1,59 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/corporate_memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/corporate_memberships_reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Corporate Membership Free Passes" %}</h1>
+<div class="corp-fp-list">
+    <table class="table-striped">
+        <thead>
+            <tr>
+                <th width="40%">{% trans 'Corporation' %}</th>
+                <th width="20%">{% trans 'Total Allowed' %}</th>
+                <th width="20%">{% trans '# Used' %}</th>
+                <th width="20%">{% trans '# Available' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for corp_membership in corp_memberships %}
+            <tr>
+                <td><a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_membership.corp_profile.name|truncatechars:40 }}</a></td>
+                <td class="align_center">{{ corp_membership.free_pass_total }}</td>
+                <td class="align_center">{{ corp_membership.free_pass_used }}</td>
+                <td class="align_center">{{ corp_membership.free_pass_avail }}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    $(document).ready(function(){
+        $(".table-striped tr:even").addClass("alt");
+        $(".table-striped tr")
+            .mouseover(function(){
+                $(this).addClass("over");
+            })
+            .mouseout(function(){
+                $(this).removeClass("over");
+            });
+    });
+
+</script>
+
+ {{ block.super }}
+{% endblock extra_body %}

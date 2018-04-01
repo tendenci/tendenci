@@ -1,0 +1,15 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}{% trans 'Donation' %}{% endblock %}
+
+{% block top_bar %}
+{% if request.user.is_authenticated %}
+    {% include "donations/top_nav.html" %}
+    {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% endblock %}

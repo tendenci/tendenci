@@ -1,0 +1,23 @@
+{{ object.object_type }}
+{{ object.object_id }}
+{{ object.bill_to }}
+{{ object.bill_to_company }}
+{{ object.bill_to_address }}
+{{ object.bill_to_city }}
+{{ object.bill_to_state }}
+{{ object.bill_to_zip_code }}
+{{ object.bill_to_country }}
+{{ object.bill_to_phone }}
+{{ object.bill_to_email }}
+{{ object.creator.get_full_name }}
+{{ object.creator.username }}
+{{ object.total }}
+{{ object.balance }}
+{{ object.status_detail }}
+{% with object.payment_set.all as payments %}
+{% for payment in payments %}
+{{ payment.first_name }} {{ payment.last_name }}
+{{ payment.email_name }}
+{{ payment.trans_id }}
+{% endfor %}
+{% endwith %}

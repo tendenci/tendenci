@@ -1,0 +1,24 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Member Registration" %} {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Member Registration" %}</h1>
+    <div class="form-wrap">
+        <form action="{% url "event.member_register" event.pk %}" method="post">{% csrf_token %}
+            <div class="forms">
+                {{ form|styled_form }}
+                <input type="submit" value="{% trans "Register Members" %}"/>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

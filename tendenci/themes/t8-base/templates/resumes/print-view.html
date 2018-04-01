@@ -1,0 +1,72 @@
+{% extends "resumes/base-print.html" %}
+{% load base_filters %}
+{% load resume_tags %}
+
+{% block title %}{% blocktrans with t=resumes.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=resumes.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=resumes.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" rel="stylesheet" href="{% static 'css/resumes.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'css/resumes-print.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+     <div class="resume-wrap">
+        <h2>{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</h2>
+        <h2>{% trans "Resume Information" %}</h2>
+
+        {% if resume.description %}
+        <div class="section-block">
+            <div class="label">{% trans "Description" %}</div>
+            <div class="value">{% blocktrans with d=resume.description|safe %}{{ d }}{% endblocktrans %}</div>
+        </div>
+        {% endif %}
+
+        {% if resume.location %}
+        <div class="section-block">
+            <div class="label">{% trans "Location" %}</div>
+            <div class="value">{{ resume.location }}</div>
+            <div class="clear"></div>
+        </div>
+        {% endif %}
+
+        {% if resume.experience %}
+        <div class="section-block">
+            <div class="label">{% trans "Experience" %}</div>
+            <div class="value">{% blocktrans with e=resume.experience %}{{ e }}{% endblocktrans %}</div>
+        </div>
+        {% endif %}
+
+        {% if resume.skills %}
+        <div class="section-block">
+            <div class="label">{% trans "Skills" %}</div>
+            <div class="value">{% blocktrans with s=resume.skills %}{{ s }}{% endblocktrans %}</div>
+        </div>
+        {% endif %}
+
+        {% if resume.education %}
+        <div class="section-block">
+            <div class="label">{% trans "Education" %}</div>
+            <div class="value">{% blocktrans with e=resume.education %}{{ e }}{% endblocktrans %}</div>
+            <div class="clear"></div>
+        </div>
+        {% endif %}
+
+        {% if resume.contact_name %}
+        <h2>{% trans "Contact Information" %}</h2>
+        <div class="contact-wrap">
+            <div>{{ resume.contact_name }}</div>
+            <div>{{ resume.contact_phone|phonenumber }}</div>
+            <div>{{ resume.contact_phone2|phonenumber }}</div>
+            <div>{{ resume.contact_fax }}</div>
+            <div><a href="">{{ resume.contact_email|urlize }}</a></div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load base_filters %}
+<div class="wrap-search-item {% if not payment.status_detail %}body-copy-yellow{% endif %}">
+    <div class="search-item payment-search-item clearfix">
+        <div class="payment-id">
+            <p class="header"><a href="{% url "payment.view" payment.id %}">{{ payment.id }}</a></p>
+        </div>
+        <div class="payment-info">
+            <p class="header">{% if payment.last_name %}{{ payment.last_name }}, {% endif %}{{ payment.first_name }}</p>
+            <p>{% trans 'Creator' %}: <a href="{{ payment.creator.profile.get_absolute_url }}" >{{ payment.creator }}</a></p>
+            {% if payment.response_reason_text %}
+                <p>{{ payment.response_reason_text }}</p>
+            {% endif %}
+            {% if payment.trans_id %}
+                <p>{% trans 'Trans_ID' %}: {{ payment.trans_id %}</p>
+            {% else %}
+                <p>{% trans 'Trans_ID not available' %}</p>
+            {% endif %}
+
+            <p>{% trans 'Description' %}: {{ payment.description }}</p>
+        </div>
+        <div class="payment-status">
+            <p class="header">{{ payment.create_dt|date:"F j, Y P" }}</p>
+            <p>{% trans 'Invoice' %}: <a href="{% url "invoice.view" payment.invoice.pk %}">{{ payment.invoice.pk }}</a></p>
+            <p>[ {% trans 'Payment Status' %}:
+                {% if not payment.status_detail %}
+                    {% if not payment.verified %}
+                        {% trans "abandoned" %}
+                    {% else %}
+                        {% trans "verified, not received" %}
+                    {% endif %}
+                   {% else %}
+                    {% if payment.status_detail == 'void' %}
+                        {% trans "voided" %}
+                    {% else %}
+                        {{ payment.status_detail }}
+                    {% endif %}
+                {% endif %}]</p>
+
+            <p>{{ payment.method }} {{ payment.amount|format_currency }}</p>
+        </div>
+    </div>
+</div>

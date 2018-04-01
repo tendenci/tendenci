@@ -1,0 +1,91 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user testimonials.add_testimonial as can_add_testimonial %}
+
+{% if app_object %}
+    {% has_perm user testimonials.view_testimonial app_object as can_view_testimonial %}
+    {% has_perm user testimonials.change_testimonial app_object as can_edit_testimonial %}
+    {% has_perm user testimonials.delete_testimonial app_object as can_delete_testimonial %}
+{% else %}
+    {% has_perm user testimonials.view_testimonial as can_view_testimonial %}
+    {% has_perm user testimonials.change_testimonial as can_edit_testimonial %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-testimonials-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "Testimonials" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'testimonials' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'testimonials' %}">{% trans "Search" %} {% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "testimonials" %}</a>
+                        </span>
+                    </li>
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:testimonials_testimonial_add' %}">{% trans "Add" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "Testimonial" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_testimonial or can_edit_testimonial %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "testimonial" %}</span>
+                            </li>
+
+                            {% if can_view_testimonial %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'testimonial.view' app_object.id %}">{% trans "View" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "testimonial" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:testimonials_testimonial_change' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "testimonial" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_testimonial %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:testimonials_testimonial_delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_TESTIMONIALS_LABEL trans "testimonial" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

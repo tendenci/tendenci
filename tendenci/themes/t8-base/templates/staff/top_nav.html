@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load staff_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/drive_user.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Staff' %}{% endblock %}
+
+{% block current_app %}
+    {% if staff %}
+        {% staff_current_app request.user staff %}
+    {% else %}
+        {% staff_current_app request.user %}
+    {% endif %}
+{% endblock %}

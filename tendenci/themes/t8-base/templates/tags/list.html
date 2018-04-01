@@ -1,0 +1,46 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% trans "Tags List" %} {{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans 'Tags List' %}</h1>
+
+    <div class="tags-wrap">
+        <div style="float: left; width: 40%; margin-right: 10px;">
+        <h3>{% trans 'All Tags' %}</h3>
+        <table>
+        {% for tag in tags %}
+            {% if tag.num > 0 %}
+            <tr>
+                <td width="120px"><a href="{% url "tag.detail" tag.pk %}">{{ tag.name }}</a></td>
+                <td>{{ tag.num }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        </table>
+        </div>
+
+
+        <div style="float: left; width: 40%;">
+        {% for item in content_types %}
+            <div class="tag-content-type" style="margin-bottom: 20px;">
+            <h3>{{ item.name|title }}</h3>
+            <table>
+            {% for tag in item.tags %}
+                <tr>
+                    <td width="120px"><a href="{% url "tag.detail" tag.pk %}">{{ tag.name }}</a></td>
+                    <td>{{ tag.num }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

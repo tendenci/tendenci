@@ -1,0 +1,21 @@
+{% extends "entities/base.html" %}
+{% load entity_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entity' %}  {% trans "Add" %}</h1>
+
+    <div class="entities-wrap">
+        <form action="{% url "entity.add" %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

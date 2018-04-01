@@ -1,0 +1,51 @@
+{% extends "site_settings/base.html" %}
+{% load site_setting_tags %}
+
+
+{% block title %}{{ scope_category|title }} {% trans 'Settings' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock%}
+
+{% block content %}
+    <h1>{{ scope_category|title }} {% trans 'Settings' %}</h1>
+    <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% if form.errors.values or form.non_field_errors  %}
+            <div class="alert alert-danger" role="alert">
+            <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {{ form.as_p }}
+
+        <input type="submit" value="{% trans 'Update Settings' %}" name="submit" />
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('a.setting-toggle').click(function() {
+                var id = $(this).attr('id').replace('toggle','');
+                $('#description'+id).toggle();
+                if ($("#toggle"+id+":contains('Show')").length > 0) {
+                    $(this).text($(this).text().replace('Show', 'Hide'));
+                } else {
+                    $(this).text($(this).text().replace('Hide', 'Show'));
+                };
+            });
+        });
+    </script>
+{% endblock extra_body %}

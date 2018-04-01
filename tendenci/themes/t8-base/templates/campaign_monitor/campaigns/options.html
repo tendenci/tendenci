@@ -1,0 +1,27 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load campaign_monitor_tags %}
+
+{% has_perm user campaign_monitor.change_campaign as can_change %}
+{% has_perm user campaign_monitor.delete_campaign as can_delete %}
+
+<div class="t-iconrow">
+
+    {% comment %}
+    {% if can_change %}
+
+        {% if opt_object.status == 'S' %}
+        {% else %}
+            <a class="option-link" href="{{ cm_url }}/createSend/snapshot.aspx?cID={{ opt_object.campaign_id }}">{% trans "View Snapshot" %}</a>
+        {% endif %}
+
+        <a class="option-link edit" href="{% url "campaign_monitor.campaign_add" %}?copy={{ opt_object.campaign_id }}">{% trans "Copy" %}</a>
+
+    {% endif %}
+    {% endcomment %}
+
+    {% if can_delete %}
+        <a class="option-link delete" href="/campaign_monitor/campaigns/delete/{{ opt_object.campaign_id }}">{% trans "Delete" %}</a>
+    {% endif %}
+
+</div>

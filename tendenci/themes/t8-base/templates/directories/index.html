@@ -1,0 +1,10 @@
+
+<h1>{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% trans "Index Page" %}</h1>
+
+<ul>
+    <li><a href="{% url "directory.search" %}">{% trans "Search" %}</a></li>
+    <li><a href="{% url "directory.view" %}">{% trans "View" %}</a></li>
+    <li><a href="{% url "directory.print_view" %}">{% trans "Print View" %}</a></li>
+    <li><a href="{% url "directory.edit" %}">{% trans "Edit" %}</a></li>
+    <li><a href="{% url "directory.delete" %}">{% trans "Delete" %}</a></li>
+</ul>

@@ -1,0 +1,14 @@
+{% load base_tags %}
+{% load perm_tags %}
+<div class="t-iconrow">
+<ul>
+    {% has_perm request.user redirects.change_redirect opt_object as can_edit %}
+    {% if opt_object.status == 0 %}
+        <span class="copyright body-copy-alerts"><em>{% trans "INACTIVE" %}</em></span>
+    {% endif %}
+    {% if can_edit %}
+        <li><a href="{% url "redirect.edit" opt_object.pk  %}" title="Edit Redirect" class="option-link edit">{% trans "Edit" %}</a></li>
+        <li><a href="{% url "redirect.delete" opt_object.pk  %}" class="option-link delete" title="Delete Redirect">{% trans "Delete" %}</a></li>
+    {% endif %}
+</ul>
+</div>

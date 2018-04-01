@@ -1,0 +1,23 @@
+{% extends "emails/base.html" %}
+{% load email_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Amazon SES - Verify Email Address" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/amazon_ses.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="t amazon-ses-index">
+<h1>{% trans "Amazon SES" %}</h1>
+<ul>
+<li><a href="{% url "email.amazon_ses_verify_email" %}">{% trans "Verify Email Addresses" %}</a></li>
+<li><a href="{% url "email.amazon_ses_list_verified_emails" %}">{% trans "View Verified Email Addresses" %}</a></li>
+<li><a href="{% url "email.amazon_ses_send_quota" %}">{% trans "View Sending Limits" %}</a></li>
+</ul>
+</div>
+{% endblock %}

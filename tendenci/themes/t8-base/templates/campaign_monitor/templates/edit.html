@@ -1,0 +1,25 @@
+{% extends "campaign_monitor/base.html" %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans "Template Edit" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% template_nav request.user %}
+
+    <h1>{% trans "Template Edit" %}</h1>
+
+    <div class="template-wrap">
+        <form action="{% url "campaign_monitor.template_edit" form.instance.template_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Template' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

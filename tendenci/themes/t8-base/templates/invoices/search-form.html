@@ -1,0 +1,69 @@
+
+<form class="search-form form-group" action="{% url "invoice.search" %}" method="get">
+
+  <!-- Advanced SEARCH -->
+  <div class="collapse" id="collapseExample">
+    <div class="fieldWrapper form-group">
+      <label>{{ form.start_dt.label }}: </label>
+      {{ form.start_dt }}
+      <label>{{ form.end_dt.label }}: </label>
+      {{ form.end_dt }}
+    </div>
+
+    <div class="fieldWrapper form-group">
+      <label>{% trans 'Amount Between' %}: </label>
+      {{ form.start_amount }}
+      <label>{% trans 'and' %}</label>
+      {{ form.end_amount }}
+    </div>
+
+    <div class="fieldWrapper float-left">
+      <div class="form-group">
+        <label>{{ form.invoice_type.label }}: </label>
+        {{ form.invoice_type }}
+      </div>
+      <div class="form-group">
+        <label>{{ form.last_name.label }}: </label>
+        {{ form.last_name }}
+      </div>
+    </div>
+
+    <div class="fieldWrapper form-group float-left">
+      <div class="form-group" style="margin-left: 3em;">
+        <label>{{ form.tendered.label }}: </label>
+        {{ form.tendered }}
+      </div>
+      <div class="form-group" style="margin-left: 3em;">
+        <label>{{ form.balance.label }}: </label>
+        {{ form.balance }}
+      </div>
+    </div>
+    <div class="clear-left"></div>
+  </div>
+
+  <!-- SIMPLE SEARCH -->
+  <div class="fieldWrapper form-group">
+    <label>{% trans 'Search By'%} : </label>
+    {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
+  </div>
+
+  <div class="fieldWrapper advanced eventFields form-group">
+    <label>{{ form.event.label }}: </label>
+    {{ form.event }}
+
+    <label>{{ form.event_id.label }}: </label>
+    {{ form.event_id }}
+  </div>
+
+  <input class="btn btn-default" type="submit" value="{% trans 'Search' %}" />
+
+  <button class="btn btn-primary" type="button" data-toggle="collapse"
+  data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Advanced Search
+  </button>
+
+</form>
+
+<script>
+  $('.collapse').collapse()
+</script>

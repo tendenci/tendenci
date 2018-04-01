@@ -1,0 +1,30 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load perm_tags %}
+
+{% block title %}{% trans "Corporate Membership Add Confirmation" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
+    <p>{% if app.confirmation_text %}
+        {% blocktrans with conf_text=app.confirmation_text|safe %}{{ conf_text }}{% endblocktrans %}
+    {% else %}
+        {% trans "Thank you for your submitting! " %}<br /><br />
+        {% if not request.user.is_superuser %}
+            {% trans "Your membership will be reviewed by an administrator who will be contacting you shortly." %}
+        {% endif %}
+    {% endif %}
+    </p>
+    {% has_perm request.user corporate_memberships.view_corpmembership as can_view %}
+    {% has_perm request.user corporate_memberships.change_corpemembership as can_edit %}
+
+    {% if can_view %}
+    <p><a href="{% url "corpmembership.view" corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
+    {% endif %}
+    {% if can_edit %}
+    <p><a href="{% url "corpmembership.edit" corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url "corpmembership.edit_corp_reps" corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
+    {% endif %}
+</div>
+{% endblock %}

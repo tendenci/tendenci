@@ -1,0 +1,1 @@
+{% blocktrans with object.corp_profile.name as objname %}New Corporate Membership ({{ objname }}){% endblocktrans %} {% blocktrans %}Signed Up on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

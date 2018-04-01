@@ -1,0 +1,165 @@
+.t {
+	width: 90%;
+}
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.contacts-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.contacts-nav li {
+	display: inline;
+}
+
+.t .contacts-wrap {
+	margin-bottom: 20px;
+}
+
+.t .contacts-wrap .contact-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .contacts-wrap .contact-wrap h2 {
+	width: 85%;
+}
+.t .contacts-wrap .contact-wrap .content {
+	margin-bottom: 10px;
+}
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+/* Contact View
+ ------------------------- */
+.t .contact-wrap .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .contact-wrap .meta .tags {
+	margin-bottom: 5px;
+}
+
+/* form */
+div.forms div.form-field div.id_release_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+
+/* View Submission Page
+------------------------------- */
+.row {
+	margin-bottom: 5px;
+	border: 1px solid #DDD;
+	background-color: #F7F7F7;
+}
+.row .label {
+	float: left;
+	width: 50px;
+	padding: 10px;
+	text-align: right;
+}
+.row .value {
+	padding: 10px;
+	margin-left: 80px;
+	background-color: white;
+}
+
+.phone-row {
+	width: 250px;
+	float: left;
+	margin-bottom: 0;
+}
+
+.email-row {
+	margin-left: 260px;
+
+}
+
+.the-message {
+	border: 1px solid #DDD;
+	position: relative;
+}
+.the-message .content {
+	padding: 10px;
+}
+
+.the-message .label {
+	background-color: #F7F7F7;
+	padding: 10px;
+}
+.the-message .submitted-dt {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}

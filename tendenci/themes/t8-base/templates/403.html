@@ -1,0 +1,16 @@
+{% extends "default.html" %}
+
+{% block title %}{{ block.super }} {% trans '403 Forbidden' %}{% endblock%}
+
+{% block content %}
+{% if MODULE_USERS_USERSSECURITYMESSAGE %}
+  {{ MODULE_USERS_USERSSECURITYMESSAGE }}
+{% else %}
+{% if user.is_authenticated %}
+<p>{% trans "You can't go to this page right now because you do not have the correct access rights." %}</p>
+<p>{% trans "Please contact the site administrator to request access to this page." %}</p>
+{% else %}
+<p>{% blocktrans with request.get_full_path as full_path %}This page requires a login. Please <a href="/accounts/login/?next={{ full_path }}">log in</a> if you have an account{% endblocktrans %}{% if MODULE_USERS_SELFREGISTRATION %}{% blocktrans %}, or <a href="/accounts/register/">create an account</a> if you do not have one{% endblocktrans %}{% endif %}.</p>
+{% endif %}
+{% endif %}
+{% endblock %}

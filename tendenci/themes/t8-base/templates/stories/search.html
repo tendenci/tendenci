@@ -1,0 +1,60 @@
+{% extends "stories/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load story_tags %}
+
+
+{% block title %}
+    {% if MODULE_STORIES_LABEL_PLURAL %}
+        {% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Stories Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="Latest Stories" href="{% url 'story.feed' %}">
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_STORIES_LABEL_PLURAL %}
+            {% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Stories Search" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate stories 10 %}
+    {% stories_search %}
+
+    <h4 class="capitalize">
+        {% if MODULE_STORIES_LABEL_PLURAL %}
+            <em>{% blocktrans with label_plural=MODULE_STORIES_LABEL_PLURAL count=paginator.count %}
+                {{ count }} {{ label_plural }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Stories Found
+            {% endblocktrans %}</em>
+        {% endif %}
+
+        <span> - {% trans "Ordered by Latest Added" %}</span>
+    </h4>
+
+    <section>
+        {% for story in stories %}
+            {% search_result story %}
+        {% empty %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}

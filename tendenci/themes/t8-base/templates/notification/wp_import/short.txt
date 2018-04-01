@@ -1,0 +1,2 @@
+
+{% blocktrans with object.headline as article %}Blog import success for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

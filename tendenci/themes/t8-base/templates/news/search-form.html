@@ -1,0 +1,18 @@
+<form class="search-form form-inline" action="." method="get">
+
+  <div class="form-group">
+    <label for="news_group" class="control-label">{{ form.news_group.label }}</label>:&nbsp;&nbsp;{{ form.news_group }}
+  </div>
+
+  <div class="form-group">
+    {% if SITE_GLOBAL_SEARCHINDEX %}
+    {% if form.q.errors %}
+    <div class="text-danger">{{ form.q.errors }}</div>
+    {% endif %}
+    {{ form.q }}
+    {% endif %}
+    <button type="submit" class="btn btn-default">
+      <i class="glyphicon glyphicon-search" alt="{% trans "Search" %}">
+      </i></button>
+  </div>
+</form>

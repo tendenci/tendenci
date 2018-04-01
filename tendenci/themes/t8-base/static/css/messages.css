@@ -1,0 +1,11 @@
+ul.messages {
+	list-style-type: none;
+	margin: 0 0 5px 0;
+	padding: 0;
+	background-color: #F4F4F4;
+	padding: 10px;
+}
+
+ul.messages li.info {
+	color: #333333;
+}

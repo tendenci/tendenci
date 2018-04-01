@@ -1,0 +1,20 @@
+{% load base_tags %}
+{% load nav_tags %}
+{% load theme_tags %}
+
+
+<nav id="t-navbar" class="navbar" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <div id="t-main-navbar-brand" class="navbar-brand">
+                <h3><a href="{% url 'home' %}">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a>&nbsp;<small>{% trans "Website tagline" %}</small></h3>
+            </div>
+        </div>
+
+        <div id="t-main-navbar-collapse" class="mainnav navbar-right">
+            <div class="clearfix">
+                {% nav 1 %}
+            </div>
+        </div>
+    </div>
+</nav>

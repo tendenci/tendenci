@@ -1,0 +1,32 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+
+{% block content %}
+{% url "article.export_download" identifier as dl_url %}
+<div class="t">
+    <div class="article-wrap">
+
+        <h1>{% trans "Articles Export - Status" %}</h1>
+
+        <div class="content">
+            {% if download_ready %}
+            <div>
+                {% blocktrans %}
+                <p>The export file is ready, click the download link below to download.</p>
+                <div><a href="{{ dl_url }}">Download Now</a></div>
+                {% endblocktrans %}
+            </div>
+            {% else %}
+                {% blocktrans %}
+                <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>
+                <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>
+                {% endblocktrans %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

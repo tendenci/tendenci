@@ -1,0 +1,40 @@
+{% extends "corporate_memberships/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Corporate Membership Notice Log View' %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+    <h1>{% trans "Corporate Membership Notice Log View" %}</h1>
+
+    <div class="notice-log-view">
+
+        <div><b>{% trans "Log ID:" %} {{ log.id }}</b></div>
+        <div>{% trans "Notice Name:" %} <a href="{% url "admin:memberships_notice_change" log.notice.id %}">{{ log.notice.notice_name }}</a></div>
+
+        <div><b>{% trans "Sent Date" %}</b>: {{ log.notice_sent_dt|date }}</div>
+        <div>{% trans "Number emails sent:" %} <b>{{ log.num_sent }}</b></div>
+
+       <div id="log-records-wrap">
+       <h2>{% trans "Sent to the representatives of the following corporation(s):" %}</h2>
+       <ol>
+       {% for record in log_records %}
+               <li><a href="{% url "corpmembership.view" record.corp_membership.id %}">{{ record.corp_membership.corp_profile.name }}</a></li>
+       {% endfor %}
+       </ol>
+       </div>
+
+    </div>
+
+</div>
+{% endblock %}

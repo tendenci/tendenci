@@ -1,0 +1,116 @@
+{% extends "campaign_monitor/base.html" %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans 'Campaign Add' %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans 'Campaign Add' %}</h1>
+
+    <div class="template-wrap">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="forms">
+                {% if form.non_field_errors %}
+                    {{ form.non_field_errors }}
+                {% endif %}
+                <div id="module-content" class="module-content">
+                    <h2>{% trans "Module Content" %}</h2>
+                    <div id="module-options">
+                        <table border="0">
+                            <tr>
+                                <td><strong>{% trans "Include Jump Links" %}</strong></td>
+                                <td colspan="2" >{{ form.jump_links }}
+                                    {% trans "Nav at the top or specified location of email" %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td width="119" nowrap ><strong>{% trans "Calendar Events" %} </strong></td>
+                                <td width="157" >
+                                    {{ form.events }}
+                                </td>
+                                <td width="210">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td width="119" nowrap ><strong>{% trans "Event Type" %} </strong></td>
+                                <td width="157" >
+                                    {{ form.events_type }}
+                                </td>
+                                <td width="210">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td colspan="3" >{% trans "Include <strong>Calendar Events</strong> for what date range? " %}</td>
+                            </tr>
+                            <tr >
+                                <td > - {% trans "Start Date Time" %} </td>
+                                <td colspan="2" >{{ form.event_start_dt }}</td>
+                            </tr>
+                            <tr >
+                                <td > - {% trans "End Date Time" %}</td>
+                                <td colspan="2" >{{ form.event_end_dt }}</td>
+                            </tr>
+                            <tr >
+                                <td colspan="3">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td>{% trans "Module" %}</td>
+                                <td>{% trans "Add to Newsletter? " %}</td>
+                                <td>{% trans "Past ? Days " %}</td>
+                            </tr>
+                            <tr >
+                                <td ><strong>{% trans "Articles" %}</strong></td>
+                                <td >
+                                    {{ form.articles }}
+                                </td>
+                                <td>
+                                    {{ form.articles_days }}
+                                </td>
+                                </tr>
+                            <tr >
+                                <td ><strong>{% trans "News" %}</strong></td>
+                                <td >
+                                    {{ form.news }}
+                                </td>
+                                <td>
+                                    {{ form.news_days }}
+                                </td>
+                            </tr>
+                            <tr >
+                                <td ><strong>{% trans "Jobs" %}</strong></td>
+                                <td >
+                                    {{ form.jobs }}
+                                </td>
+                                <td>{{ form.jobs_days }} </td>
+                            </tr>
+                            <tr >
+                                <td colspan="3" >{% trans "Include links to recently edited pages?" %}</td>
+                            </tr>
+                            <tr >
+                                <td ><strong>{% trans "Pages" %}</strong></td>
+                                <td >{{ form.pages }}</td>
+                                <td >{{ form.pages_days }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <p>&nbsp;</p>
+                {% if form.template.errors %}
+                        {{ form.template.errors }}
+                {% endif %}
+                <h2>{% blocktrans %}Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</h2>
+                <div>
+                    {{ form.template }}
+                </div>
+                <input type="submit" value="{% trans 'Continue' %}" />
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

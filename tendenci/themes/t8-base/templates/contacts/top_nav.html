@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load contact_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_green.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_CONTACTS_LABEL trans "Contacts" %}{% endblock %}
+
+{% block current_app %}
+    {% if contact %}
+        {% contact_current_app request.user contact %}
+    {% else %}
+        {% contact_current_app request.user %}
+    {% endif %}
+{% endblock %}

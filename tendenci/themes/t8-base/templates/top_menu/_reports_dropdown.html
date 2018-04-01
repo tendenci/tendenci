@@ -1,0 +1,273 @@
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/chart_bar.png' %}"/><span class="nav-label">{% trans "Reports" %}</span>
+        <span class="caret"></span>
+
+    </a>
+
+    <ul id="t-admin-megamenu-reports-dd" class="dropdown-menu apps-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-12 content-dropdown-col">
+                        <div id="megamenu-reports-accordion" class="panel-group" role="tablist" aria-multiselectable="true">
+
+
+                        <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-1">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-1">{% trans '1. Membership Overview' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="reports-heading-1">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-memberships_overview' %}"><span class="nav-label">{% trans "Overview" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-members-stats" %}"><span class="nav-label">{% trans "Active, Pending, Expired by Type" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-members-quick-list" %}"><span class="nav-label">{% trans "Member List" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-members-by-company" %}"><span class="nav-label">{% trans "Members by Company" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-memberships' %}"><span class="nav-label">{% trans "All Membership Reports" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-2">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-2">{% trans '2. Membership Data' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-2">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-active-members" %}"><span class="nav-label">{% trans "Active Memberships" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending"><span class="nav-label">{% trans "Pending Memberships" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-renewed-members" %}"><span class="nav-label">{% trans "Renewed Memberships" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-expired-members" %}"><span class="nav-label">{% trans "Expired Memberships" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-renewal-period-members" %}"><span class="nav-label">{% trans "Memberships in Renewal Period" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-grace-period-members" %}"><span class="nav-label">{% trans "Expired Members in Grace Period" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "memberships.default_import" %}"><span class="nav-label">{% trans "Membership Import" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "memberships.default_export" %}"><span class="nav-label">{% trans "Membership Export" %}</span></a>
+                                                </li>
+                                            </ul>
+                                          </div>
+                                          {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                                          <hr>
+                                          <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url "corp_membership.overview" %}"><span class="nav-label">{% trans "Corporate Memberships Overview" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "admin:corporate_memberships_corpmembership_changelist" %}"><span class="nav-label">{% trans "Corporate Memberships List" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "admin:corporate_memberships_corpmembershiprep_changelist" %}"><span class="nav-label">{% trans "Corporate Membership Representatives" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-corp-mems-by-status" %}"><span class="nav-label">{% trans "Corporate Memberships by Status" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-active-corp-mems-by-type" %}"><span class="nav-label">{% trans "Corporate Memberships by Member Type" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.cap_status" %}"><span class="nav-label">{% trans "Memberships Cap Status" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.import" %}"><span class="nav-label">{% trans "Corporate Membership Import" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "corpmembership.export" %}"><span class="nav-label">{% trans "Corporate Membership Export" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-3">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-3">{% trans '3. Membership Trends' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-3">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-members-over-time" %}"><span class="nav-label">{% trans "Memberships Over Time" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-active-members-ytd" %}"><span class="nav-label">{% trans "Active Members YTD" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-members-ytd-type" %}"><span class="nav-label">{% trans "Members YTD by Type" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-memberships-joins" %}"><span class="nav-label">{% trans "Memberships by Join Date" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-4">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-4">{% trans '4. User Management' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-4">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-user-access" %}"><span class="nav-label">{% trans "User Access" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-user-activity" %}"><span class="nav-label">{% trans "User Activity Summary" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "profile.similar" %}"><span class="nav-label">{% trans "Similar Users List" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-users-not-in-groups" %}"><span class="nav-label">{% trans "Users Not In Groups" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "reports-admin-users" %}"><span class="nav-label">{% trans "Administrators" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "profiles.user_import" %}"><span class="nav-label">{% trans "User Import" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url "profile.export" %}"><span class="nav-label">{% trans "User Export" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-5">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-5">{% trans '5. Financial' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-5">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url 'report_list' %}"><span class="nav-label">{% trans "Invoicing" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-members-donated' %}"><span class="nav-label">{% trans "Donations on Join/Renewal" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-top-spenders' %}"><span class="nav-label">{% trans "Top Spenders" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-6">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-6">{% trans '6. Site Activity' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-6">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-events-summary' %}"><span class="nav-label">{% trans "Event Log Summary" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'dashboard' %}"><span class="nav-label">{% trans "Dashboard Statistics" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'file.report_most_viewed' %}"><span class="nav-label">{% trans "Most Viewed Files" %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-404-count' %}"><span class="nav-label">{% trans "404 Tracker" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-7">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-7">{% trans '7. Custom Reports' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-7">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url 'explorer_extensions.export_page' %}"><span class="nav-label">{% trans "Data Exports" %}</span></a>
+                                                </li>
+                                                 <li class="content-item">
+                                                    <a href="/explorer/"><span class="nav-label">{% trans "Data Explorer" %}</span></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

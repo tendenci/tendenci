@@ -1,0 +1,21 @@
+{{ object.corp_profile.name }}
+{{ object.corporate_membership_type }}
+{{ object.corp_profile.address }}
+{{ object.corp_profile.address2 }}
+{{ object.corp_profile.city }}
+{{ object.corp_profile.state }}
+{{ object.corp_profile.zip }}
+{{ object.corp_profile.country }}
+{{ object.corp_profile.phone }}
+{{ object.corp_profile.email }}
+{{ object.corp_profile.secret_code }}
+{{ object.status_detail }}
+{% for authorized_domain in object.corp_profile.authorized_domains.all %}
+authorized domain:{{ authorized_domain }}
+{% endfor %}
+{% for rep in object.corp_profile.reps.all %}
+rep:{{ rep.user.username }} {{ rep.user.first_name }} {{ rep.user.last_name }}
+{% endfor %}
+is_join_pending:{{ object.is_join_pending }}
+is_renewal_pending:{{ object.is_renewal_pending }}
+is_pending:{{ object.is_pending }}

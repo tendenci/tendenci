@@ -1,0 +1,15 @@
+{% load tagging_tags %}
+
+id:{{ object.pk }}
+{% for set in object.photoset.all %}
+set_id:{{ set.pk }}
+{% endfor %}
+{% firstof object.title "Untitled" %}
+by {{ object.member }}
+by {{ object.object.member.profile.display_name }}
+{{ object.caption }}
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+{% load tagging_tags %}
+tag:{{ tag }}
+{% endfor %}

@@ -1,0 +1,155 @@
+#t-admin-megamenu a {
+    text-transform: none;
+}
+
+#t-admin-megamenu .nav-icon {
+    position: relative;
+    margin: 0 10px 0 0;
+    height: 16px;
+    width: 16px;
+    vertical-align: middle;
+}
+
+#t-admin-megamenu .content-head,
+#t-admin-megamenu .content-head > a {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.75;
+}
+
+#t-admin-megamenu-apps-dd .panel-group {
+    margin-bottom: 0;
+}
+
+#t-admin-megamenu .dropdown-toggle, #t-megamenu-logout{
+	color: #d8d8d8;
+}
+#t-admin-megamenu .dropdown-toggle:hover, #t-megamenu-logout:hover{
+	color: #9d9d9d;
+}
+
+
+/* Extra small devices (< 768px) */
+@media (max-width: 767px) {
+    #t-admin-megamenu a:link,
+    #t-admin-megamenu a:visited {
+        text-shadow: none;
+        color: #999999;
+    }
+
+    #t-admin-megamenu .content-head,
+    #t-admin-megamenu .content-head > a {
+        color: #999999;
+    }
+
+    #t-admin-megamenu .dropdown-menu {
+        margin: -5px 0;
+    }
+
+    #t-admin-megamenu .content-dropdown-col {
+        padding: 10px 15px;
+    }
+
+    #t-admin-megamenu-profile-dd .content-dropdown-col,
+    #t-admin-megamenu-community-dd .content-dropdown-col {
+        border-bottom: 1px solid #333;
+    }
+
+    #t-admin-megamenu-apps-dd .panel-body .list-unstyled {
+        margin-top: 5px;
+    }
+
+    #t-admin-megamenu-apps-dd .panel-body .list-unstyled:first-child {
+        margin-top: 0;
+    }
+}
+
+
+/* Small devices (> 767px) */
+@media (min-width: 768px) {
+    #t-admin-megamenu-profile-dd {
+        min-width: 455px;
+    }
+
+    #t-admin-megamenu-community-dd {
+        min-width: 300px;
+    }
+
+    #t-admin-megamenu-profile-dd .list-unstyled,
+    #t-admin-megamenu-community-dd .list-unstyled {
+        padding: 0 10px 10px;
+    }
+
+    #t-admin-megamenu-profile-dd .admin-col,
+    #t-admin-megamenu-community-dd .admin-col {
+        background-color: #eeffdd;
+        min-height: 165px;
+    }
+
+    #t-admin-megamenu-apps-dd {
+        min-width: 525px;
+    }
+
+    #t-admin-megamenu-reports-dd {
+        min-width: 400px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    #t-admin-megamenu-apps-dd {
+        left: 0;
+        right: 0;
+    }
+
+    #t-admin-megamenu .navbar-header {
+        width: 50%;             /* to push the first navbar-nav (the one which floats left) */
+    }
+
+    #t-admin-megamenu .navbar-nav:first-child {
+        margin-left: -15px;
+    }
+
+    html {
+        margin-top: 60px; /* 2x #t-admin-megamenu height */
+    }
+}
+
+
+/* Admin hover content */
+.t-admin-inline {
+    display: none;
+    position: relative;
+}
+
+.t-admin-inline-links {
+    font: normal 11px/11px "Lucida Grande", Verdana, sans-serif !important;
+    background: #444 !important;
+    position: absolute;
+    top: -21px;
+    left: 0px;
+    z-index: 100;
+    height: 21px;
+    margin: 0;
+    padding: 5px;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+    text-align: left;
+    overflow: hidden;
+
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+
+.t-admin-inline:hover,
+#t-main-navbar-collapse:hover > .t-admin-inline,
+.t-main-navbar-nav:hover + .t-admin-inline,
+#t-main-navbar-brand:hover > .t-admin-inline {
+    display: block;
+}

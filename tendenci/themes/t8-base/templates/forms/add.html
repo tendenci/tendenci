@@ -1,0 +1,83 @@
+{% extends "forms/base.html" %}
+{% load forms_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% firstof MODULE_FORMS_LABEL trans "Forms" %} {% trans "Add" %}{% endblock %}
+
+{% block content %}
+    <h1>{% firstof MODULE_FORMS_LABEL trans "Forms" %} {% trans "Add" %}</h1>
+
+    <form id="t-forms-builder-form-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+        {{ form|styled_form }}
+
+        <fieldset id="t-forms-builder-pricing-options" class="hidden">
+            <legend>{% trans "Pricing Options" %}</legend>
+            {{ formset.management_form }}
+            {{ formset|styled_form_set }}
+        </fieldset>
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_FORMS_LABEL %}
+                        {% blocktrans with module_forms_label=MODULE_FORM_LABEL %}
+                            Add {{ module_forms_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Form" %}
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $customPaymentFieldset = $('#id_custom_payment'),
+                $recurringPaymentSelect = $('#id_recurring_payment'),
+                showCustomPaymentFieldset,
+                isRecurringPayment;
+
+            var RECURRING_PAYMENT_YES_VALUE = 2;
+
+            /* Take Payment CHANGE Handler */
+            $customPaymentFieldset.change(function () {
+                var pricings = $(this).prop('checked');
+
+                $('#t-forms-builder-pricing-options').toggleClass('hidden', !pricings);
+                $('[id^="id_payment_methods"]').closest('.form-group').toggleClass('hidden', !pricings);
+                $('#id_recurring_payment').closest('.form-group').toggleClass('hidden', !pricings);
+            });
+
+            /* Presetting Payment Display */
+            showCustomPaymentFieldset = $customPaymentFieldset.prop('checked');
+            $('#t-forms-builder-pricing-options').toggleClass('hidden', !showCustomPaymentFieldset);
+            $('[id^="id_payment_methods"]').closest('.form-group').toggleClass('hidden', !showCustomPaymentFieldset);
+            $('#id_recurring_payment').closest('.form-group').toggleClass('hidden', !showCustomPaymentFieldset);
+
+
+            $recurringPaymentSelect.change(function () {
+                var rp = parseInt($(this).val(), 10);
+
+                $('.recurring-payment').closest('.form-group').toggleClass('hidden', rp !== RECURRING_PAYMENT_YES_VALUE);
+            });
+
+            /*Presenting recurring payment display */
+            isRecurringPayment = parseInt($recurringPaymentSelect.val(), 10);
+            $('.recurring-payment').closest('.form-group').toggleClass('hidden', isRecurringPayment !== RECURRING_PAYMENT_YES_VALUE);
+        });
+
+        var slugit = new Slugify({
+            input_element : 'input#id_title',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+    </script>
+{% endblock %}

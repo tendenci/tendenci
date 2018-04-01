@@ -1,0 +1,75 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user pages.add_page as can_add_page %}
+
+{% if nav_object %}
+    {% has_perm user pages.view_page nav_object as can_view_page %}
+    {% has_perm user pages.change_page nav_object as can_edit_page %}
+    {% has_perm user pages.delete_page nav_object as can_delete_page %}
+{% else %}
+    {% has_perm user pages.view_page as can_view_page %}
+    {% has_perm user pages.change_page as can_edit_page %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_PAGES_LABEL 'Pages' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Pages" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "pages" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "page.search" %}">{% trans "Search Pages" %}</a></li>
+            {% if can_add_page %}
+                <li><a href="{% url "page.add" %}">{% trans "Add Page" %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url "page.export" %}">{% trans "Export Pages" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_page or can_edit_page %}
+            <ul>
+                <li class="heading">{% trans "This Page" %}</li>
+                <li class="divider"></li>
+                {% if can_view_page %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Page" %}</a></li>
+                {% endif %}
+                {% if can_edit_page %}
+                    <li><a href="{% url "page.edit" nav_object.pk %}">{% trans "Edit Page" %}</a></li>
+                    <li><a href="{% url "page.edit.meta" nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url "category.update" nav_object.opt_app_label page.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
+                {% endif %}
+                {% if can_delete_page %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "page.delete" nav_object.pk %}">{% trans "Delete Page" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if user.profile.is_superuser %}
+    <li><a href="{% url 'files' %}">{% trans 'Files' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

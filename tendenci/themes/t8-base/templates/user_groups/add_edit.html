@@ -1,0 +1,28 @@
+{% extends "user_groups/base.html" %}
+{% load styled_forms %}
+{% load user_group_tags %}
+
+
+{% block title %}{% trans 'Groups Add' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="t">
+        <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
+        <div>
+            <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}
+                <div class="forms">
+                    {{ form|styled_form }}
+                    <input type="submit" value="{% trans 'Save' %}" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

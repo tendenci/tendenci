@@ -1,0 +1,13 @@
+{% extends "wp_importer/base.html" %}
+
+{% block content %}
+<h1>{% trans "get your wordpress stuff on tendenci!" %}</h1>
+  <p>{% trans "1. download xml file of blog from wordpress" %}</p>
+  <p>{% trans "2. upload here" %}</p>
+  <p>{% trans "3. enjoy your posts!" %}</p>
+    <form enctype="multipart/form-data" method="post" action="">{% csrf_token %}
+       {{ form.as_p}}
+       <input type="submit" value="{% trans 'Upload file' %}" />
+    </form>
+    {% blocktrans with m=message %}{{ m }}{% endblocktrans %}
+{% endblock %}

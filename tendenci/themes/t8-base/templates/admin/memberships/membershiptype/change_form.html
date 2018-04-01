@@ -1,0 +1,19 @@
+{% extends "django_admin_bootstrapped:admin/change_form.html" %}
+{% load admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+
+{% block extrahead %}
+{{ block.super }}
+{% if original.corporatemembershiptype_set.all|length %}
+<script>
+    $(document).ready(function(){
+        $('.deletelink-box').html('Delete option <strong>disabled</strong>, associated with corporate membership');
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "dab_override/fieldset.html" %}
+    {% endfor %}
+{% endblock %}

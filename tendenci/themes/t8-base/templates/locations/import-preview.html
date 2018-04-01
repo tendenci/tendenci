@@ -1,0 +1,101 @@
+{% extends "locations/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Import Locations from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% local_static 'css/memberships.css' %}">
+    <link rel="stylesheet" href="{% local_static 'css/locations-import-preview.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<div id="import-wrap" class="preview">
+
+    <h1>{% trans "Locations Import Preview" %}</h1>
+
+    <p class="timestamp">{% trans "Step 3/4" %} &middot; {{ now }}</p>
+
+    <p class="msg">
+        <em>{{ stats.all }}</em> import{{ stats.all|pluralize }};
+        <em>{{ stats.added }}</em> will be added,
+        and <em>{{ stats.skipped }}</em> will be skipped.</p>
+        <em><a title="Looks good!" href="{% url "membership_import_confirm" locport.id %}" id="import-confirm">Import Now &rarr;</a></em>
+    </p>
+
+    <div style="margin-top:10px; overflow:scroll;">
+        <table>
+            <tr class="header">
+                <td></td>
+                <td>{% trans "Location Name" %}</td>
+                <td>{% trans "Description" %}</td>
+                <td>{% trans "Contact" %}</td>
+                <td>{% trans "Address" %}</td>
+                <td>{% trans "Address 2" %}</td>
+                <td>{% trans "City" %}</td>
+                <td>{% trans "State" %}</td>
+                <td>{% trans "Zipcode" %}</td>
+                <td>{% trans "Country" %}</td>
+                <td>{% trans "Phone" %}</td>
+                <td>{% trans "Fax" %}</td>
+                <td>{% trans "Email" %}</td>
+                <td>{% trans "Website" %}</td>
+                <td>{% trans "Latitude" %}</td>
+                <td>{% trans "Longitude" %}</td>
+                <td>{% trans "Headquarters" %}</td>
+                <td>{% trans "Skipped" %}</td>
+            </tr>
+
+            {% for location in locations %}
+                <tr class="{% cycle 'odd' 'even' as rowcolors %}">
+                    <td>{{ forloop.counter }}</td>
+                    <td><div>{{ location.locationname }}</div></td>
+                    <td><div>{{ location.description }}</div></td>
+                    <td><div>{{ location.contact }}</div></td>
+                    <td><div>{{ location.address }}</div></td>
+                    <td><div>{{ location.address2 }}</div></td>
+                    <td><div>{{ location.city }}</div></td>
+                    <td><div>{{ location.state }}</div></td>
+                    <td><div>{{ location.zipcode }}</div></td>
+                    <td><div>{{ location.country }}</div></td>
+                    <td><div>{{ location.phone }}</div></td>
+                    <td><div>{{ location.fax }}</div></td>
+                    <td><div>{{ location.email }}</div></td>
+                    <td><div>{{ location.website }}</div></td>
+                    <td><div>{{ location.latitude }}</div></td>
+                    <td><div>{{ location.longitude }}</div></td>
+                    <td>
+                        <div>{% if location.hq %}Yes{% else %}No{% endif %}</div>
+                    </td>
+                    <td><div>
+                        {% if membership.skipped %}{% trans "Yes" %}{% endif %}
+                    </div></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div style="display: none;">
+        <form id="mapping-form" action="{% url "locations_import_confirm" locport.id %}" method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type='submit' value='{% trans "Submit" %}'>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        // import submit
+        // this is used to resubmit the mapping form on confirmation
+        $('#import-confirm').click(function(){
+            $('#mapping-form').submit();
+            return false;    // cancel
+        });
+    });
+</script>
+{% endblock %}

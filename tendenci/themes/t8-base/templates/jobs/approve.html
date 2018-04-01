@@ -1,0 +1,19 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Approve" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</h1>
+
+    <div class="job-wrap">
+    <p><a href="{{ job.get_absolute_url }}" title="{% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}</a></p>
+    <p>{% trans "Are you sure you want to approve this" %} {% firstof MODULE_JOBS_LABEL trans 'job' %}?</p>
+    <form action="{% url "job.approve" job.pk %}" method="post">{% csrf_token %}
+    <div class="forms">
+        <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+    </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

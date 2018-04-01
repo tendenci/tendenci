@@ -1,0 +1,110 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user articles.add_article as can_add_article %}
+
+{% if app_object %}
+    {% has_perm user articles.view_article app_object as can_view_article %}
+    {% has_perm user articles.change_article app_object as can_edit_article %}
+    {% has_perm user articles.delete_article app_object as can_delete_article %}
+{% else %}
+    {% has_perm user articles.view_article as can_view_article %}
+    {% has_perm user articles.change_article as can_edit_article %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-articles-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'articles' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'articles' %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_article %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'article.add' %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'article.export' %}">{% trans "Export" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_article or can_edit_article %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</span>
+                            </li>
+
+                            {% if can_view_article %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_article %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'article.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'article.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'category.update' app_object.opt_app_label article.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_article %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'article.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

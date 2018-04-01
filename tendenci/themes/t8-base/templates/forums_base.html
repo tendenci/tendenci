@@ -1,0 +1,13 @@
+{% extends "base-wide.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+    {% block extra_style %}{% endblock %}
+{% endblock %}
+
+{% block content %}{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    {% block extra_script %}{% endblock %}
+{% endblock %}

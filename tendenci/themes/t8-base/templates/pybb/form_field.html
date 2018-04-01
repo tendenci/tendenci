@@ -1,0 +1,15 @@
+{% load pybb_tags %}
+
+<div class="form-group{% if field.is_required %} required{% endif %}{% if field.errors %} error{% endif %}">
+    {% if not hide_labels or hide_labels == 0 %}
+        <label for="{{ field.auto_id }}">
+            {{ field.field.label }}
+        </label>
+    {% endif %}
+    <div>
+        {{ field }}
+    </div>
+        {% for error in field.errors %}
+            <span class="field-errors">{{ field.errors }}</span>
+        {% endfor %}
+</div>

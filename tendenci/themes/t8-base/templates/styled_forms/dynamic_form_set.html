@@ -1,0 +1,69 @@
+{% load styled_forms %}
+
+{% if form_set.errors %}
+<div class="errors">
+{% trans 'There were some problems in the formset. Please review. Thanks!' %}
+</div>
+{% endif %}
+
+{% for form in form_set.forms %}
+    <div class="form-grouping{% cycle ' alt' '' %}">
+    {% if form.non_field_errors %}
+        <div class ="errors">
+            {% for error in form.non_field_errors %}
+                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% for field in form %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% else %}
+        <div class="form-field">
+            <div class="{{ field.auto_id }}">
+                {% if field|is_checkbox %}
+                    <div class="checkbox-input">
+                        {% if field.errors %}
+                        <div class="error">
+                            {% for error in field.errors %}
+                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="field">
+                            {{ field }}
+                        </div>
+                        <div class="label{% if field.field.required %} required{% endif %}">
+                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                        </div>
+                        {% if field.help_text %}
+                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                        {% endif %}
+                    </div>
+                    <div style="clear: both"><!-- IE7 --></div>
+                {% else %}
+                    <div class="label{% if field.field.required %} required{% endif %}">
+                        {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                    </div>
+                    {% if field.errors %}
+                    <div class="error">
+                        {% for error in field.errors %}
+                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="field">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                    <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                    {% endif %}
+                {% endif %}
+             </div>
+        </div>
+    {% endif %}
+    {% endfor %}
+    </div>
+{% endfor %}
+
+<input type="button" value="{% trans 'Add More' %}" id="add_more">

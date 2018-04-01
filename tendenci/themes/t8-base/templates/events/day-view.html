@@ -1,0 +1,186 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+
+{% block title %}{{ block.super }} {% endblock %}
+{% block meta_description %} {% endblock %}
+{% block meta_keywords %} {% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-day-view.css' %}">
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+
+<div class="day-view">
+    <h2>{{ date|date:"l, F j Y" }}</h2>
+
+    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Events Views">
+      <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+      <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
+      <a href="{% url "event.today" %}" class="btn btn-secondary">{% trans "Day View" %}</a>
+      <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+      <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+    </div>
+
+<form class="search-form" action="{% url "event.today" %}" method="get">
+
+<div class="form-field clearfix">
+    <div class="id_start_dt">
+            <div class="label">
+                <label for="today_date">{% trans 'Event List for' %} </label>
+                <input style="width: 70px;" type="text" class="datepicker" name="today_date" value="{{ date|date:"Y-m-d" }}" />
+                <input class="btn" type="submit" value="Jump to Date" />
+            </div>
+     </div>
+</div>
+</form>
+
+<form class="search-form" action="" method="get">
+    {{ form.search_category }}
+    {{ form.q }}
+    <input class="btn" type="submit" value="{% trans 'Search' %}" />
+</form>
+
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    {% event_list date type 'single_day' as events %}
+    {% for event in events %}
+        <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
+            <div class="event-sidebar">
+                <div class="time-stamp">
+                  {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}{% endif %}
+                </div>
+                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
+            {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
+                <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>
+            {% endif %}
+            {% if event.type %}
+                <style type="text/css">
+                    .event-type-label {
+                        margin: 5px;
+                        padding: 3px 5px;
+                        font-size: 11px;
+                    }
+                </style>
+                <div class="event-type-label"
+                style="color:#{{ event.type.color_set.fg_color }};
+                background-color:#{{ event.type.color_set.bg_color }}"
+                title="{{ event.type.name }}">
+                {{ event.type.name|truncatewords:3 }}
+                </div>
+            {% endif %}
+            </div>
+            <div class="event-info">
+
+                <div class="options">{% event_options user event %}</div>
+
+                <h3>{% if event.priority %}
+                        <div class="event-priority"></div>
+                    {% endif %}
+                    <a href="{% url "event" event.pk %}" itemprop="url"><span itemprop="name">{{ event.title }}</span></a>
+                </h3>
+                <div class="description" itemprop="description">
+                {% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}
+                </div>
+
+                {% if event.registration_configuration.enabled %}
+
+                    {% if now > event.end_dt or now > event.registration_configuration.end_dt %}
+
+                    <div class="attend-wrap closed">
+                        <div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
+                        <div style="clear:both;"></div>
+                    </div>
+
+                    {% else %}
+
+                    {% is_registered_user user event as registered_user %}
+                    {% if registered_user %}
+                    <div class="attend-wrap registered">
+                        <div class="attend"><a href="{% url "event" event.pk %}">{% trans "You are registered" %}</a></div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    {% else %}
+                    <div class="attend-wrap">
+                        <div class="attend"><a href="{% url "event" event.pk %}">{% trans "Attend this event" %}</a></div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    {% endif %}
+
+                    {% endif %}
+
+                {% endif %}
+
+            </div>
+            <div style="clear:both;"></div>
+
+            <!-- delete-event form -->
+            <form name="event-delete" method="POST" action="{% url "event.delete" event.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+        </div>
+    {% empty %}
+        <div class="no-events">{% trans "No events are currently scheduled on this day." %}
+            {% comment %}
+            <br/><a href="{% url "event.add" date.year date.month date.day %}">{% trans "Add an event" %}</a>
+            {% endcomment %}
+        </div>
+    {% endfor %}
+
+    {% if events %}
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");    // confirm
+                if(delete_object) $(this).parents('.event-wrap').find('form[name="event-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+           $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+    </script>
+{% endblock %}

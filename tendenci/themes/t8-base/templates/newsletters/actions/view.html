@@ -1,0 +1,163 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Marketing Action'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/newsletters.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="t-newsletters">
+    <div class="page-header">
+      <h1>{% trans 'View Newsletter' %} - {% trans 'Status' %}: <span class="capitalize">{{ object.send_status }}</span></h1>
+    </div>
+
+    <div>
+      <div class="form-inline">
+        <p>
+          <label>{% trans 'Campaign Name' %}:</label>&nbsp;&nbsp;{{ newsletter.actionname }}
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <div class="form-inline">
+          <p>
+            <label>{% trans 'Sender E-mail' %}:</label>&nbsp;&nbsp;
+            <a href="mailto:{{ object.email.sender }}">
+              {{ object.email.sender }}
+            </a>
+          </p>
+        </div>
+        <div class="form-inline">
+          <p>
+            <label>{% trans 'Newsletter Subject' %}:</label>&nbsp;&nbsp;{{ object.email.subject }}
+          </p>
+        </div>
+
+        <a class="btn btn-primary" href="{% url 'email.viewbody' object.email.pk %}">
+          {% trans 'View Newsletter' %}
+        </a>
+        <a class="btn btn-warning" href="{% url 'email.edit' object.email.pk %}">
+          {% trans 'Edit Newsletter Contents' %}
+        </a>
+
+      </div>
+    </div>
+    <div>
+      <br />
+      <div class="form-inline">
+        <p>
+          <label>
+            {% if object.member_only %}
+            {% trans 'Newsletter Recipients:' %}
+            <!-- NEED TO ADD MEMBERS -->
+            {% else %}
+            {% trans 'Newsletter Recipients:' %}
+            {% endif %}
+          </label>&nbsp;&nbsp;
+          {% if not object.member_only %}
+          <a href="{% url 'groups' %}">{{ object.group }}</a>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    <div class='step-section cf'>
+
+      <div>
+        <h3>
+          {% trans 'Confirm acceptance of site policies and common sense.' %}
+        </h3>
+        <hr />
+        <p>
+          {% if object.member_only %}
+          {% blocktrans %}
+          I agree that I have permission from all users of the user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+          {% endblocktrans %}
+          {% else %}
+          {% blocktrans with group=object.group.name %}
+          I agree that I have permission from all users of the <strong>{{ group }}</strong> user group to send them e-mail. I understand that by sending this e-mail the transaction, including my IP address, is recorded. Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy (aup) and privacy policy of this site.
+          {% endblocktrans %}
+          {% endif %}{% if object.sla %}
+          <div class="form-inline">
+            <p>
+              <label>{% trans 'Service-Level Agreement (SLA)' %}: </label>&nbsp;&nbsp;
+              {% trans 'Agreed' %}
+            </p>
+          </div>
+          {% endif %}
+
+        </p>
+      </div>
+    </div>
+    <div class='step-section cf'>
+
+      <div class="step-contents">
+        <p>
+          {% trans 'Send Email' %}
+        </p>
+        <div class="step-content-item">
+          {% blocktrans %}
+          <p>
+            <strong>Note:</strong> This could take up to 30 minutes or longer depending on the size of your distribution list.
+          </p>
+        </div>
+        {% endblocktrans %}
+        <div class="step-content-item">
+          <p>
+            <label>{% trans 'Status of email' %}:</label>&nbsp;&nbsp;
+            <span class="capitalize text-warning">{{ object.send_status }}</span><br />
+            {% if object.send_status == 'sent' or object.send_status == 'resent' %}
+            <p>{% trans "The e-mail has completed processing - all e-mails have been distributed." %}</p>
+            {% endif %}
+          </p>
+        </div>
+        {% if object.send_status == 'sent' or object.send_status == 'resent' %}
+        <div class="step-content-item">
+          <p>{% trans 'Total E-mail Sent' %}: {{ object.email_sent_count }}</p>
+          <p>{% trans 'E-mails completed sending at' %}: {{ object.date_email_sent }}</p>
+          {% if object.date_last_resent %}
+          <p>{% trans 'Date of last resent' %}: {{ object.date_last_resent }}</p>
+          <p>{% trans 'Resent Count' %}: {{ object.resend_count }}
+            {% endif %}
+            <p>
+              <span>{% trans 'Date Created' %}: {{ object.date_created }}</span>&nbsp;&nbsp;
+              <span>{% trans 'Date Submitted' %}: {{ object.date_submitted }}
+              </p>
+              </div>
+                {% endif %}
+                {% if object.send_status == 'resending' or object.send_status == 'sending' or object.send_status == 'queued' %}
+                <div class="step-content-item">
+                  <p>{% trans "Kindly refresh this page or wait for the confirmation email to check the status of your newsletter." %}</p>
+                </div>
+                {% endif %}
+                <div class="step-content-item">
+                  <a class="btn btn-primary btn-lg" href="javascript:void(0);" id="resend-email" >{% trans 'Resend Email' %}</a>
+                </div>
+                <br />
+              </div>
+              </div>
+              </div>
+              </div>
+                {% endblock %}
+
+                {% block extra_body %}
+                {{ block.super }}
+                <script type="text/javascript">
+                  jQuery(document).ready(function(j) {
+                  j("#resend-email").click(function() {
+                  var x = confirm("Resend this newsletter?");
+                  if (x == true)
+                  window.location.href = "{% url 'newsletter.resend.view' object.pk %}"
+                  else
+                  return false;
+                  });
+                  });
+                </script>
+                {% endblock %}

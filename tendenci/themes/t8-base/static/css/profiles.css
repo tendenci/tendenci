@@ -1,0 +1,499 @@
+.t {
+    position: relative;
+}
+
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:60%;
+}
+
+.profile-icon img {
+    float: left;
+    margin-right: 20px;
+}
+.profile-label{
+	display: inline;
+	padding: 0.3em 0.6em 0.3em;
+	text-align: center;
+	vertical-align: baseline;
+}
+
+.info {
+    position: relative;
+    padding-bottom: 30px;
+    border-bottom: 1px dashed silver;
+    margin-bottom: 30px;
+}
+
+#t-profile div.intro.info p {
+    margin: 0;
+}
+
+#t-profile #module-tabs {
+    margin-bottom: 0;
+}
+
+#t-view {
+    padding-top: 10px;
+    background-color: white;
+}
+
+.contact.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.contact.info table {
+    width: 100%;
+}
+
+.info table tr td {
+    padding-bottom: 9px;
+}
+
+.info .glyph.plus {
+    font-size: 16px;
+    color: #A5E388;
+}
+
+.info .glyph.gears {
+    font-size: 16px;
+    color:#CCC;
+}
+
+.contact.info table td:first-child {
+    text-align: right;
+    padding-right: 20px;
+    width: 130px;
+}
+
+.contact.info .city-state-zip {
+    display: block;
+    margin-top: 5px;
+}
+
+.admin_notes.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.education.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.membership.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.membership.info .join {
+    margin-bottom: 10px;
+}
+
+.membership.info table {
+    width: 100%;
+}
+
+.membership.info table tr td {
+    padding: 15px 0;
+}
+
+.membership.info table tr td:first-child {
+    text-align: right;
+    width: 30%;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.membership.info table tr td:last-child {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.membership.info table tr:nth-child(odd) {
+    background-color: #F9F9F9;
+}
+
+.events.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+.events.info table {
+    width: 100%;
+}
+
+.events.info table tr td {
+    padding: 15px 0;
+}
+
+.events.info table tr td:first-child {
+    text-align: right;
+    width: 110px;
+    padding-right: 20px;
+    white-space: nowrap;
+    padding-left: 20px;
+}
+
+.events.info table tr td:last-child {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.events.info table tr:nth-child(odd) {
+    background-color: #F9F9F9;
+}
+
+.group.info {
+    border-bottom: none;
+}
+
+.group.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.group.info .join {
+    margin-bottom: 10px;
+}
+
+.group.info table {
+    width: 100%;
+}
+
+.group.info table tr td {
+    padding: 15px 20px;
+}
+
+.group.info table tr td:first-child {
+    padding-left: 75px;
+}
+
+.group.info table tr:nth-child(odd) {
+    background-color: #F9F9F9;
+}
+
+.contribution.info {
+    position: absolute;
+    top: 130px;
+    right: 10px;
+
+    width: 270px;
+    background-color: white;
+    border: 1px solid #CCC;
+    padding: 20px 20px 12px;
+
+    -moz-box-shadow: 0 0 5px #AAA;
+    -webkit-box-shadow: 0 0 5px #AAA;
+    box-shadow: 0 0 5px #AAA;
+
+}
+
+.contribution.info h2 {
+    float: left;
+}
+
+.contribution.info .item {
+    font-size: .9em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #DDD;
+    margin-bottom: 10px;
+}
+
+.contribution.info .more {
+    font-size: .9em;
+    margin-left: 5px;
+}
+
+.contribution.info .create-dt {
+    font-size: .9em;
+}
+
+.contribution.info.no-contribs {
+    line-height: 1.5em;
+}
+
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+.module-content h2{
+	font-size: 1.2em;
+    font-weight: bold;
+}
+.admin-section .column h3{
+	font-size: 1.2em;
+    font-weight: bold;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.profiles-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.profiles-nav li {
+	display: inline;
+}
+
+.t .profiles-wrap {
+	margin-bottom: 20px;
+}
+
+.t .profiles-wrap .wrap-search-item {
+    border: 1px solid #CCC;
+}
+
+.t .profiles-wrap .profile-wrap {
+	padding: 10px 10px 0px 10px;
+	position: relative;
+	background-color: white;
+}
+
+.t .profiles-wrap .profile-wrap h2 {
+	width: 85%;
+}
+.t .profiles-wrap .profile-wrap .content {
+	margin: 0 0 10px 1em;
+}
+.t .profiles-wrap .profile-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0 0 10px;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.deleted{
+	color: red;
+}
+
+/* form */
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_username .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password1 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password2 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_phone2 .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_work_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_home_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_mobile_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_sex .field select {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_city .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_state .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_zipcode .field input {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_county .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_country .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_dob .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_ssn .field input {
+	width: 20%;
+}
+
+#t-profile #t-add h2{
+	color: #204177;
+	font-size: 14px;
+	font-weight: bold;
+}
+#t-profile #t-add {
+    width: 550px;
+}
+.errorlist{
+	color: #ff0000;
+}
+.errorlist li{
+	list-style: none;
+}
+
+/* edit perms */
+ .t .t-profile .t-perm h2{
+  	font-size: 1.4em;
+  }
+  .t .t-profile .t-perm .field-wrapper{
+  	margin: 1em 0;
+  }
+
+/* admin list */
+div.admin-list {
+    width: 70%;
+}
+
+div.admin-profile-image {
+    float: left;
+    padding: 10px;
+}
+
+div.admin-meta {
+    float: left;
+    padding: 10px;
+}
+
+div.admin-meta p {
+    margin-bottom: 3px;
+}
+
+div.admin-item {
+    border-bottom: 1px solid #CCC;
+}
+
+/* membership tab
+------------------------------- */
+.membership-wrap {
+    border: 1px solid silver;
+    padding: 10px;
+    margin: 10px 0;
+}
+.membership-wrap div {
+    margin: 5px 0
+}
+
+/* perms widget
+------------------------------- */
+
+.edit-profile-perms .selector { width: 840px; }
+.edit-profile-perms .selector select { width: 640px; }
+.edit-profile-perms .selector-available, .edit-profile-perms .selector-chosen { float: left; width: 640px; text-align: center; margin-bottom: 5px; }
+.edit-profile-perms .selector-add, .edit-profile-perms .selector-remove { text-indent: 0; background-image: none;}
+.edit-profile-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
+.edit-profile-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
+.edit-profile-perms .selector-chosen .selector-filter { display: none; }
+
+
+/* merge profiles
+------------------------------- */
+
+.similar_group .group{
+    padding: 5px;
+    margin: 15px 0;
+    border: 1px solid;
+}
+.similar_group .group table{
+    width: 100%;
+    text-align: left;
+}
+
+/* export profiles
+------------------------------- */
+#profile-export .display-hide{
+    display: none;
+}
+#profile-export input[type="submit"] {
+    padding: 4px 12px;
+}
+#profile-export select {
+    width: 220px;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+}

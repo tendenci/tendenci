@@ -1,0 +1,21 @@
+<div class="video-wrap">
+    <a href="{{ video.get_absolute_url }}">
+
+    {% if video.image %}
+        <img src="{{ video.image.url }}" style="width: 180px; height: 120px;">
+    {% else %}
+        {% if video.thumbnail %}
+        <img src="{{ video.thumbnail }}" style="width: 180px; height: 120px;">
+        {% else %}
+            {% if video.is_youtube_video %}
+                <img src="https://img.youtube.com/vi/{{ video.youtube_video_id }}/0.jpg" style="width: 160px; height: 120px;">
+            {% else %}
+                <img src="{% static 'images/default-photo.jpg' %}" style="width: 180px; height: 120px;">
+            {%endif%}
+        {%endif%}
+    {%endif%}
+
+    <h3 title="{{ video.title }}">{{ video.title|truncatewords:"6" }}</h3>
+    </a>
+    <div>{{ video.description|safe|truncatewords_html:"20" }}</div>
+</div>

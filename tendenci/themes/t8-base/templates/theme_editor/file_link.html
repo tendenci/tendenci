@@ -1,0 +1,8 @@
+
+<li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+{% if item.editable %}
+    <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+{% else %}
+    <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
+{% endif %}
+</li>

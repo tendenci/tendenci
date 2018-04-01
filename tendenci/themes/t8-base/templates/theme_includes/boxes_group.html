@@ -1,0 +1,24 @@
+{% load box_tags %}
+{% load theme_tags %}
+{% list_boxes as sidebar_boxes tags=TEMPLATE_BOXES_GROUP_TAGNAME limit=TEMPLATE_BOXES_GROUP_LIMIT %}
+
+<div id="boxes-group">
+    {% if sidebar_boxes %}
+        {% for box in sidebar_boxes %}
+            <div id="box-{{ box.pk }}" class="boxes">
+                <h3>{% blocktrans with t=box.title %}{{ t }}{% endblocktrans %}</h3>
+                <div class="box-content">{% blocktrans with c=box.safe_content %}{{ c }}{% endblocktrans %}</div>
+                {% if user.profile.is_superuser %}
+                <a href="{% url "admin:boxes_box_change" box.pk %}?next={{ request.path }}" title="{% trans 'Edit Box' %}" class="edit-box">{% blocktrans with t=box.title|title %}Admin: Edit {{ t }} Box{% endblocktrans %}</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        {% if request.user.is_authenticated %}
+            {% blocktrans %}
+            <p><a href="/admin/boxes/box/add/">Add a box</a> and use the tag <strong>{{ TEMPLATE_BOXES_GROUP_TAGNAME }}</strong> to add content to this area. The Title of the box will be the heading and the content will display below. You can add up to {{ TEMPLATE_BOXES_GROUP_LIMIT }} boxes to your sidebar.</p>
+            {% endblocktrans %}
+        {% endif %}
+    {% endif %}
+</div>
+{% theme_setting setting_name %}

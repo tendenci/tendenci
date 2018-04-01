@@ -1,0 +1,7 @@
+{% load styled_forms %}
+<div class="forms">
+  <form id="search-form" action="{% url "event_log.search" %}" method="get">
+    {{ search_form|styled_form }}
+    <input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+  </form>
+</div>

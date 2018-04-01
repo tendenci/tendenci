@@ -1,0 +1,33 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+
+{% block title %}{% trans "Delete Job" %} - {% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_JOBS_LABEL trans 'Job' %} {% trans "Delete Page" %}</h1>
+
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title trans "Untitled" %}</a></h2>
+        <div style="margin: 10px 0px 10px 0px;">
+            {% blocktrans with desc=job.description|striptags|safe %}{{ desc }}{% endblocktrans %}
+        </div>
+    </div>
+    <div class="delete-prompt">
+        {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}?
+    </div>
+    <div class="delete-form">
+        <form name="job-delete" method="POST" action="{% url "job.delete" job.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+    <div class="back-item"><a href="{{ job.get_absolute_url }}">&laquo; {% trans "Back to this" %} {% firstof MODULE_JOBS_LABEL 'Job' %} - {% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}</a></div>
+    <div class="back-search"><a href="{% url "job.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} </a></div>
+</div>
+{% endblock %}

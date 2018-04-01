@@ -1,0 +1,102 @@
+{% extends "photos/base-wide.html" %}
+
+{% load humanize %}
+{% load bootstrap_pagination_tags %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}{% blocktrans with n=photo_set.name %}{{ n }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos-photo-set.css' %}">
+
+<meta property="og:title" content="{{ photo_set.name }}" />
+<meta property="og:type" content="image/jpeg" />
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo_set.get_cover_photo.get_small_url }}" />
+
+{% if photo_set.description %}
+<meta property="og:description" content="{{ photo_set.description|striptags }}" />
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="t" style="width:100%;">
+    <h1 class="set-name">{{ photo_set.name }}</h1> {% fb_like_button_iframe photo_set.get_absolute_url %}
+
+    <div class="back-to-photo-sets"><a href="{% url "photoset_latest" %}">&larr; {% trans "Back to Albums" %}</a></div>
+    <table class="wrap">
+        <tr><td class="set-info">
+            <div class="cover-photo">
+            {% if photo_set.get_cover_photo %}
+                <a href="{% url "photo" photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" /></a>
+            {% else %}
+                <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" title="{% blocktrans with n=photo_set.name|truncatechars:123 %}{{ n }}{% endblocktrans %}" />
+            {% endif %}
+            </div>
+
+            <div class="quick-info">
+            {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if request.user.is_superuser %}
+            <span class="visibility">
+                 &middot; {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
+            </span>
+            {% endif %}
+            </div>
+
+            <div class="set-description">
+            {% blocktrans with d=photo_set.description|safe|urlize|linebreaks %}{{ d }}{% endblocktrans %}
+            </div>
+
+            <div class="actions">
+                {% photo_set_options request.user photo_set %}
+            </div>
+
+        </td>
+        <td class="set-photos">
+
+        <div id="photos-wrap">
+            {% if photos %}
+            {% autopaginate photos 48 %}
+                <div class="thumb-row clearfix">
+                    {% for photo in photos %}
+                    <div class="gallery-photo-thumb">
+                        <a href="{% url "photo" photo.pk photo_set.pk %}"><img src="{% photo_image_url photo size=102x78 crop=True %}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/></a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div style="clear:both; height:10px;"></div>
+                {% paginate %}
+            {% else %}
+                <p>{% trans "No photos were found." %}</p>
+            {% endif %}
+        </div>
+
+        </td></tr>
+    </table>
+</div>
+
+<!-- delete form -->
+<form name="delete-photo-set" method="POST" action="{% url "photoset_delete" photo_set.pk %}">{% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete-set').click(function(){
+                var delete_item = confirm('{% trans "Permenantly delete photo set?" %}');    // confirm
+                if(delete_item) $('form[name="delete-photo-set"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+{% endblock %}

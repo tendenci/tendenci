@@ -1,0 +1,80 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load story_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    {% with story.category_set as story_cat %}
+        {% if story_cat.category %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'stories' %}?q=category:{{ story_cat.category }}">{{ story_cat.category }}</a></li>
+                    {% if story_cat.sub_category %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'stories' %}?q=sub_category:{{ story_cat.sub_category }}">{{ story_cat.sub_category }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if story.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in story.tags|tag_split %}
+                <a class="label label-default" href="{% url 'stories' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
+            {% if user == story.creator or user == story.owner %}
+                <li><strong>{% trans "Owned by you" %}</strong></li>
+                {% if not story.status_detail == "active" %}
+                    <li><strong>{% trans "Status:" %}</strong> <span>{{ story.obj_status }}</span></li>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if user.profile.is_superuser or user == story.creator or user == story.owner %}
+            {% meta_creator_owner story %}
+        {% endif %}
+    {% endif %}
+
+    <li><a href="{% url 'story.print_details' story.pk %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
+</ul>
+
+{% if user.profile.is_superuser %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ story.obj_perms }}</li>
+                    <li>{{ story.obj_status }}</li>
+                    <li>{% story_expiration story %}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ story.pk }}&source={{ story.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'story.edit' story.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'story.delete' story.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category.update' story.opt_app_label story.opt_module_name story.pk %}">{% trans "Edit Categories" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

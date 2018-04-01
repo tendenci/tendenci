@@ -1,0 +1,54 @@
+{% extends 'pybb/base.html' %}
+
+{% load pybb_tags %}
+
+{% block title %}
+    {% pybb_get_profile target_user as target_profile %}
+    {{ target_profile.get_display_name }}
+{% endblock %}
+
+{% block content %}
+    {% pybb_get_profile target_user as target_profile %}
+    <h1>{{ target_profile.get_display_name }}</h1>
+    <div class="userinfo">
+        {% include 'pybb/avatar.html' with user=target_user %}
+        <div class="info">
+            <div>
+            <a href="//gravatar.com/" target="_blank">Create / update your gravatar</a>
+            </div>
+            <div class="label">{% trans "Statistics" %}</div>
+            <div>
+                <a href="{% url 'pybb:user_topics' target_user.get_username %}">
+                    {% trans "Number of topics" %}:
+                    {{ topic_count }}
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'pybb:user_posts' target_user.get_username %}">
+                    {% trans "Number of posts" %}:
+                    {{ target_profile.post_count }}
+                </a>
+            </div>
+            <div>{% trans "Date of registration" %}: {% pybb_time target_user.date_joined %}</div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class='controls'>
+        {% if perms.pybb.block_users %}
+            {% if target_user.is_active %}
+                <form action="{% url 'pybb:block_user' target_user.get_username %}" method="post">{% csrf_token %}
+                    <button type="submit">{% trans 'Block' %}</button>
+                    <button type="submit" name="block_and_delete_messages">{% trans 'Block and delete all messages' %}</button>
+                </form>
+            {% else %}
+                <form action="{% url 'pybb:unblock_user' target_user.get_username %}" method="post">{% csrf_token %}
+                    <button type="submit">{% trans 'Unblock' %}</button>
+                </form>
+            {% endif %}
+        {% endif %}
+        {% if target_user.id == user.id %}
+            <a href="{% url 'pybb:edit_profile' %}">{% trans 'Edit' %}</a>
+        {% endif %}
+    </div>
+
+{% endblock %}

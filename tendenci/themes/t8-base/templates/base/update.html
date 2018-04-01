@@ -1,0 +1,32 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>Tendenci Update</h1>
+{% if version == latest_version %}
+    <p>Your version: {{ version }}</p>
+    <p>Latest version: {{ latest_version }}</p>
+    <p>{% trans "You are up to date!" %}</p>
+{% else %}
+<p>{% trans "An update is available for Tendenci." %}</p>
+    <p>Current Version: {{ version }}</p>
+    <p>Latest Version: {{ latest_version }}</p>
+    <form method='post' action="{% url 'update_tendenci' %}" >{% csrf_token %}
+    <div class="form-group">
+        <input type="checkbox" name="tos" value="1"/>
+        <label for="tos">
+            I accept the <a class="text-capitalize" href="https://www.tendenci.com/tendenci-terms-of-use" target="_blank">terms of service.</a>
+        </label>
+    </div>
+    <div>
+         <input type='submit' value='Update'>
+    </div>
+    </form>
+{% endif %}
+</div>
+{% endblock %}

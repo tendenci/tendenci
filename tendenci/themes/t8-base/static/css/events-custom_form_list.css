@@ -1,0 +1,60 @@
+.reg-form-list-notes{
+	background-color: #FEFBF3;
+	margin: 1em 0;
+	padding: 1em;
+	/*width: 90%;	*/
+}
+.reg-form-list-links{
+	padding-left: 1em;
+}
+.preview-btn, .edit-btn  {
+-moz-border-bottom-colors: none;
+-moz-border-image: none;
+-moz-border-left-colors: none;
+-moz-border-right-colors: none;
+-moz-border-top-colors: none;
+-moz-transition: all 0.1s linear 0s;
+background-repeat: no-repeat;
+border-color: #CCCCCC #CCCCCC #BBBBBB;
+border-radius: 4px 4px 4px 4px;
+border-style: solid;
+border-width: 1px;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+color: #333333;
+cursor: pointer;
+display: inline-block;
+font-size: 13px;
+line-height: normal;
+padding: 5px 14px 6px;
+text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
+.preview-btn {
+	background-color: #E6E6E6;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #E6E6E6);
+}
+.edit-btn {
+	background-color: #DDF4FB;
+	background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #DDF4FB);
+}
+.preview-btn:hover, .edit-btn:hover{
+	background-position: 0 -15px;
+	color: #333;
+	text-decoration: none;
+}
+.reg-form-title{
+	font-size: 1.1em;
+}
+.reg-form-btns{
+	margin: 1em;
+}
+.reg-price{
+	margin-left: 1em;
+	color: #666;
+}
+.form-wrap{
+	margin: 1em 0 2em 0;
+	background-color: #f5f5f5;
+	width: 80%;
+	padding: 10px;
+}

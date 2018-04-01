@@ -1,0 +1,15 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+<div class="t-iconrow">
+<ul>
+    {% has_perm request.user help_files.change_helpfile opt_object as can_edit %}
+    {% if opt_object.status_detail == 'draft' %}
+        <span class="copyright body-copy-alerts"><em>{% trans "DRAFT" %}</em></span>
+    {% endif %}
+    {% if can_edit %}
+        <li><a href="{% url "admin:help_files_helpfile_change" opt_object.pk %}" title="{% trans 'Edit Help File' %}" class="option-link edit">{% trans "Edit" %}</a></li>
+        <li><a href="{% url "admin:help_files_helpfile_delete" opt_object.pk %}" class="option-link delete" title="{% trans 'Delete Help File' %}">{% trans "Delete" %}</a></li>
+    {% endif %}
+</ul>
+</div>

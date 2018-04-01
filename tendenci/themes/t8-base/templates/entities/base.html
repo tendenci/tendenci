@@ -1,0 +1,33 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_ENTITIES_LABEL_PLURAL %}
+        {% blocktrans %}
+            {{ MODULE_ENTITIES_LABEL_PLURAL }} for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans %}
+            Entities for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/entities.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock banner %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "entities/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

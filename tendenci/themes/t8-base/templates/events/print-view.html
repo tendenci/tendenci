@@ -1,0 +1,56 @@
+{% extends "events/base-print.html" %}
+{% load event_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}Print - {{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+  <div class="hide-this">
+    <h1>{% trans "Print View" %}</h1>
+
+    <div class="guide">
+      <div><a href="{{ event.get_absolute_url }}">&laquo; {% trans "Back to regular event view" %}</a></div>
+    </div>
+  </div>
+
+    <div class="event-wrap">
+        <h2>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</h2>
+      <div class="content"><p>{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</p>
+        {% if event.place.name or event.place.address %}
+          <p><strong>Location:</strong>
+          {% if event.place.name %}
+              {{ event.place.name }}<br />
+          {% endif %}
+          {% if event.place.address %}
+              {{ event.place.address }}<br />
+          {% endif %}
+          {{ event.place.city }}
+          {% if event.place.city and event.place.state %}, {% endif %}
+            {{ event.place.state }} {{ event.place.zip }}</p>
+        {% endif %}
+        <strong>Date:</strong> {{ event.start_dt }} - {{ event.end_dt }}
+
+          </div>
+  </div>
+
+</div>
+{% endblock %}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
+
+{% block extra_body %}
+  {{ block.super }}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      window.print();
+    });
+  </script>
+{% endblock %}

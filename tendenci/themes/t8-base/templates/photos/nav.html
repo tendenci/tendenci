@@ -1,0 +1,69 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user photos.add_image as can_add_photo %}
+{% has_perm user photos.add_photoset as can_add_photoset %}
+
+{% if nav_object %}
+    {% has_perm user photos.view_image nav_object as can_view_photo %}
+    {% has_perm user photos.change_image nav_object as can_edit_photo %}
+    {% has_perm user photos.delete_image nav_object as can_delete_photo %}
+{% else %}
+    {% has_perm user photos.view_image as can_view_photo %}
+    {% has_perm user photos.change_image as can_edit_photo %}
+{% endif %}
+
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_PHOTOS_LABEL trans 'Photos' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Photos" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "photos" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "photoset_latest" %}">{% trans "Search Sets" %}</a></li>
+            {% if can_add_photoset %}
+                <li><a href="{% url "photoset_add" %}">{% trans "Add Photo Set" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_photo or can_edit_photo%}
+            <ul>
+                <li class="heading">{% trans "This Photo" %}</li>
+                <li class="divider"></li>
+                {% if can_view_photo %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Photo" %}</a></li>
+                {% endif %}
+                {% if can_edit_photo %}
+                    <li><a href="{% url "photo_edit" nav_object.pk %}">{% trans "Edit Photo" %}</a></li>
+                {% endif %}
+                {% if can_delete_photo %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "photo_destroy" nav_object.pk %}">{% trans "Delete Photo" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+</ul>
+{% endif %}

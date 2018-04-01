@@ -1,0 +1,48 @@
+.media-icons {
+    text-align: center;
+}
+    .media-icons a {
+        padding: 0px;
+    }
+
+    .media-icons a:hover {
+        text-decoration: none;
+    }
+
+    .social-button:before {
+        font-family: "FontAwesome";
+        font-size: 2em;
+        font-weight: normal !important;
+        margin-right: 10px;
+        position: relative;
+        color: #000000;
+    }
+
+        .social-facebook:before {
+            content: "\f09a";
+        }
+
+        .social-twitter:before {
+            content: "\f099";
+        }
+
+        .social-google:before {
+            content: "\f0d5";
+        }
+
+        .social-instagram:before {
+            content: "\f16d";
+        }
+
+        .social-pinterest:before {
+            content: "\f0d2";
+        }
+
+        .social-email:before {
+            content: "\f0e0";
+        }
+
+        .social-print:before {
+            content: "\f02f";
+            margin-right: 0px;
+        }

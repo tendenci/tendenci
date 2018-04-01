@@ -1,0 +1,28 @@
+/* Websymbols font http://www.justbenicestudio.com/studio/websymbols/ */
+
+@font-face{
+    font-family: 'WebSymbolsRegular';
+    src: url('../fonts/websymbols-regular-webfont.eot');
+    src: url('../fonts/websymbols-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/websymbols-regular-webfont.woff') format('woff'),
+         url('../fonts/websymbols-regular-webfont.ttf') format('truetype'),
+         url('../fonts/websymbols-regular-webfont.svg#WebSymbolsRegular') format('svg');
+    }
+
+#admin-bar a.glyph, #admin-bar span.glyph,
+a.glyph, span.glyph {
+  font-family: 'WebSymbolsRegular'; text-decoration: none;
+}
+
+#admin-bar a.glyph.plus { color: #a5e388; font-size: 14px; }
+#admin-bar a.glyph.plus:hover { color: #fff; }
+
+#admin-bar a.glyph.gear { color: #ccc; font-size: 16px; }
+#admin-bar a.glyph.gear:hover { color: #fff; }
+
+#admin-bar a.glyph.search { color: #fafafa; font-size: 14px; }
+#admin-bar a.glyph.search:hover { color: #fff; }
+
+#admin-bar span.glyph.heading { color: #fafafa; font-size: 13px; }
+
+#admin-bar input#admin-search-submit.glyph { font-family: 'WebSymbolsRegular'; font-size: 13px; }

@@ -1,0 +1,76 @@
+{% extends "files/base.html" %}
+
+{% load file_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "File Edit" %}</h1>
+
+    <div class="forms">
+        <form action="{% url "file.edit" file.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save changes' %}" />
+        </form>
+    </div>
+
+    <div class="loading-message">
+        <img src="{% static 'images/loadingicon.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" />
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery-blockUI.js' %}"></script>
+    <script type="text/javaScript">
+    {% include 'files/include/categories.js' %}
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.add-category').click(function(){
+                select_box = $(this).parent().prev().find('select');
+                var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
+                category = category.replace('"','')
+                var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
+                if (category) select_box.append(option_html)
+                return false;
+            });
+            $('.add-sub-category').click(function(){
+                select_box = $(this).parent().prev().find('select');
+                var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
+                sub_category = sub_category.replace('"','')
+                var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
+                if (sub_category) select_box.append(option_html)
+                return false;
+            });
+            $('.loading-message').hide();
+        });
+    </script>
+    <script type="text/javascript">
+        $('#category-form').hide();
+        $('#category-title').click(function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        });
+        $('.forms form input[type="submit"]').click(function() {
+            $.blockUI({
+                message: $('.loading-message')
+            });
+        });
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

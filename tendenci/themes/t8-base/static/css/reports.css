@@ -1,0 +1,174 @@
+h1 {
+	color:#204177;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:20px;
+	font-weight:bold;
+}
+
+h2 {
+  color:#204177;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.report_list_wrap .report_column {
+    float: left;
+    width: 49%;
+    margin-right: 2%;
+}
+
+.report_list_wrap .report_column.end {
+    margin-right: 0;
+}
+
+.report_list_wrap ol {
+    counter-reset: item;
+    margin-left: 0;
+}
+.report_list_wrap ol li {
+    display: block;
+}
+.report_list_wrap ol li:before {
+    content: counters(item, ".") ". ";
+    counter-increment: item;
+}
+
+.events-summary-chart {
+	height: 300px;
+	margin-bottom: 5px;
+}
+
+.events-summary-chart td {
+	vertical-align: bottom;
+	text-align: center;
+	width: 24px;
+  padding: 1px;
+  border: none;
+}
+
+.users-added-chart {
+	height: 100px;
+}
+
+.users-added-chart td {
+	vertical-align: bottom;
+	text-align: center;
+	width: 12px;
+}
+
+.events-summary {
+	width: 220px;
+	float: left;
+}
+
+.events-summary li {
+	display: block;
+	width: 200px;
+	margin-bottom: 5px;
+}
+
+
+tr.odd {
+	background-color: #DDDDDD;
+}
+
+.stat-table {
+    margin-top: 10px;
+}
+
+.stat-table td {
+    padding:5px;
+    border:solid 1px;
+}
+
+.stat-table th {
+    padding:5px;
+    border:solid 1px;
+    background-color: #CCCCCC;
+}
+
+.corp-mems-stats {
+    padding-left:20px;
+}
+
+.corp-mems-wrap table.report {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 18px;
+  padding: 0;
+  /*font-size: 13px;*/
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 10px 10px 9px;
+  line-height: 18px;
+  text-align: left;
+}
+.table th {
+  padding-top: 9px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+.table td {
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+.table tbody th {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #f5f5f5;
+}
+.condensed-table th, .condensed-table td {
+  padding: 5px 5px 4px;
+}
+.membership-list-report table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.membership-list-report th, .membership-list-report td {
+    padding: 10px;
+    border: 1px solid silver;
+    text-align: left;
+}
+.mems-wrap.stat-table table {
+  width: 100%;
+}
+.mems-wrap.stat-table th,
+.mems-wrap.stat-table td {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid silver;
+}
+.corp-mems-wrap table {
+  width: 100%;
+}
+.corp-mems-wrap th,
+.corp-mems-wrap td {
+  text-align: left;
+  border: 1px solid silver;
+  padding: 10px;
+}
+
+.user-access-report th {
+  border: 1px solid silver;
+  padding: 6px;
+}
+
+.user-access-report td {
+  text-align: center;
+}
+
+@media print {
+  .event-log-summary-nav { page-break-before: always; }
+  .events-summary-chart,
+  .events-summary {-webkit-print-color-adjust: exact;}
+}

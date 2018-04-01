@@ -1,0 +1,24 @@
+
+{% trans "Greetings:" %} <br /><br />
+
+<div>
+{% url "profile" user_by.username as profile_url %}
+{% blocktrans %}
+The recurring payment account for {{ rp }} has been disabled by <a href="{{ profile_url }}">{{ user_by.get_full_name }}</a>{% endblocktrans %}.
+
+</div>
+<br /><br />
+
+{% trans 'To view this recurring payment account, go to' %}:
+<br />
+<a href="{{ site_url }}{% url "recurring_payment.view_account" rp.id %}">{{ site_url }}{% url "recurring_payment.view_account" rp.id %}</a>
+
+</div>
+
+
+<br />
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>

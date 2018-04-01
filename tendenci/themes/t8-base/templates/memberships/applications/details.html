@@ -1,0 +1,67 @@
+{% extends "memberships/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h2>{{ app.name }}</h2>
+    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
+
+    {% if pending_entries %}
+        <!-- <div class="pending-entries">
+            <a href="{% url "membership.application_entries_search" %}?q=status:pending">
+            {% blocktrans count pending_entries|length as pend_length %}You have {{ pend_length }} pending submission.{% plural %}You have {{ pend_length }} pending submissions.{% endblocktrans %}</a></div> -->
+    {% endif %}
+
+    <div class="form-builder-wrap">
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ app_entry_form|styled_form }}
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" >
+        function find_field(name) {
+            labels = $(".forms").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+
+        membership = find_field("Membership Type");
+        payment = find_field("Payment Method");
+        mem_options = membership.find('li');
+
+        for(var i=0; i < mem_options.length; i++) {
+            op = $(mem_options[i]);
+            if(parseFloat(op.find('label').html().split('$')[1])==0) {
+                op.click(function() {
+                    payment.hide();
+                });
+            } else {
+                op.click(function() {
+                    payment.show();
+                });
+            };
+        }
+    </script>
+{% endblock extra_body %}

@@ -1,0 +1,28 @@
+{% load theme_editor_tags %}
+{% load theme_editor_filters %}
+{% if value.items %}
+    <li>
+    <a href="javascript:;" class="folder">+ {{ key }}</a>
+    <div class="upload-link">
+        <span class="glyph" path="{% for key,value in value.items|sortcontents %}{% if key == "contents" %}{% for item in value %}{{ item.folder_path }}{% endfor %}{% endif %}{% endfor %}"><span class="upload_btn">+</span></span>
+        <span id="glyph_mask" style="margin-left:-10px;"></span>
+    </div>
+    <ul>
+    {% for key,value in value.items|sortcontents %}
+        {% if key == "contents" %}
+            {% for item in value %}
+                <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+                {% if item.editable %}
+                    <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+                {% else %}
+                    <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
+                {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            {% folder_structure value %}
+        {% endif %}
+    {% endfor %}
+    </ul>
+    </li>
+{% endif %}

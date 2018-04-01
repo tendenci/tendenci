@@ -1,0 +1,4 @@
+https://github.com/tendenci/tendenci/archive/master.zip
+# tendenci>=7,<8  # replace the above link with this later
+
+https://github.com/epantry/django-sql-explorer/archive/master.zip

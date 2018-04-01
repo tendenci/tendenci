@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load membership_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/arrow_join.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_MEMBERSHIPS_LABEL trans "Memberships" %}{% endblock %}
+
+{% block current_app %}
+    {% if membership %}
+        {% membership_current_app request.user membership %}
+    {% else %}
+        {% membership_current_app request.user %}
+    {% endif %}
+{% endblock %}

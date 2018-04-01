@@ -1,0 +1,30 @@
+{% load base_filters %}
+{% if THEME_INFO.SSU.color %}
+  <script type="text/javascript">
+  if (typeof less != 'undefined') {
+    less.modifyVars({
+      {% if MODULE_THEME_COLORVARS %}
+      {% with MODULE_THEME_COLORVARS|split:";" as sections %}
+        {% for sec in sections %}
+           {% with sec|split:":" as sec_items %}
+            {% if sec_items.2 %}
+            '{{ sec_items.0.strip }}': '{{ sec_items.2.strip }}',
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      {% endwith %}
+      {% else %}
+      {% with THEME_INFO.SSU.default_colors|split:";" as sections %}
+        {% for sec in sections %}
+           {% with sec|split:":" as sec_items %}
+            {% if sec_items.2 %}
+            '{{ sec_items.0.strip }}': '{{ sec_items.2.strip }}',
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      {% endwith %}
+      {% endif %}
+    });
+  }
+  </script>
+{% endif %}
