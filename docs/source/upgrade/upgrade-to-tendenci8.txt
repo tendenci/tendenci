@@ -142,12 +142,25 @@ Copy any site specific settings from ``/var/www/tendenci.t7/conf/local_settings.
 how/where to configure most of the settings you are likely to need to change.  Avoid copying any
 standard/default settings.
 However, be sure to copy:
+
   - SECRET_KEY
   - SITE_SETTINGS_KEY
   - The settings in DATABASES
   - TIME_ZONE
   - Payment Gateway Settings
   - EMail Settings
+
+Note that the length recommendations for SECRET_KEY and SITE_SETTINGS_KEY have changed.  Old keys
+will continue to work, but you should consider changing your keys to meet the new guidelines.
+If you change SECRET_KEY, then all currently logged in users will be logged out, and all active
+password reset tokens will be invalidated.  If you change SITE_SETTINGS_KEY, then all settings on
+the "Site Settings" and "Full Settings" pages in Tendenci will be reset.
+Since SECRET_KEY is a critical component of the Django security model, and since changing SECRET_KEY
+is relatively non-disruptive, we strongly recommend changing SECRET_KEY to a new value that meets
+the new recommendations.
+However, since changing SITE_SETTINGS_KEY is relatively disruptive, and since it is a less critical
+component of the security model, we recommend that you do not change your SITE_SETTINGS_KEY at this
+time.
 
 If you have made site specific changes to INSTALLED_APPS, Tendenci now adds the following apps to
 INSTALLED_APPS by default, so your ``INSTALLED_APPS += [...]`` setting no longer needs to include
