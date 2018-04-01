@@ -313,7 +313,7 @@ $(document).ready(function(){
     height: "500px",
     parserfile: {% if ext in stylesheets %}"parsecss.js"{% elif ext == "js" %}["tokenizejavascript.js","parsejavascript.js"]{% else %}"parsexml.js"{% endif %},
     stylesheet: {% if ext in stylesheets %}"{% static 'codemirror/css/customcsscolors.css' %}"{% elif ext == "js" %} "{% static 'codemirror/css/jscolors.css' %}" {% else %}"{% static 'codemirror/css/xmlcolors.css' %}"{% endif %},
-    path: "{% static codemirror/js/ %}",
+    path: "{% static 'codemirror/js/' %}",
     continuousScanning: 500,
     lineNumbers: true,
     textWrapping: false

@@ -1,0 +1,1 @@
+../../../../themes/t8-base/static/js/events-registration-summary.js
