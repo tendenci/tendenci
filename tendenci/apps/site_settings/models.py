@@ -79,11 +79,11 @@ class Setting(models.Model):
         # BooleanField values.  Since these are used in many existing theme
         # settings files, we must still support them.
         if self.client_editable in ('true', 'false'):
-            self.client_editable = bool(self.client_editable)
+            self.client_editable = self.client_editable == 'true'
         if self.store in ('true', 'false'):
-            self.store = bool(self.store)
+            self.store = self.store == 'true'
         if self.is_secure in ('true', 'false'):
-            self.is_secure = bool(self.is_secure)
+            self.is_secure = self.is_secure == 'true'
 
         try:
             #get the old value as reference for updating the cache
