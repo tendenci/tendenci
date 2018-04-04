@@ -18,11 +18,11 @@ def replace_short_code(body):
     Replaces shortcodes in the body of an article with appropriate HTML structures.
     """
     # remove CDATA elements
-    body = re.sub("^<!\\[CDATA\\[", "", body)
-    body = re.sub("\\]\\]>$", "", body)
+    body = re.sub(r'^<!\[CDATA\[', '', body)
+    body = re.sub(r'\]\]>$', '', body)
 
-    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)
-    body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
+    body = re.sub(r'(.*)(\[caption.*caption=")(.*)("\])(.*)(<img.*("|/| )>)(.*)(\[/caption\])(.*)', r'\1\6<div class="caption">\3</div>\10', body)
+    body = re.sub(r'(.*)(\[gallery?.*?\])(.*)', '', body)
     return body
 
 def get_posts(item, user):
@@ -202,15 +202,15 @@ def correct_media_file_path(body, file):
     """
     Replace an instance of the given file's URL in the given HTML with a file path.
     """
-    match = re.search("(.*)(http://.*\\/?\\/\\b\\w+\\/)((\\S+)(\\-\\d+x.*?\\S*.*)|(\\S+.*?\\S+))(\\.\\S+)(\\\".*)", body)
+    match = re.search(r'(.*)(http://.*/?/\b\w+/)((\S+)(-\d+x.*?\S*.*)|(\S+.*?\S+))(\.\S+)(".*)', body)
     if match:
         match.group()
 
         if match.group(4) is None and file.basename() == match.group(6) + match.group(7):
             # if the file is unsized
-            body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+            body = re.sub(r'(.*)(http://.*/?/\b\w+/)(' + re.escape(file.basename()) + r'.*?)(".*)', r'\1/files/' + str(file.pk) + r'/\4', body)
         elif match.group(6) is None and file.basename() == match.group(4) + match.group(7):
             # if the file is sized
-            body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+            body = re.sub(r'(.*)(http://.*/?/\b\S+/)(' + re.escape(match.group(4) + match.group(5) + match.group(7)) + r'.*?)(".*)', r'\1/files/' + str(file.pk) + r'/\4', body)
 
     return body

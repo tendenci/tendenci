@@ -1,0 +1,283 @@
+#menu {
+ z-index: 150;
+}
+
+#showh {
+	position: relative;
+	width: 45em;
+	height: 3em;
+	width: 45em;
+	font-size: 10px;
+	margin:10px 0 30px;
+}
+
+#showh #primary {
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	bottom: -1px;
+	width: 45em;
+}
+
+#showh #primary li  {
+	display: inline;
+	list-style: none;
+
+}
+
+#showh #primary a,#primary span,#primary a.current {
+	width: 9em;
+	display: block;
+	float: left;
+	padding: 8px 0;
+	margin: 1px 2px 0 0;
+	text-align: center;
+	font-family: tahoma, verdana, sans-serif;
+	font-size: 90%;
+	text-decoration: none;
+	color: #333;
+	height: 21px;
+}
+
+#showh #primary span,#primary a.current,#primary a.current:hover {
+	border: 1px solid;
+	border: none;
+	
+	padding-bottom: 8px;
+	margin-top: 0;
+	background-image: url('../images/backgrounds/tabs_roll.jpg');
+	background-repeat: no-repeat;
+	height: 21px;
+	
+}
+
+#showh #primary a {
+	background: #FFF;
+	border: none;
+	border-bottom: none;
+	background-image: url('../images/backgrounds/tabs.jpg');
+	background-repeat: no-repeat;
+    height: 21px;
+	
+}
+
+#showh #primary a:hover {
+	border-color: #666;
+    background-image: url('../images/backgrounds/tabs_hover.jpg');
+	background-repeat: no-repeat;
+}
+
+#showh #secondary {
+	position: absolute;
+	margin: 0; padding: 0;
+    left: 0;
+    top: 35px;
+	width: 60em;
+}
+
+#showh #secondary li a,#secondary li span {
+	width: auto;
+	display: block;
+	float: left;
+	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+	margin: 0;
+	text-align: auto;
+	border: none;
+	border-right: 1px dotted #AAA;
+	background: none;
+height: 12px;
+
+
+
+}
+
+#showh #secondary li a {
+	color: #06C;
+	text-decoration: underline;
+height: 12px;
+
+
+}
+
+#showh #secondary li a:hover {
+	color: #333;
+	background: transparent;
+	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+	border: none;
+	border-right: 1px dotted #AAA;
+height: 12px;
+
+}
+
+#showh #secondary li a:active {
+	color: #000;
+	background: transparent;
+height: 12px;
+}
+
+#showh #secondary li:last-child a { border: none; }
+
+#showh #secondarysub li a,#secondarysub li span {
+	width: auto;
+	display: block;
+	float: left;
+	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+	margin: 0;
+	text-align: auto;
+	border: none;
+	border-right: 1px dotted #AAA;
+	background: none;
+
+}
+
+#showh #secondarysub li a {
+	color: #06C;
+	text-decoration: underline;
+}
+
+#showh #secondarysub li a:hover {
+	color: #333;
+	background: transparent;
+	padding: 0 6px; /* Padding changed 3/23/06 from 10px to 7px by Derrick to prevent wrap */
+	border: none;
+	border-right: 1px dotted #AAA;
+}
+
+#showh #secondarysub li a:active {
+	color: #000;
+	background: transparent;
+}
+
+#showh #secondarysub li:last-child a { border: none; }
+
+/*	style for tag input box
+	it was placed here because tabs.css is global
+	SOON we'll make a style that's global to tendenci
+	-EZ 06/26/2007
+-----------------------------------------------------*/
+.tag-input-box h6 {
+	margin:0;
+	font-size: 11px;
+	font-style: italic;
+	font-weight: normal;
+}
+
+/*	stylization for comments  -EZ 08/03/2007
+-----------------------------------------------------*/
+#comments-wrap {margin: 5px 0;}
+#comments-wrap .name {float: left;}
+#comments-wrap .chars {float: right;}
+#comments-wrap textarea {float: left; width: 100%; height: 100px;}
+#comments-wrap p {margin:0;}
+#comments-wrap .submit-wrap  {float: left; margin-top: 5px;}
+
+.comment-wrap {
+	padding: 10px; margin: 5px 5px 5px 0;
+	width: 410px;
+	border: 1px solid #AAA;
+	float: left;
+}
+.comment-wrap .firstname {
+	float: left;
+}
+.comment-wrap .lastname {
+	margin-left: 5px;
+	float: left;
+}
+.comment-wrap .email {
+	clear: both;
+}
+.comment-wrap .name input {
+	width: 195px;
+}
+.comment-wrap label {
+	display: block;
+}
+.comment-wrap input, .comment-wrap textarea,
+.comment-wrap .submit-wrap {
+	width: 400px;
+}
+.comment-wrap .comment textarea {
+	width: 400px !important;
+}
+.comment-wrap .char-count {
+	margin: 8px 5px 5px 5px;
+}
+.comment-wrap .submit {
+	margin-top: 7px;
+	width: 150px;
+}
+.comment-wrap .highlight {
+	border: 2px solid highlight;
+}
+.comment-wrap .submit {
+	float: right;
+}
+.comment-wrap .char-count {
+	float: left;
+}
+
+.t-display-comment{
+}
+
+ul.comments {
+	margin:0; padding:0;
+	list-style-type: none;
+}
+
+ul.comments ul {
+	margin:0; padding:0;
+	list-style-type: none;
+	margin: 7px;
+}
+
+ul.comments li {
+	list-style-type: none;
+	border: 1px solid #AAA;
+	margin: 7px 0;
+	*width: 550px;
+}
+
+ul.comments li div {
+}
+ul.comments li .info {
+	margin: 10px;
+	padding: 10px;
+	border-left: 1px solid #AAA;
+	background-color: #F4F4F4;
+}
+ul.comments li .info em {
+	font-size: .90em;
+	font-style: normal;
+}
+ul.comments li .info a {
+	font-size: .90em;
+	text-decoration: none;
+}
+
+ul.comments li .t-commenttext {
+	padding: 0;
+	margin: 10px;
+}
+
+ul.comments li .t-commenttext p {
+	margin: 0;
+	padding: 0;
+	padding-bottom: 5px;
+	width: 100%;
+	*width: 470px;
+	overflow: auto;
+	word-wrap: break-word;
+	
+}
+
+ul.comments li .t-usericon {
+	margin: 10px;
+	margin-right: 0px;
+}
+
+/* Developer only styles */
+.developer-only
+{
+	background-color: #FFEBE8;
+}

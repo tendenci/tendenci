@@ -1,0 +1,52 @@
+{{ object.user.get_full_name }}
+{{ object.user.username }}
+{{ object.email }}
+{{ object.company }}
+{{ object.phone }}
+{{ object.address }}
+{{ object.city }}
+{{ object.state }}
+{{ object.country }}
+{{ object.display_name }}
+
+{% if object.user.demographics %}
+{{ object.user.demographics.ud1 }}
+{{ object.user.demographics.ud2 }}
+{{ object.user.demographics.ud3 }}
+{{ object.user.demographics.ud4 }}
+{{ object.user.demographics.ud5 }}
+{{ object.user.demographics.ud6 }}
+{{ object.user.demographics.ud7 }}
+{{ object.user.demographics.ud8 }}
+{{ object.user.demographics.ud9 }}
+{{ object.user.demographics.ud10 }}
+{{ object.user.demographics.ud11 }}
+{{ object.user.demographics.ud12 }}
+{{ object.user.demographics.ud13 }}
+{{ object.user.demographics.ud14 }}
+{{ object.user.demographics.ud15 }}
+{{ object.user.demographics.ud16 }}
+{{ object.user.demographics.ud17 }}
+{{ object.user.demographics.ud18 }}
+{{ object.user.demographics.ud19 }}
+{{ object.user.demographics.ud20 }}
+{{ object.user.demographics.ud21 }}
+{{ object.user.demographics.ud22 }}
+{{ object.user.demographics.ud23 }}
+{{ object.user.demographics.ud24 }}
+{{ object.user.demographics.ud25 }}
+{{ object.user.demographics.ud26 }}
+{{ object.user.demographics.ud27 }}
+{{ object.user.demographics.ud28 }}
+{{ object.user.demographics.ud29 }}
+{{ object.user.demographics.ud30 }}
+{% endif %}
+
+
+is:{{ object.status_detail }}
+
+{% for role in object.roles %}
+is:{{ role }}
+{% endfor %}
+
+highestrole:{{ object.highest_role }}

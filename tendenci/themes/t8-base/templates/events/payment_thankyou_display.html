@@ -1,0 +1,10 @@
+
+<p>{% trans "Thank you for your payment!" %}</p>
+<h3>{% trans "What would you like to do now?" %}</h3>
+<ul>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'event' obj.event.id %}" class="links">{% trans "View Event Details" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.month" %}" class="links">{% trans "Monthly View" %}</a></li>
+    {% if request.user.profile.is_superuser %}
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.search" obj.event.id %}" class="links">{% trans "Search Registrations" %}</a></li>
+    {% endif %}
+</ul>

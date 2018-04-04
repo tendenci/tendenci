@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load news_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/newspaper.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %}{% endblock %}
+
+{% block current_app %}
+    {% if news %}
+        {% news_current_app request.user news %}
+    {% else %}
+        {% news_current_app request.user %}
+    {% endif %}
+{% endblock %}

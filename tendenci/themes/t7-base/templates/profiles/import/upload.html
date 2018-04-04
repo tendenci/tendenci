@@ -1,0 +1,179 @@
+{% extends "profiles/base-wide.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load profile_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans 'Import Users from CSV file' %}{% endblock %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+<link rel="stylesheet" href="{% static 'css/user-import.css' %}">
+<style>
+  .error {
+  color: red;
+  }
+  .template-download{
+  float: left;
+  margin-top: 3em;
+  width: 15%;
+  }
+  .template-download .link{
+  margin-top: 1em;
+  }
+  #import-instruction{
+  margin: 1em 1em 0 0;
+  padding: 1em;
+  width: 65%;
+  background-color: #F7F7F9;
+  float: left;
+  }
+  #import-instruction li{
+  padding: 3px 0;
+  list-style: circle;
+  }
+  .alert{
+  background-color: #fcf8e3;
+  border: 1px solid #FBEED5;
+  border-radius: 4px 4px 4px 4px;
+  color: #c09853;
+  padding: 1em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  width: 70%;
+  margin: 1em 0;
+  }
+  #fk-list{
+  margin: 3px 2em;
+  line-height: 1.1em;
+  color: #39B54A;
+  font-size: 0.9;
+  font-family:"Courier New", Courier, monospace;
+  }
+  #fk-list-wrap{
+  margin-top: 1em;
+  }
+  .import-fields li{
+  list-style: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="import-wrap">
+    <div class="page-header">
+      <h1>{% trans "Import Users" %}</h1>
+    </div>
+
+    <div class="well">
+
+      <!-- TEMPLATE -->
+      <a class="btn btn-primary pull-right" href="{% url 'profiles.download_user_template' %}">
+        <i class="fa fa-table"></i>&nbsp;&nbsp;
+        {% trans "Download Template" %}
+      </a>
+
+      <p style="margin-bottom:0;">{% blocktrans %}
+        <strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>.
+        {% endblocktrans %}</p>
+
+      {% blocktrans %}
+      <h3>How to prepare the spreadsheet (.csv file)?</h3>
+      <ul>
+        <li>
+          The required fields are the field(s) in the selected key (see the field "Identify duplicates by" below).
+          For example, if "Email" is selected as the key, the email field should be included in your spreadsheet.
+        </li>
+
+        <li>
+          Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter.
+        </li>
+      </ul>
+      {% endblocktrans %}
+    </div>{# end #import-instruction #}
+
+    <div class="clear"></div>
+
+    <form method="post" action="{% url 'profiles.user_import' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div id="upload-form-wrap">
+        <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
+
+        {% if form.errors.values %}
+        <div class="errors well">
+          {% trans 'There were some problems in the form. Please review. Thanks!' %}
+          {% for error in form.non_field_errors %}
+          <p><a href="#">{{ error }}</a></p>
+          {% endfor %}
+
+          {% for field in form %}
+          {% if field.errors %}
+          {% for error in field.errors %}
+          <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+          {% endfor %}
+          {% endif %}
+          {% endfor %}
+
+        </div>
+        {% endif %}
+
+        <div class="fields-block import-fields">
+          {% if form.upload_file.errors %}
+          <div class="error">
+            {% for error in form.upload_file.errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="import-field">{{ form.upload_file }}</div>
+
+          <div class="field-label">{% trans "Make Users" %}</div>
+          <div>{{ form.interactive }}</div>
+
+          {% if form.override.errors %}
+          <div class="error">
+            {% for error in form.override.errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="import-field">
+            <div class="field-label">{% trans "Update" %}</div>
+            <div>{{ form.override }}</div>
+          </div>
+
+          {% if form.key.errors %}
+          <div class="error">
+            {% for error in form.key.errors %}
+            <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="import-field">
+            <div class="field-label">{% trans "Identify duplicates by" %}</div>
+            <div>{{ form.key }}</div>
+          </div>
+
+          <div class="field-label">{% trans "Add Users to Group" %}</div>
+          <div>{{ form.group_id }}</div>
+
+          <div class="reset-group">{{form.clear_group_membership}}
+            <label for="id_clear_group_membership">{% trans "Delete members in group before importing" %}</label>
+          </div>
+
+          <div class="prev-btn">
+            <input type="submit" value="{% trans 'Preview Import' %}" class="btn btn-primary">
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

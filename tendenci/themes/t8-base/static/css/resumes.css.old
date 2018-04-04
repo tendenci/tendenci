@@ -1,0 +1,300 @@
+.t {
+    width: 90%;
+}
+
+.t ul.resumes-nav {
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+.t ul.resumes-nav li {
+    display: inline;
+}
+
+.t .resumes-wrap {
+    margin-bottom: 20px;
+}
+
+.t .resume-wrap {
+    padding: 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.t .resumes-wrap .resume-wrap h2 {
+    width: 85%;
+}
+.t .resumes-wrap .resume-wrap .content {
+    margin-bottom: 10px;
+}
+.t .options {
+    text-align: right;
+    position: absolute;
+    top: -30px; right: 0;
+    padding: 5px;
+    white-space: nowrap;
+}
+.t .options-search {
+    position: static;
+}
+.t .quick-options {
+    float: right;
+    margin-right: 5px;
+}
+.t .quick-options ul {
+    margin: 0; padding: 0;
+    list-style-type: none;
+}
+
+.t .dropdown-options {
+    float: right;
+    display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+    font-size: .7em;
+}
+.t .dropdown-options ul {
+    display: none;
+}
+
+.t .back-to-search {
+    margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+    width: 60%;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+    padding: 5px;
+    cursor: pointer;
+}
+
+div.forms div.form-field
+div.id_activation_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field
+div.id_activation_dt .field input#id_release_dt_1 {
+    width: 80px;
+}
+
+div.forms div.form-field
+div.id_post_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field
+div.id_post_dt .field input#id_release_dt_1 {
+    width: 80px;
+}
+
+div.forms div.form-field
+div.id_expiration_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field
+div.id_expiration_dt .field input#id_release_dt_1 {
+    width: 80px;
+}
+
+
+
+
+/* Resume View
+ ------------------------- */
+
+.section-block {
+    margin-bottom: 10px;
+}
+.section-block .label {
+    font-weight: bold;
+}
+.section-block .value {
+    margin-left: 20px;
+}
+
+.section-line {
+    margin-bottom: 10px;
+}
+.section-line .label {
+    float: left;
+    width: 120px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.section-line .value {
+    margin-left: 130px;
+}
+
+.company-wrap {
+    margin-bottom: 10px;
+}
+.contact-wrap {
+    margin-bottom: 10px;
+}
+
+#resume-link {
+    text-align: right;
+}
+
+/* Resume Print View
+ ------------------------- */
+
+.t-print .resume-wrap {
+    width: 8in;
+    margin: 30px auto 0;
+    background-color: white;
+    padding: .25in;
+    border: 1px solid silver;
+    -moz-box-shadow: 0 0 5px #AAA;
+    -webkit-box-shadow: 0 0 5px #AAA;
+    box-shadow: 0 0 5px #AAA;
+}
+
+@media print {
+    .t-print .resume-wrap {
+        width: 100%;
+        border: none;
+        padding: 0; margin: 0;
+    }
+}
+
+/* Resume Add/Edit
+ ------------------------- */
+
+.errors {
+    border: 2px solid #FF8B78;
+    background-color: #FFEBE8;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 110px;
+    width: 75%;
+}
+.clear {
+    clear: both;
+}
+.wrap {
+    white-space: pre-wrap;
+}
+.item-text {
+    font-size: 1.4em;
+    border-bottom: 1px solid silver;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+/* label:field item */
+.item {
+    margin-bottom: 10px;
+}
+.item .errs {
+    color: red;
+    margin-left: 110px;
+}
+.item .label {
+    float: left;
+    font-size: 1.4em;
+    text-align: right;
+    width: 100px;
+    white-space: nowrap;
+}
+.item .label-wrap {
+    white-space: normal;
+}
+
+
+.item .field,
+.item .help {
+    margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+    width: 100%;
+}
+.item .field .mceLayout {
+    /* WYSIWYG; .1 keeps border intact */
+    width: 100.1% !important;
+}
+.item .field-short input,
+.item .field-short select {
+    width: 20%;
+}
+
+/* date-time item */
+.item-dt {
+    margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+    color: red;
+}
+.item-dt .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-dt .field input {
+    float: left;
+    width: 15%;
+    margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+    margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-checkbox .field input {
+    float: left;
+    margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+    height: 1px;
+    background-color: silver;
+    margin: 10px 0 10px 110px;
+    width: 85%;
+}
+/* horizontal rule long item */
+.item-hr-long {
+    height: 1px;
+    background-color: silver;
+    margin: 20px 0 20px 0;
+    width: 100%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+    height: 10px;
+    width: 100%;
+}
+
+div.forms fieldset.contact {
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+    padding: 5px;
+}
+
+.t div.resume-wrap ul.pending-resumes {
+    list-style-type: none;
+    padding: 2px;
+    margin: 2px;
+}
+
+.t div.resume-wrap ul.pending-resumes li {
+    padding: 5px;
+}

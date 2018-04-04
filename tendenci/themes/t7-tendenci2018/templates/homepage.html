@@ -1,0 +1,299 @@
+<!--
+   Attribution:
+   Copyright 2013-2015 Iron Summit Media Strategies, LLC                                 
+   Licensed under the Apache License, Version 2.0 (the "License");you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0                                 
+   Unless required by applicable law or agreed to in writing, software                                   
+   distributed under the License is distributed on an "AS IS" BASIS,                                   
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                                   
+   See the License for the specific language governing permissions andlimitations under the License.
+   Alterations to this template have been made by Tendenci for use on the Tendenci Software.
+   -->
+<!-- Tendenci Specific Load Tags (Delete as Needed)
+   =========================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load forms_tags %}
+{% load news_tags %}
+{% load article_tags %}
+{% load photo_tags %}
+{% load event_tags %}
+{% load event_filters %}
+{% theme_extends "base.html" %}
+<!-- Meta Tags (for optimal SEO)
+   =========================================================== -->
+{% block title %}{{ block.super }} | {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
+
+<!-- Start of the Body
+   =========================================================== -->
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+{% block html_body %}
+<!-- begin: header -->
+{% theme_include "header.html" %}<!-- Pulls in Header Include -->
+<!-- end: header -->
+<div id="page-top-home" role="main">
+   <!-- begin: #myCarousel
+      Main jumbotron for a primary marketing message or call to action. 
+      Jumbotron uses Responsive Carousel JS for rotation.
+      -->
+   {% list_stories as stories_list limit=3 tags="rotator" quality="90" data-interval="5000" %}
+   <div id="myCarousel" class="carousel slide" data-ride="carousel">
+     
+      <!-- begin: carousel-inner -->
+      <div class="carousel-inner" id="rotator_inner">
+        
+         <!-- begin: item active -->
+         <div class="item active">
+            {% for story in stories_list %}
+            <img class="img-responsive" src="{{ story.photo.url }}" alt="{{ story.title }}" style="object-position:0 1px;">           
+            
+           <!-- begin: carousel-caption -->
+           <div class="carousel-caption col-md-5 col-md-offset-3">
+             <div class="container-fluid">
+               
+               <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+               <p class="story-summary">{{ story.content|safe|truncatewords:25 }}</p>
+               <p><a class="btn btn-lg btn-primary" href="{{ story.full_story_link }}" role="button">Read more</a></p>
+               
+             </div>
+           </div>
+           <!-- end: carousel-caption -->
+            
+         </div>
+         <!-- end: item active -->
+        
+         <div class="item">
+            <!-- keep empty -->
+            {% endfor %}
+         </div>
+        
+      </div>
+<!-- end: carousel-inner -->
+<!-- commenting out arrows
+     <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+      </a>
+      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+      </a>
+ end comment out arrows --> 
+     
+   </div>
+  <!-- end: #myCarousel -->
+  
+  
+  
+  <!-- begin: home-first-content-row -->
+   <section id="get-updates-form">
+      <div class="container">
+         
+           <div class="jumbotron text-center">
+             
+             <h1>Get Updates</h1>
+             <p>Stay in touch! Get updates about our events, articles, and other news.</p>
+             
+             <!-- Button trigger modal -->
+             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">  
+               Join our Mailing List 
+             </button> 
+             
+   <!-- MODAL NEWSLETTER -->          
+             <div id="myModal" class="modal">  
+               <div class="modal-dialog">
+                 <div class="modal-content">
+                   <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                   </div>
+                   <div class="modal-body">
+                     {% embed_form 3 %}
+                   </div>
+                   <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                   </div>
+                 </div>
+               </div>
+             </div>    
+   <!-- END MODAL NEWSLETTER -->          
+            
+        </div>
+     </div>
+   </section>
+  <!-- end: home-first-content-row -->
+  
+  <!-- begin: home-second-content-row -->
+  <section id="about-us">
+    <div class="container">
+      <div class="row col-md-10 col-md-offset-1">
+        <div class="col-md-5">
+          {% box 4 %}
+        </div>
+        
+        <div class="col-md-6 col-md-offset-1">
+          {% box 5 %}
+        </div>          
+      </div>
+    </div>
+  </section>
+  <!-- end: home-second-content-row -->
+  
+  
+    <!-- begin: home-third-content-row -->
+  <section id="our-resources">
+    <div class="container">
+      <div class="row">
+        
+        <div class="white-heading text-center">
+          <h1>Our Resources</h1>
+          <br />
+        </div>
+        
+        <div class="col-md-4">
+          <div class="thumbnail panel panel-default">
+            {% box 20 %}
+            <div class="caption">
+              {% box 24 %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="thumbnail panel panel-default">
+            {% box 19 %}
+            <div class="caption">
+              {% box 25 %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="thumbnail panel panel-default">
+            {% box 18 %}
+            <div class="caption">
+              {% box 26 %}
+            </div>
+          </div>
+        </div>
+         
+      </div>
+    </div>
+  </section>
+  <!-- end: home-third-content-row -->
+  
+  
+  
+  <!-- begin: home-fourth-content-row -->
+  <section id="recent-events">
+    <div class="container">
+      
+        <div class="col-md-6 col-md-offset-1 jumbotron">
+          {% list_events as events_list limit=3 %}    
+          <ul class="list-unstyled">
+            {% for event in events_list %}
+            <li>
+              <a href="{{ event.get_absolute_url }}"><h3>
+                {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}
+              </h3></a>
+              <p>{{ event.start_dt|date:"F j, Y - P" }}</p>
+              <h5>{{ event.place.name }}</h5>
+              </li>
+            {% empty %}
+            {% trans 'Events will be shown here. <a href="/events/add/">Start adding events now!</a>' %}           
+            {% endfor %}
+          </ul>
+          {% if event_list %}
+          <a href="{% url 'event.search' %}">{% trans 'View more events' %} »</a>
+          {% endif %}      
+        </div>
+        
+        <div class="col-md-3 col-md-offset-1">
+          {% box 21 %}
+        </div>
+      
+    </div>
+  </section>
+  <!-- end: home-fourth-content-row -->
+  
+  
+  
+  
+    <!-- begin: home-fifth-content-row -->
+  <section id="follow-us">
+    <div class="container">
+      <div class="row">
+        
+        <div class="col-md-3 col-md-offset-1">
+          
+          {% box 22 %}
+          
+          <br />
+          <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-6">
+              <a href="https://facebook.com/tendenci"><span class="fa fa-facebook fa-4x"></span></a>    
+            </div>  
+            <div class="col-md-3 col-sm-3 col-xs-6">
+              <a href="https://twitter.com/tendenci"><span class="fa fa-twitter fa-4x"></span></a>
+            </div>
+          </div>
+          
+          <br />
+          <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-6">
+              <a href="https://instagram.com/tendenci"><span class="fa fa-instagram fa-4x"></span></a>    
+            </div>  
+            <div class="col-md-3 col-sm-3 col-xs-6">
+              <a href="https://youtube.com/tendenci"><span class="fa fa-youtube fa-4x"></span></a>
+            </div>
+          </div>
+          <br />
+          
+        </div>
+        
+        <div class="col-md-6 col-md-offset-1">
+          {% box 23 %}
+        </div>
+        
+      </div>
+      
+    </div>
+  </section>
+  <!-- end: home-fifth-content-row -->
+  
+   <!-- Footer starts
+      =========================================================== -->
+   <footer>
+      {% theme_include 'footer.html' %}
+   </footer>
+   <!-- Footer Ends -->
+</div>
+{% endblock %} <!-- Ends the Body -->
+{% block extra_body %}
+{{ super.block }}
+<!-- Bootstrap core JavaScript
+   ================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script>
+   !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],
+   p=/^http:/.test(d.location)?'http':'https';
+   if(!d.getElementById(id)){
+   js=d.createElement(s);
+   js.id=id;js.src=p+"://platform.twitter.com/widgets.js";
+   fjs.parentNode.insertBefore(js,fjs);}}
+   (document,"script","twitter-wjs");
+</script>
+<script type="text/javascript">
+   $(document).ready(function() {
+   //code below helps remove extra .item that is added. 
+   //#rotator_inner helps target which carousel
+     $('#rotator_inner > .item:last').remove();
+     });
+</script>
+
+{% endblock extra_body %}

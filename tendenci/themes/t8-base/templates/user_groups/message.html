@@ -1,0 +1,125 @@
+{% extends "user_groups/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load user_group_tags %}
+{% load perm_tags %}
+{% load bootstrap_pagination_tags %}
+
+{% block title %}{% blocktrans with g=group.name %}{{ g }} - Group{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+<link rel="stylesheet" href="{% static 'css/popover.css' %}">
+{% endblock %}
+
+{% block content %}
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
+
+<div class="t">
+    <div class="group-view">
+        <h1>{{ group.name }}</h1>
+
+        {% if form.errors %}
+        <div class="forms">
+        <ul class="errors">
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                <li>{{ field|title }} is required</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+        </div>
+        {% endif %}
+
+        <form action="" method="POST">
+            {% csrf_token %}
+
+            <div class="is_test">{{ form.is_test }} {{ form.is_test.label_tag }}</div>
+
+            <div>{{ form.to_addr.label_tag }}</div>
+            <div>{{ form.to_addr }}</div>
+            <div>{{ form.from_addr.label_tag }} <a href="javascript:void(0);" id="from-addr-help"><i class="fa fa-question-circle qmark" ></i></a></div>
+            <div>{{ form.from_addr }}</div>
+            <div>{{ form.subject.label_tag }}</div>
+            <div>{{ form.subject }}</div>
+            <div>{{ form.body.label_tag }}</div>
+            <div>{{ form.body }}</div>
+
+            <input type="submit" value="{% trans 'Send Message' %}" class="submit-btn">
+        </form>
+
+    </div>
+</div>
+
+<style>
+
+    form .is_test {
+        display: inline-block;
+        background-color: #FFFBCC;
+        padding: 5px 12px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    input#id_to_addr, input#id_from_addr, input#id_subject {
+        width: 90%;
+        padding: 7px;
+    }
+    textarea#id_body {
+        width: 90%;
+        padding: 7px;
+    }
+    form input.submit-btn {
+        font-size: 24px;
+        margin: 20px 0;
+    }
+
+    .forms .errors {
+        width: 90%;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            var handle_to_addr = function(el){
+                var from_addr = '{{ form.from_addr.value|safe }}';
+                var is_test = $(el).is(':checked');
+
+                if(is_test){
+                    $('input#id_to_addr').val(from_addr);
+                } else {
+                    $('input#id_to_addr').val('All ' + '{{ num_members }}' + ' members');
+                };
+            }
+
+            // call on document ready
+            handle_to_addr($('input#id_is_test')[0])
+
+            // bind click event
+            $('input#id_is_test').click(function(e){
+                handle_to_addr(e.target);
+            });
+
+        });
+    </script>
+
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            var options = {
+                'html': true,
+                'content': '{% blocktrans %}You may change your no-reply email address in <a href="/settings/site/global" target="_blank">Site Settings.</a>{% endblocktrans %}',
+            };
+            $('#from-addr-help').popover(options);
+        })
+    </script>
+{% endblock %}

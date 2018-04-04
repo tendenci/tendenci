@@ -1,0 +1,14 @@
+
+{{ site_name }} - {{ first_name }}
+
+{% if last_name %}
+{{ last_name }}
+{% endif %}
+
+{% if phone %}
+- {{ phone }}
+{% else %}
+- {{ email }}
+{% endif %}
+
+- {% trans "Contact Form" %}

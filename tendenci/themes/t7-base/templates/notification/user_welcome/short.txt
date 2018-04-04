@@ -1,0 +1,2 @@
+
+{% blocktrans %}{{ site_name }} - Account Information{% endblocktrans %}

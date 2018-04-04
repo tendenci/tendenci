@@ -1,0 +1,131 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.corp-mems-wrap{
+    width: 95%;
+    margin: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "Corporate Memberships Overview" %}</h1>
+<div class="row corp-mems-wrap">
+    <div class="col-md-6">
+    <div id="chart_bystatus_div" style="width: 450px; height: 350px;"></div>
+    </div>
+
+    <div class="col-md-6">
+     <div id="chart_bytype_div" style="width: 450px; height: 350px;"></div>
+    </div>
+</div>
+
+<p>&nbsp;</p>
+<div id="chart_summary_div"></div>
+
+<div class="corp-mems-wrap corp-stat-table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% trans 'Type' %}</th>
+                <th>{% trans 'Active' %}</th>
+                <th>{% trans 'Pending' %}</th>
+                <th>{% trans 'Expired' %}</th>
+                <th><strong>{% trans 'Total' %}</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for type in summary %}
+            <tr>
+                <td><a href="{% url "admin:corporate_memberships_corporatemembershiptype_change" type.type.id %}">{{ type.type.name }}</a></td>
+                <td>{{ type.active }}</td>
+                <td>{{ type.pending }}</td>
+                <td>{{ type.expired }}</td>
+                <td><strong><a href="{% url "corpmembership.search" %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></strong></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td><strong>{% trans 'Total' %}</strong></td>
+                <td><strong>{{ total.total_active }}</strong></td>
+                <td><strong>{{ total.total_pending }}</strong></td>
+                <td><strong>{{ total.total_expired }}</strong></td>
+                <td><strong>{{ total.total_total }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+            var options = {
+                      title: 'By Status',
+                      colors: ['#1c91c0', '#e49307', '#DC3912']
+                    };
+
+            var status_data = google.visualization.arrayToDataTable([
+              ['{% trans 'Status' %}', '{% trans 'Count' %}'],
+              ['{% trans 'Active' %}',  {{ total.total_active  }}],
+              ['{% trans 'Pending' %}',  {{ total.total_pending }}],
+              ['{% trans 'Expired' %}',  {{ total.total_expired}}]
+            ]);
+
+            var chart = new google.visualization.PieChart(document.getElementById('chart_bystatus_div'));
+            chart.draw(status_data, options);
+
+            options = {
+                      title: 'By Corporate Membership Type'
+                    };
+            var type_data = google.visualization.arrayToDataTable([
+                 ['{% trans 'Corporate Membership Type' %}', '{% trans 'Count' %}'],
+                  {% for type in summary %}
+                 ['{{ type.type.name }}',  {{ type.total }}],
+              {% endfor %}
+               ]);
+
+               var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
+               chart.draw(type_data, options);
+
+
+          var data = google.visualization.arrayToDataTable([
+           ['{% trans 'Corp. Membership Type' %}',
+           '{% trans 'Active' %}', '{% trans 'Pending' %}',
+           '{% trans 'Expired' %}'],
+           {% for type in summary %}
+           ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
+           {{ type.expired }}],
+           {% empty %}
+           ['', 0, 0, 0],
+           {% endfor %}
+         ]);
+
+         options = {
+           title: 'Summary By Corporate Membership Type and Status',
+           legend: { position: 'top', maxLines: 3 },
+           bar: { groupWidth: '75%' },
+           isStacked: true,
+           height: 400,
+           colors: ['#1c91c0', '#e49307', '#DC3912'],
+           hAxis: {title: '{% trans 'Corp. Membership Type' %}', titleTextStyle: {color: 'black'}}
+         };
+
+        chart = new google.visualization.ColumnChart(document.getElementById('chart_summary_div'));
+        chart.draw(data, options);
+
+      }
+
+  </script>
+
+{% endblock extra_body %}

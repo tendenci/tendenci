@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load locations_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/map_go.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_LOCATIONS_LABEL trans "Locations" %}{% endblock %}
+
+{% block current_app %}
+    {% if location %}
+        {% location_current_app request.user location %}
+    {% else %}
+        {% location_current_app request.user %}
+    {% endif %}
+{% endblock %}

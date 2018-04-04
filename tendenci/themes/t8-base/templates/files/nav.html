@@ -1,0 +1,39 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user files.add_file as can_add_file %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Files" %}</a>
+            <ul class="dropdown-menu">
+                <li><a href="{% url "files" %}">{% trans "File List" %}</a></li>
+                {% if can_add_file %}
+                <li><a href="{% url "file.add" %}">{% trans "Add a File" %}</a></li>
+                {% endif %}
+                <li class="divider"></li>
+                {% if user.profile.is_staff %}
+                <li><a href="{% url "file.report_most_viewed" %}">{% trans "Most Viewed" %}</a></li>
+                {% endif %}
+            </ul>
+    </li>
+    {% if MODULE_ARTICLES_ENABLED %}
+    <li><a href="{% url "articles" %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+    {% endif %}
+    {% if MODULE_NEWS_ENABLED %}
+    <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

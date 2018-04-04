@@ -1,0 +1,14 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans 'Tendenci Update' %}</h1>
+    <p>{% trans "Tendenci is now updating." %}</p>
+    <p>{% trans "In the meantime, we'll notify you via email once the update is complete. Thank you for your patience!" %}</p>
+</div>
+{% endblock %}

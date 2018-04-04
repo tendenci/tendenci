@@ -1,0 +1,32 @@
+{% load base_tags %}
+{% load base_filters %}
+
+
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
+    <div class="meta-left">
+        {% if user.profile.is_superuser or user.pk == membership.creator_id or user == membership.owner_id or user == membership.user_id %}
+                {% meta_creator_owner membership %}
+            {% endif %}
+    </div>
+
+    <div class="meta-right">
+    </div>
+
+</div>
+{% if user.profile.is_superuser %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ membership.obj_perms }}</li>
+        <li>{{ membership.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ membership.pk }}&source={{ membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit" %}</a></li>
+    </ul>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,2 @@
+
+{% blocktrans with object.headline as obj_headline %}Your Directory Posting "{{ obj_headline }}" Approved on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

@@ -1,0 +1,26 @@
+{% extends "contacts/base.html" %}
+{% load contact_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{{ block.super }}Add{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Add:" %} {% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}</h1>
+
+    <div class="contact-wrap">
+        <form action="{% url "contact.add" %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_CONTACTS_LABEL trans 'Contact' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+{% endblock %}

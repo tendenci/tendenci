@@ -18,6 +18,7 @@ from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -101,7 +102,7 @@ class Profile(Person):
         verbose_name_plural = _("Users")
         app_label = 'profiles'
 
-    def __unicode__(self):
+    def __str__(self):
         if hasattr(self, 'user'):
             return self.user.username
         else:
@@ -356,8 +357,8 @@ class Profile(Person):
         # the first argument is the class, exclude it
         un = ''.join(args[1:])             # concat args into one string
         un =  un.lower()
-        un = re.sub('\s+', '', un)       # remove spaces
-        un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
+        un = re.sub(r'\s+', '', un)       # remove spaces
+        un = re.sub(r'[^\w.-]+', '', un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
 
@@ -478,9 +479,8 @@ class Profile(Person):
             c.close()
 
         if not default:
-            default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
-                                   getattr(settings, 'STATIC_URL', ''),
-                                   settings.GAVATAR_DEFAULT_URL)
+            default = '%s%s%s'%(get_setting('site', 'global', 'siteurl'),
+                                static(settings.GAVATAR_DEFAULT_URL))
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
         gravatar_url += urlencode({'d':default, 's':str(size)})

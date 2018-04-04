@@ -1,0 +1,30 @@
+{% extends "directories/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load directory_tags %}
+
+
+{% block title %}{% blocktrans with title=directory.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=directory.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=directory.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}">{% endblock %}
+
+{% block content %}
+    <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
+        <div class="page-header">
+            <h1>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="t-directories-directory-body">
+            {% if directory.logo %}
+                <p class="t-directories-directory-image-container">
+                    <img class="t-directories-directory-image" src="{{ directory.get_logo_url }}" alt="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}" title="{% blocktrans with headline=directory.headline|truncatechars:123 %}{{ headline }}{% endblocktrans %}">
+                </p>
+            {% endif %}
+
+            {% blocktrans with body=directory.body|safe %}{{ body }}{% endblocktrans %}
+        </div>
+
+        {% include "directories/meta.html" with show_source=True show_contact=True show_fb_connect=True %}
+    </article>
+{% endblock %}

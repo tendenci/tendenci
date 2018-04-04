@@ -1,0 +1,35 @@
+{% extends "newsletters/base.html" %}
+
+{% block title %}
+{% trans 'Tendenci Newsletter Template'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/newsletters.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h1>
+
+    <button id="d_clip_button" data-clipboard-target="clipboard_textarea" title="{% trans 'Click to copy.' %}">{% trans "Copy HTML to Clipboard" %}</button>
+
+    <textarea id="clipboard_textarea" rows=30 style="width:90%; margin:20px 0;">
+    {% blocktrans with c=content %}{{ c }}{% endblocktrans %}
+    </textarea>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script src="{% static 'js/zeroclipboard/ZeroClipboard.min.js' %}"></script>
+<script language="JavaScript">
+    var clip = new ZeroClipboard( document.getElementById("d_clip_button"), {
+        moviePath: "{% static 'js/zeroclipboard/ZeroClipboard.swf' %}"
+    });
+    clip.on('complete', function (client, args) {
+        alert("{% trans 'Successfully added HTML to clipboard' %}");
+    });
+</script>
+{% endblock %}

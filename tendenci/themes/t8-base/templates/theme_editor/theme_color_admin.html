@@ -1,0 +1,32 @@
+{% load base_filters %}
+
+<ul><li class="app"><a class="paletteSelector" href="#">{% trans "Choose your Palette" %}</a></li></ul>
+<div class="paletteSelector">
+    {% include "theme_editor/theme_color_palettes.html" %}
+</div>
+
+<ul><li class="app"><a class="colorSelector" href="#">{% trans "Customize your Palette" %}</a></li></ul>
+<div class="colorSelector">
+    {% with MODULE_THEME_COLORVARS|split:";" as colorvars %}
+    {% for colorvar in colorvars %}
+        {% with colorvar|split:":" as coloritems %}
+        {% if coloritems.0 %}
+        <ul style="clear:both;">
+            <li class="app">{{ coloritems.1.strip }}:</li>
+            <li><input class="palette_admin" type="text" label="{{ coloritems.1.strip }}" target="{{ coloritems.0.strip }}"></li>
+        </ul>
+        {% endif %}
+        {% endwith %}
+    {% endfor %}
+    {% endwith %}
+</div>
+
+<ul style="clear:both;">
+    <li><button id="defaultBtn">{% trans "Reset to Default" %}</button></li>
+    <li><button id="revertBtn">{% trans "Revert Changes" %}</button></li>
+</ul>
+<form id="themecolorForm" action="{% url "theme_editor.color" %}" method="post">{% csrf_token %}
+    <input id='colors' name='colors' type="hidden" value="{{ MODULE_THEME_COLORVARS }}">
+    <input id='previous_colors' type="hidden" value="{{ MODULE_THEME_COLORVARS }}">
+    <input id='default_colors' type="hidden" value="{{ THEME_INFO.SSU.default_colors }}">
+</form>

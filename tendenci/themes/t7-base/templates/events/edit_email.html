@@ -1,0 +1,102 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Edit Email for Registration Confirmation and Reminders" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<style type="text/css">
+    .well{
+        width: 90%;
+        margin: 1em 0;
+    }
+    .errors{
+        background-color: #ffebe8;
+        border: 2px solid #ff8b78;
+        margin-bottom: 20px;
+        margin-left: 110px;
+        padding: 10px;
+        width: 75%;
+    }
+    .btn-primary{
+        color: #0E4D84;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% trans "Edit Email to Event Registrants" %}</h1>
+
+    <div class="well">
+        {% blocktrans %}
+        This Email is used for:
+        <ul>
+        <li>The event reminders to the registrants </li>
+        </ul>
+        {% endblocktrans %}
+    </div>
+
+    <h3>{% trans "Event: " %}<a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+
+    <div class="forms">
+
+    {% if form.errors.values %}
+        <div class="errors">
+            <ul>
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+        <form action="." method="post" name="form1">{% csrf_token %}
+            <div class="form-field">
+                <div class="label">{% trans 'To' %}:
+                {% trans 'ALL Attendees' %}
+                <a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a>
+                </div>
+            </div>
+
+            {% for field in form %}
+            <div class="form-field">
+                <div class="error">{{ field.errors }}</div>
+                <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                <div class="field"> {{ field }}</div>
+                <div class="help-text">{% blocktrans with help_text=field.help_text|safe %}{{ help_text }}{% endblocktrans %}</div>
+            </div>
+            {% endfor %}
+
+            <div style="float:right;">
+            <input class="btn btn-secondary" type="submit" name="submit" value="{% trans 'Save &amp; Test' %}" title="{% trans 'Save and receive a test email' %}" />
+            </div>
+
+            <div>
+            <input class="btn btn-primary btn-large" name="submit" type="submit" value="{% trans 'Save' %}" />
+            </div>
+            <div style="clear: right;"></div>
+
+        </form>
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+
+ {% endblock %}

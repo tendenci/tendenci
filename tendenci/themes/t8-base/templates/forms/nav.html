@@ -1,0 +1,80 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user forms.add_form as can_add_form %}
+
+{% if nav_object %}
+    {% has_perm user forms.view_form nav_object as can_view_form %}
+    {% has_perm user forms.change_form nav_object as can_edit_form %}
+    {% has_perm user forms.delete_form nav_object as can_delete_form %}
+{% else %}
+    {% has_perm user forms.view_form as can_view_form %}
+    {% has_perm user forms.change_form as can_edit_form %}
+    {% has_perm user forms.delete_form as can_delete_form %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_FORMS_LABEL trans 'Forms' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Forms" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "forms" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url 'forms' %}">{% trans "Search Forms" %}</a></li>
+            {% if can_add_form %}
+                <li><a href="{% url "admin:forms_form_add" %}">{% trans "Add Form" %}</a></li>
+            {% endif %}
+            {% if user.profile.is_staff %}
+                <li><a href="{% url 'form_export' %}">{% trans "Export Forms" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_form or can_edit_form %}
+            <ul>
+                <li class="heading">{% trans "This Form" %}</li>
+                <li class="divider"></li>
+                {% if can_view_form %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Form" %}</a></li>
+                     <li><a href="{% url 'form_entries' nav_object.pk %}">{% trans "View Entries" %}</a></li>
+                    <li><a href="{% url "admin:forms_form_export" nav_object.pk %}">{% trans "Export Entries" %}</a></li>
+                {% endif %}
+                {% if can_edit_form %}
+                    <li><a href="{% url "admin:forms_form_change" nav_object.pk %}">{% trans "Edit Form" %}</a></li>
+                    <li><a href="{% url "admin:forms_form_change" nav_object.pk %}">{% trans "Edit Form Fields" %}</a></li>
+                {% endif %}
+                {% if can_add_form %}
+                    <li><a href="{% url 'form_copy' nav_object.pk %}">{% trans "Copy Form" %}</a></li>
+                {% endif %}
+                {% if can_delete_form %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url 'form_delete' nav_object.pk %}">{% trans "Delete Form" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if user.profile.is_superuser %}
+    <li><a href="{% url 'pages' %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

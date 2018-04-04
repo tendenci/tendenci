@@ -1,0 +1,63 @@
+{% extends "profiles/base.html" %}
+{% load profile_tags %}
+
+{% block title %}{% trans 'Add/Remove User Groups' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      jQuery.each($("select[multiple]"), function () {
+      // "Locations" can be any label you want
+       SelectFilter.init(this.id, "Groups", 0, "/media/");
+      });
+
+    });
+      </script>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+{% users_options request.user user_this %}
+    <h1>{% trans "Join/Leave User Groups" %}</h1>
+    <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">
+    {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
+<div class="clear-right"></div>
+    <div class="profile-wrap">
+    <form action="" method="post">{% csrf_token %}
+
+  <div class="field-wrapper">
+    <label for="id_user_groups" style="float:left; padding-right: 1em;"><b>{% trans "Groups:" %}</b></label>
+    <select multiple="multiple" name="user_groups" id="id_user_groups">
+    {% for g in groups %}
+    <option value="{{ g.id }}"{% if g in groups_joined %} selected="selected"{% endif %}>
+      {% firstof g.label g.name 'Untitled' %}
+    </option>
+    {% endfor %}
+    </select>
+
+  </div>
+<div style="clear:left;"></div>
+        <div style="display:block">
+        <input type="submit" name="submit" value="{% trans 'Save' %}" />
+        </div>
+    </form>
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+  container:  'more-options-wrap',
+  trigger:  'more-options-trigger',
+  target:    'more-options-target'
+});
+</script>
+{% endblock %}

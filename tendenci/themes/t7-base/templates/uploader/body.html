@@ -1,0 +1,17 @@
+<div id="uploader"></div>
+<script language="javascript" type="text/javascript">
+    new qq.FineUploader({
+
+        element: document.getElementById('uploader'),
+        template: 'qq-simple-thumbnails-template',
+        thumbnails: {
+            placeholders: {
+                waitingPath: '{% static "uploader/waiting-generic.png" %}',
+                notAvailablePath: '{% static "uploader/not_available-generic.png" %}'
+            }
+        },
+
+        {{ uploader_options }}
+
+    });
+</script>

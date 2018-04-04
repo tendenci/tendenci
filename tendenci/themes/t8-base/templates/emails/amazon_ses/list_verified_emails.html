@@ -1,0 +1,31 @@
+{% extends "emails/base.html" %}
+{% load email_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans "Amazon SES - Verified Emails" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Amazon SES - Verified Emails" %}</h1>
+<div style="margin: 1em 0; font-weight:bold;">{% trans "Below is the list of verified email addressed:" %}</div>
+{% if verified_emails %}
+    <ol>
+    {% for email in verified_emails %}
+        <li>{{ email }}</li>
+    {% endfor %}
+    </ol>
+{% else %}
+    {% trans "No email address verified." %}
+{% endif %}
+
+<br />
+<div style="margin: 1em 0;"><a href="{% url "email.amazon_ses_verify_email" %}">{% trans "Verify Email Addresses" %}</a></div>
+<div style="margin: 1em 0;"><a href="{% url "email.amazon_ses_send_quota" %}">{% trans "View Sending Limits" %}</a></div>
+</div>
+{% endblock %}

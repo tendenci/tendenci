@@ -1,0 +1,54 @@
+{% load base_filters %}
+
+{%if job_pricings %}
+    <table class="job-pricing-rate table table-bordered">
+
+    {% if show_member_price %}
+        <tr class="header-row">
+        <td>&nbsp;</td>
+        <td colspan="2">{% trans "Non-Member" %}</td>
+        <td colspan="2">{% trans "Member" %}</td>
+        </tr>
+    {% endif %}
+
+    <tr class="header-row">
+    <td>{% trans "Title" %}</td>
+    <td>{% trans "Duration" %}</td>
+    {% if show_member_price %}
+        {% if show_premium_price %}
+            <td>{% trans "Regular" %}</td>
+            <td>{% trans "Premium" %}</td>
+        {% else %}
+            <td colspan="2">{% trans "Price" %}</td>
+        {% endif %}
+    {% endif %}
+    {% if show_premium_price %}
+            <td>{% trans "Regular" %}</td>
+            <td>{% trans "Premium" %}</td>
+    {% else %}
+        <td colspan="2">{% trans "Price" %}</td>
+    {% endif %}
+    </tr>
+    {% for jp in job_pricings %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>{{ jp.get_title }}</td>
+            <td>{% blocktrans count jp.duration as jp_duration %}{{ jp_duration  }} day{% plural %}{{ jp_duration  }} days{% endblocktrans %}</td>
+            {% if show_premium_price %}
+                <td>{{ jp.regular_price|format_currency }}</td>
+                <td>{{ jp.premium_price|format_currency }}</td>
+            {% else %}
+                <td colspan="2">{{ jp.regular_price|format_currency }}</td>
+            {% endif %}
+            {% if show_member_price and jp.show_member_pricing %}
+                {% if show_premium_price %}
+                    <td>{{ jp.regular_price_member|format_currency }}</td>
+                    <td>{{ jp.premium_price_member|format_currency }}</td>
+                {% else %}
+                    <td colspan="2">{{ jp.regular_price_member|format_currency }}</td>
+                {% endif %}
+            {% endif %}
+        </tr>
+
+    {%endfor%}
+    </table>
+{%endif%}

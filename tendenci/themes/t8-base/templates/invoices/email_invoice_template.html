@@ -1,0 +1,9 @@
+<p>Hello {{ invoice.bill_to_first_name }},</p>
+<p>{% if invoice.balance > 0 %}We noticed an outstanding balance on your account. {% endif %}To view {% if invoice.balance > 0 %}and pay {% endif %}your invoice online, please go to: <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'invoice.view' invoice.id  %}">{{ SITE_GLOBAL_SITEURL }}{% url 'invoice.view' invoice.id  %}</a>.</p>
+<p>Attached is the PDF of your invoice.</p>
+<br />
+<p>
+Thanks,
+<br />
+{{ SITE_GLOBAL_SITEDISPLAYNAME }}
+</p>

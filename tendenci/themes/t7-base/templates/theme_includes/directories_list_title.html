@@ -1,0 +1,10 @@
+{% load theme_tags %}
+{% load directory_tags %}
+{% list_directories as directories_list limit=TEMPLATE_DIRECTORIES_LIST_TITLE_LIMIT %}
+<section id="events-list">
+    <h3>{% firstof TEMPLATE_DIRECTORIES_LIST_TITLE_TITLE trans "Directories" %}</h3>
+    {% for directory in directories_list %}
+        <h4><a href="{{ directory.get_absolute_url }}">{% blocktrans with h=directory.headline %}{{ h }}{% endblocktrans %}</a></h4>
+    {% endfor %}
+</section>
+{% theme_setting setting_name %}

@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load make_payment_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/money_add.png' %}{% endblock %}
+
+{% block nav_label %}{% trans "Make Payments" %}{% endblock %}
+
+{% block current_app %}
+    {% if mp %}
+        {% make_payment_current_app mp %}
+    {% else %}
+        {% make_payment_current_app %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,47 @@
+{% load base_filters %}
+
+{%if directory_pricings %}
+    <table class="directory-pricing-rate table table-bordered">
+
+    <tr class="header-row">
+    <td>{% trans "Duration" %}</td>
+    {% if show_member_price %}
+        {% if show_premium_price %}
+            <td>{% trans "Regular" %}</td>
+            <td>{% trans "Premium" %}</td>
+        {% else %}
+            <td colspan="2">{% trans "Price" %}</td>
+        {% endif %}
+    {% endif %}
+    {% if show_premium_price %}
+        <td>{% trans "Regular" %}</td>
+        <td>{% trans "Premium" %}</td>
+    {% else %}
+        <td colspan="2">{% trans "Price" %}</td>
+    {% endif %}
+    </tr>
+    {%for dp in directory_pricings %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>{% blocktrans with dp.duration as dp_duration %}{{ dp_duration  }} days{% endblocktrans %}</td>
+            {% if show_premium_price %}
+                <td>{{ dp.regular_price|format_currency }}</td>
+                <td>{{ dp.premium_price|format_currency }}</td>
+            {% else %}
+                <td colspan="2">{{ dp.regular_price|format_currency }}</td>
+            {% endif %}
+        </tr>
+        {% if dp.show_member_pricing %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+            <td>{% blocktrans with dp.duration as dp_duration %}{{ dp_duration  }} days Member{% endblocktrans %}</td>
+            {% if show_premium_price %}
+                <td>{{ dp.regular_price_member|format_currency }}</td>
+                <td>{{ dp.premium_price_member|format_currency }}</td>
+            {% else %}
+                <td colspan="2">{{ dp.regular_price_member|format_currency }}</td>
+            {% endif %}
+        </tr>
+        {% endif %}
+
+    {%endfor%}
+    </table>
+{%endif%}

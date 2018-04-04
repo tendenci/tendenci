@@ -55,20 +55,20 @@ def generate_email_subject(form, form_entry):
             label = field_entry.field.label
             value = field_entry.value
             # removes parens and asterisks so they don't break the re compile.
-            label = re.sub('[\*()]', '', label)
+            label = re.sub(r'[\*()]', '', label)
             if not value:
                 value = ''
-                p = re.compile('(-\s+)?\[%s\]' % label, re.IGNORECASE)
+                p = re.compile(r'(-\s+)?\[%s\]' % label, re.IGNORECASE)
             else:
-                p = re.compile('\[%s\]' % label, re.IGNORECASE)
+                p = re.compile(r'\[%s\]' % label, re.IGNORECASE)
             subject = p.sub(value, subject)
 
         # title
-        p = re.compile('\[title\]', re.IGNORECASE)
+        p = re.compile(r'\[title\]', re.IGNORECASE)
         subject = p.sub(form.title, subject)
 
         # replace those brackets with blank string
-        p = re.compile('(-\s+)?\[[\d\D\s\S\w\W]*?\]')
+        p = re.compile(r'(-\s+)?\[[\d\D\s\S\w\W]*?\]')
         subject = p.sub('', subject)
 
     else:

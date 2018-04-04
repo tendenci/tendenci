@@ -1,0 +1,15 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Module Upload" %}</h1>
+    {% blocktrans %}
+    <p>Module named <strong>{{ addon_name }}</strong> already exists in <strong>SITE ADDONS PATH</strong></p>
+    {% endblocktrans %}
+    <p>{% trans 'Would you like to overwrite this module?' %}</p>
+    <form method='post' action="{% url "addon.upload.preview" sid %}" >{% csrf_token %}
+    <input type='submit' value="{% trans 'Overwrite Module' %}">
+    </form>
+</div>
+{% endblock %}

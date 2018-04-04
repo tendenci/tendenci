@@ -1,0 +1,19 @@
+{% if corp_app.authentication_method == 'secret_code' %}
+<p>
+<b>{% trans 'The secret code' %}</b>:<br />
+<b>{{ corp_membership.corp_profile.secret_code }}</b>
+</p>
+{% elif corp_app.authentication_method == 'email' %}
+<p>
+{% blocktrans %}
+<b>The Authorized E-mail Domain</b>:<br />
+(The authorized e-mail domain will authenticate prospective
+        members as they apply for membership under this corporation)<br />
+<b>
+{% endblocktrans %}
+    {% for domain in corp_membership.corp_profile.authorized_domains.all %}
+    {{ domain.name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+</b>
+</p>
+{% endif %}

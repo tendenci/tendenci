@@ -1,0 +1,48 @@
+{% extends "entities/base.html" %}
+{% load entity_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Edit' %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %} {% trans "Edit" %}</h1>
+
+    <div class="entities-wrap">
+        <div class="options">
+             <div class="quick-options">
+                {% entity_options request.user entity %}
+             </div>
+        </div>
+
+        <form action="{% url "entity.edit" entity.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_entity = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
+                if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+{% endblock %}

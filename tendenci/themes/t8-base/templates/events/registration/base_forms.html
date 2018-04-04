@@ -1,0 +1,114 @@
+
+<table>
+<tr id="summary-item-hidden">
+    <td width="50%" class="item-label"></td>
+    <td width="50%" align="right">
+        <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+        <span class="item-price"></span>
+    </td>
+</tr>
+</table>
+<div id="delete-hidden" class="delete">
+    <div class="delete-button-wrap">
+        <input type="button" class="delete-button" value="&nbsp;&nbsp;{% trans 'Delete' %}">
+    </div>
+</div>
+<div id="registrant-hidden">
+    <div class="registrant-header">
+        <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">1</span>:
+    </div>
+    <div class="registrant-notice"></div>
+    <div class="odd-registrant">
+        {% if custom_reg_form %}
+            {% for field in hidden_form %}
+            {% if field.label != 'Delete' %}
+                <div class="form-field">
+                    {% if field.name != 'pricing' %}
+                        <div class="error">{{ field.errors }}</div>
+                        <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                        <div class="field">{{ field }}</div>
+                        {% if field.help_text %}
+                        <div class="help-text">{% blocktrans with help_text=field.help_text %}{{ help_text }}{% endblocktrans %}</div>
+                        {% endif %}
+                    {% else %}
+                        <div class="field">{{ field }}</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label required">{% trans "First Name" %}</div>
+                <div class="field">
+                    <input value="{{ request.user.first_name }}" id="id_registrant-0-first_name" type="text" name="registrant-0-first_name" maxlength="50">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label required">{% trans "Last Name" %}</div>
+                <div class="field">
+                    <input value="{{ request.user.last_name }}" id="id_registrant-0-last_name" type="text" name="registrant-0-last_name" maxlength="50">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label">{% trans "Company" %}</div>
+                <div class="field">
+                    <input id="id_registrant-0-company_name" type="text" name="registrant-0-company_name" maxlength="100">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label">{% trans "Phone" %}</div>
+                <div class="field">
+                    <input id="id_registrant-0-phone" type="text" name="registrant-0-phone" maxlength="20">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label required">{% trans "Email" %}</div>
+                <div class="field">
+                    <input class="registrant-email" value="{{ request.user.email }}" type="text" name="registrant-0-email" id="id_registrant-0-email">
+                </div>
+            </div>
+            {% if allow_memberid_pricing %}
+            <div class="form-field">
+                <div class="error"></div>
+                <div class="label">{% trans "Member ID" %}</div>
+                <div class="field">
+                    <input class="registrant-memberid" value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
+                </div>
+            </div>
+            {% endif %}
+            <div class="form-field">
+                <div class="field">
+                    <input class="registrant-pricing" type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div id="addon-hidden">
+    <div class="form-field">
+        <div class="id_addon-0-addon">
+            <div class="label required">
+                <label for="id_addon-0-addon"></label>
+            </div>
+            <div class="field">
+                <input id="id_addon-0-addon" type="text" class="addon-input" name="addon-0-addon" >
+            </div>
+        </div>
+    </div>
+    {% for addon in addons %}
+    <div class="form-field">
+        <div class="id_addon-0-{{ addon.field_name }}">
+            <div class="field">
+                <input type="hidden" name="addon-0-{{ addon.field_name }}" id="id_addon-0-{{ addon.field_name }}">
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <input type="button" class="delete-addon" value="&nbsp;&nbsp;{% trans 'Delete' %}">
+</div>

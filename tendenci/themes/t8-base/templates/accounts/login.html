@@ -1,0 +1,65 @@
+{% extends "accounts/base.html" %}
+
+
+{% block title %}{% trans "Login" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h2>{% trans "Log In to the Site" %}</h2>
+
+    {% if user.is_authenticated %}
+        <p>
+           {% blocktrans %} You are already logged in as {{ user }}. {% endblocktrans %}
+            <a href="{% url 'auth_logout' %}">{% trans "Logout?" %}</a>
+        </p>
+    {% else %}
+        <form class="form-horizontal" id="t-accounts-login-form" method="post" action="">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for f in form %}
+                {% if f.is_hidden %}
+                    {{ f }}
+                {% else %}
+                    <div class="form-group {% if f.errors %}has-error{% endif %}">
+                        <label for="{{ f.id_for_label }}" class="col-sm-2 control-label">{{ f.label }}</label>
+                        <div class="col-sm-6">
+                            {{ f }}
+
+                            {% if f.errors %}
+                                {% for field_error in f.errors %}
+                                    <span id="{{ f.id_for_label }}-help-block" class="help-block">{{ field_error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
+                </div>
+            </div>
+        </form>
+
+        <h3>{% trans "Forgot your password?" %}</h3>
+        <p><a href="{% url 'auth_password_reset' %}">{% trans "Click here to reset your password." %}</a></p>
+
+        {% if MODULE_USERS_SELFREGISTRATION %}
+            <h3>{% trans "Don't have an account?" %}</h3>
+            <p><a href="{% url 'registration_register' %}">{% trans "Register Now" %}</a></p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

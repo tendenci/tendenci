@@ -1,0 +1,52 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm request.user invoices.view_invoice app_object.invoice as can_view_invoice %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        {# "All Payments" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Payments" %}</span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'payment.search' %}">{% trans "Search Payments" %}</a>
+                        </span>
+                    </li>
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_invoice %}
+                        {# "This Payment" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Payment" %}</span>
+                            </li>
+
+                            {% if can_view_invoice %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{# url 'invoice.view' app_object.invoice.pk #}">{% trans "View Invoice" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

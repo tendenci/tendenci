@@ -1,16 +1,16 @@
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.resumes.models import Resume
+from tendenci.apps.theme.templatetags.static import static
 
 class ResumeRegistry(CoreRegistry):
     version = '1.0'
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
     description = _('Users can upload resumes to help with their careers')
-    icon = '%simages/icons/resumes-color-64x64.png' % settings.STATIC_URL
+    icon = static('images/icons/resumes-color-64x64.png')
 
     event_logs = {
         'resume':{

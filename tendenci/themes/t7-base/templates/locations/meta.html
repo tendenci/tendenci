@@ -1,0 +1,49 @@
+{% load base_tags %}
+{% load base_filters %}
+
+<div class="meta">
+    <div class="meta-left">
+        {% if user.is_authenticated %}
+            {% if not user.profile.is_superuser %}
+            {% if user == location.creator or user == location.owner %}
+            <div class="categories">
+                <strong>{% trans 'Owned by you' %}</strong>{% if not location.status_detail == "active" %} - status: {{ location.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if user.profile.is_superuser or user == location.creator or user == location.owner %}
+                {% meta_creator_owner location %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="meta-right">
+
+    </div>
+</div>
+{% if user.profile.is_superuser %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ location.obj_perms }}</li>
+        <li>{{ location.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?q=app-id:%20locations-{{ location.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "location.edit" location.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="delete" href="{% url "location.delete" location.pk %}">{% trans "Delete" %}</a>
+                </li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

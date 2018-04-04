@@ -1,0 +1,86 @@
+{% load base_filters %}
+
+{% trans "Greetings" %} {{ pt.recurring_payment.user.first_name }}, <br /><br />
+
+{% if pt.status %}
+{% blocktrans with d=pt.recurring_payment.description %}
+The payment has been received for the {{ d }}.
+{% endblocktrans %}
+{% else %}
+{% blocktrans with d=pt.recurring_payment.description %}
+We attempted a payment for the {{ d }} but was failed. The failed reason is listed below.
+{% endblocktrans %}
+{% endif %}
+<br /><br />
+
+<div><h2>{% trans "Transaction details:" %}</h2></div>
+
+<div>
+<table border="0" width="90%">
+
+    <tr>
+        <td>{% trans 'Payment amount' %}:</td><td>{{ pt.amount|format_currency }}</td>
+    </tr>
+    {% if membership %}
+    <tr>
+        <td>{% if membership.status_detail == 'active' %}{% trans 'Membership renewed:' %}{% else %}{% trans 'Membership renewal pending:' %}{% endif %}:</td><td>{{ site_url }}{% url 'membership.details' membership.id %}</td>
+    </tr>
+    {% endif %}
+    {% if not pt.recurring_payment.memberships %}
+    <tr>
+        <td>{% trans 'Billing cycle' %}: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date:'N j Y' }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date:'N j Y' }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>{% trans 'Date processed' %}:</td><td>{{ pt.create_dt|date }}</td>
+    </tr>
+    {% if not pt.status %}
+    <tr>
+        <td>{% trans 'Reason failed' %}:</td><td>{{ pt.message_text }}</td>
+    </tr>
+    {% endif %}
+
+</table>
+
+</div>
+
+<br />
+
+<div>
+{% trans 'To view your account, go to' %}:
+<br />
+<a href="{{ site_url }}{% url "recurring_payment.view_account" pt.recurring_payment.id %}">{{ site_url }}{% url "recurring_payment.view_account" pt.recurring_payment.id %}</a>
+</div>
+<br />
+
+{% if membership %}
+<div>
+{% trans 'To update membership auto renewal and payment method, go to' %}:
+<br />
+<a href="{{ site_url }}{% url "memberships.auto_renew_setup" membership.user.id %}">{{ site_url }}{% url "memberships.auto_renew_setup" membership.user.id %}</a>
+</div>
+<br />
+
+{% else %}
+
+{% if pt.recurring_payment.platform == 'authorizenet' %}
+<div>
+{% trans 'To update your payment method, go to' %}:
+<br />
+<a href="{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" pt.recurring_payment.id %}">{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" pt.recurring_payment.id %}</a>
+</div>
+<br />
+{% endif %}
+
+{% endif %}
+
+
+{% trans 'Your login username is' %}: {{ pt.recurring_payment.user.username }}
+
+<br />
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{{ site_display_name }}</P>
+

@@ -1,0 +1,14 @@
+{% load base_filters %}
+
+<tr>
+    <td>
+        {% if obj %}
+            {% trans 'Donation #' %}<a href="{% url 'donation.view' obj.id %}" title="{% trans 'View Donation' %}">{{  obj.id }}</a> from {{  obj.first_name }} {{ obj.last_name}} ({{  obj.email }})
+        {% else %}
+            {% trans 'Donation information not available' %}
+        {% endif%}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
+</td>

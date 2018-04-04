@@ -1,0 +1,65 @@
+.regconf-section {
+	background-color: #F7F7F7;
+	border: 1px solid #CCC;
+	margin-bottom: 10px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.regconf-section h2 {
+	background-color: #DDD;
+	padding: 10px;
+}
+.regconf-section h3 {
+	margin: 10px 10px 0;
+}
+.regconf-section .event-url {
+	margin-top: 0;
+}
+.regconf-section div {
+	margin: 10px;
+}	
+.cancel-notice {
+	background-color: #FFC;
+	border: 1px solid #fcd574;
+	padding: 10px 5px;
+	margin-bottom: 10px;
+}
+.cancel-notice2 {
+	background-color: #FFC;
+	margin-bottom: 10px;
+	padding: 2px;
+}
+.canceled {
+	text-decoration: line-through;
+}
+div.event-desc-long {
+    display: none;
+}
+
+div.event-desc-toggle {
+    margin: 10px 0 0 0;
+    display: block;
+}
+
+table.registrants-table {
+	width: 100%;
+}
+table.registrants-table td {
+	padding: 8px 20px 8px 20px;
+	border-bottom: 1px solid #D1D1D1;
+}
+table.registrants-table td.td-right {
+	text-align: right;
+}
+div.register-more {
+	padding-left: 10px;
+}
+.discount-symbol{
+	color: green;
+	font-weight: bold;
+	font-size: 0.7em;
+}
+.override-symbol{
+	color: red;
+}

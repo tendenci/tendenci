@@ -1,0 +1,19 @@
+{% extends "payments/base1.html" %}
+
+{% block content %}
+{% if form %}
+<form action="{{ post_url }}" method="POST" name="myform99">
+    {{ form.as_p }}
+
+    <br><br><br><br>
+    {% trans "If you are not redirected within 45 secs,<br> please click the button below to submit your payment. Thank you." %}
+    <br><br><br>
+    <input type="submit" value="Submit Payment" />
+    <script language="javascript">
+        document.myform99.submit();
+    </script>
+</form>
+{% else %}
+<p>{% trans "The online payment is not setup for the site. Check out later." %}</p>
+{% endif %}
+{% endblock %}

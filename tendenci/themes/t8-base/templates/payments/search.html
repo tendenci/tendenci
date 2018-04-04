@@ -1,0 +1,31 @@
+{% extends "payments/base.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load payments_tags %}
+{% load search_tags %}
+
+
+{% block title %}{% trans 'Payment Search' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/payments.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans "Search Payments" %}</h1>
+
+        <form class="search-form" action="{% url 'payment.search' %}" method="get">
+            {% trans 'Search By'%} : {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
+            <input type="submit" value="Search" />
+        </form>
+
+        {% autopaginate payments 25 %}
+        {% paginate %}
+        {% for payment in payments %}
+            {% search_result payment %}
+        {% endfor %}
+        {% paginate %}
+    </div>
+{% endblock %}

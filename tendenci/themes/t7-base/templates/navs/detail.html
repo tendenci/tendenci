@@ -1,0 +1,23 @@
+{% extends "navs/base.html" %}
+{% load nav_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }} {% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/navs.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="nav-wrap">
+        <h1>{% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}</h1>
+        <div class="content">
+            {% blocktrans with d=current_nav.description %}{{ d }}{% endblocktrans %}
+        </div>
+        {% nav current_nav.id %}
+    </div>
+</div>
+{% endblock %}

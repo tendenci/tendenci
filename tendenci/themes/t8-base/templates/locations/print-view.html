@@ -1,0 +1,24 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+    <div class="location-wrap">
+        <h2>{{ location.location_name }}</h2>
+        <div class="content">{% blocktrans with l=location.description|safe %}{{ l }}{% endblocktrans %}</div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with dt=location.create_dt|date:"long" creator=location.creator %}Submitted on {{ dt }} by {{ creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

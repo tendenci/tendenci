@@ -1,0 +1,56 @@
+{% load perm_tags %}
+{% load base_filters %}
+
+<!--
+<tr style="border-top: 3px solid {{ obj_color }};">
+  <td width="25%">
+    <a href="{% url "invoice.view" invoice.pk %}">{{ invoice.pk}}</a>
+    {% if not invoice.is_tendered  %}
+    {% if 'cancel' in invoice.status_detail %}
+    <span class="body_copy_yellow">{% trans "CANCELLED" %}</span>
+    {% else %}
+    {% trans "EST" %}
+    {% endif %}
+    {% else %}
+    <a href="{% url "invoice.view" invoice.pk %}" class="links">
+      <img src="{% static 'images/icons/tendered65x12.gif' %}" border="0" width="65"
+      height="12" alt="{% trans 'Tendered' %} {{ invoice.tender_date|date:'N j, Y h:i a'}}"
+      title="{% trans 'Tendered' %}" />
+    </a>&nbsp;
+    {% endif %}
+    {% if request.user.is_superuser %}
+    <a href="{% url "invoice.detail" invoice.pk %}" class="links">
+      <img src="{% static 'images/icons/accounting12x12.gif' %}"
+      border="0" width="12" height="12" alt="{% trans 'View Accounting Entries' %}" title="{% trans 'View Accounting Entries' %}"></a>
+    {% endif %}
+  </td>
+
+  {# createor username #}
+  <td width="25%">
+    {% if invoice.creator.username %}
+    <a href="{% url 'profile' invoice.creator.username %}">{{ invoice.creator.username }}</a>
+    {% else %}
+    &nbsp;
+    {% endif %}
+  </td>
+
+  {# create_dt  #}
+  <td width="25%">
+    {% if invoice.create_dt %}
+    {{ invoice.create_dt|date:'long'}}
+    {% else  %}
+    &nbsp;
+    {% endif %}
+  </td>
+
+  {# total #}
+  <td width="25%">
+    {% if invoice.is_tendered and invoice.total > 0  %}
+    {{ invoice.total|format_currency }}
+    {% else %}
+
+    {% endif %}
+  </td>
+
+</tr>
+-->

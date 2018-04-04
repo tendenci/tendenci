@@ -1,0 +1,46 @@
+{% extends 'pybb/base.html' %}
+
+{% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
+
+{% block content %}
+{% block breadcrumb %}
+{% if category  %}
+{% include "pybb/breadcrumb.html" %}
+{% endif %}
+{% endblock %}
+
+<div class="page-header">
+  <h1>Forums</h1>
+</div>
+
+<!-- START: BUTTONS - MARK AS READ AND TOPIC LATEST - ADD SEARCH HERE -->
+{% if user.is_authenticated %}
+<div class="row">
+  <div class="container-fluid">
+    <div id="mark-all-as-read" class="pull-right">
+      <ul class="nav nav-pills">  
+        <li role="presentation"><a class="btn btn-default" href='{% url 'pybb:mark_all_as_read' %}'>{% trans "Mark all forums as read" %}</a></li>
+        <li role="presentation"><a class="btn btn-primary" href='{% url 'pybb:topic_latest' %}'>{% trans "Last updates in topics" %}</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% else %}                                            
+{% if not user.is_authenticated %}                                               
+{% include 'pybb/_need_to_login_message.html' %}  
+{% endif %}                                        
+{% endif %}
+<!-- END: BUTTONS -->
+
+{% if categories %}
+{% for category in categories %}
+{% include 'pybb/category.html' %}
+{% endfor %}
+
+
+{% else %}
+<h2>{% trans "Forum categories are not created" %}</h2>
+<a href="{% url 'admin:forums_category_add' %}">{% trans "Add a category now" %}</a>
+{% endif %}
+
+{% endblock content %}

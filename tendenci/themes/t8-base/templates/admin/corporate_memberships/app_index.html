@@ -1,0 +1,31 @@
+{% extends "django_admin_bootstrapped:admin/app_index.html" %}
+{% load bootstrapped_goodies_tags %}
+
+
+{% block sidebar %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class='panel-title'>{% trans "Reporting Options" %}</h3>
+  </div>
+  <div class"panel-body">
+    <div class="container">
+      <h4>{% trans "Imports" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.import' %}">{% trans "Import" %}</a></li>
+      </ol>
+      <h4>{% trans "Exports" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</a></li>
+      </ol>
+      <h4>{% trans "Others" %}</h4>
+      <ol>
+        <li><a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a></li>
+        <li><a href="{% url 'corp_membership.overview' %}">{% trans "Overview" %}</a></li>
+        {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+        <li><a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a></li>
+        {% endif %}
+      </ol>
+    </div>
+  </div>
+</div>
+{% endblock %}

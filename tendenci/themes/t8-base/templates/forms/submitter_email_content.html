@@ -1,0 +1,14 @@
+
+{{ form.email_text|safe }}
+
+
+{% comment %}
+{# removed to prevent user from submitted someone elses email address and sending them content with links (spam) #}
+
+{% for field in fields %}
+    {% if field.include_in_email %}
+        <p><strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong>: {% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</p>
+    {% endif %}
+{% endfor %}
+
+{% endcomment %}

@@ -36,7 +36,7 @@ When setting up your mobile layout, you can select to show the mobile content us
 ::
 
    {% if request.mobile %}
-      <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles-mobile.css" type="text/css" />
+      <link rel="stylesheet" href="{% static 'css/styles-mobile.css' %}" type="text/css" />
    {% endif %}
 
 That same code can be used to include a separate layout, separate navigation, or anything else that you may want to display to mobile viewers but not to desktop browsers. It is **not** necessary to use these ``if`` tags in templates in the ``mobile`` folder.

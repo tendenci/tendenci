@@ -1,0 +1,143 @@
+{% extends "speakers/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load speaker_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+{% nowhitespace %}
+{{ speaker.name }}
+{% if speaker.position %}
+&nbsp;&ndash;&nbsp;{{ speaker.position }}
+{% endif %}
+{% if speaker.company %}
+&nbsp;&ndash;&nbsp;{{ speaker.company }}
+{% endif %}
+{% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+{% nowhitespace %}
+speaker {{ speaker.name }}
+{% if speaker.position %}
+{{ speaker.position }}
+{% endif %}
+{% if speaker.company %}
+{{ speaker.company }}
+{% endif %}
+{% if speaker.tags %}
+{{ speaker.tags }}
+{% endif %}
+{% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+{% nowhitespace %}
+{{ speaker.name }}
+{% if speaker.position %}
+,{{ speaker.position }}
+{% endif %}
+{% if speaker.company %}
+,{{ speaker.company }}
+{% endif %}
+{{ speaker.biography|striptags|truncatewords:"50"|safe }}
+{% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/speaker.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div id="speaker-details">
+  
+  <div class="page-header">
+    <h1>{{ speaker.name }}</h1>
+  </div>
+  
+  <div class="view-speaker-member">
+    
+    <div class="row">
+      <div class="col-md-3">
+        <div class="member-photo">
+          {% if speaker.professional_photo %}
+          <img class="img-responsive" src="{% url 'file' speaker.professional_photo.pk %}" title="{{ speaker.name }}"  />
+          {% else %}
+          <img class="img-responsive" src="{% static 'images/speakers-default.jpg' %}" title="{{ speaker.name }}"  />
+          {% endif %}
+          {%  if speaker.position %}
+          <p class="speaker-position">{{ speaker.position }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-9">
+        <p>
+          {{ speaker.name }}
+          {% if speaker.position %}
+          {{ speaker.position }}
+          {% endif %}
+          {% if speaker.company %}
+          {{ speaker.company }}
+          {% endif %}
+        </p>
+        {% if speaker.biography %}
+        <p class="speaker-bio">
+          {{ speaker.biography|safe }}
+        </p>
+        {% endif %}
+        {% if speaker.email %}
+        <div>
+          {% trans 'Send email to ' %}{{ speaker.email|obfuscate_email:speaker.name }}
+        </div>
+        {% endif %}
+      </div>
+    </div> <!-- Close row -->
+    
+    <div class="speaker-media">
+      {% if speaker.facebook %}
+      <a href="{{ speaker.facebook }}"><img src="{% static 'images/icons/facebook-24x24.png' %}" title="Follow {{ speaker.name }} on Facebook" alt="Follow {{ speaker.name }} on Facebook" /></a>
+      {% endif %}
+      {% if speaker.twitter %}
+      <a href="{{ speaker.twitter }}"><img src="{% static 'images/icons/twitter-24x24.png' %}" title="Follow {{ speaker.name }} on Twitter" alt="Follow {{ speaker.name }} on Twitter" /></a>
+      {% endif %}
+      {% if speaker.linkedin %}
+      <a href="{{ speaker.linkedin }}"><img src="{% static 'images/icons/linkedin-24x24.png' %}" title="Follow {{ speaker.name }} on Linkedin" alt="Follow {{ speaker.name }} on Linkedin" /></a>
+      {% endif %}
+      
+      {% if speaker.get_satisfaction %}
+      <div>
+        {% trans 'Get Satisfaction:' %} <a href="{{ speaker.get_satisfaction }}">{{ speaker.get_satisfaction }}</a>
+      </div>
+      {% endif %}
+      {% if speaker.flickr %}
+      <div>
+        {% trans 'Flickr:' %} <a href="{{ speaker.flickr }}">{{ speaker.flickr }}</a>
+      </div>
+      {% endif %}
+      {% if speaker.slideshare %}
+      <div>
+        {% trans 'SlideShare:' %} <a href="{{ speaker.slideshare }}">{{ speaker.slideshare }}</a>
+      </div>
+      {% endif %}
+    </div>
+    <div>&nbsp;</div>
+    
+    
+    <nav aria-label="speaker-meta-search">  
+      <ul class="pager">
+        <li class="previous"><a href="/speakers/"><span aria-hidden="true">&larr; 
+          {% trans 'Search other speakers' %}</span> </a></li>
+      </ul>
+    </nav>
+    
+    <!-- START: EDITING FOOTER -->  
+    {% if user.is_authenticated %}
+    {% speaker_options request.user speaker %}
+    {% endif %}
+    <!-- END: EDITING FOOTER -->  
+    
+  </div>
+</div>
+{% endblock %}

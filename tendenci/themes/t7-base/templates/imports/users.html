@@ -1,0 +1,80 @@
+{% extends "imports/base-wide.html" %}
+{% load dashboard_tags %}
+
+{% block title %}{% trans 'Import Users' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/user_imports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="imports">
+<h1>{% trans "Import Users" %}</h1>
+<p>
+{% trans "<strong>Download</strong> and <strong>fill in</strong> spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong>, and then <strong>submit</strong>." %}
+</p>
+
+<div class="download-csv">
+    <img src="{% static 'images/icons/xls-icon.gif' %}" alt="Download CSV Template" title="Download CSV Template"/>
+    <div class="item-right">
+        <p style="margin-bottom:0;"><a href="{% url "import.download_user_upload_template_csv" %}">{% trans "Download template" %}</a></p>
+        <p style="margin-top:0;">{% trans "Fill in with your user information."%}</p>
+    </div>
+    <div class="clear-both"></div>
+</div>
+
+{% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+{% endif %}
+
+<form class="import" action="." method="post" enctype="multipart/form-data" >
+    {% csrf_token %}
+    <div class="select-file">{{ form.file }}</div>
+    <div class="wrap">
+        <div class="column1">
+        <div class="user-settings">
+
+        <h2>{% trans "Make Users " %}</h2>
+        {{form.interactive}}
+
+        <h2>{% trans "Update" %} </h2>
+        {{form.override}}
+
+    </div>
+</div>
+
+
+<div class="column2">
+    <div class="duplicates">
+    {% blocktrans with form.key as form_key %}
+        <h2>Identify Duplicates by</h2>
+        {{ form_key }}
+    {% endblocktrans %}
+    </div>
+
+    <div class="usergroup">
+        <h2>{% trans "Add Users to Group" %}  </h2>
+        <div class="usergroup-field">
+        {{ form.group }}
+        </div>
+
+        <div class="reset-group">{{form.clear_group_membership}}
+            <label for="clear-user-group">{% trans "Delete members in group before importing" %}</label>
+        </div>
+    </div>
+
+</div>
+<div class="clear-both"></div>
+
+<div>
+    <input type="submit" class="submit-btn"  name="submit" value="{% trans 'Preview Import' %}">
+</div>
+<div class="clear-both"></div>
+</div>
+</form>
+
+</div>
+</div>
+{% endblock %}

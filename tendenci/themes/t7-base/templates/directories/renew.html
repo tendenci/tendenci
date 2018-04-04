@@ -1,0 +1,44 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Renew" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/jquery-ui///ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css' %}">
+<link rel="stylesheet" href="{% static 'css/timepicker.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Renew" %}</h1>
+
+    <div class="directory-wrap">
+    {% if directory.renew_window %}
+        <div>
+            {% blocktrans with headline=directory.headline %}
+            You are renewing: {{ headline }}. Click submit below to complete your renewal.
+            {% endblocktrans %}
+
+        </div>
+        <form action="{% url "directory.renew" directory.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Submit Renewal' %}" />
+        </div>
+        </form>
+    {% else %}
+        {% blocktrans %}
+        <p>Sorry, this directory isn't available for renewal right now. Please contact your site administrator with any questions.</p>
+        {% endblocktrans %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+{% endblock %}

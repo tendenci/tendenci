@@ -1,0 +1,26 @@
+{% extends "campaign_monitor/base.html" %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+
+{% block title %}{% trans "Template Add" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% template_nav request.user %}
+
+    <h1>{% trans "Template Add" %}</h1>
+
+    <div class="template-wrap">
+        <form action="{% url "campaign_monitor.template_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Add Template' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

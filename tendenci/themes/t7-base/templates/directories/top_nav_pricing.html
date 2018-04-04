@@ -1,0 +1,16 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load directory_tags %}
+
+{% block current_app %}
+<li class="dropdown">
+    <button type="button" class="btn btn-primary"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/folder_page_white.png' %}"/>{% trans "Directories Pricing" %}
+      <span class="caret"></span>
+    </button>
+    {% if directory_pricing %}
+    {% directory_pricing_current_app request.user directory_pricing %}
+    {% else %}
+    {% directory_pricing_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

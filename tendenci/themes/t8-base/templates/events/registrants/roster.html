@@ -1,0 +1,416 @@
+{% extends "events/base-print.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}
+    {{ event.title }} - {{ event.start_dt|date:"F j, Y" }} - {% trans "Registrant Roster" %} {{ roster_view }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+    <link rel="stylesheet" href="{% static 'css/events-roster.css' %}">
+    <link rel="stylesheet" media="screen" href="{% static 'css/events-roster-screen.css' %}">
+    <link rel="stylesheet" media="print" href="{% static 'css/events-roster-print.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class='back-button'>
+        <a href="{{ event.get_absolute_url }}">&laquo; {% trans "Back to event" %}</a>
+    </div>
+
+    <div class='event-info'>
+        <h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
+        <div class="attendees-export-links">
+            {% if roster_view == 'non-paid' %}
+                <div>
+                    <a href="{% url "event.registrant.export.non_paid" event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a>
+                </div>
+            {% endif %}
+
+            {% if roster_view == 'paid' %}
+                <div>
+                    <a href="{% url "event.registrant.export.paid" event.pk %}">{% trans "Export Only Paid Registrants" %} </a>
+                </div>
+            {% endif %}
+
+            {% if roster_view == 'total' %}
+                <div>
+                    <a href="{% url "event.registrant.export.total" event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a>
+                </div>
+            {% endif %}
+        </div>
+        <h3>{{ event.place.address }} {{ event.place.city_state|join:", " }} {{ event.place.zip }}</h3>
+        <div id="event-time">{{ event.start_dt|date:"F j, Y" }}
+            {% if not event.all_day %}
+                {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}{% endif %}</div>
+    </div>
+
+    <div class='event-info roster-sort-wrap'>
+        <form id="roster-sort-form" method="get">
+            Sort by:
+            <select name="sort_order" size="1">
+                <option value="first_name"
+                        {% if sort_order == 'first_name' %}selected="selected"{% endif %}>{% trans "First Name" %}</option>
+                <option value="last_name"
+                        {% if sort_order == 'last_name' %}selected="selected"{% endif %}>{% trans "Last Name" %}</option>
+                <option value="company_name"
+                        {% if sort_order == 'company_name' %}selected="selected"{% endif %}>{% trans "Company Name" %}</option>
+            </select>
+            <input id="sort-ascending" type="radio" value="asc" name="sort_type"
+                   {% if sort_type == 'asc' %}checked{% endif %}/>
+            <label for="sort-ascending">{% trans "Ascending" %}</label>
+            <input id="sort-descending" type="radio" value="desc" name="sort_type"
+                   {% if sort_type == 'desc' %}checked{% endif %}/>
+            <label for="sort-descending">{% trans "Descending" %}</label>
+            <input type="submit" name="submit" value="Submit"/>
+        </form>
+
+        <span>*** {% trans "Registrants without names (if any) are listed at the bottom" %}.</span>
+    </div>
+
+
+
+    <div class="hr"></div>
+
+    <center>
+        <table id="registrant-table">
+            <tr>
+                <th width="2%">#</th>
+
+                <th width="22%" title="{% trans "Name and Phone Number" %}">{% trans "Name & Phone" %}</th>
+                <th width="30%" title="{% trans "Company and Title" %}">{% trans "Title &amp; Company" %}</th>
+                <th width="8%" title="{% trans "Invoice Number" %}">{% trans "Inv#" %}</th>
+                <th width="8%" title="{% trans "Invoice Amount" %}">{% trans "Inv$" %}</th>
+                <th width="8%" title="{% trans "Registration Number" %}">{% trans "Reg#" %}</th>
+                <th width="8%" title="{% trans "Registration Amount" %}">{% trans "Reg$" %}</th>
+                {% if has_addons %}
+                    <th width="8%" title="{% trans "Addon Amount" %}">{% trans "Addon$" %}</th>
+                {% endif %}
+                {% if discount_available %}
+                    <th width="8%" title="{% trans "Discount Amount" %}">{% trans "Discount$" %}</th>
+                {% endif %}
+                <th width="8%" title="{% trans "Balance" %}">{% trans "Balance" %}</th>
+                <th width="6%" class='attended' title="{% trans "Attendance Checkbox" %}">{% trans "Attend" %}</th>
+            </tr>
+            <tr class='row-spacer'>
+                <td colspan="9"></td>
+            </tr>
+            {% for registrant in registrants %}
+
+                {% if registrant.invoice_dict.balance > 0 %}
+                    <tr class="{% cycle 'odd' 'even' %} non-paid-top">
+                        {% else %}
+                    <tr class="{% cycle 'odd' 'even' %}">
+                {% endif %}
+
+            <td class="counter"><a name="roster{{ registrant.pk }}"></a>{{ forloop.counter }}</td>
+
+
+            <td> <!-- name & phone -->
+                {% if registrant.user_id %}
+                    <div title="View {{ registrant.first_name }}'s profile">
+                        <a href="{% url 'profile' registrant.user.username %}">{% firstof registrant.lastname_firstname registrant.email %}</a>
+                        {% if registrant.memberid %}
+                            <span class="member-icon"
+                                  title="memberID: {{ registrant.memberid }}">{% trans "Member" %}</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div title="{{ registrant.name }} does not have a user-account">
+                        {% if registrant.lastname_firstname or registrant.email %}
+                            {% firstof registrant.lastname_firstname registrant.email %}
+                        {% else %}
+                            {% trans "Guest#" %}{{ registrant.pk }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </td>
+
+            <td> <!-- title & company -->
+                <div>
+                    {% if registrant.company_name %}{{ registrant.company_name }}{% endif %}
+                    {% if registrant.position_title %}{% if registrant.company_name %} / {% endif %}
+                        {{ registrant.position_title }}{% endif %}
+                </div>
+
+            </td>
+
+            <td>
+                {% if registrant.invoice_dict.id %}
+                    <a href="{% url "invoice.view" registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>
+                {% endif %}
+            </td> <!-- invoice number -->
+            <td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
+            <td>
+                <a href="{% url "event.registration_confirmation" event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a>
+            </td> <!-- registration number -->
+
+            {% if discount_available %}
+                <td>${{ registrant.amount|add_decimal:registrant.discount_amount|floatformat:"2" }}</td>
+                <!-- registration amount -->
+            {% else %}
+                <td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
+            {% endif %}
+
+            {% if has_addons %}
+                {% if registrant.is_primary and registrant.addons %}
+                    <td>${{ registrant.addons_amount|floatformat:"2" }}</td> <!-- addon amount -->
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endif %}
+
+            {% if discount_available %}
+                <td>-${{ registrant.discount_amount|floatformat:"2" }}</td> <!-- discount amount -->
+            {% endif %}
+
+            <td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
+            <td class="attended-checkbox">
+                <input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}"
+                       value="1" {% if registrant.checked_in %}checked{% endif %}/>
+            </td>
+            </tr>
+
+                {% if registrant.invoice_dict.balance > 0 %}
+                    <tr class="{% cycle 'odd' 'even' %} non-paid-middle">
+                        {% else %}
+                    <tr class="{% cycle 'odd' 'even' %}">
+                {% endif %}
+            <td>&nbsp;</td>
+            <td>
+                {% if registrant.phone %}{{ registrant.phone|phonenumber }}{% endif %}
+
+                {% if registrant.roster_field_list %}
+                    {% for field in registrant.roster_field_list %}
+                        {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if registrant.comments %}
+                    <div>{% trans "Comments" %}:{% blocktrans with c=registrant.comments %}
+                        {{ c }}{% endblocktrans %}</div>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+                    {% if registrant.invoice_dict.admin_notes %}
+                        <div> {% trans "admin notes: " %}{{ registrant.invoice_dict.admin_notes }}</div>
+                    {% endif %}
+                {% endif %}
+
+            </td>
+            <td>
+                {% if registrant.email %}{{ registrant.email }}{% endif %}
+                <div>{% trans "Registered as" %}: {% firstof registrant.price_title 'Untitled' %}</div>
+            </td>
+            <td colspan="{% if has_addons %}5{% else %}4{% endif %}">
+
+                {% if registrant.invoice_dict.tender_date %}
+                    {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
+                {% else %}
+                    {% trans "Not Tendered" %}
+                {% endif %}
+            </td>
+            {% if discount_available %}
+                <td colspan="2">
+                    {% if registrant.discount_amount > 0 %}
+                        {% if registrant.registration.invoice.discount_code and registrant.registration.invoice.get_discount_url %}
+                            {% trans "discount code" %}(
+                            <a href="{{ registrant.registration.invoice.get_discount_url }}">{{ registrant.registration.invoice.discount_code }}</a>
+                            )
+                        {% else %}
+                            discount
+                        {% endif %}
+                    {% endif %}
+                </td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}
+                {{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
+            </tr>
+
+
+
+
+                {% with registrant.additionals as additionals %}
+
+
+                    {% if registrant.invoice_dict.balance > 0 %}
+                        <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
+                            {% else %}
+                        <tr class="{% cycle 'odd' 'even' %}">
+                    {% endif %}
+                <td colspan="1"></td>
+                <td colspan="{% if has_addons %}8{% else %}7{% endif %}">
+
+                    {% if additionals %}
+                        {% if registrant.invoice_dict.id %}
+                            <a href="{% url "invoice.view" registrant.invoice_dict.id %}">{% trans "Additional registrants on this invoice:" %}</a>
+                        {% else %}
+                            {% trans "Additional registrants:" %}
+                        {% endif %}
+
+                        {% for reg in additionals %}
+                            <a href="#roster{{ reg.pk }}">
+                                {% if reg.lastname_firstname or reg.email %}
+                                    [{% firstof reg.lastname_firstname reg.email %}]
+                                {% else %}
+                                    [{% trans "Guest#" %}{{ reg.pk }}]
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if has_addons %}
+                        {% if registrant.is_primary and registrant.addons %}
+                            <div>
+                            {% trans "addons:" %}
+                            {{ registrant.addons }}
+                        {% endif %}
+                    {% endif %}
+
+                </td>
+                <td>&nbsp;</td>
+
+                </tr>
+
+                {% endwith %}
+            {% endfor %}
+
+            <tr class='row-spacer'>
+                <td colspan="10"></td>
+            </tr>
+            <tr class="bottom-row">
+                <td></td>
+                <td colspan="2" class="total-label">{% trans "Total" %}</td>
+                <td colspan="3"></td>
+                <td>${{ total_sum|floatformat:2 }}</td>
+                {% if has_addons %}
+                    <td>${{ addon_total_sum|floatformat:2 }}</td>
+                {% endif %}
+                <td>${{ balance_sum|floatformat:2 }}</td>
+                <td id="checked-in-total">{% if total_checked_in > 0 %}{{ total_checked_in }}{% endif %}</td>
+            </tr>
+        </table>
+    </center>
+
+    <div class="counts">
+
+        {% if roster_view == 'paid' or roster_view == 'total' %}
+            <div class="count-box">
+                <div>{{ num_registrants_who_paid }}</div>
+                <div>{% trans "Paid" %}</div>
+            </div>
+        {% endif %}
+
+        {% if roster_view == 'non-paid' or roster_view == 'total' %}
+            <div class="count-box">
+                <div>{{ num_registrants_who_owe }}</div>
+                <div>{% trans "Non-Paid" %}</div>
+            </div>
+        {% endif %}
+
+        {% if roster_view == 'total' %}
+            <div class="count-box">
+                <div>{{ event.registrants.count }}</div>
+                <div>{% trans "Total" %}</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="roster-view-options">
+
+        {% if roster_view == 'non-paid' %}
+            <div>{% trans "Showing only non-paid registrants." %}</div>
+        {% endif %}
+
+        {% if roster_view == 'paid' %}
+            <div>{% trans "Showing only paid registrants." %}</div>
+        {% endif %}
+
+        {% if roster_view == 'total' %}
+            <div>{% trans "Showing paid and non-paid registrants." %}</div>
+        {% endif %}
+
+        <div>
+            <a href="{% url "event.registrant.roster.paid" event.pk %}">{% blocktrans %}Show only
+                <strong>paid</strong>{% endblocktrans %}</a>
+            <a href="{% url "event.registrant.roster.non_paid" event.pk %}">{% blocktrans %}Show only
+                <strong>non-paid</strong>{% endblocktrans %}</a>
+            <a href="{% url "event.registrant.roster.total" event.pk %}">{% blocktrans %}Show
+                <strong>total</strong>{% endblocktrans %}</a>
+        </div>
+    </div>
+
+    <div style="clear:both; height:10px;"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container: 'more-options-wrap',
+            trigger: 'more-options-trigger',
+            target: 'more-options-target'
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var $total_checked_td = $('#checked-in-total');
+            var total_checked_in = parseInt($total_checked_td.html());
+            if (isNaN(total_checked_in)) {
+                total_checked_in = 0;
+            }
+
+            $('.attended-checkbox input[type=checkbox]').change(function () {
+                var $this = $(this);
+                var action = 'not_checked_in';
+                var id = $this.data('reg');
+
+                if ($this.is(':checked')) {
+                    action = 'checked_in';
+                }
+
+                $.post(
+                    '{% url "event.registrant_check_in" %}',
+                    {
+                        'id': id,
+                        'action': action
+                    },
+                    function (data, textStatus, jqXHR) {
+                        json = $.parseJSON(data);
+                        if (!json["error"]) {
+                            $this.closest('tr').next().find('.attended-checkedin-text').html(json['checked_in_dt'])
+                                .css({opacity: 0.1}).animate({opacity: 1}, 900);
+                            if (action == 'checked_in') {
+                                total_checked_in = total_checked_in + 1;
+                            } else {
+                                total_checked_in = total_checked_in - 1;
+                                if (total_checked_in < 0) {
+                                    total_checked_in = 0;
+                                }
+                            }
+                            if (total_checked_in == 0) {
+                                $total_checked_td.html('');
+                            } else {
+                                $total_checked_td.html(total_checked_in);
+                            }
+
+                        }
+                    }
+                );
+
+            });
+
+        });
+    </script>
+{% endblock %}

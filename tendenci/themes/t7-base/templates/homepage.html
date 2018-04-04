@@ -1,0 +1,67 @@
+{% extends 'default.html' %}
+{% load cache %}
+{% load base_filters %}
+{% load base_tags %}
+{% load photo_tags %}
+
+
+{% block sidebar %}
+    {# Panel or sidebar gose here #}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% trans "Search" %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <form action="{% url 'haystack_search' %}" method="get" class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="type, hit enter" size="18", maxlength="50" name="q">
+                </div>
+
+                <button type="submit" class="btn btn-default"><span class="fa fa-search" aria-hidden="true"></span></button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title">{% trans "Meta" %}</h1>
+        </div>
+
+        <div class="panel-body">
+            <ul class="list-unstyled">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> {% trans "Dashboard" %}</a></li>
+                    <li><a href="{% url 'auth_logout' %}"><i class="fa fa-sign-out"></i> {% trans "Log Out" %}</a></li>
+                {% else %}
+                    {% if MODULE_USERS_SELFREGISTRATION %}
+                    <li><a href="{% url 'registration_register' %}"><i class="fa fa-sign-in"></i> {% trans "Register" %}</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'auth_login' %}"><i class="fa fa-sign-in"></i> {% trans "Log in" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    {% if MODULE_PHOTOS_ENABLED %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1 class="panel-title">{% firstof MODULE_PHOTOS_LABEL trans "Photos" %}</h1>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    {% list_photos as photos limit=4 %}
+
+                    {% for photo in photos %}
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="thumbnail">
+                                <img src="{% photo_image_url photo size=100x100 crop=True %}" alt="{{ photo }}" title="{{ photo }}" />
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,223 @@
+{% load base_filters %}
+
+
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <h2>{{ inline_admin_formset.opts.verbose_name_plural|title }}</h2>
+{{ inline_admin_formset.formset.management_form }}
+{{ inline_admin_formset.formset.non_form_errors }}
+
+<div class="toggle-all-button">
+        <div class="collapse-all-button">
+            <a href="javascript:;">{% trans "Collapse ALL" %}</a></div>
+        <div class="expand-all-button" style="display:none;"><a href="javascript:;">{% trans "Expand ALL" %}</a></div>
+</div>
+
+{% for inline_admin_form in inline_admin_formset %}<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+  <h3>
+
+    {% if inline_admin_form.original.field_type == 'section_break' %}
+        {% trans "Section" %}
+    {% else %}
+        {% if inline_admin_form.original.field_type == 'Page_break' %}
+            {% trans "Page" %}
+        {% else %}
+            {% trans "Field Name" %}
+        {% endif %}
+    {% endif %}:
+    &nbsp;<span class="inline_label">
+    {% if inline_admin_form.original %}
+        {{ inline_admin_form.original.field_name }}
+    {% else %}
+        #{{ forloop.counter }}
+    {% endif %}
+    </span>
+
+    {% if inline_admin_form.show_url %}
+        <a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/">
+            {% trans "View on site" %}</a>
+    {% endif %}
+
+    {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and not inline_admin_form.original.vital %}
+        <span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>
+    {% endif %}
+
+  </h3>
+
+  {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}
+  {% for fieldset in inline_admin_form %}
+    {#{% include "admin/includes/fieldset.html" %}#}
+
+    <fieldset class="module aligned {{ fieldset.classes }}">
+        {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+        {% if fieldset.description %}
+            <div class="description">{% blocktrans with d=fieldset.description|safe %}{{ d }}{% endblocktrans %}</div>
+        {% endif %}
+        {% for line in fieldset %}
+
+            {% if inline_admin_form.original.field_type in fields_to_check and forloop.counter in excluded_lines %}
+                {{ field.field }}
+            {% else %}
+                <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
+                    {{ line.errors }}
+                    {% for field in line %}
+
+                        {% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
+                            {{ field.field }}
+                        {% else %}
+                            <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+                                {% if field.field.name == "field_function" %}<div class="field_function">{% endif %}
+                                {% if field.field.name == "function_params" %}<div class="function_params">{% endif %}
+                                {% if field.field.name == "field_type" %}<div class="field_type">{% endif %}
+                                {% if field.is_checkbox %}
+                                    {{ field.field }}{{ field.label_tag }}
+                                {% else %}
+                                    {% if not field.field.is_hidden %}
+                                        {{ field.label_tag }}
+                                    {% endif %}
+
+                                    {% if field.is_readonly %}
+                                        <p>{{ field.contents }}</p>
+                                    {% else %}
+                                        {{ field.field }}
+                                    {% endif %}
+                                {% endif %}
+                                {% if field.field.field.help_text %}
+                                    <p class="help">{% blocktrans with h=field.field.field.help_text|safe %}{{ h }}{% endblocktrans %}</p>
+                                {% endif %}
+                                {% if field.field.name == "field_function" %}</div>{% endif %}
+                                {% if field.field.name == "function_params" %}</div>{% endif %}
+                                {% if field.field.name == "field_type" %}</div>{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if forloop.first %}
+                <div class="inline-fields-to-toggle">
+            {% endif %}
+            {% if forloop.last %}
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    </fieldset>
+
+
+    <div class="collapse-expand-button">
+        <div class="collapse-button">
+            <a href="javascript:;">{% trans "Collapse" %}</a></div>
+        <div class="expand-button" style="display:none;"><a href="javascript:;">{% trans "Expand" %}</a></div>
+    </div>
+  {% endfor %}
+  {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+  {{ inline_admin_form.fk_field.field }}
+</div>{% endfor %}
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        var rows = "#{{ inline_admin_formset.formset.prefix }}-group .inline-related";
+        var updateInlineLabel = function(row) {
+            $(rows).find(".inline_label").each(function(i) {
+                var count = i + 1;
+                $(this).html($(this).html().replace(/(#\d+)/g, "#" + count));
+            });
+        }
+        var reinitDateTimeShortCuts = function() {
+            // Reinitialize the calendar and clock widgets by force, yuck.
+            if (typeof DateTimeShortcuts != "undefined") {
+                $(".datetimeshortcuts").remove();
+                DateTimeShortcuts.init();
+            }
+        }
+        var updateSelectFilter = function() {
+            // If any SelectFilter widgets were added, instantiate a new instance.
+            if (typeof SelectFilter != "undefined"){
+                $(".selectfilter").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], false, "{% admin_media_prefix %}");
+                })
+                $(".selectfilterstacked").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], true, "{% admin_media_prefix %}");
+                })
+            }
+        }
+        var initPrepopulatedFields = function(row) {
+            row.find('.prepopulated_field').each(function() {
+                var field = $(this);
+                var input = field.find('input, select, textarea');
+                var dependency_list = input.data('dependency_list') || [];
+                var dependencies = row.find(dependency_list.join(',')).find('input, select, textarea');
+                if (dependencies.length) {
+                    input.prepopulate(dependencies, input.attr('maxlength'));
+                }
+            });
+        }
+        $(rows).formset({
+            prefix: "{{ inline_admin_formset.formset.prefix }}",
+            addText: "{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}",
+            formCssClass: "dynamic-{{ inline_admin_formset.formset.prefix }}",
+            deleteCssClass: "inline-deletelink",
+            deleteText: "{% trans "Remove" %}",
+            emptyCssClass: "empty-form",
+            removed: updateInlineLabel,
+            added: (function(row) {
+                initPrepopulatedFields(row);
+                reinitDateTimeShortCuts();
+                updateSelectFilter();
+                updateInlineLabel(row);
+            })
+        });
+
+        // collapse all fields as default
+        $('div.inline-fields-to-toggle').each(function(){
+               if ($(this).is(':visible')){
+                   $(this).hide('slideUp');
+                   $(this).closest('div.inline-related').find('.expand-button').show();
+                   $(this).closest('div.inline-related').find('.collapse-button').hide();
+               }
+           });
+           $('div.expand-all-button').show();
+           $('div.collapse-all-button').hide();
+
+        // collapse and expand buttons to toggle the fields
+        $('.collapse-button').click(function(){
+            $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
+            $(this).closest('.collapse-expand-button').find('.expand-button').show();
+            $(this).hide();
+        });
+        $('.expand-button').click(function(){
+            $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').show('slideDown');
+            $(this).closest('.collapse-expand-button').find('.collapse-button').show();
+            $(this).hide();
+        });
+        $('.toggle-all-button > .collapse-all-button').click(function(){
+            $('div.inline-fields-to-toggle').each(function(){
+                if ($(this).is(':visible')){
+                    $(this).hide('slideUp');
+                    $(this).closest('div.inline-related').find('.expand-button').show();
+                    $(this).closest('div.inline-related').find('.collapse-button').hide();
+                }
+            });
+            $('div.expand-all-button').show();
+            $(this).hide();
+        });
+        $('.toggle-all-button > .expand-all-button').click(function(){
+            $('div.inline-fields-to-toggle').each(function(){
+                if ($(this).is(':hidden')){
+                    $(this).show('slideDown');
+                    $(this).closest('div.inline-related').find('.expand-button').hide();
+                    $(this).closest('div.inline-related').find('.collapse-button').show();
+                }
+            });
+            $('div.collapse-all-button').show();
+            $(this).hide();
+        });
+
+    });
+
+})(django.jQuery);
+</script>

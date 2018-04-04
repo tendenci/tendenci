@@ -1,0 +1,10 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load helpdesk_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/star.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_HELPDESK_LABEL_PLURAL trans "Helpdesk" %}{% endblock %}
+
+{% block current_app %}
+    {% helpdesk_current_app request.user %}
+{% endblock %}

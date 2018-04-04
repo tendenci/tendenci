@@ -21,7 +21,7 @@ class PrintExifNode(Node):
         except VariableDoesNotExist:
             exif = u''
 
-        EXPR = "'(?P<key>[^:]*)'\:(?P<value>[^,]*),"
+        EXPR = r"'(?P<key>[^:]*)':(?P<value>[^,]*),"
         expr = re.compile(EXPR)
         msg = "<table>"
         for i in expr.findall(exif):

@@ -1,0 +1,10 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load social_services_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/heart.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Social Services' %}{% endblock %}
+
+{% block current_app %}
+    {% social_service_current_app request.user %}
+{% endblock %}

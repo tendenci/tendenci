@@ -60,7 +60,7 @@ class EventLog(models.Model):
     def get_absolute_url(self):
         return reverse('event_log', args=[self.pk])
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.event_id)
 
     def delete(self, *args, **kwargs):

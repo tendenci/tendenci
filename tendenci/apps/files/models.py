@@ -31,6 +31,7 @@ from tendenci.apps.files.managers import FileManager
 from tendenci.apps.base.utils import extract_pdf, correct_filename
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 
 
 def file_directory(instance, filename):
@@ -114,7 +115,7 @@ class File(TendenciBaseModel):
     def get_absolute_download_url(self):
         return reverse('file', args=[self.pk, 'download'])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_name()
 
     @property
@@ -268,9 +269,6 @@ class File(TendenciBaseModel):
         if not self.type():
             return None
 
-        # assign icons directory
-        icons_dir = os.path.join(settings.LOCAL_STATIC_URL, 'images/icons')
-
         # map file-type to image file
         icons = {
             'text': 'icon-ms-word-2007.gif',
@@ -283,7 +281,7 @@ class File(TendenciBaseModel):
         }
 
         # return image path
-        return icons_dir + '/' + icons[self.type()]
+        return static('images/icons/'+icons[self.type()])
 
     def get_file_from_remote_storage(self):
         return BytesIO(default_storage.open(self.file.name).read())
@@ -422,5 +420,5 @@ class FilesCategory(models.Model):
         ordering = ('name',)
         app_label = 'files'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

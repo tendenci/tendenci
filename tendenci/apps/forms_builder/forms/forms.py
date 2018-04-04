@@ -82,7 +82,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     field_class = getattr(forms, field_class)
                 field_args = {"label": mark_safe(field.label), "required": field.required}
-                arg_names = field_class.__init__.__func__.__code__.co_varnames
+                arg_names = field_class.__init__.__code__.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = FIELD_MAX_LENGTH
                 if "choices" in arg_names and field.field_type != 'CountryField':
@@ -591,6 +591,9 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
                 class_attr += ' recurring-payment'
 
                 self.fields[field].widget.attrs.update({'class': class_attr})
+
+    def clean_tax_rate(self):
+        return self.cleaned_data.get('tax_rate') or 0
 
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)

@@ -25,5 +25,5 @@ class ICS(models.Model):
     def get_absolute_url(self):
         return reverse('ics.status', args=[self.app_label, self.model_name])
 
-    def __unicode__(self):
+    def __str__(self):
         return "ICS for %s %s - %s" % (self.app_label, self.model_name, self.user)

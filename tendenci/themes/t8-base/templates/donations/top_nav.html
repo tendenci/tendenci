@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load donation_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/money.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Donations' %}{% endblock %}
+
+{% block current_app %}
+    {% if donation %}
+        {% donation_current_app request.user donation %}
+    {% else %}
+        {% donation_current_app request.user %}
+    {% endif %}
+{% endblock %}

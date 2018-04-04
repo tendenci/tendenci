@@ -1,0 +1,52 @@
+{% extends "speakers/base.html" %}
+{% load pagination_tags %}
+{% load speaker_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{% trans 'Speakers' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/speaker.css' %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Speaker' %}" href="{% url "speaker.feed" %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate speakers 5 %}
+{% has_perm user speaker.add_speaker as can_add_speaker %}
+<div id="speakers">
+  <div class="page-header">
+    <h1>{% firstof SITE_GLOBAL_SPEAKERS_LABEL_PLURAL "Speakers" %}</h1>
+  </div>
+    
+    {% speaker_search %}
+
+    <div class="speaker-search-wrap">
+        {% for speaker_member in speakers %}
+            {% if SITE_GLOBAL_SEARCHINDEX and request.GET.q %}
+                {% with speaker_member=speaker_member.object %}
+                    {% search_result speaker_member %}
+                {% endwith %}
+            {% else %}
+                {% search_result speaker_member %}
+            {% endif %}
+        {% empty %}
+            <p>0 {% trans "Speakers Found" %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+  <script type="text/javascript">
+    var iconrow = new dropdown({
+      container:  'more-options-wrap',
+      trigger:  'more-options-trigger',
+      target:    'more-options-target'
+    });
+  </script>
+{% endblock %}

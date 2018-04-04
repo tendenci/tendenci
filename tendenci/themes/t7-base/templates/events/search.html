@@ -1,0 +1,88 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/events-search.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+{% endblock %}
+
+{% block content %}
+
+<div class="t search-view">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %}</h1>
+
+    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Events Views">
+      <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+      <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
+      <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
+      <a href="{% url "event.search" %}" class="btn btn-secondary">{% trans "List/Search" %}</a>
+      <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+    </div>
+
+    <div class="event-tabs">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="dropdown {% if not past %}active{% endif %}">
+                <a href="{% url "event.search" %}?{{ request.GET.urlencode }}">{% trans "Ongoing Events" %}</a>
+            </li>
+            <li role="presentation" class="dropdown {% if past %}active{% endif %}">
+                <a href="{% url "event.past_search" %}?{{ request.GET.urlencode }}">{% trans "Past Events" %}</a>
+            </li>
+        </ul>
+    </div>
+
+    {% autopaginate events 10 %}
+    {% event_search %}
+    <div class="highlight">
+        You found {{ paginator.count }} event{{ paginator.count|pluralize }}
+        {% if with_registration %}with registration{% endif %}{% if event_type %}.
+        {% elif past %} starting before {{ start_dt|date:"F jS, Y" }}.
+        {% else %} starting on or after {{ start_dt|date:"F jS, Y" }}.{% endif %}
+    </div>
+
+    <div class="events-wrap">
+    {% for event in events %}
+        {% search_result event %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+    <script src="{% static 'js/jquery.inputfieldtext.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+        $('#id_search_category').change(function(){
+            var category = $('#id_search_category').val();
+            if (category==="priority" ) {
+                $('#id_q').attr('disabled', 'disabled');
+                $('#id_q').val('');
+            } else {
+                $('#id_q').removeAttr('disabled');
+            }
+        });
+    </script>
+{% endblock %}

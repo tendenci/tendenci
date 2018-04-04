@@ -1,0 +1,30 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user photos.view_image as can_view %}
+{% has_perm user photos.add_image as can_add %}
+{% has_perm user photos.change_image as can_change %}
+{% has_perm user photos.delete_image as can_delete %}
+
+<ul class="list-unstyled list-inline">
+  <li class="photo-view"><a href="{% url "photo_medium_640" opt_object.pk %}">{% trans 'View all sizes' %}</a></li>
+  
+  {% if can_change %}
+  {% if photo_set_id %}
+  <li class="photo-edit" data-id="{{ opt_object.pk }}">
+    <a class="btn btn-default" href="{% url "photo_edit" opt_object.pk photo_set_id %}">{% trans "Edit" %}</a></li>
+  {% else %}
+  <li class="photo-edit" data-id="{{ opt_object.pk }}"><a href="{% url "photo_edit" opt_object.pk %}">{% trans "Edit" %}</a></li>
+  {% endif %}
+  {% endif %}
+  
+  {% if can_delete %}
+  {% if photo_set_id %}
+  <li class="photo-delete" data-id="{{ opt_object.pk }}">
+    <a class="btn btn-danger" href="{% url "photo_destroy" opt_object.pk photo_set_id %}">{% trans "Delete" %}</a></li>
+  {% else %}
+  <li class="photo-delete" data-id="{{ opt_object.pk }}">
+    <a class="btn btn-danger" href="{% url "photo_destroy" opt_object.pk %}">{% trans "Delete" %}</a></li>
+  {% endif %}
+  {% endif %}
+</ul>

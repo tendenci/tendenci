@@ -1,0 +1,44 @@
+.event-info {
+    padding: 10px;
+    background-color: #F5F5F5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: left;
+    margin-bottom: 10px;
+    width: 61%;
+}
+
+.event-title {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.event-cancel-amount {
+    font-weight: bold;
+    padding: 5px;
+}
+
+.event-registrants-cancelled {
+    opacity: .5;
+}
+
+.event-registrants {
+    margin: 10px 0 10px 0;
+}
+
+.event-registrants-cancelled {
+    margin: 10px 0 10px 0;
+}
+
+.event-registrants h4 {
+    margin-bottom: 5px;
+}
+
+.event-registrants-cancelled h4 {
+    margin-bottom: 5px;
+}
+
+.light {
+    color: #777;
+}

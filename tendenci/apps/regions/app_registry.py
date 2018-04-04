@@ -10,7 +10,7 @@ class RegionRegistry(CoreRegistry):
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
     description = _('A list of regions')
-    #icon = '%simages/icons/regions-color-64x64.png' % settings.STATIC_URL
+    #icon = static('images/icons/regions-color-64x64.png')
 
     event_logs = {
         'regions': {

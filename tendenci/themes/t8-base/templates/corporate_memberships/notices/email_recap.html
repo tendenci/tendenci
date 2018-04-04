@@ -1,0 +1,39 @@
+
+{% trans "Greetings:" %}<br /><br />
+{% blocktrans with display_name=site_display_name %}Corporate Membership Notices were distributed on {{ display_name }}.{% endblocktrans %}
+<br /><br />
+{% trans "Total Notices sent:" %} {{ total_sent }}<br>
+
+<ol>
+{% for notice in notices %}
+    <li><a href="{{ site_url }}{% url "admin:corporate_memberships_notice_change" notice.id %}">{{ notice.notice_name  }}</a></li>
+{% endfor %}
+</ol>
+<br />
+
+{% trans "Recap of Emails Sent:" %}
+<br />
+<br />
+{% for notice in notices %}
+    {{ notice.num_days }} day(s) {{ notice.notice_time }} {{ notice.notice_type }} -
+    {{ site_url }}{% url "admin:corporate_memberships_notice_change" notice.id %}
+    <br />
+
+    {% if notice.log.num_sent <= 50 %}
+        <ol>
+        {% for corporate in notice.corporate_members_sent %}
+            <li>{{ corporate.corp_profile.name }} - {{ site_url }}{% url "corpmembership.view" corporate.id %}</li>
+        {% endfor %}
+        </ol>
+        <br />
+    {% else %}
+        <br /><br />
+    {% endif %}
+{% endfor %}
+
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+
+{% include email_footer.html %}

@@ -1,0 +1,52 @@
+{% load profile_tags %}
+{% load profile_filters %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% if profile.user_id %}
+<div class="panel panel-info clearfix">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+        <a href="{{ profile.get_absolute_url }}">
+        {% if profile.display_name %}
+            {{ profile.display_name }}
+        {% else %}
+            {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
+        {% endif %}({{ profile.user.username }})
+        </a>
+        {% if profile.is_member %}
+        <span class="small text-danger">{% trans 'Member' %}</span> <!-- replace with Icon -->
+        {% endif %}
+        </h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="profile-avatar-left pull-left">
+            {% gravatar profile.user 56 %}
+            {% if profile.is_member %}
+                {% if profile|allow_edit_by:user %}
+                    <div class="member-icon text-success">{% trans 'Member ID' %}:<br />{{ profile.member_number }}</div>
+                {% endif %}
+
+            {% endif %}
+        </div>
+
+        <div class="pull-left" style="margin-left: 2em;">
+            {% if profile.user.email %}
+            <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
+            {% endif %}
+            {% if profile.phone %}
+            <b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
+            {% endif %}
+            {% if profile.company %}
+            <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
+            {% endif %}
+            <b>{% trans "Create Date:" %}</b> {{ profile.create_dt }}<br />
+            <b>{% trans "Last Login:" %}</b> {{ profile.user.last_login }}<br />
+            <b>{% trans "Invoice Count:" %}</b> {{ profile.user|invoice_count }}<br />
+            <b>{% trans "Number of Contributions:" %}</b> {{ profile.user.contributions_contribution_owner.count }}<br />
+            <b>{% trans "Number of Group Memberships:" %}</b> {{ profile.get_groups|length }}<br />
+        </div>
+   </div>
+</div>
+{% endif %}

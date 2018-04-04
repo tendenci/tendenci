@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block top_bar %}
+<style type="text/css">
+html {margin-top: 0 !important;}
+body {margin: 1em;}
+</style>
+{% endblock %}
+
+{% block html_body %}
+<div id="container">
+        <div id="body">
+             <div id="main-content">
+    {% block content %}{% endblock %}
+      </div>
+        </div>
+    </div>
+{% endblock %}

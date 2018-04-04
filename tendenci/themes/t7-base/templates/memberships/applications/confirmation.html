@@ -1,0 +1,58 @@
+{% extends "memberships/base.html" %}
+{% load base_filters %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+    <div class="application-entry-wrap">
+
+        <h1>{% blocktrans with entry.app.name as entry_name and entry.entry_time|date_short as entry_date %}{{ entry_name }} Application Entry Confirmation</h1>
+        <div class="entry_dt">Submitted {{ entry_date }}{% endblocktrans %}</div>
+
+        {% if entry.membership %}
+            {% if entry.membership.approved %}
+                <div class="approved_dt">{% blocktrans with entry.decision_dt|date_short as decision_date %}
+                    Approved on
+                    {{ decision_date }}
+                    by:{% endblocktrans %} <a href="{% url "profile" entry.membership.approved_denied_user %}">
+                    {{ entry.membership.approved_denied_user }}</a></div>
+            {% else %}
+                <div class="denied_dt">{% blocktrans with entry.decision_dt|date_short as decision_date %}
+                    Denied on
+                    {{ decision_date }}
+                    by:{% endblocktrans %} {{ entry.membership.approved_denied_user }}</div>
+            {% endif %}
+        {% else %}
+            <div class="pending">{% trans "Pending" %}</div>
+        {% endif %}
+
+        {% for field in entry.fields.all %}
+            {% if field.field.field_type == 'FileField' %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+                <div class="value">
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+                <div class="value">{{ field.value }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

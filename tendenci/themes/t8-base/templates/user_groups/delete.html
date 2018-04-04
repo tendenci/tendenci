@@ -1,0 +1,48 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+{% load perm_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Delete a User Group" %}</h1>
+<h3>{% trans 'Group' %}: <a href="{{ group.get_absolute_url }}">{{ group.label }}
+({{ group.members.count }} member{{group.members.count|pluralize }})</a></h3>
+
+{% if perms_lacking or protected %}
+    {% if perms_lacking %}
+        <p>{% blocktrans %}Deleting the group {{ object_name }} would result in deleting related objects, but your account doesn't have permission to delete the following types of objects:{% endblocktrans %}</p>
+        <ul>
+        {% for obj in perms_lacking %}
+            <li>{{ obj }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% if protected %}
+        <p>{% blocktrans %}Deleting the group {{ object_name }} would require deleting the following protected related objects:{% endblocktrans %}</p>
+        <ul>
+        {% for obj in protected %}
+            <li>{{ obj }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% else %}
+    <p>{% blocktrans %}Are you sure you want to delete the group {{ object_name }}? All of the following objects and their related items will be deleted:{% endblocktrans %}</p>
+
+        <ul>{{ deleted_objects|unordered_list }}</ul>
+
+    <form action="" method="post">{% csrf_token %}
+    <div>
+    <input type="hidden" name="id" value="{{group.id}}" />
+    <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+    </div>
+    </form>
+{% endif %}
+
+</div>
+{% endblock %}

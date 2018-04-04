@@ -1,0 +1,17 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+
+{% block content %}
+<div class="t">
+    <div class="resume-wrap">
+        <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Delete" %}</h1>
+        <p><a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</a></p>
+        <p>{% trans "Are you sure you want to delete this resume?" %}</p>
+        <form action="{% url "resume.delete" resume.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            <input type="submit" value="{% trans 'Yes, delete it.' %}" /> {% trans "or" %} <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

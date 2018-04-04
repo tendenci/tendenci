@@ -1,0 +1,19 @@
+{% firstof object.location_name "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.profile.display_name }}
+{{ object.description }}
+
+is:{{ object.status_detail }}
+
+{{ object.description }}
+{{ object.contact }}
+{{ object.address }}
+{{ object.address2 }}
+{{ object.city }}
+{{ object.state }}
+{{ object.zipcode }}
+{{ object.country }}
+{{ object.phone }}
+{{ object.fax }}
+{{ object.email }}
+{{ object.website }}

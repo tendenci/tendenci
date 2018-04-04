@@ -1,0 +1,50 @@
+{% extends "newsletters/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% trans "Newsletters" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans "Newsletters" %}</h1>
+
+<p><a href="/newsletters/newsletter_orig_generator/">Add a Newsletter</a></p>
+
+        <div class="newsletter-wrap">
+            {% if object_list %}
+                {% for newsletter in object_list %}
+                    {% include 'newsletters/search-result.html' %}
+                {% endfor %}
+                {% paginate %}
+            {% else %}
+                <p>{% trans "No Newsletters found." %}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    {% if user.profile.is_superuser %}
+    <script type="text/javascript">
+        jQuery(document).ready(function(j) {
+            j(".resend-link").click(function() {
+                var nl = j(this).data('title');
+                var resend_link = j(this).data('href');
+                var x = confirm('Resend the newsletter "' + nl + '"?');
+                if (x == true)
+                    window.location.href = resend_link;
+                else
+                    return false;
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}

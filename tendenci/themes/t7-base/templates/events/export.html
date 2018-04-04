@@ -1,0 +1,96 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css"/>
+<style>
+    .inline-block { display: inline-block;}
+    .label {width: 150px; font-size: 14px; text-align: left;}
+    .form-field {margin: 5px 0;}
+    .form-field .error {color: #990000;}
+    .datefield {display: none;}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="events-wrap">
+
+        <h1>{% trans "Events Export" %}</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <div class="form-field">
+                    <div class="field inline-block">{{ form.by_date_range }}</div>
+                    <div class="label inline-block">
+                        <label for="id_by_date_range">{{ form.by_date_range.label }}</label>
+                    </div>
+                    <div class="error inline-block">{{ form.by_date_range.errors|first }}</div>
+                </div>
+                <div class="form-field datefield">
+                    <div class="label inline-block">
+                        <label for="id_start_dt">{{ form.start_dt.label }}</label>
+                    </div>
+                    <div class="field inline-block">{{ form.start_dt }}</div>
+                    <div class="error inline-block">{{ form.start_dt.errors|first }}</div>
+                </div>
+                <div class="form-field datefield">
+                    <div class="label inline-block">
+                        <label for="id_end_dt">{{ form.end_dt.label }}</label>
+                    </div>
+                    <div class="field inline-block">{{ form.end_dt }}</div>
+                    <div class="error inline-block">{{ form.end_dt.errors|first }}</div>
+                </div>
+                <div class="form-field">
+                    <div class="label inline-block">
+                        <label for="id_by_type">{{ form.by_type.label }}</label>
+                    </div>
+                    <div class="field inline-block">{{ form.by_type }}</div>
+                    <div class="error inline-block">{{ form.by_type.errors|first }}</div>
+                </div>
+                <input type="submit" value="{% trans 'Export' %}" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script>
+    $(function() {
+        $( "#id_start_dt" ).datepicker({
+            defaultDate: "+2d",
+            changeMonth: true,
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#id_end_dt" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+        $( "#id_end_dt" ).datepicker({
+            defaultDate: "+2d",
+            changeMonth: true,
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#id_start_dt" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        });
+        var date_range = $("#id_by_date_range"), datefield = $(".datefield");
+        function check_checkbox() {
+            if (date_range.is(':checked'))
+                datefield.show();
+            else
+                datefield.hide();
+        };
+        check_checkbox();
+        date_range.on('click', check_checkbox);
+
+    });
+    </script>
+{% endblock %}

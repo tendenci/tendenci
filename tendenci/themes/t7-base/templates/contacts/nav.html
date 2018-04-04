@@ -1,0 +1,60 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user contacts.add_contact as can_add_contact %}
+
+{% if nav_object %}
+    {% has_perm user contacts.view_contact nav_object as can_view_contact %}
+{% else %}
+    {% has_perm user contacts.view_contact as can_view_contact %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+    <div id="showh">
+        <ul id="primary">
+            {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+                <li>
+                    <a href="{% url 'dashboard' %}" title="Tendenci Home Page">
+                    <img border="0" src="{% static 'images/tendenci34x15.gif' %}"
+                    alt="Tendenci User Home" title="Tendenci" align="top" width="34" height="15"></a>
+                </li>
+            {% endif %}
+
+            <li>
+                <span>{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}</span>
+
+                <ul id="secondary">
+                    <li>
+                        <a href="{% url "contact.search" %}">{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %}:</a>
+                    </li>
+
+                    {% if nav_object %}
+                        {% if can_view_contact %}
+                            <li>
+                                <a href="{% url 'contact' nav_object.pk %}">{% trans "View" %}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    <li>
+                        <a href="{% url "contact.search" %}">{% trans "Search" %}</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </li>
+
+            {% if MODULE_NEWS_ENABLED %}
+                <li>
+                    <a href="{% url 'news' %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}

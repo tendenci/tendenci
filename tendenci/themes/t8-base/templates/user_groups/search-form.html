@@ -1,0 +1,16 @@
+
+<form class="search-form" action="{% url "groups" %}" method="get">
+    <span>Search by: </span>
+    <div class="search-category">
+        {{ form.search_category}}
+        {{ form.search_category.errors }}
+    </div>
+    <div class="q">
+        {{ form.q }}
+        {{ form.q.errors }}
+    </div>
+
+    <!--input type="text" name="q" value="{{ request.GET.q|striptags }}" /-->
+    <input type="submit" name="search" value="{% trans 'Search' %}" />
+    <div class="clearfix"></div>
+</form>

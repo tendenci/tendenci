@@ -1,0 +1,44 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+<div class="t-iconrow">
+<ul>
+    {% has_perm user user_groups.change_group group as can_edit %}
+    {% has_perm user user_groups.add_groupmembership as can_add_member %}
+    {% has_perm user user_groups.delete_group group as can_delete %}
+
+    {% if group.type != "system_generated" %}
+      {% if user|in_group:group.id %}
+        {% if group.allow_self_remove and user.is_authenticated or can_add_member %}
+          <li><a href="{% url "group.selfremove" group.slug user.id %}" title="{% trans 'Remove myself from group' %}">{% trans "Remove myself from group" %}</a></li>
+        {% endif %}
+      {% else %}
+        {% if group.allow_self_add and user.is_authenticated or can_add_member %}
+          <li><a href="{% url "group.selfadd" group.slug user.id %}" class="option-link addmember" title="{% trans 'Add myself to group' %}">{% trans "Add Myself to Group" %}</a></li>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+
+    {% if can_edit %}
+
+      {% if group.type != "system_generated" %}
+      <li><a href="{% url "group.edit" group.slug %}" title="Edit Group" class="option-link edit">{% trans 'Edit' %}</a></li>
+      {% endif %}
+
+      <li><a href="{% url "group.edit_perms" group.id %}" class="option-link permissions" title="{% trans 'Edit Permissions' %}">{% trans "Permissions" %}</a></li>
+
+      {% if group.type != "system_generated" %}
+        {% if can_add_member %}
+          <li><a href="{% url "group.adduser" group.slug %}" class="option-link addmember" title="{% trans 'Add new member' %}">{% trans "Add Member" %}</a></li>
+        {% endif %}
+      {% endif %}
+
+      {% if group.type != "system_generated" %}
+        {% if can_delete %}
+          <li><a href="{% url "group.delete" group.id  %}" class="option-link delete" title="{% trans 'Delete Group' %}">{% trans "Delete" %}</a></li>
+         {% endif %}
+      {% endif %}
+    {% endif%}
+</ul>
+</div>

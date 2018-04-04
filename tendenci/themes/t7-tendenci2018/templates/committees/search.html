@@ -1,0 +1,31 @@
+{% extends "committees/base.html" %}
+
+{% load search_tags %}
+{% load pagination_tags %}
+{% load committee_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Committees' %}" href="{% url "committees.feed" %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate committees 10 %}
+<div id="committees">
+  
+  <div class="page-header">
+    <h1>{% trans 'Committee List' %}</h1>
+  </div>
+  
+    {% committee_search %}
+
+    <div class="committees-wrap clearfix">
+    {% for committee in committees %}
+        {% search_result committee %}
+    {% empty %}
+        <p>{% trans '0 committees found' %}</p>
+    {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}

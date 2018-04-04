@@ -1,0 +1,28 @@
+{% extends "site_settings/base.html" %}
+{% load site_setting_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Settings' %}{% endblock %}
+
+{% block content %}
+
+{% regroup settings by scope_category as settings_list %}
+{% for settings in settings_list %}
+    <h2 id="id_{{ settings.grouper }}">{{ settings.grouper|capfirst }}</h2>
+    <ul>
+        {% for setting in settings.list|dictsort:"label" %}
+            {% url "setting.permalink" setting.scope setting.scope_category setting.name as permalink %}
+            {% if not setting.client_editable %}
+                {% if user.is_superuser %}
+                    <li><a href="{{ permalink }}">{{ setting.label }}</a></li>
+                {% endif %}
+            {% else %}
+                <li><a href="{{ permalink }}">{{ setting.label }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% empty %}
+    <p>{% trans 'No settings are currently available' %}</p>
+{% endfor %}
+
+{% endblock %}

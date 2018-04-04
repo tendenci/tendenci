@@ -1,0 +1,9 @@
+
+<p>{% trans "Thank you for your payment!" %}</p>
+
+<h3>{% trans "What would you like to do now?" %}</h3>
+<ul>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" obj.id %}" class="links">{% trans "Add memberships under this corporate membership" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.edit_corp_reps" obj.id %}" class="links">{% trans "Designate representatives for this corporate membership" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" obj.id %}" class="links">{% trans "View Corporate Membership" %}</a></li>
+</ul>

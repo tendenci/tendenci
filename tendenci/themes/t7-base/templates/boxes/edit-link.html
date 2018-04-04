@@ -1,0 +1,12 @@
+{% if box %}
+{% if user.is_superuser %}
+<div class="admin-inline">
+  <div class="admin-border admin-border-top"></div>
+  <div class="admin-border admin-border-right"></div>
+  <div class="admin-border admin-border-bottom"></div>
+  <div class="admin-border admin-border-left"></div>
+  <div class="admin-links clear-block"><a href="{% url "admin:boxes_box_change" box.pk %}?next={{ request.path }}" title="{% trans 'Edit Box' %}" class="edit-box">{% blocktrans with t=box.title|title %}Edit {{ t }} Box{% endblocktrans %}</a></div>
+</div>
+
+{% endif %}
+{% endif %}

@@ -1,0 +1,32 @@
+
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
+    <form id="t-corporatememberships-applications-search-form" class="form-inline t-search-form" action="{% url 'corpmembership.search' %}" method="get">
+        {% if "cp_id" in search_form.fields %}
+            <fieldset>
+                <div class="form-group">
+                    <label for="{{ search_form.cp_id.id_for_label }}">{{ search_form.cp_id.label }}:</label>
+                    {{ search_form.cp_id }}
+                </div>
+            </fieldset>
+        {% endif %}
+
+        {% if "industry" in search_form.fields %}
+            <fieldset>
+                <div class="form-group">
+                    <label for="{{ search_form.industry.id_for_label }}">{{ search_form.industry.label }}:</label>
+                    {{ search_form.industry }}
+                </div>
+            </fieldset>
+        {% endif %}
+
+        <fieldset>
+            <div class="form-group">
+                <label>{% trans "Search By" %}</label>
+                {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+        </fieldset>
+    </form>
+{% endif %}

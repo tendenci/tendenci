@@ -1,0 +1,27 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user contributions.change_contribution opt_object as can_edit %}
+{% has_perm user contributions.delete_contribution opt_object as can_delete %}
+
+<div class="t-iconrow">
+        <a class="option-link print" href="{% url "contribution.print_view" opt_object.pk %}">{% trans "Print" %}</a>
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url "contribution.edit" opt_object.pk %}">{% trans "Edit" %}</a>
+    {% endif %}
+
+ {% if can_edit %}
+      <div class="more-options-wrap">
+        <a href="javascript:;" class="more-options-trigger">{% trans "More options " %}<small>&#9660;</small></a>
+        <div class="more-options-target">
+            <ul>
+                {% if can_delete %}
+                    <li>
+                        <a class="option-link delete" href="{% url "contribution.delete" opt_object.pk %}">{% trans "Delete" %}</a>
+                    </li>
+                {% endif %}
+             </ul>
+            </div>
+      </div>
+  {% endif %}
+</div>

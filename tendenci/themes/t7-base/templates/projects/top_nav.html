@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load project_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/application_view_gallery.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_PROJECTS_LABEL_PLURAL trans "Projects" %}{% endblock %}
+
+{% block current_app %}
+    {% if project %}
+        {% project_current_app request.user project %}
+    {% else %}
+        {% project_current_app request.user %}
+    {% endif %}
+{% endblock %}

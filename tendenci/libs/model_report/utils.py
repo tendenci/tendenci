@@ -153,11 +153,8 @@ class ReportValue(object):
     def __repr__(self):
         return self.text()
 
-    def __unicode__(self):
-        return self.text()
-
     def __str__(self):
-        return "%s" % self.text()
+        return self.text()
 
     def __iter__(self):
         return self.value.__iter__()

@@ -10,6 +10,8 @@ AWS_ACCESS_KEY_ID = ''
 AWS_SECRET_ACCESS_KEY = ''
 AWS_STORAGE_BUCKET_NAME = ''
 USE_S3_STORAGE = False
+THEME_S3_PATH = 'themes'
+USE_S3_THEME = False
 
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.environ['TENDENCI_PROJECT_ROOT']
@@ -18,10 +20,11 @@ LOCALE_PATHS = [os.path.join(TENDENCI_ROOT, 'locale')]
 
 SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 
+BUILTIN_THEMES_DIR = os.path.join(TENDENCI_ROOT, 'themes')
+
 THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
-USE_S3_THEME = False
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
@@ -115,16 +118,26 @@ TEMPLATES = [
         'tendenci.apps.forums.context_processors.processor',
         'tendenci.apps.base.context_processors.newrelic',
       ],
-      'loaders':  [
+      'loaders': [
         ('django.template.loaders.cached.Loader', [
           'app_namespace.Loader',
-          'tendenci.apps.theme.template_loaders.Loader',
+          'tendenci.apps.theme.template_loader.Loader',
           'django.template.loaders.filesystem.Loader',
           'django.template.loaders.app_directories.Loader',
         ])
       ],
+      'libraries': {
+        # tendenci.apps.theme.templatetags.static replaces these, so rename them
+        # to avoid conflicts
+        'django.static': 'django.contrib.staticfiles.templatetags.staticfiles',
+        'django.staticfiles': 'django.templatetags.static',
+      },
+      'builtins': [
+        'tendenci.apps.theme.templatetags.static',
+        'django.templatetags.i18n',
+      ],
     },
-    'DIRS': []
+    'DIRS': [os.path.join(TENDENCI_ROOT, 'templates')]
   }
 ]
 def disable_template_cache():  # For use in site-specific settings.py
@@ -154,7 +167,6 @@ INSTALLED_APPS = [
     'timezone_field',
     'gunicorn',
 
-    'tendenci',
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
     'tendenci.libs.uploader',
@@ -266,8 +278,20 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 ]
 # Additional paths to collect static files from when populating STATIC_ROOT
-STATICFILES_DIRS = [
-]
+STATICFILES_DIRS = []
+# Collect static files from builtin themes
+for theme in os.listdir(BUILTIN_THEMES_DIR):
+    # Ignore '.' '..' and hidden directories
+    if theme.startswith('.'):
+        continue
+    theme_path = os.path.join(BUILTIN_THEMES_DIR, theme)
+    if not os.path.isdir(theme_path):
+        continue
+    for static_dir in ['media', 'static']:
+        static_path = os.path.join(theme_path, static_dir)
+        if os.path.isdir(static_path):
+            prefix = os.path.join('themes', theme)
+            STATICFILES_DIRS += [(prefix, static_path)]
 
 CACHES = {
     'default': {
@@ -612,7 +636,7 @@ PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
 # PayPal
 PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
-#PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+PAYPAL_SANDBOX_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 
 # Stripe
 STRIPE_SECRET_KEY = ''

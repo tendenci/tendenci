@@ -90,8 +90,8 @@ class NewsletterTemplate(models.Model):
     class Meta:
         permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
-    def __unicode__(self):
-        return self.name or u"No Name"
+    def __str__(self):
+        return self.name or "No Name"
 
     @property
     def content_type(self):
@@ -203,8 +203,8 @@ class Newsletter(models.Model):
         verbose_name = _("Newsletter")
         verbose_name_plural = _("Newsletters")
 
-    def __unicode__(self):
-        return self.actionname or u"No Action Name"
+    def __str__(self):
+        return self.actionname or "No Action Name"
 
     def get_absolute_url(self):
         return reverse('newsletter.detail.view', args=[self.pk])

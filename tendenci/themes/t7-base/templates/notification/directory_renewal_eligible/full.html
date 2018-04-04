@@ -1,0 +1,37 @@
+{% load email_filters %}
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Directory Eligible for Renewal" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>
+{% blocktrans %}Your directory listing on {{ SITE_GLOBAL_SITEDISPLAYNAME }} is eligible for renewal. It will expire on {{ directory.expiration_dt }}.{% endblocktrans %}</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
+    <td width="75%"><b>{% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Body:" %}</td>
+    <td width="75%"><b>{% blocktrans with body=directory.body|relative_to_absolute_urls|safe %}{{ body }}{% endblocktrans %}</b></td>
+  </tr>
+</table>
+<p>
+    {% blocktrans %}
+    To view the details of this directory, go to:{% endblocktrans %}
+    <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ directory.get_absolute_url }}</a></b>
+    <br>
+    {% blocktrans %}
+    To renew this directory, go to:{% endblocktrans %}
+    <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ directory.get_renew_url }}">{{ SITE_GLOBAL_SITEURL }}{{ directory.get_renew_url }}</a></b>
+    </p>
+
+</body>
+</html>

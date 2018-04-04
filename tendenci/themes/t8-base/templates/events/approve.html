@@ -1,0 +1,44 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+
+{% block content %}
+<div class="t">
+    <div class="info">
+        <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Approve" %}</h1>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to approve this event?" %}
+        </div>
+    </div>
+    <div class="event-info" style="margin-top:10px;">
+
+        <h3><a href="{% url "event" event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+        {% if event.place %}
+            <div class="place">{{ event.place }}</div>
+        {% endif %}
+
+         <div class="time-period">
+            {% if event.all_day %}
+            {{ event.start_dt|date:"l, M j, Y" }} - {{ event.end_dt|date:"l, M j, Y" }}
+            {% else %}
+             {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
+            {% endif %}
+         </div>
+
+        <div class="description">
+        {% if event.meta.description %}
+            {% blocktrans with desc=event.meta.description %}{{ desc }}{% endblocktrans %}
+        {% else %}
+            {% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}
+        {% endif %}
+        </div>
+
+        <div class="form" style="margin-top:10px;">
+            <form name="approve" method="POST" action="{% url "event.approve" event.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <input type="submit" name="submit" value="{% trans 'Confirm Approve' %}">
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

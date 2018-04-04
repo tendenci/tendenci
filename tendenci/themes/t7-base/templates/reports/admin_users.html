@@ -1,0 +1,58 @@
+{% extends "reports/base.html" %}
+{% load base_filters %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{% trans "Superuser Security Level Report" %}</h1>
+</div>
+
+<p>{% trans "Lists all users with a security level of Superuser. This can be helpful as a cross reference when auditing." %}</p>
+
+<table class="table table-tendenci-reports">
+  <tr>
+    <th>{% trans "#" %}</th>
+    <th>
+      {% trans "Username" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=username" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-username" ><i class="fa fa-arrow-down"></i></a>&nbsp;
+    </th>
+    <th>
+      {% trans "User Id" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=id" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-id" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Lastname" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=last_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-last_name" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Firstname" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=first_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-first_name" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Email" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=email" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-email" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Phone" %}&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=phone" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-admin-users" %}?sort=-phone" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+  </tr>
+  {% for profile in profiles %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td><a href="{% url 'profile' profile.user.username %}">{{ profile.user.username }}</a></td>
+    <td>{{ profile.user.pk }}</td>
+    <td>{{ profile.user.last_name }}</td>
+    <td>{{ profile.user.first_name }}</td>
+    <td>{{ profile.user.email|obfuscate_email }}</td>
+    <td>{{ profile.phone }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock content %}

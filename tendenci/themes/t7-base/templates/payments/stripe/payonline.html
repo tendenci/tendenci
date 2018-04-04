@@ -1,0 +1,100 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+<link rel="stylesheet" href="{% static 'css/stripe.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="well basic-info">
+  <div>{% trans 'Invoice #' %}: {{ payment.invoice.id }}</div>
+  <div>{% trans 'Description' %}: {{ payment.description }}</div>
+  <div id="total-amount">{% trans 'Total' %}: {{ payment.amount|format_currency }}</div>
+</div>
+
+<div class="forms">
+
+{% if billing_info_form.errors.values %}
+    <div class="errors">
+        <ul>
+            {{ billing_info_form.non_field_errors }}
+            {% for field in billing_info_form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+        </ul>
+    </div>
+{% endif %}
+
+
+<p>{% trans 'Please fill out the fields below' %}</p>
+
+
+
+
+<form action="" method="POST" id="payment-form" class="form-horizontal">{% csrf_token %}
+  <h3>{% trans 'Payment Information' %}</h3>
+    <div class="form-group">
+        <label for="card-element" class="col-sm-3 control-label">
+          Credit or debit card:
+        </label>
+        <div id="card-element" class="col-sm-9">
+          <!-- a Stripe Element will be inserted here. -->
+        </div>
+        <br />
+        <div id="card-errors"  class="col-sm-offset-3 col-sm-9" role="alert"></div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="id_card_name" class="required col-sm-3  control-label">{% trans 'Name on Card' %}:</label>
+        <div class="col-sm-9">
+        <input class="card-name form-control" id="id_card_name" maxlength="100" type="text">
+        <span class="error text-danger">{{ form.card_name.errors }}</span>
+        </div>
+    </div>
+
+
+    <h3>Billing Information</h3>
+    {% for field in billing_info_form %}
+     <div class="form-group">
+        <label for="id_{{ field.name }}" class="{% if field.field.required %}required {% endif %}col-sm-3 control-label">{{ field.label }}:</label>
+        <div class="col-sm-{% if field.field.width %}{{ field.field.width }}{% else %}9{% endif %}">
+          {{ field }}
+          <span class="error text-danger">{{ field.errors }}</span>
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    <div class="col-sm-offset-3 col-sm-9">
+    <button type="submit" class="submit-button btn btn-primary">{% trans 'Submit Payment' %}</button>
+     </div>
+
+    <div class="col-sm-offset-3 col-sm-9" id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+      <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/> {% trans 'loading...' %}
+    </div>
+</form>
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+{% set_stripe_key %}
+
+<script type="text/javascript" src="{% static 'js/stripe_payment.js' %}"></script>
+{% endblock %}

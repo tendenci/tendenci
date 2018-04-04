@@ -1,0 +1,9 @@
+[General]
+name = Creative Theme
+description = Creative
+tags = homepage rotator
+screenshot = screenshot.png
+version = 1.0
+extends = t7-base
+
+

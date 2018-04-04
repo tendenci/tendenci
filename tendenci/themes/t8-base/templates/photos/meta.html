@@ -1,0 +1,58 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+{% if image %}
+
+<ul class="list-unstyled t-meta-data">
+    {% if image.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in image.tags|tag_split %}
+                <a class="label label-default" href="{% url 'photos_search' %}?q={{ tag }}">{{ tag }}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
+        {% if user == image.creator or user == image.owner %}
+             <li><strong>{% trans 'Owned by you' %}</strong>{% if not image.status_detail == "active" %} - status: {{ image.obj_status }}{% endif %}</li>
+        {% endif %}
+        {% endif %}
+
+        {% if user.profile.is_superuser or user == image.creator or user == image.owner %}
+            {% meta_creator_owner image %}
+        {% endif %}
+    {% endif %}
+</ul>
+
+{% if user.profile.is_superuser %}
+<nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ image.obj_perms }}</li>
+                    <li>{{ image.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                   <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ image.pk }}&source={{ image.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                  <li><a class="edit-link" href="{% url "photo_edit" image.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                           <li><a class="delete" href="{% url "photo_destroy" image.pk %}">{% trans "Delete" %}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+</nav>
+{% endif %}
+{% endif %}

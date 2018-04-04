@@ -1,0 +1,26 @@
+<div class="wrap-search-item">
+<div class="search-item">
+
+    <h2><a href="{% url "profile" membership.user %}">{{ membership.get_name }}</a></h2>
+    {% if user.profile.is_superuser %}
+    <div><strong>{% trans 'Member Number' %}: {{ membership.member_number }}</strong></div>
+    {% endif %}
+
+    <div class="type-and-period">
+        <div><a href="{% url "membership.details" membership.pk %}">{{ membership.membership_type }}</a></div>
+        <div>{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</div>
+    </div>
+
+    {% with membership.entries.all as entries %}
+    {% if entries %}
+    <div>
+        <h2>{% trans "Application Entries" %}:</h2>
+        {% for entry in entries %}
+            <div><a href="{% url "membership.application_entries" entry.pk %}">{{ entry }} - {{ entry.status_msg }}</a></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% include 'memberships/meta.html' %}
+</div>

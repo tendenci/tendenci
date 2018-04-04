@@ -1,0 +1,31 @@
+{% load pybb_tags %}
+<div class="col-sm-9">
+<form class="post-form" action="
+    {% if forum %}
+        {% url 'pybb:add_topic' forum.pk %}
+    {% else %}
+        {% if topic %}
+            {% url 'pybb:add_post' topic.pk %}
+        {% else %}
+            {% url 'pybb:edit_post' pk=object.pk %}
+        {% endif %}
+    {% endif %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+    {% include "pybb/form_errors.html" %}
+    {% if form.name %} {% include "pybb/form_field.html" with field=form.name %} {% endif %}
+    {% if form.slug %} {% include "pybb/form_field.html" with field=form.slug %} {% endif %}
+    {% if form.login %} {% include "pybb/form_field.html" with field=form.login %}  {% endif %}
+    {% if form.body %} {% include "pybb/form_field.html" with field=form.body %}  {% endif %}
+    <div id='emoticons'>
+      {% for smile, url in form.available_smiles.items %}
+        <a href='#' title='{{ smile|safe }}'><img src="{% static url %}"></a>
+      {% endfor %}
+    </div>
+
+    {% if request.user|pybb_may_create_poll and form.poll_type %}
+      {% include "pybb/poll_edit_form.html" %}
+    {% endif %}
+    <div>&nbsp;</div>
+    <p class="submit">{% include "pybb/_button_submit.html" %}</p>
+</form>
+</div>

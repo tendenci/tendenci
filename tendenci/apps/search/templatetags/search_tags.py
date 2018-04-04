@@ -1,6 +1,5 @@
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, Variable
 from django.template import Library
-from django.conf import settings
 from django.template.loader_tags import IncludeNode
 from django.utils.translation import ugettext_lazy as _
 from haystack.models import SearchResult
@@ -76,7 +75,6 @@ class SearchResultNode(IncludeNode):
             return t.render(context=context)
         except:
             return ''
-
 
 def search_result(parser, token):
     """

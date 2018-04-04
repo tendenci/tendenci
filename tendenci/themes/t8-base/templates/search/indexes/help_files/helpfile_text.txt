@@ -1,0 +1,5 @@
+{{ object.question }}
+{{ object.answer }}
+{% for topic in object.topics.all %}
+topic:{{ topic }}
+{% endfor %}

@@ -1,0 +1,176 @@
+{% extends 'navs/base-wide.html' %}
+{% load nav_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }} {% trans "Items" %}{% endblock title %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/navs.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="nav-wrap">
+        <div class="nav-edit-menu">
+            <h3>{{ page_select.pages.label }} {% trans 'list' %}</h3>
+            <p>{% trans 'Select pages below to be added to' %} {{ current_nav.title }}. {% trans 'Use the search box to filter the list of pages' %}.</p>
+            {% trans 'Search' %}: <input id="navs-search-box" type="text" />
+            <form method="post" action="{% url "navs.page_select" %}" id="page-select">
+                <div class="forms">{% csrf_token %}
+                <div class="page-select">
+                    {{ page_select.pages }}
+                </div>
+                <input class="nav-add" type="submit" value="{% trans 'Add selected pages' %}" />
+                </div>
+            </form>
+            <a id="add-custom" >{% trans 'Add a Custom Navigation Item' %}</a>
+        </div>
+        <div class="nav-edit-content">
+        <h1>{% trans "Items" %} for {{ current_nav.title }}</h1>
+            <form method="post" action="">{% csrf_token %}
+                {{ formset.management_form }}
+                <div id="nav-items">
+                {% for form in formset.forms %}
+                <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
+                    <input type="hidden" name="form-{{ forloop.counter0 }}-id" id="id_form-{{ forloop.counter0 }}-id" />
+                    <a href="#" class="nav-item-label">
+                        + <span class="linklabel">{{ form.instance.label }}</span>&nbsp;<span class="helpertext">({% trans 'edit' %})</span>
+                    </a>
+                    <a href="#" class="nav-move-right"><img class="nav-move-image" src="{% static 'images/arrow-right.jpg' %}" /></a>
+                    <a href="#" class="nav-move-left"><img class="nav-move-image" src="{% static 'images/arrow-left.jpg' %}" /></a>
+                    {% if form.errors %}
+                        <div class="errors">{{ form.errors }}</div>
+                    {% endif %}
+                    <div class="nav-item-detail">
+                        <table>
+                        <tr>
+                        <td>
+                            <div class="nav-item-field">
+                                {% if form.url.errors %}
+                                    <div class="errors">
+                                        {{ form.url.errors }}
+                                    </div>
+                                {% endif %}
+                                {% if form.instance.page %}
+                                    <label class="small-label">{% trans 'URL' %}</label> <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                                {% else %}
+                                    <label class="small-label">{{ form.url.label }}</label>
+                                    {{ form.url }}
+                                {% endif %}
+                            </div>
+                            <div class="nav-item-field">
+                                {% if form.label.errors %}
+                                    <div class="errors">
+                                        {{ form.label.errors }}
+                                    </div>
+                                {% endif %}
+                                <label class="small-label">{{ form.label.label }}</label>
+                                {{ form.label }}
+                            </div>
+                        </div>
+                        </td>
+                        <td>
+                            <div class="nav-item-field">
+                                {% if form.title.errors %}
+                                    <div class="errors">
+                                        {{ form.title.errors }}
+                                    </div>
+                                {% endif %}
+                                <label>{{ form.title.label }}</label>
+                                {{ form.title }}
+                            </div>
+                            <div class="nav-item-field">
+                                {% if form.css.errors %}
+                                    <div class="errors">
+                                        {{ form.css.errors }}
+                                    </div>
+                                {% endif %}
+                                <label>{{ form.css.label }}</label>
+                                {{ form.css }}
+                            </div>
+                            <div class="nav-item-field-checkbox">
+                            {{ form.new_window }}
+
+                            <label>{{ form.new_window.label }}</label>
+                            </div>
+                        </td>
+                        </tr>
+                        </table>
+                        <div style="display: none;" >
+                            <div class="position">{{ form.position }}</div>
+                            <div class="level">{{ form.level }}</div>
+                            {{ form.page }}
+                        </div>
+                        <a href="#" class="item-delete">{% trans 'Remove' %}</a>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+
+            <input type="submit" id="save-all" value="{% trans 'Save All Navigation Items' %}">
+            </form>
+
+        </div>
+        <div style="clear:both"></div>
+        <!-- The next div is a base template for the form in form sets -->
+        <div class="nav-item" id="base">
+            <input type="hidden" name="form-0-id" id="id_form-0-id" />
+            <a href="#" class="nav-item-label"><b>+ </b></a>
+            <a href="#" class="nav-move-right"><img class="nav-move-image" src="{% static 'images/arrow-right.jpg' %}" /></a>
+            <a href="#" class="nav-move-left"><img class="nav-move-image" src="{% static 'images/arrow-left.jpg' %}" /></a>
+            <div class="nav-item-detail">
+                <table>
+                <tr>
+                <td>
+                <div class="nav-item-field">
+                    <label class="small-label">{% trans 'URL' %}</label>
+                    <input class="url-field" id="id_form-0-url" type="text" name="form-0-url" maxlength="200" >
+                </div>
+                <div class="nav-item-field">
+                    <label class="small-label">{% trans 'Label' %}</label>
+                    <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" />
+                </div>
+                </td>
+                <td>
+                <div class="nav-item-field">
+                    <label>{% trans 'Title Attribute' %}</label>
+                    <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" />
+                </div>
+                <div class="nav-item-field">
+                    <label>{% trans 'CSS Class' %}</label>
+                    <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" />
+                </div>
+                <div class="nav-item-field-checkbox">
+                <input id="id_form-0-new_window" type="checkbox" name="form-0-new_window"><label>{% trans 'Open in a new window' %}</label>
+                </div>
+                </td>
+                <td>
+                </td>
+                </tr>
+
+                </table>
+                <div style="display: none;" >
+                    <div class="position">
+                        <input type="hidden" name="form-0-position" value="0" id="id_form-0-position" />
+                    </div>
+                    <div class="level">
+                        <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" />
+                    </div>
+                    <input type="text" name="form-0-page" id="id_form-0-page" />
+                </div>
+                <a class="item-delete">{% trans 'Remove' %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.form.js' %}"></script>
+    <script type="text/javascript" src="{% local_static 'js/navs.js' %}"></script>
+{% endblock %}

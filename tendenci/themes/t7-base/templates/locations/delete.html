@@ -1,0 +1,30 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+
+{% block title %}{% trans "Delete" %} - {{ location.location_name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="location-wrap">
+        <h1>{% firstof MODULE_LOCATIONS_LABEL trans 'Location' %} {% trans "Delete Page" %}</h1>
+        <h2>{{ location.location_name }} - <a href="{{ location.get_absolute_url }}">{{ location.get_absolute_url }}</a></h2>
+        <div class="content">{% blocktrans with l=location.description|safe|truncatewords_html:"60" %}{{ l }}{% endblocktrans %}</div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_LOCATIONS_LABEL trans 'location' %}?
+        </div>
+        <div class="delete-form">
+            <form name="location-delete" method="POST" action="{% url "location.delete" location.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+            </form>
+        </div>
+        <div class="back-item"><a href="{{ location.get_absolute_url }}">&laquo; {% trans "Back to" %} {{ location.location_name }}</a></div>
+        <div class="back-search"><a href="{% url "location.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'locations' %}</a></div>
+    </div>
+</div>
+{% endblock %}

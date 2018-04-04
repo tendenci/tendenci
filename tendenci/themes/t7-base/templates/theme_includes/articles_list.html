@@ -1,0 +1,34 @@
+{% load theme_tags %}
+{% load article_tags %}
+
+{% list_articles as featured_articles limit=TEMPLATE_ARTICLES_LIST_LIMIT %}
+<section id="articles-list-featured">
+    <h3>{% firstof TEMPLATE_ARTICLES_LIST_TITLE trans 'Articles' %}</h3>
+
+    {% if featured_articles %}
+    {% for article in featured_articles|slice:":1" %}
+        <h4><a href="{{ article.get_absolute_url }}">{% blocktrans with h=article.headline %}{{ h }}{% endblocktrans %}</a></h4>
+        <p>{% blcktrans with b=article.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ article.get_absolute_url }}">{% trans 'Read more' %}</a>
+    {% endfor %}
+    {% else %}
+        <p>{% trans 'Tendenci supports great articles updates for your members and website visitors. You can pull extra details from the latest articles, while showing other articles items to the side.' %} {% if request.user.is_authenticated %}{% blocktrans %}<a href="/articles/add/">Add your first articles item</a> to take the place of these examples.{% endblocktrans %}{% endif %}</p> <a class="readmore" href="/">{% trans 'Read more' %}</a>
+    {% endif %}
+</section>
+<section id="articles-list-others">
+    <ul id="articles-items">
+        {% if featured_articles|length > 1 %}
+        {% for article in featured_articles %}
+            {% if forloop.first %}
+            {% else %}
+            <li><a href="{{ article.get_absolute_url }}">{% blocktrans with h=articles_item.headline|truncatewords:4|safe %}{{ h }}{% endblocktrans %}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        {% blocktrans %}
+        <li>Another top story in the articles</li>
+        <li>Even more great article updates</li>
+        {% endblocktrans %}
+        {% endif %}
+    </ul>
+</section>
+{% theme_setting setting_name %}

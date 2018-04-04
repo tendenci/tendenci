@@ -1,0 +1,94 @@
+{% extends "invoices/base-wide.html" %}
+{% load base_filters %}
+{% load invoice_tags %}
+{% load accounting_tags %}
+
+
+{% block title %}{{ block.super }}{% trans 'Make an Offline Payment'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/invoices.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{% blocktrans with invoice.pk as invoice_pk %}Mark Invoice #{{ invoice_pk }} as Paid{% endblocktrans %}</h1>
+  </div>
+  <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">View Invoice #{{ invoice.pk }}</a>
+  <br />
+
+  {% with invoice.get_object as object %}
+  <div class="invoice-meta">
+    <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td>Invoice #</td>
+        <td class="td-right">{{ invoice.id }}</td>
+      </tr>
+      {% if object %}
+      <tr>
+        <td>{% trans "Invoice For" %}</td>
+        <td class="td-right">
+          {% if object.event.pk %}
+          <a href="{% url "event.registration_confirmation" object.event.pk object.pk %}">{{ object }}</a><br>
+          <strong>Event Date:</strong> {{ object.event.start_dt }}
+          {% else %}
+          {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+          <br>
+          {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
+          {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+          {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td>{% trans "Invoice Date" %}</td>
+        <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Invoice Status" %}</td>
+        {% if invoice.is_tendered %}
+        <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %} Tendered {{ tenddate }} {% endblocktrans %}</td>
+        {% else %}
+        <td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
+        {% endif %}
+      </tr>
+      <tr class="invoice-meta-amount">
+        <td>{% trans "Invoice Amount" %}</td>
+        <td class="td-right">{{ invoice.total|format_currency }}</td>
+      </tr>
+    </table>
+  </div>
+  {% endwith %}
+
+  <br />
+  <form method="POST">
+    <div id="offline-payment-form-wrap">
+      {% csrf_token %}
+      {% for field in form %}
+      <table>
+        <tr>
+          <td class="field-label">{{ field.label_tag }}</td>
+          <td class="field-widget">{{ field }}</td>
+        </tr>
+      </table>
+      {% endfor %}
+
+      <div>
+        <input class="field-submit btn btn-primary" type="submit" value="{% trans 'Save Payment' %}"></div>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script src="{% static 'timepicker/timepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/formset.js' %}"></script>
+{% endblock %}

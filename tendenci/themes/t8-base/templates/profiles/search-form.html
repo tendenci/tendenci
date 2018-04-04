@@ -1,0 +1,34 @@
+
+<form class="profile-search-form" action="." method="get">
+
+<div class="float-left">
+    <div class="form-field">
+        {{ search_form.first_name.label }}: {{ search_form.first_name }}
+    </div>
+    <div class="form-field">
+        {{ search_form.last_name.label }}:  {{ search_form.last_name }}
+    </div>
+</div>
+<div class="float-left">
+      <div class="form-field" style="margin-left: 3em;">
+        {{ search_form.email.label }}: {{ search_form.email }}
+    </div>
+    {% if not memberships_search %}
+    {% if show_member_option %}
+     <div class="form-field" style="margin-left: 3em;">
+    {{ search_form.member_only }} <label for="id_member_only" style="display: inline;">{{ search_form.member_only.label }}</label>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+<div class="clear-left"></div>
+{% if show_member_option %}
+<div class="form-field">{{ search_form.membership_type.label }}: {{ search_form.membership_type }}</div>
+{% endif %}
+<div class="form-field">{{ search_form.group.label }}: {{ search_form.group }}</div>
+<div class="form-field">
+    {% trans 'Search By'%}: {{ search_form.search_criteria }} {{ search_form.search_text }} {{ search_form.search_method }}
+    <input type="submit" name="search" value="{% trans 'Search' %}" />
+</div>
+
+</form>

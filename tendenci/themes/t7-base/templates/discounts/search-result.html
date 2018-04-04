@@ -1,0 +1,17 @@
+{% load discount_tags %}
+{% load base_filters %}
+
+<div class="wrap-search-item">
+    <div class="search-item discount-search-item">
+        <h2><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></h2>
+        <div class="item-content">
+            <div class="search-text">
+                <p>{% trans 'Value' %}: {{ discount.value|format_currency }}</p>
+                <p>{% trans 'Uses' %}: {{ discount.num_of_uses }}</p>
+                <p>{% trans 'Cap' %}: {{ discount.cap }}</p>
+                <p>{% trans 'Status' %}: {% discount_expiration discount %}</p>
+            </div>
+        </div>
+    </div>
+    {% include 'discounts/meta.html' %}
+</div>

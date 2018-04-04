@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.username as objname %}New user ({{ objname }}) added on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

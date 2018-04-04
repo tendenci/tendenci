@@ -1,10 +1,10 @@
 from django.contrib import admin
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.help_files.models import Topic, HelpFile, Request
 from tendenci.apps.help_files.forms import HelpFileAdminForm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class HelpFileAdmin(TendenciBaseModelAdmin):
@@ -32,7 +32,7 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
         )
 
 admin.site.register(Topic)

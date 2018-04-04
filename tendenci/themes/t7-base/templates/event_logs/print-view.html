@@ -1,0 +1,54 @@
+{% extends "event_logs/base.html" %}
+{% load event_log_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Print' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/event-logs.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{{ MODULE_EVENT_LOGS_LABEL }} {% trans 'Print' %}</h1>
+
+    <div class="event-log-wrap">
+
+        <div class="options">
+            <div class="quick-options">
+                {% event_log_options request.user event_log %}
+            </div>
+        </div>
+
+
+        <h2>{{ event_log.event_data }}</h2>
+        <div class="content">
+            <p>{% trans "Event id :" %} {{ event_log.event_id  }}</p>
+            <p>{% trans "Event name :" %} {{ event_log.event_name  }}</p>
+            <p>{% trans "Event type :" %}{{ event_log.event_type  }}</p>
+            <p>{% trans "Event data :" %}{{ event_log.event_data  }}</p>
+            <p>{% trans "Category :" %}{{ event_log.category  }}</p>
+            <p>{% trans "Session id :" %}{{ event_log.session_id  }}</p>
+            <p>{% trans "User :" %}{{ event_log.user  }}</p>
+            <p>{% trans "Username :" %}{{ event_log.username  }}</p>
+            <p>{% trans "Email :" %}{{ event_log.email  }}</p>
+            <p>{% trans "User ip address :" %}{{ event_log.user_ip_address  }}</p>
+            <p>{% trans "Server ip address :" %}{{ event_log.server_ip_address  }}</p>
+            <p>{% trans "URL :" %}{{ event_log.url  }}</p>
+            <p>{% trans "HTTP referrer :" %}{{ event_log.http_referrer  }}</p>
+            <p>{% trans "Headline :" %}{{ event_log.headline  }}</p>
+            <p>{% trans "Description :" %}{{ event_log.description  }}</p>
+            <p>{% trans "HTTP user agent :" %}{{ event_log.http_user_agent  }}</p>
+            <p>{% trans "Request method :" %}{{ event_log.request_method  }}</p>
+            <p>{% trans "Query string :" %}{{ event_log.query_string  }}</p>
+            <p>{% trans "Robot :" %}{{ event_log.robot  }}</p>
+            <p>{% trans "Create dt :" %}{{ event_log.create_dt|date:"short"  }}</p>
+        </div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with event_log.create_dt|date:"long" as create_date %}Logged on {{ create_date }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

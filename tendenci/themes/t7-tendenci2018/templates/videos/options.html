@@ -1,0 +1,12 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user video.change_video opt_object as can_edit %}
+{% has_perm user video.delete_video opt_object as can_delete %}
+
+{% if can_edit %}
+<li><a href="{% url 'admin:videos_video_change' opt_object.pk %}?next={{ request.path }}">{% trans 'Edit' %}</a></li>
+{% endif %}
+{% if can_delete %}
+<li><a href="{% url 'admin:videos_video_delete' opt_object.pk %}">{% trans 'Delete' %}</a></li>
+{% endif %}

@@ -1,0 +1,34 @@
+.t h1 {
+	margin-bottom: 0;
+}
+.t div.event-title {
+	font-size: 1.2em;
+	margin-bottom: 10px;
+}
+.hidden{
+	display: none;
+}
+.registrant-header{
+	border-bottom: 1px dotted #ccc;
+	margin: 2em 0 1em;
+	padding: 5px 8px;
+	font-weight: bold;
+}
+.even-registrant, .odd-registrant{
+	background-color: #f5f5f5;
+	padding: 10px;
+}
+.errors-box{
+	background-color: #FFEBE8;
+	border: 2px solid #FF8B78;
+	margin-bottom: 20px;
+	padding: 10px;
+	width: 80%;
+}
+
+.clear{
+	clear: both;
+}
+.event-title{
+	margin-top: 1em;
+}

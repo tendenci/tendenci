@@ -1,0 +1,80 @@
+{% extends "entities/base.html" %}
+{% load entity_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load category_tags %}
+
+{% block title %}{{ block.super }}{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+{% tags_for_object entity as tags %}
+
+<div class="t">
+    <div class="entity-wrap">
+        <div class="options">
+             <div class="quick-options">
+                {% entity_options request.user entity %}
+             </div>
+        </div>
+
+        <h2>{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}</h2>
+        <div class="content">
+
+         <div class="notes">{% blocktrans with n=entity.notes|safe %}{{ n }}{% endblocktrans %}</div>
+         <div class="summary">{% blocktrans with s=entity.summary|safe %}{{ s }}{% endblocktrans %}</div>
+
+             <p>
+             <div class="contact"><h3>{% trans "Contact:" %}</h3>
+                 {{ entity.contact_name|safe }}<br>
+                 {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
+                 {{ entity.email|safe }}<br>
+                 {{ entity.website|safe }}
+             </div>
+               </p>
+               <p>
+               <div class="admin_notes">{% blocktrans with n=entity.admin_notes|safe %}{{ n }}{% endblocktrans %}</div>
+                </p>
+
+        </div>
+
+
+        <div class="meta">
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as encreate %}Submitted on {{ encreate }}
+            by:{% endblocktrans %} {% firstof entity.creator.profile.display_name entity.creator %}</div>
+        </div>
+
+        <br />
+        {% url 'entity' entity.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
+    </div>
+
+    <!-- delete-entity form -->
+    <form name="entity-delete" method="POST" action="{% url "entity.delete" entity.pk %}">{% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_entity = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
+                if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+{% endblock %}

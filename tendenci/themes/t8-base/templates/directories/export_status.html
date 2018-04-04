@@ -1,0 +1,30 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% url "directory.export_download" identifier  as dl_url %}
+
+{% block title %}{% trans "Export Directories - Status" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Directories Export - Status" %}</h1>
+
+    <div id="directory-export">
+        <div{% if not download_ready %} class="display-hide"{% endif %}>
+            <p>{% trans "The export file is ready, click the download link below to download." %}</p>
+            <div>
+                <a href="{% url 'directory.export_download' identifier %}">{% trans "Download Now" %}</a>
+            </div>
+        </div>
+
+    </div>
+
+    {% if not download_ready %}
+    {% blocktrans %}
+    <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>
+    <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>
+    {% endblocktrans %}
+   {% endif %}
+</div>
+{% endblock %}

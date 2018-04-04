@@ -1,0 +1,29 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Current Members Quick List" %}</h1>
+</div>
+<div class="mems-wrap">
+{% if members %}
+<p><a class="btn btn-primary" href="{% url "reports-members-quick-list" %}?output=csv">
+    {% trans 'Download CSV File' %}</a></p>
+    <table class="table table-tendenci-reports">
+        <tr>
+            <th>{% trans "Last Name" %}</th>
+            <th>{% trans "First Name" %}</th>
+            <th>{% trans "Company" %}</th>
+        </tr>
+        {% for member in members %}
+        <tr>
+            <td>{{ member.user.last_name }}</td>
+            <td>{{ member.user.first_name }}</td>
+            <td>{{ member.user.profile.company }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+{% trans "No active members." %}
+{% endif %}
+</div>
+{% endblock content %}

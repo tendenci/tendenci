@@ -1,0 +1,3 @@
+{% load email_filters %}
+
+{% blocktrans with b=email.body|relative_to_absolute_urls|safe %}{{ b }}{% endblocktrans %}

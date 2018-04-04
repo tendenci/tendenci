@@ -1,0 +1,842 @@
+.t h2 {
+    margin: 0 auto 10px 0;
+}
+
+.t ul.memberships-nav {
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+.t ul.memberships-nav li {
+    display: inline;
+}
+
+.t .memberships-wrap {
+    margin-bottom: 20px;
+}
+
+.t .membership-wrap {
+    padding: 10px;
+    position: relative;
+}
+
+.t .wrap-search-item {
+    border: 1px solid #CCC;
+}
+
+/*= Membership Application Entry
+---------------------------------- */
+.t .application-entry-wrap #member-number {
+    font-size: 1.5em;
+    /*background-color: red;*/
+    padding: 10px;
+}
+.t .application-entry-wrap .field {
+    border: 1px solid silver;
+    padding: 10px;
+    margin: 0 0 10px;
+}
+.t .application-entry-wrap .field .label {
+    font-weight: bold;
+    border-bottom: 1px solid #DDD;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
+.t .application-entry-wrap .entry_dt {
+    font-size: .9em;
+    margin-bottom: 3px;
+}
+.t .application-entry-wrap .pending,
+.t .application-entry-wrap .approved_dt,
+.t .application-entry-wrap .denied_dt {
+    font-size: .9em;
+    margin-bottom: 15px;
+}
+
+.t .options {
+    text-align: right;
+    position: absolute;
+    top: -30px; right: 0;
+    padding: 5px;
+    white-space: nowrap;
+}
+.t .options-search {
+    position: static;
+}
+.t .quick-options {
+    float: right;
+    margin-right: 5px;
+}
+.t .quick-options ul {
+    margin: 0; padding: 0;
+    list-style-type: none;
+}
+
+.t .dropdown-options {
+    float: right;
+    display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+    font-size: .7em;
+}
+.t .dropdown-options ul {
+    display: none;
+}
+
+.t h1 {
+    margin: 0;
+}
+.t .back-to-search {
+    margin-bottom: 20px;
+}
+
+.t form.search-form {
+    margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+    width: 60%;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+    padding: 5px;
+    cursor: pointer;
+}
+.t form.search-form .total-results {
+    font-size: .8em;
+}
+
+.t .profile-link {
+    text-align: right;
+}
+
+.t form .label, .t form label{
+	font-weight: normal;
+	font-size: 100%;
+}
+.t form .required{
+	font-weight: bold;
+}
+
+/* Membership details
+ ------------------------- */
+ .t .memberships-wrap .membership-wrap-search {
+    margin-bottom: 20px;
+    position: relative;
+    background-color: white;
+    border: 1px solid #DDD;
+    border-top: none;
+}
+
+.t .memberships-wrap .membership-wrap-search:last-child {
+    margin-bottom: 0;
+}
+
+.result-head {
+    padding: 10px;
+
+}
+.result-head.approved {
+    border-top: 10px solid #7AE309;
+}
+.result-head.disapproved {
+    border-top: 10px solid #E30918;
+}
+.result-head.pending {
+    border-top: 10px solid #FFE44B;
+}
+.result-head .member-requires-approval {
+    font-weight: bold;
+    float: left;
+}
+.result-head .member-number {
+    font-weight: bold;
+    float: left;
+}
+.result-head .member-subscription {
+    float: left;
+    margin-top: 4px;
+}
+
+.result-head .member-status {
+    text-align: right;
+}
+.result-head .member-status a {
+    color: black;
+    text-decoration: underline;
+}
+.result-head .member-date {
+    font-size: .8em;
+    text-align: right;
+    margin-top: 4px;
+    float: right;
+}
+.result-head .balance {
+    text-align: right;
+    padding-top: 10px;
+}
+
+.result-content {
+    margin-top: 4px;
+    float: left;
+}
+
+.result-content a {
+    color: black;
+    text-decoration: underline;
+}
+
+.result-content .member-name,
+.result-content .member-email {
+    margin-bottom: 3px;
+}
+
+.t .membership-wrap .meta, .t .membership-wrap-search .meta {
+    border: 1px solid silver;
+    padding: 10px;
+    background-color: #F7F7F7;
+    margin-top: 10px;
+}
+.t .memberships-wrap .membership-wrap h2 {
+    width: 85%;
+}
+.t .memberships-wrap .membership-wrap .content {
+    margin-bottom: 10px;
+}
+.t .memberships-wrap .category {
+    margin-top: 5px;
+}
+.t .membership-wrap .meta .tags {
+    margin-bottom: 5px;
+}
+.t .membership-wrap .fb-connect {
+    margin-top: 10px;
+}
+
+/* form */
+div.forms div.form-field div.id_release_dt .field input {
+    width: 30%;
+}
+
+div.forms div.form-field div.id_first_name .field input {
+    width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+    width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+    width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+    width: 18%;
+}
+div.forms div.form-field div.id_release_dt .field input {
+    margin: 0 5px 0 0;
+    width: 18%;
+}
+div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
+    width: 80px;
+}
+
+div.pending-entries {
+    border: 1px solid silver;
+    background-color: #EEE;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.t .membership-detail-wrap fieldset {
+    background-color: #FAFAFA;
+    padding: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.t .membership-detail-wrap fieldset .fieldset-label {
+    font-size: 20px;
+    float: left;
+    margin-bottom: 7px;
+}
+
+.t .membership-detail-wrap #member-number {
+    font-size: 1.5em;
+    /*background-color: red;*/
+    padding: 10px;
+}
+.t .membership-detail-wrap .field {
+    background-color: white;
+    border: 1px solid silver;
+    padding: 10px;
+    margin: 0 0 10px;
+}
+.t .membership-detail-wrap .field .label {
+    font-weight: bold;
+    border-bottom: 1px solid #DDD;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
+.t .membership-detail-wrap .entry_dt {
+    font-size: .9em;
+    margin-bottom: 3px;
+}
+.t .membership-detail-wrap .pending,
+.t .membership-detail-wrap .approved_dt,
+.t .membership-detail-wrap .denied_dt {
+    font-size: .9em;
+}
+
+.t .membership-details-inner-wrap {
+    background-color: white;
+    border: 1px solid silver;
+    padding: 10px;
+}
+
+.t .membership-details-name {
+    border-bottom: 1px solid #DDD;
+    position: relative;
+}
+
+.t .membership-details-name h1 {
+    padding-bottom: 5px;
+}
+
+.t .membership-details-balance {
+    font-size: 1.4em;
+    position: absolute;
+    top: 5px;
+    right: 1px;
+}
+
+.t .membership-details-balance a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.t .go-to-profile {
+    position: absolute;
+    top: 5px;
+    right: 1px;
+}
+
+.t .membership-detail-nav {
+    float: right;
+    margin-top: 7px;
+}
+
+.t .membership-detail-nav a {
+    margin: 0 2px;
+}
+
+
+.t .membership-details-info {
+    position: relative;
+}
+
+.t #membership-details-info {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.t #membership-details-info #status {
+    border-left: 1px solid #DDD;
+    width: 400px;
+    padding-bottom: 10px;
+}
+
+.t #membership-details-info #status .status-label {
+    padding: 10px;
+    background-color: #FAFAFA;
+}
+
+.t .membership-details-status .status-label {
+    border-bottom: 1px solid #DDD;
+    padding: 10px;
+    background-color: #FAFAFA;
+}
+
+.t #membership-details-info #status .status-label.active {
+    color: white;
+    background-color: #468847;
+}
+
+.t #membership-details-info #status .status-label.pending {
+    color: white;
+    background-color: #FB9406;
+}
+
+.t #membership-details-info #status .status-label.expired,
+.t #membership-details-info #status .status-label.disapproved,
+.t #membership-details-info #status .status-label.revoked {
+    color: white;
+    background-color: #B94A4B;
+}
+
+.t #membership-details-info #status .status-action ul {
+    padding: 10px 10px 0;
+    margin-bottom: 0;
+}
+
+
+/* Membership Details Print
+ ------------------------- */
+.t .membership-detail-print .membership-details-status .status-label {
+    color: black;
+    font-size: 1em;
+    background-color: white;
+    padding: 0;
+    width: 0;
+    white-space: nowrap;
+    border-bottom: none;
+}
+.t .membership-detail-print .membership-detail-nav {
+    display: none;
+}
+.t .membership-detail-print .membership-details-status p:last-child {
+    margin: 0;
+}
+.t .membership-detail-wrap.membership-detail-print fieldset legend {
+    margin-bottom: 2px;
+}
+
+
+@media print {
+    .t .membership-detail-print {
+        font-size: 50%;
+        line-height: .8em;
+    }
+    .t .membership-detail-wrap.membership-detail-print fieldset {
+        padding: 0px 10px 0px;
+        border: none;
+    }
+    .t .membership-detail-wrap.membership-detail-print .field {
+        padding: 5px 10px;
+        margin-bottom: 3px;
+    }
+    .t .membership-detail-wrap.membership-detail-print .field .label {
+        margin-bottom: 5px;
+    }
+}
+
+/* Membership Add/Edit
+ ------------------------- */
+
+.errors {
+    border: 2px solid #FF8B78;
+    background-color: #FFEBE8;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-left: 110px;
+    width: 75%;
+}
+#t-memberships-application-form .error{
+	color: red;
+}
+.clear {
+    clear: both;
+}
+.wrap {
+    white-space: pre-wrap;
+}
+.item-text {
+    font-size: 1.4em;
+    border-bottom: 1px solid silver;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+/* label:field item */
+.item {
+    margin-bottom: 10px;
+}
+.item .errs {
+    color: red;
+    margin-left: 110px;
+}
+.item .label {
+    float: left;
+    font-size: 1.4em;
+    text-align: right;
+    width: 100px;
+    white-space: nowrap;
+}
+.item .label-wrap {
+    white-space: normal;
+}
+
+
+.item .field,
+.item .help {
+    margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+    width: 100%;
+}
+.item .field .mceLayout {
+    /* WYSIWYG; .1 keeps border intact */
+    width: 100.1% !important;
+}
+.item .field-short input,
+.item .field-short select {
+    width: 20%;
+}
+
+/* date-time item */
+.item-dt {
+    margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+    color: red;
+}
+.item-dt .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-dt .field input {
+    float: left;
+    width: 15%;
+    margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+    margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+.item-checkbox .field input {
+    float: left;
+    margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+    height: 1px;
+    background-color: silver;
+    margin: 10px 0 10px 110px;
+    width: 85%;
+}
+/* horizontal rule long item */
+.item-hr-long {
+    height: 1px;
+    background-color: silver;
+    margin: 20px 0 20px 0;
+    width: 100%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+    height: 10px;
+    width: 100%;
+}
+
+
+div.forms fieldset.contact {
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+    padding: 5px;
+}
+
+/* membership entry details page
+---------------------------------------- */
+.approval-status {
+    margin-top: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid;
+}
+.approval-status.pending {
+    background-color: #ffe44b;
+    border-color: #fcc500;
+    font-size: 1em;
+}
+.approval-status.approved {
+    background-color: #7AE309;
+    border-color: green;
+}
+.approval-status.disapproved {
+    background-color: #fb9292;
+    border-color: red;
+}
+
+form.connect-with ul {
+    margin-top: 10px;
+}
+
+form.connect-with li {
+    list-style-type: none;
+    margin: 5px 0;
+}
+
+/* membership entries search page
+---------------------------------------- */
+.memberships-wrap {
+    width: 75%;
+    float: left;
+}
+.membership-side-panel {
+    width: 20%;
+    float: left;
+    border-left: 1px solid #EEE;
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+.membership-side-panel div {
+    margin: 5px 0;
+}
+.membership-side-panel > div {
+    margin-bottom: 20px;
+}
+.membership-side-panel ul {
+    margin-left: 0;
+
+}
+.membership-side-panel li {
+    list-style-type: none;
+    margin-bottom: 5px;
+}
+
+.membership-status {
+    float: right;
+}
+.membership-status ul {
+    margin-left: 0; /* browser reset */
+}
+.membership-status li {
+    float: left;
+    list-style-type: none;
+    margin-left: 7px;
+}
+.membership-status.approved {
+    background-color: #92ff6c;
+    border: 1px solid green;
+    padding: 10px 5px;
+}
+.membership-status.disapproved {
+    background-color: #fb9292;
+    border: 1px solid red;
+    padding: 10px 5px;
+}
+
+/* Membership Import
+------------------------------------- */
+
+#import-wrap .form-field {
+    width: 500px;
+    /*height: 40px;*/
+    background-color: #F7F7F7;
+}
+#import-wrap .form-field > div {
+    clear: both;
+}
+
+#import-wrap .form-field .label,
+#import-wrap .form-field .field {
+    width: 200px;
+    float: left;
+}
+
+#import-wrap .form-field .label {
+    text-align: right;
+    padding: 5px 10px 5px 0;
+}
+
+#import-wrap .form-field .field select {
+    width: 200px;
+}
+
+#import-wrap form {
+    margin-top: 10px;
+}
+
+#import-wrap form .errors {
+    margin: 0 0 5px 0;
+    width: 402px;
+}
+
+#import-wrap form .errors p {
+    margin: 5px 0 0 0;
+    line-height: 1em;
+}
+
+#import-wrap ul {
+    list-style: none;
+}
+
+#import-wrap .form-field .error {
+    display: none;
+}
+
+#import-wrap .download-template img{
+    vertical-align:middle;
+    float: left;
+    margin-right: 10px;
+}
+
+#import-wrap .download-template .link.form {
+    float: left;
+    margin-top: 10px;
+}
+
+#import-wrap .download-template .link.form a {
+    margin: 0 0 0 3px;
+}
+
+#import-wrap .choose-file {
+    margin: 20px 0;
+}
+#import-wrap .choose-file input {
+    font-size: 16px;
+}
+
+
+#import-wrap .import-options {
+    border-top: 1px solid #EEE;
+}
+
+#import-wrap .checkbox-fields {
+    /*border: 1px solid silver;*/
+    float: left;
+    padding: 20px;
+}
+
+#import-wrap .update {
+    margin-top: 15px;
+}
+
+#import-wrap .dropdown-fields {
+    /*border: 1px solid silver;*/
+    float: left;
+    padding: 20px;
+}
+
+#import-wrap .preview-btn {
+    text-align: right;
+}
+
+/* Step 4 */
+#import-wrap h1 {
+    margin-bottom: 0;
+}
+#import-wrap .timestamp {
+    margin-top: 0;
+    font-size: 13px;
+}
+
+#import-wrap em {
+    font-size: 1.2em;
+    font-style: normal;
+    font-weight: bold;
+}
+
+#import-wrap p.msg {
+    margin: 14px 0 0 0;
+}
+
+#import-wrap.finished .link {
+    margin-top: 0;
+}
+
+/*Delete CSS*/
+.delete-prompt {
+    padding: 5px;
+    border: 2px solid #C00;
+    margin-top: 10px;
+}
+
+.entry-edit {
+    float: right;
+}
+
+.entry-link { float: right; margin-left: 6px; }
+
+.errorlist{
+    color: red;
+}
+
+.notice-log-view {
+    background-color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    line-height: 20px;
+    }
+#log-records-wrap{
+    border-top: 1px dashed #ccc;
+    margin-top: 2em;
+    padding-top: 1em;
+}
+
+.notice-log-wrap {
+    background-color: white;
+    border: 1px solid #CCCCCC;
+    margin-bottom: 20px;
+    padding: 10px;
+    }
+.notice-log{
+    margin-left: 2em;
+    line-height: 20px;
+}
+.notice-log-form{
+    margin-bottom: 1em;
+}
+
+.membership-renew-button {
+    margin-top: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid;
+}
+.membership-renew-button.renew-now {
+    background-color: #92ff6c;
+    border-color: green;
+}
+.membership-renew-button.renew-soon {
+    background-color: #ffe44b;
+    border-color: #fcc500;
+}
+
+/* Member Roster */
+.member-roster-membership {
+    border: 1px #000 solid;
+    margin: 5px;
+    padding: 5px;
+    float: left;
+    height: 200px;
+    width: 350px;
+    line-height: 20px;
+}
+
+/* Members YTD by Type */
+.totals-row {
+    background: #ccc;
+}
+
+.download-pdf-version {
+    float: right;
+    margin-bottom: 3px;
+}
+
+div.label {
+    text-align: left !important;
+}
+
+.t p{
+	margin: 1em 0;
+}

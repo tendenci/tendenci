@@ -1,0 +1,29 @@
+/*!
+ * Bootstrap @VERSION
+ *
+ * Copyright 2011 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ * Date: @DATE
+ */
+
+/*!
+ * Tendenci Edit of Bootstrap
+ *
+ * This file is compiled into CSS to be used
+ */
+
+// CSS Reset
+// @import "../bootstrap/lib/reset.less";
+
+// Core variables and mixins
+@import "../bootstrap/lib/variables.less"; // Modify this for custom colors, font-sizes, etc
+@import "../bootstrap/lib/mixins.less";
+
+@import "patterns-custom.less";
+@tenMain: #6A120D;
+
+// Start actual import for this file.
+@import "patterns-overrides.less";

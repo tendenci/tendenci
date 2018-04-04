@@ -1,0 +1,74 @@
+{% extends "emails/base.html" %}
+{% load email_tags %}
+{% load base_filters %}
+
+
+{% block title %}
+    {% if MODULE_EMAILS_LABEL %}
+        {% blocktrans %}{{ MODULE_EMAILS_LABEL }} View{% endblocktrans %}
+    {% else %}
+        {% trans "Email View" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    {% emails_options email %}
+
+    <article id="t-emails-email-{{ news.pk }}" class="t-emails-email">
+        <div class="page-header">
+            <h1>
+                {% if MODULE_EMAILS_LABEL %}
+                    {% blocktrans %}{{ MODULE_EMAILS_LABEL }} View{% endblocktrans %}
+                {% else %}
+                    {% trans "Email View" %}
+                {% endif %}
+            </h1>
+        </div>
+
+        <div class="t-emails-email-body">
+            <ul class="list-unstyled t-emails-email-info-list">
+                <li>
+                    <strong>{% trans "Sender:" %}</strong> <span>{{ email.sender|default:"None" }}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Reply To:" %}</strong> <span>{{ email.reply_to|default:"None" }}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Content Type:" %}</strong> <span>{{ email.content_type }}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Created on:" %}</strong> <span>{{ email.create_dt|date:"long" }}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Subject:" %}</strong> <span>{{email.subject}}</span>
+                </li>
+
+                <li>
+                    <a href="{% url 'email.viewbody' email.id %}" class="btn btn-info" target="_blank">{% trans "Click here to view the entire e-mail body in a new window." %}</a>
+                </li>
+
+                <li>
+                    <strong>{% trans "Recipient:" %}</strong> <span>{% if email.recipient %}{{ email.recipient|obfuscate_email }}{% else %}{% trans "None" %}{% endif %}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Recipient CC:" %}</strong> <span>{% if email.recipient_cc %}{{ email.recipient_cc|obfuscate_email }}{% else %}{% trans "None" %}{% endif %}</span>
+                </li>
+
+                <li>
+                    <strong>{% trans "Creator:" %}</strong> <span>{% spaceless %}
+                        {% if email.creator.name %}
+                            <a href="{% url 'profile' email.creator.username %}">{{ email.creator.username }}</a>
+                        {% else %}
+                            <span>{% trans "None" %}</span>
+                        {% endif %}
+                    {% endspaceless %}</span>
+                </li>
+            </p>
+        </div>
+    </article>
+{% endblock %}

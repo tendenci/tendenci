@@ -1,0 +1,60 @@
+{% extends "case_studies/base.html" %}
+{% load pagination_tags %}
+{% load case_study_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Case Studies' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/casestudy.css' %}">
+<link rel="stylesheet" href="{% static 'css/casestudy-search.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Case Studies" href="{% url "case_study.feed" %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate case_studies 12 %}
+{% has_perm user case_studies.add_casestudy as can_add_case_study %}
+
+<div class="container">
+  
+  <div class="page-header">
+    <h1> Case Studies </h1>
+  </div>
+  
+  <div>  
+    {% case_study_search %}
+  </div>
+  
+  <br />
+  <br />
+  
+  {% for case_study in case_studies %}
+  
+  {% with case_study|get_object as case_study %}
+  
+  <!-- NOTE: for loops are adding rows every 3 results, which correlates col-md-4, divides page by 3,
+  if changing - change the divisiblyby counter below to match page columns -->
+  
+  {% if forloop.first %}<div class="row">{% endif %}
+  
+  <div class="col-md-4">
+    {% include 'case_studies/search-result.html' %}
+  </div>
+  
+  {% if forloop.counter|divisibleby:3 %}</div><div class="row">{% endif %}
+  {% if forloop.last %}</div>{% endif %}
+  
+  {% endwith %}
+  
+  {% empty %}
+  
+  <p>{% trans '0 Case Studies Found' %}</p>
+  
+  {% endfor %}
+  
+</div>
+{% paginate %}
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user news.change_news opt_object as can_edit %}
+{% has_perm user news.delete_news opt_object as can_delete %}
+
+
+{% if can_edit %}
+    <nav class="navbar navbar-default t-meta-editor-bar t-meta-editor-more-options-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ news.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links t-meta-quick-links">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "More Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            {% if can_delete %}
+                                <li>
+                                    <a class="t-meta-delete-link" href="{% url 'news.delete' opt_object.pk %}">{% trans "Delete" %}</a>
+                                </li>
+                            {% endif %}
+
+                            <li>
+                                {% if opt_object.object %}
+                                    <a href="{% url 'category.update' opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                                {% else %}
+                                    <a href="{% url 'category.update' opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+                                {% endif %}
+                            </li>
+
+                            <li>
+                                <a href="{% url 'news.edit.meta' opt_object.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load resume_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_attach.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_RESUMES_LABEL trans "Resumes" %}{% endblock %}
+
+{% block current_app %}
+    {% if resume %}
+        {% resume_current_app request.user resume %}
+    {% else %}
+        {% resume_current_app request.user %}
+    {% endif %}
+{% endblock %}

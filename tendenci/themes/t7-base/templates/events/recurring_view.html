@@ -1,0 +1,29 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-search.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t search-view">
+    <h1>{% trans 'Recurring Event List' %}</h1>
+    <h3>{{ recurring_event.get_info }}</h3>
+    {% autopaginate events 10 %}
+
+    <div class="events-wrap">
+    {% for event in events %}
+        {% search_result event %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

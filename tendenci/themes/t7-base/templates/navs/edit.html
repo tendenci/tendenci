@@ -1,0 +1,32 @@
+{% extends "navs/base.html" %}
+{% load nav_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }} {% trans "Edit" %}{% endblock title %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/navs.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% firstof MODULE_NAVS_LABEL trans "Nav" %} {% trans "Edit" %}</h1>
+
+    <div class="nav-wrap">
+        <form action="{% url "navs.edit" current_nav.id %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Update Nav' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

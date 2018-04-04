@@ -1,0 +1,21 @@
+{% load base_filters %}
+
+{% if object_display %}
+    {% blocktrans with d=object_display|safe %}{{ d }}{% endblocktrans %}
+{% else %}
+<tr>
+    <td>
+        {% blocktrans with t=invoice.title %}{{ t }}{% endblocktrans %}
+        {% if obj %}
+            {% if obj.get_absolute_url %}
+            &nbsp;<a href="{{ obj.get_absolute_url }}" title="{% trans 'View' %} {{ obj }}">#{{ obj.pk }}</a>
+            {% else %}
+            &nbsp;#{{ obj.pk }}
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
+</td>
+{% endif %}

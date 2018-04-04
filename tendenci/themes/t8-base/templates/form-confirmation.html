@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{ block.super }} Contact Us{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Success!" %}</h1>
+
+    <p>{% trans "Thank you for getting in touch with" %} {% firstof SITE_GLOBAL_SITEDISPLAYNAME "us" %}!  {% trans "We will be in touch with you shortly." %}</p>
+    <p>{% trans "Thanks!" %}</p>
+    {% if SITE_GLOBAL_SITECONTACTNAME %}<p>{{ SITE_GLOBAL_SITECONTACTNAME }}</p>{% endif %}
+</div>
+{% endblock %}

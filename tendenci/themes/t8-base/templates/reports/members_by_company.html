@@ -1,0 +1,74 @@
+{% extends "reports/base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" href="{% static 'tablesorter/sortthemes.css' %}" rel="Stylesheet" />
+<style>
+    table.tablesorter{
+        width: 500px;
+    }
+    table.tablesorter th, .align_center{
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Current Members by Company" %}</h1>
+</div>
+<div class="mems-wrap">
+{% if companies %}
+<table class="table table-tendenci-reports">
+    <thead>
+    <tr>
+        <th>{% trans "Company" %}</th>
+        <th>{% trans "# Members" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for company in companies %}
+    <tr>
+        <td><a href="{% url "profile.search" %}?member_only=on&search_criteria=company&search_text={{ company.name|urlencode }}&search_method=exact">{{ company.name|truncatechars:45 }}</a></td>
+        <td class="align_center">{{ company.total_members }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    {% trans "No company data available." %}
+{% endif %}
+</div>
+
+{% endblock content %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+    if (!(window.jQuery)) {
+        var s = document.createElement('script');
+        s.setAttribute('src', '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js');
+        s.setAttribute('type', 'text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{% static 'tablesorter/jquery.tablesorter.min.js' %}"></script>
+
+<script type="text/javascript">
+var cname_extraction = function(node)
+{
+    return node.childNodes[0].innerHTML;
+}
+$(document).ready(function(){
+    $.tablesorter.defaults.widgets = ['zebra'];
+        // extend the default setting to always sort on the first column
+        $.tablesorter.defaults.sortList = [[0,0]];
+    $(".tablesorter").tablesorter({
+        textExtration: cname_extraction
+    });
+
+});
+
+</script>
+
+{% endblock %}

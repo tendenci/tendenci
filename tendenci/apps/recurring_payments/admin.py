@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 
@@ -12,6 +11,7 @@ from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
@@ -127,7 +127,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
 
     @mark_safe
     def view_on_site(self, obj):
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = static('images/icons/external_16x16.png')
         return '<a href="%s"><img src="%s" /></a>' % (
             reverse('recurring_payment.view_account', args=[obj.id]),
             link_icon)

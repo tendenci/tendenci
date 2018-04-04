@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_CAMPAIGN_MONITOR_LABEL %}
+        {% blocktrans with label=MODULE_CAMPAIGN_MONITOR_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label }} for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            Campaign Monitor for {{ display_name }} in {{ location }}
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/campaign_monitor.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock %}

@@ -16,7 +16,7 @@ class FieldDict(dict):
     Custom Field dict that will allow unicode
     representation based on a models verbose_name
     """
-    def __unicode__(self):
+    def __str__(self):
         return self['verbose_name_plural'].lower()
 
 

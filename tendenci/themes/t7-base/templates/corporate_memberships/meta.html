@@ -1,0 +1,44 @@
+{% load base_tags %}
+{% load base_filters %}
+
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
+    <div class="meta-left">
+        {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
+            {% meta_creator_owner corporate_membership %}
+        {% endif %}
+    </div>
+
+    <div class="meta-right">
+    </div>
+
+</div>
+
+{% if user.profile.is_superuser %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ corporate_membership.obj_perms }}</li>
+        <li>{{ corporate_membership.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ corporate_membership.pk }}&source={{ corporate_membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "corp_memb.edit" corporate_membership.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="option-link roster" href="{% url "corp_memb.roster_search" %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
+                </li>
+                    <li>
+                        <a class="option-link delete" href="{% url "corp_memb.delete" corporate_membership.pk %}">{% trans "Delete" %}</a>
+                    </li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,74 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user navs.add_nav as can_add_nav %}
+
+{% if nav_object %}
+    {% has_perm user navs.view_nav nav_object as can_view_nav %}
+    {% has_perm user navs.change_nav nav_object as can_edit_nav %}
+    {% has_perm user navs.delete_nav nav_object as can_delete_nav %}
+{% else %}
+    {% has_perm user navs.view_nav as can_view_nav %}
+    {% has_perm user navs.change_nav as can_edit_nav %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_NAVS_LABEL trans 'Navs' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Navs" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "navs" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "navs.search" %}">{% trans "Search Navs" %}</a></li>
+            {% if can_add_nav %}
+                <li><a href="{% url "navs.add" %}">{% trans "Add Nav" %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url "navs.export" %}">{% trans "Export Navs" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_nav or can_edit_nav %}
+            <ul>
+                <li class="heading">{% trans "This Nav" %}</li>
+                <li class="divider"></li>
+                {% if can_view_nav %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Nav" %}</a></li>
+                {% endif %}
+                {% if can_edit_nav %}
+                    <li><a href="{% url "navs.edit" nav_object.pk %}">{% trans "Edit Nav" %}</a></li>
+                    <li><a href="{% url "navs.edit_items" nav_object.pk %}">{% trans "Edit Nav Items" %}</a></li>
+                {% endif %}
+                {% if can_delete_nav %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "navs.delete" nav_object.pk %}">{% trans "Delete Nav" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_PAGES_ENABLED %}
+    <li><a href="{% url 'pages' %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

@@ -1,0 +1,55 @@
+{% extends "help_files/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load help_file_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="help-files">
+    
+  <div class="page-header">
+    <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Search" %}</h1>
+  </div>
+  
+ 
+  <ol class="breadcrumb">
+    <li><a href="{% url "help_files" %}">
+      {% trans 'All' %} 
+      {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}
+    </a> <strong>{{ request.GET.q|striptags }}</strong> 
+    {% firstof MODULE_HELP_FILES_LABEL trans 'Help Files' %}</li>
+  </ol>
+
+
+    {% autopaginate help_files 10 %}
+    {% help_file_search %}
+  
+  <span><em>{{ paginator.count }} 
+    {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} 
+    {% trans "Found" %}</em></span>
+
+
+    <div class="help-files-wrap">
+    {% for help_file in help_files %}
+        {% search_result help_file %}
+    {% empty %}
+        {% if user.profile.is_superuser %}
+        
+      <a class="btn btn-default" href="{% url "help_files.add" %}">
+        {% trans "Add a new" %} 
+        {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}
+      </a>
+      
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

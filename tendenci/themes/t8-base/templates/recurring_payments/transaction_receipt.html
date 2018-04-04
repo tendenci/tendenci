@@ -1,0 +1,97 @@
+{% extends "recurring_payments/base-print.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Recurring Payment Receipt' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/recurring_payments.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="rp-receipt">
+        <h1>{% trans 'Payment Receipt' %} </h1>
+
+
+        <div class="rp-receipt-label">{% trans 'Name' %}</div>
+        <div class="rp-receipt-field">{{ rp.user.get_full_name }}({{ rp.user.email }})</div>
+        <div class="clear-left"></div>
+
+
+        <div class="rp-receipt-label">{% trans 'Date' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.create_dt|date }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Card #' %}</div>
+        <div class="rp-receipt-field">****{{ payment_profile.card_num }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Description' %}</div>
+        <div class="rp-receipt-field">{{ rp.description }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Billing Cycle' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.recurring_payment_invoice.billing_cycle_start_dt|date:"n/j/Y" }}
+        - {{ payment_transaction.recurring_payment_invoice.billing_cycle_end_dt|date:"n/j/Y" }}
+        </div>
+
+        <div class="rp-receipt-label">&nbsp;</div>
+        <div class="rp-receipt-field">
+            <table>
+                <tr>
+                    <td class="totals">{% trans 'Subtotal' %}: </td><td align="right">{{ invoice.subtotal|format_currency }}</td>
+                </tr>
+                <tr>
+                    <td class="totals">{% trans 'Tax' %}: </td><td align="right">{{ invoice.tax|format_currency }}</td>
+                </tr>
+                <tr>
+                    <td class="rp-total-label totals">{% trans 'Total' %}: </td><td class="rp-total" align="right">{{ invoice.total|format_currency }}</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="clear-left"></div>
+
+
+        <div class="l0"></div>
+
+        <div style="font-weight: bold;">{% trans 'Billing Info' %}</div>
+
+        <div class="rp-receipt-label">{% trans 'Name' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.first_name }} {{ payment_transaction.payment.last_name }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Address' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.address }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'City' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.city }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Zip code' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.zip }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Phone' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.phone }}</div>
+        <div class="clear-left"></div>
+
+        <div class="rp-receipt-label">{% trans 'Email' %}</div>
+        <div class="rp-receipt-field">{{ payment_transaction.payment.email }}</div>
+        <div class="clear-left"></div>
+
+        <div>&nbsp;</div>
+        <div><a href="{% url "recurring_payment.view_account" rp.id %}">{% trans 'View Account' %}</a></div>
+
+
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Types' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Reassign Event Types" %}</h1>
+    <div class="event-wrap">
+        <div class="type-wrap">
+            <div class="type-item">
+                {{ type.name }} has {{ type.event_set.count }} event{{ type.event_set.count|pluralize }} associated
+                {% if type.event_set.count > 0 %}
+                    <ul class="associated-events">
+                    {% for event in type.event_set.all %}
+                        <li>
+                        <a href="{% url "event" event.pk %}">{{ event }}</a>
+                        {% if event.all_day %}
+                        ({{ event.start_dt|date:"l, M j, Y" }} - {{ event.end_dt|date:"l, M j, Y" }}
+                        {% else %}
+                        ({{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }})
+                        {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <div class="forms">
+        <form action="{% url "event.reassign_type" type.pk %}" method="post">{% csrf_token %}
+            <div class="item">
+                <div class="errs">{{ form.type.errors }}</div>
+                <div class="label">{{ form.type.label }}</div>
+                <div class="field" style="margin-left:150px">{{ form.type }}</div>
+                <div class="clear"></div>
+            </div>
+            <input type="Submit" value="{% trans 'Reassign Events' %}" />
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

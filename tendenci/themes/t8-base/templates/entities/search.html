@@ -1,0 +1,81 @@
+{% extends "entities/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load entity_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_ENTITIES_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_ENTITIES_LABEL_PLURAL }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Entities List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_ENTITIES_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_ENTITIES_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Entities List" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate entities 10 %}
+    {% entity_search %}
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_ENTITIES_LABEL_PLURAL and MODULE_ENTITIES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_ENTITIES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_ENTITIES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Entity Found
+                {% plural %}
+                    {{ obj_count }} Entities Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for entity in entities %}
+            {% search_result entity %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_entity = confirm('{% trans "Permenantly delete" %} {{ MODULE_ENTITIES_LABEL }} ?');    // confirm
+                if(delete_entity) $(this).parents('.entity-wrap').find('form[name="entity-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+{% endblock %}

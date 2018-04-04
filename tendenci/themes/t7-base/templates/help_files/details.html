@@ -1,0 +1,27 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load base_filters %}
+
+{% block title %}{{ help_file.question|striptags|safe }} - {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}{% endblock %}
+{% block meta_description %}{{ help_file.answer|striptags|safe|truncatewords:40 }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% help_file_search %}
+    <div class="breadcrumbs"><p><a href="{% url "help_files" %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a> > {% blocktrans with question=help_file.question|striptags|safe %}{{ question }}{% endblocktrans %}</p></div>
+    <div class="help-file-wrap">
+        <h1>{{ help_file.question|striptags|safe }}</h1>
+
+        <div class="content">
+            {{ help_file.answer|safe }}
+        </div>
+
+        {% include "help_files/meta.html" %}
+    </div>
+</div>
+{% endblock %}

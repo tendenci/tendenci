@@ -1,0 +1,10 @@
+
+{% if MODULE_ANNOUNCEMENTS_ENABLED and announcements %}
+<div id="announcement-bar">
+    {% for announcement in announcements %}
+    <div class="announcement-wrap">
+        {% blocktrans with content=announcement.content|safe %}{{ content }}{% endblocktrans %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,31 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Membership Application Approved" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Approved" %}</div>
+
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type.name as memtype and membership.membership_type.price as memprice %}Membership Type: {{ memtype }} ${{ memprice }}{% endblocktrans %}</div>
+    {% else %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type.name as memtype %}Membership Type: {{ memtype }} (Free){% endblocktrans %}</div>
+    {% endif %}
+
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
+        {% trans "View Approved Application" %}
+    </a></div>
+
+    <div>========================</div>
+
+    <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
+
+</body>
+</html>

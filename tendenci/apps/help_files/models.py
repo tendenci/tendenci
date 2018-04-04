@@ -23,7 +23,7 @@ class Topic(models.Model):
     def get_absolute_url(self):
         return reverse('help_files.topic', args=[self.pk])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 class HelpFile(TendenciBaseModel):
@@ -56,7 +56,7 @@ class HelpFile(TendenciBaseModel):
     def get_absolute_url(self):
         return reverse('help_file.details', args=[self.slug])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.question
 
     def level_is(self):
@@ -70,7 +70,7 @@ class Request(models.Model):
     class Meta:
         app_label = 'help_files'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.question
 
 

@@ -1,0 +1,23 @@
+.collapse-expand-button, .toggle-all-button{
+	padding: 1em;
+    background-color: white;
+}
+.collapse-expand-button .collapse-button{
+	display:inline;
+	background-image: url('/static/images/icons/collapse.jpg');
+	background-repeat:no-repeat;
+}
+.collapse-expand-button .expand-button{
+	display:inline;
+	background-image: url('/static/images/icons/expand.jpg');
+	background-repeat:no-repeat;
+}
+.collapse-button a, .expand-button a{
+	margin:0 1em;
+	padding:0 1em;
+}
+
+.inline-related h3{
+	line-height: 1.5em;
+	border-top: 1px solid #ccc;
+}

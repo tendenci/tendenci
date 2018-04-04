@@ -92,7 +92,7 @@ class Article(TendenciBaseModel):
     def get_version_url(self, hash):
         return reverse('article.version', args=[hash])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.headline
 
     def save(self, *args, **kwargs):

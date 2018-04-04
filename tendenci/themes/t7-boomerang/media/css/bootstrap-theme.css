@@ -1,0 +1,52 @@
+* {
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+.box-text-center {
+    text-align: center;
+}
+
+
+.wp-theme-1 .btn-one {
+    background-color: transparent;
+}
+
+.footer .col h3 {
+    font-size: 14px;
+}
+
+.footer .col h3 {
+    color: #ccc;
+}
+
+.navbar-header:hover .admin-inline {
+    display: block;
+}
+
+.navbar-header .admin-inline {
+    position: relative;
+    top: 20px;
+}
+
+.upload-logo {
+  width: 100px;
+}
+
+.modal.fade.in {
+  top: 50%;
+  left: 50%;
+}
+
+#upload-logo-modal {
+   display: none;
+   height: 250px;
+}
+
+@media (max-width: 970px) {
+    .wp-theme-1 .wrapper {
+        padding-top: 50px;
+    }
+}
+

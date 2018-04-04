@@ -1,0 +1,37 @@
+{% extends "jobs/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load job_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }} {% trans "List" %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="{% trans 'My' %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}" href="{% url "job.feed" %}" />
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "My Pending" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} {% trans "List" %}</h1>
+
+    {% job_search %}
+    <span><em>{{ jobs|length }} {% trans "Pending" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %} {% trans "Found" %}</em></span>
+    {% autopaginate jobs 10 %}
+
+    <div class="jobs-wrap">
+    {% for job in jobs %}
+        {% search_result job %}
+    {% empty %}
+        {% if user.profile.is_staff %}
+        <p><a href="{% url "job.add" %}">{% trans "Add a new" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a></p>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

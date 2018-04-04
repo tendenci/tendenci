@@ -1,0 +1,92 @@
+{% load tagging_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load resume_tags %}
+
+
+{% has_perm user resumes.change_resume resume as can_edit %}
+{% has_perm user resumes.delete_resume resume as can_delete %}
+{% tags_hash_tags resume as hash_tags %}
+{% tags_strip_hash resume as nonhash_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    <li class="pull-right"><a href="{% url 'resume.print_view' resume.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
+
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe resume.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% if nonhash_tags or hash_tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in nonhash_tags %}
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+            {% endfor %}
+
+            {# TODO: Distinguish between hash_tags and nonhash_tags #}
+            {% for tag in hash_tags %}
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+            {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if resume.creator.first_name %}
+            {% blocktrans with create_date=resume.create_dt|date:"long" profile_url=resume.creator.get_absolute_url first_name=resume.creator.first_name last_name=resume.creator.last_name %}
+                <li><strong>Created on {{ create_date }} by:</strong> <a href="{{ profile_url }}">{{ first_name }} {{ last_name }}</a></li>
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans with create_date=resume.create_dt|date:"long" profile_url=resume.creator.get_absolute_url username=resume.creator.username %}
+                <li><strong>Created on {{ create_date }} by:</strong> <a href="{{ profile_url }}">{{ username }}</a></li>
+            {% endblocktrans %}
+        {% endif %}
+
+        {% if resume.owner.first_name %}
+            {% blocktrans with update_date=resume.update_dt|date:"long" profile_url=resume.owner.get_absolute_url first_name=resume.owner.first_name last_name=resume.owner.last_name %}
+                <li><strong>Last update on {{ update_date }} by:</strong> <a href="{{ profile_url }}">{{ first_name }} {{ last_name }}</a></li>
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans with update_date=resume.update_dt|date:"long" username=resume.owner.username profile_url=resume.owner.get_absolute_url username=resume.owner %}
+                <li><strong>Last update on {{ update_date }} by:</strong> <a href="{{ profile_url }}">{{ username }}</a></li>
+            {% endblocktrans %}
+        {% endif %}
+    {% endif %}
+
+</ul>
+
+{% if can_edit %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ resume.obj_perms }}</li>
+                    <li>{{ resume.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ resume.pk }}&source={{ resume.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'resume.edit' resume.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            {% if can_delete %}
+                                <li>
+                                    <a class="t-meta-delete-link" href="{% url 'resume.delete' resume.pk %}">{% trans "Delete" %}</a>
+                                </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'resume.edit.meta' resume.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

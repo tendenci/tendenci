@@ -1,0 +1,107 @@
+{% extends "admin/base_site.html" %}
+{% load admin_static bootstrapped_goodies_tags %}
+{% load admin_tags %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block breadcrumbs %}
+
+{% endblock %}
+
+{% block content-navbar-collapse %}
+{% endblock %}
+
+{% block object-tools %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div id="content-main" class="{% if app_list|length > 1 %}col-sm-7{% else %}col-sm-12{% endif %}">
+
+        <div class="tabbable">
+            {% for app in app_list %}
+                {% if app.name|check_enabled %}
+                <div class="panel panel-info">
+                      <div id="{% render_app_label app %}" class="panel-heading app-name">
+                     <strong><a href="{{ app.app_url }}">{{ forloop.counter }}. {% render_app_name app %}</a></strong>
+                    {% render_app_description app %}
+                    </div>
+                    <div class="panel-body">
+                    {% for model in app.models %}
+                        <div class="clearfix">
+                                {% if model.admin_url %}
+                                <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                                {% else %}
+                                {{ model.name }}
+                                {% endif %}
+
+                                {% if model.add_url or model.admin_url%}
+                                <div class="pull-right">
+                                    {% if model.add_url %}
+                                    <a href="{{ model.add_url }}" class="btn btn-xs addlink"><span class="glyphicon glyphicon-plus"></span>
+                                    {% trans 'Add' %}</a>
+                                    {% endif %}
+                                    {% if model.admin_url %}
+                                    <a href="{{ model.admin_url }}" class="btn btn-xs changelink"><span class="glyphicon glyphicon-edit"></span>
+                                    {% trans 'Change' %}</a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                         </div>
+                    {% endfor %}
+                    </div>
+                 </div>
+                {% endif %}
+
+            {% empty %}
+                <p>{% trans "You don't have permission to edit anything." %}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if app_list|length > 1 %}
+    <div id="content-related" class="col-sm-4">
+        <div class="module" id="recent-actions-module">
+           <div class="panel panel-default">
+            <div class="panel-heading">{% trans 'Recent Actions' %}</div>
+            <div class="panel-body">
+                <h4>{% trans 'My Actions' %}</h4>
+                {% load log %}
+                {% get_admin_log 10 as admin_log for_user user %}
+                {% if not admin_log %}
+                <p>{% trans 'None available' %}</p>
+                {% else %}
+                <div class="actionlist">
+                {% for entry in admin_log %}
+                <div class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
+                        {{ entry.object_repr }}
+                    {% else %}
+                         <a href="{{ entry.get_admin_url }}"><span class="glyphicon glyphicon-edit btn-xs"></span> {{ entry.object_repr }}</a>
+                    {% endif %}
+                    &nbsp;&nbsp;
+                    {% if entry.content_type %}
+                        <small class="text-muted">{% filter capfirst %}{{ entry.content_type }}{% endfilter %}</small>
+                    {% else %}
+                        <small class="text-muted">{% trans 'Unknown content' %}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

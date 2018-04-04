@@ -1,0 +1,16 @@
+{% extends "helpdesk/base.html" %}
+{% load styled_forms %}
+
+{% block helpdesk_title %}{% trans "Add Ticket CC" %}{% endblock %}
+
+{% block helpdesk_body %}{% blocktrans %}
+<h2>Add Ticket CC</h2>
+
+<p>To automatically send an email to a user or e-mail address when this ticket is updated, select the user or enter an e-mail address below.</p>{% endblocktrans %}
+
+<form class="form-horizontal"  method='post' action='./'>{% csrf_token %}
+    {{ form|styled_form }}
+    <input class="btn btn-primary" type='submit' value='{% trans "Save Ticket CC" %}' />
+</form>
+
+{% endblock %}

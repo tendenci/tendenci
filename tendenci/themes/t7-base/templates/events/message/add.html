@@ -1,0 +1,59 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% trans "Email to Event Registrants" %}</h1>
+
+    <div class="event-message-wrap">
+        <form action="." method="post" name="form1">{% csrf_token %}
+        <div class="message-forms">
+            <h2>{% trans "Event Title: " %}<a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h2>
+
+            <div class="recipient-set">{% blocktrans with payment_status=form.payment_status %}{{ payment_status }}{% endblocktrans %}</div>
+
+            <div class="message-item"><a href="{% url "event.registrant.roster" event.id %}">{% trans "View all registrant(s)" %}</a></div>
+
+            <div class="message-item">
+                <p><strong>{% blocktrans with label=form.subject.label %}{{ label }}{% endblocktrans %}:</strong></p>
+                {% blocktrans with subject=form.subject %}{{ subject }}{% endblocktrans %}
+            </div>
+
+            <div class="message-item">
+                <p><strong>{% blocktrans with label=form.body.label %}{{ label }}{% endblocktrans %}:</strong></p>
+                {% blocktrans with body=form.body %}{{ body }}{% endblocktrans %}
+            </div>
+
+            <div class="message-item">
+                <em><strong>
+        {% trans "For security a footer will be automatically appended indicating the sender (you!) as well as logging a security event to prevent abuse of the system" %}</strong></em>.
+            </div>
+
+            <div class="message-item">
+                <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
+            </div>
+
+            <input type="submit" value="{% trans "Send Email" %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+{% endblock %}

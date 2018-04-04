@@ -45,7 +45,7 @@ class Setting(models.Model):
         return reverse("setting.permalink",
                 args=[self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
 
-    def __unicode__(self):
+    def __str__(self):
         return "(%s) %s" %(self.name, self.label)
 
     def set_value(self, value):
@@ -69,12 +69,22 @@ class Setting(models.Model):
 
     def save(self, *args, **kwargs):
         """The save method is overwritten because settings are referenced
-        in several different ways. This is the cental command if we
+        in several different ways. This is the central command if we
         want to incorporate a process applicable for all those ways.
-        Using signals is also feasable however there is a process order
+        Using signals is also feasible however there is a process order
         that must be followed (e.g. caching new value if not equal to old value)
         so we can leave that for a later time.
         """
+        # Django 1.10 and later no longer accept "true" or "false" strings for
+        # BooleanField values.  Since these are used in many existing theme
+        # settings files, we must still support them.
+        if self.client_editable in ('true', 'false'):
+            self.client_editable = self.client_editable == 'true'
+        if self.store in ('true', 'false'):
+            self.store = self.store == 'true'
+        if self.is_secure in ('true', 'false'):
+            self.is_secure = self.is_secure == 'true'
+
         try:
             #get the old value as reference for updating the cache
             orig = Setting.objects.get(pk = self.pk)

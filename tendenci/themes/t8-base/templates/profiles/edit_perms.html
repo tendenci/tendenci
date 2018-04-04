@@ -1,0 +1,82 @@
+{% extends "profiles/base-wide.html" %}
+{% load profile_tags %}
+
+
+{% block title %}{% trans 'Edit User Permissions' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            jQuery.each($("select[multiple]"), function () {
+            // "Locations" can be any label you want
+            SelectFilter.init(this.id, "Permissions", 0, "/media/");
+            });
+
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <div class="t-profile">
+
+            <div class="t-perm">
+                <h1>{% trans "Grant/Remove Module Level Permissions" %}</h1>
+                <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">
+                {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
+
+                <div class="profile-wrap edit-profile-perms">
+                    <form action="" method="post">{% csrf_token %}
+
+                        <div class="field-wrapper">
+                            {% if form.is_superuser.errors %}
+                                {{ form.is_superuser.errors }}
+                            {% endif %}
+
+                            <b>{{form.is_superuser.label_tag }}</b>
+
+                            {{ form.is_superuser }}
+                            {{form.is_superuser.help_text }}
+                        </div>
+
+                        <div class="field-wrapper">
+                            {% if form.user_permissions.errors %}
+                                {{ form.user_permissions.errors }}
+                            {% endif %}
+
+                            <label for="id_user_permissions" style="float:left; padding-right: 1em;">
+                                <b>{% trans "User Permissions:" %}</b>
+                            </label>
+
+                            <br />
+                            {{ form.user_permissions }}
+                        </div>
+
+                        <div style="clear:both"></div>
+                        <input type="submit" value="{% trans 'Save' %}" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+{% endblock %}

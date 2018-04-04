@@ -1,0 +1,42 @@
+{% extends "user_groups/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load user_group_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'User Groups' %} {% trans "Import" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="imports">
+    <h1>{% firstof MODULE_USERGROUPS_LABEL_PLURAL trans 'User Groups' %} {% trans "Import" %}</h1>
+
+    <p>
+    {% trans "<strong>Download</strong> and <strong>fill in</strong> spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong>, and then <strong>submit</strong>." %}
+    </p>
+
+    <div class="download-csv">
+        <img src="{% static 'images/icons/xls-icon.gif' %}" alt="{% trans 'Download CSV Template' %}" title="{% trans 'Download CSV Template' %}"/>
+        <div class="item-right">
+            <p style="margin-bottom:0;"><a href="{% url "group.import_download_template" %}">{% trans "Download template" %}</a></p>
+        </div>
+        <div class="clear-both"></div>
+    </div>
+
+    <div class="forms">
+        <form class="import" action="." method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            {{ form|styled_form }}
+            <input type="submit" class="submit-btn"  name="submit" value="{% trans 'Preview Import' %}">
+        </form>
+    </div>
+
+</div>
+</div>
+{% endblock %}

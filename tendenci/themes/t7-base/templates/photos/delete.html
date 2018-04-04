@@ -1,0 +1,24 @@
+{% extends "photos/base.html" %}
+{% load photo_tags %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_PHOTOS_LABEL 'Photo' %} {% trans "Delete Page" %}</h1>
+    <div class="delete-prompt">
+        {% trans "Are you sure you want to permanently delete this photo?" %}
+    </div>
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <img src="{{ photo.get_medium_640_url }}" alt="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" />
+        <div>
+        <span >{% blocktrans with t=photo.title %}{{ t }}{% endblocktrans %}</span><br>
+        by <a href="{{ photo.creator.get_absolute_url }}">{{ photo.creator.get_full_name }}</a>.
+        </div>
+    </div>
+    <div class="delete-form">
+        <form name="photo-delete" method="POST" action="{% url "photo_destroy" photo.id %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+</div>
+{% endblock %}

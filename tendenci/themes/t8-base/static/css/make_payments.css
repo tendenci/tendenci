@@ -1,0 +1,46 @@
+/* form */
+div.forms div.form-field div.id_first_name .field input {
+  width: 30%;
+}
+
+
+div.forms div.form-field div.id_payment_amount .field input {
+  width: 14%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+  width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+  width: 28%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+  width: 18%;
+}
+
+div.forms div.form-field div.id_city .field input {
+  width: 28%;
+}
+
+div.forms div.form-field div.id_state .field input {
+  width: 18%;
+}
+
+div.forms div.form-field div.id_zip_code .field input {
+  width: 18%;
+}
+
+.make-payment-view{
+	/*font-size: 12px;*/
+}
+.make-payment-view .label{
+	float: left;
+	text-align: right;
+	width: 10em;
+	padding-right: 1em;
+}
+.clear-left{
+	clear: left;
+}

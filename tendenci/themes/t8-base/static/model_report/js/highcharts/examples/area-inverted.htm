@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+		
+		
+		<!-- 1. Add these JavaScript inclusions in the head of your page -->
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/highcharts.js"></script>
+		
+		<!-- 1a) Optional: add a theme file -->
+		<!--
+			<script type="text/javascript" src="../js/themes/gray.js"></script>
+		-->
+		
+		<!-- 1b) Optional: the exporting module -->
+		<script type="text/javascript" src="../js/modules/exporting.js"></script>
+		
+		
+		<!-- 2. Add the JavaScript to initialize the chart on document ready -->
+		<script type="text/javascript">
+		
+			var chart;
+			$(document).ready(function() {
+				chart = new Highcharts.Chart({
+					chart: {
+						renderTo: 'container',
+						defaultSeriesType: 'area',
+						inverted: true
+					},
+					title: {
+						text: 'Average fruit consumption during one week'
+					},
+					subtitle: {
+						style: {
+							position: 'absolute',
+							right: '0px',
+							bottom: '10px'
+						}
+					},
+					legend: {
+						layout: 'vertical',
+						align: 'right',
+						verticalAlign: 'top',
+						x: -150,
+						y: 100,
+						floating: true,
+						borderWidth: 1,
+						backgroundColor: '#FFFFFF'
+					},
+					xAxis: {
+						categories: [
+							'Monday',
+							'Tuesday',
+							'Wednesday',
+							'Thursday',
+							'Friday',
+							'Saturday',
+							'Sunday'
+						]
+					},
+					yAxis: {
+						title: {
+							text: 'Number of units'
+						},
+						labels: {
+							formatter: function() {
+								return this.value;
+							}
+						},
+						min: 0
+					},
+					tooltip: {
+						formatter: function() {
+				                return ''+
+								this.x +': '+ this.y;
+						}
+					},
+					plotOptions: {
+						area: {
+							fillOpacity: 0.5
+						}
+					},
+					series: [{
+						name: 'John',
+						data: [3, 4, 3, 5, 4, 10, 12]
+					}, {
+						name: 'Jane',
+						data: [1, 3, 4, 3, 3, 5, 4]
+					}]
+				});
+				
+				
+			});
+				
+		</script>
+		
+	</head>
+	<body>
+		
+		<!-- 3. Add the container -->
+		<div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+		
+				
+	</body>
+</html>

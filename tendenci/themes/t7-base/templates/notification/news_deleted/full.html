@@ -1,0 +1,35 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "News Delete Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans %}A record has been deleted
+  from the {{ SITE_GLOBAL_SITEDISPLAYNAME }} module {% endblocktrans %}{% firstof MODULE_NEWS_LABEL trans 'News' %}. {% blocktrans %}The details are given below:{% endblocktrans %}</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
+    <td width="75%"><b>{% blocktrans with h=object.headline %}{{ h }}{% endblocktrans %}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%">{% blocktrans with request.user.get_full_name as requser %} Deleted
+      by:</td>
+    <td width="75%"><b>{{ requser }}</b>{% endblocktrans %}</td>
+  </tr>
+</table>
+<p>{% blocktrans %}If you would like view all
+  recently deleted news, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=305300">{{ SITE_GLOBAL_SITEURL }}{% url "event_log.search" %}?q=305300</a></b><br>
+  <br>
+ </p>
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+
+</body>
+</html>

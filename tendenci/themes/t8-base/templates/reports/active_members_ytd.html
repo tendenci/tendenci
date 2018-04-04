@@ -1,0 +1,107 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "New and Renewing Members YTD" %} {{ year_selected }}</h1>
+</div>
+
+<div class="mems-wrap stat-table">
+
+
+  <div id="chart_div">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Months');
+      data.addColumn('number', 'New');
+      data.addColumn('number', 'Renewing');
+      {% if not exclude_total %}
+      data.addColumn('number', 'Total Active');
+      {% endif %}
+      data.addRows([
+      {% for  month in months %}
+      ['{{ month.name }}', {{ month.new_mems }},
+      {{ month.renew_mems }}{% if not exclude_total %}, {{ month.total_active }}{% endif %}],
+      {% endfor %}
+      ]);
+      var options = {
+      width: 1000, height: 500,
+      hAxis: {title: 'Month'},
+      vAxis: {title: '# Members'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+      }
+    </script>
+  </div>
+
+
+  <form class="search-form pull-right form-inline" action="{% url "reports-active-members-ytd" %}" method="get">
+    <div class="form-group">
+      <label class="control-label" for="id_year">{% trans "Select a Year" %}:</label>
+      <select class="form-control" name="year" id="id_year" onchange="this.form.submit();">
+        <option value="">-----------</option>
+        {% for year in years %}
+        <option value="{{ year }}" {% if year_selected == year %}selected="selected"{% endif %}> &nbsp;{{ year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  <div>
+    {% if not exclude_total %}
+    <a class="btn btn-default" href="{% url "reports-active-members-ytd" %}?exclude_total=on">{% trans 'Exclude Total Active from Chart' %}</a>
+    {% else %}
+    <a class="btn btn-default" href="{% url "reports-active-members-ytd" %}">{% trans 'Include Total Active to Chart' %}</a>
+    {% endif %}
+  </div>
+
+
+  <div style="clear: right;">&nbsp;</div>
+  <table class="table table-tendenci-reports">
+    <tr>
+      <th>{% trans "Members" %}</th>
+      {% for month in months %}
+      <th>{{ month.name }}</th>
+      {% endfor %}
+      <th>{% trans "Total" %}</th>
+    </tr>
+    <tr>
+      <td>{% trans "New" %}</td>
+      {% for month in months %}
+      <td>{{ month.new_mems }}</td>
+      {% endfor %}
+      <td>{{ total_new }}
+      </tr>
+        <tr>
+          <td>{% trans "Renewing" %}</td>
+          {% for month in months %}
+          <td>{{ month.renew_mems }}</td>
+          {% endfor %}
+          <td>{{ total_renew }}
+          </tr>
+            <tr>
+              <td>{% trans "Total Active" %}</td>
+              {% for month in months %}
+              <td>{{ month.total_active }}</td>
+              {% endfor %}
+              <td></td>
+            </tr>
+          </table>
+            <div style="float: right; margin-right: 1em;">
+              <a href="?year={{ year_selected }}&print=on{% if exclude_total %}&exclude_total=on{% endif %}" target="_blank">
+                <i class="fa fa-print"></i> &nbsp; {% trans 'Print' %}
+              </a>
+            </div>
+            <br />
+            <br />
+            <br />
+          </div>
+
+
+
+            {% endblock content %}

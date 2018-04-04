@@ -1,0 +1,144 @@
+.email_block-view-item{
+	margin: 1em 0;
+}
+.body-copy-yellow{
+	background-color: yellow;
+}
+
+.t {
+	width: 90%;
+}
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t .email_blocks-wrap {
+	margin-bottom: 20px;
+}
+
+.t .email_blocks-wrap .email_block-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .email_blocks-wrap .email_block-wrap h2 {
+	width: 85%;
+}
+.t .email_blocks-wrap .email_block-wrap .content {
+	margin-bottom: 10px;
+}
+.t .email_blocks-wrap .email_block-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t .add-email_block-link{
+	margin-bottom: 20px;
+}
+
+
+.t ul.email_blocks-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.email_blocks-nav li {
+	display: inline;
+}
+.email_block-wrap .delete-form{
+	margin-top: 1em;
+}
+.email_block-wrap .delete-prompt{
+	font-size: 1.2em;
+	color: red;
+}
+
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_end_dt .field input {
+	width: 30%;
+}
+
+.field-wrapper{
+	margin: 5px 0;
+}
+.field-wrapper .field-label{
+	float: left;
+	width: 9em;
+	text-align: right;
+	padding-right: 1em;
+}
+.submitbutton{
+	margin-left: 10em;
+}
+
+.clear-left{
+	clear: left;
+}
+.errorlist{
+	color: red;
+}

@@ -1,0 +1,36 @@
+{% load base_tags %}
+{% load nav_tags %}
+{% load box_tags %}
+{% load theme_tags %}
+
+<!-- start: navbar outer -->
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    
+    <div class="navbar-header"> 
+<!-- responsive btn --> 
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span> 
+      </button>
+<!-- logo -->      
+      <div class="navbar-brand" href="/">
+        {% box 1 %}
+      </div>
+    </div> <!-- end: navbar-header --> 
+<!-- navigation -->     
+    <div class="container">
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-left">  <!-- main nav -->
+          {% nav 1 %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right"> <!-- right justifed link in separate nav -->      
+          {% nav 2 %}
+        </ul>
+      </div>
+    </div>
+    
+  </div> <!-- end: container-fluid --> 
+</nav>
+<!-- end: navbar outer --> 

@@ -1,0 +1,27 @@
+{% load redirect_tags %}
+
+<div class="redirect-wrap">
+<div class="quick-options">{% redirect_options request.user redirect %}</div>
+
+{% if redirect.from_app %}
+<p><strong>{% trans "From App:" %}</strong>&nbsp;{{ redirect.from_app|capfirst }}</p>
+{% else %}
+<p><strong>{% trans "From URL:" %}</strong>&nbsp;<a href="/{{ redirect.from_url }}">{{ redirect.from_url }}</a>{% if redirect.uses_regex %}&nbsp;{% trans "(Uses Regular Expression)" %}{% endif %}</p>
+{% endif %}
+
+<p><strong>{% trans "To URL:" %}</strong>&nbsp;{{ redirect.to_url }}</p>
+<p>
+    <strong>{% trans "HTTP Status:" %}</strong>&nbsp;{{ redirect.http_status }}
+    {% if redirect.http_status == 302 %}
+        &nbsp;-&nbsp;{% trans "Temporary Redirect" %}
+    {% else %}
+        &nbsp;-&nbsp;{% trans "Permanent Redirect" %}
+    {% endif %}
+</p>
+
+      <!-- delete-article form -->
+      <form name="redirect-delete" method="POST" action="{% url "redirect.delete" redirect.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+      </form>
+</div>

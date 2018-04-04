@@ -1,0 +1,38 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'social-services.form' %}">{% trans "Relief Assessment Form" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'social-services.map' %}">{% trans "View Map" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'social-services.responders' %}">{% trans "View Responder List" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'social-services.relief_areas' %}">{% trans "View Relief Areas" %}</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

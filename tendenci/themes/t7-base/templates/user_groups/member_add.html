@@ -1,0 +1,92 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+
+{% block title %}{% trans 'Groups' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+
+    <div class="quick-options">
+        {% user_group_options request.user group %}
+    </div>
+
+    <h1>{% trans "Add Members to Group" %}</h1>
+    <div class="clear-right"></div>
+    <h2>{% trans "Group:" %} <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+
+    <form method="post" action=".">{% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="errors">
+            {{ form.non_field_errors|striptags }}
+            </div>
+        {% endif %}
+
+        <div class="profile-wrap" style="margin-top:1em;">
+            <div class="field-wrapper">
+                {% if form.members.errors %}
+                    <div class="errors">{{ form.members.errors|striptags }}</div>
+                {% endif %}
+                <label for="id_members" style="float:left; padding-right: 1em;">
+                    <b>{{ form.members.label }}:</b>
+                    {% trans 'view by' %}
+                    <a href="?member_label=full_name">{% trans 'name' %}</a>,
+                    <a href="?member_label=email">{% trans 'email' %}</a>,
+                    <a href="?member_label=username">{% trans 'username' %}</a>.
+                </label>
+                <br>
+                {{ form.members }}
+            </div>
+            <div style="clear:left;"></div>
+        </div>
+        <div class="field-wrapper">
+            {% if form.role.errors %}
+                <div class="errors">{{ form.role.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_role">{{ form.role.label }}:</label>
+            {{ form.role }}
+        </div>
+        <div class="field-wrapper">
+            {% if form.status.errors %}
+                <div class="errors">{{ form.status.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_status">{{ form.status.label }}:</label>
+            {{ form.status }}
+        </div>
+        <div class="field-wrapper">
+            {% if form.status_detail.errors %}
+                <div class="errors">{{ form.status_detail.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_status_detail">{{ form.status_detail.label }}</label>
+            {{ form.status_detail }}
+        </div>
+
+        <div class="submit-row">
+            <input id='add_members_submit' type="submit" value="{% trans 'Save' %}" class="default" />
+        </div>
+    </form>
+
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        jQuery.each($("select[multiple]"), function () {
+         SelectFilter2.init(this.id, "Members", 0, "/media/");
+        });
+        $("#add_members_submit").click(function(){
+            SelectBox.filter('id_members_to', '');
+            $("#id_members_input2").val('');
+        });
+    });
+</script>
+{% endblock %}

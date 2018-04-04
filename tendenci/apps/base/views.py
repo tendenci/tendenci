@@ -167,7 +167,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
 
     from django.conf import settings
 
-    document_root = os.path.join(settings.PROJECT_ROOT,'plugins',plugin,'media')
+    document_root = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin, 'media')
 
     # Clean up given path to only allow serving files below document_root.
     path = posixpath.normpath(unquote(path))
@@ -224,7 +224,7 @@ def memcached_status(request):
 
     # get first memcached URI
     m = re.match(
-        "memcached://([.\w]+:\d+)", settings.CACHE_BACKEND
+        r'memcached://([.\w]+:\d+)', settings.CACHE_BACKEND
     )
     if not m:
         raise Http404

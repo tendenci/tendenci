@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load email_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/email.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_EMAILS_LABEL_PLURAL trans "Emails" %}{% endblock %}
+
+{% block current_app %}
+    {% if email %}
+        {% emails_current_app email %}
+    {% else %}
+        {% emails_current_app %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "memberships/base.html" %}
+{% load base_filters %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Expire Membership" %}</h1>
+{% if msg_expired %}
+<div>{{ msg_expired }}</div>
+{% endif %}
+</div>
+{% endblock %}

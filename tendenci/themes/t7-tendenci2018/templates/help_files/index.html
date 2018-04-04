@@ -1,0 +1,100 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% has_perm request.user help_files.add_helpfile as can_add %}
+<div id="help-files-index">
+  
+  <div class="page-header">
+    <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</h1>
+  </div>
+  
+    {% help_file_search %}
+
+  <br />
+  
+  <div class="row">
+    
+ <div class="col-md-5">
+   
+   <div class="panel panel-default">
+     <div class="panel-heading">
+       {% trans "Featured" %}
+     </div>
+     <div class="panel-body">
+       <ul>
+         {% for hfile in featured %}
+         <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+         {% endfor %}
+       </ul>
+     </div>
+   </div>
+   
+    
+   <div class="panel panel-default">
+     <div class="panel-heading">
+       {% trans "FAQ" %}
+     </div>
+     <div class="panel-body">
+       <ul>
+         {% for hfile in faq %}
+         <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+         {% endfor %}
+       </ul>
+     </div>
+   </div>
+   
+   <div class="panel panel-default">
+     <div class="panel-heading">
+       {% trans "Most viewed" %}
+     </div>
+     <div class="panel-body">
+       <ul>
+         {% for hfile in most_viewed %}
+         <li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
+         {% endfor %}
+       </ul>
+     </div>
+   </div>
+   
+<!-- FEATURED PANEL -->
+   
+ </div><!-- PANEL WIDTH OUTER -->
+  
+ 
+    <div class="col-md-7">
+      <div class="left-col">
+        <div class="topics">
+          <h3>{% trans "Topics" %}</h3>
+          <ul class="list-group">
+            {% for topic in topics.0 %}
+            <li class="list-group-item"><a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a></li>
+            {% endfor %}
+          </ul>
+          <ul class="list-group">
+            {% for topic in topics.1 %}
+            <li class="list-group-item"><a href="{% url "help_files.topic" topic.pk %}">{{ topic }}</a></li>
+            <br>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+     
+        
+      <div style="clear: both;"></div>
+      
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}

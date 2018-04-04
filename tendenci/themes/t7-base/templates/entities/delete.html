@@ -1,0 +1,5 @@
+
+{% block content %}
+<h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url "entity.search" %}">&laquo; {% trans "Back to entities search" %}</a></div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+<ShortName>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</ShortName>
+<Description>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image  width="16" height="16" type="image/png">{{ SITE_GLOBAL_SITEURL }}{% static 'images/icons/tendenci-favicon.png' %}</Image >
+<Url type="text/html" method="GET" template="{{ SITE_GLOBAL_SITEURL }}{% url 'haystack_search' %}?q={searchTerms}"></Url>
+<moz:SearchForm>{{ SITE_GLOBAL_SITEURL }}{% url 'haystack_search' %}?q={searchTerms}</moz:SearchForm>
+</OpenSearchDescription>

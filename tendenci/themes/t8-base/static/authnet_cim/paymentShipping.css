@@ -1,0 +1,22 @@
+
+#divAuthorizeNetPopupScreen { position:fixed; left:0px; top:0px; width:100%; height:100%; z-index:1; background-color:#808080; opacity:0.5; -ms-filter:'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)'; filter:alpha(opacity=50); }
+#divAuthorizeNetPopup { position:absolute; left:50%; top:50%; margin-left:-200px; margin-top: -200px; z-index:2; overflow:visible; }
+.AuthorizeNetShadow {
+	height: 16px;
+	width: 16px;
+	position: absolute;
+}
+.AuthorizeNetShadowT { top: -16px; left: 0px; background-image: url('shadow1-top.png'); background-repeat: repeat-x; width: 100%; }
+.AuthorizeNetShadowR { top: 0px; right: -16px; background-image: url('shadow1-right.png'); background-repeat: repeat-y; height: 100%; }
+.AuthorizeNetShadowB { bottom: -16px; left: 0px; background-image: url('shadow1-bottom.png'); background-repeat: repeat-x; width: 100%; }
+.AuthorizeNetShadowL { top: 0px; left: -16px; background-image: url('shadow1-left.png'); background-repeat: repeat-y; height: 100%; }
+.AuthorizeNetShadowTR { top: -16px; right: -16px; background-image: url('shadow1-topRight.png'); background-repeat: no-repeat; }
+.AuthorizeNetShadowBR { bottom: -16px; right: -16px; background-image: url('shadow1-bottomRight.png'); background-repeat: no-repeat; }
+.AuthorizeNetShadowBL { bottom: -16px; left: -16px; background-image: url('shadow1-bottomLeft.png'); background-repeat: no-repeat; }
+.AuthorizeNetShadowTL { top: -16px; left: -16px; background-image: url('shadow1-topLeft.png'); background-repeat: no-repeat; }
+
+.AuthorizeNetPopupSimpleTheme .AuthorizeNetPopupOuter { border:1px solid #585858; background-color:#ffffff; }
+
+.rp-dname{
+	padding: 5px 0;
+}

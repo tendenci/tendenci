@@ -1,7 +1,6 @@
 from __future__ import print_function
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
 from django import forms
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -11,6 +10,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.studygroups.models import StudyGroup, Position, Officer
 from tendenci.apps.studygroups.forms import StudyGroupAdminForm, StudyGroupAdminChangelistForm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class OfficerAdminInline(admin.TabularInline):
@@ -94,7 +94,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
         )
 
     def get_form(self, request, obj=None, **kwargs):
@@ -149,7 +149,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
 
     @mark_safe
     def view_on_site(self, obj):
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('studygroups.detail', args=[obj.slug]),
             obj.title,

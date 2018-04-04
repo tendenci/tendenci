@@ -1,0 +1,71 @@
+{% extends "discounts/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load discount_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_DISCOUNTS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_DISCOUNTS_LABEL_PLURAL }} List{% endblocktrans %} {% else %}
+        {% trans "Discounts List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_DISCOUNTS_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_DISCOUNTS_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Discounts List" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate discounts 50 %}
+    {% discount_search %}
+
+    <h4 class="capitalize">
+        {% if MODULE_DISCOUNTS_LABEL_PLURAL %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} {{ MODULE_DISCOUNTS_LABEL_PLURAL }} Found
+            {% endblocktrans %}</em>
+        {% else %}
+            <em>{% blocktrans with count=paginator.count %}
+                {{ count }} Discounts Found
+            {% endblocktrans %}</em>
+        {% endif %}
+    </h4>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "Code" %}</th>
+                <th>{% trans "Value" %}</th>
+                <th>{% trans "Uses" %}</th>
+                <th>{% trans "Cap" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Edit" %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for discount in discounts %}
+                <tr class="t-discounts-search-result t-search-result">
+                    <td><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></td>
+                    <td>{{ discount.value|format_currency }}</td>
+                    <td>{{ discount.num_of_uses }}</td>
+                    <td>{{ discount.cap }}</td>
+                    <td>{% discount_expiration discount %}</td>
+                    <td class="t-meta-editor-td">{% discount_options request.user discount %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+{% endblock %}

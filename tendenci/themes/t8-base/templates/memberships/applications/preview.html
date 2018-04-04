@@ -1,0 +1,86 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+{% load membership_tags %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<style>
+    .inline-block{
+        display: inline-block;
+    }
+    div.short-label{
+        width: 125px;
+    }
+    div.float-left{
+        float: left;
+    }
+    div.clear{
+        clear: both;
+    }
+    div.form-field{
+        margin: 3px 0;
+    }
+    div.admin-only-header{
+        color: #CC0000;
+    }
+    div.section-break{
+        margin: 2em 0 1em 0;
+    }
+    div.form-field ul{
+        list-style-type: none;
+    }
+    div.form-field{
+        margin-left: 2em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="application-form-wrap">
+
+    <div class="alert-message" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p>
+            {% url "admin:memberships_membershipapp_change" app.id  as app_url %}
+            {% blocktrans with n=app.name  %}
+            This is the preview of "{{ n }}". Back to <a href="{{ app_url }}">App Edit</a>.
+            {% endblocktrans %}
+        </p>
+    </div>
+
+        <h1>{{ app.name }}</h1>
+        {{ app.description|safe }}
+
+       {% for field_obj in app_fields %}
+            {% render_membership_field request field_obj user_form profile_form demographics_form membership_form education_form %}
+        {% endfor %}
+
+        <input class="btn" type="submit" name="submit" value="{% trans 'Submit' %}" disabled="true" />
+
+</div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+      <script type="text/javascript"
+      src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+      <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+      <script type="text/javascript">
+            $(document).ready(function() {
+                $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+                $('.timepicker').timepicker({'step':15 });
+            });
+      </script>
+{% endblock extra_body %}

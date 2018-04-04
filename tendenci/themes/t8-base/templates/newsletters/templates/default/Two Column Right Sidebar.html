@@ -1,0 +1,320 @@
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <title>{% trans "Two Column Right Sidebar" %}</title>
+
+<style>
+body {
+   margin: 0;
+   padding: 0;
+   background-color: #ffffff;
+}
+h1, h2, h3, h4 { margin: 0 0 5px 0; }
+
+a img { border: none; }
+
+a { color: #3c5691; }
+
+td.permission {
+   padding: 20px 0 20px 0;
+}
+
+td.permission p {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 10px;
+   font-weight: normal;
+   color: #151515;
+}
+
+td.permission p a {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #3c5691;
+}
+
+td.header {
+   height: 90px;
+}
+
+td.header2 {
+   height: 25px;
+   width: 533px;
+   background-color:#3c5691;
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #CCC
+
+}
+
+td.volume {
+
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 14px;
+   font-weight: normal;
+   color: #f1f0e7
+
+}
+
+td.header h1 {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 30px;
+   font-weight: normal;
+   color: #333333;
+   margin-left: 50px;
+   margin-bottom: 24px;
+}
+
+td.toc1 { text-align: right; }
+td.toc1 h1 {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #565656;
+}
+td.toc1 h2, td.toc2 h2 {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 14px;
+    color: #3c5691;
+}
+td.toc2 h2.date {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+td.toc1 p, td.toc2 p {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #565656;
+   text-decoration: none;
+   margin: 0 0 5px 0;
+}
+td.toc1 a, td.toc2 a {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #565656;
+}
+
+table.content {
+   background-color: #f5f5f5;
+}
+
+td.sidebar img { margin: 0 0 15px 0; }
+
+td.sidebar a, td.footer a {
+   font-family: Georgia, "Times New Roman", Times, serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #3c5691;
+   text-decoration: none;
+}
+
+td.sidebar ul {
+   margin: 0 0 0 24px;
+   padding: 0;
+}
+
+td.sidebar ul li,
+td.sidebar ul li a {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #3c5691;
+}
+
+td.sidebar h3 {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 16px;
+   font-weight: bold;
+   color: #333333;
+   margin: 10px 0 14px 0;
+   padding: 0;
+}
+
+td.sidebar h3.buttons {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 16px;
+   font-weight: bold;
+   color: #333333;
+   margin: 0 0 4px 0;
+   padding: 0;
+}
+
+td.sidebar h4 {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 13px;
+   font-weight: bold;
+   color: #333333;
+   margin: 0 0 2px 0;
+   padding: 0;
+}
+
+td.sidebar p {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #505050;
+   margin: 0 0 13px 0;
+   padding: 0;
+}
+
+table.member-month { background-color: #a0b037; border: 1px #565656 solid; margin: 0 0 15px 0; }
+table.member-month td h3 { font-size: 14px; margin: 0 0 5px 0; padding: 0; }
+table.member-month td a { color: #ffffff; }
+
+td.mainbar a {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #3c5691;
+}
+
+td.mainbar h2 {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 16px;
+   font-weight: bold;
+   color: #3c5691;
+   margin: 0 0 4px 0;
+   padding: 0 0 4px 0;
+   border-bottom: 1px solid #cbcbcb;
+}
+
+td.mainbar h3 {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 14px;
+   font-weight: normal;
+   color: #333333;
+   margin: 10px 0 14px 0;
+   padding: 0;
+}
+
+td.mainbar p {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #333333;
+   margin: 0 0 16px 0;
+   padding: 0;
+}
+
+td.mainbar p.top {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: bold;
+   color: #3c5691;
+   margin: 0 0 30px 0;
+   padding: 0;
+}
+
+td.mainbar p.top a {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: bold;
+   color: #3c5691;
+}
+
+td.mainbar ul {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: normal;
+   color: #333333;
+   margin: 0 0 20px 24px;
+   padding: 0;
+}
+
+td.footer {
+   padding: 20px 0 20px 0;
+}
+
+td.footer p {
+   font-family: Arial, Helvetica, sans-serif;
+   font-size: 11px;
+   font-weight: normal;
+   color: #565656;
+}
+</style>
+
+</head>
+<body>
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+   <tr>
+      <td align="center">
+
+         <table width="710" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td class="header" align="left" valign="bottom"><img src="{{ SITE_GLOBAL_SITEURL }}{% static 'newsletters/templates/default/images/Sunset-eschipul-710x170.jpg' %}" alt="Sunset" width="710" height="170" title="Sunset"></td>
+
+            </tr>
+            <tr>
+               <td>
+                  <table width="710" height="130" border="0" cellspacing="16" cellpadding="0" class="content">
+                     <tr>
+                        <td class="mainbar" align="left" valign="top">
+                       <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Articles" %}</h2>
+
+                           <p>[articles]</p>
+
+                         <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Releases" %}</h2>
+                           <p>[releases]</p>
+
+                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Calendar Events" %}</h2>
+                          <p>[calendarevents]</p>
+
+                        </td>
+                        <td width="2" bgcolor="#cccccc"></td>
+                        <td class="sidebar" align="left" valign="top" width="197">
+<div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
+                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Directories" %}</h2>
+<p>[directories]</p>
+
+
+</div>
+
+<div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
+                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Jobs" %}</h2><br/>
+<img src="{{ SITE_GLOBAL_SITEURL }}{% static 'newsletters/templates/default/images/Sunset-eschipul-150x200.jpg' %}" alt="Sunset" width="150" height="200" title="Sunset">
+<p>[jobs]</p>
+
+</div>
+<div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
+                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Resumes" %}</h2>
+<p>[resumes]</p>
+
+</div>
+
+
+</td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+         <table width="705" border="0" cellspacing="0" cellpadding="0" height="2">
+         <tr>
+               <td height="2" bgcolor="#cccccc">&nbsp;</td>
+            </tr>
+            <tr>
+               <td align="center" class="footer"><p>[site_url]<br />
+               [site_mailing_address] | [site_phone_number] | [site_contact_email]</p></td>
+            </tr>
+            <tr>
+               <td align="center" class="footer">
+                   <p>Having trouble viewing this newsletter? <br /> View the <a href="[browser_view_url]">web version here</a>. <br/> Want to Unsubscribe from this newsletter?<a href="[unsubscribe_url]">Click Here</a></p>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'User Groups' %} {% trans "Import" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Import Groups Process" %}</h1>
+<div class="imports">
+{% if import_i.status == "pending" %}
+{% trans "We're not done yet! This page will be updated as your groups are imported." %}
+{% endif %}
+    <p><strong>{% trans "Import ID" %}:</strong> {{ import_i.id }}</p>
+    <p><strong>{% trans "File" %}:</strong> {{ import_i.file.name }}</p>
+    <p><strong>{% trans "Status" %}:</strong> {{ import_i.status }}</p>
+    {% if import_i.status == "completed" %}
+    <p><strong>{% trans "Import complete!" %}</strong> <a href="{% url 'groups' %}">{% trans "View groups list." %}</a>
+    {% endif %}
+    {% if import_i.status == "failed" %}
+    <p><strong>{% trans "Failure Reason" %}</strong> {{ import_i.failure_reason }}</p>
+    {% endif %}
+    <p><strong>{% trans "Total Groups Created" %}:</strong> {{ import_i.total_created }}</p>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% if import_i.status == "pending" %}
+<script language="javascript" type="text/javascript">
+    $(document).ready(function(){
+        setInterval("location.reload(true)", 15000);
+    });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,223 @@
+<! -- CSS custom -->
+html {margin: 0;}
+#home section, #home aside {
+    padding: 40px 0;
+}
+
+#sub section, #sub aside {
+    padding: 0px;
+}
+.service-box {margin-top: 0px;}
+#home .well {margin-bottom: 0px;}
+.photo-gallery-home h3 {margin-top: 0px;}
+
+/*NAVIGATION*/
+#t-main-navbar-collapse .t-main-navbar-nav {margin-top: 20px;}
+#t-main-navbar-collapse .navbar-nav{
+    margin: 10px 0px 0px;
+}
+#sub #t-navbar {
+    border-bottom: 2px solid #F05F40;
+}
+.form-control{ border: 1px solid #9A9A9A; }
+#t-main-navbar-collapse .navbar-header > a {display:block;}
+#t-main-navbar-collapse .navbar-brand {
+    height: inherit;
+    font-size: 18px;
+}
+#t-main-navbar-brand h3{
+    height: inherit;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+
+/*ROTATOR*/
+.carousel {background-color: #222;}
+.carousel-inner>.item>img, 
+.carousel-inner>.item>a>img{
+  display: block;
+  margin: 0 auto;
+  width: 100%!important;
+}
+.carousel-caption {
+  top: 9%; 
+}
+.carousel-caption .story-summary {
+    text-shadow: 0 1px 5px rgba(0,0,0,0.8);
+    font-size: 24px;
+    background: rgba(0,0,0,0.4);
+}
+.carousel-caption h1 a {
+   font-size: 40px;
+}
+
+/*PHOTO GALLERY HOMEPAGE*/
+i.fa.fa-angle-right {
+  font-size: 30px;
+  background-color: #222;
+  padding: 10px 18px;
+  margin-bottom: 15px;
+}
+i.fa.fa-angle-left {
+  font-size: 30px;
+  background-color: #222;
+  padding: 10px 18px;
+  margin-right: 10px;
+}
+/*SPONSORS*/
+.sponsors-item img {
+    margin: 25px auto;
+    position: relative;
+    padding: 0 40px;
+    height: auto;
+}
+
+/*FOOTER*/
+footer {
+    margin-top: 0px;
+    background-color: #222;
+    padding: 35px 0px 0px;
+}
+footer p {
+    color: #fff;
+}
+
+/*SIDEBAR*/
+.sidebar {
+    background-color: #F9F9F9;
+    border: 1px solid #eee;
+    margin-bottom: 60px;
+    float: right;
+}
+.sidebar .photo-gallery ul li {
+    margin: 0px;
+    padding-bottom: 25px;
+}
+
+iframe #twitter-widget-0 {height: 413px;}
+
+.body-wide .sidebar {display: none;}
+.admin-links.clear-block {
+    background: rgba(0,0,0,0.8);
+    padding: 4px 8px;
+    position: relative;
+    width: 260px;
+    clear: both;
+}/*Tendenci EDIT box*/
+.admin-links.clear-block a {
+    color: #fff;
+}/*Tendenci EDIT link of box*/
+
+.t {width: 100%!important;}
+/*FORMS OVERRIDES*/
+.label, label {color: inherit; float: left; text-align: left!important; font-size: inherit!important;}
+label {float: none;}
+.field-wrapper .field-label {text-align: left!important;}
+.form-control {width: inherit!important;}
+.donation-add {width: 100%!important;}
+
+/*Code below styles to default of T-META-EDITOR*/
+.t-meta-editor-bar {  
+  background-color: #eeffdd; 
+}
+.t-meta-data a.label {color: #eee;}
+.t-meta-editor-bar .t-meta-options-links > li a {
+    color: #0066cc;
+}
+.t-meta-editor-bar .t-meta-options-links > li a:hover {    
+  color: #002266;
+}
+
+/*BOOTSTRAP OVERRIDE*/
+.label {
+    padding: .2em .6em .2em;
+    margin-right: 10px;
+}
+#t-jobs-search-form > span.label, 
+#t-jobs-search-form > a.label{
+ color: #fff!important; 
+}
+span.glyphicon.glyphicon-ok-sign {
+    /*font-size: 22px;*/
+    color: #F05F40;
+}
+
+.t-jobs-job-regular h1 .glyphicon{display: none; }
+/*MEDIA*/
+@media (min-width: 991px){
+ nav .collapse {display: block; visibility: visible;}
+}
+@media (max-width: 990px){
+/*custom nav code BEGIN*/
+nav .collapse {display: none;}
+nav .navbar-nav {
+    float: none!important;
+    margin: 0px!important;
+}
+nav .navbar-header {         
+  float: none;     
+}     
+nav .navbar-toggle {         
+  display: block;    
+}     
+nav .navbar-collapse {        
+  border-top: 1px solid transparent;         
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);     
+}     
+/*nav .navbar-collapse.collapse {         
+  display: none!important;     
+}  */   
+nav .navbar-nav {         
+  float: none!important;         
+  margin: 0x;     
+}     
+nav .navbar-nav>li {         
+  float: none;     
+}     
+nav .navbar-nav>li>a {        
+  padding-top: 10px;         
+  padding-bottom: 10px;     
+}
+.navbar-nav>li>a {padding: 13px 20px!important;}/*styles secondary nav li*/
+nav .navbar-nav .open .dropdown-menu>li>a {    
+  line-height: 20px;
+}
+nav .navbar-nav .open .dropdown-menu>li>a,
+nav .navbar-nav .open .dropdown-menu .dropdown-header {
+    padding: 10px 20px;
+}
+nav .dropdown-menu>li>a {
+    display: block;
+    clear: both;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+nav .navbar-nav .open .dropdown-menu {
+    position: static;
+    float: none;
+    width: auto;
+    margin-top: 0;
+    box-shadow: none;
+    border: none;
+}
+.open>.dropdown-menu {
+    display: block;
+}
+.navbar-right {
+    float: none!important;
+    margin-right: 0px; 
+}
+/*custom nav code ENDs*/
+
+/*ROTATOR*/
+.carousel-inner {height: 250px;}
+}
+@media (max-width: 991px){
+#about .well a.pull-right {float: none!important;}
+}
+
+.settings-form label, .t-meta-data .label{
+  float: none !important;
+}

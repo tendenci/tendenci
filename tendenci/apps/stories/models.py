@@ -82,7 +82,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         ordering = ['position']
         app_label = 'stories'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -162,5 +162,5 @@ class Rotator(models.Model):
     class Meta:
         app_label = 'stories'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

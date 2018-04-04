@@ -1,0 +1,40 @@
+#corp-info{
+    background-color: #efefef;
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin: 1em 0;
+    width: 90%;
+}
+#corp-info tr td{
+    padding: 3px;
+}
+.search-form .form-field{
+    margin-bottom: 1em;
+}
+.search-form input[type="text"]{
+    width: 60%;
+}
+.clear-left{
+    clear: left;
+}
+.roster-search-wrap .member-line{
+    border: 1px solid #ccc;
+    margin-botton: 1em;
+    padding: 5px;
+
+}
+.roster-search-wrap .avatar, .roster-search-wrap .member-details, .roster-search-wrap .member-left, .roster-search-wrap .member-right{
+    float: left;
+
+}
+.roster-search-wrap .member-detail, .roster-search-wrap .member-right{
+    padding-left: 1em !important;
+    line-length: 1.2em;
+}
+.member-line .member-name{
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+.member-line{
+    margin-bottom: 1em;
+}

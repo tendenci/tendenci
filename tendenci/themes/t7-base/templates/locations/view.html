@@ -1,0 +1,46 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+{% load base_filters %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="location-wrap">
+            <h1>{% firstof location.location_name "Untitled" %}</h1>
+            {% if location.logo %}
+            <div class="logo">
+                <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}" alt="{% trans 'Location Logo' %}" />
+            </div>
+            {% endif %}
+
+            <div class="image">
+                <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false" alt="{% trans 'Google Maps view of the Location' %}" title="{% trans 'Google Maps view' %}"></a>
+            </div>
+
+            <div class="details">
+                {% if location.contact %}<p><strong>{{ location.contact }}</strong></p>{% endif %}
+                <p>{{ location.address }}<br />
+                {% if location.address2 %}{{ location.address2 }}<br />{% endif %}
+                {{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+                {% if location.country %}<p>{{ location.country }}</p>{% endif %}
+                {% if location.phone %}<p>{{ location.phone|phonenumber }}</p>{% endif %}
+                {% if location.fax %}<p>Fax: {{ location.fax|phonenumber }}</p>{% endif %}
+                {% if location.email %}<p>{{ location.email|obfuscate_email }}</p>{% endif %}
+                {% if location.website %}<p>{{ location.website|urlize }}</p>{% endif %}
+            </div>
+
+            <div style="clear:both;"><!--ie-bug--></div>
+            <div class="content">{% blocktrans with d=location.description|safe|linebreaks %}{{ d }}{% endblocktrans %}</div>
+
+    </div>
+
+</div>
+{% endblock %}

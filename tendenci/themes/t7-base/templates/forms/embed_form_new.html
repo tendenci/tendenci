@@ -1,0 +1,21 @@
+{% load styled_forms %}
+{% load perm_tags %}
+
+{% has_perm user forms.change_form embed_form as can_edit %}
+
+<style>
+.id_captcha input[type="text"]{
+    width: 160px !important;
+}
+</style>
+    <h4>{{ embed_form.title }}</h4>
+    <div>{{ embed_form.intro|safe }}</div>
+
+    <div class="form-builder-wrap">
+        <form method="post" enctype="multipart/form-data" action="{{ embed_form.get_absolute_url }}">{% csrf_token %}
+        <div class="forms">
+            {{ embed_form_for_form|styled_form }}
+            <input type="submit" value="{% trans 'Submit' %}" />
+        </div>
+        </form>
+    </div>

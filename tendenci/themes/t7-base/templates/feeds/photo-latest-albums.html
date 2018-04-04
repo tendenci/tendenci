@@ -1,0 +1,7 @@
+<div>
+{% blocktrans count obj.image_set.count as obj_count %}{{ obj_count }} photo{% plural %}{{ obj_count }} photos{% endblocktrans %}
+</div>
+
+{% for image in obj.image_set.all %}
+    <a href="{{ image.get_absolute_url }}"><img src="{{ image.get_small_crop_url }}" alt="{% blocktrans with t=image.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=image.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/></a>
+{% endfor %}

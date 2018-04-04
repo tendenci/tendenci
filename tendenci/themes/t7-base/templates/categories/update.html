@@ -1,0 +1,58 @@
+{% extends "categories/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{{ MODULE_CATEGORIES_LABEL }} {% trans "Update" %}</h1>
+    <p>{{ model|capfirst }} - <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
+    <div class="article-wrap">
+        <form action="." method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Apply Changes' %}" />
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        (function($){
+            // delete confirmation
+            $('#t-categories-add-category-help-text button').click(function(){
+                select_box = $(this).closest(".form-group").find('select#id_category');
+                var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
+                category = category.replace('"','');
+
+                if (category){
+                    var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
+                    select_box.append(option_html);
+                }
+                return false;
+            });
+            $('#t-categories-add-subcategory-help-text button').click(function(){
+                select_box = $(this).closest(".form-group").find('select#id_sub_category');
+                var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
+                sub_category = sub_category.replace('"','');
+
+                if (sub_category){
+                    var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
+                     select_box.append(option_html);
+                }
+
+                return false;
+            });
+
+        })(jQuery);
+
+    </script>
+{% endblock %}

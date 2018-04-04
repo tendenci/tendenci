@@ -1,0 +1,61 @@
+
+{% if jobs %}
+{% load base_filters %}
+    <h3 style="font-size: 24px; font-family: Helvetica, Arial, sans-serif; margin: 0px;">
+    {# named area for jump links #}
+    <a name="jobs" id="jobs"></a>
+    {% if start_dt %}
+        {% blocktrans with start_dt|date:"M d, Y" as startdate and end_dt|date:"M d, Y" as enddate %}Jobs for {{ startdate }} to {{ enddate }}{% endblocktrans %}
+    {% else %}
+        {% trans "All Jobs" %}
+    {% endif %}
+    </h3>
+
+    {% for job in jobs %}
+
+        {# leverage the functions in the object #}
+
+        <table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
+        <tr><td>&nbsp;</td></tr>
+        <tr><td align="left" valign="top">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'job' job.slug %}" >
+        <font face="Arial" size="2"><b> {% blocktrans with t=job.title %}{{ t }}{% endblocktrans %}
+        </b></font></a>
+
+    {% if job.activation_dt|date_diff < 7 %}
+        <span style="FONT-SIZE: 8pt; COLOR: red; BACKGROUND-COLOR: yellow"><b>--new</b></span>
+    {% endif %}
+
+        </td></tr>
+
+        <tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
+        <b>{% trans "Company:" %}</b> {{ job.contact_company }} </font></td></tr>
+
+        {% if not simplified  %}
+            <tr><td align="left"><font face="Arial" size="2" color="#000000">
+            <b>{% trans "Date Activated:" %}</b> {{ job.activation_dt|date:"l d-M-Y h:i A" }} </font>
+            </td></tr>
+        {% endif %}
+
+        <tr><td align="left" valign="top"><div>
+        <font face="Arial" size="2" color="#000000">
+
+        {% blocktrans with d=job.description|striptags|safe|truncatewords:60 %}{{ d }}{% endblocktrans %}
+         <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'job' job.slug %}">[More Info]</a>
+        </font>
+
+        {#  posted by #}
+        {% if not simplified  %}
+            <font face="Arial" size="2" color="#000000">
+            <br><b>{% blocktrans with job.owner.first_name as ownfirst and job.owner.last_name as ownlast %}Posted by</b>:
+            {{ ownfirst }} {{ ownlast }}{% endblocktrans %}
+            </font>
+        {% endif %}
+        <br>
+
+        </div></td></tr>
+        </table>
+
+    {% endfor %}
+    <hr>
+{% endif %}

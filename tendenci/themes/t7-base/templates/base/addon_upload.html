@@ -1,0 +1,14 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Module Upload" %}</h1>
+    <form method='post' action="{% url "addon.upload" %}" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type='submit' value='{% trans "Upload" %}'>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+
+{% if corp_membership.anonymous_creator %}
+<p>
+    {% if created %}
+    {% trans 'Your login account' %}:<br />
+    {% trans 'Username' %}: <strong>{{ username }}</strong><br />
+    {% trans 'Password' %}: <strong>{{ password }}</strong>
+    {% else %}
+    {% trans 'Your login username' %}: <strong>{{ corp_membership.creator_username }}</strong>
+    {% endif %}
+    <br />
+    {% trans 'To log into the site, visit' %} <a href="{{ login_url }}">{{ login_url }}</a>
+</p>
+{% endif %}

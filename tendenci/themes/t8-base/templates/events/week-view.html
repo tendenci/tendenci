@@ -1,0 +1,154 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+
+{% block title %}{{ cur_date|date:"F j, Y" }} - {% trans 'Week Calendar' %} {% endblock %}
+{% block meta_description %} {% endblock %}
+{% block meta_keywords %} {% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="month-view week-view">
+  <div class="row">
+    <div class="col-md-9 col-xs-12">
+
+      <div class="page-header">
+        <ul class="list-inline text-center">
+          <li><h1>{% trans "Week of " %}{{ cur_date|date:"n/j/Y" }}</h1></li>
+          <li class="pull-left"><h1><a href="{{ prev_week_url }}"> <i class="fa fa-angle-left"></i></a></h1></li>
+          <li class="pull-right"><h1><a href="{{ next_week_url }}"><i class="fa fa-angle-right"></i></a></h1></li>
+        </ul>
+      </div>
+
+      <div style="clear:both;"></div>
+      <div class="calendar-wrap">
+
+        <div class="month-wrap">
+
+          <div class="month-labels">
+            {% for weekday in weekdays %}
+            <div class="weekday">{{ weekday }}</div>
+            {% endfor %}
+            {% for weekday in weekdays %}
+            <div class="weekday-mobile">{{ weekday|slice:":3" }}</div>
+            {% endfor %}
+            <div style="clear:both;"></div>
+          </div>
+
+          <div class="month-grid">
+            {% for day in week %}
+
+            <div class="day{% if today == day %} today{% endif %}">
+              <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
+
+              {% event_list day type 'single_day' as events %}
+              {% if events %}
+
+              {% for event in events %}
+              <div class="event-item" title="{{ event.type }}: {{ event }}"
+              style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}" itemscope itemtype="http://schema.org/Event">
+                {% if event.priority %}
+                <div class="event-priority"></div>
+                {% endif %}
+                {% if event.is_recurring_event %}
+                <div class="event-recurring"></div>
+                {% endif %}
+                <a href="{{ event.get_absolute_url }}" class="time-stamp">
+                  {% if not event.all_day %}{{ event.start_dt|date:"f A" }} - {{ event.end_dt|date:"f A" }}<br/>{% endif %}
+                </a>
+                <span style="display:none" itemprop="startDate" datetime="{{ event.start_dt|date:'c' }}">{{ event.start_dt|date:"l, M j, Y P" }}</span>
+                <a href="{{ event.get_absolute_url }}" class="event-title" itemprop="url">
+                  <span itemprop="name">{{ event.title }}</span>
+                </a>
+                <br><a href="{{ event.get_absolute_url }}" itemprop="description">{{ event.description|striptags|safe|truncatewords:5 }}</a>
+                <a class='click-mask' href="{{ event.get_absolute_url }}"></a>
+              </div>
+              {% endfor %}
+
+              {% endif %}
+            </div>
+
+            {% endfor %}
+            <div style="clear:both;"></div>
+          </div> <!-- END month-grid -->
+
+        </div> <!-- END month-wrap -->
+
+      </div> <!-- END calendar-wrap -->
+
+    </div> <!-- END col -->
+    {# TODO: If there are no types, don't show sidebar #}
+    <div class="col-md-3 col-xs-12">
+
+      <div class="event-buttons btn-group-vertical" role="group" aria-label="Events Views">
+        <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
+        <a href="{% url "event.week" %}" class="btn btn-secondary">{% trans "Week View" %}</a>
+        <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
+        <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
+        <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
+      </div>
+
+      <br/>
+      <div class="well">
+        <div class="month-side-bar">
+          <div class="header">
+            <h2>{% trans "Filter by Type" %}</h2>
+            <hr />
+          </div>
+          <div class="types">
+            <div class="type all-types">
+              <a class="btn btn-default" href="{% url "event.week" cur_date.year cur_date.month cur_date.day %}">
+                {% trans "All Events" %}
+              </a>
+            </div>
+
+            {% with type as curr_type %}
+            {% for type in types %}
+
+            {% if curr_type == type.slug %}
+            <div class="type">
+              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};"
+              href="{% url "event.week" cur_date.year cur_date.month cur_date.day type.slug %}?latest">{{ type }}</a>
+            </div>
+            {% else %}
+            <div class="type">
+              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.bg_color }};"
+              href="{% url "event.week" cur_date.year cur_date.month cur_date.day type.slug %}?latest">{{ type }}</a>
+            </div>
+            {% endif %}
+
+            {% endfor %}
+            {% endwith %}
+
+          </div> <!-- END types -->
+          <div style="clear:both;"></div>
+        </div> <!-- END month-side-bar -->
+      </div> <!-- END well -->
+
+    </div> <!-- END col -->
+  </div> <!-- END row -->
+</div> <!-- END month-view week-view -->
+
+<br/><br/>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
+<script type="text/javascript">
+  $('.event-item').tipsy({
+    gravity: 's',
+    live: true
+  });
+</script>
+{% endblock %}

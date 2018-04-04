@@ -1,0 +1,92 @@
+{% extends "directories/base-pricing.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans "View Price Details:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% endblock %}
+
+{% block content %}
+<div class="t">
+
+
+    <h1>{% trans "View Price Details:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} </h1>
+
+    <div class="directory-pricing-details">
+
+        <div class="quick-options">
+            {% directory_pricing_options request.user directory_pricing %}
+          </div>
+
+        <div class="clear"></div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 align-right text-right">{% trans "Duration:" %}</div>
+            <div><b>{{ directory_pricing.duration }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Regular Price:" %}</div>
+            <div><b>{{ directory_pricing.regular_price|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Premium Price:" %}</div>
+            <div><b>{{ directory_pricing.premium_price|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Regular Price:" %}</div>
+            <div><b>{{ directory_pricing.regular_price_member|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Premium Price:" %}</div>
+            <div><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Show Member Pricing:" %}</div>
+            <div><b>{{ directory_pricing.show_member_pricing }}</b></div>
+        </div>
+
+        <div class="sep-line"></div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Status:" %}</b></div>
+            <div>{% if directory_pricing.status %}Active{%else%}Inactive{%endif%}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created by:" %}</b></div>
+            <div><a href="{% if directory_pricing.creator_username %}{% url "profile" directory_pricing.creator_username %}{% else %}#{% endif %}">{{ directory_pricing.creator_username }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created on:" %}</b></div>
+            <div>{{ directory_pricing.create_dt|date:"long" }}</div>
+        </div>
+
+
+         <!-- delete-directory_pricing form -->
+            <form name="directory-pricing-delete" method="POST" action="{% url "directory_pricing.delete" directory_pricing.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+    </div>
+
+
+</div>
+{% endblock %}
+{{ block.super }}
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_directory_pricing = confirm("Permenantly delete this directory price?");    // confirm
+                if(delete_directory_pricing) $(this).parents('.directory-pricing-details').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Add' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+{% endblock %}
+
+{% block content %}
+    <p>{% blocktrans %}Step {{ step }} of {{ step_count }}{% endblocktrans %}</p>
+    <form action="" method="post">{% csrf_token %}
+        <table>
+            <tr><td>
+                {{ form|styled_form }}
+            </td></tr>
+        </table>
+        <input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />
+        {{ previous_fields|safe }}
+        <input type="submit">
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
+    <script type="text/javascript" src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        $('.timepicker').timepicker({'step':15});
+    </script>
+{% endblock %}

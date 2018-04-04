@@ -1,0 +1,39 @@
+{% load base_filters %}
+{% load base_tags %}
+
+<div class="wrap-search-item">
+    <div class="search-item location-search-item">
+        <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
+        {% if location.logo %}
+        <div class="logo">
+            <img src="{% image_url location.logo size=200x200 crop=true quality=84 %}" title="{% firstof location.location_name 'Untitled' %}" alt="{% firstof location.location_name 'Untitled' %}" />
+        </div>
+        {% endif %}
+        <div class="image">
+            {% if origin %}
+                <a title="{% trans 'Google Directions' %}" href="https://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
+                <img src="{% google_cmaps_url location origin size=200x200 markers=color:red|label:B markers_origin=color:green|label:A %}" alt="Google Maps view" title="Google Maps view">
+                <br />Directions</a>
+            {% else %}
+                <a title="{% trans 'Google Directions' %}" href="https://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=8 %}" alt="Google Maps view" title="Google Maps view">
+                <br />Directions</a>
+            {% endif %}
+        </div>
+        <div class="details">
+            {% if location.contact %}<p><strong>{{ location.contact }}</strong></p>{% endif %}
+            <p>{{ location.address }}<br />
+            {% if location.address2 %}{{ location.address2 }}<br />{% endif %}
+            {{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+            {% if location.country %}<p>{{ location.country }}</p>{% endif %}
+            {% if location.phone %}<p>{{ location.phone|phonenumber }}</p>{% endif %}
+            {% if location.fax %}<p>Fax: {{ location.fax|phonenumber }}</p>{% endif %}
+            {% if location.email %}<p>{{ location.email|obfuscate_email }}</p>{% endif %}
+            {% if location.website %}<p>{{ location.website|urlize }}</p>{% endif %}
+            {% if location.distance %}<p>{{ location.distance|floatformat }} {% trans "miles away" %}</p>{% endif %}
+            <p>{% blocktrans with d=location.description|striptags|urlize|linebreaks|truncatewords:20|safe %}{{ d }}{% endblocktrans %}</p>
+        </div>
+        <div style="clear:both;"><!--ie-bug--></div>
+    </div>
+    {% include "locations/meta.html" %}
+</div>

@@ -1,0 +1,23 @@
+
+{% trans "Greetings" %} {{ rp.user.first_name }},<br /><br />
+
+<div>
+{% blocktrans with d=rp.description %}
+Your recurring payment account "{{ d }}" doesn't have a valid payment method associated with.
+{% endblocktrans %}
+</div>
+<br /><br />
+
+{% trans 'Please visit the link below to add or update the payment method' %}:
+<br />
+<a href="{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" rp.id %}">{{ site_url }}{% url "recurring_payment.authnet.update_payment_info" rp.id %}</a>
+
+</div>
+
+
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<p>{{ site_display_name }}</p>
+

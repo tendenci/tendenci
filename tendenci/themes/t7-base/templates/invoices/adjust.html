@@ -1,0 +1,88 @@
+{% extends "invoices/base.html" %}
+{% load invoice_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Invoice Adjustment'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/invoices.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Adjustment'%}</h1>
+  </div>
+
+  <a class="btn btn-default" href="{% url "invoice.view" invoice.pk %}" class="links">View Invoice #{{ invoice.pk }}</a>
+  <br /><br />
+
+  <div class="invoice-adjust">
+    <div class="field-wrapper required">
+      <label class="field-label">{% trans 'Billing Information:'%}</label>
+      <div style="float:left;">
+        {% if invoice.bill_to %}{{invoice.bill_to}}<br />{% endif %}
+        {% if invoice.bill_to_phone %}{{invoice.bill_to_phone}}<br />{% endif %}
+        {% if invoice.bill_to_email %}{{invoice.bill_to_email}}<br />{% endif %}
+        {% if invoice.bill_to_address %}{{invoice.bill_to_address}}{% endif %}
+        {% if invoice.bill_to_city %}{{invoice.bill_to_city}}{% endif %}
+        {% if invoice.bill_to_state %}{{invoice.bill_to_state}}{% endif %}
+        {% if invoice.bill_to_zip_code %}{{invoice.bill_to_zip_code}}{% endif %}
+        {% if invoice.bill_to_country %}{{invoice.bill_to_country}}{% endif %}<br />
+      </div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Current Invoice Totals:'%}</label>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Total:'%}</label>
+      <div>{{invoice.total|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Payments/Credits:'%}</label>
+      <div>{{invoice.payments_credits|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Balance:'%}</label>
+      <div>{{invoice.balance|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
+    <p>&nbsp;</p>
+
+    <form method="post" action=".">{% csrf_token %}
+      <div class="field-wrapper required">
+        {% if form.variance.errors %}
+        {{ form.variance.errors }}
+        {% endif %}
+        <label for="id_variance" class="field-label">{% trans 'Adjustment Amount(+/-)'%} ({{SITE_GLOBAL_CURRENCYSYMBOL}}):</label>
+        {{ form.variance }}
+      </div>
+      <div class="clear-left"></div>
+
+      <div class="field-wrapper">
+        {% if form.variance_notes.errors %}
+        {{ form.variance_notes.errors }}
+        {% endif %}
+        <label for="id_variance_notes" class="field-label">{% trans 'Notes/Comments:'%}:</label>
+        {{ form.variance_notes }}
+      </div>
+      <div class="clear-left"></div>
+
+      <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Submit' %}" id="adjust-sumit-button" />
+    </form>
+    <br /><br />
+
+
+  </div>
+
+</div>
+{% endblock %}

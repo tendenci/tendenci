@@ -1,0 +1,219 @@
+#t-dashboard-js-modules-list ul { /* remove bullets and spacing */
+    margin: 0; padding: 0;
+    list-style-type: none;
+    list-style-image: none;
+}
+
+
+.main-panel {
+    width: 70%;
+    float: left;
+}
+#t-dashboard-js-modules-list {
+    margin-bottom: 20px;
+}
+
+#t-dashboard-js-modules-list li {
+    width: 100px;
+    height: 100px;
+    float: left;
+    margin: 5px;
+    background: no-repeat 20px 5px;
+    position: relative;
+}
+#t-dashboard-js-modules-list li a {
+    position: absolute;
+    text-align: center;
+    top:0; right:0; bottom:0; left:0;
+}
+#t-dashboard-js-modules-list li a:hover {
+    background-color: rgba(175,175,175,.3);
+}
+#t-dashboard-js-modules-list li a span {
+    position: absolute;
+    left:0; top:72px;
+    width: 100%;
+}
+#t-dashboard-js-modules-list li.users {
+    background-image: url('../images/icons/users-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.groups {
+    background-image: url('../images/icons/groups-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.events {
+    background-image: url('../images/icons/events-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.articles {
+    background-image: url('../images/icons/articles-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.jobs {
+    background-image: url('../images/icons/jobs-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.resumes {
+    background-image: url('../images/icons/resumes-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.news {
+    background-image: url('../images/icons/news-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.memberships {
+    background-image: url('../images/icons/memberships-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.corporatememberships {
+    background-image: url('../images/icons/corporate-membership-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.directories {
+    background-image: url('../images/icons/directories-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.photo-albums {
+    background-image: url('../images/icons/photo-albums-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.stories {
+    background-image: url('../images/icons/stories-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.pages {
+    background-image: url('../images/icons/pages-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.entities {
+    background-image: url('../images/icons/entities-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.files {
+    background-image: url('../images/icons/files-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.contributions {
+    background-image: url('../images/icons/contributions-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.contacts {
+    background-image: url('../images/icons/contacts-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.settings {
+    background-image: url('../images/icons/settings-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.event-logs {
+    background-image: url('../images/icons/event-logs-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.locations {
+    background-image: url('../images/icons/locations-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.invoices {
+    background-image: url('../images/icons/invoicing-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.forms {
+    background-image: url('../images/icons/cms-forms-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.rss {
+    background-image: url('../images/icons/rss-color-64x64.png');
+}
+#t-dashboard-js-modules-list li.redirects {
+    background-image: url('../images/icons/redirects-color-64x64.png');
+}
+
+.t-dashboard-sidebar-panel h3 {
+    margin-top: 10px;
+}
+
+.t-dashboard-sidebar-panel-gray {
+    background-color: #F7F7F7;
+}
+
+.rss-feeds {
+    border-top: 1px solid #DDD;
+}
+.rss-feed {
+    float: left;
+    width: 40%;
+    margin: 10px;
+    padding: 5px;
+}
+.rss-feed li {
+    margin: 7px 0;
+    overflow: hidden;
+}
+
+.new-rss-feed {
+    width: 226px;
+    padding: 0 20px 20px 0;
+}
+.new-rss-feed li {
+    margin: 7px 0;
+    overflow: hidden;
+}
+
+.dashboard-stats {
+    position: relative;
+    top: 10px;
+}
+
+/** Dashboard V2 styles **/
+.dashboard-stats .stat {
+    border:3px double #999;
+    padding:20px;
+    margin:20px auto;
+    font-size:1em;
+}
+.dashboard-stats .stat span{
+    position:relative;
+    padding:4px 8px;;
+    border:1px solid #999;
+    top:-30px;
+    left:20px;
+    background-color:#fff;
+    font-size:0.9em;
+    color:#300;
+}
+.dashboard-stats .stat table {
+    margin:-10px 0 10px;
+    width: 100%
+}
+.dashboard-stats .stat table td {
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #dddddd;
+}
+.dashboard-stats .stat table th {
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  background-color: #EEE;
+}
+.dashboard-stats #members-info {
+    width: 100px;
+    float: left;
+    margin-top: 50px
+}
+.dashboard-stats .ui-widget {
+    float: right;
+}
+.dashboard-stats .members-header {
+    font-size: 16px;
+    font-weight: bold;
+}
+.dashboard-stats #members-graph .ui-widget-bg {
+    border-top: 1px dotted #aed0ea;
+    font-size:9px;
+}
+.dashboard-stats #members-graph .ui-widget-bar {
+    position:absolute;
+    bottom:0;
+    font-size:10px;
+    text-align:center;
+}
+.dashboard-customize-form table {
+    width: 100%;
+}
+.dashboard-customize-form table th{
+    text-align: left;
+}
+.dashboard-customize-form textarea {
+    width: 100%;
+    height: 50px;
+}
+.dashboard-customize-form .row1 {
+    background: #EDF3FE;
+}
+.dashboard-customize-form .row2 {
+    background: white;
+}
+.dashboard-customize-form .position-icon{
+	cursor: move;
+}

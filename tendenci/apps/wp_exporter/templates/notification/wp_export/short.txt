@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.headline as article %}Blog export success for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

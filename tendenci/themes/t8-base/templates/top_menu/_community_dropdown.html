@@ -1,0 +1,93 @@
+{% load megamenu_tags %}
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans "Community" %}</span><span class="caret"></span>
+    </a>
+
+    <ul id="t-admin-megamenu-community-dd" class="dropdown-menu community-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-12 content-dropdown-col">
+                        <ul class="list-unstyled">
+                            {% if USER_IS_SUPERUSER or MODULE_USERS_ALLOWUSERSEARCH %}
+                                <li class="content-item">
+                                    <a href="{% url 'profile.search' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Users' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_MEMBERSHIPS_ENABLED %}
+                            {% if USER_IS_SUPERUSER or user.profile.is_member %}
+                            {% if USER_IS_SUPERUSER or MODULE_USERS_ALLOWUSERSEARCH or MODULE_MEMBERSHIPS_MEMBERPROTECTION == 'public' %}
+                                <li class="content-item">
+                                    <a href="{% url 'profile.search' %}?member_only=on">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% endif %}
+
+                            {% if USER_IS_SUPERUSER %}
+                                <li class="content-item">
+                                    <a href="{% url 'admin:memberships_membershipdefault_changelist' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members (Admin)' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+
+                            {% endif %}
+
+
+                            {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                            {% if USER_IS_SUPERUSER %}
+                            <li class="content-item">
+                                <a href="{% url 'corpmembership.search' %}"><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'Corporate Members' %}</span></a>
+                            </li>
+                            {% endif %}
+                             {% endif %}
+
+                            {% if MODULE_GROUPS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'groups' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/><span class="nav-label">{% trans 'Groups' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+
+
+                            {% if MODULE_COMMITTEES_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'committees.search' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/group_gear.png' %}"/><span class="nav-label">{% trans 'Committees' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if MODULE_FORUMS_ENABLED %}
+                                <li class="content-item">
+                                    <a href="{% url 'pybb:index' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/comments.png' %}"/><span class="nav-label">{% trans 'Forums' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if USER_IS_SUPERUSER %}
+                                <li class="content-item">
+                                    <a href="{% url 'reports-admin-users' %}">
+                                        <img class="nav-icon" src="{% static 'famfamfam/icons/wand.png' %}"/><span class="nav-label">{% trans 'Admins' %}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

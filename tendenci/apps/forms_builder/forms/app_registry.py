@@ -1,9 +1,9 @@
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.forms_builder.forms.models import Form
+from tendenci.apps.theme.templatetags.static import static
 
 
 class FormRegistry(CoreRegistry):
@@ -11,7 +11,7 @@ class FormRegistry(CoreRegistry):
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
     description = _('Create custom forms to take information throughout the site')
-    icon = '%simages/icons/cms-forms-color-64x64.png' % settings.STATIC_URL
+    icon = static('images/icons/cms-forms-color-64x64.png')
 
     event_logs = {
         'form': {

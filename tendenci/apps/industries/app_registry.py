@@ -8,7 +8,7 @@ class IndustryRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'A list of industries'
-    #icon = '%simages/icons/industries-color-64x64.png' % settings.STATIC_URL
+    #icon = static('images/icons/industries-color-64x64.png')
 
     event_logs = {
         'industry': {

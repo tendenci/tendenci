@@ -1,0 +1,17 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Blog Export Success!" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans with request.user.get_full_name as author %}Your export file is now ready for download.{% endblocktrans %}</p>
+
+<p>To download go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}/wp_exporter/download/{{ export.id }}">{{ SITE_GLOBAL_SITEURL }}/wp_exporter/download/{{ export.id }}</a></b><br>
+
+<P>{% trans 'Time submitted' %}:  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

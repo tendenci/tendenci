@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load payments_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/money_add.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_PAYMENTS_LABEL trans 'Payments' %}{% endblock %}
+
+{% block current_app %}
+    {% if payment %}
+        {% payment_current_app payment %}
+    {% else %}
+        {% payment_current_app %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans "Export Corporate Memberships" %}{% endblock %}
+
+{% block content %}
+<div id="corp-import-wrap">
+
+    <h1>{% trans "Corporate Membership CSV Export" %}</h1>
+
+    <div id="corp-export">
+
+        <form method="post" action="">{% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value='{% trans "Export" %}'>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

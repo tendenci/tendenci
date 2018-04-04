@@ -1,0 +1,67 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL 'Events' %} {% trans "Import" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="imports">
+    <h1>{% trans "Preview Your Import" %}</h1>
+
+    <p>{% trans "You're almost done! To complete your import click 'Import Now.'" %}</p>
+
+    <div class="csv-icon">
+        <img src="{% static 'images/icons/xls-icon.gif' %}" alt="{{ import_i.file.name|truncatechars:123 }}" title="{{ import_i.file.name|truncatechars:123 }}" />
+        <p>{{ import_i.file.name }}<br /></p>
+    </div>
+
+    <div class="summary">
+    <ul>
+        <li>{{ total }} {% trans "Total Events" %}</li>
+        <li>{{ import_i.total_created }} {% trans "Valid Events" %}</li>
+        <li class="last highlight">{{ import_i.total_invalid}} {% trans "Invalid Events" %}</li>
+    </ul>
+    </div>
+
+    <div style="clear: both; "></div>
+
+    <div class="results">
+    {% for event in event_list %}
+        <div class="result">
+            <div class="header">
+                <strong>{% trans "Row" %} {{ event.ROW_NUM }} - {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong>
+            </div>
+            <div class="verdict">
+            {% if not event.IS_VALID %}
+                <span class="error"><strong>{% trans 'ERROR' %}: {{ event.ERROR }}</strong></span><br/>
+                <span class="error">{% trans "This event will be ignored (not added)" %}</span>
+            {% else %}
+                <span class="message">{% trans "This event will be included" %}</span>
+            {% endif %}
+            </div>
+            <div class="details">
+                {% trans "Date" %}: {{ event.start_dt }} - {{ event.end_dt }}<br/>
+                {% trans "Place" %}: {{ event.place__name }}<br/>
+                {% trans "Description" %}: {{ event.description }}<br/>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <div align="right">
+    <form class="import" method="post" action="{% url "event.import_process" import_i.pk %}">{% csrf_token %}
+    <input type="submit" class="submit-btn" name="submit" value="{% trans "Import Now" %}" >
+    </form>
+    </div>
+
+</div>
+</div>
+{% endblock %}

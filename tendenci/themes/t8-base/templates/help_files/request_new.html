@@ -1,0 +1,26 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% blocktrans with t=topic %}{{ t }} Request{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+<h3>{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</h3>
+
+{% trans "Please provide as much detail as possible." %}<br>
+{% trans "If you would like to, also include your name and email: " %}
+<form method="POST">{% csrf_token %}
+    <div class="forms">
+    {{ form|styled_form }}
+    <input type="submit" value="{% trans 'Request' %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}">
+    </div>
+</form>
+</div>
+{% endblock %}

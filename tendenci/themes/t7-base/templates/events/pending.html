@@ -1,0 +1,63 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{% trans "Pending Events" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/events-pending.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+{% endblock %}
+
+{% block content %}
+
+<div class="t search-view">
+    <h1>{% trans "Pending Events" %}</h1>
+
+    {% autopaginate events 10 %}
+
+    <div class="events-wrap">
+    {% for event in events %}
+        {% search_result event %}
+    {% empty %}
+        {% trans "0 Pending Events" %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");    // confirm
+                if(delete_object) $(this).parents('.event-wrap').find('form[name="event-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+    <script src="{% static 'js/jquery.inputfieldtext.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $('.search-form input[type="text"]').inputFieldText('Search past, present, and future events', 'search-hint');
+    </script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+{% endblock %}

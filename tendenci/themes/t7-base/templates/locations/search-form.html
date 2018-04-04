@@ -1,0 +1,11 @@
+<form class="search-form" action="{% url "locations" %}" method="post">{% csrf_token %}
+    <div>
+        {{ form.query }}
+        <input style="vertical-align:top;" class="btn" type="submit" value="{% trans 'Search' %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %}" />
+    </div>
+    <div>
+        {{ form.country.label }} {{ form.country }}
+        {{ form.state.label }} {{ form.state }}
+        {{ form.city.label }} {{ form.city }}
+    </div>
+</form>

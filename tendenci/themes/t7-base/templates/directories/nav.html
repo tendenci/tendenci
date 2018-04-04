@@ -1,0 +1,83 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if nav_object %}
+    {% has_perm user directories.view_directory nav_object as can_view_directory %}
+    {% has_perm user directories.change_directory nav_object as can_edit_directory %}
+    {% has_perm user directories.delete_directory nav_object as can_delete_directory %}
+{% else %}
+    {% has_perm user directories.view_directory as can_view_directory %}
+    {% has_perm user directories.change_directory as can_edit_directory %}
+    {% has_perm user directories.delete_directory as can_delete_directory %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "directories" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "directories" %}">{% trans "All" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url "directory.add" %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url "directory.pending" %}">{% trans "Pending" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'directories' %}</a></li>
+                <li><a href="{% url "directory.export" %}">{% trans "Export" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'directories' %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_directory or can_edit_directory %}
+            <ul>
+                <li class="heading">{% trans "This" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</li>
+                <li class="divider"></li>
+                {% if can_view_directory %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</a></li>
+                {% endif %}
+                {% if can_edit_directory %}
+                    <li><a href="{% url "directory.edit" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</a></li>
+                    <li><a href="{% url "directory.edit.meta" nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url "category.update" nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
+                    {% if nav_object.renew_window %}
+                        <li><a href="{% url "directory.renew" nav_object.pk %}">{% trans "Renew Directory" %}</a></li>
+                    {% endif %}
+                {% endif %}
+                {% if can_delete_directory %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "directory.delete" nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if can_edit_directory and not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
+    <li><a href="{% url "directory_pricing.search" %}">{% trans "Pricing" %}</a></li>
+    {% else %}
+    {% if MODULE_NEWS_ENABLED and MODULE_DIRECTORIES_SHOW_NEWS_TAB %}
+    <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    {% endif %}
+    {% endif %}
+</ul>
+{% endif %}

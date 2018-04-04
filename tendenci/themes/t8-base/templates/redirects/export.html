@@ -1,0 +1,24 @@
+{% extends "redirects/base.html" %}
+{% load redirect_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/redirects.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="redirects-wrap">
+        <h1>{% trans "Redirects Export" %}</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "pages/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load page_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{% firstof MODULE_PAGES_LABEL trans 'Pages' %} {% trans 'Inactive' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Pages' %} {% trans "Archive" %}</h1>
+
+    {% autopaginate pages 10 %}
+    <div class="pages-wrap">
+    {% for page in pages %}
+        <div class="wrap-search-item">
+            <div class="search-item page-search-item">
+                <h2><a href="{% url "page.inactive" page.pk %}">{% firstof page.title 'Untitled'%}</a></h2>
+                <div class="item-content">{% blocktrans with c=page.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}</div>
+            </div>
+        </div>
+        {% include "pages/meta.html" %}
+    {% empty %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

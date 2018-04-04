@@ -851,7 +851,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
                 redirect_url = reverse('event.recurring', args=[event.pk])
 
             # make dict (i.e. speaker_bind); bind speaker with speaker image
-            pattern = re.compile('speaker-\d+-name')
+            pattern = re.compile(r'speaker-\d+-name')
             speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
             speaker_bind = {}
             for speaker_key in speaker_keys:  # loop through speaker form items
@@ -1260,7 +1260,7 @@ def add(request, year=None, month=None, day=None,
                     event.image = image
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
-                pattern = re.compile('speaker-\d+-name')
+                pattern = re.compile(r'speaker-\d+-name')
                 speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
                 speaker_bind = {}
                 for speaker_key in speaker_keys:  # loop through speaker form items
@@ -1886,7 +1886,7 @@ def register(request, event_id=0,
                         for registrant in registrants:
                             #registrant.assign_mapped_fields()
                             if registrant.custom_reg_form_entry:
-                                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                                registrant.name = str(registrant.custom_reg_form_entry)
 
                             else:
                                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
@@ -2274,7 +2274,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     for registrant in registrants:
                         #registrant.assign_mapped_fields()
                         if registrant.custom_reg_form_entry:
-                            registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                            registrant.name = str(registrant.custom_reg_form_entry)
                         else:
                             registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
@@ -2572,12 +2572,12 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         if regt.custom_reg_form_entry:
             regt.assign_mapped_fields()
             if not regt.name:
-                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+                regt.last_name = regt.name = str(regt.custom_reg_form_entry)
     for c_regt in cancelled_registrants:
         if c_regt.custom_reg_form_entry:
             c_regt.assign_mapped_fields()
             if not c_regt.name:
-                c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
+                c_regt.last_name = c_regt.name = str(c_regt.custom_reg_form_entry)
 
     return render_to_resp(request=request, template_name=template_name,
         context={
@@ -2679,7 +2679,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     if registrant.custom_reg_form_entry:
         registrant.assign_mapped_fields()
         if not registrant.name:
-            registrant.last_name = registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            registrant.last_name = registrant.name = str(registrant.custom_reg_form_entry)
 
     return render_to_resp(request=request, template_name=template_name,
         context={
@@ -3098,7 +3098,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
             reg.assign_mapped_fields()
             reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
             if not reg.name:
-                reg.name = reg.custom_reg_form_entry.__unicode__()
+                reg.name = str(reg.custom_reg_form_entry)
 
     EventLog.objects.log(instance=event)
 
@@ -3432,7 +3432,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     for registrant in registrants:
         #registrant.assign_mapped_fields()
         if registrant.custom_reg_form_entry:
-            registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            registrant.name = str(registrant.custom_reg_form_entry)
         else:
             if registrant.first_name or registrant.last_name:
                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])

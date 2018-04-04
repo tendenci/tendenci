@@ -1,0 +1,2 @@
+
+{% blocktrans with event.title as event_title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Event Deleted: {{ event_title }}{% endblocktrans %}

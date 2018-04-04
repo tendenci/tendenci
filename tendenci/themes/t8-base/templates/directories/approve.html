@@ -1,0 +1,21 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Approve" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</h1>
+
+    <div class="directory-wrap">
+    <p><a href="{{ directory.get_absolute_url }}" title="{{ directory.headline }}">
+    {% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}
+    </a></p>
+    <p>{% trans "Are you sure you want to approve this" %} {% firstof MODULE_DIRECTORIES_LABEL 'directory' %} {% trans 'posting' %}?</p>
+    <form action="{% url "directory.approve" directory.pk %}" method="post">{% csrf_token %}
+    <div class="forms">
+        <input type="submit" value="{% trans 'Yes, approve it.' %}" /> or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+    </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

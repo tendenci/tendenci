@@ -1,0 +1,40 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %} {% trans "Import" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="imports">
+    <b>
+    {% blocktrans with request.user.username as requser %}
+        You ({{ requser }}) are importing the following file at (time)
+    {% endblocktrans %}({% now "D d M Y P" %})</b>: <br>
+    <font color="red">
+    {{ file_name }}
+    </font>
+    <br>
+    {% trans "Note: Event Logging Will be Suspended for the duration of import for this session only." %}<br>
+    <br>
+    <div class="results">
+        <div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
+            <img src="{% static 'images/icons/loading.gif' %}" alt="{% trans "loading" %}" title="{% trans "loading" %}" /> {% trans "loading ..." %}
+        </div>
+    </div>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}

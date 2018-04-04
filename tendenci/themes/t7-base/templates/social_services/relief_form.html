@@ -1,0 +1,44 @@
+{% extends "social_services/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Relief Assessment Form' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h1 class="capitalize">{% trans "relief assessment form" %}</h1>
+<p class="capitalize">{% trans "date of visit" %}: {{ now|date:"j-F-Y P" }}</p>
+<form action="" method="post">{% csrf_token %}
+    <div class="forms">
+        {{ form|styled_form }}
+        <input type="submit" value="Submit Information!"/>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{{ form.media }}
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    ethnicity = $(".form-field .id_ethnicity li input:checked")
+    if (ethnicity.attr("value") == "other") {
+        $(".form-field .id_other_ethnicity").show();
+    }else {
+        $(".form-field .id_other_ethnicity").hide();
+    }
+    $(".form-field .id_ethnicity li input").click(function() {
+        if ($(this).attr("value") == "other") {
+            $(".form-field .id_other_ethnicity").show();
+        }else {
+            $(".form-field .id_other_ethnicity").hide();
+        }
+    });
+});
+</script>
+{% endblock %}

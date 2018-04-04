@@ -1,0 +1,47 @@
+
+{% if obj_header %}
+    {{ obj_header }}
+{% else %}
+    <h1>{% trans 'Payment Status' %}</h1>
+{% endif %}
+
+<p>&nbsp;</p>
+    <p>
+    {% if not payment.is_approved %}
+        <b>
+        {% trans "DO NOT press the back button in your browser." %}
+        </b>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a>
+    {% else %}
+        <b>
+        {% trans "DO NOT press the back button in your browser, or your credit card will be charged twice." %}
+        </b>
+    {% endif %}
+    </p>
+    <p>&nbsp;</p>
+    <p>{% trans "Status of transaction (with reason if declined):" %}</p>
+    {% if payment.response_code != '1' and payment.response_reason_code != '1' %}
+        <b>{% trans "Not approved -" %}</b>
+    {% endif %}
+    <b>
+    {{ payment.response_reason_text }}
+    </b>
+
+    <p>&nbsp;</p>
+    {% if not payment.is_approved %}
+        <p>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a>
+        </p>
+    {% else %}
+        <p>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.print_view" payment.invoice.id payment.invoice.guid %}">{% trans "Print Friendly Invoice." %}</a>
+        </p>
+        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" payment.invoice.id payment.invoice.guid %}">{% trans "View my Invoice" %}</a></p>
+
+   {% endif %}
+
+
+
+    {% if obj_display %}
+        {{ obj_display }}
+    {% endif %}

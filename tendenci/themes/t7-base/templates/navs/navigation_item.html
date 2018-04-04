@@ -1,0 +1,31 @@
+{% load nav_tags %}
+
+{% if is_site_map %}
+<li>{% spaceless %}
+    <a class="{% if item.css %}{{ item.css }}{% endif %}"{% if item.new_window %} target="_blank"{% endif %} href="{{ item.get_url }}">
+      {% trans item.label|safe %}
+    </a>{% endspaceless %}
+
+    {% if item.children %}
+        <ul>
+            {% for child in item.children %}
+                {% nav_item child is_site_map=is_site_map %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
+{% else %}
+<li {% if item.children %}class="dropdown"{% endif %}>{% spaceless %}
+    <a class="{% if item.css %}{{ item.css }}{% endif %}{% if item.children %} dropdown-toggle{% endif %}"{% if item.new_window %} target="_blank"{% endif %} href="{{ item.get_url }}"{% if item.children %} data-toggle="dropdown" role="button" aria-expanded="false"{% endif %}>
+        {% trans item.label|safe %}
+    </a>{% endspaceless %}
+
+    {% if item.children %}
+        <ul class="dropdown-menu" role="menu">
+            {% for child in item.children %}
+                {% nav_item child %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
+{% endif %}

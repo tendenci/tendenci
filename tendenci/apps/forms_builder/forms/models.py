@@ -143,7 +143,7 @@ class Form(TendenciBaseModel):
         permissions = (("view_form", _("Can view form")),)
         app_label = 'forms'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
@@ -230,7 +230,7 @@ class Field(OrderingBaseModel):
         #order_with_respect_to = "form"
         app_label = 'forms'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
     def get_field_class(self):
@@ -304,7 +304,7 @@ class FormEntry(models.Model):
         verbose_name_plural = _("Form entries")
         app_label = 'forms'
 
-    def __unicode__(self):
+    def __str__(self):
         return ('%s submission' % (self.form.title,))
 
     def get_absolute_url(self):
@@ -445,7 +445,7 @@ class FieldEntry(models.Model):
         verbose_name_plural = _("Form field entries")
         app_label = 'forms'
 
-    def __unicode__(self):
+    def __str__(self):
         return ('%s: %s' % (self.field.label, self.value))
 
     def include_in_email(self):
@@ -493,7 +493,7 @@ class Pricing(models.Model):
         ordering = ["pk"]
         app_label = 'forms'
 
-    def __unicode__(self):
+    def __str__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")
         if not currency_symbol:
             currency_symbol = '$'

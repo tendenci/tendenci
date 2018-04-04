@@ -1,0 +1,2 @@
+
+{% blocktrans with object.get_name as file %}File ({{ file }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

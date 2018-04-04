@@ -1,0 +1,97 @@
+.t {
+	width: 90%;
+}
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.contributions-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.contributions-nav li {
+	display: inline;
+}
+
+.t .contributions-wrap {
+	margin-bottom: 20px;
+}
+
+.t .contribution-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .contributions-wrap .contribution-wrap-search {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .contributions-wrap .contribution-wrap h2 {
+	width: 85%;
+}
+.t .contributions-wrap .contribution-wrap .content {
+	margin-bottom: 10px;
+}
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+/* Contribution View
+ ------------------------- */
+.t .contribution-wrap .meta, .t .contribution-wrap-search .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .contribution-wrap .meta .tags {
+	margin-bottom: 5px;
+}

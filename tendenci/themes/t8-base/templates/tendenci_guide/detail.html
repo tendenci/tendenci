@@ -1,0 +1,23 @@
+{% extends "tendenci_guide/base.html" %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/tendenci_guide.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+<div class="guide-nav">
+<h3>{% blocktrans with s=guide.section %}{{ s }}{% endblocktrans %}</h3>
+<ul>
+    {% for g in section_guides %}
+    <li><a {% ifequal guide.slug g.slug %}class="active" {% endifequal %}href="{% url "tendenci_guide.guide_page" g.slug %}">{% blocktrans with t=g.title %}{{ t }}{% endblocktrans %}</a></li>
+    {% endfor %}
+</ul>
+</div>
+<div class="guide-content">
+<h1>{% blocktrans with t=guide.title|title %}{{ t }}{% endblocktrans %}</h1>
+<div>{% blocktrans with c=guide.content|safe %}{{ c }}{% endblocktrans %}</div>
+{% if next %}<h3>{% trans 'Next' %}: <a href="{% url "tendenci_guide.guide_page" next.slug %}">{% blocktrans with t=next.title %}{{ t }}{% endblocktrans %}</a></h3>{% endif %}
+</div>
+{% endblock content %}

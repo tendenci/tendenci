@@ -1,0 +1,16 @@
+{% load nav_tags %}
+
+
+{% if show_title == "True" %}
+    <h2>{% blocktrans with t=nav.title %}{{ t }}{% endblocktrans %}</h2>
+{% endif %}
+
+{% if is_site_map %}
+<ul>
+{% else %}
+<ul class="nav navbar-nav t-main-navbar-nav" id="t-main-navbar-nav-{{ nav.id }}">
+{% endif %}
+    {% for item in items %}
+        {% nav_item item is_site_map=is_site_map %}
+    {% endfor %}
+</ul>

@@ -1,0 +1,15 @@
+{% url "event" event.id as event_url %}
+{% trans 'Greetings' %} {{ event.organizer.user.get_full_name }},
+<br /><br />
+{% blocktrans with title=event.title  dt=event.start_dt|date:"M j, Y" t1=event.start_dt|date:"P" t2=event.end_dt|date:"P" %}
+Event reminders for {{ title }} which is coming up on
+{{ dt }} {{ t1 }} - {{ t2 }}
+have been distributed to all registrants requesting reminders.
+<br /><br />
+To view the details of this event, go to <a href="{{ site_url }}{{ event_url }}">{{ title }}
+</a>
+{% endblocktrans %}
+<br /><br />
+{% trans 'Thanks!' %}
+<br /><br />
+{{ site_display_name }}

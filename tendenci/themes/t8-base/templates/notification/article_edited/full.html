@@ -1,0 +1,9 @@
+
+<p>{{ user.username }},</p>
+
+<p>{% trans 'The following article has been edited:' %}</p>
+
+<div>{% blocktrans with headline=object.headline %}Headline: {{ headline }}{% endblocktrans %}</div>
+<div>{% trans "To view this article go to:" %} {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</div>
+
+<p>{% trans "Thanks!" %}</p>

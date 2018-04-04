@@ -1,12 +1,25 @@
+from warnings import warn
 from datetime import datetime
-
 from django.conf import settings
-
 from tendenci.apps.site_settings.utils import get_setting
 
 
 def static_url(request):
-    return {'STATIC_URL': settings.STATIC_URL, 'LOCAL_STATIC_URL': settings.LOCAL_STATIC_URL, 'STOCK_STATIC_URL': settings.STOCK_STATIC_URL, 'TINYMCE_JS_URL': settings.TINYMCE_JS_URL}
+    context = {}
+    context['STOCK_STATIC_URL'] = settings.STOCK_STATIC_URL
+    context['TINYMCE_JS_URL'] = settings.TINYMCE_JS_URL
+
+    # Backward compatibility for old themes
+    def warn_static_url(value=settings.STATIC_URL):
+        warn("{{ STATIC_URL }}<path> is deprecated, use {% static '<path>' %} instead", DeprecationWarning)
+        return value
+    context['STATIC_URL'] = warn_static_url
+    def warn_local_static_url(value=settings.LOCAL_STATIC_URL):  # noqa: E306
+        warn("{{ LOCAL_STATIC_URL }}<path> is deprecated, use {% local_static '<path>' %} instead", DeprecationWarning)
+        return value
+    context['LOCAL_STATIC_URL'] = warn_local_static_url
+
+    return context
 
 
 def index_update_note(request):

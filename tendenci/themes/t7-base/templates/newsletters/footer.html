@@ -1,0 +1,58 @@
+
+<table border="0" cellspacing="0" cellpadding="2" width="500" align="center" bgcolor="#FFFFFF" bordercolor="##EAEAEA">
+      <tr valign="bottom">
+        <td width="60"><div align="left"><a href="http://www.tendenci.com/">
+                <img src="{{ SITE_GLOBAL_SITEURL }}{% static 'tresources/footers/tendenci54x22.gif' %}" width="54" height="22" border="0" title="Tendenci" alt="Tendenci"></a></div></td>
+        <td width="240"><div align="left"><a href="http://www.tendenci.com/">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">{% trans "Tendenci&reg; Membership Management Software" %} </font></a></div>
+</td>
+        <td width="140"><div align="right"><a href="http://www.schipul.com/">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">{% trans "Schipul Web Marketing" %}</font></a></div></td>
+        <td width="60"><div align="right"><a href="http://www.schipul.com/">
+<img src="{{ SITE_GLOBAL_SITEURL }}{% static 'tresources/footers/schipul54x22.gif' %}" width="54" height="22" border="0" alt="Schipul" title="Schipul"></a></div>
+</td>
+      </tr>
+</table>
+
+ <table border="0" cellspacing="0" cellpadding="2" width="500" align="center" bgcolor="#FFFFFF" bordercolor="##EAEAEA">
+
+<!----------------------------- start a new row ----------------------------->
+<tr>
+                <td valign="top" align="center" bgcolor="#FFFFFF" height="10">
+<div align="center">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">
+ {% if action.group %}
+You are on the "{{ action.group.name }}" list for
+ {% else %}
+ You are a member of
+ {% endif %}
+</font>
+<A href="{{ SITE_GLOBAL_SITEURL }}">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">{{ SITE_GLOBAL_SITEDISPLANAME }}</font></a>.
+
+&nbsp;&nbsp;&nbsp;&nbsp;(<a href="http://www.schipul.com/policy/"><font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">policy</font></a>)<br>
+
+ {% if action.group %}
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">
+If you no longer want to receive this letter, </font>
+<A href="{{ SITE_GLOBAL_SITEURL }}{% url 'group.deleteuser' action.group.slug user_this.id %}">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">follow this link</font>
+</a>.<br>
+
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">If you no longer want to receive any emails from Schipul Beta, </font>
+<A href="{{ SITE_GLOBAL_SITEURL }}{% url 'group.deleteuser' action.group.slug user_this.id %}">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">follow this link</font></a>.
+<br>
+ {% endif %}
+
+<A href="{{ SITE_GLOBAL_SITEURL }}"><font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">RSS syndication available</font></a>
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy"> for the Schipul Beta site.</font>
+</div><br>
+<div align="center">
+<font size="1" face="Arial, Helvetica, sans-serif" color="#808080" class="body_copy">
+
+Schipul Beta - 11757 Katy Frwy Suite 930  Houston, Texas 77079</font>
+
+</div></td>
+</tr>
+</table>

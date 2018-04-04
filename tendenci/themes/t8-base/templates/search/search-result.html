@@ -1,0 +1,14 @@
+<div class="wrap-search-item">
+    <div class="search-item">
+        <h3><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h3>
+        <div class="item-content">
+            {% filter striptags|truncatewords:50 %}
+                {% autoescape on %}
+                    {% firstof result.object.content result.object.description result.object.body %}
+                {% endautoescape %}
+            {% endfilter %}
+            &nbsp;[{{ result.model_name }}]
+        </div>
+        <div style="margin-bottom:10px;"></div>
+    </div>
+</div>

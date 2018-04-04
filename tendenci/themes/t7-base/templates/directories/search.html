@@ -1,0 +1,94 @@
+{% extends "directories/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load directory_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_DIRECTORIES_LABEL_PLURAL }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Directories List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %}  {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}" href="{% url 'directory.feed' %}" />
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_DIRECTORIES_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_DIRECTORIES_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Directories List" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate directories 10 %}
+    {% directory_search %}
+
+    <p id="a-to-z">
+        {% trans "Directory Starts With:" %}
+        {% for letter in a_to_z %}
+        <a href="{% url 'directories' %}?search_category=headline&search_method=starts_with&q={{letter }}">{{ letter|upper }}</a>
+        {% endfor %}
+    </p>
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_DIRECTORIES_LABEL_PLURAL and MODULE_DIRECTORIES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Directory Found
+                {% plural %}
+                    {{ obj_count }} Directories Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for directory in directories %}
+            {% search_result directory %}
+        {% empty %}
+            {% if user.profile.is_superuser %}
+                <p><a href="{% url 'directory.add' %}">
+                    {% if MODULE_DIRECTORIES_LABEL %}
+                        {% blocktrans %}
+                            Add a New {{ MODULE_DIRECTORIES_LABEL }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add a New Directory" %}
+                    {% endif %}
+                </a></p>
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $catAndSubcatSelect = $('#id_cat, #id_sub_cat'),
+                $directoriesSearchForm = $('#t-directories-search-form');
+
+            $catAndSubcatSelect.on('change', function (e) {
+                $directoriesSearchForm.submit();
+            });
+        });
+    </script>
+{% endblock %}

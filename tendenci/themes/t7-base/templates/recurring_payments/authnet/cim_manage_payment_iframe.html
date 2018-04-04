@@ -1,0 +1,67 @@
+{% extends "recurring_payments/authnet/base.html" %}
+
+{% block title %} {% trans "Manage Customer Payment and Shipping Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="{{ form_post_url }}"
+name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="{{ token }}" />
+</form>
+
+
+
+<div class="t">
+    <h1>{% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
+
+    {% if gateway_error  %}
+
+    <div>
+    {% blocktrans %}
+    Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or
+    contact your site administrator for assistance. Thanks!
+    {% endblocktrans %}
+    </div>
+
+    {% else %}
+
+    <noscript>
+        <div style="font-size: 1.2em; color:red; margin-top: 1em;">{% blocktrans %}JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again{% endblocktrans %} </div>
+     </noscript>
+     <br />
+
+      <div class="AuthorizeNetPopupInner">
+    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="" frameborder="0" scrolling="auto"
+    width="482px" height="678px"></iframe>
+      </div>
+
+      {% endif %}
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+{% if not gateway_error %}
+<script>
+    var form = document.forms["formAuthorizeNetPopup"];
+    form.action = "{{ form_post_url }}"
+    form.submit();
+
+</script>
+{% endif %}
+
+
+
+{% endblock %}

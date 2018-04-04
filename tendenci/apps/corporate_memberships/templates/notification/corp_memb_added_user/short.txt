@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.corp_profile.name as bname %}Corporate Membership - {{ bname }} - on  {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

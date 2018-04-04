@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
@@ -29,6 +28,7 @@ from tendenci.apps.base.utils import tcurrency
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -53,7 +53,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+            static('js/admin/admin-list-reorder.js'),
         )
 
     def get_queryset(self, request):
@@ -124,12 +124,12 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/corpmembershipapp_tabular_inline_ordering.js' % settings.STATIC_URL,
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/tax_fields.js' % settings.STATIC_URL,
+            static('js/admin/corpmembershipapp_tabular_inline_ordering.js'),
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/tax_fields.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
-                       '%scss/corpmemberships-admin.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css'),
+                       static('css/corpmemberships-admin.css')], }
 
     def get_queryset(self, request):
         qs = super(CorpMembershipAppAdmin, self).get_queryset(request)
@@ -373,7 +373,7 @@ class NoticeAdmin(admin.ModelAdmin):
     class Media:
         js = (
             "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
         )
 
     def save_model(self, request, object, form, change):
@@ -399,7 +399,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url("^clone/(?P<pk>\d+)/$",
+            url(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='corporate_membership_notice.admin_clone'),
         ]
@@ -472,7 +472,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
         js = (
             "//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+            static('js/admin/admin-list-reorder.js'),
         )
 
     def get_fieldsets(self, request, obj=None):

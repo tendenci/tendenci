@@ -1,0 +1,40 @@
+
+<div>
+    <ol>
+    {% if event_content %}
+        <li>
+        <font face="Arial" size="2" color="#000000">
+        <a href="#calendarevents">{% trans "Calendar Events" %}</a>
+        </font>
+        </li>
+    {% endif %}
+    {% if art_content %}
+        <li>
+        <font face="Arial" size="2" color="#000000">
+        <a href="#articles">{% trans "Articles" %}</a>
+        </font>
+        </li>
+    {% endif %}
+    {% if news_content %}
+        <li>
+        <font face="Arial" size="2" color="#000000">
+        <a href="#news">{% trans "News" %}</a>
+        </font>
+        </li>
+    {% endif %}
+    {% if job_content %}
+        <li>
+        <font face="Arial" size="2" color="#000000">
+        <a href="#jobs">{% trans "Job Listings" %}</a>
+        </font>
+        </li>
+    {% endif %}
+    {% if page_content %}
+        <li>
+        <font face="Arial" size="2" color="#000000">
+        <a href="#pages">{% trans "Recent Pages" %}</a>
+        </font>
+        </li>
+    {% endif %}
+    </ol>
+</div>

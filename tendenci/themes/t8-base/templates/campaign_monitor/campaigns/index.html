@@ -1,0 +1,34 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+
+
+{% block title %}{% trans "Index" %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Campaign Monitor Campaigns" %}</h1>
+    {% autopaginate campaigns 5 %}
+
+    <div class="templates-wrap">
+    {% for campaign in campaigns %}
+        <div class="template-wrap">
+            <div class="options options-search">
+                <div class="quick-options">
+                    {% campaign_options request.user campaign %}
+                </div>
+            </div>
+            <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></h2>
+            <p><b>{% trans "Subject" %}:</b> {{ campaign.subject }}</p>
+            <p><b>{% trans "Status" %}</b>: {{ campaign.get_status_display }}</p>
+        </div>
+    {% empty %}
+        <div>{% trans "0 Campaigns Found" %}</div>
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

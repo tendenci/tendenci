@@ -1,0 +1,176 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user profiles.add_profile as can_add_profile %}
+
+{% if app_object %}
+    {% has_perm user profiles.view_profile app_object as can_view_profile %}
+    {% has_perm user profiles.change_profile app_object as can_edit_profile %}
+    {% has_perm user profiles.delete_profile app_object as can_delete_profile %}
+{% else %}
+    {% has_perm user profiles.view_profile as can_view_profile %}
+    {% has_perm user user.change_user as can_edit_profile %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        {# "All Users" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Users" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'users' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'profile.search' %}">{% trans "Search Users" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_profile %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'profile.add' %}">{% trans "Add a User" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'profile.similar' %}">{% trans "Similar Users List" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'reports-memberships' %}">{% trans "Membership Reports" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'profile.admins' %}">{% trans "Admin List" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="divider"></li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'profiles.user_import' %}">{% trans "Import" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'profile.export' %}">{% trans "Export" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {# Edit links need to point to the user_this instead of app_object since the views for profile pull from auth.user #}
+                    {% if can_view_profile or can_edit %}
+                        {# "This User" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This User" %}</span>
+                            </li>
+
+                            {% if can_view_profile %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View User Profile" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit or can_edit_profile %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'profile.edit' user_this.id %}">{% trans "Edit User Profile" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'profile.edit_groups' user_this.username %}">{% trans "Edit Groups" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if MODULE_EDUCATIONS_ENABLED %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'profile.edit_education' user_this.username %}">{% trans "Edit Education" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if user.profile.is_staff %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'profile.edit_perms' user_this.id %}">{% trans "Edit Permissions" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if MODULE_SOCIAL_SERVICES_ENABLED %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'user.skills' user_this.username %}">{% trans "View Skills" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'user.skills_edit' user_this.username %}">{% trans "Edit Skills" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'auth_password_change' user_this.id %}">{% trans "Change Password" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_profile %}
+                                {% if request.user != user_this %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'profile.delete' user_this.pk %}">{% trans "Delete User" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                            {# End "This User" Section #}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

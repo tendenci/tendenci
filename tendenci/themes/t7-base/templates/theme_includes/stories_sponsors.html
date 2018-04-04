@@ -1,0 +1,23 @@
+{% load theme_tags %}
+{% load story_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% list_stories as sponsor_stories tags=TEMPLATE_STORIES_SPONSORS_TAG limit=TEMPLATE_STORIES_SPONSORS_LIMIT random=true %}
+<section id="stories-sponsors">
+    <h3>{% firstof TEMPLATE_STORIES_SPONSORS_TITLE 'Sponsors' %}</h3>
+    <div id="sponsor-items">
+    {% if sponsor_stories %}
+    {% for story in sponsor_stories %}
+        {% if story.image %}
+        <a href="{{ story.full_story_link }}"><img alt="{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}" src="{% image_url story.image size=140x80 crop=true quality=92 %}" /></a>
+        {% endif %}
+    {% endfor %}
+    {% else %}
+    {% for item in TEMPLATE_STORIES_SPONSORS_LIMIT|make_range %}
+        <img alt="Visit our Sponsor" src="{% stock_image_url '140x80' %}" />
+    {% endfor %}
+        {% if user.is_authenticated %}{% blocktrans %}<p><a href="/stories/add/?tags={{ TEMPLATE_STORIES_SPONSORS_TAG }}">Add a story</a> and tag it <strong>{{ TEMPLATE_STORIES_SPONSORS_TAG }}</strong> to have it appear as an image above.</p>{% endblocktrans %}{% endif %}
+    {% endif %}
+    </div>
+</section>
+{% theme_setting setting_name %}

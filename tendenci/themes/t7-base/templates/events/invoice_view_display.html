@@ -1,0 +1,60 @@
+{% load base_filters %}
+
+<!--<a href="">{% trans 'View Registration' %}</a>-->
+
+{% with obj.registrant_set.all as registrants %}
+    {% if registrants %}
+        {% for reg in registrants %}
+            <tr>
+                <td>
+                    {% if reg.user %}
+                        <a href="{% url 'profile' reg.user.username %}">
+                    {% endif %}
+                    {% if reg.get_name %}
+                        {{ reg.get_name }}
+                    {% else %}
+                        {% trans "Guest #" %}{{ forloop.counter0 }}
+                    {% endif %}
+                    {% if reg.email %}
+                        ({{ reg.email }})
+                    {% endif %}
+                    {% if reg.user %}
+                        </a>
+                    {% endif %}
+                    {% if reg.custom_reg_form_entry %}
+                    {% with reg.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
+                            {% if field.value %}
+                                <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% endif %}
+                    {% with reg.pricing as price_title  %}
+                    {% if price_title %}
+                     <br />{% trans "Registered as:" %} {{ price_title}}
+                    {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="td-right">
+                    {{ reg.amount|format_currency }}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% with obj.regaddon_set.all as regaddons %}
+    {% if regaddons %}
+        {% for regaddon in regaddons %}
+            <tr>
+                <td>
+                {{ regaddon.addon.title }}
+                ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                </td>
+                <td class="td-right">
+                    <span>{{ regaddon.amount|format_currency }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+{% endwith %}

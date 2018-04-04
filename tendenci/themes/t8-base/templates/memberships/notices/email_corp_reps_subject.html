@@ -1,0 +1,2 @@
+
+{% if not membership.renewal %}{% trans 'New' %} {% endif %}{% trans 'Member' %} "{{ membership.user.first_name|safe }} {{ membership.user.last_name|safe }}" {% if not membership.renewal %}{% trans 'Joined' %}{% else%}{% trans 'Renewed' %}{% endif %} {% trans 'under Your Corporation' %} "{{ corp_membership.corp_profile.name|safe }}" {% trans 'on' %} {{ SITE_GLOBAL_SITEURL }}

@@ -1,0 +1,125 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user forms.add_form as can_add_form %}
+
+{% if app_object %}
+    {% has_perm user forms.view_form app_object as can_view_form %}
+    {% has_perm user forms.change_form app_object as can_edit_form %}
+    {% has_perm user forms.delete_form app_object as can_delete_form %}
+{% else %}
+    {% has_perm user forms.view_form as can_view_form %}
+    {% has_perm user forms.change_form as can_edit_form %}
+    {% has_perm user forms.delete_form as can_delete_form %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-forms-builder-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Forms" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'forms' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'forms' %}">{% trans "Search Forms" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_form %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:forms_form_add' %}">{% trans "Add Form" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_staff %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'form_export' %}">{% trans "Export Forms" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_form or can_edit_form %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Form" %}</span>
+                            </li>
+
+                            {% if can_view_form %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Form" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'form_entries' app_object.pk %}">{% trans "View Entries" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:forms_form_export' app_object.pk %}">{% trans "Export Entries" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_form %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:forms_form_change' app_object.pk %}">{% trans "Edit Form" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:forms_form_change' app_object.pk %}">{% trans "Edit Form Fields" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_add_form %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'form_copy' app_object.pk %}">{% trans "Copy Form" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_form %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'form_delete' app_object.pk %}">{% trans "Delete Form" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

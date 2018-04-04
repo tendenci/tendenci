@@ -24,7 +24,7 @@ class Track(models.Model):
     class Meta:
         app_label = 'speakers'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -58,7 +58,7 @@ class Speaker(TendenciBaseModel):
 
     objects = SpeakerManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

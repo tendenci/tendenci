@@ -1,0 +1,43 @@
+{% load email_filters %}
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Directory Add Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>
+  {% if request.user.is_superuser %}{% blocktrans with request.user.get_full_name as requser %}The following directory was
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Directories module by {{ requser }}{% endblocktrans %} (administrator).{% else %} {% blocktrans with request.user.get_full_name as requser %}The following directory was
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Directories module by {{ requser }} and needs to be activated.{% endblocktrans %}{% endif %}</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
+    <td width="75%"><b>{% blocktrans with headline=object.headline %}{{ headline }}{% endblocktrans %}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Body:" %}</td>
+    <td width="75%"><b>{% blocktrans with body=object.body|relative_to_absolute_urls|safe %}{{ body }}{% endblocktrans %}</b></td>
+  </tr>
+</table>
+<p>
+    {% blocktrans %}
+    To view the details of this directory, go to:{% endblocktrans %}
+    <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b>
+    <br>
+    {% if object.status_detail != 'active' %}
+        <p>
+            {% blocktrans %}To activate this directory, go to:{% endblocktrans %}
+            <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "directory.approve" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "directory.approve" object.id %}</a></b>
+        </p>
+    {% endif %}
+</p>
+<P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

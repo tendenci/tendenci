@@ -1,0 +1,94 @@
+{% extends "events/base-wide.html" %}
+{% load perm_tags %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load humanize %}
+{% load profile_tags %}
+
+
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-attendees.css' %}">
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="event-wrap">
+        <div class="info">
+            <h1>{{ event.title }}</h1>
+            <div class="event-date">
+                {% for span in event.date_spans %}
+                    {% if span.same_date %}
+                        <div class=""><h2>{{ span.start_dt|date:"l, j-M-Y" }}
+                        {% if not event.all_day %}
+                        {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+                        {% if not event.all_day %}{{ event.timezone.zone|timezone_label }}{% endif%}</h2></div>
+                    {% else %}
+                        <div class=""><h2>
+                        {% if event.all_day %}
+                        {{ span.start_dt|date:"l, j-M-Y" }} - {{ span.end_dt|date:"l, j-M-Y" }}
+                        {% else %}
+                        {{ span.start_dt|date:"l, j-M-Y" }} {{ event.start_dt|date:"P" }} - {{ span.end_dt|date:"l, j-M-Y" }} {{ event.end_dt|date:"P" }}
+                        {% endif %}
+                        {% if not event.all_day %}{{ event.timezone.zone|timezone_label }}{% endif %}</h2></div>
+                        {% if not forloop.last %} and {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="registration-info">
+                {% if is_registrant %}
+                    <div class="registration-notice"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">{% trans "You are already registered for this event" %}</a></div>
+                {% else %}
+                    {% if reg_ended %}
+                        <div class="registration-red">{% trans "We are unable to register you for this event as the event deadline has already passed" %}</div>
+                    {% else %}
+                        {% if not reg_started %}
+                            <div class="registration-red">
+                                <div>{% trans "Registration starts on " %}</div>
+                                <div><strong>{{ earliest_time }}</strong></div>
+                            </div>
+                        {% else %}
+                        <div class="registration-notice">{% trans "Event registration is currently ongoing" %}</div>
+                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                <div class="event-slots">
+                {% if limit > 0 and slots_available != -1 %}
+                    <div>{% trans "Total Seats" %}: {{ limit }} </div>
+                    <div>{% trans "Reserved" %}: {{ slots_taken }} </div>
+                {% endif %}
+                </div>
+            </div>
+
+
+            <div class="attendees-wrap">
+                <div class="attendees-header">
+                    <h2>{{ event.registrants|length }} {% trans "Attendee" %}{{ event.registrants.count|pluralize }}</h2>
+                </div>
+                <div class="attendees-list">
+                {% for registrant in event.registrants %}
+                <div class="attendee">
+                    <div class="image-wrap">
+                        {% gravatar registrant.user 80 %}
+                    </div>
+                    <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+
+<div>
+    <font color="#000000" face="Arial">{% trans "Hello" %} [firstname],
+        <br />
+        <br />
+        {% trans "This is a reminder from your event planner for an upcoming event that you are registered for." %}
+        <br />
+        <br />
+    </font>
+
+    <!-- -- start hCalendar Spec -- -->
+    <h3>
+        <font color="#000000" face="Arial">
+              <span class="vevent">
+                      <a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url "event" event.id %}">
+                        <span class="summary">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span>
+                    </a>
+              </span>
+         </font>
+     </h3>
+
+    <font color="#000000" face="Arial">
+        <span class="vevent">
+            {% blocktrans with event.start_dt|date:"Y-m-j" as event_start and event.start_dt|date:"M j, Y P" as event_starts and event.end_dt|date:"Y-m-j" as event_end and event.end_dt|date:"M j, Y P" as event_ends and event.timezone as event_tz %} Start:
+            <abbr class="dtstart" title="{{ event_start }}"><b>{{ event_starts }}{{ event_tz }}</b></abbr>
+            to <abbr class="dtend" title="{{ event_end }}"><b>{{ event_ends }}{{ event_tz }}</b></abbr><br />{% endblocktrans %}
+
+            {% trans "Location: " %}<abbr class="location"><b>
+            {%if event.place.address %}{{ event.place.address }}, {%endif%}
+            {%if event.place.city %}{{ event.place.city }}, {%endif%}
+            {%if event.place.state %}{{ event.place.state }} {%endif%}
+            {%if event.place.zip %}{{ event.place.zip }} {%endif%}
+            </b></abbr>
+            <br />
+            <br />
+            <b>{% trans "Details: " %}</b><br />
+            {{ event.description|striptags|truncatewords:"80"|safe }}
+        </span>
+        <br />
+        <br />
+    </font>
+    <!-- -- end hCalendar Spec -- -->
+
+    <font color="#000000" face="Arial">
+        <i>{% trans "You are receiving this email from:" %} {% firstof request.user.get_full_name request.user.username %} {% trans "because you are a registered attendee of the event above." %}</i>
+    </font>
+</div>

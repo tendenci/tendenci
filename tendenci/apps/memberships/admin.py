@@ -28,6 +28,7 @@ from tendenci.apps.memberships.utils import get_selected_demographic_field_names
 from tendenci.apps.memberships.middleware import ExceededMaxTypes
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class MembershipStatusDetailFilter(SimpleListFilter):
@@ -453,16 +454,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
         extra_urls = [
-            url("^approve/(?P<pk>\d+)/$",
+            url(r'^approve/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
-            url("^renew/(?P<pk>\d+)/$",
+            url(r'^renew/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.renew),
                 name='membership.admin_renew'),
-            url("^disapprove/(?P<pk>\d+)/$",
+            url(r'^disapprove/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.disapprove),
                 name='membership.admin_disapprove'),
-            url("^expire/(?P<pk>\d+)/$",
+            url(r'^expire/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
         ]
@@ -609,12 +610,12 @@ class MembershipAppAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/membapp_tabular_inline_ordering.js' % settings.STATIC_URL,
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/tax_fields.js' % settings.STATIC_URL,
+            static('js/admin/membapp_tabular_inline_ordering.js'),
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/tax_fields.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
-                       '%scss/memberships-admin.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css'),
+                       static('css/memberships-admin.css')], }
 
 
 class MembershipTypeAdmin(TendenciBaseModelAdmin):
@@ -654,7 +655,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-              "%sjs/membtype.js" % settings.STATIC_URL,)
+              static('js/membtype.js'),)
 
     @mark_safe
     def show_group(self, instance):
@@ -662,7 +663,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
             return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
                     reverse('group.detail', args=[instance.group.slug]),
                     instance.group,
-                    instance.group.id
+                    instance.group.id,
                 )
         return ""
     show_group.short_description = u'Group'
@@ -754,8 +755,8 @@ class NoticeAdmin(admin.ModelAdmin):
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/admin/membnotices.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/membnotices.js'),
         )
 
     def save_model(self, request, object, form, change):
@@ -781,7 +782,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url("^clone/(?P<pk>\d+)/$",
+            url(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
         ]
@@ -855,7 +856,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+            static('js/admin/admin-list-reorder.js'),
         )
 
     def get_fieldsets(self, request, obj=None):

@@ -1,0 +1,94 @@
+{% load pybb_tags %}
+
+{% pybb_get_profile user=post.user as post_user_profile %}
+{% pybb_get_profile user=user as user_profile %}
+
+<a name="post-{{ post.id }}"></a> {# may be remove this string? #}
+<table class="table table-bordered post {% if post.on_moderation %}on-moderation{% endif %}" id="post-{{ post.id }}">
+    <thead class="post-header">
+    <tr>
+    <th colspan="2">
+        <a class="permalink" href="{{ post.get_absolute_url }}">#</a>
+        <span class="updated">{% pybb_time post.created %}</span>
+    </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="post-row">
+        <td class="post-info">
+            {% include "pybb/avatar.html" with user=post.user %}
+
+            <div class="post-author">
+                <a href="{{ post_user_profile.get_absolute_url }}">
+                    <span class="post-username">{{ post_user_profile.get_display_name }}</span>
+                </a>
+            </div>
+            {% if post_user_profile.rank %}
+                <div class='rank'>
+                    {% trans "Rank" %}: {{ post_user_profile.rank }}
+                    {% if user.is_authenticated and user != post.user %}
+                        <a href='#' class='vote' rel='{{ post_user_profile.get_vote_up_url }}'>+</a>
+                        <a href='#' class='vote' rel='{{ post_user_profile.get_vote_down_url }}'>-</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if user.is_superuser %}
+                <div class="post-extra-info">{{ post.user_ip }}</div>
+            {% endif %}
+
+            <div class="post-controls">
+                {% if user.is_moderator or post|pybb_posted_by:user %}
+                    <a href="{% url 'pybb:edit_post' pk=post.id %}">{% trans "Edit" %}</a>
+                {% endif %}
+                {% if user.is_moderator %}
+                    <a onclick="pybb_delete_post('{% url 'pybb:delete_post' post.id %}',
+                            'post-{{ post.id }}', '{% trans 'Delete post?' %}'); return false;"
+                       href="{% url 'pybb:delete_post' post.id %}">{% trans "Delete" %}</a>
+                    {% if post.on_moderation %}
+                        <a href="{% url 'pybb:moderate_post' pk=post.id %}">{% trans "Approve post" %}</a>
+                    {% endif %}
+                {% endif %}
+
+                {% if perms.pybb.change_post and user.is_staff %}
+                    <a href="{% url 'admin:forums_post_change' post.id %}">{% trans 'Admin' %}</a>
+                {% endif %}
+
+            </div>
+        </td>
+        <td class="post-content">
+            {{ post.body_html|safe }}
+
+            {% if not user.is_authenticated or user_profile.show_signatures %}
+                {% if post_user_profile.signature %}
+                    <div class="post-signature">
+                        {{ post_user_profile.signature_html|safe }}
+                    </div>
+                {% endif %}
+            {% endif %}
+            {% if post.updated %}
+                <div class="updated-message">{% trans "Edited" %} {% pybb_time post.updated %}</div>
+            {% endif %}
+
+            {% comment %}
+                    {% if post.attachment_cache %}
+                    {% for attach in post.attachment_cache %}
+                    <br/>
+                    {% trans "Attachment" %}: <a href="{{ attach.get_absolute_url }}">{{ attach.name }}</a> ({{ attach.size_display }})
+                    {% endfor %}
+                    {% endif %}
+            {% endcomment %}
+            <div class="post-related">
+                {% if user|pybb_may_create_post:post.topic %}
+                    <a href="{% url 'pybb:add_post' topic.id %}?quote_id={{ post.id }}" class="quote-link">{% trans "quote" %}</a>
+                    <a href="#" class="quote-selected-link">{% trans "quote selected" %}</a>
+                {% endif %}
+                <div class='attachments'>
+                    {% for attachment in post.attachments.all %}
+                        <a href="{{ attachment.file.url }}"><img src="{% static 'pybb/img/attachment.png' %}"> {{ attachment.size_display }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>

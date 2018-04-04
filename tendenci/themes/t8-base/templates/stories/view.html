@@ -1,0 +1,26 @@
+{% extends "stories/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load story_tags %}
+
+
+{% block title %}{{ block.super }}{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <article id="t-stories-story-{{ story.pk }}" class="t-stories-story">
+        {% if story.image %}
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}">
+        {% endif %}
+
+        <div class="page-header">
+            <h1>{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</h1>
+        </div>
+
+        <div class="t-stories-story-body">
+            {% blocktrans with c=story.content|safe %}{{ c }}{% endblocktrans %}
+        </div>
+
+        {% include "stories/meta.html" %}
+    </article>
+{% endblock %}

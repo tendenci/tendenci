@@ -1,0 +1,85 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="application-entry-wrap">
+
+        <h1>{% trans "Membership Confirmation" %}</h1>
+
+        {% firstof app.confirmation_text|safe "Thank you for your submission!" %}
+
+        {% if membership.is_pending %}
+            <p><span style="background-color: #ECF716;">
+                    {% if request.user.profile.is_superuser %}
+                    {% trans "This membership is pending." %}
+                    {% else %}
+                    {% trans "Your membership is pending for admin approval." %}
+                    <br />{% trans "You will be notified shortly after your application is approved." %}
+                    {% endif %}
+            </span></p>
+        {% else %}
+            {% if membership.referer_url %}
+            <p><a href="{% url "auth_login" %}?next={{ membership.referer_url }}">{% trans 'Please continue registering for your event as a member.' %}</a></p>
+            {% endif %}
+        {% endif %}
+
+        <h4>{% trans 'What would you like to do now?' %}</h4>
+        <ul>
+            {% if membership.is_pending and request.user.profile.is_superuser %}
+            <li>
+                <a href="{% url "admin:memberships_membershipdefault_change" membership.id %}">{% trans 'Admin: Click here to edit and approve this membership ' %}</a>
+            </li>
+            {% endif %}
+             {% with membership.get_invoice as invoice %}
+            {% if invoice and invoice.total > 0 %}
+            <li>
+                <a href="{% url "invoice.view" invoice.id invoice.guid %}">{% trans 'View Invoice' %}{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} {% trans 'and Make Online Payment' %}{% endif %}</a>
+            </li>
+            {% endif %}
+            {% endwith %}
+
+            {% if membership.corporate_membership_id %}
+            {% with membership.corpmembership as corpmembership %}
+            {% if corpmembership %}
+            <li>
+                <a href="{% url "membership_default.add_under_corp" membership.corporate_membership_id %}">{% blocktrans with corp_name=corpmembership.corp_profile.name %}Add <strong>More</strong> Members Under "{{ corp_name }}"{% endblocktrans %}  </a>
+            </li>
+            <li><a href="{% url "corpmembership.view" membership.corporate_membership_id %}">{% trans 'Back to Corporate Membership' %} - {{ corpmembership.corp_profile.name }}</a></li>
+            {% endif %}
+            {% endwith %}
+
+
+
+            {% endif %}
+
+            {% if membership.user.profile.is_active %}
+            <li><a href="{% url "profile" membership.user.username %}">{% if not user.is_authenticated %}{% trans 'Click Here to Log in and View Your Profile' %}{% else %}{% trans 'View Profile' %}{% endif %}</a></li>
+            {% endif %}
+
+            {% if not membership.is_pending and MODULE_RECURRING_PAYMENTS_ENABLED %}
+            {% if MODULE_MEMBERSHIPS_AUTORENEW %}
+            <li>
+                <a href="{% url "memberships.auto_renew_setup" membership.user.id %}">{% if not user.is_authenticated %}{% trans 'Log in and Set Up Auto Renew' %}{% else %}{% trans 'Set Up Auto Renew' %}{% endif %}</a>
+            </li>
+            {% endif %}
+            {% endif %}
+        </ul>
+
+
+
+
+        <p>&nbsp;</p>
+</div>
+</div>
+{% endblock %}

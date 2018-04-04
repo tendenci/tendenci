@@ -1,0 +1,15 @@
+<div class="media-icons">
+    <a class="social-button social-popup social-facebook" href="https://www.facebook.com/sharer/sharer.php?app_id={{ MODULE_SOCIAL_MEDIA_FB_APP_ID }}&amp;u={{ request.build_absolute_uri }}"></a>
+
+    <a class="social-button social-popup social-twitter" href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&amp;text={{ MODULE_SOCIAL_MEDIA_TWITTER_TEXT }}&amp;via={{ MODULE_SOCIAL_MEDIA_TWITTER_VIA }}"></a>
+
+    <a class="social-button social-popup social-google" href="https://plus.google.com/share?url={{ request.build_absolute_uri }}"></a>
+
+    <a target="_blank" class="social-button social-instagram" href="{{ MODULE_SOCIAL_MEDIA_INSTAGRAM_LINK }}"></a>
+
+    <a target="_blank" class="social-button social-pinterest" href="{{ MODULE_SOCIAL_MEDIA_PINTEREST_LINK }}"></a>
+
+    <a target="_blank" class="social-button social-email" href="mailto:{{ MODULE_SOCIAL_MEDIA_CONTACT_EMAIL }}?subject={{ MODULE_SOCIAL_MEDIA_CONTACT_SUBJECT }}&amp;body={{ MODULE_SOCIAL_MEDIA_CONTACT_MESSAGE }}"></a>
+
+    <a target="_blank" class="social-button social-print" href="{% url "event.print_view" event.pk %}"></a>
+</div>

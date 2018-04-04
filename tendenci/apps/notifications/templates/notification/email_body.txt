@@ -1,6 +1,0 @@
-{% load i18n %}{% blocktrans with site=current_site m=message  %}You have received the following notice from {{ site }}:
-
-{{ m }}
-
-To see other notices or change how you receive notifications, please go to {{ notices_url }}.
-{% endblocktrans %}

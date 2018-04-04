@@ -1,0 +1,41 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "New Member Joined under Your Corporation" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+    <p>
+        {% trans 'Hello' %} {{ user.first_name }},<br /><br />
+        {{ membership.user.first_name }} {{ membership.user.last_name }} {% trans ' has ' %}
+        {% if not membership.renewal %}
+        {% trans 'joined' %}
+        {% else %}
+        {% trans 'renewed' %}
+        {% endif %}
+        {% trans 'the membership under your corporation' %}
+        "{{ corp_membership }}" on <a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEURL }}</a>.
+        <br /><br />
+        {% url "profile" membership.user.username as profile_url %}
+        {% url "corpmembership.view" corp_membership.id as corp_mem_url %}
+
+        {% url "profile" membership.user.username as profile_url %}
+        {% url "corpmembership.view" corp_membership.id as corp_url %}
+        {% blocktrans %}
+        To view the profile of this member, go to <a href="{{ SITE_GLOBAL_SITEURL }}{{ profile_url }}">{{ SITE_GLOBAL_SITEURL }}{{ profile_url }}</a>.
+        <br /> <br />
+
+         To view and manage the corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{{ corp_mem_url }}">{{ SITE_GLOBAL_SITEURL }}{{ corp_url }}</a>.
+        <br /> <br />
+
+        Thanks,<br />
+        {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+        <br /><br />
+        {% endblocktrans %}
+    </p>
+    <P>{% trans 'Time submitted' %}:  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

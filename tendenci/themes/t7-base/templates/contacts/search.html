@@ -1,0 +1,72 @@
+{% extends "contacts/base.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load base_tags %}
+{% load contact_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_CONTACTS_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_CONTACTS_LABEL_PLURAL }} Search{% endblocktrans %}
+    {% else %}
+        {% trans "Contacts Search" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_CONTACTS_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODOULE_CONTACTS_LABEL_PLURAL }} Search{% endblocktrans %}
+        {% else %}
+            {% trans "Contacts Search" %}
+        {% endif %}
+    </h1>
+
+    {% contact_search %}
+    {% autopaginate contacts 10 %}
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_CONTACTS_LABEL_PLURAL and MODULE_CONTACTS_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_CONTACTS_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_CONTACTS_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Contact Found
+                {% plural %}
+                    {{ obj_count }} Contacts Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for contact in contacts %}
+            {% search_result contact %}
+        {% endfor %}
+    <section>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_contact = confirm('{% trans "Permenantly delete" %} {{ MODULE_CONTACTS_LABEL }}?');    // confirm
+                if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+{% endblock %}

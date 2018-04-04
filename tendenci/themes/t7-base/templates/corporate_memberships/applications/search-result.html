@@ -1,0 +1,122 @@
+{% load base_filters %}
+{% load corporate_memberships_tags %}
+
+
+{% if corporate_membership %}
+
+    {% allow_edit_corp corporate_membership request.user as allow_edit %}
+    {% with corporate_membership.corp_profile as corp_profile %}
+
+        <article class="panel panel-info t-corporatememberships-applications-search-result t-search-result {% if corporate_membership.status_detail == 'disapproved' %} disapproved{% endif %}">
+            <div class="panel-heading t-search-result-heading">
+                <h1 class="panel-title"><a href="{% url 'corpmembership.view' corporate_membership.pk %}">{{ corp_profile.name }}</a></h1>
+            </div>
+
+            <div class="panel-body t-search-result-body">
+                 {% if corp_profile.logo %}
+                     <div class="t-corp-membership-logo">
+                         <img class="img-responsive" src="{{ corp_profile.get_logo_url }}" alt="{{ corp_profile.name }}" title="{{ corp_profile.name }}">
+                     </div>
+                 {% endif %}
+
+                <ul class="list-unstyled t-corporatememberships-corporatemembership-information-list">
+                    {% if corp_profile.address or corp_profile.address2 or corp_profile.city or corp_profile.state or corp_profile.zip or corp_profile.country %}
+                        <li>
+                            <strong>{% trans "Address:" %}</strong>
+                            <address>
+                                {% if corp_profile.address or corp_profile.address2 %}
+                                    {{ corp_profile.address }} {{ corp_profile.address2 }}<br>
+                                {% endif %}
+
+                                {% if corp_profile.city %}
+                                    {{ corp_profile.city }}<br>
+                                {% endif %}
+
+                                {% if corp_profile.state %}
+                                    {{ corp_profile.state }}<br>
+                                {% endif %}
+
+                                {% if corp_profile.zip %}
+                                    {{ corp_profile.zip }}<br>
+                                {% endif %}
+
+                                {% if corp_profile.country %}
+                                    {{ corp_profile.country }}
+                                {% endif %}
+                            </address>
+                        </li>
+                    {% endif %}
+
+                    {% if corp_profile.phone %}
+                        <li>
+                            <strong>{% trans "Phone:" %}</strong> <span>{{ corp_profile.phone }}</span>
+                        </lI>
+                    {% endif %}
+
+                    {% if corp_profile.url %}
+                        <li>
+                            <strong>{% trans "Website:" %}</strong> <span>{{ corp_profile.url|safe|urlize }}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if allow_edit or request.user.profile.is_superuser and corporate_membership.corporate_membership_type %}
+                        <li>
+                            <strong>{% trans "Member Type:" %}</strong> <span>{{ corporate_membership.corporate_membership_type }}{% if corporate_membership.invoice %} - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total|floatformat:"2" }}{% if request.user.is_superuser %}<a href="{% url 'invoice.view' corporate_membership.invoice.id %}">{% trans "View Invoice" %}</a>{% endif %}{% endif %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if corporate_membership.status and corporate_membership.real_time_status_detail == "active" %}
+                        <li>
+                            <a href="{% url 'membership_default.add_under_corp' corporate_membership.id %}">{% trans "Join Corporation" %} <span>{% individual_pricing_desp corporate_membership as corp_mem_individual_pricing_desp %}{% blocktrans %}({{ corp_mem_individual_pricing_desp }}){% endblocktrans %}</span></a>
+                        </li>
+                    {% endif %}
+
+                    {% if allow_edit or request.user.profile.is_superuser %}
+                        <li>
+                            <strong>{% trans "Join Date:" %}</strong> <span>{{ corporate_membership.join_dt|date:"long" }}</span>
+                        </li>
+
+                        <li>
+                            <strong>{% trans "Expiration Date:" %}</strong> <span>{% if corporate_membership.expiration_dt %}{{ corporate_membership.expiration_dt|date:"long" }}{% else %}{% trans "Never expires" %}{% endif %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_superuser and not corporate_membership.is_archive %}
+                        <a href="{% url "corpmembership.roster_search" %}?cm_id={{ corporate_membership.id }}">
+                        {% blocktrans count mcount=corporate_membership.members_count %}
+                            {{ mcount }} Member
+                        {% plural %}
+                            {{ mcount }} Members
+                        {% endblocktrans %}
+                        </a>
+                    {% endif %}
+
+                    {% if request.user.is_superuser and corporate_membership.is_join_pending %}
+                        <li class="pending-info-box">
+                            <strong>{% trans "Admin:" %}</strong> <a href="{% url 'corpmembership.approve' corporate_membership.pk %}">{% trans "Approve/Disapprove" %}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if corporate_membership.can_renew %}
+                        {% if allow_edit %}
+                            <li>
+                                <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Renew" %}</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        {% if corporate_membership.is_expired and request.user.is_superuser %}
+                            <li>
+                                <a href="{% url 'corpmembership.renew' corporate_membership.id %}" class="btn btn-warning">{% trans "Admin: Renew" %}</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="panel-footer t-search-result-footer">
+                {% include "corporate_memberships/applications/meta.html" %}
+            </div>
+        </article>
+
+    {% endwith %}
+{% endif %}

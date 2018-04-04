@@ -1,0 +1,38 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Resume Add Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>{% if request.user.is_superuser %}{% blocktrans %}The following resume was added
+  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Resume Bank by:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' request.user.username %}">{{request.user.get_full_name}}</a>
+  (superuser){% else %} {% blocktrans %}The following resume was added
+  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Resume Bank by:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' request.user.username %}">{{request.user.get_full_name}}</a>. It needs to be activated{% endif %}:</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%">{% trans "Company Name:" %}</td>
+    <td width="75%"><b>{{ object.contact_company }}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%">{% trans "Position Title:" %}</td>
+    <td width="75%"><b>{{ object.title }}</b></td>
+  </tr>
+</table>
+<p>{% trans "To view the details of this resume, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+
+{% if object.status_detail != 'active' %}
+    <br>
+<p>{% blocktrans %}To activate this resume, go
+  to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "resume.approve" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "resume.approve" object.pk %}</a></b>
+  </p>
+  {% endif %}
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+
+</body>
+</html>

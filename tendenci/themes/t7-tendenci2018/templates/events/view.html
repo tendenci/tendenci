@@ -1,0 +1,443 @@
+{% extends "events/base-wide.html" %}
+{% load perm_tags %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load humanize %}
+{% load meta_tags %}
+
+{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{% meta_og_image event "image" %}
+{% meta_og_image event "description" %}
+<meta name="fb:app_id" content="{{ MODULE_SOCIAL_MEDIA_FB_APP_ID }}" />
+<meta name="og:title" content="{{ MODULE_SOCIAL_MEDIA_OG_TITLE }}" />
+<meta name="og:description" content="{{ MODULE_SOCIAL_MEDIA_OG_DESCRIPTION }}" />
+<style>
+div.speaker-desc-long {
+    display: none;
+}
+a.speaker-desc-toggle {
+    margin: 10px 0 0 0;
+    display: block;
+}
+div.organizer-desc-long {
+    display: none;
+}
+a.organizer-desc-toggle {
+    margin: 10px 0 0 0;
+    display: block;
+}
+div.event-place-desc-long {
+    display: none;
+}
+a.event-place-desc-toggle {
+    margin: 10px 0 0 0;
+    display: block;
+}
+</style>
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<!-- you are here: templates/events/view.html -->
+
+{% has_perm user events.change_event as can_edit %}
+
+<div id="events-view">
+  <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
+    
+    <!-- TOP -->
+    <br />
+    <div class="col-xs-12 well">
+      
+      {% if event.image %}
+      <div class="col-sm-5 col-xs-12">
+        <div class="photo">
+          <img class="img-responsive" itemprop="image" src="{% image_url event.image %}" title="{{ event.title|truncatechars:123 }}" alt="{{ event.title|truncatechars:123 }}" />
+        </div>
+      </div>
+      
+      <div class="col-sm-7 col-xs-12">
+        {% else %}
+        <div class="col-sm-12">
+          {% endif %}
+          
+        <div class="time-period">
+          <h3>
+            {% for span in event.date_spans %}
+            {% if span.same_date %}
+            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"N j, Y" }}</span>
+            {% if not forloop.last %} and {% endif %}
+            {% else %}
+            <span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"M. j" }}</span> -
+            <span itemprop="endDate" datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"M. j, Y" }}</span>
+            {% endif %}
+            {% endfor %}
+          </h3>
+        </div>
+        <div class="page-header">
+          <h2>
+            {% if event.priority %}
+            <div class="event-priority"></div>
+            {% endif %}
+            {% if event.is_recurring_event %}
+            <div class="event-recurring"></div>
+            {% endif %}
+            <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span>
+          </h2>
+        </div>
+        <div class="col-xs-7">
+          <p><strong>{{ event.place.name }}</strong><br />
+            {{ event.place.address }} <br />
+            {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
+            {{ event.place.country }}
+          </p>
+        </div>
+        <div class="col-xs-5">
+          {% if event.registration_configuration.enabled %}
+          {% registration_pricing_and_button event request.user %}
+          {% endif %}
+        </div>
+      </div>
+      
+    </div>
+    <!-- END: TOP -->
+    
+    <div class="info col-md-8 col-sm-8">
+      <br />
+      <!-- Event Details -->
+      <div class="details-wrap clearfix">
+        <!-- event description -->
+        <div class="content">
+          <h4 class="time-period">Description</h4>
+          <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
+        </div>
+        
+        <br />
+        {% if speakers_length >= 1 %}
+        <h4 class="time-period">Featured Speakers</h4>
+        {% for speaker in speakers %}
+        <div class="speaker-wrap panel panel-default">
+          <div class="panel-body">
+            {% if speaker.get_photo %}
+            <div class="speaker-photo col-xs-3">
+              <img class="img-responsive" alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url "file" speaker.get_photo.pk %}"  width="100" />
+            </div>
+            {% endif %}
+            <div class="speaker">
+              <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
+            </div>
+            {% if speaker.description|striptags|wordcount > 50 %}
+            <div class="speaker-desc-short">
+              {% blocktrans with desc=speaker.description|striptags|safe|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+            </div>
+            <div class="speaker-desc-long">
+              {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+            </div>
+            {% else %}
+            <div class="speaker-desc-short">
+              {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+            </div>
+            {% endif %}
+            {% if speaker.description|striptags|wordcount > 50 %}
+            <a class="speaker-desc-toggle btn btn-default" href="#">{% trans "Full Description" %}</a>
+            {% endif %}
+            <div style="clear:both;"></div>
+            <br />
+          </div>
+        </div>
+        {% endfor %}
+        {% if speakers_length > 1 %}
+        <a class="btn btn-default" href="{% url "event.speakers" event.pk %}">{% trans "View all speakers" %}</a>
+        {% endif %}
+        {% endif %}
+        
+        {% if organizer.name %}
+        <br /><br />
+        <div class="organizer-wrap">
+          <div class="organizer">
+            <h4 class="time-period">{% trans "Organizer" %}</h4> 
+            <p>{{ organizer.name }}</p>
+          </div>
+          {% if organizer.description|striptags|wordcount > 50 %}
+          <div class="organizer-desc-short">
+            {% blocktrans with desc=organizer.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+          </div>
+          <div class="organizer-desc-long">
+            {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+          </div>
+          {% else %}
+          <div class="organizer-desc-short">
+            {{ organizer.description|safe|urlize|linebreaks }}
+          </div>
+          {% endif %}
+          {% if organizer.description|striptags|wordcount > 50 %}
+          <a class="organizer-desc-toggle" href="#">{% trans "Full Description" %}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if addons %}
+        <hr/>
+        <h4 class="time-period">{% trans "Addons" %}</h4> 
+        <div class="addons-wrap">
+          {% for addon in addons %}
+          <h2>{{ addon.title }}</h2>
+          <table class="addon-detail">
+            <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
+            {% if addon.options.all %}
+            <tr>
+              <td><strong>{% trans 'Options' %}</strong></td>
+              <td>
+                {% for op in addon.options.all %}
+                {{ op.title }}{% if not forloop.last%}, {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+            {% endif %}
+          </table>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      
+      <div class="files-wrap">
+        {% if event_files %}
+        <h4 class="time-period">{% trans "Event Files" %}</h4> 
+        {% for file in event_files %}
+        {% file_detail file %}
+        {% endfor %}
+        {% endif %}
+        {% if speaker_files %}
+        <h3>{% trans "Speaker Files" %}</h3>
+        {% for file in speaker_files %}
+        {% file_detail file %}
+        {% endfor %}
+        {% endif %}
+        {% if organizer_files %}
+        <h3>{% trans "Organizer Files" %}</h3>
+        {% for file in organizer_files %}
+        {% file_detail file %}
+        {% endfor %}
+        {% endif %}
+        {% if place_files %}
+        <h3>{% trans "Location Files" %}</h3>
+        {% for file in place_files %}
+        {% file_detail file %}
+        {% endfor %}
+        {% endif %}
+      </div>
+      
+    </div> <!-- end info -->
+    
+    
+    <!-- START SIDEBAR -->
+    <div class="vitals col-md-4 col-sm-4">
+      <br />
+      {% if event.external_url %}
+      <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
+      {% endif %}
+      
+      <div class="vitals">
+        <h4 class="time-period">{% trans "Date and Time" %}</h4>
+        
+        {% for span in event.date_spans %}
+        {% if span.same_date %}
+        <p><span itemprop="startDate" datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, N j, Y" }}</span></p>
+        
+        {% if not forloop.last %} and {% endif %}
+        {% else %}
+        <p><span datetime="{{ span.start_dt|date:'c' }}">{{ span.start_dt|date:"D, M. j" }}</span></p> -
+        <p><span datetime="{{ span.end_dt|date:'c' }}">{{ span.end_dt|date:"D, M. j, Y" }}</span></p>
+        {% if not forloop.last %} and {% endif %}
+        {% endif %}
+        
+        {% endfor %}
+        
+        <p>
+          {% if not event.all_day %}
+          {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}
+          <br />
+          {% if not event.all_day %}
+          {{ event.timezone.zone|timezone_label }}</p>
+        {% endif %}
+        
+      </div>
+      
+      <div class="vitals place" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
+        <h4 class="time-period">{% trans "Location" %}</h4>
+        <p><strong>{{ event.place.name }}</strong></p>
+        <p>{{ event.place.address }}<br />
+          {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+          {{ event.place.country }}</p>
+        
+        {% if event.place.description|striptags|wordcount > 50 %}
+        <div class="line event-place-desc-short">
+          {{ event.place.description|striptags|truncatewords:"50" }}
+        </div>
+        <div class="line event-place-desc-long">
+          {{ event.place.description|safe|linebreaks }}
+        </div>
+        {% else %}
+        <div class="line event-place-desc-short">
+          {{ event.place.description|safe|linebreaks }}
+        </div>
+        {% endif %}
+        {% if event.place.description|striptags|wordcount > 50 %}
+        <a class="line event-place-desc-toggle" href="#">{% trans "Full Description" %}</a>
+        {% endif %}
+      </div>
+      
+      {% if event.registration_configuration.enabled %}
+      <div class="vitals">
+        <h4 class="time-period">
+          {% if not free_event %}
+          {% trans 'Pricing' %}
+          {% endif %}
+        </h4>
+        {% registration_pricing_and_button event request.user %}
+      </div>
+      {% endif %}
+      
+      <br />
+      
+      {% url "event" event.pk as the_url %}
+      <p class="fb-like-event">{% fb_like_button_iframe the_url %}</p>
+      
+      {% include 'social_media/icons.html' %}
+    </div> 
+    <!-- END SIDEBAR -->
+    
+    <div style="clear:both;"></div>
+  </div>
+  
+</div>
+
+<!-- LOCATION BOTTOM -->
+<div class="col-xs-12">
+  <div class="hr"></div>
+  
+  {% if event.place.address and event.place.city_state %}
+  <h4 class="time-period">Location</h4>
+  <div class="map">
+    <iframe width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe>
+    <br />
+    <a class="btn btn-default pull-right" href="//maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed">{% trans 'View Larger Map' %}</a>
+    <br />
+    <div class="text-center">
+      <h3><strong>{{ event.place.name }}</strong></h3>
+      <h4>{{ event.place.address }}<br />
+        {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+        {{ event.place.country }}</h4>
+    </div>
+    <br />
+    <!-- FOOTER / META -->
+    <div>
+      {% if event.groups.count > 0 %}
+      <div><strong>{% trans "Group(s):" %}</strong>
+        {% for group in event.groups.all %}
+        <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% include 'events/meta.html' %}
+    <br />
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/social_media_icons.js' %}"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+  
+  $('td.price-disabled').tipsy({
+  gravity: 'e',
+  live: true
+  });
+  
+  $('.files-wrap').hide();
+  $('a#event_detail_tab').click(function(){
+  var _this = $(this);
+  $('.event-wrap .event-tabs .dropdown').removeClass('active');
+  _this.parent().addClass('active');
+  $('.details-wrap').show();
+  $('.files-wrap').hide();
+  return false;
+  });
+  $('a#event_files_tab').click(function(){
+  var _this = $(this);
+  $('.event-wrap .event-tabs .dropdown').removeClass('active');
+  _this.parent().addClass('active');
+  $('.details-wrap').hide();
+  $('.files-wrap').show();
+  return false;
+  });
+  
+  // speaker description toggle
+  $('div.speaker-desc-long').hide();
+  $('a.speaker-desc-toggle').click(function() {
+  var _this = $(this);
+  var speaker_wrap = _this.parents('.speaker-wrap');
+  
+  _this.hide();
+  speaker_wrap.find('div.speaker-desc-short').hide();
+  speaker_wrap.find('div.speaker-desc-long').show();
+  return false;
+  });
+  
+  // organizer description toggle
+  $('div.organizer-desc-long').hide();
+  $('a.organizer-desc-toggle').click(function() {
+  var _this = $(this);
+  var speaker_wrap = _this.parents('.organizer-wrap');
+  
+  _this.hide();
+  speaker_wrap.find('div.organizer-desc-short').hide();
+  speaker_wrap.find('div.organizer-desc-long').show();
+  return false;
+  });
+  
+  // event description toggle
+  $('a.event-place-desc-toggle').click(function() {
+  var _this = $(this);
+  var speaker_wrap = _this.parents('.place');
+  
+  _this.hide();
+  speaker_wrap.find('div.event-place-desc-short').hide();
+  speaker_wrap.find('div.event-place-desc-long').show();
+  return false;
+  });
+  
+  // // Dialog
+  // $('#event_export_dialog').dialog({
+  // autoOpen: false,
+  // width: 600,
+  // buttons: {
+  // "Close": function() {
+  // $(this).dialog("close");
+  // }
+  // }
+  // });
+  // // Dialog Link
+  // $('#event_export_link').click(function(){
+  // $('#event_export_dialog').show();
+  // $('#event_export_dialog').dialog('open');
+  // 
+  // return false;
+  // });
+  });
+</script>
+{% endblock %}

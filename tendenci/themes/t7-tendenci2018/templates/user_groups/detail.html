@@ -1,0 +1,127 @@
+{% extends "user_groups/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load user_group_tags %}
+{% load perm_tags %}
+{% load bootstrap_pagination_tags %}
+
+{% block title %}{% blocktrans with g=group.name %}{{ g }} - Group{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
+
+<!-- you are here: templates/user_groups/detail.html -->
+
+<div class="t">
+  <div class="group-view">
+    <div class="page-header">
+      <h1>{{ group.name }}</h1>
+    </div>
+    
+    {% if can_edit and group.type == 'system_generated' %}
+    <div class="system-generated">{% trans 'System generated groups can not be deleted.' %}</div>
+    {% endif %}
+    
+    {% if can_edit %}
+    <div id="group-options">
+      
+      <ul>
+        {% if request.user.profile.is_superuser and count_members > 0 %}
+        <li><p><a href="{% url "group.members_export" group.slug "members" %}">{% blocktrans %}Export all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></p></li>
+        
+        <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
+        {% endif %}
+        
+        <li><a href="{% url "group.edit_perms" group.pk %}">
+          {% trans "Change Group Member Permissions" %}</a></li>
+        
+        {% if group.email_recipient %}
+        <li><a href="{% url "group.edit" group.slug %}">{% blocktrans %}Emails regarding group activity will be sent to{% endblocktrans %} <strong>{{ group.email_recipient }}</strong></a></li>
+        {% else %}
+        <li>{% blocktrans %}Please set a {% endblocktrans%}
+          <a href="{% url "group.edit" group.slug %}">{% blocktrans %}recipient{% endblocktrans %}</a>{% blocktrans %} for this group{% endblocktrans %}</li>
+        {% endif %}
+        
+        {% if group.type %}
+        <li>{% trans "Type" %}: {{ group.type|capfirst }}</li>
+        {% endif %}
+        
+        {% if group.allow_self_add %}
+        <li><a href="{% url "group.edit" group.slug %}">
+          {% blocktrans %}Users can add themselves to this group{% endblocktrans %}</a></li>
+        {% else %}
+        <li><a href="{% url "group.edit" group.slug %}">
+          {% blocktrans %}Users cannot add themselves to this group{% endblocktrans %}</a></li>
+        {% endif %}
+        
+        {% if group.allow_self.remove %}
+        <li><a href="{% url "group.edit" group.slug %}">
+          {% blocktrans %}Users can remove themselves from this group{% endblocktrans %}</a></li>
+        {% else %}
+        <li><a href="{% url "group.edit" group.slug %}">
+          {% blocktrans %}Users cannot remove themsleves{% endblocktrans %}</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    {% if not groupmemberships %}
+    {% if membership_view_perms != 'private' %}
+    <p>{% trans "This group has no members" %}</p>
+    {% endif %}
+    {% else %}
+    {% autopaginate groupmemberships 100 %}
+    {% paginate %}
+    <div class="group-member-list">
+      <p>Group members in sets of 100</p>
+      {% for gm in groupmemberships %}
+      <div class="group-member {% cycle 'gray' '' %}">
+        
+        <a href="{{ gm.member.profile.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) {% if gm.role %}- {{ gm.role }}{% endif %}</a>
+        
+        {% if can_delete %}
+        &nbsp;<span class="delete-member"><a href="{% url "group.deleteuser" group.slug gm.member.id %}">{% trans "Remove" %}</a></span>
+        <!-- delete-member form -->
+        <form class="delete-member-form" name="member-delete" method="POST" action="{% url "group.deleteuser" group.slug gm.member.id %}">{% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+        </form>
+        {% endif %}
+        
+        {% if gm.is_newsletter_subscribed %}
+        
+        {% else %}
+        <span class="unsubscribe-status">{% trans "This User Has Unsubscribed" %}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% paginate %}
+    
+    {% endif %}
+    
+    <div class="clearfix">&nbsp; </div>
+    {% include "user_groups/meta.html" %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function(){
+  // delete confirmation for members
+  $('.delete-member').click(function(){
+  var delete_member = confirm('{% trans "Remove this member from the group?" %}');  // confirm
+  if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
+  return false;   // cancel
+  });
+  });
+</script>
+{% endblock %}

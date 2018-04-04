@@ -1,0 +1,143 @@
+{% extends "corporate_memberships/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Corporate Membership Representatives" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/corporate_memberships-edit_reps.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="corp-reps">
+     <h1>{% trans "Corporate Membership Representatives" %}</h1>
+     <div><a href="{% url "corp_memb.view" corp_memb.id %}">{{ corp_memb.name }}</a></div>
+     {% if reps %}
+     <table width="90%">
+             <tr>
+                 <td class="header" width="55%">{% trans "Representative." %}</td>
+                 <td class="header" width="20%">{% trans "Is Dues Rep." %}</td>
+                 <td class="header" width="20%">{% trans "Is Member Rep." %}</td>
+                 <td class="header" width="5%">&nbsp;</td>
+             </tr>
+             {% for rep in reps %}
+                 <tr class="corp-rep">
+                 <td><a href="{% url "profile" rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
+
+                </td>
+                 <td>
+                     {% if rep.is_dues_rep %}
+                         {% trans "True" %}
+                     {% else %}
+                         -
+                     {% endif %}
+                 </td>
+                 <td>
+                 {% if rep.is_member_rep %}
+                         {% trans "True" %}
+                     {% else %}
+                         -
+                     {% endif %}
+                 </td>
+                 <td><a href="{% url "corp_memb.delete_rep" rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
+                 <!-- delete-corp_memb form -->
+                    <form name="corp-memb-rep-delete" method="POST" action="{% url "corp_memb.delete_rep" rep.pk %}">{% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                    </form>
+                 </td>
+                 </tr>
+             {% endfor %}
+             </table>
+     {% else %}
+         <div>{% trans "No representative designated yet." %}</div>
+     {% endif %}
+
+
+    <form action="" method="post">{% csrf_token %}
+    <div class="forms">
+        {{ form|styled_form }}
+            <input type="submit" name="submit" value="{% trans 'Save and Continue Add Another' %}" />
+            <input type="submit" name="submit" value="{% trans 'Save' %}" />
+    </div>
+
+    </form>
+
+    <div id="toggle_members_list"><a href="javascript:;">{% trans 'Click to view members' %}</a></div>
+    <div id="members-list">
+    {% autopaginate memberships 10 %}
+    <ul style="margin: 1em 0;">
+    {% for membership in memberships %}
+        {% with membership|get_object as membership %}
+                <li class="member-line">
+                        <a href="{% url "profiles.views.index" membership.user.username %}">
+                        {{ membership.user.get_full_name }}
+                        {% if membership.user.email %}
+                        ({{ membership.user.email }})
+                        {% endif %}
+                        </a>
+                </li>
+
+
+        {% endwith %}
+    {% empty %}
+        <div>{% trans "0 Members" %}</div>
+    {% endfor %}
+    </ul>
+     {% paginate %}
+    </div>
+
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    if (!(window.jQuery)) {
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js');
+        s.setAttribute('type', 'text/javascript');
+        document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+
+
+ <script type="text/javascript">
+    $(document).ready(function(){
+
+        // delete confirmation
+        $('.delete').click(function(){
+            var delete_corp_memb_rep = confirm('Permenantly delete this corporate membership representative?');    // confirm
+            if(delete_corp_memb_rep) $(this).parents('.corp-rep').find('form[name="corp-memb-rep-delete"]').submit() // delete: if OK
+            return false;    // cancel
+        });
+
+        $( "#id_user_display" ).autocomplete({
+            source: "{% url "corp_memb.reps_lookup" %}",
+            selectFirst:true,
+            minLength:2,
+            select:function(event,ui) {
+                $("#id_user").val(ui.item.id)
+            }
+        });
+
+    });
+   </script>
+
+   <script>
+    $(document).ready(function() {
+        {% if page == 0 %}
+        $('#members-list').hide();
+        {% endif %}
+         $('#toggle_members_list').click(function () {
+        $('#members-list').toggle();
+         });
+    });
+</script>
+ {% endblock %}

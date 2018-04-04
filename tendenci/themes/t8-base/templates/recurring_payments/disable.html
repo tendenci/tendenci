@@ -1,0 +1,43 @@
+{% extends "recurring_payments/base.html" %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load recurring_payments_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/recurring_payments.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="rp-delete">
+    <h1>{% trans 'Disabling Recurring Payment' %}</h1>
+
+    <div class="rp-dname">{% trans 'Name' %}: <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+    <div >{% trans 'Payment Amount' %}: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
+
+    <div>{% trans 'Initial Billing Cycle Start Date' %}: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+
+    <div>{% trans 'Billing Frequency' %}: <span class="body-bold">{% trans 'Once every' %} {{ rp.billing_frequency }}
+    {{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
+
+    <div>{% trans 'Billing Date' %}: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  {% trans 'after each billing cycle' %} {{ rp.due_sore }} {% trans 'date' %}</span></div>
+
+    <div>{% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span></div>
+    <div>{% trans 'The number of billing cycle failed' %}: <span class="body-bold">{{ rp.num_billing_cycle_failed }}</span></div>
+
+    {% url "recurring_payment.view_account" rp.id as acc_url %}
+     <h2 style="color: red;">{% blocktrans %}Are you sure you want to disable <a href="{{ acc_url }}">this account</a>?{% endblocktrans %}</h2>
+     <div>
+    <form action="{% url "recurring_payment.disable_account" rp.id %}" method="post">{% csrf_token %}
+    <input type="hidden" name="id" value="{{rp.id}}" />
+    <input type="submit" name="cancel" value="{% trans 'Cancel' %}" />
+    <input type="submit" name="submit" value="{% trans 'Disable Account' %}" />
+    </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

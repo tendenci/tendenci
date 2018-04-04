@@ -1,0 +1,10 @@
+
+<h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} {% trans "Index Page" %}</h1>
+
+<ul>
+    <li><a href="{% url "entity.search" %}">{% trans "Search" %}</a></li>
+    <li><a href="{% url "entity.view" %}">{% trans "View" %}</a></li>
+    <li><a href="{% url "entity.print_view" %}">{% trans "Print View" %}</a></li>
+    <li><a href="{% url "entity.edit" %}">{% trans "Edit" %}</a></li>
+    <li><a href="{% url "entity.delete" %}">{% trans "Delete" %}</a></li>
+</ul>

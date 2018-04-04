@@ -1,0 +1,39 @@
+{% extends 'pybb/base.html' %}
+{% load pybb_tags %}
+
+{% block title %}{{ forum.name }}{% endblock title %}
+
+{% block content %}
+    {% block breadcrumb %}
+        {% with forum as object %}
+            {% include "pybb/breadcrumb.html" %}
+        {% endwith %}
+    {% endblock %}
+
+    <div class="forum">
+        <h1>{{ forum.name }}</h1>
+        {% if forum.headline %}
+            <div class="forum-headline alert alert-block">
+                {{ forum.headline|safe }}
+            </div>
+        {% endif %}
+
+       {% if not user.is_authenticated %}
+                {% include 'pybb/_need_to_login_message.html' %}
+        {% endif %}
+
+        {% include "pybb/pagination.html" %}
+
+        {% include 'pybb/forum_list.html' with forum_list=forum.forums_accessed category='' parent_forum=forum %}
+
+        {% include "pybb/topic_list.html" %}
+
+        {% include "pybb/pagination.html" %}
+
+        {% if user|pybb_may_create_topic:forum %}
+            <div class="controls">
+                {% include "pybb/_button_new_topic.html" %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,71 @@
+{% extends "donations/base.html" %}
+{% load pagination_tags %}
+{% load profile_tags %}
+{% load donation_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Donation Search' %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/donations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="donation-search">
+  
+  <div class="page-header">
+    <h1>{% firstof MODULE_DONATIONS_LABEL trans 'Donations' %} {% trans 'Search' %}</h1>
+  </div>
+  
+  {% donation_search %}
+  {% autopaginate donations 10 %}
+  
+  <div class="donations-wrap">
+    {% for donation in donations %}
+    {% with donation|get_object as donation %}
+    {% has_perm user donations.view_donation donation as can_view %}
+    {% if can_view %}
+    <div class="donation-wrap-search">
+      
+      <h2><a href="{% url 'donation.view' donation.id %}">{{ donation.first_name}} {{ donation.last_name }}</a></h2>
+      {% if donation.user %}
+      <div class="donation-item-left"><a href="{% url 'profile' donation.user.username %}">{% gravatar donation.user 56 %}</a></div>
+      {% endif %}
+      <div class="donation-item-right">
+        <div class="content">{% trans 'Invoice:' %}
+          {% if donation.invoice %}
+          <a href="{% url 'invoice.view' donation.invoice.id %}">{{ donation.invoice.id }}</a>
+          {% else %}
+          n/a
+          {% endif %}
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          {% trans 'Amount:' %} <b>{{ donation.donation_amount|format_currency }}</b>
+        </div>
+        
+        {% if donation.allocation %}
+        <div class="content">{% trans 'Donate to:' %} {{ donation.allocation }}</div>
+        {% endif %}
+        <div class="content">{% trans 'Payment Method:' %} {{ donation.payment_method }}</div>
+      </div>
+      <div class="clear-left"></div>
+      <div class="meta">
+        <div class="submitted">{% trans 'Created:' %} {{ donation.create_dt|date:"long" }}</div>
+      </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% empty %}
+    <div>{% trans '0 Results Found' %}</div>
+    {% endfor %}
+  </div>
+  
+  {% paginate %}
+</div>
+{% endblock %}
+

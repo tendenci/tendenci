@@ -1,0 +1,112 @@
+{% extends "recurring_payments/authnet/base.html" %}
+
+{% block title %} {% trans "Manage Customer Payment and Shipping Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+  <link href="{% static 'authnet_cim/manage.css' %}" rel="stylesheet" type="text/css" />
+
+   <!--[if lte IE 6]>
+  <link href="{% static 'authnet_cim/manageIELTE6.css' %}" rel="stylesheet" type="text/css" />
+  <![endif]-->
+
+ <script type="text/javascript" src="{% static 'authnet_cim/popup.js' %}"></script>
+ <script type="text/javascript">
+
+ AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }};
+
+ AuthorizeNetPopup.options.onPopupClosed = function() {
+      //alert('blah');
+ };
+
+ </script>
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="{{ form_post_url }}"
+name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="{{ token }}" />
+</form>
+
+
+
+<div class="t">
+    <h1>
+    {% if request.user.id == rp.user.id %}
+       {% trans 'Manage my Payment Info' %}
+    {% else %}
+    {% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% endif %}
+    </h1>
+
+    <button onclick="AuthorizeNetPopup.openManagePopup()">{% trans 'Click to start' %}</button>
+
+    {% if gateway_error  %}
+
+    <div>
+    {% blocktrans %}
+    Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or
+    contact your site administrator for assistance. Thanks!
+    {% endblocktrans %}
+    </div>
+
+    {% else %}
+
+    <noscript>
+        <div style="font-size: 1.2em; color:red; margin-top: 1em;">{% blocktrans %}JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again{% endblocktrans %} </div>
+     </noscript>
+     <br />
+
+      <div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupGrayFrameTheme">
+      <div class="AuthorizeNetPopupOuter">
+        <div class="AuthorizeNetPopupTop">
+          <div class="AuthorizeNetPopupClose">
+            <a href="javascript:;" onclick="AuthorizeNetPopup.closePopup();" title="{% trans 'Close' %}"> </a>
+          </div>
+        </div>
+        <div class="AuthorizeNetPopupInner">
+          <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0" scrolling="no"></iframe>
+        </div>
+        <div class="AuthorizeNetPopupBottom">
+          <div class="AuthorizeNetPopupLogo" title="{% trans 'Powered by Authorize.Net' %}"></div>
+        </div>
+      </div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
+    </div>
+
+
+
+      <div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
+      {% endif %}
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+{% if not gateway_error %}
+<script>
+    //var form = document.forms["formAuthorizeNetPopup"];
+    //form.action = "{{ form_post_url }}"
+    //form.submit();
+
+</script>
+{% endif %}
+
+
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% load email_filters %}
+
+<html><body>
+
+<h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
+<h3 style="margin:0;">{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Event Registration Confirmation" %}</h3>
+
+{% if total_amount <= 0 %}
+    <h3 style="margin-top:0;">{% trans "Price: Free!" %}</h3>
+{% else %}
+    <h3 style="margin-top:0;">{% blocktrans with total_amount|floatformat:"2" as priceflo %}Total Amount: ${{ priceflo }}{% endblocktrans %} </h3>
+{% endif %}
+
+{% if is_paid %}  {# handles free & priced events #}
+    <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
+        {% if for_admin %}
+            {% trans "Registration Complete." %}
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
+            <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
+                    {% for registrant in registrants %}
+                        <div>
+                        {% if registrant.get_name %}
+                            {{ registrant.get_name }}
+                        {% else %}
+                            {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.email %}
+                            ({{ registrant.email }})
+                        {% endif %}
+                        {% if registrant.pricing.title %}
+                        <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
+                        {% endif %}
+                        {% if registrant.custom_reg_form_entry %}
+                        {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endwith %}
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+        {% else %}
+            {% trans "Registration Complete. Enjoy the Event!" %}
+        {% endif %}
+    </div>
+{% else %}
+
+    {% if event.registration_configuration.payment_required %}
+        <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
+            {% if for_admin %}
+                {% trans "Almost Registered. Payment is still required." %}
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
+                <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
+                    {% for registrant in registrants %}
+                        <div>
+                        {% if registrant.get_name %}
+                            {{ registrant.get_name }}
+                        {% else %}
+                            {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.email %}
+                            ({{ registrant.email }})
+                        {% endif %}
+                        {% if registrant.pricing.title %}
+                        <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
+                        {% endif %}
+                        {% if registrant.custom_reg_form_entry %}
+                        {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endwith %}
+                        {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% trans "Almost Registered. Payment is still required." %}
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "payment.pay_online" reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
+            {% if for_admin %}
+                {% trans "Registration Complete." %}
+                            <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
+
+                    {% for registrant in registrants %}
+                            <div>
+                            {% if registrant.name %}
+                                    {{ registrant.name }}
+                            {% else %}
+                                {% trans "Guest #" %}{{ forloop.counter0 }}
+                            {% endif %}
+                            {% if registrant.email %}
+                                ({{ registrant.email }})
+                            {% endif %}
+                            {% if registrant.pricing.title %}
+                            <div>{% trans "Registration Type" %}: {{ registrant.pricing.title }}</div>
+                            {% endif %}
+                            {% if registrant.custom_reg_form_entry %}
+                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                            {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                            {% endif %}
+                            </div>
+                    {% endfor %}
+                </div>
+                {% if reg8n.regaddon_set.all.count != 0 %}
+                <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n.regaddon_set.all.count }} {% trans "Addons:" %}
+                </div>
+                <table class="addons-table" border="0" cellspacing="0" cellpadding="0">
+                {% for regaddon in reg8n.regaddon_set.all %}
+                    <tr>
+                        <td>
+                            <span>{{ regaddon.addon.title }}
+                            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+                {% endif %}
+
+            {% else %}
+                {% trans "Registration Complete. Enjoy the Event!" %}
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% endif %}
+
+{% if event.description and event.registration_configuration.registration_email_type and event.registration_configuration.registration_email_type != 'custom' %}
+<div>{% blocktrans with desc=event.description|relative_to_absolute_urls|safe %}{{ desc }}{% endblocktrans %}</div>
+{% endif %}
+
+{% if event.registration_configuration.registration_email_type and event.registration_configuration.registration_email_type != 'default' %}
+    {% if event.registration_configuration.registration_email_text %}
+    {{ event.registration_configuration.registration_email_text|relative_to_absolute_urls|safe }}
+    {% endif %}
+{% endif %}
+
+
+{% if event.registration_configuration.registration_email_type != 'custom' or not event.registration_configuration.registration_email_text %}
+<h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
+<ol style="margin-top:0;">
+    <li>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk reg8n.registrant.hash %}">
+            {% trans "Registration Details" %}
+        </a>
+    </li>
+    <li>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.cancel_registrant" event.pk reg8n.registrant.hash %}">
+            {% trans "Cancel Registration" %}
+        </a>
+    </li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
+    {% if for_admin %}
+        <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.roster" event.pk %}">{% trans "Event Roster" %}</a></li>
+    {% endif %}
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics_single" event.pk %}">{% trans "Add this event to your calendar." %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEURL }}</a></li>
+</ol>
+{% if for_admin %}
+    <div>{% trans "Total registrants for this event: " %} {{ event.registrants.count }}</div>
+    <div>{% trans "This email contains registration details. Keep it in a safe place. Do not forward this email to an untrusted person." %}</div>
+{% else %}
+    {% if self_reg8n and not reg8n.registrant.user %}
+        <div style="margin-bottom:5px;">
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url "registration_register" %}">
+                {% trans "You should register for an account!" %}
+            </a>
+        </div>
+    {% endif %}
+
+    <div>{% trans "This email contains your registration details. Keep it in a safe place. Do not forward this email to an untrusted person." %}</div>
+{% endif %}
+
+{% endif %}
+</body></html>

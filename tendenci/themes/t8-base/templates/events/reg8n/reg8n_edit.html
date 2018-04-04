@@ -1,0 +1,52 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Edit Registration" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-reg8n_edit.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Registration Edit" %}</h1>
+    <div class="event-title">{% trans "Event" %}: <a href="{% url "event" reg8n.event.id%}">{% blocktrans with title=reg8n.event.title %}{{ title }}{% endblocktrans %}</a></div>
+
+    <div class="event-wrap">
+    {% if formset_errors %}
+        <div class="errors-box">
+            <ul>
+                {% for form in formset.forms %}
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li><a href="javascript:;">{{ field.label_tag }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+        <form action="" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ formset.management_form }}
+            {% for form in formset.forms %}
+                <div class="registrant-header{% if total_regt_forms == 1 %} hidden{% endif %}">
+                    {% trans "Registrant" %} #<span class="item-counter">{{ forloop.counter }}</span>:
+                </div>
+
+                <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+                {{ form|styled_form }}
+                </div>
+            {% endfor %}
+
+            <input type="submit" value="{% trans "Save Changes" %}" />
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

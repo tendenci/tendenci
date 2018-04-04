@@ -1,0 +1,30 @@
+{% extends "default.html" %}
+
+{% block title %}{{ block.super }}{% trans "404 NOT FOUND" %}{% endblock%}
+
+{% block banner %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "The page was not found" %}</h1>
+    <p>{% trans "Possible reasons" %}</p>
+    <ul>
+        <li>{% blocktrans with request.get_full_path as reqpath %}The page moved from <code>{{ reqpath }}</code> to another path like <code>/cool-stuff/</code>.{% endblocktrans %}</li>
+        <li>{% blocktrans %}If you came from another site they may have linked this page incorrectly.{% endblocktrans %}</li>
+        <li>{% blocktrans %}The link expired and the search engine has not updated its database.{% endblocktrans %}</li>
+        <li>{% blocktrans %}It just doesn't exist.{% endblocktrans %}</li>
+    </ul>
+    <p>{% blocktrans %}You may be able to find what you're looking for by:{% endblocktrans %}</p>
+    <ul>
+        <li><a href="{% url 'home' %}">{% trans "Visiting the Home Page" %}</a></li>
+        <li>
+            <p>{% trans "Searching the site:" %}</p>
+            <form class="form-inline" method="get" action="{% url 'haystack_search' %}">
+                <div class="form-group">
+                    <input type="text" class="form-control" value="" size="18" maxlength="50" name="q" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+            </form>
+        </li>
+    </ul>
+{% endblock %}

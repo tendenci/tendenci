@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load page_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/page_white_stack.png' %}{% endblock %}
+
+{% block nav_label %}{% trans "Pages" %}{% endblock %}
+
+{% block current_app %}
+    {% if page %}
+        {% page_current_app request.user page %}
+    {% else %}
+        {% page_current_app request.user %}
+    {% endif %}
+{% endblock %}

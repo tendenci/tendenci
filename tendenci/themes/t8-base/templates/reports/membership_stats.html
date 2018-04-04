@@ -1,0 +1,81 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Membership Statistics Report" %}</h1>
+</div>
+<div class="mems-wrap">
+  <table class="table table-tendenci-reports">
+    <tr>
+      <th>{% trans 'Membership Type' %}</th>
+      <th>{% trans 'Active' %}</th>
+      <th>{% trans 'Pending' %}</th>
+      <th>{% trans 'Expired' %}</th>
+      <th>{% trans 'Total' %}</th>
+    </tr>
+    {% for type in summary %}
+    <tr>
+
+      <td>{{ type.type.name }}</td>
+
+      {% if type.active %}
+      <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=active&amp;membership_type__id__exact={{ type.type.pk }}">
+        {{ type.active }}</a></td>
+      {% else %}
+      <td>{{ type.active }}</td>
+      {% endif %}
+
+      {% if type.pending %}
+      <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending&amp;membership_type__id__exact={{ type.type.pk }}">{{ type.pending }}</a></td>
+      {% else %}
+      <td>{{ type.pending }}</td>
+      {% endif %}
+
+      {% if type.expired %}
+      <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=expired&amp;membership_type__id__exact={{ type.type.pk }}">{{ type.expired }}</a></td>
+      {% else %}
+      <td>{{ type.expired }}</td>
+      {% endif %}
+
+      {% if type.total %}
+      <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?membership_type__id__exact={{ type.type.pk }}">{{ type.total }}</a></td>
+      {% else %}
+      <td>{{ type.total }}</td>
+      {% endif %}
+
+    </tr>
+    {% endfor %}
+    <tfoot>
+      <tr>
+        <td>{% trans 'Total' %}</td>
+
+        {% if total.active %}
+        <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=active">{{ total.active }}</a></td>
+        {% else %}
+        <td>{{ total.active }}</td>
+        {% endif %}
+
+        {% if total.pending %}
+        <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending">{{ total.pending }}</a></td>
+        {% else %}
+        <td>{{ total.pending }}</td>
+        {% endif %}
+
+        {% if total.expired %}
+        <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=expired">{{ total.expired }}</a></td>
+        {% else %}
+        <td>{{ total.expired }}</td>
+        {% endif %}
+
+        {% if total.total %}
+        <td><a href="{% url "admin:memberships_membershipdefault_changelist" %}">{{ total.total }}</a></td>
+        {% else %}
+        <td>{{ total.total }}</td>
+        {% endif %}
+      </tr>
+    </tfoot>
+  </table>
+  <br />
+</div>
+{% endblock content %}

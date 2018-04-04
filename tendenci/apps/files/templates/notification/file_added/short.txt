@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.get_name as file %}New file ({{ file }}) added for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

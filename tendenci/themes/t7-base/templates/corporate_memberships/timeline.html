@@ -1,0 +1,46 @@
+{% if all_records|length > 0 %}
+     <section class="t-corpmemberships-timeline">
+         <h3 class="t-corpmemberships-timeline-label">{% trans "Timeline" %}</h3>
+
+         <div>
+             <ul>
+                 {% for corp_memb in all_records %}
+                    <li>
+                         {% if not corp_memb.renewal %}
+                             {% blocktrans with join_dt=corp_memb.join_dt|date:"N d, Y" %}
+                                 <strong>Joined</strong> on {{ join_dt }},
+                             {% endblocktrans %}
+                         {% else %}
+                             {% blocktrans with renew_dt=corp_memb.renew_dt|date:"N d, Y" %}
+                                 <strong>Renewed</strong> on {{ renew_dt }},
+                             {% endblocktrans %}
+                        {% endif %}
+
+                         {% if corp_memb.is_archive or corp_memb.is_expired %}
+                             {% blocktrans with exp_dt=corp_memb.expiration_dt|date:"N d, Y" %}
+                                 <strong>expired</strong> on {{ exp_dt }}.
+                             {% endblocktrans %}
+                         {% else %}
+                             {% blocktrans with exp_dt=corp_memb.expiration_dt|date:"N d, Y" %}
+                                 <strong>expires</strong> on {{ exp_dt }}.
+                             {% endblocktrans %}
+                         {% endif %}
+
+                         {% if corp_memb.status_detail != "archive" %}
+                             {% trans "Status:" %} <span class="t-status-{{ corp_memb.status_detail }}">
+                             {% blocktrans with stat=corp_memb.real_time_status_detail %}{{ stat }}{% endblocktrans %}</span>
+                         {% else %}
+                             {% blocktrans with stat=corp_memb.real_time_status_detail %}
+                                 Status: <strong>{{ stat }}</strong>
+                             {% endblocktrans %}
+                         {% endif %}
+
+                         {% if corp_memb.id != corporate_membership.id %}
+                             <a href="{% url 'corpmembership.view' corp_memb.id %}">{% trans "View" %}</a>
+                        {% endif %}
+                    </li>
+                 {% endfor %}
+             </ul>
+         </div>
+     </section>
+ {% endif %}

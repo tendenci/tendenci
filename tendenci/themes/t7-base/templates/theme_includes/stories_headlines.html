@@ -1,0 +1,22 @@
+{% load theme_tags %}
+{% load story_tags %}
+{% load base_filters %}
+{% list_stories as headline_stories tags=TEMPLATE_STORIES_HEADLINES_TAG limit=TEMPLATE_STORIES_HEADLINES_LIMIT %}
+
+<section id="featured-stories">
+    {% if headline_stories %}
+        {% for story in headline_stories %}
+            <div class="featured-item">
+                <a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
+            </div>
+        {% endfor %}
+    {% else %}
+    {% for item in TEMPLATE_STORIES_HEADLINES_LIMIT|make_range %}
+        <div class="featured-item">
+            <a href="#">{% trans 'Headline' %} {{ forloop.counter }}</a>
+        </div>
+    {% endfor %}
+        {% if user.is_authenticated %}{% blocktrans %}<p><a href="/stories/add/?tags=featured">Add a story</a> and tag it <strong>featured</strong> to have it appear as an image above.</p>{% endblocktrans %}{% endif %}
+    {% endif %}
+</section><!-- /#featured-stories -->
+{% theme_setting setting_name %}

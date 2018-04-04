@@ -1,0 +1,536 @@
+[
+{
+    "fields": {
+        "status": true,
+        "create_dt": "2012-04-05T15:57:43",
+        "megamenu": false,
+        "description": "The main navigation that is initially created.",
+        "update_dt": "2017-03-21T20:54:51.597",
+        "allow_user_edit": false,
+        "allow_user_view": false,
+        "creator": null,
+        "allow_member_view": false,
+        "entity": 1,
+        "owner_username": "",
+        "owner": 1,
+        "title": "Main Navigation",
+        "status_detail": "active",
+        "creator_username": "",
+        "allow_member_edit": false,
+        "allow_anonymous_view": true
+    },
+    "model": "navs.nav",
+    "pk": 1
+},
+{
+    "fields": {
+        "status": true,
+        "create_dt": "2016-01-08T15:32:46.562",
+        "megamenu": false,
+        "description": "",
+        "update_dt": "2017-02-15T23:58:33.819",
+        "allow_user_edit": false,
+        "allow_user_view": false,
+        "creator": 1,
+        "allow_member_view": false,
+        "entity": 1,
+        "owner_username": "",
+        "owner": 1,
+        "title": "Utility Nav",
+        "status_detail": "active",
+        "creator_username": "bleven",
+        "allow_member_edit": false,
+        "allow_anonymous_view": true
+    },
+    "model": "navs.nav",
+    "pk": 2
+},
+{
+    "fields": {
+        "status": true,
+        "create_dt": "2017-03-08T13:57:37.072",
+        "megamenu": false,
+        "description": "",
+        "update_dt": "2017-03-20T13:39:26.987",
+        "allow_user_edit": false,
+        "allow_user_view": false,
+        "creator": 1,
+        "allow_member_view": false,
+        "entity": 1,
+        "owner_username": "",
+        "owner": 1,
+        "title": "Sidebar-About Nav",
+        "status_detail": "active",
+        "creator_username": "lluce",
+        "allow_member_edit": false,
+        "allow_anonymous_view": true
+    },
+    "model": "navs.nav",
+    "pk": 3
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/articles/",
+        "level": 1,
+        "label": "Articles",
+        "new_window": false,
+        "nav": 1,
+        "position": 14,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 4
+},
+{
+    "fields": {
+        "title": "About Us",
+        "url": "/about/",
+        "level": 0,
+        "label": "News",
+        "new_window": false,
+        "nav": 1,
+        "position": 16,
+        "page": 1,
+        "css": "t-caret"
+    },
+    "model": "navs.navitem",
+    "pk": 7
+},
+{
+    "fields": {
+        "title": "Mission/Vision",
+        "url": "/mission-vision/",
+        "level": 1,
+        "label": "Mission/Vision",
+        "new_window": false,
+        "nav": 1,
+        "position": 3,
+        "page": 3,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 8
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/committees/",
+        "level": 1,
+        "label": "Committees",
+        "new_window": false,
+        "nav": 1,
+        "position": 10,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 10
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/study-groups/",
+        "level": 1,
+        "label": "Study Groups",
+        "new_window": false,
+        "nav": 1,
+        "position": 9,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 11
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/photos/",
+        "level": 1,
+        "label": "Photos",
+        "new_window": false,
+        "nav": 1,
+        "position": 20,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 12
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/videos/",
+        "level": 1,
+        "label": "Videos",
+        "new_window": false,
+        "nav": 1,
+        "position": 21,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 13
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/membership-benefits/",
+        "level": 0,
+        "label": "Program",
+        "new_window": false,
+        "nav": 1,
+        "position": 7,
+        "page": 2,
+        "css": "t-caret"
+    },
+    "model": "navs.navitem",
+    "pk": 14
+},
+{
+    "fields": {
+        "title": "Membership Benefits",
+        "url": "/membership-benefits/",
+        "level": 1,
+        "label": "Membership",
+        "new_window": false,
+        "nav": 1,
+        "position": 8,
+        "page": 2,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 15
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/contact/",
+        "level": 1,
+        "label": "Contact Us",
+        "new_window": false,
+        "nav": 1,
+        "position": 26,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 19
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/donations/",
+        "level": 1,
+        "label": "Donate",
+        "new_window": false,
+        "nav": 1,
+        "position": 24,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 20
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/speakers",
+        "level": 1,
+        "label": "Past Speakers",
+        "new_window": false,
+        "nav": 1,
+        "position": 19,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 26
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/help-files/",
+        "level": 1,
+        "label": "FAQs",
+        "new_window": false,
+        "nav": 1,
+        "position": 25,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 33
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/forums/",
+        "level": 0,
+        "label": "Articles",
+        "new_window": false,
+        "nav": 1,
+        "position": 13,
+        "page": null,
+        "css": "t-caret"
+    },
+    "model": "navs.navitem",
+    "pk": 36
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/mission-vision/",
+        "level": 0,
+        "label": "About us",
+        "new_window": false,
+        "nav": 1,
+        "position": 1,
+        "page": 3,
+        "css": "t-caret"
+    },
+    "model": "navs.navitem",
+    "pk": 37
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/case-studies/",
+        "level": 1,
+        "label": "Case Studies",
+        "new_window": false,
+        "nav": 1,
+        "position": 4,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 38
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/donations/",
+        "level": 0,
+        "label": "Contact",
+        "new_window": false,
+        "nav": 1,
+        "position": 22,
+        "page": null,
+        "css": "t-caret"
+    },
+    "model": "navs.navitem",
+    "pk": 42
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/news/",
+        "level": 1,
+        "label": "News",
+        "new_window": false,
+        "nav": 1,
+        "position": 17,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 43
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/forums/",
+        "level": 1,
+        "label": "Forums",
+        "new_window": false,
+        "nav": 1,
+        "position": 15,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 44
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/staff/",
+        "level": 1,
+        "label": "Our Staff",
+        "new_window": false,
+        "nav": 1,
+        "position": 6,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 45
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/volunteer/",
+        "level": 1,
+        "label": "Volunteer",
+        "new_window": false,
+        "nav": 1,
+        "position": 11,
+        "page": 14,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 46
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/forms/grant-request-npo/",
+        "level": 1,
+        "label": "Financial Support",
+        "new_window": false,
+        "nav": 1,
+        "position": 12,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 47
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/events/month/",
+        "level": 1,
+        "label": "Attend Events",
+        "new_window": false,
+        "nav": 1,
+        "position": 18,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 49
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/accounts/login/",
+        "level": 1,
+        "label": "Login",
+        "new_window": false,
+        "nav": 1,
+        "position": 23,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 50
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/welcome/",
+        "level": 1,
+        "label": "Welcome",
+        "new_window": false,
+        "nav": 1,
+        "position": 2,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 51
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/contact/",
+        "level": 0,
+        "label": "Apply",
+        "new_window": false,
+        "nav": 2,
+        "position": 1,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 55
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/welcome/",
+        "level": 0,
+        "label": "Welcome",
+        "new_window": false,
+        "nav": 3,
+        "position": 1,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 58
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/mission-vision/",
+        "level": 0,
+        "label": "Mission/Vision",
+        "new_window": false,
+        "nav": 3,
+        "position": 2,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 59
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/case-studies/",
+        "level": 0,
+        "label": "Case Studies",
+        "new_window": false,
+        "nav": 3,
+        "position": 3,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 60
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/staff/",
+        "level": 0,
+        "label": "Staff",
+        "new_window": false,
+        "nav": 3,
+        "position": 4,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 61
+},
+{
+    "fields": {
+        "title": "",
+        "url": "/testimonials/",
+        "level": 1,
+        "label": "Testimonials",
+        "new_window": false,
+        "nav": 1,
+        "position": 5,
+        "page": null,
+        "css": ""
+    },
+    "model": "navs.navitem",
+    "pk": 62
+}
+]

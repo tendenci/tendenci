@@ -1,0 +1,41 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="template-wrap">
+
+        <div class="options options-search">
+            <div class="quick-options">
+                {% campaign_options request.user campaign %}
+            </div>
+        </div>
+         <h1>{{ campaign.name }}</h1>
+        <div class="content">
+            <p><b>{% trans "Subject" %}:</b> {{ campaign.subject }}</p>
+            <p><b>{% trans "Status" %}:</b> {{ campaign.get_status_display }}</p>
+            {% if campaign.status == 'S' %}
+                <p><b>{% trans "Sent on" %}:</b> {{ campaign.sent_date }}</p>
+                <p><b>{% trans "Total Recipients" %}:</b>{{ campaign.total_recipients }}</p>
+                <p><b>{% trans "Web Version URL" %}:</b><a href="{{ campaign.web_version_url }}" > {{ campaign.web_version_url }}</a></p>
+            {% endif %}
+            {% if campaign.status == 'C' %}
+                <p><b>{% trans "Date Scheduled" %}:</b> {{ campaign.scheduled_date }}</p>
+                <p><b>{% trans "Scheduled Time Zone" %}:</b> {{ campaign.scheduled_time_zone }}</p>
+                <p><b>{% trans "Preview URL" %}: </b><a href={{ campaign.preview_url }}> {{ campaign.preview_url }}</a></p>
+            {% endif %}
+            {% if campaign.status == 'D' %}
+                <p><b>{% trans "Preview URL" %}: </b><a href={{ campaign.preview_url }}> {{ campaign.preview_url }}</a></p>
+            {% endif %}
+            <p><b></b></p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

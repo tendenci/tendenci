@@ -1,0 +1,33 @@
+{% extends "help_files/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load help_file_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans "Requests" %}</h1>
+
+    {% autopaginate requests 10 %}
+
+    <div class="requests-wrap">
+        {% for r in requests %}
+        <div class="request-wrap">
+            <p>{{ r.question }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}

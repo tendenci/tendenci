@@ -1,0 +1,26 @@
+{% load email_filters %}
+
+<html>
+    <body>
+        <h3 style="margin:0;">{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Event Registration Ended" %}</h3>
+
+        <div class="event">{% trans "Event" %}: {{event }}</div>
+        <div class="moneyCollected">{% trans "Money Collected" %}: {{ money_collected }}</div>
+        <div class="registrantCnt">{% trans "Number of registrants" %}: {{ registrants_count }}</div>
+        <div class="registrantWithBalanceCnt">{% trans "Number of registrants with balance" %}: {{ registrants_with_balance_count }}</div>
+        <div class="outstandingMoney">{% trans "Outstanding Money" %}: {{ money_outstanding }}</div>
+
+        <div class="links">
+            <div>
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.export" event.id %}">
+                    {% trans "Export Registration" %}
+                </a>
+            </div>
+            <div>
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registrant.roster.total" event.id %}">
+                    {% trans "Event Roster" %}
+                </a>
+            </div>
+        </div>
+    </body>
+</html>

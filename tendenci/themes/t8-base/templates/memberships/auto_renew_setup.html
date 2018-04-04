@@ -1,0 +1,196 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans "Update Membership Auto-Renew" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style>
+    .glyphicon-minus-sign{
+        color: #DE2121;
+    }
+    .glyphicon-ok-sign{
+        color: #42AD3F !important;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{% trans "Update Memberships Auto-Renew" %}</h1>
+    {% if is_owner %}
+    <div><a href="{% url 'profile' u.username %}">&laquo; Back to My Profile</a></div>
+    {% else %}
+    <div>{% trans "User:" %} <a href="{% url 'profile' u.username %}">{% firstof u.get_full_name u.username %}</a></div>
+    {% endif %}
+
+    <div class="well">
+    <h4>{% trans "Instructions" %}</h4>
+    <ul>
+    {% if rp and rp.customer_profile_id %}
+        <li>{% trans 'Click the button "Update Payment Method" to update your credit card if needed.' %} </li>
+    {% else %}
+        <li>{% trans 'Click the button "Add Payment Method" to add your credit card.' %} </li>
+    {% endif %}
+
+    {% if auto_renew_all_off or not auto_renew_all_on %}
+    <li>{% trans 'Select your membership by clicking on the checkbox next to the membership, then hit the button "Turn on Auto Renew".' %}</li>
+    {% endif %}
+
+    {% if auto_renew_all_on or not auto_renew_all_off %}
+    <li>{% trans 'To cancel auto renew, select your membership by clicking on the checkbox next to the membership, then hit the button "Cancel Auto Renew".' %}</li>
+    {% endif %}
+
+    </ul>
+    </div>
+
+
+    {% if rp and rp.status_detail == 'active' %}
+    <div class="text-right">
+    {% if rp.platform == 'stripe' %}
+    <form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
+      <script
+      src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+      data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
+      data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
+      data-panel-label="{% if rp.customer_profile_id %}Update Card Details{% else %}Add Card{% endif %}"
+      data-label="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}"
+      data-description="for membership auto renew"
+      {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
+      data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
+      {% else %}
+      data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+      {% endif  %}
+      data-allow-remember-me=false
+      data-locale="auto"
+      data-email={{ u.email }}
+      data-zip-code="true">
+      </script>
+    </form>
+    {% if source_data %}
+    <small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+    {% endif %}
+
+    {% else %}
+    <a href="{% url 'recurring_payment.view_account' rp.id rp.guid %}">{% if rp and rp.customer_profile_id %}{% trans "Update Payment Method" %}{% else %}{% trans "Add Payment Method" %}{% endif %}</a>
+    {% endif %}
+    </div>
+    {% endif %}
+    <p>&nbsp;</p>
+
+    {% if form.errors.values %}
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+        </ul>
+    </div>
+    {% endif %}
+
+    <form id="auto-renew-form" action="" method="post">{% csrf_token %}
+        <table class="table">
+            <tr>
+                <th width="5%"><input type="checkbox" id="ar-select-all-toggle" /> </th>
+                <th width="25%" class="text-left">{% trans "Membership type" %}</th>
+                <th width="20%" class="text-center">{% trans "Expire date" %}</th>
+                <th width="15%" class="text-center">{% trans "Auto Renew" %}</th>
+                <th width="20%" class="text-center">{% trans "Next Auto Renew Date" %}</th>
+                <th width="15%" class="text-center">{% trans "Status detail" %}</th>
+            </tr>
+            {% for m in memberships %}
+            <tr>
+                <td><input type="checkbox" class="ar-checkbox" name="selected_m" value="{{ m.id }}"/></td>
+                <td class="text-left">{{ m.membership_type.name }}</td>
+                <td class="text-center">{{ m.expire_dt|date:'m/d/Y' }}</td>
+                <td class="text-center">{% if m.auto_renew %}
+                <span class="glyphicon glyphicon-ok-sign"></span>
+                {% else %}
+                <span class="glyphicon glyphicon-minus-sign"></span>
+                {% endif %}</td>
+                {% with m.next_auto_renew_date as next_auto_renew_date %}
+                <td class="text-center">{% if next_auto_renew_date %}{{ next_auto_renew_date|date:'m/d/Y' }}{% else %} -- {% endif %}</td>
+                {% endwith %}
+                <td class="text-center"><a href="{% url "membership.details" m.pk %}">{{ m.status_detail }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+          <div class="text-right">
+          {% if not auto_renew_all_on %}
+          <button type="submit" class="btn btn-primary" id="turn-on-auto-renew">{% trans "Turn On Auto Renew" %}</button>
+          {% endif %}
+          {% if not auto_renew_all_off %}
+          <button type="submit" name="cancel_auto_renew" class="btn btn-default">{% trans "Cancel Auto Renew" %}</button>
+          {% endif %}
+          </div>
+
+    </form>
+
+    {% if not rp.customer_profile_id %}
+    <div id="payment-method-needed-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="payment-method-needed-label">>
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="payment-method-needed-label">{% trans "Payment Method Needed" %}</h4>
+          </div>
+          <div class="modal-body">
+            <p>{% trans "Please add a payment method first!" %}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-info" data-dismiss="modal">{% trans "Got it" %}</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    {% endif %}
+
+</div>
+
+<p>&nbsp;</p>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+(function($){
+    ($('#ar-select-all-toggle')).on('click',function(){
+        if(this.checked){
+            $('.ar-checkbox').each(function(){
+                this.checked = true;
+            });
+        }else{
+             $('.ar-checkbox').each(function(){
+                this.checked = false;
+            });
+        }
+    });
+
+    $('.ar-checkbox').on('click',function(){
+        if($('.ar-checkbox:checked').length == $('.ar-checkbox').length){
+            $('#ar-select-all-toggle').prop('checked',true);
+        }else{
+            $('#ar-select-all-toggle').prop('checked',false);
+        }
+    });
+
+    {% if not rp.customer_profile_id %}
+    $('#turn-on-auto-renew').on('click',function(){
+        $('#payment-method-needed-modal').modal('show');
+        return false;
+    });
+    {% endif %}
+
+}(jQuery));
+
+</script>
+
+{% endblock %}

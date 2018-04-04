@@ -1,0 +1,4 @@
+
+<font face=Arial size=2 color=#000000>
+    View this email from your browser by clicking <a href="[browser_view_url]">here</a>.
+</font>

@@ -1,0 +1,110 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user news.add_news as can_add_news %}
+
+{% if app_object %}
+    {% has_perm user news.view_news app_object as can_view_news %}
+    {% has_perm user news.change_news app_object as can_edit_news %}
+    {% has_perm user news.delete_news app_object as can_delete_news %}
+{% else %}
+    {% has_perm user news.view_news as can_view_news %}
+    {% has_perm user news.change_news as can_edit_news %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-news-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All News" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'news' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'news.search' %}">{% trans "Search" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_news %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'news.add' %}">{% trans "Add" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'news.export' %}">{% trans "Export" %} {% firstof MODULE_NEWS_LABEL 'News' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_news or can_edit_news %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_NEWS_LABEL 'News' %}</span>
+                            </li>
+
+                            {% if can_view_news %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_news %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'news.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'news.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'category.update' app_object.opt_app_label news.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_news %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'news.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_NEWS_LABEL trans 'News' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

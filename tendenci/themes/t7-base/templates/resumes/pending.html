@@ -1,0 +1,25 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Pending Resumes" %}</h1>
+
+    <div class="resume-wrap">
+    <ul class="pending-resumes">
+    {% for resume in resumes %}
+        <li>
+            <a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title|truncatewords:"10" %}{{ t }}{% endblocktrans %}</a>
+            &nbsp;&ndash;&nbsp;
+            {{ resume.create_dt|date }}&nbsp;{{ resume.create_dt|time }}
+            &nbsp;&ndash;&nbsp;
+            <a href="{% url "resume.approve" resume.pk %}">{% trans "Approve" %}</a>
+        </li>
+    {% empty %}
+        <li>{% trans "There are no pending resumes." %}</li>
+    {% endfor %}
+    </div>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user forms.change_form opt_object as can_edit %}
+{% has_perm user forms.delete_form opt_object as can_delete %}
+{% has_perm user forms.add_form as can_add %}
+
+<div class="t-iconrow">
+<ul>
+    {% if can_edit %}
+        {% if opt_object.status_detail == 'draft' %}
+            <span class="copyright body-copy-alerts">{% trans "Draft" %}</span>
+        {% endif %}
+    {% endif %}
+
+    {% if can_edit %}
+        <li><a class="option-link" href="{% url 'form_entries' opt_object.pk %}">{% trans "Entries" %}</a></li>
+        <li><a class="option-link" href="{% url "admin:forms_form_export" opt_object.pk %}">{% trans "Export Entries" %}</a></li>
+        <li><a class="option-link edit" href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="option-link edit" href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit Fields" %}</a></li>
+        {% if can_add %}
+        <li><a class="option-link" href="{% url 'form_copy' opt_object.pk %}">{% trans "Copy" %}</a></li>
+        {% endif %}
+        {% if can_delete %}
+        <li><a class="option-link delete" href="{% url 'form_delete' opt_object.pk %}">{% trans "Delete" %}</a></li>
+        {% endif %}
+    {% endif %}
+</ul>
+</div>

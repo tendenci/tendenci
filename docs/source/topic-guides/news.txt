@@ -44,9 +44,9 @@ Adding a Thumbnail
 
    .. hidden-code-block:: html
          :label: + Show Added HTML / Django Template Tags
-
+         
               <!-- NOTE: This is a different tagging convention than the thumbnail display in a News Feed -->
-
+         
               {% if news.thumbnail %}
               <div class="col-xs-4">
                 <!-- news-image -->

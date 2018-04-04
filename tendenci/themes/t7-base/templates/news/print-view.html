@@ -1,0 +1,36 @@
+{% extends "news/base-print.html" %}
+{% load news_tags %}
+{% load base_filters %}
+
+{% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=news.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/news.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
+
+        <div class="guide">
+            <div><a href="{{ news.get_absolute_url }}">&laquo; {% trans "Back to regular news view" %}</a></div>
+            <div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+        </div>
+    </div>
+
+    <div class="news-wrap">
+        <h2>{% blocktrans with h=news.headline %}{{ h }}{%  endblocktrans %}</h2>
+        <div class="content">{% blocktrans with b=news.body|safe %}{{ b }}{% endblocktrans %}</div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with news.create_dt|date:"long" as news_create and news.creator as news_creator %}Submitted on {{ news_create }} by {{ news_creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

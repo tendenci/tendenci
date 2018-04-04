@@ -1,0 +1,160 @@
+/*
+
+All CSS for newsletters and actions
+
+*/
+
+/* add */
+#t-newsletters #t-add, #t-newsletters #t-view {
+    width: 550px;
+}
+
+#t-newsletters #t-add strong {
+    color: #444;
+}
+
+#t-newsletters #t-add .yellow-highlight {
+    background: #FFF9D7;
+    border: solid 1px #E2C822;
+    padding: 4px;
+    text-align: center;
+}
+
+
+#t-newsletters #t-add p.headers {
+    border: solid 1px #DDD;
+    xbackground: #DFEAFF;
+    border-bottom: 0px;
+    margin: 0;
+    width: 80px;
+}
+
+#t-newsletters #t-add .input-wrapper {
+    border: solid 1px #DDD;
+    text-align: center;
+    background: #FAFAFA;
+    padding-bottom: 4px;
+    margin-bottom: 20px;
+}
+
+#t-newsletters #t-add .input-wrapper p {
+    text-align: left;
+    padding: 4px;
+    margin: 0;
+    margin-left: 4px;
+}
+
+#t-newsletters #t-add .input-wrapper input.newsletter-subject {
+    padding: 2px;
+    font-size: 1.4em;
+    font-weight: bold;
+    width: 96%;
+    margin: 6px 1% 6px 1%;
+}
+
+
+#t-newsletters #t-add .module-content {
+    background: #F7F7F7;
+    border: solid 1px #BBB;
+    padding: 10px;
+}
+
+#t-newsletters #t-add .module-content h2 {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 8px;
+}
+
+#t-newsletters #t-add .newsletter-submit {
+    margin-top: 10px;
+    text-align: center;
+}
+
+#t-newsletters #t-add .newsletter-submit input {
+    font-size: 1.6em;
+}
+#t-newsletters #format-list ul li{
+	list-style: none;
+}
+#t-newsletters .template_list ul li{
+	list-style: none;
+}
+ul.errorlist li{
+		list-style: none;
+		color: red;
+}
+
+.body-copy-yellow{
+	background-color: yellow;
+}
+.body-copy-alerts{
+	color: red;
+}
+.step-wrap{
+	margin: 1em 0;
+}
+.step-wrap .step-label{
+	float: left;
+	width: 3em;
+	padding-right: 1em;
+}
+.step-wrap .step-desc{
+	float: left;
+	width: 35em;
+}
+.clear-left{
+	clear: left;
+}
+.clear-both{
+	clear: both;
+}
+.recap-wrap{
+	border-bottom: 1px dotted #ccc;
+	padding-bottom: 1em;
+}
+#global-zeroclipboard-html-bridge {
+    margin-top: 30px;
+}
+
+.step-section {
+    margin: 10px 0;
+}
+
+.step-number {
+    float: left;
+    width: 4em;
+    margin-right: 1em;
+
+}
+
+.step-contents {
+    float: left;
+    width: 35em;
+}
+
+.step-content-item {
+    margin: 10px 0;
+}
+
+.step-content-item input[name="actionname"] {
+    width: 100%;
+}
+
+.emails-table thead tr th,
+.emails-table tbody tr td {
+    text-align: center;
+    padding: 5px;
+}
+
+.cf:after {
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;
+     }
+.cf { display: inline-block; }
+
+* html .cf { height: 1%; }
+.cf { display: block; }

@@ -1,0 +1,11 @@
+{% load base_filters %}
+{% if file %}
+<tr class="file-wrap">
+    <td class="clicks"><a href="{% url "event_log.search" %}?start_dt_0={{ form.start_dt.value|str_to_date|date:"Y-m-d" }}&start_dt_1=12%3A00+AM&end_dt_0={{ form.end_dt.value|str_to_date|date:"Y-m-d" }}&end_dt_1=11%3A30+PM&application=files&object_id={{ file.pk }}">{{ event_log.count }}</a></td>
+    <td class="file-type"><img src="{{ file.icon }}" alt="filetype" title="filetype" /></td>
+    <td class="file-name"><a href="{% url 'file' file.pk %}">{{ file.basename }}</a>
+        <div class="create-dt">Created {{ file.create_dt }}</div> </td>
+    <td class="change"><a href="{% url "file.edit" file.pk %}">{% trans "Edit" %}</a></td>
+    <td class="delete"><a href="{% url "file.delete" file.pk %}">{% trans "Delete" %}</a></td>
+</tr>
+{% endif %}

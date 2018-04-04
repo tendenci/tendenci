@@ -1,0 +1,7 @@
+{{ object.user.get_full_name }}
+{{ object.description }}
+{{ object.user.username }}
+{{ object.user.email }}
+{{ object.payment_amount }}
+
+is:{{ object.status_detail }}

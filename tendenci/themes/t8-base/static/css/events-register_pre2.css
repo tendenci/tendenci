@@ -1,0 +1,42 @@
+.pricing-info-wrap{
+    margin-top: 2em;
+}
+.pricing-list {
+    margin-bottom: 18px;
+}
+.pricing-item {
+    border: 2px solid #3E83C9;
+    margin-bottom: 5px;
+}
+.pricing-item.alt {
+    background: #ecf6fc;
+}
+.pricing-item:hover {
+    background: #bcd4ec;
+}
+.pricing-item .pricing-header {
+    padding: 6px;
+    background: #3E83C9;
+    color: #fff;
+}
+.pricing-item .pricing-info {
+    width: 60%;
+    padding: 6px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.pricing-item form {
+    display: inline-block;
+}
+.register-green-button2 {
+    background-color: green;
+    border: 0 none;
+    border-radius: 5px 5px 5px 5px;
+    color: white;
+    cursor: pointer;
+    padding: 5px !important;
+}
+.register-green-button2:hover {
+    background-color: #234F32;
+    color: #FFC757;
+}

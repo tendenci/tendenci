@@ -56,4 +56,4 @@ Theme File Descriptions
 Theme Media Usage
 -----------------
 
-Template media in the ``media`` folder can be referenced in the template using the ``{{ THEME_URL }}media/``.
+Template media in the ``media`` folder can be referenced in the template using ``{% static 'path/to/file' %}``.

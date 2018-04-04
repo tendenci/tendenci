@@ -1,0 +1,14 @@
+{% extends "default.html" %}
+{% load nav_tags %}
+
+{% block title %}{{ block.super }} {% trans "Site Map" %}{% endblock%}
+
+{% block content %}
+<div class="sitemap">
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Sitemap" %}</h1>
+    {% list_navs as nav_sitemap_list limit=100 %}
+    {% for nav in nav_sitemap_list %}
+        {% nav nav.pk is_site_map='True' %}
+    {% endfor %}
+</div>
+{% endblock %}

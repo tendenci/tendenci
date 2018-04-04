@@ -1,0 +1,30 @@
+{% extends "theme_editor/base_list.html" %}
+
+{% load humanize %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Theme Editor' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/theme-editor.css' %}" />
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="editor-nav" style="float:right">
+        <a href="{% url "theme_editor.editor" %}?theme_edit={{ current_theme }}" >{% trans "Back to Theme-Editor" %}</a>
+    </div>
+
+    <h1>{% trans "Tendenci Apps" %}</h1>
+    <strong>{% trans "Choose a theme or app that you wish to override:" %}</strong>
+    <div class="apps-wrap">
+    {% for app in apps %}
+        <div class="app">
+            <a href="{% url "theme_editor.original_templates" %}?theme_edit={{ current_theme }}&app={{ app }}">{{ app }}</a>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

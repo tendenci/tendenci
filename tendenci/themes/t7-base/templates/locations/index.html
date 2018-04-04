@@ -1,0 +1,10 @@
+
+<h1>{% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %} {% trans "Index Page" %}</h1>
+
+<ul>
+    <li><a href="{% url "location.search" %}">{% trans "Search" %}</a></li>
+    <li><a href="{% url "location.view" %}">{% trans "View" %}</a></li>
+    <li><a href="{% url "location.print_view" %}">{% trans "Print View" %}</a></li>
+    <li><a href="{% url "location.edit" %}">{% trans "Edit" %}</a></li>
+    <li><a href="{% url "location.delete" %}">{% trans "Delete" %}</a></li>
+</ul>

@@ -1,0 +1,97 @@
+{% extends "recurring_payments/authnet/base.html" %}
+
+{% block title %} {% trans "Add / Update Customer Payment Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'authnet_cim/paymentShipping.css' %}">
+
+  <!--[if lte IE 6]>
+  <link href="{% static 'authnet_cim/paymentShippingIELTE6.css' %}" rel="stylesheet" type="text/css" />
+ <![endif]-->
+
+<script type="text/javascript" src="{% static 'authnet_cim/popup.js' %}"></script>
+
+ <script type="text/javascript">
+  //<![CDATA[
+  // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
+  AuthorizeNetPopup.options.eCheckEnabled = false;
+
+  // Uncomment this line if you do not have absolutely positioned elements on your page that can obstruct the view of the popup.
+  // This can speed up the processing of the page slightly.
+ // AuthorizeNetPopup.options.skipZIndexCheck = true;
+
+  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
+  //]]>
+  </script>
+
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="{{ token }}" />
+  <input type="hidden" name="PaymentProfileId" value="{% if payment_profile %}{{ payment_profile.payment_profile_id }}{% endif %}" />
+  <input type="hidden" name="ShippingAddressId" value="" />
+</form>
+
+<div class="t">
+    <h1>
+    {% if request.user.id == rp.user.id %}
+       {% trans 'Manage my Payment Info' %}
+    {% else %}
+    {% trans "Manage Payment Info for " %} <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a>
+    {% endif %}
+    </h1>
+
+ <h3>Description: {{ rp.description }}</h3>
+
+   {% if payment_profile %}
+   <button onclick="AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}')">{% trans 'Edit Payment Method' %}</button>
+    {% else %}
+    <button onclick="AuthorizeNetPopup.openAddPaymentPopup()">{% trans 'Add a New Payment Method' %}</button>
+   {% endif %}
+
+<br />
+    <div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
+      <div class="AuthorizeNetPopupOuter">
+        <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0"
+        scrolling="no"></iframe>
+      </div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
+      <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
+    </div>
+
+    <div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+<script text="text/javascript">
+    AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
+        if(action_result=="successfulSave"){
+            $.ajax({
+                   type: "POST",
+                   url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
+                   data: {rpid : {{ rp.id }}, ppid : {% if payment_profile %}{{ payment_profile.id }}{% endif %} },
+                   success: function(msg){
+                     //alert( msg );
+                   }
+                 });
+        }
+    };
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+
+{% load base_filters %}
+
+{% if is_paid %}
+    {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration Confirmed and Paid - {{ event_title }} on {{ event_start }}{{ event_tz }}{% endblocktrans %}
+{% else %}
+    {% if event.registration_configuration.payment_required %}
+        {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration ALMOST Confirmed - {{ event_title }} on {{ event_start }}{{ event_tz }}{% endblocktrans %}
+    {% else %}
+        {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration Confirmed - {{ event_title }} on {{ event_start }}{{ event_tz }}{% endblocktrans %}
+    {% endif %}
+{% endif %}

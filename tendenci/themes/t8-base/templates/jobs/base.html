@@ -1,0 +1,62 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Job Listings for {{ display_name }} - Employment Opportunities and Job Openings
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL label_lower=MODULE_JOBS_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+            {{ label }} search page for {{ display_name }} in {{ location }} listing - {{ label_lower }} openings and employment opportunities
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
+            Job search page for {{ display_name }} in {{ location }} listing - job openings and employment opportunities
+        {% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% trans "Employment Search" %},
+    {% if MODULE_JOBS_LABEL %}
+        {% blocktrans with label=MODULE_JOBS_LABEL %}
+            {{ label }} Search
+        {% endblocktrans %}
+    {% else %}
+        {% trans "Job Search" %}
+    {% endif %},
+    {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% if MODULE_JOBS_LABEL_PLURAL %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_JOBS_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
+    {% else %}
+        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} jobs{% endblocktrans %}
+    {% endif %}, {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/jobs.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "jobs/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

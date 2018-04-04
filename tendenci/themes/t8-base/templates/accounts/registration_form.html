@@ -1,0 +1,117 @@
+{% extends "accounts/base.html" %}
+
+
+{% block title %}{% trans "User Registration" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h2>{% trans "Fill out the form below to create your account" %}</h2>
+    <form class="form-horizontal" id="t-accounts-registration-form" method="post" action=".">{% csrf_token %}
+        <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+            <label for="{{ form.username.id_for_label }}" class="col-sm-3 control-label">{{ form.username.label }}</label>
+            <div class="col-sm-6">
+                {{ form.username }}
+
+                {% if form.username.errors %}
+                    <p id="{{ form.username.id_for_label }}-help-block" class="help-block">
+                        {{ form.username.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.first_name.errors %}has-error{% endif %}">
+            <label for="{{ form.first_name.id_for_label }}" class="col-sm-3 control-label">{{ form.first_name.label }}</label>
+            <div class="col-sm-6">
+                {{ form.first_name }}
+
+                {% if form.first_name.errors %}
+                    <p id="{{ form.first_name.id_for_label }}-help-block" class="help-block">
+                        {{ form.first_name.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.last_name.errors %}has-error{% endif %}">
+            <label for="{{ form.last_name.id_for_label }}" class="col-sm-3 control-label">{{ form.last_name.label }}</label>
+            <div class="col-sm-6">
+                {{ form.last_name }}
+
+                {% if form.last_name.errors %}
+                    <p id="{{ form.last_name.id_for_label }}-help-block" class="help-block">
+                        {{ form.last_name.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+            <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">{{ form.email.label }}</label>
+            <div class="col-sm-6">
+                {{ form.email }}
+
+                {% if form.email.errors %}
+                    <p id="{{ form.email.id_for_label }}-help-block" class="help-block">
+                        {{ form.email.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.password1.errors %}has-error{% endif %}">
+            <label for="{{ form.password1.id_for_label }}" class="col-sm-3 control-label">{{ form.password1.label }}</label>
+            <div class="col-sm-6">
+                {{ form.password1 }}
+                <p class="help-text">
+                        {{ form.password1.help_text }}
+                    </p>
+                {% if form.password1.errors %}
+                    <p id="{{ form.password1.id_for_label }}-help-block" class="help-block">
+                        {{ form.password1.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.password2.errors %}has-error{% endif %}">
+            <label for="{{ form.password2.id_for_label }}" class="col-sm-3 control-label">{{ form.password2.label }}</label>
+            <div class="col-sm-6">
+                {{ form.password2 }}
+
+                {% if form.password2.errors %}
+                    <p id="{{ form.password2.id_for_label }}-help-block" class="help-block">
+                        {{ form.password2.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group {% if form.captcha.errors %}has-error{% endif %}">
+            <label for="{{ form.captcha.id_for_label }}" class="col-sm-3 control-label">{{ form.captcha.label }}</label>
+            <div class="col-sm-6">
+                {{ form.captcha }}
+
+                {% if form.captcha.errors %}
+                    <p id="{{ form.captcha.id_for_label }}-help-block" class="help-block">
+                        {{ form.captcha.errors.as_text }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary" id="t-accounts-create-account-btn">{% trans "Create Account" %}</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %} {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+{% endblock %}

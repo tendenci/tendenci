@@ -1,0 +1,43 @@
+{% extends "news/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load meta_tags %}
+{% load news_tags %}
+{% load tagging_tags %}
+
+
+{% block title %}{% blocktrans with t=news.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=news.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=news.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+    {% meta_og_image news "thumbnail" %}
+    {% meta_og_image news "body" %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    {% tags_for_object news as tags %}
+
+    <article id="t-news-news-{{ news.pk }}" class="t-news-news">
+        <div class="page-header">
+            <h1>{% blocktrans with headline=news.headline %}{{ headline }}{% endblocktrans %}</h1>
+        </div>
+
+        {% if news.google_profile %}
+            {% if news.has_google_author %}
+                <a href="{{ news.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
+            {% elif news.has_google_publisher %}
+                <a href="{{ news.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="t-news-news-body">
+            {% blocktrans with body=news.body|safe %}{{ body }}{% endblocktrans %}
+        </div>
+
+        {% include "news/meta.html" with show_source=True show_contact=True show_fb_connect=True %}
+    </article>
+{% endblock %}

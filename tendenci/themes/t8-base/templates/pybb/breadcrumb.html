@@ -1,0 +1,20 @@
+{% load pybb_tags %}
+<ul class='breadcrumb'>
+    {% include "pybb/breadcrumb_top_extra_crumb.html" %}
+    <li><a href="{% url 'pybb:index' %}">{% trans "Forums" %}</a> </li>
+    {% if object %}
+        {% if object.get_parents %}
+            {% for obj in object.get_parents %}
+                <li>{% pybb_link obj %} </li>
+            {% endfor %}
+        {% endif %}
+        {% if extra_crumb %}
+            <li>{% pybb_link object %} </li>
+        {% else %}
+            <li>{{ object }}</li>
+        {% endif %}
+    {% endif %}
+    {% if extra_crumb %}
+        <li>{% trans extra_crumb %}</li>
+    {% endif %}
+</ul>

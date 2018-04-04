@@ -1,0 +1,6 @@
+{% load pybb_tags %}
+
+<div class='category'>
+    <h2>{{ category.name }} {% if category.hidden %}[{% trans "Hidden" %}]{% endif %}</h2>
+    {% include 'pybb/forum_list.html' with forum_list=category.forums_accessed category=category parent_forum='' %}
+</div>

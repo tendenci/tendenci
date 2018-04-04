@@ -1,0 +1,16 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load job_tags %}
+
+{% block current_app %}
+<li class="dropdown">
+    <button type="button" class="btn btn-primary"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/briefcase.png' %}"/>{% trans "Job Pricing" %}
+        <span class="caret"></span>
+    </button>
+    {% if job_pricing %}
+    {% job_pricing_current_app request.user job_pricing %}
+    {% else %}
+    {% job_pricing_current_app request.user %}
+    {% endif %}
+</li>
+{% endblock %}

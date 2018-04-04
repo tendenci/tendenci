@@ -1,0 +1,70 @@
+{% extends "photos/base-wide.html" %}
+
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load search_tags %}
+{% load humanize %}
+
+{% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos-photo-set.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url "photo.feed.latest-albums" %}" />
+{% endblock %}
+
+{% block content %}
+  
+  <div id="photo-sets-header-wrap">
+    
+    <div class="page-header">
+      <h1>{{ MODULE_PHOTOS_LABEL }}</h1>
+    </div>
+    
+  </div><!-- photo-sets-header-wrap -->
+  
+  {% photo_set_search %}
+  
+  <span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
+  
+  {% autopaginate photo_sets %}
+  
+  <br />
+
+  <!-- photo-sets masonry -->
+  {% if photo_sets %}
+  
+  <div class="container-fluid">  
+    <div class="grid">
+      
+      <div class="grid-sizer col-xs-12"></div>
+      
+      {% for photo_set in photo_sets %}
+   
+      <div class="grid-item col-md-4 col-sm-4 col-xs-4">
+        {% search_result photo_set %}
+      </div>
+      
+      {% endfor %}
+      
+    </div>
+  </div>
+  {% endif %}
+  <!-- end: photo-sets masonry -->
+
+<script type="text/javascript">
+  // photo: delete confirmation
+  $('.photo-set .info .actions .delete-set').click(function(){
+  var delete_photo = confirm('{% trans "Permenantly delete photo set?" %}'); // confirm
+  if(!delete_photo) return false; // do not delete
+  });
+</script>
+<script>
+  $('.grid').masonry({
+  itemSelector: '.grid-item',
+  columnWidth: '.grid-sizer',
+  percentPosition: true
+  });
+</script>
+
+{% endblock %}

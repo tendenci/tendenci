@@ -1,0 +1,29 @@
+{% extends "forms/base.html" %}
+{% load forms_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Delete' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms-builder.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %}{% trans " Delete" %}</h1>
+
+    <div class="form-builder-wrap">
+        <div class="delete-prompt">
+            {% blocktrans %}Are you sure you want to delete this{% endblocktrans %} {% firstof MODULE_FORMS_LABEL 'form' %}?
+        </div>
+        <h2>{{ form }}</h2>
+
+        <div class="delete-form">
+            <form action="{% url "form_delete" form.pk %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans 'Delete' %} {% firstof MODULE_FORMS_LABEL trans 'Form' %}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

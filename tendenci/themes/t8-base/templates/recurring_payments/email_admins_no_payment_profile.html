@@ -1,0 +1,24 @@
+
+{% trans "Greetings:" %} <br /><br />
+
+<div>
+{% blocktrans %}
+The recurring payment account for {{ rp }} doesn't have a valid payment method set up yet. A notification is also sent to the customer {{ rp.user.get_full_name  }} ({{ rp.user.email }}) to add/update their payment method on the payment gateway.
+{% endblocktrans %}
+</div>
+<br /><br />
+
+{% trans 'To add or update the payment method for this recurring payment account, go to' %}:
+<br />
+<a href="{{ site_url }}{% url "recurring_payment.view_account" rp.id %}">{{ site_url }}{% url "recurring_payment.view_account" rp.id %}</a>
+
+</div>
+
+
+<br />
+<br />
+{% trans "Thanks!" %}
+<br /><br />
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+

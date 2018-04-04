@@ -1,0 +1,110 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user pages.add_page as can_add_page %}
+
+{% if app_object %}
+    {% has_perm user pages.view_page app_object as can_view_page %}
+    {% has_perm user pages.change_page app_object as can_edit_page %}
+    {% has_perm user pages.delete_page app_object as can_delete_page %}
+{% else %}
+    {% has_perm user pages.view_page as can_view_page %}
+    {% has_perm user pages.change_page as can_edit_page %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-pages-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        {# "All Pages" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Pages" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'pages' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'page.search' %}">{% trans "Search Pages" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_page %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'page.add' %}">{% trans "Add Page" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'page.export' %}">{% trans "Export Pages" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object and app_object.pk %}
+                    {% if can_view_page or can_edit_page %}
+                        {# "This Page" Section #}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Page" %}</span>
+                            </li>
+
+                            {% if can_view_page %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Page" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_page %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'page.edit' app_object.pk %}">{% trans "Edit Page" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'page.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'category.update' app_object.opt_app_label page.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_page %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'page.delete' app_object.pk %}">{% trans "Delete Page" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load newsletter_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/email_go.png' %}{% endblock %}
+
+{% block nav_label %}{% trans "Newsletters" %}{% endblock %}
+
+{% block current_app %}
+    {% if object %}
+        {% newsletter_current_app request.user object %}
+    {% else %}
+        {% newsletter_current_app request.user %}
+    {% endif %}
+{% endblock %}

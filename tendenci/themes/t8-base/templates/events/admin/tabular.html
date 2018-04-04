@@ -1,0 +1,367 @@
+{% load admin_static admin_modify bootstrapped_goodies_tags %}
+<div class="_inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+{{ inline_admin_formset.formset.management_form }}
+<fieldset class="module">
+   <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+   {{ inline_admin_formset.formset.non_form_errors }}
+   <table class="table table-striped table-bordered">
+     <thead><tr>
+     {% for field in inline_admin_formset.fields %}
+       {% if not field.widget.is_hidden %}
+         <th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label|capfirst }}
+         {% if field.help_text %}<i class="glyphicon glyphicon-comment help help-tooltip" style="margin-left: 4px;" alt="({{ field.help_text|striptags }})" title="{{ field.help_text|striptags }}"></i>{% endif %}
+         </th>
+       {% endif %}
+     {% endfor %}
+     {% if inline_admin_formset.formset.can_delete %}<th>{% trans "Delete?" %}</th>{% endif %}
+     </tr></thead>
+
+     <tbody>
+     {% for inline_admin_form in inline_admin_formset %}
+        {% if inline_admin_form.form.non_field_errors %}
+        <tr><td colspan="{{ inline_admin_form|cell_count }}">{{ inline_admin_form.form.non_field_errors }}</td></tr>
+        {% endif %}
+        <tr class="form-row {% cycle "row1" "row2" %} {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+             id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+        <td class="original">
+          {% if inline_admin_formset.opts.sortable_field_name %}
+          <span class="btn btn-default btn-xs drag-handler pull-left"><i class="glyphicon glyphicon-move"></i></span>
+          {% endif %}
+          {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
+          {% if inline_admin_form.original %} {{ inline_admin_form.original }}{% endif %}
+          {% if inline_admin_form.show_url %}<a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/">{% trans "View on site" %}</a>{% endif %}
+            </p>{% endif %}
+          {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+          {{ inline_admin_form.fk_field.field }}
+          {% spaceless %}
+          {% for fieldset in inline_admin_form %}
+            {% for line in fieldset %}
+              {% for field in line %}
+                {% if field.is_hidden %} {{ field.field }} {% endif %}
+              {% endfor %}
+            {% endfor %}
+          {% endfor %}
+          {% endspaceless %}
+        </td>
+        {% for fieldset in inline_admin_form %}
+          {% for line in fieldset %}
+            {% for field in line %}
+              <td{% if field.field.name %} class="field-{{ field.field.name }}"{% endif %}>
+              {% if field.is_readonly %}
+                  <p>{{ field.contents }}</p>
+              {% else %}
+                  {% if field.errors %}
+                  <div class="alert alert-danger">{{ field.errors|striptags }}</div>
+                  {% endif %}
+                  {% dab_field_rendering field.field %}
+              {% endif %}
+              </td>
+            {% endfor %}
+          {% endfor %}
+        {% endfor %}
+        {% if inline_admin_formset.formset.can_delete %}
+          <td class="delete">{% if inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</td>
+        {% endif %}
+        </tr>
+     {% endfor %}
+     </tbody>
+   </table>
+</fieldset>
+  </div>
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function($) {
+        var rows = "#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr";
+        var alternatingRows = function(row) {
+            $(rows).not(".add-row").removeClass("row1 row2")
+                .filter(":even").addClass("row1").end()
+                .filter(rows + ":odd").addClass("row2");
+        }
+        var reinitDateTimeShortCuts = function() {
+            // Reinitialize the calendar and clock widgets by force
+            if (typeof DateTimeShortcuts != "undefined") {
+                $(".datetimeshortcuts").remove();
+                DateTimeShortcuts.init();
+            }
+        }
+        var updateSelectFilter = function() {
+            // If any SelectFilter widgets are a part of the new form,
+            // instantiate a new SelectFilter instance for it.
+            if (typeof SelectFilter != "undefined"){
+                $(".selectfilter").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], false, "{% static "admin/" %}");
+                });
+                $(".selectfilterstacked").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], true, "{% static "admin/" %}");
+                });
+            }
+        }
+        var initPrepopulatedFields = function(row) {
+            row.find('.prepopulated_field').each(function() {
+                var field = $(this);
+                var input = field.find('input, select, textarea');
+                var dependency_list = input.data('dependency_list') || [];
+                var dependencies = [];
+                $.each(dependency_list, function(i, field_name) {
+                  dependencies.push('#' + row.find('.field-' + field_name).find('input, select, textarea').attr('id'));
+                });
+                if (dependencies.length) {
+                    input.prepopulate(dependencies, input.attr('maxlength'));
+                }
+            });
+        }
+        $(rows).formset({
+            prefix: "{{ inline_admin_formset.formset.prefix }}",
+            addText: "{% blocktrans with verbose_name=inline_admin_formset.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}",
+            formCssClass: "dynamic-{{ inline_admin_formset.formset.prefix }}",
+            deleteCssClass: "inline-deletelink",
+            deleteText: "{% trans "Remove" %}",
+            emptyCssClass: "empty-form",
+            removed: alternatingRows,
+            added: (function(row) {
+                initPrepopulatedFields(row);
+                reinitDateTimeShortCuts();
+                updateSelectFilter();
+                alternatingRows(row);
+            })
+        });
+
+
+        var has_mapped_field = function(field){
+            var field_name = $(field).attr('name');
+            var mapped_field = $(".inline-related tr.dynamic-fields")
+                                .find('.field-map_to_field select option[value="' + field_name + '"]:selected');
+            if (mapped_field.length > 0){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        var get_mapped_row = function(field){
+            var field_name = $(field).attr('name');
+            var mapped_field = $(".inline-related tr.dynamic-fields")
+                                .find('.field-map_to_field select option[value="' + field_name + '"]:selected');
+            return $(mapped_field).closest('tr.dynamic-fields');
+
+        }
+
+        var addMappedField = function(field){
+            var add_btn = $('.add-row a');
+            $(add_btn).trigger('click');
+            var template = $("#{{ inline_admin_formset.formset.prefix }}-empty");
+            var row_added = $(template).prev();
+
+            // get field_name and field_label from checkbox
+            var field_name = $(field).attr('name');
+            //var field_label = $(field).next('label').html();
+            var field_label = $(field).parents('.form-group').find('label').html();
+            $(row_added).find('.field-label input').attr('value', field_label);
+
+            // remove the error message for label field
+            $(row_added).find('.field-label ul.errorlist').remove();
+
+            // remove the error message for field type
+            $(row_added).find('.field-field_type ul.errorlist').remove();
+
+            // select for map to user field
+            $(row_added).find('.field-map_to_field select')
+                .find('option[value="' + field_name + '"]').attr('selected', 'selected');
+
+            // select for field type & choices
+            var field_type = 'CharField';
+            if (field_name == 'comments'){
+                field_type = 'CharField/django.forms.Textarea';
+            }
+            if (field_name == 'email'){
+                field_type = 'EmailVerificationField';
+            }
+            if (field_name == 'meal_option'){
+                field_type = 'ChoiceField';
+
+                $(row_added).find('.field-choices input[type="text"]').attr('value', 'Vegetarian,Non-Vegetarian');
+            }
+            $(row_added).find('.field-field_type select option[value="' + field_type + '"]').attr('selected', 'selected');
+
+            // check display on roster
+            $(row_added).find('.field-display_on_roster input[type="checkbox"]').attr('checked', 'checked');
+            if (field_name !== 'first_name' && field_name !== 'last_name' && field_name !== 'email'){
+                $(row_added).find('.field-required input[type="checkbox"]').removeAttr('checked');
+            }
+
+            if (field_name == 'first_name' || field_name == 'last_name' || field_name == 'email'){
+                $(field).attr('disabled', true);
+            }
+
+            // test if we have the delete checkbox, if so, we're on the edit page. Otherwise, on add.
+            var delete_checkbox = $(row_added).find('td.delete input[type="checkbox"]');
+            if (delete_checkbox.length > 0){
+                // disable the delete checkbox
+                delete_checkbox.attr('disabled', true);
+            }else{
+                // hide the delete btn
+                $(row_added).find('td.delete div .inline-deletelink').closest('td div').hide();
+            }
+
+        }
+
+        var updateElementIndex2 = function(el, prefix, ndx) {
+            var id_regex = new RegExp("(" + prefix + "-\\d+)");
+            var replacement = prefix + "-" + ndx;
+            if ($(el).attr("for")) {
+                $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+            }
+            if (el.id) {
+                el.id = el.id.replace(id_regex, replacement);
+            }
+            if (el.name) {
+                el.name = el.name.replace(id_regex, replacement);
+            }
+        };
+
+
+        var deleteMappedField = function(field){
+            var field_name = $(field).attr('name');
+
+            var map_to_option = $('.field-map_to_field select option[value="' + field_name + '"]:selected');
+            if (map_to_option){
+                var delete_btn = $(map_to_option).closest('tr').find('td.delete .inline-deletelink');
+                if (delete_btn.length > 0){
+                    delete_btn.trigger('click');
+                }else{
+                    var row = $(map_to_option).parents(".dynamic-fields");
+
+                    // no delete button. check if we have delete checkbox (on edit)
+                    delete_checkbox = $(row).find('td.delete input[type="checkbox"]');
+                    console.log(delete_checkbox.length);
+                    if (delete_checkbox.length > 0){
+                        $(delete_checkbox).attr('checked', true);
+                        console.log('is checked: ' + $(delete_checkbox).attr('checked'));
+                        //$(delete_checkbox).attr('checked', 'checked');
+                    }else{
+                        row.remove();
+
+                        // Update the TOTAL_FORMS form count.
+                        var forms = $(".dynamic-fields");
+                        $("#id_fields-TOTAL_FORMS").val(forms.length);
+
+                        // Also, update names and ids for all remaining form controls
+                        // so they remain in sequence:
+                        for (var i=0, formCount=forms.length; i<formCount; i++)
+                        {
+                            $(forms.get(i)).find("input,select,textarea,label,a").each(function() {
+                                updateElementIndex2(this, 'fields', i);
+                            });
+                        }
+                        return false;
+
+                    }
+                }
+            }
+
+        }
+
+        //$('.mapped-fields .row .field-box').css({'width': '150px'});
+        $('.mapped-fields .row label').css({'color': '#01437D'});
+        $('.tabular td.choices input[type=text]').css({'width': '10em'});
+        $('.tabular td.default input[type=text]').css({'width': '5em'});
+        // lock the dropdown of Map to User field
+       $('.field-map_to_field select').attr('disabled', true);
+
+        var existing_rows = $('._inline-group tr.dynamic-fields');
+        if (existing_rows.length == 0){
+            // initialize
+            var field;
+            var myfields = ['#id_first_name', '#id_last_name', '#id_email',
+                            '#id_company_name', '#id_phone', '#id_comments'];
+            for (var i=0; i<myfields.length; i++){
+                field = $(myfields[i]);
+                //console.log(field);
+                addMappedField(field);
+
+                $(field).attr('checked', 'checked');
+            }
+
+        }else{
+            var myfields = ['#id_first_name', '#id_last_name', '#id_email'];
+            for (var i=0; i<myfields.length; i++){
+                if (has_mapped_field($(myfields[i]))){
+                    $(myfields[i]).attr('disabled', true);
+                }
+
+            }
+        }
+
+
+        // field checkboxes on change
+        $('.mapped-fields .row input[type="checkbox"]').change(function(){
+            var $this = $(this);
+            console.log($this.is(':checked'));
+            if ($this.is(':checked')){
+                if (!has_mapped_field($this)){
+                    addMappedField($this);
+                }else{
+                    // field exists, check if there is delete checkbox and uncheck it if checked.
+                    var row = get_mapped_row($this);
+                    var delete_checkbox = $(row).find('td.delete input[type="checkbox"]');
+                    //$(delete_checkbox).removeAttr('checked');
+                    $(delete_checkbox).attr('checked', false);
+
+                }
+            }else{
+                deleteMappedField($this);
+            }
+        });
+
+        // disable the delete buttons for mapped fields
+        $(".inline-related tr.dynamic-fields").each(function(){
+            var $this = $(this);
+            var map_to_value = $(this).find('.field-map_to_field select option:selected').attr('value');
+            if (map_to_value !==''){
+                $(this).find('td.delete input[type="checkbox"]').attr('disabled', true);
+            }
+        });
+
+        // form on submit
+        $('input[type="submit"]').click(function(){
+            $('.field-map_to_field select').removeAttr('disabled');
+            $('#id_first_name').removeAttr('disabled');
+            $('#id_last_name').removeAttr('disabled');
+            $('#id_email').removeAttr('disabled');
+            $('.inline-related tr.dynamic-fields td.delete input[type="checkbox"]').removeAttr('disabled');
+            $('#fields-group td.delete div').show();
+        });
+
+
+    });
+})(django.jQuery);
+
+// listener for jquery 1.7.2
+(function($) {
+    {% if inline_admin_formset.opts.sortable_field_name %}
+    $('tbody').sortable({
+        // items: '.dynamic-{{ inline_admin_formset.formset.prefix }}',
+        handle: '.drag-handler',
+        items: ".form-row"
+    });
+    $("#{{ opts.model_name }}_form").submit(function(e) {
+        var sortable_field_name = "{{ inline_admin_formset.opts.sortable_field_name }}",
+            i = 0;
+        var initial_form_count = $('#id_{{ inline_admin_formset.formset.prefix }}-INITIAL_FORMS').val();
+
+        $('#{{ inline_admin_formset.formset.prefix }}-group table > tbody').find(".form-row").each(function(i, e) {
+            // make sure we don't assign a position unless extra has been moved
+            if ($(this).find("input[name$='" + sortable_field_name + "']").val() || (i <= initial_form_count - 1 )) {
+                $(this).find("input[name$='" + sortable_field_name + "']").val(i);
+                i++;
+            }
+        });
+    });
+    {% endif %}
+})(jQuery);
+</script>

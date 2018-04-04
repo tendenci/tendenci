@@ -1,0 +1,18 @@
+
+<p>{% blocktrans with object.corp_profile.name as objname %}Your corporate membership "{{ objname }}" has been renewed and approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
+</p>
+
+<p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
+    </p>
+
+<p>
+{% blocktrans with total_individuals_renewed as totind %}Total individual memberships renewed: {{ totind }}{% endblocktrans %}
+</p>
+<p>{% trans "Thanks!" %}</p>
+
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

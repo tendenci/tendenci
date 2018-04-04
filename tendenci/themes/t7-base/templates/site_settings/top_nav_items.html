@@ -1,0 +1,33 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        {# "All Settings" Section #}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Settings" %}</span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings.index' 'site' 'global' %}">{% trans "Global Site Settings" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'settings' %}">{% trans "Full Settings List" %}</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

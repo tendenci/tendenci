@@ -1,0 +1,38 @@
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+    <tr style="font-size: .9em;">
+        <th>{% trans "#" %}</th>
+        <th>{% trans "First Name" %}</th>
+        <th>{% trans "Last Name" %}</th>
+        <th>{% trans "Email" %}</th>
+        <th>{% trans "Member Type" %}</th>
+        <th>{% trans "Paid" %}</th>
+        <th>{% trans "Pay Method" %}</th>
+        <th>{% trans "Start Date" %}</th>
+        <th>{% trans "Expire Date" %}</th>
+        <th>{% trans "Status" %}</th>
+    </tr>
+    {% for mem in mems %}
+
+    {% if mem.is_active %}
+        <tr class="success">
+    {% elif mem.is_pending %}
+        <tr class="warning">
+    {% elif mem.is_expired %}
+        <tr class="error">
+    {% else %}
+        <tr class="info">
+    {% endif %}
+        <td>{{ forloop.counter }}</td>
+        <td>{{ mem.user.first_name }}</td>
+        <td>{{ mem.user.last_name }}</td>
+        <td style="font-size: .9em;">{{ mem.user.email }}</td>
+        <td>{{ mem.membership_type }}</td>
+        <td><a href="{{ mem.get_invoice.get_absolute_url }}">{{ mem.get_invoice.total }}</a></td>
+        <td style="white-space: nowrap;">{{ mem.payment_method.human_name }}</td>
+        <td style="white-space: nowrap;">{{ mem.join_dt|date:"N j, Y" }}</td>
+        <td style="white-space: nowrap;">{{ mem.expire_dt|date:"N j, Y" }}</td>
+        <td>{{ mem.status_detail|title }}</td>
+    </tr>
+    {% endfor %}
+</table>

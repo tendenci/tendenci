@@ -1,0 +1,29 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+<h1>{% trans "Active Memberships Per Month" %}</h1>
+
+<div>
+    <a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
+    {{ date_range.0|date:"M Y" }}
+    <a href="./?{% month_url next %}">{% trans "Next" %}</a>
+</div>
+
+<table class="events-summary-chart">
+<tr>
+{% for item in chart_data %}
+    <td>
+        <a href="#" title="{{ item.count }}">
+            <div style="width: 24px; height: {{ item.height }}px; background-color: #0000FF;"> </div>
+        </a>
+        {{ item.day|date:"d" }}
+        <div style="font-size: 10px;">{{ item.day|date:"D" }}</div>
+    </td>
+{% endfor %}
+</tr>
+</table>
+
+<div style="clear: both;"></div>
+
+{% endblock content %}

@@ -1,0 +1,2 @@
+
+{% blocktrans with object.headline as objname %}Renewed directory ({{ objname }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

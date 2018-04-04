@@ -1,0 +1,625 @@
+div.forms .form-field ul{list-style:none;}
+div.column2 ul, div.column3 ul{
+    float: left;
+    width: 90%;
+}
+div.column2 ul li {
+    float: left;
+    width: 45%;
+    margin: 0;
+    padding: 0;
+}
+div.column3 ul li {
+    float: left;
+    width: 30%;
+    margin: 0;
+    padding: 0;
+}
+div.column0 ul li {
+    float: left;
+    margin-right: 1em;
+    padding: 0;
+}
+.size-s input[type="text"]{width: 20% !important;}
+.size-m input[type="text"]{width: 50% !important;}
+
+/*
+div.section-break h2{
+    font-size: 1.2em;
+    margin: 1.5em 0 1em;
+    padding: 3px 0;
+    background-color: #e5ecf9;
+    border-top: 1px dotted silver;
+    color: #417690;
+}
+*/
+
+div.admin-only h2{
+    color: #9f2221;
+}
+div.forms div.form-field input.datepicker{
+    width: 9em !important;
+}
+div.forms div.form-field input.timepicker{
+    width: 8em !important;
+}
+.errors{
+    background-color: #ffebeb;
+    border: 2px solid #ff8b78;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 75%;
+}
+
+/* view */
+.bolded-content{
+    font-weight: bold;
+}
+.corpmemb-view .content{
+    line-height: 1.3em;
+}
+
+.status-pending{
+    background-color: yellow;
+}
+.status-expired{
+    color: red;
+}
+.status-archived{
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+}
+.status-archive{
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+}
+.status-disapproved{
+    color:#C09853;
+}
+.pending-info-box{
+    background-color: #F7FFAF;
+}
+
+/* import */
+#corp-import-wrap .form-field {
+    background-color: #F7F7F7;
+    height: 25px;
+    width: 725px;
+}
+#corp-import-wrap .form-field .label {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 5px 10px 5px 0;
+    text-align: right;
+}
+#corp-import-wrap .form-field .label {
+    float: left;
+       width: 365px;
+}
+#corp-import-wrap .form-field .field{
+    float: left;
+}
+ .corp-import-step{
+     padding: 1em 0 0.5em 0;
+ }
+ .import-timestamp{
+     float: right;
+ }
+ #corp-import{
+     width: 80%;
+ }
+ .corp-import-upload{
+     border-top: 1px dashed #ccc;
+ }
+#corp-import em{
+    font-weight: bold;
+ }
+ .opt-link{
+     padding-left: 6px;
+ }
+  .opt-link:hover{
+     color: #03447F;
+ }
+ .errorlist{
+     color: red;
+ }
+.action-invalid{
+    color: red;
+    background-color: yellow
+}
+.corp-index h2{
+    margin: 1em 0;
+}
+.corp-index table tr td{
+    padding: 3px;
+}
+.corp-index table tr td.header{
+    background-color: #e5ecf9;
+    border-bottom: 1px dotted #ccc;
+}
+
+.wrap-search-item{
+    border: 1px solid #CCC;
+}
+.clear-left{
+    clear: left;
+}
+.t-search .corpmember-left{
+    width: 65%;
+}
+.t-search .corpmember-right{
+    width: 35%;
+}
+.t-search .float-left{
+    float: left;
+}
+.t-search .corpmember-box-header{
+    font-size: 1.4em;
+    background-color: #f2f2f2;
+    padding: 3px;
+}
+.t-search .corpmember-box-body{
+    margin-bottom: 1em;
+    padding: 0 2em;
+    line-height: 1.5em;
+}
+.t-search .label{
+    font-weight: bold;
+}
+.t-search .search-form input[type="text"]{
+    width: 500px;
+}
+.t-search .search-form{
+    margin-bottom: 10px;
+}
+.disapproved .corpmember-box-header{
+    text-decoration: line-through;
+}
+.disapproved .meta, .disapproved{
+    background-color: #ccc !important;
+}
+
+/* search */
+.field-label{
+    font-weight: bold;
+    margin-right: 3px;
+}
+.indiv-join-link{
+    font-size: 1.2em;
+}
+.small{
+    font-size: 0.8em;
+}
+
+/* Notice logs */
+.notice-log-view {
+    background-color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    line-height: 20px;
+    }
+#log-records-wrap{
+    border-top: 1px dashed #ccc;
+    margin-top: 2em;
+    padding-top: 1em;
+}
+
+.notice-log-wrap {
+    background-color: white;
+    border: 1px solid #CCCCCC;
+    margin-bottom: 20px;
+    padding: 10px;
+    }
+.notice-log{
+    margin-left: 2em;
+    line-height: 20px;
+}
+.notice-log-form{
+    margin-bottom: 1em;
+}
+
+.pagination {
+    margin: 20px 0;
+}
+.pagination ul {
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+.pagination ul > li {
+    display: inline;
+}
+.pagination ul > li > a, .pagination ul > li > span {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #FFFFFF;
+    border-color: #DDDDDD;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px 1px 1px 0;
+    float: left;
+    line-height: 20px;
+    padding: 4px 12px;
+    text-decoration: none;
+}
+.pagination ul > li > a:hover, .pagination ul > li > a:focus, .pagination ul > .active > a, .pagination ul > .active > span {
+    background-color: #F5F5F5;
+}
+.pagination ul > .active > a, .pagination ul > .active > span {
+    color: #999999;
+    cursor: default;
+}
+.pagination ul > .disabled > span, .pagination ul > .disabled > a, .pagination ul > .disabled > a:hover, .pagination ul > .disabled > a:focus {
+    background-color: transparent;
+    color: #999999;
+    cursor: default;
+}
+.pagination ul > li:first-child > a, .pagination ul > li:first-child > span {
+    border-bottom-left-radius: 4px;
+    border-left-width: 1px;
+    border-top-left-radius: 4px;
+}
+.pagination ul > li:last-child > a, .pagination ul > li:last-child > span {
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.pagination-centered {
+    text-align: center;
+}
+.pagination-right {
+    text-align: right;
+}
+.pagination-large ul > li > a, .pagination-large ul > li > span {
+    font-size: 17.5px;
+    padding: 11px 19px;
+}
+.pagination-large ul > li:first-child > a, .pagination-large ul > li:first-child > span {
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
+}
+.pagination-large ul > li:last-child > a, .pagination-large ul > li:last-child > span {
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}
+.pagination-mini ul > li:first-child > a, .pagination-small ul > li:first-child > a, .pagination-mini ul > li:first-child > span, .pagination-small ul > li:first-child > span {
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+}
+.pagination-mini ul > li:last-child > a, .pagination-small ul > li:last-child > a, .pagination-mini ul > li:last-child > span, .pagination-small ul > li:last-child > span {
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.pagination-small ul > li > a, .pagination-small ul > li > span {
+    font-size: 11.9px;
+    padding: 2px 10px;
+}
+.pagination-mini ul > li > a, .pagination-mini ul > li > span {
+    font-size: 10.5px;
+    padding: 0 6px;
+}
+.pager {
+    list-style: none outside none;
+    margin: 20px 0;
+    text-align: center;
+}
+.pager:before, .pager:after {
+    content: "";
+    display: table;
+    line-height: 0;
+}
+.pager:after {
+    clear: both;
+}
+.pager li {
+    display: inline;
+}
+.pager li > a, .pager li > span {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    border-radius: 15px 15px 15px 15px;
+    display: inline-block;
+    padding: 5px 14px;
+}
+.pager li > a:hover, .pager li > a:focus {
+    background-color: #F5F5F5;
+    text-decoration: none;
+}
+.pager .next > a, .pager .next > span {
+    float: right;
+}
+.pager .previous > a, .pager .previous > span {
+    float: left;
+}
+.pager .disabled > a, .pager .disabled > a:hover, .pager .disabled > a:focus, .pager .disabled > span {
+    background-color: #FFFFFF;
+    color: #999999;
+    cursor: default;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+.label{
+	font-weight: normal;
+	font-size: 100%;
+}
+
+div.form-field{
+    margin-top: 10px !important;
+}
+
+.help-text{
+    font-style: italic;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    border-radius: 4px 4px 4px 4px;
+    color: #555555;
+    display: inline-block;
+    font-size: 14px;
+    /*margin-bottom: 10px;*/
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+input, textarea, .uneditable-input {
+    width: 206px;
+}
+textarea {
+    height: auto;
+}
+textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+}
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+}
+input[type="radio"], input[type="checkbox"] {
+    line-height: normal;
+    margin: 4px 0 0;
+}
+input[type="file"], input[type="image"], input[type="submit"], input[type="reset"], input[type="button"], input[type="radio"], input[type="checkbox"] {
+    width: auto;
+}
+select, input[type="file"] {
+    height: 30px;
+    line-height: 30px;
+}
+select {
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    width: 220px;
+}
+select[multiple], select[size] {
+    height: auto;
+}
+select:focus, input[type="file"]:focus, input[type="radio"]:focus, input[type="checkbox"]:focus {
+    outline: thin dotted #333333;
+    outline-offset: -2px;
+}
+.uneditable-input, .uneditable-textarea {
+    background-color: #FCFCFC;
+    border-color: #CCCCCC;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.024) inset;
+    color: #999999;
+    cursor: not-allowed;
+}
+.uneditable-input {
+    overflow: hidden;
+    white-space: nowrap;
+}
+.uneditable-textarea {
+    height: auto;
+    width: auto;
+}
+input:-moz-placeholder, textarea:-moz-placeholder {
+    color: #999999;
+}
+.radio, .checkbox {
+    min-height: 20px;
+    padding-left: 20px;
+}
+.radio input[type="radio"], .checkbox input[type="checkbox"] {
+    float: left;
+    margin-left: -20px;
+}
+.controls > .radio:first-child, .controls > .checkbox:first-child {
+    padding-top: 5px;
+}
+.radio.inline, .checkbox.inline {
+    display: inline-block;
+    margin-bottom: 0;
+    padding-top: 5px;
+    vertical-align: middle;
+}
+.radio.inline + .radio.inline, .checkbox.inline + .checkbox.inline {
+    margin-left: 10px;
+}
+.input-mini {
+    width: 60px;
+}
+.input-small {
+    width: 90px;
+}
+.input-medium {
+    width: 150px;
+}
+.input-large {
+    width: 210px;
+}
+.input-xlarge {
+    width: 270px;
+}
+.input-xxlarge {
+    width: 530px;
+}
+input[class*="span"], select[class*="span"], textarea[class*="span"], .uneditable-input[class*="span"], .row-fluid input[class*="span"], .row-fluid select[class*="span"], .row-fluid textarea[class*="span"], .row-fluid .uneditable-input[class*="span"] {
+    float: none;
+    margin-left: 0;
+}
+.input-append input[class*="span"], .input-append .uneditable-input[class*="span"], .input-prepend input[class*="span"], .input-prepend .uneditable-input[class*="span"], .row-fluid input[class*="span"], .row-fluid select[class*="span"], .row-fluid textarea[class*="span"], .row-fluid .uneditable-input[class*="span"], .row-fluid .input-prepend [class*="span"], .row-fluid .input-append [class*="span"] {
+    display: inline-block;
+}
+input, textarea, .uneditable-input {
+    margin-left: 0;
+}
+.controls-row [class*="span"] + [class*="span"] {
+    margin-left: 20px;
+}
+input.span12, textarea.span12, .uneditable-input.span12 {
+    width: 926px;
+}
+input.span11, textarea.span11, .uneditable-input.span11 {
+    width: 846px;
+}
+input.span10, textarea.span10, .uneditable-input.span10 {
+    width: 766px;
+}
+input.span9, textarea.span9, .uneditable-input.span9 {
+    width: 686px;
+}
+input.span8, textarea.span8, .uneditable-input.span8 {
+    width: 606px;
+}
+input.span7, textarea.span7, .uneditable-input.span7 {
+    width: 526px;
+}
+input.span6, textarea.span6, .uneditable-input.span6 {
+    width: 446px;
+}
+input.span5, textarea.span5, .uneditable-input.span5 {
+    width: 366px;
+}
+input.span4, textarea.span4, .uneditable-input.span4 {
+    width: 286px;
+}
+input.span3, textarea.span3, .uneditable-input.span3 {
+    width: 206px;
+}
+input.span2, textarea.span2, .uneditable-input.span2 {
+    width: 126px;
+}
+input.span1, textarea.span1, .uneditable-input.span1 {
+    width: 46px;
+}
+.controls-row {
+
+}
+.controls-row:before, .controls-row:after {
+    content: "";
+    display: table;
+    line-height: 0;
+}
+.controls-row:after {
+    clear: both;
+}
+.controls-row [class*="span"], .row-fluid .controls-row [class*="span"] {
+    float: left;
+}
+.controls-row .checkbox[class*="span"], .controls-row .radio[class*="span"] {
+    padding-top: 5px;
+}
+input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
+    background-color: #EEEEEE;
+    cursor: not-allowed;
+}
+input[type="radio"][disabled], input[type="checkbox"][disabled], input[type="radio"][readonly], input[type="checkbox"][readonly] {
+    background-color: transparent;
+}
+.control-group.warning .control-label, .control-group.warning .help-block, .control-group.warning .help-inline {
+    color: #C09853;
+}
+.control-group.warning .checkbox, .control-group.warning .radio, .control-group.warning input, .control-group.warning select, .control-group.warning textarea {
+    color: #C09853;
+}
+.control-group.warning input, .control-group.warning select, .control-group.warning textarea {
+    border-color: #C09853;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.control-group.warning input:focus, .control-group.warning select:focus, .control-group.warning textarea:focus {
+    border-color: #A47E3C;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 6px #DBC59E;
+}
+.control-group.warning .input-prepend .add-on, .control-group.warning .input-append .add-on {
+    background-color: #FCF8E3;
+    border-color: #C09853;
+    color: #C09853;
+}
+.control-group.error .control-label, .control-group.error .help-block, .control-group.error .help-inline {
+    color: #B94A48;
+}
+.control-group.error .checkbox, .control-group.error .radio, .control-group.error input, .control-group.error select, .control-group.error textarea {
+    color: #B94A48;
+}
+.control-group.error input, .control-group.error select, .control-group.error textarea {
+    border-color: #B94A48;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.control-group.error input:focus, .control-group.error select:focus, .control-group.error textarea:focus {
+    border-color: #953B39;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 6px #D59392;
+}
+.control-group.error .input-prepend .add-on, .control-group.error .input-append .add-on {
+    background-color: #F2DEDE;
+    border-color: #B94A48;
+    color: #B94A48;
+}
+.control-group.success .control-label, .control-group.success .help-block, .control-group.success .help-inline {
+    color: #468847;
+}
+.control-group.success .checkbox, .control-group.success .radio, .control-group.success input, .control-group.success select, .control-group.success textarea {
+    color: #468847;
+}
+.control-group.success input, .control-group.success select, .control-group.success textarea {
+    border-color: #468847;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.control-group.success input:focus, .control-group.success select:focus, .control-group.success textarea:focus {
+    border-color: #356635;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 6px #7ABA7B;
+}
+.control-group.success .input-prepend .add-on, .control-group.success .input-append .add-on {
+    background-color: #DFF0D8;
+    border-color: #468847;
+    color: #468847;
+}
+.control-group.info .control-label, .control-group.info .help-block, .control-group.info .help-inline {
+    color: #3A87AD;
+}
+.control-group.info .checkbox, .control-group.info .radio, .control-group.info input, .control-group.info select, .control-group.info textarea {
+    color: #3A87AD;
+}
+.control-group.info input, .control-group.info select, .control-group.info textarea {
+    border-color: #3A87AD;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+.control-group.info input:focus, .control-group.info select:focus, .control-group.info textarea:focus {
+    border-color: #2D6987;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 6px #7AB5D3;
+}
+.control-group.info .input-prepend .add-on, .control-group.info .input-append .add-on {
+    background-color: #D9EDF7;
+    border-color: #3A87AD;
+    color: #3A87AD;
+}
+input:focus:invalid, textarea:focus:invalid, select:focus:invalid {
+    border-color: #EE5F5B;
+    color: #B94A48;
+}
+input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus {
+    border-color: #E9322D;
+    box-shadow: 0 0 6px #F8B9B7;
+}
+

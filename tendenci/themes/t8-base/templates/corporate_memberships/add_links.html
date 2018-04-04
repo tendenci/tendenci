@@ -1,0 +1,32 @@
+
+{% if corp_apps %}
+    {% if app_count == 1 %}
+        {% for corp_app in corp_apps %}
+            <a href="{% url "corp_memb.add" corp_app.slug %}">{% trans "Add" %}</a>
+        {% endfor %}
+    {% else %}
+<link rel="stylesheet" href="{% static 'css/corporate_memberships-add_links.css' %}">
+     <div class="add-links-all-wrapper">
+         <a href="javascript:;" class="add-links-all-trigger">{% trans "Add" %} <small>&#9660;</small></a>
+         <div class="add-links-all-target">
+            <ul style="margin:0;">
+            {% for corp_app in corp_apps %}
+                <li>
+                <a href="{% url "corp_memb.add" corp_app.slug %}">{{ corp_app.name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+
+{% if app_count > 1 %}
+    <script type="text/javascript">
+    var moreAddLinks = new dropdown({
+        container:    'add-links-all-wrapper',
+        trigger:    'add-links-all-trigger',
+        target:        'add-links-all-target'
+    });
+    </script>
+{% endif %}

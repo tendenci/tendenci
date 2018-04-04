@@ -1,0 +1,20 @@
+{% extends PYBB_TEMPLATE|default:"forums_base.html" %}
+
+{% load pybb_tags %}
+
+{% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'pybb/style.css' %}" />
+    <!-- Feeds -->
+    <link rel="alternate" type="application/atom+xml" href="{% url 'pybb:feed_posts' %}" title="{% trans "Latest posts on forum" %}" >
+    <link rel="alternate" type="application/atom+xml" href="{% url 'pybb:feed_topics' %}" title="{% trans "Latest topics on forum" %}" >
+
+{% endblock %}
+
+{% block content %}
+    {% block breadcrumb %}
+        {% include "pybb/breadcrumb.html" %}
+    {% endblock %}
+{% endblock content %}

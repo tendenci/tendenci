@@ -1,0 +1,52 @@
+{% extends "memberships/base-wide.html" %}
+{% load bootstrap_pagination_tags %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Membership Search' %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberships-search.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans 'Membership Search' %}</h1>
+
+    {% membership_search %}
+
+    {% autopaginate members 10 %}
+
+    <div class="memberships-wrap">
+
+    {% for member in members %}
+        {% with member|get_object as membership %}
+            {% include 'memberships/search-result.html' %}
+        {% endwith %}
+    {% empty %}
+        <div>{% trans "0 Members Found" %}</div>
+    {% endfor %}
+    </div>
+
+    <div class="membership-side-panel">
+        <div class="type-set">
+            <div>{% trans "Membership Types" %}</div>
+            <ul>
+                {% for type in types %}
+                <li><a href="?type={{ type.pk }}">{{ type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div style="clear:both;"></div>
+    {% paginate %}
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base-print.html" %}
+
+{% block title %}{% trans "Current Members Roster" %} | {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Current Members Roster" %}</h1>
+
+<div id="member-roster-wrap">
+{% for member in members %}
+<div class="member-roster-membership">
+<a href="{{ member.user.profile.get_absolute_url }}">{{ member.user.first_name }} {{ member.user.last_name }}</a><br />
+<strong>{% trans "Member Number" %}:</strong> {{ member.member_number }}<br />
+<strong>{% trans "Membership Type" %}:</strong> {{ member.membership_type }}<br />
+{{ member.user.email }}<br />
+{% if member.user.profile.position_title %}
+    {{ member.user.profile.position_title }}<br />
+{% endif %}
+{% if member.user.profile.company %}
+    {{ member.user.profile.company }}<br />
+{% endif %}
+{% if member.user.profile.phone %}
+    <strong>{% trans "Phone" %}:</strong> {{ member.user.profile.phone }}<br />
+{% endif %}
+{% if member.user.profile.fax %}
+    <strong>{% trans "Fax" %}:</strong> {{ member.user.profile.fax }}<br />
+{% endif %}
+{% if member.user.profile.address %}
+    {{ member.user.profile.address }}<br />
+{% endif %}
+{% if member.user.profile.city %}
+    {{ member.user.profile.city }}<br />
+{% endif %}
+{% if member.user.profile.state %}
+    {{ member.user.profile.state }}<br />
+{% endif %}
+</div>
+{% empty %}
+<div>
+{% trans "No active members." %}
+</div>
+{% endfor %}
+</div>
+
+{% endblock content %}

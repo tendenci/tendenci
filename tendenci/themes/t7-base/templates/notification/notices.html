@@ -1,0 +1,60 @@
+{% extends "notification/base.html" %}
+{% load humanize %}
+{% load bootstrap_pagination_tags %}
+
+
+{% block title %}{% trans "Notifications" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/atom+xml" title="Notices Feed" href="{% url 'notification_feed_for_user' %}" />
+    <link rel="stylesheet" href="{% static 'css/notification.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+    <h2>{% trans "Notifications" %}</h2>
+
+    <div class="notice_settings">
+        {% url 'acct_email' as email_url %}
+        {% if user.email %}
+            <p>
+                {% trans "Primary email" %}:
+                <b>{{ user.email }}</b>
+                (<a href="{% url "profile.edit" user.pk %}#id_email">{% trans 'change' %}</a>)
+            </p>
+        {% else %}
+            <p>
+                <span class="warning">{% trans "Note" %}</span>:
+                {% blocktrans %}You do not have a verified email address to which notices can be sent. You can add one by going to <a href="{{ email_url }}">Account</a>.{% endblocktrans %}
+            </p>
+        {% endif %}
+
+        <form method="POST" action="">{% csrf_token %} {# doubt this easy to do in uni-form #}
+            <table class="notice_settings">
+                <tr>
+                    <th>{% trans "Notification Type" %}</th>
+                    {% for header in notice_settings.column_headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                {% for row in notice_settings.rows %}
+                    <tr>
+                        <td>{% trans row.notice_type.display %}<br/>
+                            <span class="notice_type_description">{% trans row.notice_type.description %}</span>
+                        </td>
+                        {% for cell in row.cells %}
+                            <td>
+                                <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %}/>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td><input type="submit" value="{% trans "Change" %}" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+{% endblock %}

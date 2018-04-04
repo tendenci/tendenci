@@ -1,0 +1,22 @@
+{% load base_filters %}
+{% load pagination_tags %}
+{% load staff_tags %}
+{% load perm_tags %}
+
+<div class="wrap-search-item">
+    <div class="search-item staff-item">
+        {% for img in staff.stafffile_set.all %}
+            {% if img.photo_type == "featured" %}
+            <div class="member-photo">
+                <a href="{{ staff.get_absolute_url }}"><img alt="Contact {{ staff.name }}" src="{% url "file" img.pk %}184x184" /></a>
+            </div>
+            {% endif %}
+        {% endfor %}
+        <div class="member-info">
+            <h4><a href="{{ staff.get_absolute_url }}">{{ staff.name|safe }}</a></h4>
+            <p>{% if staff.positions %}{% for position in staff.positions.all %}<strong>{{ position }}</strong><br />{% endfor %}{% endif %}
+            {% if staff.department %}{{ staff.department }}{% endif %}</p>
+        </div>
+    </div><!-- /staff-item -->
+    {% include 'staff/meta.html' %}
+</div>

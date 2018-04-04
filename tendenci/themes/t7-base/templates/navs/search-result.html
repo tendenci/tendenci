@@ -1,0 +1,14 @@
+{% load nav_tags %}
+<div class="wrap-search-item">
+    <div class="search-item nav-search-item">
+        <div class="quick-options">
+        {% nav_options request.user nav %}
+        </div>
+        <h2><a href="{{ nav.get_absolute_url }}">{% blocktrans with t=nav.title %}{{ t }}{% endblocktrans %} <span>ID: {{ nav.pk }}</span></a></h2>
+        <div class="item-content">
+            <div class="search-text">
+                <p>{% blocktrans with d=nav.description %}{{ d }}{% endblocktrans %}</p>
+            </div>
+        </div>
+    </div>
+</div>

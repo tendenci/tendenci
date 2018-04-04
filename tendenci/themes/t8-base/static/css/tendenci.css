@@ -1,0 +1,462 @@
+
+/* Bootstrap overrides */
+.navbar-nav > li.dropup > .dropdown-menu {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+
+    -moz-border-bottom-left-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    -moz-border-bottom-right-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+
+/* Common megamenu styles */
+.t-megamenu {
+    min-height: 30px;
+    z-index: 1020 !important;
+}
+
+.t-megamenu a {
+    text-transform: none;
+}
+
+.t-megamenu .nav-logo {
+    display: inline-block;
+    margin: 3px 0;
+    vertical-align: middle;
+}
+
+.t-megamenu .navbar-brand {
+    height: 100%;
+    padding: 0 15px;
+}
+
+.t-megamenu-toggle {
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding: 5px 10px;
+}
+
+.t-megamenu .dropdown-toggle,
+#t-megamenu-logout {
+    padding: 5px 15px;
+}
+
+#t-megamenu-logout > .glyph {
+    display: inline-block;
+    margin-right: 9px;
+    line-height: 14px;
+}
+
+#t-megamenu-search-form {
+    margin: 2px 0;
+}
+
+#t-megamenu-search-form-input {
+    height: 26px;
+}
+
+.t-megamenu .t-megamenu-navbar-link {
+    padding: 5px 15px;
+}
+
+.t-megamenu .glyph {
+    margin-right: 10px;
+}
+
+.t-megamenu .nav-label + .caret {
+    margin-left: 4px;
+}
+
+.t-megamenu .fa-globe {
+    font-size: 16px;
+    margin: 0 10px 0 0;
+    padding: 0 1px;
+    vertical-align: middle;
+}
+
+.t-megamenu .nav-label {
+    display: inline-block;
+    line-height: 16px;          /* make sure this is the same height as the .nav-icon */
+}
+
+.t-megamenu .content-item {
+    margin-bottom: 5px;
+}
+
+.t-megamenu .list-unstyled > .content-item:last-child {
+    margin: 0;
+}
+
+.t-megamenu .yamm-content {
+    padding: 0 15px;
+}
+
+#t-megamenu-lang-dd {
+    height: 500px;
+    overflow-y: scroll;
+}
+
+/* Make dropdown scrollable if too long */
+.t-megamenu .dropdown-menu {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+
+/* User megamenu */
+
+
+/* Metadata */
+.t-meta-editor-bar {
+    background-color: #eeffdd;
+    border: 0;
+
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+.t-search-view .t-meta-editor-bar {
+    margin: 0 -15px;
+
+    -moz-border-bottom-left-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+
+    -moz-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.t-meta-editor-bar > .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.t-meta-perm-status {
+    margin-left: -15px;
+}
+
+.t-meta-editor-bar .t-meta-options-links > li a {
+    color: #0066cc;
+}
+
+.t-meta-editor-bar .t-meta-options-links > li a:hover {
+    color: #002266;
+}
+
+.t-meta-editor-bar .t-meta-options-links > li .t-meta-delete-link,
+.t-meta-editor-td .t-meta-options-links > li .t-meta-delete-link {
+    color: #cc0000;
+}
+
+.t-meta-editor-bar .t-meta-options-links > li .t-meta-delete-link:hover,
+.t-meta-editor-td .t-meta-options-links > li .t-meta-delete-link:hover {
+    color: #880000;
+}
+
+.t-perm,
+.t-status,
+.t-role,
+.t-expires {
+    display: block;
+    font-weight: bold;
+    padding: 15px;
+}
+
+.t-perm-public {
+    color: green;
+}
+
+.t-perm-users,
+.t-perm-members,
+.t-perm-groups {
+    color: darkblue;
+}
+
+.t-perm-private {
+    color: red;
+}
+
+.t-status-active {
+    color: green;
+}
+
+.t-status-pending,
+.t-status-draft {
+    color: orange;
+}
+
+.t-status-inactive,
+.t-status-expired {
+    color: red;
+}
+
+.t-role-superuser {
+    color: #d32e2e;
+}
+
+.t-role-staff {
+    color: #e5600d;
+}
+
+.t-expires-active {
+    color: green;
+}
+
+.t-expires-inactive {
+    color: red;
+}
+
+
+/* Search Results */
+.t-auth-admin-loggedin .t-search-result-footer {
+    padding-bottom: 0;
+}
+
+/* form */
+.form-horizontal .control-label {
+	  text-align: right !important;
+}
+.t .form-horizontal .form-group{
+		margin-bottom: 8px !important;
+}
+.t-jobs-search-result .fa-star{
+	color: #FFD700;
+}
+
+
+/* REPORTS
+============= */
+.table.table-tendenci-reports>thead>tr>td,
+.table.table-tendenci-reports>tbody>tr>td,
+.table.table-tendenci-reports>tfoot>tr>td {
+  border-top: 1px solid #cccccc !important;
+}
+.table.table-tendenci-reports th,
+.table.table-tendenci-reports thead {
+  border-bottom: 2px solid #cccccc;
+  background: #cccccc;
+  font-weight: bold;
+}
+.table.table-tendenci-reports>tfoot,
+.table.table-tendenci-reports tf {
+  background: #DDDDDD;
+  font-weight: bold;
+}
+.table.table-tendenci-reports {
+  border: 1px solid #cccccc;
+}
+#id_days {
+  border: 2px solid #cccccc;
+  height: 40px;
+}
+.similar_group .group {
+  border: 1px solid #cccccc;
+}
+table.events-summary-chart {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+/* MEMBERSHIP IMPORT
+===================== */
+#upload-form-wrap {
+  border-top: 1px solid #ccc;
+}
+
+/* INVOICES
+============== */
+#ui-datepicker-div {
+  position: absolute;
+  top: 266px;
+  left: 112.406px;
+  z-index: 1;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #ccc;
+}
+#id_variance {
+  margin-bottom: 10px;
+}
+#id_variance_notes,
+#id_admin_notes {
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+}
+div.invoice-admin-notes {
+  border: 0;
+}
+
+/* ACCOUNTING
+================ */
+#offline-payment-form-wrap #id_amount {
+  margin-bottom: 10px !important;
+}
+#offline-payment-form-wrap #id_payment_method {
+  margin-bottom: 10px !important;
+}
+
+/* NEWSLETTERS MODULE (AND REPORTS FORMS)
+===================== */
+#id_group,
+#id_member_only {
+  margin-left: 10px;
+}
+#t-newsletters .form-control {
+  height: auto;
+}
+.newsletter-label {
+  padding-top: 10px;
+}
+#id_subject{
+  margin-top: 10px;
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+#id_actionname {
+  width: 350px;
+  padding-left: 5px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+/* commenting it out ... it contradicts to line 224.  */
+/*.form-horizontal .control-label {
+  text-align: left !important;
+}*/
+
+/* INPUT NO WIDTH */
+#id_group,
+#id_event_start_dt_month,
+#id_event_start_dt_day,
+#id_event_start_dt_year,
+#id_event_end_dt_month,
+#id_event_end_dt_day,
+#id_event_end_dt_year,
+#id_articles_days,
+#id_news_days,
+#id_jobs_days,
+#id_pages_days,
+#id_directories_days,
+#id_resumes_days,
+#id_send_to_email2,
+#id_actionname,
+#id_actiontype,
+#id_membership_type,
+#id_membership_status,
+#id_start_date,
+#id_end_date,
+#id_start_dt,
+#id_end_dt,
+#id_start_amount,
+#id_end_amount,
+#id_invoice_type,
+#id_last_name,
+#id_tendered,
+#id_balance,
+#id_search_criteria,
+#id_search_text,
+#id_search_method,
+#id_amount,
+#id_submit_dt_0,
+#id_submit_dt_1,
+#id_variance,
+#id_event_id,
+#id_ip,
+#id_user_id,
+#id_session_id,
+#id_start_dt_0,
+#id_start_dt_1,
+#id_end_dt_0,
+#id_end_dt_1,
+#id_request_method,
+#id_user_name,
+#id_user_ip_address,
+#id_object_id,
+#id_application,
+#id_action,
+#id_password,
+#id_override,
+#id_key,
+#id_export_status_detail,
+#id_export_fields,
+#id_export_type,
+#id_group_id,
+#id_type,
+#id_invoice_display,
+#id_invoice_status,
+#id_invoice_membership_filter,
+#id_report,
+#id_range_start_dt,
+#id_range_end_dt,
+#id_output_type,
+#id_file_type {
+  height: 40px;
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+}
+#id_event_id,
+#id_ip,
+#id_user_id,
+#id_session_id,
+#id_start_dt_0,
+#id_start_dt_1,
+#id_end_dt_0,
+#id_end_dt_1,
+#id_user_name,
+#id_user_ip_address,
+#id_object_id,
+#id_password,
+#id_export_status_detail,
+#id_export_fields,
+#id_export_type,
+#id_group_id {
+  margin-bottom: 10px;
+}
+/* INPUT 100 WIDTH */
+#id_jump_links,
+#id_events,
+#id_articles,
+#id_news,
+#id_jobs,
+#id_pages,
+#id_directories,
+#id_resumes {
+  height: 40px;
+  border: 2px solid #cccccc;
+  width: 100%;
+}
+#id_file_type {
+  margin-top: -3px;
+}
+table.table.table-responsive.bottomless {
+  margin-bottom: 0;
+}
+ul#id_format {
+  list-style: none;
+  padding-left: 0;
+}
+#t-newsletters .template_list {
+  margin-left: 1.5em;
+}
+input#id_format_0,
+input#id_format_1 {
+  margin-right: 10px;
+}
+.errorlist {
+  padding: 10px;
+  color: #a94442;
+  list-style: none;
+  background: #f2dede;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
+  margin: 10px 0;
+}

@@ -1,0 +1,83 @@
+{% extends "social_services/base-wide.html" %}
+{% load pagination_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Relief Areas' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+<link rel="stylesheet" href="{% static 'css/jquery.jqplot.min.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="social-services-wrap">
+    <h1 class="capitalize">{% trans "relief assessment areas" %}</h1>
+
+    <div class="clearfix">
+    <div id="relief-chart" style="height:400px;width:100%; "></div>
+    </div>
+
+    {% if lon and lat %}
+    <form action='' method='get'>
+        <p>Showing relief areas within
+        <select name="d">
+            <option value="1" {% if request.GET.d == "1" %}selected{% endif %}>1</option>
+            <option value="5" {% if request.GET.d == "5" %}selected{% endif %}>5</option>
+            <option value="20" {% if request.GET.d == "20" %}selected{% endif %}>20</option>
+            <option value="100" {% if request.GET.d == "100" %}selected{% endif %}>100</option>
+        </select>
+        miles from the location at Longitude = {{ lon }} : Latitude = {{ lat }}
+        <input type="hidden" value="{{ lon }}" name="lon"/>
+        <input type="hidden" value="{{ lat }}" name="lat"/>
+        <input type="submit" value="Change"/></p>
+    </form>
+    {% else %}
+        <p>Showing all relief areas</p>
+    {% endif %}
+
+    {% autopaginate relief_areas 20 %}
+
+    <div class="social-services-list-wrap">
+    {% for area in relief_areas %}
+        <div class="relief-area">
+            <h3>{% trans "Relief assessment report from " %} <a href="{{ area.user.profile.get_absolute_url }}">{{ area.user.profile.get_name }}</a></h3>
+            <p class="capitalize">{% trans "disaster address" %}: {{ area.get_address }}</p>
+            <p class="capitalize"><a href="{{ area.get_absolute_url }}">{% trans "view submission details" %}</a></p>
+        </div>
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/jquery.jqplot.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jqplot.pieRenderer.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  var values = {{ stats }};
+  var legend = ['Social Security Administration','Department Human Services','Children Needs','Toiletries','Employment','Training','Food','Gas','Prescription Care']
+  var data = []
+  for (i=0; i<values.length; i++) {
+    data.push([legend[i], values[i]])
+  }
+  console.log(data)
+  var plot1 = jQuery.jqplot ('relief-chart', [data],
+    { title: 'Services Needed',
+      seriesDefaults: {
+        renderer: jQuery.jqplot.PieRenderer,
+        rendererOptions: {
+          fill: false,
+          sliceMargin: 10,
+          lineWidth: 10,
+          showDataLabels: true
+        }
+      },
+      legend: { show:true, location: 'e' }
+    }
+  );
+});
+</script>
+{% endblock %}

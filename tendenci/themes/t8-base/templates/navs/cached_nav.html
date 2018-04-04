@@ -1,0 +1,18 @@
+{% load nav_tags %}
+
+
+{% if nav_id %}
+    {% if cached %}
+        {{ cached|safe }}
+    {% else %}
+        {% load_nav nav_id show_title %}
+    {% endif %}
+
+    {% if user.profile.is_superuser %}
+        <div class="t-admin-inline">
+            <div class="t-admin-inline-links">
+                <a href="{% url 'navs.edit_items' nav_id %}?next={{ request.path }}" title="{% trans 'Edit Nav' %}" class="t-admin-inline-link t-admin-inline-edit-link">{% trans "Edit Nav" %}</a>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

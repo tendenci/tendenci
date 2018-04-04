@@ -1,0 +1,25 @@
+{% extends "site_base.html" %}
+
+
+{% block title %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/stories.css' %}">
+{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "stories/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

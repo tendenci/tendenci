@@ -49,7 +49,7 @@ class Email(TendenciBaseModel):
     def get_absolute_url(self):
         return reverse('email.view', args=[self.pk])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.subject
 
     @staticmethod

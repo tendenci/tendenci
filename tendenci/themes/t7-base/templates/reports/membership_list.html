@@ -1,0 +1,182 @@
+{% extends "reports/base.html" %}
+{% load bootstrap_pagination_tags %}
+
+{% block content %}
+
+{% if active %}
+<div class="page-header">
+  <h1>{% trans "Active Memberships Report" %}</h1>
+</div>
+{% if days == 0 %}
+<p>{% trans "Lists all memberships that are still active." %}</p>
+{% else %}
+{% if days == 1826 %}
+<p>{% trans "Currently showing members who joined in the last 5 years." %}</p>
+{% else %}
+{% blocktrans with days=days %}
+<p>Currently showing members who joined in the last {{ days }} days.</p>
+{% endblocktrans %}
+{% endif %}
+{% endif %}
+
+<form class="search-form form-inline pull-right" action="{% url "reports-active-members" %}" method="get">
+  <div class="form-group">
+    <label for="id_days" class="control-label">{% trans "Filter by join date" %}:</label>
+    <select class="form-control" name="days" id="id_days" onchange="this.form.submit();">
+      <option value="" selected="selected">-----------</option>
+      <option value="30">{% trans 'Last 30 days' %}</option>
+      <option value="60">{% trans 'Last 60 days' %}</option>
+      <option value="90">{% trans 'Last 90 days' %}</option>
+      <option value="180">{% trans 'Last 180 days' %}</option>
+      <option value="365">{% trans 'Last 365 days' %}</option>
+      <option value="1826">{% trans 'Last 5 years' %}</option>
+    </select>
+  </div>
+</form>
+
+{% else %}
+<div class="page-header">
+  <h1>{% trans "Expired Memberships Report" %}</h1>
+</div>
+{% if days == 0 %}
+{% trans "Lists all memberships that have expired.  Grace periods are not included." %}
+{% else %}
+{% if days == 1826 %}
+{% trans "Currently showing members who expired in the last 5 years." %}
+{% else %}
+{% blocktrans with days=days %}
+Currently showing members who expired in the last {{ days }} days.
+{% endblocktrans %}
+{% endif %}
+{% endif %}
+<form class="search-form form-inline pull-right" action="{% url "reports-expired-members" %}" method="get">
+  <label class="control-label" for="id_days">{% trans "Filter by expire date" %}:</label>
+  <select class="form-control" name="days" id="id_days" onchange="this.form.submit();">
+    <option value="" selected="selected">-----------</option>
+    <option value="30">{% trans 'Last 30 days' %}</option>
+    <option value="60">{% trans 'Last 60 days' %}</option>
+    <option value="90">{% trans 'Last 90 days' %}</option>
+    <option value="180">{% trans 'Last 180 days' %}</option>
+    <option value="365">{% trans 'Last 365 days' %}</option>
+    <option value="1826">{% trans 'Last 5 years' %}</option>
+  </select>
+</form>
+{% endif %}
+
+
+
+<p><em>{{ mems|length }} {% trans "Members listed" %}</em></p>
+{% autopaginate mems 50 %}
+
+{% if active %}
+<p><a class="btn btn-default" href="{% url "reports-active-members" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
+  {% trans 'Download CSV File' %}</a></p>
+{% else %}
+<p><a class="btn btn-default" href="{% url "reports-expired-members" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}">
+  {% trans 'Download CSV File' %}</a></p>
+{% endif %}
+
+<div>
+  <table class="table table-tendenci-reports">
+    <tr>
+      {% if active %}
+      <th></th>
+      <th>
+        {% trans "Username" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=username" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-username" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Fullname" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=full_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-full_name" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Email" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=email" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-email" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Type" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=type" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-type" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Join" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=subscription" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-subscription" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Expiration" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=expiration" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-expiration" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Invoice" %}&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=invoice" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-active-members" %}?sort=-invoice" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+
+      {% else %}
+      <!-- EXPIRED REPORT -->
+      <th></th>
+      <th>
+        {% trans "Username" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=username" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-username" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Fullname" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=full_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-full_name" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Email" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=email" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-email" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Type" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=type" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-type" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Join" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=subscription" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-subscription" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Expiration" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=expiration" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-expiration" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      <th>
+        {% trans "Invoice" %}&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=invoice" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="{% url "reports-expired-members" %}?sort=-invoice" ><i class="fa fa-arrow-down"></i></a>
+      </th>
+      {% endif %}
+    </tr>
+    {% for mem in mems %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'profile' mem.user.username %}">{{ mem.user.username }}</a></td>
+      <td>{{ mem.user.get_full_name }}</td>
+      <td><a href="mailto:{{ mem.user.email }}">{{ mem.user.email }}</td>
+        <td>{{ mem.membership_type }}</td>
+        <td>{{ mem.join_dt|date:"N j, Y" }}</td>
+        <td>{{ mem.expire_dt|date:"N j, Y" }}</td>
+        <td>
+          {% if mem.get_invoice %}
+          <a href="{% url "invoice.view" mem.get_invoice.pk %}">
+            {{ mem.get_invoice.pk }}</a>
+          {% endif %}
+        </td>
+        </tr>
+        {% endfor %}
+        </table>
+        </div>
+
+        {% paginate %}
+        <br /><br />
+        {% endblock content %}

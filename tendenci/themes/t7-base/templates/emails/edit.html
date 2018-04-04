@@ -1,0 +1,115 @@
+{% extends "emails/base.html" %}
+{% load email_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'E-mail Record '%}{% if email.id %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+<style>
+  .form-horizontal .control-label {
+  text-align: right !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{% trans 'E-mail Record '%}{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}</h1>
+  </div>
+
+  <form class="form-horizontal" method="post" action=".">{% csrf_token %}
+    <div class="form-group">
+      {% if form.content_type.errors %}
+      {{ form.content_type.errors }}
+      {% endif %}
+      <label for="id_content_type" class="col-sm-3 control-label">{% trans 'Content Type'%} :</label>
+      <div class="col-sm-6">
+        {{ form.content_type }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.subject.errors %}
+      {{ form.subject.errors }}
+      {% endif %}
+      <label for="id_subject" class="col-sm-3 control-label">{% trans 'Subject'%} :</label>
+      <div class="col-sm-8">
+        {{ form.subject }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.body.errors %}
+      {{ form.body.errors }}
+      {% endif %}
+      <div class="col-sm-11">
+        {{ form.body }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.sender.errors %}
+      {{ form.sender.errors }}
+      {% endif %}
+      <label for="id_sender" class="col-sm-3 control-label">{% trans 'Sender'%} :</label>
+      <div class="col-sm-7">
+        {{ form.sender }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.sender_display.errors %}
+      {{ form.sender_display.errors }}
+      {% endif %}
+      <label for="id_sender_display" class="col-sm-3 control-label">{% trans 'Sender Display'%} :</label>
+      <div class="col-sm-6">
+        {{ form.sender_display }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.reply_to.errors %}
+      {{ form.reply_to.errors }}
+      {% endif %}
+      <label for="id_reply_to" class="col-sm-3 control-label">{% trans 'Reply To'%} :</label>
+      <div class="col-sm-7">
+        {{ form.reply_to }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.recipient.errors %}
+      {{ form.recipient.errors }}
+      {% endif %}
+      <label for="id_recipient" class="col-sm-3 control-label">{% trans 'Recipient'%} :</label>
+      <div class="col-sm-7">
+        {{ form.recipient }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {% if form.status_detail.errors %}
+      {{ form.status_detail.errors }}
+      {% endif %}
+      <label for="id_status_detail" class="col-sm-3 control-label">{% trans 'Status Detail'%} :</label>
+      <div class="col-sm-5">
+        {{ form.status_detail }}
+      </div>
+    </div>
+
+
+    <input type="hidden" name="next" value="{{ next }}" />
+    <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Save' %}" />
+  </form>
+  <br /><br />
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{{ form.media }}
+{% endblock %}

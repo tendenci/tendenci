@@ -1,0 +1,37 @@
+table {
+    margin-top: 5px;
+    white-space: nowrap;
+    border: 1px solid silver;
+}
+
+tr.header {
+    background-color: #DDD;
+    text-align: left;
+}
+
+tr.even {
+    background-color: #EEE;
+    border: 1px solid silver;
+    border-top: 0;
+    border-bottom: 0;
+}
+
+tr td {
+    padding: 10px;
+}
+.action-insert{
+    color: #005FCF;
+}
+.action-update{
+    color: green;
+}
+.action-skip{
+    color: purple;
+}
+.invalid-msg{
+    background-color: yellow;
+}
+.action-invalid{
+    color: red;
+    background-color: yellow
+}

@@ -1,0 +1,171 @@
+{% load invoice_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</title>
+<style>
+td.td-right {
+    text-align: right;
+}
+td{
+    padding: 3px;
+    width: 40%;
+}
+.page-header {
+    padding-bottom: 9px;
+    margin: 40px 0 20px;
+    border-bottom: 1px solid #eee;
+}
+address{
+    font-style: italic;
+}
+div.invoice-meta{
+
+}
+.table.table-tendenci-reports {
+    border: 1px solid #cccccc;
+}
+.invoice-table-header{
+    font-style: bold;
+}
+#invoice-meta-logo{
+    text-align: right;
+}
+</style>
+</head>
+
+<body>
+<div class="t">
+
+
+  <div class="page-header">
+    <h1>{% if obj_name %}{{ obj_name|capfirst}} {% endif %} {% trans "Invoice" %}</h1>
+  </div>
+  <table>
+      <tr>
+          <td style="width: 50%;">
+            <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</div>
+          {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
+          <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
+          {% endif %}
+          </td>
+          <td class="td-right" style="width: 30%;">
+             {% if MODULE_INVOICES_INVOICELOGO %}
+              <div id="invoice-meta-logo print-view">
+                <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
+              </div>
+              {% endif %}
+          </td>
+      </tr>
+  </table>
+    <br />
+  {% with invoice.get_object as object %}
+  <div class="invoice-meta">
+    <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td>{% trans "Invoice #" %}</td>
+        <td class="td-right">{{ invoice.id }}</td>
+      </tr>
+      {% if object %}
+      <tr>
+        <td>{% trans "Invoice For" %}</td>
+        <td class="td-right">
+          {% if object.event.pk %}
+          <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
+          <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
+          {% else %}
+          {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+          <br>
+          {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
+          {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+          {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td>{% trans "Invoice Date" %}</td>
+        <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Invoice Status" %}</td>
+        {% if invoice.is_tendered %}
+        <td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}{% endblocktrans %}</td>
+        {% else %}
+        <td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
+        {% endif %}
+      </tr>
+      <tr class="invoice-meta-amount">
+        <td><strong>{% trans "Invoice Amount" %}</strong></td>
+        <td class="td-right"><strong>{{ invoice.total|format_currency }}</strong></td>
+      </tr>
+    </table>
+  </div>
+  {% endwith %}
+<p>&nbsp;</p>
+  <div class="invoice-table">
+    <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="invoice-table-header"><strong>{% trans 'Description' %}</strong></td>
+        <td class="td-right"><strong>{% trans 'Line Amount' %}</strong></td>
+      </tr>
+      {% invoice_object_display request invoice %}
+    </table>
+  </div>
+
+  <div class="invoice-total-wrap">
+    <div class="invoice-total">
+      <table class="table">
+  {% if payment_method %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Method:" %} &nbsp;&nbsp;&nbsp;{{ payment_method }}</td>
+  </tr>
+  {% endif%}
+  {% if invoice.variance and invoice.variance != 0 %}
+  {% if invoice.total != tmp_total %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Adjustment:" %} &nbsp;&nbsp;&nbsp;{{ invoice.variance|format_currency }}</td>
+  </tr>
+  {% endif%}
+  {% endif%}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Sub Total:" %} &nbsp;&nbsp;&nbsp;{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
+  </tr>
+  {% if invoice.discount_amount > 0 %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Discount Applied (discount code" %} &nbsp;&nbsp;&nbsp;-{{ invoice.discount_amount|format_currency }}</td>
+  </tr>
+  {% endif %}
+  {% if invoice.tax %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Tax:" %} &nbsp;&nbsp;&nbsp;{{ invoice.tax|format_currency }}</td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Total:" %} &nbsp;&nbsp;&nbsp;{{ invoice.total|format_currency }}</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="td-right">{% trans "Payments/Credits:" %} &nbsp;&nbsp;&nbsp;{{ invoice.payments_credits|format_currency }}</td>
+  </tr>
+  <tr class="invoice-total-balance">
+    <td></td>
+    <td class="td-right"><strong>{% trans "Balance due:" %} &nbsp;&nbsp;&nbsp;{{ invoice.balance|format_currency }}</strong></td>
+  </tr>
+</table>
+    </div>
+  </div>
+  <div style="clear: both"></div>
+</div>
+</body>
+
+</html>

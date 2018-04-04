@@ -1,0 +1,96 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user speakers.add_speaker as can_add_speaker %}
+
+{% if app_object %}
+    {% has_perm user speakers.view_speaker app_object as can_view_speaker %}
+    {% has_perm user speakers.change_speaker app_object as can_edit_speaker %}
+    {% has_perm user speakers.delete_speaker app_object as can_delete_speaker %}
+{% else %}
+    {% has_perm user speakers.view_speaker as can_view_speaker %}
+    {% has_perm user speakers.change_speaker as can_edit_speaker %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans 'All Speakers' %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'speakers' %}">{% trans 'Settings' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'speakers' %}">{% trans 'Search' %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_speaker %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:speakers_speaker_add' %}">{% trans "Add" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'speaker.feed' %}">{% trans "Feed" %}</a>
+                        </span>
+                    </li>
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_speaker or can_edit_speaker %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans 'This Speaker' %}</span>
+                            </li>
+
+                            {% if can_view_speaker %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans 'View Speaker' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_speaker %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:speakers_speaker_change' app_object.pk %}">{% trans 'Edit Speaker' %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_speaker %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'admin:speakers_speaker_delete' app_object.pk %}">{% trans "Delete Speaker" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

@@ -1,0 +1,11 @@
+{% extends "django_admin_bootstrapped:admin/change_form.html" %}
+{% load admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+
+{% block object-tools-items %}
+<li>
+    {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+    <a role="button" href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+</li>
+<li><a href="{% url 'admin:corporate_membership_notice.admin_clone' original.pk %}">{% trans "Clone this notice" %}</a></li>
+{% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+{% endblock %}

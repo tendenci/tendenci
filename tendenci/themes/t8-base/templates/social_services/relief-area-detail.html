@@ -1,0 +1,17 @@
+{% extends "social_services/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans 'Relief Assessment Detail' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/social_services.css' %}" />
+{% endblock %}
+
+{% block content %}
+<h1 class="capitalize">{% trans "relief assessment detail" %}</h1>
+<div class="forms">
+    {{ form|styled_form }}
+</div>
+
+{% endblock %}

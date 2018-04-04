@@ -1,0 +1,78 @@
+{% extends "base-print.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+<link rel="stylesheet" href="{% static 'bootstrap3/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/datepicker.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>{% trans "New and Renewing Members YTD" %} {{ year_selected }}</h1>
+<div class="mems-wrap stat-table">
+
+<table>
+    <tr>
+        <th>{% trans "Members" %}</th>
+        {% for month in months %}
+            <th>{{ month.name }}</th>
+        {% endfor %}
+        <th>{% trans "Total" %}</th>
+    </tr>
+    <tr>
+        <td>{% trans "New" %}</td>
+        {% for month in months %}
+            <td>{{ month.new_mems }}</td>
+        {% endfor %}
+        <td>{{ total_new }}
+    </tr>
+    <tr>
+        <td>{% trans "Renewing" %}</td>
+        {% for month in months %}
+            <td>{{ month.renew_mems }}</td>
+        {% endfor %}
+        <td>{{ total_renew }}
+    </tr>
+    <tr>
+        <td>{% trans "Total Active" %}</td>
+        {% for month in months %}
+            <td>{{ month.total_active }}</td>
+        {% endfor %}
+        <td></td>
+    </tr>
+</table>
+</div>
+
+<div id="chart_div">
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Months');
+      data.addColumn('number', 'New');
+      data.addColumn('number', 'Renewing');
+      {% if not exclude_total %}
+      data.addColumn('number', 'Total Active');
+      {% endif %}
+      data.addRows([
+        {% for  month in months %}
+          ['{{ month.name }}', {{ month.new_mems }},
+          {{ month.renew_mems }}{% if not exclude_total %}, {{ month.total_active }}{% endif %}],
+        {% endfor %}
+      ]);
+      var options = {
+        width: 1000, height: 500,
+        hAxis: {title: 'Month'},
+        vAxis: {title: '# Members'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+  </script>
+</div>
+
+{% endblock content %}

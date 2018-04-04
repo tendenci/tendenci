@@ -64,7 +64,7 @@ def new(request, template_name="dashboard/new.html"):
                                                name='themeredirect')
         redirect_setting.set_value(False)
         redirect_setting.save()
-        return redirect('tendenci.apps.theme_editor.views.theme_picker')
+        return redirect('theme_editor.picker')
 
     profile_redirect = get_setting('site', 'global', 'profile_redirect')
     if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:

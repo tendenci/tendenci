@@ -1,0 +1,58 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user entities.add_entity as can_add_entity %}
+
+{% if nav_object %}
+    {% has_perm user entities.view_entity nav_object as can_view_entity %}
+    {% has_perm user entities.change_entity nav_object as can_edit_entity %}
+{% else %}
+    {% has_perm user entities.view_entity as can_view_entity %}
+    {% has_perm user entities.change_entity as can_edit_entity %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<div id="showh">
+    <ul id="primary">
+
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li>
+        <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">
+        <img border="0" src="{% static 'images/tendenci34x15.gif' %}"
+        alt="{% trans 'Tendenci User Home' %}" title="{% trans 'Tendenci' %}" align="top" width="34" height="15"></a>
+    </li>
+    {% endif %}
+
+    <li>
+        <span>{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %}</span>
+        <ul id="secondary">
+            <li><a href="{% url "entities" %}">{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %}:</a></li>
+            {% if nav_object %}
+                {% if can_view_entity %}
+                <li><a href="{% url 'entity' nav_object.pk %}">{% trans "View" %}</a></li>
+                {% endif %}
+                {% if can_edit_entity %}
+                <li><a href="{% url "entity.edit" nav_object.pk %}">{% trans "Edit" %}</a></li>
+                {% endif %}
+            {% endif %}
+            <li><a href="{% url "entity.search" %}">{% trans "Search" %}</a></li>
+            {% if can_add_entity %}
+            <li><a href="{% url "entity.add" %}">{% trans "Add" %}</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'auth_logout' %}">{% trans "Log Off" %}</a></li>
+            {% endif %}
+        </ul>
+
+    </li>
+    {% if MODULE_USERS_ENABLED %}
+    <li><a href="{% url "profile.search" %}">{% firstof MODULE_USERS_LABEL trans 'Users' %}</a></li>
+    {% endif %}
+    {% if MODULE_LOCATIONS_ENABLED %}
+    <li><a href="{% url "locations" %}">{% firstof MODULE_LOCATIONS_LABEL trans 'Locations' %}</a></li>
+    {% endif %}
+    </ul>
+</div>
+{% endif %}

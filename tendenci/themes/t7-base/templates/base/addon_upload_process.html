@@ -1,0 +1,35 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Module Upload" %}</h1>
+    <img src="{% static 'images/loadingicon.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}"/>
+    <p>{% trans "Uploading module. Please wait..." %}</p>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function() {
+        var status_check = function(){
+            $.ajax({
+                url: "{% url "addon.upload.check" sid %}",
+                success: function(status_data){
+                    if (status_data == 'True') {
+                        location.reload();
+                    }
+                }
+            });
+        }
+        status_check();
+        status_check_intval = setInterval(function() {
+            status_check();  // check every 5 seconds
+        }, 5000);
+    });
+</script>
+{% endblock %}

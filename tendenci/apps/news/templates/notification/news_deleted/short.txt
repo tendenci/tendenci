@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.headline as objhead %}News ({{ objhead }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

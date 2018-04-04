@@ -1,0 +1,102 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Minimal Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Minimal Add" %}</h1>
+    <p>{% trans 'Adding events are subject to the approval of the Administrators.' %}</p>
+
+    <div class="event-wrap">
+        <form class="form-horizontal" action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ form|styled_form }}
+            {{ form_place|styled_form }}
+            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
+    <script type="text/javascript" src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/formset.js' %}"></script>
+    <script type="text/javascript">
+        var slugit = new Slugify({
+            input_element : 'input#id_title',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+
+        function find_field(name) {
+            //finds a field given a label
+            //don't use if multiple fields share the same label
+            labels = $(".form-group").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+
+        //script for hiding and showing the 'On weekend' field
+        //when nesessary.
+        $(document).ready(function() {
+            weekend = $('.id_on_weekend');
+            start_dt = $(find_field("Start Date/Time").find('input')[0]);
+            start_dt_val = start_dt.val();
+            end_dt = $(find_field("End Date/Time").find('input')[0]);
+            end_dt_val = end_dt.val();
+
+            if(start_dt_val != end_dt_val){
+                weekend.show();
+            } else {
+                weekend.hide();
+            }
+
+            start_dt.change(function() {
+                val = end_dt.val()
+                if ($(this).val() == val) {
+                    weekend.hide();
+                } else {
+                    weekend.show();
+                }
+            });
+
+            end_dt.change(function() {
+                val = start_dt.val()
+                if ($(this).val() == val) {
+                    weekend.hide();
+                } else {
+                    weekend.show();
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        {% include 'events/include/event_place.js' %}
+    </script>
+{% endblock %}

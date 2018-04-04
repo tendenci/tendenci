@@ -1,0 +1,181 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Import Corporate Memberships from CSV file - Preview' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/corp-membership-import.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div id="import-wrap">
+    <h1>{% trans "Import Corporate Membership" %}</h1>
+    <h3 class="import-step">{% trans "Step 2/3 - Preview" %}</h3>
+
+
+{% if mimport.status == 'preprocess_done' %}
+<p>{% trans "You're almost done!  Please review your settings.  To complete your import, click the button"%} <strong>{% trans 'Import Now' %}</strong>. </p>
+{% endif %}
+
+<div class="dimport-settings">
+        <div>{% trans "Update" %}:
+            <strong>
+            {% if not mimport.override %}
+            {% trans 'Blank Fields' %}
+            {% else %}
+            {% trans 'All Fields (override)' %}
+            {% endif %}
+            </strong>
+        </div>
+        <div>{% trans "Identify Duplicates by" %}: <strong>{{ mimport.key }}</strong> </div>
+        <div>{% trans "Bind members to corporation" %}: <strong>{% if mimport.bind_members %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</strong> </div>
+        <div>&nbsp;</div>
+        <div>
+         <strong>{% trans "Total Rows" %}:  {{ total_rows }}</strong>
+        </div>
+</div> <!-- dimport settings -->
+
+{% if mimport.status == 'preprocess_done' %}
+
+    <form class="import" method="post" action="{% url "corpmembership.import_process" mimport.id %}">{% csrf_token %}
+
+    <div class="import-preview">
+        <table>
+            <tr>
+                <th>{% trans 'Row #' %}</th>
+                <th>{% trans  'Action' %}</th>
+                <th>{% trans 'Company Name' %}</th>
+                {% if 'email' in fieldnames %}
+                <th>{% trans 'Email' %}</th>
+                {% endif %}
+                {% if 'address' in fieldnames %}
+                <th>{% trans 'Address' %}</th>
+                {% endif %}
+                {% if 'city' in fieldnames %}
+                <th>{% trans 'City' %}</th>
+                {% endif %}
+                {% if 'state' in fieldnames %}
+                <th>{% trans 'State' %}</th>
+                {% endif %}
+                <th>{% trans 'Status' %}</th>
+                <th>{% trans 'Reason if to be skipped' %}</th>
+            </tr>
+
+            {% for cm in corp_membs_list %}
+            <tr class="row-{{ cm.action }}">
+                <td>{{ cm.row_num }}</td>
+                <td class="action-{{ cm.action }}">{{ cm.action }}</td>
+                <td>{{ cm.company_name }}</td>
+                {% if 'email' in fieldnames %}
+                <td>{{ cm.email }}</td>
+                {% endif %}
+                {% if 'address' in fieldnames %}
+                <td>{{ cm.address }} {{ cm.address2 }}</td>
+                {% endif %}
+                {% if 'city' in fieldnames %}
+                <td>{{ cm.city }}</td>
+                {% endif %}
+                {% if 'state' in fieldnames %}
+                <td>{{ cm.state }}</td>
+                {% endif %}
+                <td>{{ cm.status_detail }}</td>
+                <td>
+                    {% if cm.error %}
+                    {{ cm.error }}
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+        </table>
+
+    </div>
+
+    {% if num_pages > 1%}
+    <div id="import-paginate">
+        {% if prev %}
+        <a href="?page={{ prev }}">{% trans 'Prev' %}</a>
+        {% else %}
+        {% trans 'Prev' %}
+         {% endif %}
+
+        {% for page in page_range %}
+            {% if page == '...' %}
+                {{ page }}
+            {% else %}
+                {% if page == curr_page %}
+                <strong>{{ page }}</strong>
+                {% else %}
+                <a href="?page={{ page }}">{{ page }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if curr_page >= num_pages  %}
+        {% trans 'Next' %}
+        {% else %}
+        <a href="?page={{ next }}">{% trans 'Next' %}</a>
+         {% endif %}
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 1em;">
+    <input type="submit" class="submit-btn btn" name="submit" value="{% trans 'Import Now' %}" >
+    </div>
+
+    </form>
+
+{% else %}
+    <div style="margin: 5em;">
+        <img src="{% static 'images/loadingicon.gif' %}" alt="loading">
+        <div style="color: #0D4C83;"><small>{% trans "Please wait while we're processing..." %}</small></div>
+    </div>
+
+{% endif %}
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+{% if mimport.status != 'preprocess_done' %}
+
+  $(document).ready(function() {
+     // http://jqueryui.com/progressbar/#animated
+    var value;
+    var status_check_intval;
+
+    var status_check = function(){
+        $.ajax({
+           type: "POST",
+           url: "{% url "corpmembership.check_preprocess_status" mimport.id %}",
+           success: function(status_data){
+               if (status_data == 'preprocess_done'){
+                   clearInterval(status_check_intval);
+                   window.location.reload();
+               }
+             },
+             error: function(data){
+               clearInterval(status_check_intval);
+             }
+         });
+     }
+
+    status_check();
+    status_check_intval = setInterval(function() {
+        status_check();  // check every 5 seconds
+    }, 5000);
+
+  });
+
+{% endif %}
+</script>
+
+{% endblock %}

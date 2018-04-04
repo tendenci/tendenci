@@ -2,7 +2,6 @@ from csv import writer
 from datetime import datetime
 
 from django.contrib import admin, messages
-from django.conf import settings
 from django.urls import reverse
 from django.conf.urls import url
 from django.http import HttpResponse, Http404
@@ -19,6 +18,7 @@ from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForF
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.theme.templatetags.static import static
 
 
 class EventAdmin(TendenciBaseModelAdmin):
@@ -63,7 +63,7 @@ class EventTypeAdmin(admin.ModelAdmin):
     reassign.short_description = _('Reassign Link')
 
     class Media:
-        css = {'all': ['%scss/admin/event-types-color-set.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/event-types-color-set.css')], }
 
 admin.site.register(Type, EventTypeAdmin)
 
@@ -123,11 +123,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
-            '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
+            static('js/admin/form-fields-inline-ordering.js'),
+            static('js/admin/form-field-dynamic-hiding.js'),
         )
-        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
     @mark_safe
     def preview_link(self, obj):
@@ -249,7 +249,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         """
         urls = super(CustomRegFormAdmin, self).get_urls()
         extra_urls = [
-            url("^export/(?P<regform_id>\d+)/$",
+            url(r'^export/(?P<regform_id>\d+)/$',
                 self.admin_site.admin_view(self.export_view),
                 name="customregform_export"),
         ]
@@ -266,7 +266,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
         """
         urls = super(StandardRegFormAdmin, self).get_urls()
         extra_urls = [
-            url("^edit",
+            url(r'^edit',
                 self.admin_site.admin_view(self.edit_regform_view),
                 name="standardregform_edit"),
         ]

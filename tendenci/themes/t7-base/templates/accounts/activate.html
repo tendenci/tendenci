@@ -1,0 +1,22 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}
+    {% trans "Account Activation" %}
+{% endblock %}
+
+{% block content %}
+    {% if account %}
+        <p>{% trans "Your account has been activated." %}</p>
+
+        {% if not user.is_authenticated %}
+            {% url 'auth_login' as auth_login_url %}
+            <p>{% blocktrans with auth_login_url=auth_login_url %}
+                <a href="{{ auth_login_url }}">Log in</a> now
+            {% endblocktrans %}</p>
+        {% else %}
+         <p><a href="{% url 'profile' user.username %}">{% trans "View My Profile" %}</a></p>
+        {% endif %}
+    {% else %}
+        <p>{% trans "Activation failed." %}</p>
+    {% endif %}
+{% endblock %}

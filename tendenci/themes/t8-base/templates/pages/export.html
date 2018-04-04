@@ -1,0 +1,24 @@
+{% extends "pages/base.html" %}
+{% load page_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="pages-wrap">
+
+        <h1>{% trans "Pages Export" %}</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Groups' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+    <h1>{% trans "Import Subscribers to" %} {{ group.name }}</h1>
+
+    <form method="post" action="." enctype="multipart/form-data">{% csrf_token %}
+        {{ form|styled_form }}
+        <input type="submit" value="{% trans 'Submit' %}">
+    </form>
+
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "donations/base.html" %}
+
+{% block title %}{% trans 'Donation Confirmation' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+<h1>{% trans 'Donation Confirmation' %}</h1>
+<p>
+{% trans 'Thank you for your donation!' %}
+</p>
+
+</div>
+{% endblock %}

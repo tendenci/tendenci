@@ -1,0 +1,86 @@
+{% extends "profiles/base-wide.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load search_tags %}
+
+
+{% block title %}{% trans "People Search" %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}" type="text/css">
+
+    <style>
+        #id_first_name,
+        #id_last_name,
+        #id_email {
+            width: 200px;
+        }
+
+        #id_search_criteria,
+        #id_search_text {
+            width: 150px;
+        }
+
+        #id_search_method {
+            width: 100px;
+        }
+
+        .float-left {
+            float: left;
+        }
+
+        .clear-left {
+            clear: left;
+        }
+
+        .profile-search-form .form-field {
+            margin: 3px 0;
+        }
+
+        .profile-search-form input,
+        .profile-search-form select {
+            padding: 3px;
+            margin-bottom: 5px;
+        }
+
+        .profile-search-form {
+            margin: 1em 0;
+        }
+
+        .profile-search-form input[type=submit] {
+           font-size: 1.0em;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% if memberships_search  %}{% trans "Members Search" %}{% else %}{% trans "People Search" %}{% endif %}</h1>
+
+        {{ MODULE_USERS_USERSEARCHSTATEMENT }}
+
+        {% autopaginate profiles 10 %}
+
+        {% profile_search %}
+
+        {% if profiles %}
+            <span><em>{{ paginator.count }} Pe{{ paginator.count|pluralize:"rson,ople" }} {% trans "Found" %}</em></span>
+        {% else %}
+            <p>{% trans "Sorry, we didn't find anything for your search."%}</p>
+        {% endif %}
+
+        <div class="profiles-wrap">
+            {% for profile in profiles %}
+                {% search_result profile %}
+            {% empty %}
+            {% endfor %}
+        </div>
+
+        {% paginate %}
+    </div>
+{% endblock %}

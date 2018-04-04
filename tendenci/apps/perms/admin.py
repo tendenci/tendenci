@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri, force_text
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import router
 from django.db.models import Q
@@ -18,6 +17,7 @@ from django.utils.safestring import mark_safe
 from tagging.models import TaggedItem
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.theme.templatetags.static import static
 
 
 class TendenciBaseModelAdmin(admin.ModelAdmin):
@@ -26,7 +26,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     """
 
     class Media:
-        js = ('%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,)
+        js = (static('js/global/tinymce.event_handlers.js'),)
 
     def __init__(self, *args, **kwargs):
         super(TendenciBaseModelAdmin, self).__init__(*args, **kwargs)
@@ -59,7 +59,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         if not hasattr(obj, 'get_absolute_url'):
             return None
 
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
             obj.get_absolute_url(),
             obj,

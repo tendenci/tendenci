@@ -1,0 +1,26 @@
+{% extends "emails/base.html" %}
+{% load perm_tags %}
+{% load email_tags %}
+{% load base_filters %}
+
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Delete an Email Record" %}</h1>
+<h3>{% blocktrans with email.subject as subject %}Subject: {{ subject }}{% endblocktrans %}</h3>
+<div>{% blocktrans with email.create_dt|date:'long' as dat %} Created on: <b>{{ dat }}{% endblocktrans %}</b></div>
+{% if email.creator %}
+<div>by: <a href="{% url "profile" email.creator.username %}">{{email.creator.username}}</a></div>
+{% endif %}
+<div style="color:red;font-weight:bold;margin: 1em 0;">{% trans "Are you sure you want to delete this Email?" %}</div>
+<br />
+<div>
+{% trans "Deleted items cannot be recovered!" %}
+</div>
+<br />
+<form action="{% url "email.delete" email.id %}" method="post">{% csrf_token %}
+<input type="hidden" name="id" value="{{email.id}}" />
+<input type="submit" value="{% trans 'Delete Email' %}" />
+</form>
+</div>
+{% endblock %}

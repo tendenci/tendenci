@@ -1,0 +1,23 @@
+{% load base_tags %}
+
+<div class="photo-wrapper">
+    <input type="hidden" name="icon_url" value="{{ file.icon }}" />
+    <input type="hidden" name="filename" value="{{ file.get_name }}" />
+    <input type="hidden" name="file_url" value="{{ file.get_absolute_url }}" />
+    <input type="hidden" name="file_download_url" value="{{ file.get_absolute_download_url }}" />
+    <input type="hidden" name="file_width" id="file_{{ file.pk }}_width" value="{{ file.image_dimensions|first }}" />
+    <input type="hidden" name="file_height" id="file_{{ file.pk }}_height" value="{{ file.image_dimensions|last }}" />
+
+    <input id="file_{{ file.pk }}" type="radio" name="file_selected" value="{{ file.id }}" target="{{ file.type }}" />
+    <label for="file_{{ file.pk }}">
+        <div class="icon">
+            {% if file.type == 'image' %}
+                <img src="{% image_url file size=150x150 crop=True quality=88 %}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}"/>
+            {% else %}
+                <img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" />
+            {% endif %}
+            <h3>{{ file.get_name|truncatechars:20 }}</h3>
+        </div>
+    </label>
+
+</div> <!-- END photo-wrapper -->

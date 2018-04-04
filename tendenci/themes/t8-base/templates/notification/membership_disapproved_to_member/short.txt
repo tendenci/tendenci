@@ -1,0 +1,2 @@
+
+{% blocktrans with s=subject %}{{ s }}{% endblocktrans %}

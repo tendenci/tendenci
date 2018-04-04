@@ -1,0 +1,64 @@
+{% extends "profiles/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load profile_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Users not in Groups' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="page-header">
+    <h1>{% trans "Users not in Groups" %}</h1>
+  </div>
+
+    <div class="profiles-wrap">
+
+        {% if users %}
+        <table class="table table-tendenci-reports">
+        <thead>
+            <td>
+                <strong>{% trans 'ID' %}</strong>
+            </td>
+            <td>
+                {% trans 'Name' %}
+            </td>
+            <td>
+                {% trans 'Username' %}
+            </td>
+            <td>
+                {% trans 'Email' %}
+            </td>
+        </thead>
+            {% for user in users %}
+                <tr>
+                    <td>
+                        <strong>{{ user.id }}</strong>
+                    </td>
+                    <td>
+                        {% if user.profile.display_name %}
+                            {{ user.profile.display_name }}
+                        {% else %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ user.profile.get_absolute_url }}">{{ user.username }}</a>
+                    </td>
+                    <td>
+                        {{ user.email }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <div>{% trans "No users not in groups found." %}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

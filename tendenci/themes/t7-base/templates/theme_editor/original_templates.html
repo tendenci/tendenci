@@ -1,0 +1,69 @@
+{% extends "theme_editor/base_list.html" %}
+
+{% load humanize %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Theme Editor' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/theme-editor.css' %}" />
+<link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="editor-nav" style="float:right">
+        <a href="{% url "theme_editor.app_list" %}?theme_edit={{ current_theme }}" >{% trans "Back to App List" %}</a>&nbsp;&nbsp;
+        <a href="{% url "theme_editor.editor" %}?theme_edit={{ current_theme }}" >{% trans "Back to Theme-Editor" %}</a>
+    </div>
+    <h1>{{ app }} templates</h1>
+    <strong>{% trans "Choose a folder or file:" %}</strong>
+    <div id="right_files_list">
+        {% if prev_dir %}
+           <p class="prev_dir">
+               <a href="{% url "theme_editor.original_templates" %}?theme_edit={{ current_theme }}&app={{ app }}&dir={{ prev_dir }}">
+               &laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}
+               </a>
+           </p>
+        {% endif %}
+        {% if dirs %}
+           <ul class="dir_list">
+                {% for dir in dirs %}
+                    <li class="dir_item"><a href="{% url "theme_editor.original_templates" %}?theme_edit={{ current_theme }}&app={{ app }}&dir={{ dir }}">
+                    {{ dir|basename|safe }}</a></li>
+                {% endfor %}
+           </ul>
+        {%  endif %}
+        {%  if files %}
+           <ul class="files_list">
+                {% for file in files %}
+                    <li>
+                        {{ file|safe }}<a class="copy" href="{% url "theme_editor.copy_to_theme" %}?theme_edit={{ current_theme }}&app={{ app }}&dir={{ current_dir }}&file={{ file }}">
+                        &laquo;&nbsp;{% trans "copy to custom templates" %}</a>
+                    </li>
+                {% endfor %}
+           </ul>
+        {% endif %}
+        {% if not files and not dirs %}
+            <p>{% trans "No editable files" %}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function(){
+        //bind the modified one
+        $('.copy').click(function(){
+            if(window.confirm("{% trans 'Do you want to override this template file?' %}")){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

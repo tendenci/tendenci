@@ -1,0 +1,23 @@
+{% extends "memberships/base.html" %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h2>{% trans "Email Has been Sent to Verify Your Email Address" %}</h2>
+    <p>
+    {% trans "Please follow the instruction in the email to continue signing up for the membership." %} <br /><br />
+
+    {% trans "Thank you!" %}
+    </p>
+
+</div>
+{% endblock %}

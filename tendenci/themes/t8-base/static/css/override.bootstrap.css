@@ -1,0 +1,30 @@
+/* BOOSTSTRAP CSS OVERRIDES */
+
+* {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+.list-unstyled {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+    margin-left: 10px;
+}
+
+.form-field .label, .profile-wrap .label {
+    color: #333;
+}
+
+.container {
+    padding-left: 0;
+    padding-right: 0;
+    width: auto;
+}

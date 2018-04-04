@@ -1,0 +1,342 @@
+{% load l10n %}
+{% load styled_forms %}
+{% load base_filters %}
+
+
+{% comment %}
+<div class="alert alert-danger" role="alert">
+    <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
+
+    {% for error in form.non_field_errors %}
+        <p><a href="#" class="alert-link">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+    {% endfor %}
+
+    {% if form.fieldsets.fieldsets %}
+        {% for fieldset in form.fieldsets %}
+            {% for field in fieldset %}
+                {% if field.errors %}
+                {% for error in field.errors %}
+                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                {% endfor %}
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% else %}
+        {% for field in form %}
+            {% if field.errors %}
+                  {% for error in field.errors %}
+                      <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}" class="alert-link">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                  {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endcomment %}
+
+{# Form Errors #}
+{% for form in forms %}
+    {% if form.forms %}
+        {% if form.non_form_errors %}
+        <div class="errors">
+            {% for error in form.non_form_errors %}
+            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% for form_set in form.forms %}
+            {% if form_set.errors.values %}
+            <div class="errors">
+                {% for error in form_set.non_field_errors %}
+                    <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                {% endfor %}
+                {% if form.fieldsets.fieldsets %}
+                    {% for fieldset in form.fieldsets %}
+                        {% for field in fieldset %}
+                            {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+                                {% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                            {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    {% for field in form_set %}
+                        {% if field.errors %}
+                              {% for error in field.errors %}
+                                  <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{% blocktrans with l=field.label e=error %}{{ l }} - {{ e }}{% endblocktrans %}</a></p>
+                              {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if form.errors.values %}
+        <div class="errors">
+        {% for error in form.errors.values %}
+            {% blocktrans with e=error %}{{ e }}{% endblocktrans %}
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+
+{# Form #}
+{% for form in forms %}
+    <fieldset id="t-formsbuilder-form-{{ form.label|slugify|default:forloop.counter }}">
+        {% if form.forms %} {# form sets #}
+            {% if form.label %}
+                <legend>{% blocktrans with l=form.label %}{{ l }}{% endblocktrans %}</legend>
+            {% endif %}
+
+            {{ form.management_form }}
+
+            {% for form_set in form.forms %}
+                <div class="{{ form_set.auto_id }}">
+                <input type="hidden" name="form-number" value="{{ forloop.counter0 }}" />
+                {% if form_set.id %}
+                    {{ form_set.id }}
+                {% endif %}
+                {% if form_set.label %}
+                    <div class="formset-label">{% blocktrans with l=form_set.label %}{{ l }}{% endblocktrans %}</div>
+                {% endif %}
+                {% if form_set.fieldsets.fieldsets %}
+                    {% for fieldset in form_set.fieldsets %}
+                      {% if fieldset.boundfields %}
+                      <fieldset class="{{ fieldset.classes }}">
+                        {% if fieldset.legend %}
+                          <legend>{% blocktrans with l=fieldset.legend %}{{ l }}{% endblocktrans %}</legend>
+                        {% endif %}
+                        {% if fieldset.description %}
+                          <p class="section-description">{% blocktrans with d=fieldset.description %}{{ d }}{% endblocktrans %}</p>
+                        {% endif %}
+                        {% for field in fieldset %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
+                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
+
+                            <div class="col-sm-9">
+                                {% if field|is_checkbox %}
+                                    <div class="checkbox">
+                                        <label>{{ field }}</label>
+                                    </div>
+                                {% elif field|is_checkboxselectmultiple %}
+                                    {% for choice in field.field.choices %}
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% elif field|is_radioselect %}
+                                    {% for choice in field.field.choices %}
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <span class="help-block">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</span>
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <span class="help-block">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                      </fieldset>
+                      {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {% for field in form_set %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="form-field">
+                            <div class="{{ field.auto_id }}">
+                                {% if field|is_checkbox %}
+                                    <div class="checkbox-input">
+                                           {% if field.errors %}
+                                        <div class="error">
+                                            {% for error in field.errors %}
+                                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        <div class="field">
+                                            {{ field }}
+                                        </div>
+                                        <div class="label{% if field.field.required %} required{% endif %}">
+                                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                                        </div>
+                                        {% if field.help_text %}
+                                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div style="clear: both"><!-- IE7 --></div>
+                                {% else %}
+                                    <div class="label{% if field.field.required %} required{% endif %}">
+                                        {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                                    </div>
+                                    {% if field.errors %}
+                                    <div class="error">
+                                        {% for error in field.errors %}
+                                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="field">
+                                        {{ field }}
+                                    </div>
+                                    {% if field.help_text %}
+                                    <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                                    {% endif %}
+                                {% endif %}
+                             </div>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </div>
+                <div class="formset-functions">
+                    <div class="formset-add">
+                        <a href="#{{ form_set.auto_id }},{{ form_set.prefix }}" title="{% blocktrans with l=form_set.label %} Add {{ l }}{% endblocktrans %}">{% blocktrans with l=form_set.label %} Add {{ l }}{% endblocktrans %}</a>
+                    </div>
+                    <div class="formset-delete">
+                        <a href="#{{ form_set.auto_id }},{{ form_set.prefix }}" title="{% blocktrans with l=form_set.label %} Delete {{ l }}{% endblocktrans %}">{% blocktrans with l=form_set.label %} Delete This {{ l }}{% endblocktrans %}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %} {# Non-form sets #}
+            {% if form.label %}
+                <legend>{% blocktrans with l=form.label %}{{ l }}{% endblocktrans %}</legend>
+            {% endif %}
+
+            {% if form.fieldsets.fieldsets %}
+                {% for fieldset in form.fieldsets %}
+                    {% if fieldset.boundfields %}
+                        <fieldset class="{{ fieldset.classes }}">
+                            {% if fieldset.legend %}
+                                <legend>{% blocktrans with l=fieldset.legend %}{{ l }}{% endblocktrans %}</legend>
+                            {% endif %}
+
+                            {% if fieldset.description %}
+                                <p class="section-description">{% blocktrans with d=fieldset.description %}{{ d }}{% endblocktrans %}</p>
+                            {% endif %}
+
+                            {% for field in fieldset %}
+                                {% if field.is_hidden %}
+                                    {{ field }}
+                                {% else %}
+                                    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
+                                        <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
+
+                                        <div class="col-sm-9">
+                                            {% if field|is_checkbox %}
+                                                <div class="checkbox">
+                                                    <label>{{ field }}</label>
+                                                </div>
+                                            {% elif field|is_checkboxselectmultiple %}
+                                                {% for choice in field.field.choices %}
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% elif field|is_radioselect %}
+                                                {% for choice in field.field.choices %}
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                {{ field }}
+                                            {% endif %}
+
+                                            {% if field.errors %}
+                                                {% for error in field.errors %}
+                                                    <span class="help-block">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</span>
+                                                {% endfor %}
+                                            {% endif %}
+
+                                            {% if field.help_text %}
+                                                <span class="help-block">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </fieldset>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% elif field|is_header %}
+                        <legend>{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</legend>
+                    {% elif field|is_description %}
+                        <p>{% blocktrans with l=filed.label %}{{ l }}{% endblocktrans %}</p>
+                    {% else %}
+                        <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
+                            <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</label>
+
+                            <div class="col-sm-9">
+                                {% if field|is_checkbox %}
+                                    <div class="checkbox">
+                                        <label>{{ field }}</label>
+                                    </div>
+                                {% elif field|is_checkboxselectmultiple %}
+                                    {% for choice in field.field.choices %}
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% elif field|is_radioselect %}
+                                    {% for choice in field.field.choices %}
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <span class="help-block">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</span>
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <span class="help-block">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </fieldset>
+{% endfor %}

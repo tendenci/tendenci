@@ -1,0 +1,169 @@
+.t {
+	width: 90%;
+}
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t .stories-wrap {
+	margin-bottom: 20px;
+}
+
+.t .stories-wrap .story-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .stories-wrap .story-wrap h2 {
+	width: 85%;
+}
+.t .stories-wrap .story-wrap .content {
+	margin-bottom: 10px;
+}
+.t .stories-wrap .story-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t .add-story-link{
+	margin-bottom: 20px;
+}
+
+/* Stories Search */
+.search-image {float: left; margin-right: 10px; width: 90px;}
+.search-text {float: left; width: 500px;}
+.search-text h2 small {font-weight: normal; font-size: 12px;}
+
+/* Stories Meta */
+.expires-inactive,
+.expires-active {font-weight: bold; padding-left: 10px; border-left: 2px solid #666;}
+
+.expires-active {color: green;}
+.expires-inactive {color: red;}
+
+
+.t ul.stories-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.stories-nav li {
+	display: inline;
+}
+
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
+}
+
+div.forms div.form-field div.id_end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
+}
+
+.story-wrap .print-link {
+	float: none;
+}
+
+/* Story Print View
+ ------------------------- */
+.t-print .story-wrap {
+	width: 8in;
+	padding: .25in;
+	margin: 20px 0;
+	border: 1px solid silver;
+}
+
+.t-print .hide-this {
+	width: 8.5in;
+	margin: 20px 0;
+	position: relative;
+}
+.t-print .guide {
+	position: absolute;
+	top: 0; right: 0;
+}
+.t-print object {
+	visibility: hidden;
+}
+
+@media print {
+	.hide-this {
+		display: none;
+	}
+	.t-print .story-wrap {
+		width: 100%;
+		border: none;
+		padding: 0; margin: 0;
+	}
+}

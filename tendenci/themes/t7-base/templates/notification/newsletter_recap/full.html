@@ -1,0 +1,19 @@
+
+{% blocktrans with action.creator.first_name as act_create and action.name as act_name and action.attempted as act_attempt and action.failed as act_fail and action.sent as act_sent %}Greetings {{ act_create }}: <br /><br />
+
+The submission of your newsletter {{ act_name }} has been completed.<br /><br />
+
+Total Attempted to Send = {{ act_attempt }} <br />
+Bad Address or E-mail Blocked = {{ act_fail }} <br />
+Total Processed = {{ act_sent }} <br /><br />
+
+For details of this submission, go to:{% endblocktrans %} {{ SITE_GLOBAL_SITEURL }}{% url "action.recap" action.id %} <br /><br />
+
+{% trans "Thanks!" %} <br /><br />
+
+{{ SITE_GLOBAL_SITECONTACTNAME }} <br />
+{{ SITE_GLOBAL_SITECONTACTEMAIL }} <br />
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} <br />
+<p>{% trans "Time Submitted:" %} {% now "D d M Y P" %}</p>
+
+{% include email_footer.html %}

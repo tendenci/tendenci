@@ -1,0 +1,88 @@
+{% extends "invoices/base-wide.html" %}
+{% load invoice_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %} {% trans 'Email Invoice' %}{% endblock %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/invoices.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Email Invoice" %}</h1>
+
+{% with invoice.get_object as object %}
+<div class="row">
+    <div style="margin: 20px auto; width: 500px;">
+      <table class="table table-tendenci-reports" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>{% trans 'Invoice #' %}</td>
+          <td class="td-right"><a href="{% url 'invoice.view' invoice.id %}">{{ invoice.id }}</a></td>
+        </tr>
+        {% if object %}
+        <tr>
+          <td>{% trans "Invoice For" %}</td>
+          <td class="td-right">
+            {% if object.event.pk %}
+            <a href="{% url 'event.registration_confirmation' object.event.pk object.pk %}">{{ object }}</a><br>
+            <strong>{% trans 'Event Date' %}:</strong> {{ object.event.start_dt }}
+            {% else %}
+            {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+            <br>
+            {% if invoice.bill_to_first_name %} {{ invoice.bill_to_first_name }} {% endif %} {% if invoice.bill_to_last_name %}{{ invoice.bill_to_last_name }}<br> {% endif %}
+            {% if invoice.bill_to_address %} {{ invoice.bill_to_address }}<br>{% endif %}
+            {% if invoice.bill_to_city %}{{ invoice.bill_to_city}},{% endif %} {% if invoice.bill_to_state %}{{ invoice.bill_to_state }}{% endif %} {% if invoice.bill_to_zip_code %}{{ invoice.bill_to_zip_code }}{% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td>{% trans "Invoice Date" %}</td>
+          <td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+        </tr>
+        <tr>
+          <td>{% trans "Invoice Status" %}</td>
+          {% if invoice.is_void %}
+          <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
+          {% elif invoice.is_tendered %}
+          <td class="invoice-status td-right">
+            {{ invoice.get_status|title }}
+            {% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}{{ tenddate }}{% endblocktrans %}
+          </td>
+          {% else %}
+          <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
+          {% endif %}
+        </tr>
+        <tr class="invoice-meta-amount">
+          <td>{% trans "Invoice Amount" %}</td>
+          <td class="td-right">{{ invoice.total|format_currency }}</td>
+        </tr>
+      </table>
+   </div>
+ </div>
+  {% endwith %}
+
+<form action="." method="post" class="form-horizontal">{% csrf_token %}
+{{ form|styled_form }}
+
+<div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <button type="submit" class="btn btn-primary">{% trans "Send Now" %}</button>
+    </div>
+  </div>
+</form>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+{% endblock %}

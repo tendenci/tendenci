@@ -1,0 +1,84 @@
+#populate-fields{
+margin-top: 1em;
+}
+.admin-override, .memberid{
+margin-left: 2em;
+}
+.memberid .help-text{
+margin-left: 5em;
+}
+.admin-override_price{
+margin-left: 3.5em;
+}
+.override{
+color: #880000;
+}
+#admin-override-price-table{
+margin-left: 1.5em;
+}
+#reg-form-box #admin-override-price-table input[type="text"]{
+width: 50px;
+
+}
+#admin-override-table label{
+cursor: pointer;
+}
+#add-another-btn{
+-moz-border-bottom-colors: none;
+-moz-border-image: none;
+-moz-border-left-colors: none;
+-moz-border-right-colors: none;
+-moz-border-top-colors: none;
+-moz-transition: all 0.1s linear 0s;
+background-repeat: no-repeat;
+border-color: #CCCCCC #CCCCCC #BBBBBB;
+border-radius: 4px 4px 4px 4px;
+border-style: solid;
+border-width: 1px;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+cursor: pointer;
+line-height: normal;
+padding: 5px 14px 6px;
+text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+background-color: #DDF4FB;
+     background-image: -moz-linear-gradient(center top , #FFFFFF, #FFFFFF 25%, #DDF4FB);
+     font-size: 1.2em;
+     color: #0F4C82;
+}
+#add-another-btn:hover{
+background-position: 0 -15px;
+color: #333;
+text-decoration: none;
+}
+.add-registrant-box{
+margin: 2em 0 1em;
+}
+.discount-field-wrap input[type="text"]{
+width: 130px !important;
+}
+.discount-field-wrap, #admin-override-table-wrap{
+width: 160px;
+padding: 1em;
+margin: 1em 0;
+}
+.item-label{
+white-space: nowrap;
+}
+
+/* free pass */
+ .free-pass-wrap{
+ 	margin-left: 2em;
+ 	margin-bottom: 1em;
+ }
+ .free-pass-price{
+ 	text-decoration: line-through;
+ }
+  .free-pass-img{
+ 	background-image: url('/static/images/icons/fp.png');
+ 	background-repeat: no-repeat;
+ 	padding-right: 10px;
+ }
+
+p.cls-paragraph-warning strong {
+    color: red;
+ }

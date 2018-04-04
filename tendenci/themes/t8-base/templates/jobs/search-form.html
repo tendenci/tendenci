@@ -1,0 +1,49 @@
+
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
+    <form id="t-jobs-search-form" class="form-inline t-search-form" action="{% if my_job %}{% url 'myjobs' %}{% else %}{% url 'jobs' %}{% endif %}" method="get">
+        <div class="form-group{% if form.q.errors %} has-error{% endif %}">
+            {{ form.q }}
+
+            {% if form.q.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.q.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
+            {{ form.cat }}
+
+            {% if form.cat.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.cat.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.sub_cat.errors %} has-error{% endif %}">
+            {{ form.sub_cat }}
+
+            {% if form.sub_cat.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.sub_cat.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+    </form>
+{% endif %}

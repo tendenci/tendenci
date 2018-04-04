@@ -1,0 +1,4 @@
+{% block content %}
+<h1>{% firstof MODULE_CONTACTS_LABEL trans 'Conacts' %}{% trans " Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url "contact.search" %}">&laquo;{% trans " Back to contacts search" %}</a></div>
+{% endblock %}

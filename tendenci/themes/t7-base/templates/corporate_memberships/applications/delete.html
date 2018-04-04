@@ -1,0 +1,35 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+
+
+{% block content %}
+<div class="t">
+<h2>{% trans "Are you sure you want to delete this corporate membership?" %}</h2>
+<br />
+<h3>{% trans "Corporate Name: " %}<a href="{% url "corpmembership.view" corp_memb.pk %}">{{ corp_memb.corp_profile.name }}</a></h3>
+<br />
+<div><b>{% trans "Corporate Address:" %}</b> </div>
+        {% if corp_memb.corp_profile.address or corp_memb.corp_profile.address2 %}
+            {{ corp_memb.corp_profile.address }} {{ corp_memb.corp_profile.address2 }} <br />
+        {% endif %}
+
+        {{ corp_memb.corp_profile.city }} {{ corp_memb.corp_profile.state }}
+        {{ corp_memb.corp_profile.zip }} {{ corp_memb.corp_profile.country }}
+
+
+</div>
+ <br />
+<div><span class="label"><b>{% trans "Join Date:" %}</b></span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
+<div><span class="label"><b>{% trans "Expiration Date:" %}</b></span> {% if corp_memb.expiration_dt %}
+    {{ corp_memb.expiration_dt|date:'Y-n-j' }}
+    {% else %}
+    {% trans "Never Expire" %}
+    {% endif %}
+</div>
+<br />
+<form action="{% url "corpmembership.delete" corp_memb.pk %}" method="post">{% csrf_token %}
+<input type="hidden" name="id" value="{{ corp_memb.pk }}" />
+<input type="submit" value="{% trans 'Delete Corporate' %}" />
+</form>
+
+{% endblock %}

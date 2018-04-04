@@ -1,0 +1,2 @@
+
+{% blocktrans with object.title as objtitle %}New Job ({{ objtitle }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

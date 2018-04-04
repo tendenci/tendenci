@@ -1,0 +1,23 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Import Memberships from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="membership-wrap">
+
+    <h1>{% trans "Import Memberships from CSV file" %}</h1>
+
+    <form method='post' action='{% url "membership_import" %}' enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value="{% trans 'Submit' %}">
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "profiles/base.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load perm_tags %}
+{% load profile_tags %}
+
+
+{% block title %}{% trans 'Administrators' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t">
+        <h1>{% trans "Superusers" %}</h1>
+
+        {% autopaginate admins 50 %}
+
+        <div class="profiles-wrap">
+            <div class="admin-list">
+                {% for admin in admins %}
+                    <div class="admin-item">
+                        <div class="admin-profile-image">
+                            <a href="{{ admin.get_absolute_url }}">{% gravatar admin.user 48 %}</a>
+                        </div>
+
+                        <div class="admin-meta">
+                            <p>
+                                <strong>
+                                    {{ admin }}
+                                    {% if request.user.is_superuser %}
+                                        &ndash;&nbsp;<a href="{% url 'profile.edit' admin.user.pk %}">{% trans "edit" %}</a>
+                                    {% endif %}
+                                </strong>
+                            </p>
+
+                            {% if admin.user.first_name and admin.user.last_name  %}
+                                <p>{{ admin.user.first_name }}&nbsp;{{ admin.user.last_name }}</p>
+                            {% endif %}
+                            <p>{{ admin.user.email|obfuscate_email }}</p>
+                        </div>
+
+                        <div style="clear: both"></div>
+                    </div>
+                {% empty %}
+                    <div>{% trans "No administrators found." %}</div>
+                {% endfor %}
+            </div>
+        </div>
+        {% paginate %}
+    </div>
+{% endblock %}

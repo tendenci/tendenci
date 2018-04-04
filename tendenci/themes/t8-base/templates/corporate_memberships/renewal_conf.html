@@ -1,0 +1,31 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load perm_tags %}
+
+{% block title %}{% trans "Corporate Membership Renewal Confirmation" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Corporate Membership Renewal Confirmation" %}</h1>
+    <p>
+    {% blocktrans with corp_profile.name as member %}Thanks for renewing corporate membership "{{ member }}"!{% endblocktrans %}<br /><br />
+    {% blocktrans with corp_membership.status_detail as status %}The status of the renewal: <b>{{ status }}{% endblocktrans %}</b> <br /><br />
+        {% if not request.user.is_superuser %}
+            {% if  corp_membership.status_detail == "pending" or corp_membership.status_detail == "paid - pending approval" %}
+                {% trans "Your membership renewal will be reviewed by an administrator who will be contacting you shortly." %}
+            {% endif %}
+        {% endif %}
+
+    </p>
+    {% has_perm request.user corporate_memberships.view_corpmembership as can_view %}
+    {% has_perm request.user corporate_memberships.change_corpmembership as can_edit %}
+
+    {% if can_view %}
+    <p><a href="{% url "corpmembership.view" corp_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
+    {% endif %}
+    {% if can_edit %}
+    <p><a href="{% url "corpmembership.edit" corp_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url "corpmembership.edit_corp_reps" corp_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
+    {% endif %}
+</div>
+{% endblock %}

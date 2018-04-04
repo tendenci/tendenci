@@ -1,0 +1,5 @@
+{% if event.limit > 0 and event.spots_available != -1 %}
+{% if user.profile.is_superuser or event.registration_configuration.display_registration_stats %}
+<div class="spots-status">{% blocktrans with sp=spots_available|pluralize %}{{ spots_taken }} registered. {{ spots_available }} spot{{ sp }} left{% endblocktrans %}</div>
+{% endif %}
+{% endif %}

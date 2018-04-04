@@ -11,11 +11,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.cache import cache
 
 # local
-from tendenci.apps.theme.utils import get_theme_root, get_theme, theme_choices
+from tendenci.apps.theme.utils import theme_choices
 from tendenci.apps.theme_editor.utils import archive_file
 from tendenci.libs.boto_s3.utils import save_file_to_s3
 
-THEME_ROOT = get_theme_root()
 FILE_EXTENTIONS = (
     '.html',
     '.js',
@@ -42,14 +41,10 @@ class FileForm(forms.Form):
                            widget=forms.Textarea(attrs={'rows': 26, 'cols': 73}),
                            max_length=500000
                            )
-    rf_path = forms.CharField(widget=forms.HiddenInput())
 
-    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT, ORIG_ROOT_DIR=THEME_ROOT):
+    def save(self, root_dir, theme, file_relative_path, request):
         content = self.cleaned_data["content"]
-        file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
-
-        if settings.USE_S3_THEME:
-            file_path = (os.path.join(ORIG_ROOT_DIR, file_relative_path)).replace("\\", "/")
+        file_path = os.path.join(root_dir, file_relative_path)
 
         # write the theme file locally in case it was wiped by a restart
         if settings.USE_S3_THEME and not os.path.isfile(file_path):
@@ -61,8 +56,8 @@ class FileForm(forms.Form):
             new_file.write('')
             new_file.close()
 
-        if os.path.isfile(file_path) and content != "":
-            archive_file(request, file_relative_path, ROOT_DIR=ORIG_ROOT_DIR)
+        if os.path.isfile(file_path) and content != '':
+            archive_file(root_dir, file_relative_path, request)
 
             # Save the file locally no matter the theme location.
             # The save to S3 reads from the local file, so we need to save it first.
@@ -73,13 +68,15 @@ class FileForm(forms.Form):
 
             if settings.USE_S3_THEME:
                 # copy to s3 storage
-                if os.path.splitext(file_path)[1] == '.html':
+                if os.path.splitext(file_relative_path)[1] == '.html':
                     public = False
                 else:
                     public = True
-                save_file_to_s3(file_path, public=public)
+                dest_path = os.path.join(theme, file_relative_path)
+                dest_full_path = os.path.join(settings.THEME_S3_PATH, dest_path)
+                save_file_to_s3(file_path, dest_path=dest_full_path, public=public)
 
-                cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
+                cache_key = '.'.join([settings.SITE_CACHE_KEY, 'theme', dest_path])
                 cache.delete(cache_key)
 
                 if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
@@ -90,14 +87,21 @@ class FileForm(forms.Form):
             return False
 
 
+class ThemeNameForm(forms.Form):
+    theme_name = forms.RegexField(label=_("New theme name"),
+                                  regex=r'^[a-z][0-9a-z_-]+$',
+                                  max_length=64)
+
+
 class AddTemplateForm(forms.Form):
     template_name = forms.RegexField(label=_("Template Name"),
                                      regex=r'^[a-z][0-9a-z_-]+$',
-                                     max_length=20)
+                                     max_length=16)
 
 
 class ThemeSelectForm(forms.Form):
-    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[],
+        widget=forms.Select(attrs={'onchange': 'submit();'}))
 
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)

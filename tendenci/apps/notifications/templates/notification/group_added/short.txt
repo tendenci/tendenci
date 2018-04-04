@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.name as objname %}New group ({{ objname }}) added on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

@@ -1,0 +1,2 @@
+
+{% blocktrans with object.title as objtitle %}Page ({{ objtitle }}) edited for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

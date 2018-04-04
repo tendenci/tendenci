@@ -17,8 +17,8 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 # # introspection rules for south migration for the slugfield
-# add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.SlugField'])
-# add_introspection_rules([], ['^tendenci\.apps\.base\.fields\.DictField'])
+# add_introspection_rules([], [r'^tendenci\.apps\.base\.fields\.SlugField'])
+# add_introspection_rules([], [r'^tendenci\.apps\.base\.fields\.DictField'])
 
 
 class SlugField(CharField):
@@ -175,7 +175,7 @@ class PriceField(fields.DecimalField):
         if comma_setting and ',' in value:
             comma_validator = re.compile(r'^[0-9]{1,3}(,[0-9]{3})*(\.[0-9]+)?$')
             if comma_validator.match(value):
-                value = re.sub(',', '', value)
+                value = re.sub(r',', '', value)
             else:
                 raise ValidationError(self.error_messages['invalid'])
 

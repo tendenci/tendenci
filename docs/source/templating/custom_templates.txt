@@ -34,7 +34,7 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
    :emphasize-lines: 1,12,25
 
    {% extends "pages/base.html" %}
-
+   
    {% block title %}{{ page.get_title }}{% endblock %}
    {% block meta_description %}{{ page.get_description }}{% endblock %}
    {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
@@ -42,7 +42,7 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
    {% block extra_head %}
    {{ block.super }}
    {% endblock %}
-
+   
    {% block custom_body %}
    <div class="t">
        <div class="page-wrap">
@@ -50,9 +50,9 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
            <h1>{{ page.title }}</h1>
            {% endif %}
            <div class="content">{{ page.content|safe }}</div>
-
+           
            <!-- Insert custom template code here -->
-
+           
            {% include "pages/meta.html" %}
        </div>
    </div>
@@ -78,12 +78,12 @@ Adding a button
     In the Navs App, Links can be assigned their own CSS Class.  This is helpful for targeting individual links to emphasize in your design.
 
     .. image:: img/navsappcss.png
-
+    
     For this example, I added the class "top-nav-button" to the "Attend Orientation" Nav Link.
-
+    
     .. hidden-code-block:: css
         :label: + Show Added CSS
-
+        
             .top-nav-button {
               color: #fbce42;
               border: 2px solid #fbce42;
@@ -107,9 +107,9 @@ Adding Font-Awesome Icons
 .. Tip::
 
     Also using the Nav App Classes, you can add Font Awesome Icons to your navigation bar. Just add the Font Awesome tag into the CSS Class and leave the Label blank.
-
+    
     .. image:: img/fontawesomenavapp.png
-
+    
 Font-Awesome After Nav Items
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/dropdownicons.png
@@ -117,12 +117,12 @@ Font-Awesome After Nav Items
 .. Tip::
 
     To add a dropdown caret or other icons to the Tendenci Navbar, use FontAwesome in the css.  For this application, I added a css class ("t-caret") to the navbar items that I wanted to have a dropdown caret.
-
+    
     .. image:: img/t-caret.png
-
+    
     .. hidden-code-block:: css
         :label: + Show Added css
-
+        
             a.t-caret.dropdown-toggle:after {
                 content: "\f0d7";
                 font-family: FontAwesome, 'Roboto', sans-serif;
@@ -133,17 +133,17 @@ Simple Search Bar w/ Font-Awesome Icon
 .. image:: img/simplesearch.png
 
 .. Tip::
-
+        
     .. hidden-code-block:: html
         :label: + Show Added HTML
-
+        
             <div class="globalSearch pull-right" id="global-search">
                <form method="get" action="/search/">
                  <input type="text" name="q" size="28" maxlength="300" title="Search" class="searchbox blur" onfocus="clearDefault(this)">
                  <input type="submit" value="&#xf002;" class="fa fa-search">
                </form>
              </div>
-
+             
     .. hidden-code-block:: css
         :label: + Show Added CSS
 
@@ -163,7 +163,7 @@ Simple Search Bar w/ Font-Awesome Icon
               box-shadow: none;
               outline: none;
             }
-
+            
 Bootstrap Search Bar w/ Font-Awesome Icon
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: img/bootstrapsearch.png
@@ -171,12 +171,10 @@ Bootstrap Search Bar w/ Font-Awesome Icon
 .. Tip::
 
     This example is from the Case Studies module, but can be used in other modules by swapping the action url.  There is no added css for this snippet.  You can also change the look and feel by adding Bootswatch themes.
-
+    
     .. hidden-code-block:: html
         :label: + Show Added HTML
-
-            {% load i18n %}
-
+        
             {% if SITE_GLOBAL_SEARCHINDEX %}
             <form class="form-inline" action="{% url 'case_study' %}" method="get" role="search">
               <div class="form-group">
@@ -186,12 +184,11 @@ Bootstrap Search Bar w/ Font-Awesome Icon
               <button class="btn btn-default" type="submit">
                 <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
               </button>
-
+             
              </div>
-
+            
             </form>
             {% endif %}
-
 
 
 Basic Footer
@@ -202,11 +199,11 @@ In Tendenci, the Footer is usually set up inside a box to make it easy for clien
 .. image:: img/basicfooter.png
 
 .. Tip::
-
+    
     I like to set up my Footer links in a bulleted list.  The bullets can be removed later in html or in css.
-
+    
     HTML is added inside the Footer links box.
-
+    
     .. image:: img/footerlinks.png
 
     .. hidden-code-block:: html
@@ -295,14 +292,14 @@ Embed forms in Bootstrap Modals to declutter your pages.
 .. image:: img/formmodal.png
 
 .. Tip::
-
+    
     Don't forget to add ``{% load forms_tags %}`` at the top of your template.
-
+    
     This code references W3schools and is for educational purposes only!  Original here: https://www.w3schools.com/bootstrap/bootstrap_modal.asp
 
     .. hidden-code-block:: html
         :label: + Show HTML
-
+            
               <!-- BUTTON -->
               <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
                 Sign up Now</button>

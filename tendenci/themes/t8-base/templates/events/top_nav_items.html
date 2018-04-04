@@ -1,0 +1,294 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load site_setting_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user events.add_event as can_add_event %}
+{% has_perm user events.view_registrant as can_view_registrant %}
+{% get_setting module events minimaladdform as can_request_event %}
+
+{% if app_object %}
+    {% has_perm user events.view_event app_object as can_view_event %}
+    {% has_perm user events.change_event app_object as can_edit_event %}
+    {% has_perm user events.delete_event app_object as can_delete_event %}
+{% else %}
+    {% has_perm user events.view_event as can_view_event %}
+    {% has_perm user events.change_event as can_edit_event %}
+    {% has_perm user events.delete_event as can_delete_event %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-events-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Events" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'events' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event.search' %}">{% trans "Event List" %}</a>
+                        </span>
+                    </li>
+
+                     {% if can_add_event %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.add' %}">{% trans "Add an Event" %}</a>
+                            </span>
+                        </li>
+                    {% else %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.global.registrant.search' %}">{% trans "Registrant List" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event.month' %}">{% trans "Monthly Calendar" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event.week' %}">{% trans "Weekly Calendar" %}</a>
+                        </span>
+                    </li>
+
+                    {% if request.user.is_authenticated %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.myevents' %}">{% trans "My Events" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+
+                        {% if can_request_event %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'event.minimal_add' %}">{% trans "Submit an Event" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.pending' %}">{% trans "Pending Events" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_event %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.types' %}">{% trans "Event Types" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'event.ics' %}">{% trans "Events ICS" %}</a>
+                        </span>
+                    </li>
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.create_ics' %}">{% trans "Precreate Event ICS" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.export' %}">{% trans "Export" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.import_add' %}">{% trans "Import" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.reports.financial' %}">{% trans "Events Financial Report" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <li>
+                            <span class="content-head text-content-head">{% trans "This Event" %}</span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{{ app_object.get_absolute_url }}">{% trans "View Event" %}</a>
+                            </span>
+                        </li>
+
+                        {% if app_object.is_recurring_event %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'event.recurring' app_object.pk %}">{% trans "View Recurring Event List" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.print_view' app_object.pk %}">{% trans "Print Event" %}</a>
+                            </span>
+                        </li>
+
+                        {% if can_view_attendees %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'event.attendees' app_object.pk %}">{% trans "View Attendees" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.ics_single' app_object.pk %}">{% trans "Add Event to my Calendar" %}</a>
+                            </span>
+                        </li>
+
+                        {% if can_view_event or can_edit_event %}
+                            {% if can_edit_event %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.edit' app_object.pk %}">{% trans "Edit Event" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.list_addons' app_object.pk %}">{% trans "Edit Addons" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.add_addon' app_object.pk %}">{% trans "Add Addon" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if app_object.registration_configuration.use_custom_reg_form %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'event.event_custom_reg_form_list' app_object.pk %}">{% trans "Manage Custom Registration Form" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+
+                                {% if app_object.registration_configuration.send_reminder %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'event.edit.email' app_object.pk %}">{% trans "Edit Reminder Email" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if can_add_event %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.copy' app_object.pk %}">{% trans "Clone Event" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if request.user.is_superuser and event.status == 0 %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.approve' app_object.pk %}">{% trans "Approve" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_event or can_view_registrant %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.registrant.search' app_object.pk %}">{% trans "Search Registrants" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.registrant.roster' app_object.pk %}">{% trans "Roster Report" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_event %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.message' app_object.pk %}">{% trans "E-mail Registrants" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'event.member_register' app_object.pk %}">{% trans "Register Members" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_event %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'event.delete' app_object.pk %}">{% trans "Delete Event" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if app_object.is_recurring_event %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a class="delete" href="{% url 'event.delete_recurring' app_object.pk %}">{% trans "Delete Recurring Events" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

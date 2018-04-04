@@ -1,0 +1,29 @@
+{% extends "redirects/base.html" %}
+{% load redirect_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Delete' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/redirects.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% trans "Redirect Delete" %}</h1>
+
+    <div class="story-wrap">
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to delete this redirect?" %}"
+        </div>
+        <h2>{{ Redirect }}</h2>
+
+        <div class="delete-form">
+            <form action="{% url "redirect.delete" redirect.pk %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans 'Delete Redirect' %}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

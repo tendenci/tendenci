@@ -1,0 +1,140 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator - Edit Your Newsletter'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div id="t-newsletters">
+    <div class="page-header">
+      <h1>{% trans 'Edit Your Newsletter' %}</h1>
+    </div>
+
+    <form action='' method="POST">{% csrf_token %}
+      <div class='step-section cf'>
+        <div class="step-contents">
+          <div class="step-content-item">
+            <div class="form-group">
+              <label>{% trans 'Include Secondary Email:' %}</label> &nbsp;{{ form.send_to_email2 }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='step-section cf'>
+        <div class="step-contents">
+          <div class="step-content-item">
+
+            <p><strong>{% trans 'Newsletter Subject' %}:</strong> {{ form.subject }}</p>
+            <p><strong>{% trans 'Current Sender E-mail' %}:</strong> {{ object.email.sender }} </p>
+            <p>
+              <a class="btn btn-primary" href="{% url 'email.viewbody' object.email.pk %}">
+                {% trans 'View Newsletter' %}
+              </a>
+              <a class="btn btn-warning" href="{% url 'email.edit' object.email.pk %}?next={{ request.path }}">
+                {% trans 'Edit Newsletter Contents' %}
+              </a>
+            </p>
+          </div>
+
+        </div>
+      </div>
+      <div class='step-section cf'>
+        <div class="step-contents">
+
+
+          <div class="form-group">
+            <p class="capitalize">
+              <label>
+                {% if object.member_only %}
+                {% trans 'Newsletter Recipients:' %}
+                {% else %}
+                {% trans 'Newsletter Recipients: ' %}
+                {% endif %}
+              </label>
+
+             <!-- {% if object.member_only %}
+              {% trans 'Members Only' %}
+              <a href="{% url 'groups' %}">{% trans 'Specify User Group' %}</a>
+              {% else %}
+              {{ object.group }}&nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="{% url 'groups' %}">{% trans 'Edit User Group' %}</a>
+              {% endif %} -->
+
+              <!-- test user group add -->
+              <div class='step-section cf'>
+                <div class="step-contents">
+                  <div class="step-content-item">
+                    <strong>{% trans "Send to members only?" %}</strong>
+                    {{ form.member_only }}&nbsp; {% trans 'If checked, skip usergroup' %}
+                  </div>
+                  {% if form.group.errors %}
+                  <div class="step-content-item body-copy-alerts">
+                    {{ form.group.errors }}
+                  </div>
+                  {% endif %}
+                  <div class="step-content-item">
+                    {% trans "Usergroup" %} {{ form.group }}
+                  </div>
+
+                </div>
+              </div>
+              <!-- end test -->
+
+            </p>
+          </div>
+
+        </div>
+      </div>
+      <div class='step-section cf'>
+        <div class="step-contents">
+
+          <h3>{% trans 'Confirm acceptance of site policies and common sense.' %}</h3>
+          <hr />
+          <div class="step-content-item body-copy-alerts">
+            {% if object.member_only %}
+            {% blocktrans %}
+            <p>I agree that I have permission from all users of the user group to send them e-mail.
+              I understand that by sending this e-mail the transaction, including my IP address, is recorded.
+              Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy
+              (aup) and privacy policy of this site.</p>
+            {% endblocktrans %}
+            {% else %}
+            {% blocktrans with group=object.group.name %}
+            <p>I agree that I have permission from all users of the
+              <strong class="capitalize">{{ group }}</strong> user group to send them e-mail.
+              I understand that by sending this e-mail the transaction, including my IP address, is recorded.
+              Furthermore I am legally bound by common courtesy, common sense, and the acceptable use policy
+              (aup) and privacy policy of this site.</p>
+            {% endblocktrans %}
+            {% endif %}
+          </div>
+          {% if form.sla.errors %}
+          <div class="step-content-item body-copy-alerts">
+            {{ form.sla.errors }}
+          </div>
+          {% endif %}
+          <div class="form-group">
+            <input type="checkbox" name="sla">&nbsp;&nbsp;
+            <label>{% trans 'I Agree and Accept Software License Agreement' %}</label>
+          </div>
+          <div class="step-content-item">
+            <input class="btn btn-primary btn-lg pull-right" type="submit" value="{% trans 'Continue' %} &nbsp; &rarr;" />
+          </div>
+          <br /><br />
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}

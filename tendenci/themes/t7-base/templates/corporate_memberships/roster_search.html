@@ -1,0 +1,265 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load bootstrap_pagination_tags %}
+{% load bootstrap_pagination_tags %}
+{% load profile_tags %}
+{% load base_filters %}
+{% load corporate_memberships_tags %}
+
+{% block title %}{{ block.super }}{% trans "Corporate Membership Roster Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/corporate_memberships-roster_search.css' %}">
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+<style>
+     #corp-info table td{
+        border-top: none;
+    }
+    .member-details{
+        margin-left: 5px;
+    }
+    #id_first_name, #id_last_name, #id_email{
+        width: 200px;
+    }
+    #id_search_criteria, #id_search_text{
+        width: 150px;
+    }
+    #id_search_method{
+        width: 100px;
+    }
+    .float-left{
+        float: left;
+    }
+    .roster-search-form .form-field{
+        margin: 3px 0;
+    }
+    .roster-search-wrap .wrap-search-item{
+        border: 1px solid #ccc;
+    }
+    .roster-search-wrap .editor-bar, .roster-search-wrap .options-list{
+        background-color: #EFFBFB;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="t-search">
+<h1>Roster -
+    {% if corp_membership %}
+    <a href="{% url "corpmembership.view" corp_membership.id %}">{{ corp_profile.name }}</a>
+    {% else %}
+    ALL
+    {% endif %}
+    </h1>
+
+{% if corp_membership %}
+<div id="corp-info">
+    <table width="100%">
+        {% if corp_profile.address %}
+        <tr>
+            <td width="20%">{% trans "Address:" %}</td>
+            <td width="80%" colspan="3">{{ corp_profile.address }} {{ corp_profile.address2 }}</td>
+        </tr>
+        {% endif %}
+        {% if corp_profile.city or corp_profile.state or corp_profile.zip  %}
+        <tr>
+            <td width="20%">&nbsp;</td>
+            <td width="80%" colspan="3">{{ corp_profile.city }} {{ corp_profile.state }} {{ corp_profile.zip }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td width="20%">{% trans "Phone:" %}</td>
+            <td width="40%">{{ corp_profile.phone|phonenumber }}</td>
+            <td width="20%">{% trans "Join Date:" %}</td>
+            <td width="40%">{{ corp_membership.join_dt|date:'Y-n-j' }}</td>
+        </tr>
+        <tr>
+            <td width="20%">{% trans "Member Type:" %}</td>
+            <td width="40%">{{ corp_membership.corporate_membership_type.name }}</td>
+            <td width="20%">{% trans "Expiration Date:" %}</td>
+            <td width="40%">{% if corp_membership.expiration_dt %}
+                                            {{ corp_membership.expiration_dt|date:'Y-n-j' }}
+                                            {% else %}
+                                            {% trans "Never Expire" %}
+                                            {% endif %}</td>
+        </tr>
+    </table>
+
+</div>
+{% endif %}
+<br />
+<form name="roster-search" class="roster-search-form" method="get">
+<div class="form-field">{{ form.cm_id.label }}: {{ form.cm_id }}</div>
+<div class="float-left">
+    <div class="form-field">
+        {{ form.first_name.label }}: {{ form.first_name }}
+    </div>
+    <div class="form-field">
+        {{ form.last_name.label }}:  {{ form.last_name }}
+    </div>
+</div>
+<div class="float-left">
+      <div class="form-field" style="margin-left: 3em;">
+        {{ form.email.label }}: {{ form.email }}
+    </div>
+     <div class="form-field" style="margin-left: 3em;">
+    {{ form.active_only }} <label for="id_active_only" style="display: inline;">{{ form.active_only.label }}</label>
+    </div>
+
+</div>
+<div class="clear-left"></div>
+<div class="form-field">
+    {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
+    <input type="submit" name="search" value="Search" />
+</div>
+
+</form>
+
+{% autopaginate memberships 10 %}
+<div class="roster-search-wrap">
+<span><em>{{ paginator.count }} {% if active_only %}{% trans "Active" %}{% endif %} {% trans "Member" %}{{ paginator.count|pluralize }} {% trans "Found" %}</em></span>
+
+    {% for membership in memberships %}
+        {% with membership|get_object as membership %}
+        {% with membership.user as m_user %}
+        {% with m_user.profile as profile %}
+        <div class="wrap-search-item">
+            <div class="" style="padding:10px;">
+                <div class="row">
+                    <h2 class="col-md-9 col-xs-12">
+                        <a href="{{ membership.user.profile.get_absolute_url }}">
+                             {{ m_user.last_name }}{% if m_user.first_name %}, {{ m_user.first_name }} {% endif %}
+                            ({{ m_user.username }})
+                        </a>
+                    </h2>
+                    <div class="col-md-3 col-xs-12" style="line-height:46px;">
+                        {% if request.user.profile.is_superuser %}
+                            <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-1 hidden-xs profile-avatar-left">
+                        {% gravatar m_user 56 %}
+                    </div>
+
+                    <div class="col-x2-12 visible-xs" style="margin:15px;">
+                        {% gravatar m_user 56 %}
+                    </div>
+
+                    <div class="col-md-4 col-xs-12">
+                        {% if profile.company %}
+                            <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
+                        {% endif %}
+
+                        {% if profile.address %}
+                            {% if not profile.hide_address or is_rep or request.user.profile.is_superuser %}
+                                <b>{% trans "Address:" %}</b> {{ profile.address }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if profile.user.email %}
+                            {% if not profile.hide_email or is_rep or request.user.profile.is_superuser %}
+                                <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if request.user.profile.is_superuser or is_rep or request.user == profile.user %}
+                            {% if profile.member_number %}
+                                <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if membership.status_detail %}
+                            <b>{% trans "Application Status:" %}</b> {{ membership.status_detail }}<br />
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4 col-xs-12">
+                        {% if profile.phone %}
+                            {% if not profile.hide_phone or is_rep or request.user.profile.is_superuser %}
+                                <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if profile.mobile_phone %}
+                            {% if not profile.hide_phone or is_rep or request.user.profile.is_superuser %}
+                                <b>{% trans "Mobile Phone:" %}</b> {{ profile.mobile_phone|phonenumber }}<br />
+                            {% endif %}
+                        {% endif %}
+
+                        {% if request.user.profile.is_superuser or request.user == profile.user %}
+                            {% if membership.create_dt %}
+                                <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
+                            {% endif %}
+
+                            {% if membership.join_dt %}
+                                <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
+                            {% endif %}
+
+                            {% if membership.expire_dt %}
+                                <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        {% include 'corporate_memberships/roster_meta.html' %}
+
+        <!-- delete membership form -->
+        <form name="membership-delete" method="POST" action="{% url "membership.delete" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
+            <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
+            <input type="hidden" name="action" value="delete">
+        </form>
+
+        <!-- expire membership form -->
+        <form name="membership-expire" method="POST" action="{% url "membership.expire" membership.pk %}?next={{ request.get_full_path }}">{% csrf_token %}
+            <input type="hidden" name="membership_name" value="{{ m_user.first_name }} {{ m_user.last_name }}">
+        </form>
+
+        </div>
+        {% endwith %}
+        {% endwith %}
+        {% endwith %}
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+</div>
+
+
+ {% paginate %}
+
+ </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-delete"]');
+                var membership_name = $(this_form).find('input[name="membership_name"]').val();
+                var delete_membership = confirm('{% trans "Permenantly delete membership:" %} ' + membership_name + '?');  // confirm
+                if(delete_membership) $(this_form).submit() // delete: if OK
+                return false;   // cancel
+            });
+
+             // expire confirmation
+            $('.expire').click(function(){
+                var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-expire"]');
+                var membership_name = $(this_form).find('input[name="membership_name"]').val();
+                var expire_membership = confirm('{% trans "Are you sure you want to expire this membership?" %} ' + membership_name);  // confirm
+                if(expire_membership) $(this_form).submit() // delete: if OK
+                return false;   // cancel
+            });
+
+        });
+    </script>
+{% endblock %}

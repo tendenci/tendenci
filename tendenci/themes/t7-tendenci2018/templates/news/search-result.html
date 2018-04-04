@@ -1,0 +1,45 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load category_tags %}
+{% load news_tags %}
+{% load perm_tags %}
+
+<!-- UNCOMMENT TO PANELIZE NEWS RESULTS -->
+
+<article class="col-md-12">
+  <!--  <div class="panel panel-default">
+  <div class="panel-heading"> 
+  <h3 class="panel-title">-->
+  
+  <h3>
+    <a href="{{ news.get_absolute_url }}">{% blocktrans with h=news.headline %}{{ h }}{% endblocktrans %}</a>
+  </h3>
+  <!--    </div> -->
+  
+  {% if news.thumbnail %}
+  <div class="col-xs-4">
+    <!-- news-image -->
+    <img class="img-responsive" src="{% image_url news.thumbnail %}"
+    alt="{{ news_item.headline|striptags|safe }}"
+    style="width:100%;height:auto;"/>
+  </div>
+  {% else %}
+  {% endif %}
+  
+  <!--    <div class="panel-body"> -->
+  <div class="t-search-result-body">
+    <p class="item-content">
+      {% blocktrans with s=news.body|truncatewords:100|striptags|safe %}{{ s }}{% endblocktrans %}
+    </p>
+  </div>
+  <!--    </div> -->
+  
+  {% include "news/meta.html" %}
+  
+  <form name="news-delete" method="POST" action="{% url 'news.delete' news.pk %}">{% csrf_token %}
+    <input type="hidden" name="action" value="delete">
+  </form>
+  
+  <br />
+  <!--  </div> -->
+</article>

@@ -1,0 +1,192 @@
+.t {
+    width: 90%;
+}
+.t h2 {
+    margin: 0 auto 10px 0;
+}
+
+.t ul.locations-nav {
+    margin: 0; padding: 0;
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+.t ul.locations-nav li {
+    display: inline;
+}
+
+.t .locations-wrap {
+    margin-bottom: 20px;
+}
+
+.t .location-wrap {
+    padding: 0 10px 10px 10px;
+    margin-bottom: 20px;
+    position: relative;
+}
+.t .location-wrap h1 {
+    margin-bottom: 10px;
+}
+.t .location-wrap div.image a {
+    /*border: 1px solid silver;*/
+    box-shadow: 0 0 5px #AAA;
+}
+
+.location-search-item .image {
+    float: left;
+}
+
+.location-search-item .details {
+    width: 55%;
+    float: left;
+}
+
+.location-search-item .image a {
+    box-shadow: 0 0 5px #AAA;
+}
+
+.t .locations-wrap .location-wrap h2 {
+    width: 85%;
+}
+.t .locations-wrap .location-wrap .content {
+    margin-bottom: 10px;
+}
+.t .options {
+    text-align: right;
+    /*margin-bottom: 10px;*/
+    width: 100%;
+
+}
+.t .quick-options {
+    /*float: right;*/
+    margin-right: 5px;
+}
+.t .quick-options ul {
+    margin: 0; padding: 0;
+    list-style-type: none;
+}
+
+.t .dropdown-options {
+    float: right;
+    display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+    font-size: .7em;
+}
+.t .dropdown-options ul {
+    display: none;
+}
+
+.t h1 {
+    margin: 0;
+}
+.t .back-to-search {
+    margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+    width: 60%;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+    padding: 5px;
+    cursor: pointer;
+}
+
+/* Location View
+ ------------------------- */
+.t .location-wrap .meta, .t .location-wrap-search .meta {
+    border: 1px solid silver;
+    padding: 10px;
+    background-color: #F7F7F7;
+    margin-top: 10px;
+}
+.t .location-wrap .meta .tags {
+    margin-bottom: 5px;
+}
+
+div.forms fieldset.contact {
+    background-color: #EFEFEF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+    padding: 5px;
+}
+
+div.image a {
+    width: 200px;
+    height: 200px;
+    background-color: #DDD;
+    float: left;
+}
+
+div.details {
+    float: left;
+    margin-left: 10px;
+}
+
+div.location-wrap-search .content {
+    margin: 0;
+}
+
+#container .t div.details p {
+    font-size: 1.2em;
+    line-height: 1em;
+    margin-bottom: 2px;
+}
+
+div#import-wrap {
+    margin-top:  30px;
+    margin-bottom: 20px;
+}
+#import-wrap h1 {
+    margin-bottom: 0;
+}
+
+#import-wrap .timestamp {
+    margin-top: 0;
+    font-size: 13px;
+}
+
+#import-wrap form {
+    margin-top: 10px;
+}
+
+#import-wrap .form-field {
+    width: 500px;
+    background-color: #F7F7F7;
+}
+
+#import-wrap .form-field > div {
+    clear: both;
+}
+
+#import-wrap .form-field .label {
+    text-align: right;
+    padding: 5px 10px 5px 0px;
+}
+
+#import-wrap .form-field .label, #import-wrap .form-field .field {
+    width: 200px;
+    float: left;
+}
+
+#import-wrap .form-field .field select {
+    width: 200px;
+}
+
+div.download-csv a {
+    font-size: 1.5em;
+}
+
+div.download-csv img {
+    float: left;
+    margin-right: 10px;
+    border:  0;
+}

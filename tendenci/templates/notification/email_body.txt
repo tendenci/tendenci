@@ -1,1 +1,0 @@
-{% load i18n %}{% blocktrans with m=message %}{{ m }}{% endblocktrans %}

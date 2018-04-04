@@ -1,0 +1,27 @@
+{% extends "django_admin_bootstrapped:admin/app_index.html" %}
+{% load bootstrapped_goodies_tags %}
+
+{% block sidebar %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class='panel-title'>{% trans "Reporting Options" %}</h3>
+  </div>
+  <div class"panel-body">
+    <div class="container">
+      <h4>{% trans "Imports" %}</h4>
+      <ol>
+        <li><a href="{% url 'memberships.default_import' %}">{% trans "Import" %}</a></li>
+      </ol>
+      <h4>{% trans "Exports" %}</h4>
+      <ol>
+        <li><a href="{% url 'memberships.default_export' %}">{% trans "Export" %}</a></li>
+      </ol>
+      <h4>{% trans "Others" %}</h4>
+      <ol>
+        <li><a href="{% url 'profile.search' %}?member_only=on">{% trans "Search Members" %}</a></li>
+        <li><a href="{% url 'reports-memberships'%}">{% trans "Reports for Members" %}</a></li>
+      </ol>
+    </div>
+  </div>
+</div>
+{% endblock %}

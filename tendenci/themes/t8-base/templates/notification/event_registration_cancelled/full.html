@@ -1,0 +1,49 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Event Registration Cancelled - Notification" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<div style="margin-bottom:20px;">
+
+<p style="margin:2px">
+{% if user_is_registrant %}
+    {% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user_first }} {{ user_last }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+{% else %}
+    {% if user.is_anonymous %}
+        {% trans "An anonymous user just cancelled the registration for:" %}
+    {% else %}
+        {% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user_first }} {{ user_last }} just cancelled the registration for:{% endblocktrans %}
+    {% endif %}
+    {% if registrant.first_name or registrant.last_name %}
+        {{ registrant.first_name }} {{ registrant.last_name }}
+    {% else %}
+         {% trans "guest" %} #{{ registrant.pk }}
+    {% endif %}
+{% endif %}
+on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+</p>
+<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.registration_confirmation" event.pk registrant.registration.pk %}">{% trans "View registration details" %}</a></p>
+</div>
+
+<div style="margin-bottom:20px;">
+<p style="margin:2px;">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</p>
+<p style="margin:2px;">{{ event.dt_display }}</p>
+<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
+</div>
+
+<p>{% blocktrans with event.registrants.count as eventreg and registrants_paid.count as regpaid and event.money_collected as eventmoney and registrants_pending.count as regpend and event.money_outstanding as eventout %}We now have {{ eventreg }} registrants, {{ regpaid }} paid
+    (${{ eventmoney }}) and {{ regpend }} pending ({{ eventout }}){% endblocktrans %}</p>
+
+<p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
+    {% trans "Remove my email from this notification list" %}</a></p>
+
+
+</body>
+</html>

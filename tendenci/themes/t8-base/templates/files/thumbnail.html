@@ -1,0 +1,8 @@
+{% load base_tags %}
+<div class="icon">
+{% if use_image %}
+    <img src="{% image_url file size=192x192 crop=true quality=84 %}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" />
+{% else %}
+    <img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" />
+{% endif %}
+</div>

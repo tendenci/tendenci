@@ -1,0 +1,169 @@
+{% load base_filters %}
+
+{% if THEME_INFO.SSU.walkthrough %}
+    <link rel="stylesheet" href="{% static 'walkthrough/css/walkthrough.css' %}" type="text/css" />
+
+    <div id="walkthrough">
+      <div id="walkthrough-intro" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'Welcome to Your New Website!' %}</p>
+            <p>{% blocktrans %}Please follow along while we show you around the customizable elements on the homepage to get you started. You can go to the next step or previous step at any time.{% endblocktrans %}</p>
+            <br>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-logo" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'Upload Your Logo' %}</p>
+            <p>{% blocktrans %}Just hover over the sample logo in the upper left hand part of the header and click on "Upload Logo." Select the file on your computer and click "Upload Logo." Pretty easy, huh?{% endblocktrans %}</p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-rotator" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'This is Your Rotator' %}</p>
+            <p>{% blocktrans %}You can add and change this content in the{% endblocktrans %}
+            <a href="{% url 'stories' %}" target="_blank">{{ MODULE_STORIES_LABEL }}</a>
+            {% blocktrans %}module. You can even assign dates to a story to ensure it's only shown during a specific period. For more information on how to use the Rotator and Stories, check out this{% endblocktrans %}
+            <a href="http://tendenci.com/help-files/how-do-i-use-the-stories-module/" target="_blank">{% trans 'help file.' %}</a></p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-space_1" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'Customize Spaces' %}</p>
+            <p>{% blocktrans %}This is a sample Space. You can customize your Spaces to feature different content such as sidebars, photos, videos, events, and more. Just hover over the Space and click on "Edit Space." Spaces will feed content from other pages on your site to the homepage. If you dedicate this Space to{% endblocktrans %}
+            <a href="{% url "event.month" %}" target="_blank">{{ MODULE_EVENTS_LABEL }}</a>
+            {% blocktrans %}(for example), this Space will display your organization's upcoming events. For more instruction on Spaces, check out{% endblocktrans %}
+            <a href="http://tendenci.com/help-files/using-spaces-tendenci-community-themes/" target="_blank">{% trans 'this training video.' %}</a></p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-nav" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'Edit Your Navigation' %}</p>
+            <p>{% blocktrans %}Hover over the navigation menu and click on "Edit Nav." You can add pages and use our drag and drop editor to change the order and levels of navigation. Check out{% endblocktrans %}
+            <a href="http://tendenci.com/help-files/how-to-edit-your-navigation/" target="_blank">{% trans 'this help file.' %}</a>
+            {% blocktrans %}for more detailed information.{% endblocktrans %}</p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-footer" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'This is the Footer' %}</p>
+            <p>{% blocktrans %}We've populated this area with some info you've already provided. You can change your address in{% endblocktrans %}
+            <a href="{% url "settings.index" 'site' 'global' %}" target="_blank">Site Settings</a>
+            {% blocktrans %}under "Quick Links" in the blue admin bar above.{% endblocktrans %}
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-admin-bar" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans 'The Admin Bar' %}</p>
+            <p>{% blocktrans %}You can access your site's backend from the blue admin bar{% endblocktrans %}
+            <strong>{% trans 'above' %}</strong>.
+            {% blocktrans %}Under "Content," you'll find all the editable content modules. Under "People," you can add user and groups and assign permissions. "Reports" will show you how people are accessing your website. Under "Quick Links," you have access to the Site Settings as well as the{% endblocktrans %}
+            <a href="{% url "theme_editor.editor" %}" target="_blank">{% trans 'Theme Editor' %}</a>,
+            {% blocktrans %}where you can edit your site's html and css.{% endblocktrans %}</p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="next-step" style="float:right;">{% trans 'Next Step' %}</a>
+      </div>
+
+      <div id="walkthrough-done" class="walkthrough-item" style="display:none;">
+        <p class="tooltipTitle">{% trans "It's as Easy as That!" %}</p>
+            <p>{% blocktrans %}You can access your site's backend from the blue admin bar. Under "Content," you'll find all the editable content modules. Under "People," you can add user and groups and assign permissions. "Reports" will show you how people are accessing your website. Under "Quick Links," you have access to the Site Settings as well as the{% endblocktrans %}
+            <a href="http://tendenci.com/help-files/topic/94/" target="_blank">{% trans 'help files' %}</a>
+            {% blocktrans %}to answer your questions. Thanks again for choosing Tendenci and enjoy building your new website!{% endblocktrans %}</p>
+            <br>
+            <a href="javascript:;" class="prev-step" style="float:left;">{% trans 'Prev Step' %}</a>
+            <a href="javascript:;" class="close-step" style="float:right;">{% trans 'Close' %}</a>
+      </div>
+
+    </div>
+    <script src="{% static 'walkthrough/js/walkthrough.js' %}" type="text/javascript"></script>
+    <script>
+    $(document).ready(function(){
+        $('#walkthrough').pagewalkthrough({
+            steps: [
+               {
+                   wrapper: '',
+                   margin: 0,
+                   popup:
+                   {
+                       content: '#walkthrough-intro',
+                       type: 'modal',
+                       offsetHorizontal: 0,
+                       offsetVertical: 0,
+                       width: '400'
+                   }
+               },
+               {% for k,v in THEME_INFO.Walkthrough.items %}
+               {% if k != '__name__' %}
+               {
+                   wrapper: '#' + "{{ k.strip }}",
+                   margin: '10px 0 0 0',
+                   popup:
+                   {
+                       content: '#walkthrough-' + "{{ k.strip }}",
+                     {% if k.strip == 'admin-bar' %}
+                       type: 'nohighlight',
+                     {% else %}
+                       type: 'tooltip',
+                     {% endif %}
+                       position: "{{ v.strip }}",
+                       offsetHorizontal: 0,
+                       offsetVertical: 0,
+                       width: '400'
+                   },
+                   {% if k.strip == 'admin-bar' %}
+                   stayFocus: true,
+                   {% endif %}
+                   accessable: true
+               },
+               {% endif %}
+               {% endfor %}
+               {
+                   wrapper: '',
+                   margin: '0',
+                   popup:
+                   {
+                       content: '#walkthrough-done',
+                       type: 'modal',
+                       position: 'top',
+                       offsetHorizontal: 0,
+                       offsetVertical: 0,
+                       width: '400'
+                   }
+               },
+
+        ],
+            name: 'Walkthrough',
+            onClose: function(){
+                if($.pagewalkthrough('currIndex') != 7){
+                    alert("{% trans 'You can not close before you finish all the walkthrough steps.' %}");
+                    return false;
+                }
+                window.location = "{% url 'completion_checklist' %}";
+                return true;
+            }
+        });
+
+        $('.prev-step').on('click', function(e){
+            $.pagewalkthrough('prev',e);
+        });
+
+        $('.next-step').on('click', function(e){
+            $.pagewalkthrough('next',e);
+        });
+
+        $('.close-step').on('click', function(e){
+            $.pagewalkthrough('close');
+            window.location = "{% url 'completion_checklist' %}";
+        });
+    });
+  </script>
+{% endif %}

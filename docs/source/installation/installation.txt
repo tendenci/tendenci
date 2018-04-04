@@ -95,24 +95,25 @@ development effort.
 Install PostgreSQL and some required modules:
 ::
 
-    sudo apt-get install --no-install-recommends postgresql postgresql-contrib postgis
+    sudo apt-get install postgresql postgresql-contrib postgis
 
 Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB_PASS`` and
 ``DB_NAME`` with an appropriate user name, password, and database name):
 ::
 
+    sudo -u postgres -s
     DB_USER=tendenci
     DB_PASS=tendenci
     DB_NAME=tendenci
-    sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
-    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
-    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
-    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+    psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
+    psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
+    psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+    psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
 
 Database Preparation on OS X
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -227,8 +228,10 @@ Edit ``/var/www/tendenci/conf/settings.py``
 
 For testing, uncomment ``DEBUG = True``
 
-Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to random strings 50 characters in length.  Random
-strings are conveniently available from <https://www.grc.com/passwords.htm>
+Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to two different random strings, each at least 50
+characters in length.  Random strings are conveniently available at
+<https://www.grc.com/passwords.htm> (Use the "63 random alpha-numeric characters" string, and
+refresh the page to get an additional string.)
 
 For live sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
 sufficient.
@@ -327,9 +330,8 @@ not yet in the released version of Tendenci:
     python manage.py deploy
 
 You can now edit files under /srv/tendenci-git/ and/or run ``git pull`` to retrieve the latest
-changes from GitHub.  Depending on the type of change and the server configuration, changes may be
-picked up immediately by the server without a restart, or may require a server restart before they
-will take effect.
+changes from GitHub.  ``python manage.py runserver`` should immediately pick up your changes, so you
+can view them simply by reloading the page in your browser.
 
 
 Live Site Setup
@@ -514,7 +516,7 @@ First, make an NGINX configuration file for the site. This will be created at
             return 404;
         }
 
-        location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {
+        location ~ /themes/([a-zA-Z0-9\-\_]+)/(media|static)/ {
             access_log off;
         }
 

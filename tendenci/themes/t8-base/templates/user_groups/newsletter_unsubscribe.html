@@ -1,0 +1,25 @@
+{% extends "user_groups/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load user_group_tags %}
+{% load perm_tags %}
+{% load pagination_tags %}
+
+{% block title %}{% blocktrans with g=group.name %}{{ g }} - Group{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <div class="group-view">
+        <h3>{% trans 'You have successfully unsubscribed from Newsletters.' %}</h3>
+        <br><br><br><br><br>
+    </div>
+</div>
+
+
+{% endblock %}

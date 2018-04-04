@@ -1,0 +1,33 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Event Deleted - Notification" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<p>{% blocktrans with user.first_name as userfirst and user.last_name as userlast %} {{ userfirst }} {{ userlast }} just deleted the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% endblocktrans %}</p>
+
+<div style="margin-bottom:20px;">
+<p style="margin:2px;">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</p>
+<p style="margin:2px;">{{ event.dt_display }}</p>
+<p style="margin:2px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ eventlog_url }}">{% trans "View details saved in the event-logs" %}</a></p>
+</div>
+
+<div style="margin-bottom:20px;">
+<p style="margin:2px;">{% blocktrans count event.registrants.count as event_registrants %}This event had {{ event_registrants }} registrant{% plural %}This event had {{ event_registrants }} registrants{% endblocktrans %}</p>
+<p style="margin:2px;">---------------------------------------------------------------</p>
+<p style="margin:2px;">{% blocktrans count registrants_paid.count as regpaid %}{{ regpaid }} paid registrant{% plural %}{{ regpaid }} paid registrants{% endblocktrans %}</p>
+<p style="margin:2px;">{% blocktrans count registrants_pending.count as regpend %}{{ regpend }} pending registrant{% plural %}{{ regpend }} pending registrants{% endblocktrans %}
+</p>
+</div>
+
+<p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
+    {% trans "Remove my email from this notification list" %}</a></p>
+
+</body>
+</html>

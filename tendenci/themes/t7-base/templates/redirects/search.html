@@ -1,0 +1,47 @@
+{% extends "redirects/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load redirect_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/redirects.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_REDIRECTS_LABEL_PLURAL trans "Redirects" %}</h1>
+
+    {% autopaginate redirects 10 %}
+    {% redirect_search %}
+    <span><em>{{ paginator.count }} {% firstof MODULE_REDIRECTS_LABEL_PLURAL trans "Redirects" %} {% trans "Found" %}</em></span>
+
+    <div class="redirects-wrap">
+    {% for redirect in redirects %}
+        {% search_result redirect %}
+    {% empty %}
+
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_redirect = confirm('{% trans "Permenantly delete redirect?" %}');  // confirm
+                if(delete_redirect) $(this).parents('.redirect-wrap').find('form[name="redirect-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
+    </script>
+{% endblock %}

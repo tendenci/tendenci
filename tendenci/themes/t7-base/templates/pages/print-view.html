@@ -1,0 +1,32 @@
+{% extends "base-print.html" %}
+{% load base_filters %}
+
+{% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
+
+        <div class="guide">
+            <div><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to regular page view" %}</a></div>
+            <div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+        <p>{{SITE_GLOBAL_SITEURL}}{{ page.get_absolute_url }}</p>
+        <h2>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+    </div>
+
+</div>
+{% endblock %}

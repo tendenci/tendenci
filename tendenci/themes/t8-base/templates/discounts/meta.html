@@ -1,0 +1,62 @@
+{% load job_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load category_tags %}
+{% load perm_tags %}
+
+{% has_perm user discounts.change_discount discount as can_edit %}
+{% has_perm user discounts.delete_discount discount as can_delete %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if user.is_authenticated %}
+            <div class="submitted">{% blocktrans with discount.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ discount.creator.get_absolute_url }}">
+            {% if discount.creator.first_name %}{{ discount.creator.first_name }} {{ discount.creator.last_name }}
+            {% else %}
+            {{ discount.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with discount.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ discount.owner.get_absolute_url }}">
+            {% if discount.owner.first_name %}{{ discount.owner.first_name }} {{ discount.owner.last_name }}
+            {% else %}
+            {{ discount.owner }}
+            {% endif %}</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="meta-right">
+    </div>
+
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ discount.obj_perms }}</li>
+        <li>{{ discount.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url "event_log.search" %}?object_id={{ discount.pk }}&source={{ discount.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url "discount.edit" discount.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if can_delete %}
+                <li>
+                    <a class="delete" href="{% url "discount.delete" discount.pk %}">{% trans "Delete" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

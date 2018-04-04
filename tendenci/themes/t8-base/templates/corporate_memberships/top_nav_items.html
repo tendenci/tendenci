@@ -1,0 +1,206 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load corporate_memberships_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if app_object %}
+    {% has_perm user corporate_memberships.view_corpmembership app_object as can_view_corpmemb %}
+    {% allow_view_corp app_object user as allow_view %}
+    {% has_perm user corporate_memberships.change_corpmembership app_object as can_edit_corpmemb %}
+    {% allow_edit_corp app_object user as allow_edit %}
+    {% has_perm user corporate_memberships.delete_corpemembership app_object as can_delete %}
+{% else %}
+    {% has_perm user corporate_memberships.view_corpmembership as can_view_corpmemb %}
+    {% has_perm user corporate_memberships.change_corpmembership as can_edit_corpmemb %}
+{% endif %}
+
+
+<ul id="t-admin-megamenu-corporatememberships-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Corp. Members" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'corporate_memberships' %}">{% trans "Settings" %}</a></a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.index' %}">{% trans 'Index Page' %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'corpmembership.add' %}">{% trans "Add Corp. Member" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'corpmembership.search' %}">{% trans "Search All" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'corpmembership.mycorps' %}">{% trans "My Corp. Members" %}</a>
+                        </span>
+                    </li>
+
+                    {% if user.profile.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.pending_list' %}">{% trans "Pending Corp. Members" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.cap_status' %}">{% trans "Cap Status" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="divider"></li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:app_list' 'corporate_memberships' %}">{% trans 'Admin Backend' %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:corporate_memberships_corpmembershipapp_changelist' %}">{% trans "Application" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:corporate_memberships_corporatemembershiptype_changelist' %}">{% trans "Types" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:corporate_memberships_notice_changelist' %}">{% trans "Notices" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corp_membership.overview' %}">{% trans "Overview" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.import' %}">{% trans "Import" %}</a>
+                            </span>
+                        </li>
+
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</a>
+                            </span>
+                        </li>
+
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_corpmemb or can_edit_corpmemb %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Corp. Member" %}</span>
+                            </li>
+
+                            {% if can_view_corpmemb or allow_view %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'corpmembership.view' app_object.pk %}">{% trans "View Corp. Member" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_corpmemb and not app_object.is_archive %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'corpmembership.edit' app_object.pk %}">{% trans "Edit Corp. Member" %}</a>
+                                    </span>
+                                </li>
+
+                                {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:corporate_memberships_corpprofile_change' app_object.corp_profile.pk %}">{% trans "Edit Corp. Profile" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="option-link roster" href="{% url 'corpmembership.roster_search' %}?cm_id={{ app_object.id }}&active_only=1">{% trans "View Roster" %}</a>
+                                    </span>
+                                </li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'memberships.default_export' %}?cp_id={{ app_object.corp_profile.pk }}">{% trans "Export Roster" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if app_object.can_renew %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'corpmembership.renew' app_object.id %}">{% trans "Renew" %}</a>
+                                    </span>
+                                </li>
+                            {% else %}
+                                {% if app_object.is_expired and request.user.is_superuser %}
+                                    <li class="content-item">
+                                        <span class="app-name">
+                                            <a href="{% url 'corpmembership.renew' app_object.id %}">{% trans "Admin: Renew" %}</a>
+                                        </span>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if can_delete %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="option-link delete" href="{% url 'corpmembership.delete' app_object.pk %}">{% trans "Delete" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

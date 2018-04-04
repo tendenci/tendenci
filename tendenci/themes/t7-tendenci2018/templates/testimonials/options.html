@@ -1,0 +1,49 @@
+{% load testimonial_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% has_perm user testimonials.change_testimonial testimonial as can_edit %}
+{% has_perm user testimonials.delete_testimonial testimonial as can_delete %}
+
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    
+    <ul class="nav navbar-nav navbar-left {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+      <li>
+      {% if user.is_authenticated %}
+            <span><small>{% blocktrans with testimonial.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ testimonial.creator.get_absolute_url }}">
+            {% if testimonial.creator.first_name %}{{ testimonial.creator.first_name }} {{ testimonial.creator.last_name }}
+            {% else %}
+            {{ testimonial.creator }}
+            {% endif %}</a>
+            <br />
+            {% blocktrans with testimonial.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ testimonial.owner.get_absolute_url }}">
+            {% if testimonial.owner.first_name %}{{ testimonial.owner.first_name }} {{ testimonial.owner.last_name }}
+            {% else %}
+            {{ testimonial.owner }}
+            {% endif %}</a>
+            </small></span>
+        {% endif %}
+      </li>
+    </ul>
+    
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          {% if can_edit %}
+          <li><a href="{% url 'admin:testimonials_testimonial_change' opt_object.pk %}">Edit</a></li>
+          {% endif %}
+          {% if can_delete %}
+          <li><a href="{% url 'admin:testimonials_testimonial_delete' opt_object.pk %}">Delete</a></li>
+          {% endif %}
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>

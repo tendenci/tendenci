@@ -1,0 +1,10 @@
+{% extends "django_admin_bootstrapped:admin/change_form.html" %}
+{% load admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+
+{% block extrahead %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javaScript">
+{% include 'jobs/include/get_subcategories.js' %}
+</script>
+{% endblock %}

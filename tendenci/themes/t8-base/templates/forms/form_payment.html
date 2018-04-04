@@ -1,0 +1,33 @@
+{% extends form_template %}
+{% load styled_forms %}
+{% load forms_tags %}
+
+{% block title %}{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with i=form.intro %}{{ i }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+
+{% endblock extra_head %}
+
+{% block content %}
+
+<div class="t">
+    <div class="form-wrap">
+        <h1>{% trans "Billing Information" %}</h1>
+
+        <div class="form-builder-wrap">
+            <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div style="display:none">
+                <input type="hidden" name="entry_path" value="{{ request.path }}">
+            </div>
+            <div class="forms">
+                {{ payment_form|styled_form }}
+                <input type="submit" value="{% trans 'Submit' %}" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

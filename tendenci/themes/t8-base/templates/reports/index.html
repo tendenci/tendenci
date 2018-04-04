@@ -1,0 +1,22 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<h1>{% trans "Available reports" %}</h1>
+
+<ul>
+    <li><a href="{% url "reports-events-summary" %}">{% trans "Marketing Events Summary" %}</li>
+    <li><a href="{% url "reports-admin-users" %}">{% trans "Administrator Security Level" %}</li>
+    <li><a href="{% url "reports-user-added" %}">{% trans "Site Users Added" %}</li>
+    <li><a href="{% url "reports-user-activity" %}">{% trans "User Activity Summary" %}</li>
+    <li><a href="{% url "reports-user-access" %}">{% trans "User Access" %}</li>
+    <li><a href="{% url "reports-contacts-referral" %}">{% trans "Contacts Report - Referral Analysis" %}</li>
+    <li><a href="{% url "reports-articles" %}">{% trans "Article Reporting Options" %}</li>
+    <li><a href="{% url "reports-active-members" %}">{% trans "Active Memberships" %}</a></li>
+    <li><a href="{% url "reports-members-summary" %}">{% trans "Membership Summary" %}</a></li>
+    <li><a href="{% url "reports-expired-members" %}">{% trans "Expired Memberships" %}</a></li>
+    <li><a href="{% url "reports-members-over-time" %}">{% trans "Memberships Over Time" %}</a></li>
+    <li><a href="{% url "reports-corp-mems-over-time" %}">{% trans "Corporate Memberships Over Time" %}</a></li>
+    <li><a href="{% url "reports-corp-mems-summary" %}">{% trans "Corporate Membership Report" %}</a></li>
+</ul>
+
+{% endblock content %}

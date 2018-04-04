@@ -1,0 +1,28 @@
+{% load bootstrap_pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+
+<article class="panel panel-success t-search-result">
+    <div class="panel-heading t-search-result-heading">
+        <h1 class="panel-title"><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h1>
+    </div>
+
+    <div class="panel-body t-search-result-body">
+        {% if image.file_exists %}
+            <img class="photo-search-photo" src="{{ image.get_small_url }}" alt="{{ image.title|truncatechars:123 }}" title="{{ image.title|truncatechars:123 }}"/>
+        {% else %}
+            <img class="photo-search-photo" src="{{ image.default_thumbnail }}" alt="{% trans 'search photo' %}" title="{% trans 'search photo' %}" />
+        {% endif %}
+
+        <div class="description">
+                    {{ image.caption|striptags|truncatewords_html:25|safe }}
+        </div>
+
+    </div>
+
+    <div class="panel-footer t-search-result-footer">
+        {% include "photos/meta.html" %}
+    </div>
+</article>

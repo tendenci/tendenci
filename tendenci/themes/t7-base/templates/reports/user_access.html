@@ -1,0 +1,33 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{% trans "Active User Logins" %}</h1>
+</div>
+
+<p><strong>{% trans "Total User Records in Database:" %}</strong> {{ total_users }}</p>
+<p><strong>{% trans "Total Logins:" %}</strong> {{ total_logins }}</p>
+
+
+<h2>{% trans 'Unique User Logins' %}</h2>
+
+<div class="row">
+  <div class="col-sm-6">
+    <table class="table table-tendenci-reports">
+      <tr>
+        <th>Last x Days</th>
+        <th>Logins</th>
+      </tr>
+      {% for days, count in day_logins %}
+
+      <tr>
+        <td>{% blocktrans %}{{ days }} Day{% endblocktrans %}</td>
+        <td>{% blocktrans %}{{ count }}{% endblocktrans %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% endblock content %}

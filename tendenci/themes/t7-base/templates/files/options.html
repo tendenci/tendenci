@@ -1,0 +1,12 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user files.change_file opt_object as can_edit %}
+{% has_perm user files.delete_file opt_object as can_delete %}
+
+<div class="t-iconrow">
+{% if can_edit %}
+    <a class="option-link edit" href="{% url "file.edit" opt_object.pk %}">{% trans "Edit" %}</a>
+    <a class="option-link delete" href="{% url "file.delete" opt_object.pk %}">{% trans "Delete" %}</a>
+{% endif %}
+</div>

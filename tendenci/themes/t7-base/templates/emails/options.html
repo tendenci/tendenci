@@ -1,0 +1,19 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm request.user emails.change_emails opt_object as can_edit %}
+
+
+{% if can_edit %}
+    <nav class="navbar navbar-default t-meta-editor-bar t-meta-editor-more-options-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right t-meta-options-links t-meta-quick-links">
+                    <li><a class="t-meta-edit-link" href="{% url 'email.edit' email.pk  %}">{% trans "Edit" %}</a></li>
+                    <li><a class="t-meta-delete-link" href="{% url 'email.delete' email.pk %}">{% trans "Delete" %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

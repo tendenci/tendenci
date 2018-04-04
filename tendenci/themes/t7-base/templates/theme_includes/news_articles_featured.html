@@ -1,0 +1,27 @@
+{% load theme_tags %}
+{% load news_tags %}
+{% load article_tags %}
+{% list_news as featured_news limit=TEMPLATE_NEWS_ARTICLES_FEATURED_LIMIT %}
+{% list_articles as featured_articles limit=TEMPLATE_NEWS_ARTICLES_FEATURED_LIMIT %}
+<section id="news-featured">
+    <h3>{% firstof TEMPLATE_NEWS_ARTICLES_FEATURED_NEWSTITLE "News" %}</h3>
+
+    {% if featured_news %}
+    {% for news_item in featured_news %}
+        <p>{% blocktrans with b=news_item.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ news_item.get_absolute_url }}">{% trans 'Read more' %}</a>
+    {% endfor %}
+    {% else %}
+        <p>{% trans 'Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side.' %} {% if request.user.is_authenticated %}{% blocktrans %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endblocktrans %}{% endif %}</p> <a class="readmore" href="/">{% trans 'Read more' %}</a>
+    {% endif %}
+</section>
+<section id="news-featured">
+    <h2>{% firstof TEMPLATE_NEWS_ARTICLES_FEATURED_ARTICLESTITLE trans "News" %}</h2>
+    {% if featured_articles %}
+    {% for art in featured_articles %}
+        <p>{% blocktrans with b=art.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ art.get_absolute_url }}">{% trans 'Read more' %}</a>
+    {% endfor %}
+    {% else %}
+        <p>{% trans 'Tendenci supports great article updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side.' %} {% if request.user.is_authenticated %}{% blocktrans %}<a href="/articles/add/">Add your first article</a> to take the place of these examples.{% endblocktrans %}{% endif %}</p> <a href="/">{% trans 'Read more' %}</a>
+    {% endif %}
+</section>
+{% theme_setting setting_name %}

@@ -1,0 +1,172 @@
+{% extends "events/base-wide.html" %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+{% load event_filters %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link rel="stylesheet" href="{% static 'css/events-reg-search.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+<style>
+    #id_search_criteria, #id_search_text{
+        width: 150px;
+    }
+    #id_search_method{
+        width: 100px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+
+    <table id="wrap">
+        <tr><td id="event-wrap">
+        <!-- column1 -->
+
+            <div class="event-title">
+                <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+            </div>
+
+            <div class="event-date">
+                <div class="line">{{ event.start_dt|date:"M j, Y" }}</div>
+                <div class="line">{% if not event.all_day %}
+               {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}{% endif %}</div>
+            </div>
+
+            <div class="hr"></div>
+
+            {% if event.speaker_set.all.0 %}
+            {% with event.speaker_set.all.0 as speaker %}
+            <div class="speaker-wrap">
+                <div class="speaker"><strong>{% trans "Speaker" %}</strong></div>
+                <div>{{ speaker.name }}</div>
+            </div>
+            {% endwith %}
+            {% endif %}
+
+            {% if event.organizer_set.all.0 %}
+            {% with event.organizer_set.all.0 as organizer %}
+            <div class="organizer-wrap">
+                <div class="organizer"><strong>{% trans "Organizer" %}</strong></div>
+                <div>{{ organizer.name }}</div>
+            </div>
+            {% endwith %}
+            {% endif %}
+
+            <div class="filter-wrap">
+                <div><strong>{% trans "Filters" %}</strong></div>
+                <div><a href="{% url "event.registrant.search" event.pk %}?status=active">{{ active_registrants }} {% trans "Active" %}</a></div>
+                <div><a href="{% url "event.registrant.search" event.pk %}?status=canceled">{{ canceled_registrants }} {% trans "Canceled" %}</a></div>
+            </div>
+
+
+        </td> <!-- END #event-wrap -->
+        <td id="registrant-wrap">
+        <!-- column2 -->
+            <h1>{% trans "Event Registrant Search" %}</h1>
+
+            {% registrant_search event %}
+
+            {% if query %}
+            <div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
+            {% endif %}
+
+            {% autopaginate registrants 10 %}
+
+            <div class="events-wrap">
+            {% for registrant in registrants %}
+                {% with registrant|get_object as registrant %}
+                {# has_perm user events.view_event event as can_view #}
+                {# if can_view #}
+                <div class="event-wrap-search">
+
+                    <div class="options">
+                        <div class="quick-options">
+                            {% registrant_options request.user registrant %}
+                        </div>
+                    </div>
+
+                    <div class="image-wrap">
+                        {% gravatar registrant.user 80 %}
+                    </div>
+
+                    <div class="registrant-info">
+                        <h2>{% firstof registrant.get_name registrant.email %}</h2>
+
+                        {% if registrant.phone and registrant.email %}
+                        <div>{{ registrant.phone|phonenumber }} &middot; {{ registrant.email }}</div>
+                        {% else %}
+                            {% if registrant.phone %}
+                            <div>{{ registrant.phone|phonenumber }}</div>
+                            {% else %}
+                                {% if registrant.email %}
+                                <div>{{ registrant.email }}</div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if registrant.position_title and registrant.company_name %}
+                        <div>{% blocktrans with registrant.position_title as postitle %}{{ postitle }}{% endblocktrans %}
+                            {% blocktrans with registrant.company_name as regcomp %} at {{ regcomp }}{% endblocktrans %}</div>
+                        {% else %}
+                            {% if registrant.position_title %}
+                            <div>{% blocktrans with registrant.position_title as postitle %}{{ postitle }}{% endblocktrans %}</div>
+                            {% else %}
+                                {% if registrant.company_name %}
+                                <div>{% blocktrans with registrant.company_name as regcomp %}Works at {{ regcomp }}{% endblocktrans %}</div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+
+                        {% if registrant.custom_reg_form_entry and registrant.non_mapped_field_entries %}
+                            {% for entry in registrant.non_mapped_field_entries %}
+                            <div>{{ entry.label }}: {{ entry.value }}</div>
+                            {% endfor %}
+                        {% endif %}
+
+                    </div>
+
+                    <div style="clear:both;"></div>
+
+                    <div class="content"></div>
+                    <div class="meta">
+                        <div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}Registered on {{ reg_date }}{% endblocktrans %}</div>
+                        {% if registrant.cancel_dt %}
+                        <div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}Canceled on {{ cancel_date }}{% endblocktrans %}</div>
+                        {% endif %}
+                        <div style="clear:both;"></div>
+                    </div>
+
+                </div>
+                {# endif #}
+                {% endwith %}
+            {% empty %}
+                <div>{% trans "0 Results Found" %}</div>
+            {% endfor %}
+            </div>
+
+            {% paginate %}
+        </td></tr> <!-- END #registrant-wrap -->
+    </table>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:    'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:        'more-options-target'
+        });
+    </script>
+{% endblock %}

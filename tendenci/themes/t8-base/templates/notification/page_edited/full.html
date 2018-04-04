@@ -1,0 +1,25 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Page Edited" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<font size="2" face="Arial, Helvetica, sans-serif">
+<p>{% blocktrans with object.title as objtitle %}A page has been edited on the
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ objtitle }}</b>{% endblocktrans %}</p>
+<p>{% blocktrans %}To view the detail of the edited page, go to:{% endblocktrans %} <b>
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url 'page' object.id %}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+{% trans "To approve the edited page, go to:" %}
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url "page.edit" object.id %}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>
+</p>
+
+<br>{% trans "Thanks!" %}
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+</font>
+</body>
+</html>

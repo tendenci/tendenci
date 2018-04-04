@@ -1,0 +1,118 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+<div class="application-entry-wrap">
+
+        <h1>{% trans "Membership Confirmation" %}</h1>
+
+        <div class="entry_dt">
+            {% trans "Submitted" %} {{ membership.create_dt }}
+        </div>
+
+        {% if membership.application_approved %}
+            <div class="approved_dt">
+                {% blocktrans with membership.application_approved_dt|date_short as decision_date %}
+                Approved on {{ decision_date }} by:{% endblocktrans %}
+                {% if membership.application_approved_user %}
+                <a href="{% url "profile" membership.application_approved_user.username %}">{{ membership.application_approved_denied_user.profile.get_name }}</a>
+                {% else %}
+                {% trans 'Anonymous' %}
+                {% endif %}
+            </div>
+        {% elif membership.application_denied %}
+            <div class="denied_dt">
+                {% blocktrans with membership.application_approved_denied_user|date_short as decision_date %}
+                Denied on {{ decision_date }} by:{% endblocktrans %}
+                {{ entry.membership.application_approved_denied_user.profile.get_name }}
+            </div>
+        {% else %}
+            <div class="pending">{% trans "Pending" %}</div>
+        {% endif %}
+
+        {% with membership.user as member %}
+            <div>{% trans 'First Name' %}: {{ member.first_name }}</div>
+            <div>{% trans 'Last Name' %}: {{ member.last_name }}</div>
+            <div>{% trans 'Email' %}: {{ member.email }}</div>
+            <div>{% trans 'Email2' %}: {{ member.email2 }}</div>
+            <div>{% trans 'Company' %}: {{ member.profile.company }}</div>
+            <div>{% trans 'Department' %}: {{ member.profile.department }}</div>
+            <div>{% trans 'Position Title' %}: {{ member.profile.position_title }}</div>
+            <div>{% trans 'Address' %}: {{ member.profile.address }}</div>
+            <div>{% trans 'Address2' %}: {{ member.profile.address2 }}</div>
+            <div>{% trans 'Address Type' %}: {{ member.profile.address_type }}</div>
+            <div>{% trans 'City' %}: {{ member.profile.city }}</div>
+            <div>{% trans 'State' %}: {{ member.state }}</div>
+            <div>{% trans 'Zipcode' %}: {{ member.profile.zipcode }}</div>
+            <div>{% trans 'Country' %}: {{ member.profile.country }}</div>
+            <div>{% trans 'Phone' %}: {{ member.profile.phone }}</div>
+            <div>{% trans 'Phone2' %}: {{ member.profile.phone2 }}</div>
+            <div>{% trans 'Work Phone' %}: {{ member.profile.work_phone }}</div>
+            <div>{% trans 'Home Phone' %}: {{ member.profile.home_phone }}</div>
+            <div>{% trans 'Mobile Phone' %}: {{ member.profile.mobile_phone }}</div>
+            <div>{% trans 'Fax' %} : {{ member.profile.fax }}</div>
+            <div>{% trans 'URL' %}: {{ member.profile.url }}</div>
+            <div>{% trans 'URL2' %}: {{ member.profile.url2 }}</div>
+            <div>{% trans 'DOB' %}: {{ member.profile.dob }}</div>
+            <div>{% trans 'Sex' %}: {{ member.profile.sex }}</div>
+            <div>{% trans 'Spouse' %}: {{ member.profile.spouse }}</div>
+            <div>{% trans 'Hide in Search' %}: {{ member.profile.hide_in_search|yesno:"Yes,No" }}</div>
+            <div>{% trans 'Hide Address' %}: {{ member.profile.hide_address|yesno:"Yes,No" }}</div>
+            <div>{% trans 'Hide Email' %}: {{ member.profile.hide_email|yesno:"Yes,No" }}</div>
+            <div>{% trans 'Hide Phone' %}: {{ member.profile.hide_phone|yesno:"Yes,No" }}</div>
+        {% endwith %}
+
+        <hr />
+
+        <div>{% trans 'Payment Method' %}: {{ membership.payment_method }}</div>
+        <div>{% trans 'Membership Type' %}: {{ membership.membership_type }}</div>
+        <div>{% trans 'Join Date' %}: {{ membership.join_dt }}</div>
+        <div>{% trans 'Renew Date' %}: {{ membership.renew_dt }}</div>
+        <div>{% trans 'Expire Date' %}: {{ membership.expire_dt }}</div>
+
+        <hr />
+
+        <div>{% trans 'Member Number' %}: {{ membership.member_number }}</div>
+        <div>{% trans 'Renewal' %}: {{ membership.renewal }}</div>
+        <div>{% trans 'Certifications' %}: {{ membership.certifications }}</div>
+        <div>{% trans 'Work Experience' %}: {{ membership.work_experience }}</div>
+
+        <div>{% trans 'Referral Source' %}: {{ membership.referral_source }}</div>
+        <div>{% trans 'Referral Source Other' %}: {{ membership.referral_source_other }}</div>
+        <div>{% trans 'Referral Source Member Name' %}: {{ membership.referral_source_member_name }}</div>
+        <div>{% trans 'Referral Source Member Number' %}: {{ membership.referral_source_member_number }}</div>
+
+        <div>{% trans 'Affilliation Member Number' %}: {{ membership.affiliation_member_number }}</div>
+        <div>{% trans 'Primary Practice' %}: {{ membership.primary_practice }}</div>
+        <div>{% trans 'How long in practice' %}: {{ membership.how_long_in_practice }}</div>
+        <div>{% trans 'Notes' %}: {{ membership.notes }}</div>
+
+        <div>{% trans 'Areas of Expertise' %}: {{ membership.areas_of_expertise }}</div>
+        <div>{% trans 'Corporate Membership ID' %}: {{ membership.corporate_membership_id }}</div>
+        <div>{% trans 'Home State' %}: {{ membership.home_state }}</div>
+        <div>{% trans 'Year left Native Country' %}: {{ membership.year_left_native_country }}</div>
+        <div>{% trans 'Network Sectors' %}: {{ membership.network_sectors }}</div>
+        <div>{% trans 'Networking' %}: {{ membership.networking }}</div>
+        <div>{% trans 'Government Worker' %}: {{ membership.government_worker|yesno:"Yes,No" }}</div>
+        <div>{% trans 'Government Agency' %}: {{ membership.government_agency }}</div>
+        <div>{% trans 'License Number' %}: {{ membership.license_number }}</div>
+        <div>{% trans 'License State' %}: {{ membership.license_state }}</div>
+        <div>{% trans 'Region' %}: {{ membership.region }}</div>
+        <div>{% trans 'Industry' %}: {{ membership.industry }}</div>
+        <div>{% trans 'Company Size' %}: {{ membership.company_size }}</div>
+        <div>{% trans 'Promotion Code' %}: {{ membership.promotion_code }}</div>
+
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+
+{% blocktrans with mp.last_name as mplast and mp.first_name as mpfirst %}Payment attempt by {{ mplast }}, {{ mpfirst }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

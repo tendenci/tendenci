@@ -70,7 +70,7 @@ class SkillSet(models.Model):
 
     loc = models.PointField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: Skills' % (self.user.profile.get_name())
 
     @property

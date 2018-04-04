@@ -1,0 +1,21 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} StudyGroups, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} StudyGroups{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "studygroups/media/css/studygroups.css" %}
+    </style>
+{% endblock %}
+
+{% block top_bar %}
+{% if request.user.is_authenticated %}
+    {% include "studygroups/top_nav.html" %}
+    {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% endblock %}

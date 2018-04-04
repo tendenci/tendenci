@@ -1,0 +1,58 @@
+{% extends "photos/base.html" %}
+
+{% load humanize %}
+{% load bootstrap_pagination_tags %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{{ photo_set.name }}</h1>
+
+    {% if task_id %}
+        <div id="zip-wait">
+            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{% static 'images/ajax-loader.gif' %}" alt="{% trans 'loading' %}" title="{% trans 'loading' %}" ></p>
+        </div>
+    {% endif %}
+
+    <div id="zip-done">
+        <p>{% trans "Zip file ready for download" %}.</p>
+        {% trans "Download" %} <a id='download-link' href="{{ file_path }}">{% trans "here" %}.</a></p>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        {% if task_id %}
+            function refresh(){
+                $.ajax({
+                    url: "{% url "photoset_zip_status" photo_set.id task_id %}",
+                    success: function(data){
+                        if (data != "DNE"){
+                            $('#zip-wait').hide();
+                            $('#download-link').attr('href', data);
+                            $('#zip-done').show();
+                        } else {
+                            setTimeout(refresh, 2000);
+                        }
+                    }
+                });
+            }
+            $(document).ready(function(){
+                $('#zip-done').hide();
+                refresh();
+            });
+        {% endif %}
+    </script>
+{% endblock %}

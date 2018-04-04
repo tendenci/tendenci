@@ -1,3 +1,4 @@
+from builtins import str
 from haystack import indexes
 
 from tendenci.apps.events.models import Event, Registrant
@@ -105,7 +106,7 @@ class RegistrantIndex(CustomSearchIndex, indexes.Indexable):
         if obj.custom_reg_form_entry:
             obj.last_name = obj.custom_reg_form_entry.get_value_of_mapped_field('last_name')
             if not obj.last_name:
-                obj.last_name = obj.custom_reg_form_entry.__unicode__()
+                obj.last_name = str(obj.custom_reg_form_entry)
         return obj.last_name
 
     def prepare_order(self, obj):

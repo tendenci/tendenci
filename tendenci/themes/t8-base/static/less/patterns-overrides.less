@@ -1,0 +1,112 @@
+/*!
+ * Bootstrap @VERSION
+ *
+ * Copyright 2011 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ * Date: @DATE
+ */
+
+/*!
+ * Tendenci Edit
+ */
+
+// Tabs
+.tabs {
+  > li {
+    &.dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    &.active > a {
+      color: @grayDark;
+    }
+    > a {
+      color: #555;
+      text-decoration: none;
+    }
+  }
+}
+
+// Dropdowns in tabs
+
+.dropdown-menu {
+  margin: 0;
+  a {
+    text-decoration: none;
+    color: @grayDark;
+    &:visited {
+      color: @grayDark;
+    }
+    &:hover {
+      color: #333;
+    }
+    &.delete {
+     color: @red !important;
+    }
+  }
+}
+
+li.dropdown {
+    // Fix for IE7 tabs over lower elements
+    z-index: 100;
+}
+
+// Mega Menu Dropdown
+div.dropdown-menu {
+  min-width: 320px;
+  width: 320px;
+  li.heading {
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 110%;
+  }
+  ul {
+    float: left;
+    margin: 0;
+    padding: 0;
+    display: block;
+    min-width: 160px;
+    width: 160px;
+  }
+}
+
+// Alerts
+.alert-message a.close, .btn {
+  text-decoration: none;
+}
+.alert-message {
+  a, a:visited { color: @grayDark; }
+  a:hover { color: #333; }
+}
+
+// Modal
+.modal {
+  width: 460px;
+  margin: -150px 0 0 -230px;
+  &.hide { display: none; }
+}
+.modal-header {
+  background-color: #f5f5f5;
+  h3 {
+    color: @grayDark;
+    border: none;
+    margin: 0;
+    padding: 4px 0;
+    font-size: 24px;
+    font-family: Helvetica, Arial, "sans-serif";
+    text-transform: none;
+  }
+  a {
+    text-decoration: none;
+  }
+}
+.modal-middle-header {
+  border-top: solid 1px @grayLight;
+}
+
+// Buttons
+.btn {
+  &.secondary { color: @grayDark; }
+}

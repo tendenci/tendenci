@@ -1,0 +1,66 @@
+{% load base_filters %}
+{% load perm_tags %}
+
+
+{% if registration.enabled %}
+    {% if event.is_over and not request.user.is_superuser %}
+        <div class="registration-red">
+            {% trans "Event has ended" %}
+        </div>
+    {% else %}
+        {% if spots_taken >= limit and limit > 0 %}
+            <div class="registration-orange">
+                {% trans "Event is full" %}
+            </div>
+        {% else %}
+            {% if reg_ended and not event.is_over %}
+                {% if request.user.is_superuser %}
+                <div class="alert alert-info" role="alert"><a href="{% url 'event.pricing_edit' event.pk %}">Admin: To Open Registration, Update Price End Date</a></div>
+                {% endif %}
+                <div class="registration-red">
+                    {% trans "Registration has ended" %}
+                </div>
+            {% endif %}
+            {% if not reg_started %}
+                <div class="registration-red">
+                    <div>{% trans "Registration starts on " %}</div>
+                    <div><strong>{{ earliest_time }}</strong></div>
+                </div>
+            {% endif %}
+            {% if pricing %}
+                <div class="pricing-list-wrap">
+                    <form action="{% url "event.register" event.pk %}" method="get">
+
+                    {% if pricing|length == 1 and pricing.0.price == 0 %}
+                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'RSVP Now' %}" />
+                    {% else %}
+                    <ul>
+                        {% for price in pricing %}
+                        <li>
+                            {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %} - &nbsp;<strong>{{ price.price|format_currency }}</strong><br>
+                            ({% trans "ends" %} {{ price.end_dt|date:"m/d/Y" }})
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                    {% endif %}
+
+                    {% if event.registration_configuration.has_member_price %}
+                    {% if not request.user.profile.is_member %}
+                    <a class="become-a-member" href="{% url "membership-referer-url" %}?next={% url "membership-applications" %}">{% trans "Become a member" %}</a>
+                    {% endif %}
+                    {% endif %}
+
+                    </form>
+
+                {% include "events/include/spots_status.html" %}
+
+                {% if is_registrant %}
+                <div id="is-registrant"><a href="{% url "event.registrant.search" event.pk %}?q={{ user.email }}">{% trans "You have already registered" %}</a></div>
+                {% endif %}
+
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,32 @@
+
+{% load base_filters %}
+
+<p>{{ user.username }},</p>
+
+<p>{% trans "The following invoice has been edited:" %}</p>
+
+<div>{% trans "ID:" %} {{ object.id }}</div>
+<div>{% trans "Type:" %}
+    {% if object.estimate  %}
+        {% if 'cancel' in object.status_detail %}
+            {% trans "CANCELLED" %}
+        {% else %}
+            {% trans "EST" %}
+        {% endif %}
+    {% else %}
+        {% trans "Tendered" %}
+    {% endif %}
+</div>
+{% if invoice.create_dt %}
+    <div>
+        {% blocktrans with object.create_dt|date:'long' as objdate %}Create Date: {{ objdate }} {% endblocktrans %}
+    </div>
+{% endif %}
+{% if not object.estimate and object.total > 0  %}
+    <div>
+       {% trans "Total:" %} {{ object.total|format_currency }}
+    </div>
+{% endif %}
+<div>{% blocktrans with object.get_absolute_url as objget%}To view this invoice go to: {{ SITE_GLOBAL_SITEURL }}{{ objget }}{% endblocktrans %}</div>
+
+<p>{% trans "Thanks!" %}</p>

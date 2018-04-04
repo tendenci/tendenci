@@ -1,0 +1,24 @@
+{% extends "locations/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Import Locations from CSV file' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="import-wrap">
+
+    <h1>{% trans "Locations Import Map Fields" %}</h1>
+    <p class="timestamp">{% trans "Step 2/4" %} &middot; {{ now }}</p>
+
+    <form method='post' action='{% url "locations_import_preview" locport.id %}' enctype="multipart/form-data">{% csrf_token %}
+        {{ form|styled_form }}
+        <input type='submit' value='{% trans "Submit" %}'>
+    </form>
+</div>
+{% endblock %}

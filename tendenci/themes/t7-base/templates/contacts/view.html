@@ -1,0 +1,53 @@
+{% extends "contacts/base.html" %}
+{% load base_filters %}
+{% load contact_tags %}
+
+
+{% block title %}{{ contact }}{% endblock %}
+
+{% block content %}
+    {% contact_options request.user contact %}
+
+    <article id="t-contacts-contact-{{ contact.pk }}" class="t-contacts-contact">
+        <div class="page-header">
+            <h1>{% blocktrans %}{{ contact }}'s Contact Form Submission{% endblocktrans %}</h1>
+        </div>
+
+        <div class="t-contacts-contact-body">
+            <section class="t-contacts-contact-information">
+                <ul class="list-unstyled t-contacts-contact-information-list">
+                    {% if contact.phones.exists %}
+                        <li><strong>{% trans "Phone:" %}</strong> <span>{{ contact.phones.all.0.number|phonenumber }}</span></li>
+                    {% endif %}
+
+                    {% if contact.emails.exists %}
+                        <li><strong>{% trans "Email:" %}</strong> <span>{{ contact.emails.all.0.email|obfuscate_email }}</span></li>
+                    {% endif %}
+
+                    {% if contact.urls.exists %}
+                        <li><strong>{% trans "Website" %}</strong> <span>{{ contact.urls.all.0.url }}</span></li>
+                    {% endif %}
+
+                    {% if contact.addresses.exists %}
+                        <li>
+                            <strong>{% trans "Address" %}</strong>
+                            <address>
+                                <span class="t-contacts-contact-address">{{ contact.addresses.all.0.address }}</span><br>
+                                <span class="t-contacts-contact-city-state">{{ contact.addresses.all.0.city_state|join:", " }} {{ contact.addresses.all.0.zipcode }}</span><br>
+                                <span class="t-contacts-contact-country">{{ contact.addresse.all.0.country }}</span>
+                            </address>
+                        </li>
+                    {% endif %}
+                </ul>
+            </section>
+
+            <section class="t-contacts-contact-message">
+                <h2>{% trans "Message" %}</h2>
+
+                <em><strong>{% trans "Submitted on:" %}</strong> <span>{{ contact.create_dt|date:"long" }}</span></em>
+
+                <p>{% blocktrans with m=contact.message|linebreaks %}{{ m }}{% endblocktrans %}</p>
+            </section>
+        </div>
+    </article>
+{% endblock %}

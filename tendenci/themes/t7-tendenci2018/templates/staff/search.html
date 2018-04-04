@@ -1,0 +1,83 @@
+{% extends "staff/base.html" %}
+{% load base_filters %}
+{% load pagination_tags %}
+{% load staff_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/staff.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Staff" href="{% url "staff.feed" %}" />
+{% endblock %}
+
+{% block content %}
+
+
+<div class="page-header">
+  <h1> <!--{{ SITE_GLOBAL_SITEDISPLAYNAME }}
+    {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}-->  Our Staff</h1>
+</div>
+
+{% autopaginate staff_members 9 %}
+{% has_perm user staff.add_staff as can_add_staff %}
+<div id="case-studies-search">
+  
+  
+  <div>
+    <ul class="nav nav-pills">
+      <li>
+        {% staff_search %}
+        {% if can_add_staff %}
+      </li>
+      <li class="pull-right"><a class="btn btn-primary" href="{% url "admin:staff_staff_add" %}">
+        {% trans "Add" %} {% firstof MODULE_STAFF_LABEL 'Staff' %}</a>
+      </li>
+      {% endif %}
+    <!-- NOTE: this is a styling inconsistency and should be updated to carry the Add button in "search-form.html" -->
+    </ul>
+  </div>
+  
+  <br />
+  
+  
+  <div class="staff-search-wrap-list clearfix">
+    {% for staff in staff_members %}
+    
+    {% if forloop.first %}<div class="row">{% endif %}
+    
+    <div class="col-md-4">
+      {% search_result staff %}
+    </div>
+    
+    {% if forloop.counter|divisibleby:3 %}</div><div class="row">{% endif %}
+    {% if forloop.last %}</div>{% endif %}    
+    
+    {% empty %}
+    <p>0 {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %} {% trans "Found" %}</p>
+    {% endfor %}
+    
+  </div>
+  {% paginate %}
+  
+</div>
+
+
+{% endblock %}
+
+{% block featured_staff %}
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+<script type="text/javascript">
+  var iconrow = new dropdown({
+  container:  'more-options-wrap',
+  trigger:  'more-options-trigger',
+  target:    'more-options-target'
+  });
+</script>
+{% endblock %}

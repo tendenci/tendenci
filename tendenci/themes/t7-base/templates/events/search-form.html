@@ -1,0 +1,52 @@
+<form class="search-form" action="{% if past %}{% url "event.past_search" %}{% else %}{% url "event.search" %}{% endif %}" method="get">
+
+<div class="form-field clearfix">
+    <div class="id_start_dt">
+            <div class="label">
+                <label for="start_dt">{% trans 'Start Date' %}</label>
+            </div>
+            <div class="field">
+                {{ form.start_dt }}
+            </div>
+     </div>
+</div>
+
+<div id="event_types_container" class="form-field clearfix">
+    <div class="id_event_types">
+            <div class="label">
+                <label for="event_type">{% trans 'Event Type' %}</label>
+            </div>
+            <div class="field">
+                {{ form.event_type }}
+            </div>
+     </div>
+</div>
+
+<div id="event_groups_container" class="form-field clearfix">
+    <div class="id_event_groups">
+            <div class="label">
+                <label for="event_group">{% trans 'Event Group' %}</label>
+            </div>
+            <div class="field">
+                {{ form.event_group }}
+            </div>
+     </div>
+</div>
+
+{% if form.registration %}
+<div class="form-field clearfix">
+    <div class="id_registration">
+        <div class="label"><br/></div>
+        <div class="field">
+            {{ form.registration }} <label for="id_registration">{% trans "Events I Have Registered For" %}</label>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="clear"></div>
+
+<div>{{ form.q.errors }}</div>
+{{ form.search_category }}
+{{ form.q }}
+<input class="btn" type="submit" value="{% trans 'Search' %}" />
+</form>

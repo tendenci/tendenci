@@ -1,0 +1,73 @@
+{% extends base_template_path %}
+{% load bootstrap_pagination_tags %}
+{% load file_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/files.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %}</h1>
+
+    {% autopaginate files 10 %}
+    {% file_search %}
+    <div class="files-found">{{ paginator.count }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</div>
+
+    <div class="files-wrap clearfix">
+    {% for file in files %}
+        {% search_result file %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // url exists
+            url_exists = function(url){
+                var http = new XMLHttpRequest();
+                http.open('HEAD', url, false);
+                http.send();
+                return http.status!=404;
+            }
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_file = confirm('{% trans "Permenantly delete file" %}?');  // confirm
+                if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+
+            // loop through files
+            $('.t .file-wrap h2 a').each(function(){
+                if(!url_exists(this.href)){
+                    $(this).addClass('broken');
+                }
+            });
+
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
+    <script type="text/javascript">
+    {% include 'files/include/categories.js' %}
+    </script>
+{% endblock %}

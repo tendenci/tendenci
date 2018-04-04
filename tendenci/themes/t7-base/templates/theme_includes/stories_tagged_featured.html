@@ -1,0 +1,24 @@
+{% load theme_tags %}
+{% load story_tags %}
+{% list_stories as featured_stories limit=TEMPLATE_STORIES_TAGGED_FEATURED_LIMIT tags="featured" %}
+
+<section id="featured-stories">
+    {% if featured_stories %}
+        {% for story in featured_stories %}
+            <div class="featured-item">
+                <a href="{{ story.full_story_link }}">{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="featured-item">
+            <a href="#">{% trans 'Business Strategy' %}</a>
+        </div>
+        <div class="featured-item">
+            <a href="#">{% trans 'Talking Points' %}</a>
+        </div>
+        <div class="featured-item">
+            <a href="#">{% trans 'Who We Are' %}</a>
+        </div>
+    {% endif %}
+</section><!-- /#featured-stories -->
+{% theme_setting setting_name %}

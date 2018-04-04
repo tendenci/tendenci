@@ -1,0 +1,23 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+
+{% block content %}
+
+<div class="t">
+    <div class="article-wrap">
+
+        <h1>{% trans "Articles Export" %}</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" name="download" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+
+{% if membership.can_renew %}
+<div class="membership-renew-button renew-now">
+    <a href="{{ membership.ma.get_absolute_url }}">{% blocktrans with membership.get_renewal_period_dt.1 as memdate %}Renew from now until {{ memdate }}{% endblocktrans %}</a>
+</div>
+{% else %}
+
+    {% if membership.get_renewal_period_dt.0 > TODAY %}
+        <div class="membership-renew-button renew-soon">
+        {% trans "Renewal available in" %} {{ membership.get_renewal_period_dt.0|timeuntil }}
+        </div>
+    {% else %}
+        <div class="membership-renew-button renew-soon">
+        {% trans "Expired: Renewal Period has Passed" %}
+        </div>
+    {% endif %}
+
+{% endif %}

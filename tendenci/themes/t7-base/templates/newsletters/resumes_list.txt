@@ -1,0 +1,59 @@
+
+{% if resumes %}
+
+    <h3 style="font-size: 24px; font-family: Helvetica, Arial, sans-serif; margin: 0px;">
+    {# named area for jump links #}
+    <a name="resumes" id="resumes"></a>
+    {% if start_dt %}
+        {% blocktrans with start_dt|date:"M d, Y" as startdate and end_dt|date:"M d, Y" as enddate %}Resumes Updated for {{ startdate }} to {{ enddate }}{% endblocktrans %}
+    {% else %}
+        {% trans "All Resumes" %}
+    {% endif %}
+    </h3>
+
+    {% for resume in resumes %}
+
+        {# leverage the functions in the object #}
+
+        <table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
+        <tr><td>&nbsp;</td></tr>
+        <tr><td align="left" valign="top">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'resume' resume.slug %}" >
+        <font face="Arial" size="2"><b> {% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}
+        </b></font></a>
+
+        {# show member icon if not allowanonymousview/allowsiteuserview #}
+        {% if not page.allow_anonymous_view and page.allow_user_view   %}
+            &nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}{% static 'images/icons/member.gif' %}" height="13" width="15"
+            border="0" alt="{% trans 'Member View Only' %}" title="{% trans 'Member View Only' %}">
+        {% endif %}
+        </td></tr>
+
+        {% if not simplified  %}
+            <tr><td align="left"><font face="Arial" size="2" color="#000000">
+            <b>{% trans "Updated:" %}</b> {{ resume.update_dt|date:"l d-M-Y h:i A" }} </font>
+            </td></tr>
+        {% endif %}
+
+        <tr><td align="left" valign="top"><div>
+        <font face="Arial" size="2" color="#000000">
+
+        {% blocktrans with b=resume.description|striptags|safe|truncatewords:60 %}{{ b }}{% endblocktrans %}
+         <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'resume' resume.slug %}">[More Info]</a>
+        </font>
+
+        {#  posted by #}
+        {% if not simplified  %}
+            <font face="Arial" size="2" color="#000000">
+            <br><b>{% blocktrans with resume.owner.first_name as resumefirst and resume.owner.last_name as resumelast %}Posted by</b>:
+            {{ resumefirst }} {{ resumelast }}{% endblocktrans %}
+            </font>
+        {% endif %}
+        <br>
+
+        </div></td></tr>
+        </table>
+
+    {% endfor %}
+    <hr>
+{% endif %}

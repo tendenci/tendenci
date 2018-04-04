@@ -1,0 +1,15 @@
+{% load theme_tags %}
+{% load event_tags %}
+
+<section id="events-list">
+    <h3>{% firstof TEMPLATE_EVENTS_LIST_TITLE_DATE_TIME_TITLE "Upcoming Events" %}</h3>
+    {% list_events as events_list limit=TEMPLATE_EVENTS_LIST_TITLE_DATE_TIME_LIMIT %}
+    {% for event in events_list %}
+        <h4><a href="{{ event.get_absolute_url }}">{% blocktrans with t=event.title %}{{ t }}{% endblocktrans %}</a></h4>
+        <p>{{ event.start_dt }}</p>
+    {% empty %}
+        <h4>{% if user.profile.is_superuser %}<a href="{% url "event.add" %}">{% trans "Add your first event" %}</a>{% else %}<a href="#">{% trans "Great Event" %}</a>{% endif %}</h4>
+        <p>{% now "b" %} 28th</p>
+    {% endfor %}
+</section>
+{% theme_setting setting_name %}

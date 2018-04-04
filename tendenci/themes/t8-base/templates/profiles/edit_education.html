@@ -1,0 +1,33 @@
+{% extends "profiles/base.html" %}
+{% load profile_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Edit Education History' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+       {% if request.user == user_this %}
+       <h1>{% trans 'My Education History' %}</h1>
+       {% else %}
+        <h1>{% trans 'Education History ' %}</h1>
+        <p>
+        {% trans 'User:' %} <a href="{% url 'profile' user.username %}">{% if user_this.full_name %}{{ user_this.full_name }}{% else %}{{ user_this.username }}{% endif %}</a>
+        </p>
+        {% endif %}
+        <div class="profile-wrap">
+            <form  class="form-horizontal" action="." method="post">{% csrf_token %}
+                <div class="forms">
+                    {{ form|styled_form }}
+                    <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}" />
+                </div>
+            </form>
+        </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

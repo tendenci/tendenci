@@ -1,0 +1,69 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user discounts.add_discount as can_add_discount %}
+
+{% if nav_object %}
+    {% has_perm user discounts.view_discount nav_object as can_view_discount %}
+    {% has_perm user discounts.change_discount nav_object as can_edit_discount %}
+    {% has_perm user discounts.delete_discount nav_object as can_delete_discount %}
+{% else %}
+    {% has_perm user discounts.view_discount as can_view_discount %}
+    {% has_perm user discounts.change_discount as can_edit_discount %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Discounts' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Discounts" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            <li><a href="{% url 'discounts' %}">{% trans "Search Discounts" %}</a></li>
+            {% if can_add_discount %}
+                <li><a href="{% url "discount.add" %}">{% trans "Add Discount" %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url "discount.export" %}">{% trans "Export Discounts" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_discount or can_edit_discount %}
+            <ul>
+                <li class="heading">{% trans "This Discount" %}</li>
+                <li class="divider"></li>
+                {% if can_view_discount %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Discount" %}</a></li>
+                {% endif %}
+                {% if can_edit_discount %}
+                    <li><a href="{% url "discount.edit" nav_object.pk %}">{% trans "Edit Discount" %}</a></li>
+                {% endif %}
+                {% if can_delete_discount %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "discount.delete" nav_object.pk %}">{% trans "Delete Discount" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_EVENTS_ENABLED %}
+    <li><a href="{% url 'events' %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

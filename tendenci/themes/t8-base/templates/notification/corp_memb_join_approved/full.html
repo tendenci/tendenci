@@ -1,0 +1,42 @@
+
+<p>{% blocktrans with object.corp_profile.name as objname %}Your corporate membership "{{ objname }}" has been approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk  %}</a>
+</p>
+
+{% if invoice %}
+<p>
+    {% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.pk %}</a>
+</p>
+{% endif %}
+
+<p>
+{% blocktrans %}To add individual memberships under your corporate, go to:
+{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url "membership_default.add_under_corp" object.id %}</a>
+</p>
+
+{% if object.authentication_method == 'secret_code' %}
+<p>
+{% blocktrans %}<b>secret code</b>:{% endblocktrans %}<br />
+<b>{{ object.corp_profile.secret_code }}</b>
+</p>
+{% endif %}
+
+{% if object.anonymous_creator %}
+<p>
+    {% if created %}
+    {% trans 'Your login account' %}:<br />
+    {% trans 'Username' %}: <strong>{{ username }}</strong><br />
+    {% trans 'Password' %}: <strong>{{ password }}</strong>
+    {% else %}
+    {% trans 'Your login username' %}: <strong>{{ object.creator_username }}</strong>
+    {% endif %}
+    <br />
+    {% trans 'To log into the site, visit' %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url "auth_login" %}">{{ SITE_GLOBAL_SITEURL }}{% url "auth_login" %}</a>
+</p>
+{% endif %}
+<p>{% trans "Thanks!" %}</p>
+
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

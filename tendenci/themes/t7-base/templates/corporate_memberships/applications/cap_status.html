@@ -1,0 +1,47 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load base_filters %}
+
+{% block content %}
+<div class="t">
+<div class="application-form-wrap">
+    <h1>{% trans "Memberships Cap Status" %}</h1>
+
+    {% if corp_memberships %}
+    <table class="table table-striped">
+        <tr>
+            <th width="20%">{% trans 'Corporate Name' %}</th>
+            <th width="20%">{% trans 'Membership Type' %}</th>
+            <th width="10%">{% trans '# of members' %}</th>
+            <th width="10%">{% trans 'Cap (Maximum # of members allowed)' %}</th>
+            <th width="10%">{% trans 'Cap reached?' %}</th>
+        </tr>
+    {% for corp_membership in corp_memberships %}
+        <tr{% if corp_membership.is_cap_reached %} class="danger"{% endif %}>
+            <td><a href="{% url 'corpmembership.view' corp_membership.id %}">{{ corp_membership.corp_profile.name }}</a></td>
+            <td><a href="{% url 'admin:corporate_memberships_corporatemembershiptype_change' corp_membership.corporate_membership_type.id  %}">{{ corp_membership.corporate_membership_type.name }}</a></td>
+            <td>{{ corp_membership.members_count }}</td>
+            <td>
+                {% if corp_membership.corporate_membership_type.apply_cap %}
+                {{ corp_membership.corporate_membership_type.membership_cap }}
+                {% else %}
+                {% trans 'N/A' %}
+                {% endif %}
+            </td>
+            <td>
+                {% if corp_membership.corporate_membership_type.apply_cap %}
+                    {% if corp_membership.is_cap_reached %}
+                    <strong>{% trans 'Yes' %}</strong>
+                    {% else %}
+                    {% trans 'Not yet' %}
+                    {% endif %}
+                {% else %}
+                    {% trans 'N/A' %}
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

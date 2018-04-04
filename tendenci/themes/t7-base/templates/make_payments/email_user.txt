@@ -1,0 +1,33 @@
+{% load base_filters %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Email Notification" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+
+    <p><font face="Arial, Helvetica, sans-serif" size="2">
+    {{ make_payment.first_name }} {{ make_payment.last_name }},
+    </font></p>
+
+    <p><font face="Arial, Helvetica, sans-serif" size="2">
+    {% blocktrans with make_payment.payment_amount|format_currency as makepay %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} Thank you for your payment of
+    {{ makepay }}.{% endblocktrans %}
+    {% trans "This e-mail does not confirm payment approval." %}
+    </font></p>
+
+    <p><font face="Arial, Helvetica, sans-serif" size="2">
+    {% trans "To check the status of your payment, click here:" %}
+    <a href="{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url "invoice.view" invoice.id invoice.guid %}</a>
+    </font></p>
+
+    <p><font face="Arial, Helvetica, sans-serif" size="2" color="red">
+    {% trans "*** Important Note: This is a private link. Please DO NOT share it with anybody publicly.    " %}
+    </font></p>
+
+</body>
+</html>

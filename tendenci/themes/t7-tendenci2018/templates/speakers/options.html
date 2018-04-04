@@ -1,0 +1,22 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user speaker.change_speaker opt_object as can_edit %}
+{% has_perm user speaker.delete_speaker opt_object as can_delete %}
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    
+    <ul class="nav navbar-nav">
+      {% if can_edit %}
+      <li><a href="{% url "admin:speakers_speaker_change" opt_object.pk %}?next={{ request.path }}">
+        {% trans 'Edit' %}</a></li>
+      {% endif %}
+      {% if can_delete %}
+      <li><a href="{% url "admin:speakers_speaker_delete" opt_object.pk %}">
+        {% trans 'Delete' %}</a></li>
+      {% endif %}
+    </ul>
+    
+  </div>
+</nav>

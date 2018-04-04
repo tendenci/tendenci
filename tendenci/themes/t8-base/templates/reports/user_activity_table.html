@@ -1,0 +1,49 @@
+
+<table class="table table-tendenci-reports">
+  <tr>
+    <th>
+      {% trans "#" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort={{ request.GET.sort|striptags }}&reverse=False"><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort={{ request.GET.sort|striptags }}&reverse=True"><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Username" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=username" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=-username" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Lastname" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=last_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=-last_name" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Firstname" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=first_name" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=-first_name" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Email" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=email" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=-email" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+    <th>
+      {% trans "Events" %}&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=events" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+      <a href="{% url "reports-user-activity" %}?sort=-events" ><i class="fa fa-arrow-down"></i></a>
+    </th>
+  </tr>
+  {% for user in users %}
+  <tr>
+    {% if is_reverse %}
+    <td>{{ forloop.revcounter }}</td>
+    {% else %}
+    <td>{{ forloop.counter }}</td>
+    {% endif %}
+    <td><a href="{% url 'profile' user.username %}">{{ user.username }}</a></td>
+    <td>{{ user.last_name }}</td>
+    <td>{{ user.first_name }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.event_count }}</td>
+  </tr>
+  {% endfor %}
+</table>

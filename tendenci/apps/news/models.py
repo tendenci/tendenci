@@ -99,7 +99,7 @@ class News(TendenciBaseModel):
     def get_absolute_url(self):
         return reverse('news.detail', args=[self.slug])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.headline
 
     def save(self, *args, **kwargs):

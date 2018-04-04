@@ -1,0 +1,54 @@
+{% extends "memberships/base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h2>{{ app.name }}</h2>
+    <h4 class="alert alert-danger" role="alert">
+        {% blocktrans with corp_profile_name=corp_membership.corp_profile.name %}
+        The corporate "<a href="{{ view_url }}">{{ corp_profile_name }}</a>"
+        has reached the maximum allowable members
+        {% endblocktrans %}
+    </h4>
+
+    <p>{% trans "We're sorry that currently you cannot join under the corporate" %}
+        {% if can_view %}
+        "<strong><a href="{{ view_url }}">{{ corp_membership.corp_profile.name }}</a></strong>"
+        {% else %}
+        "<strong>{{ corp_membership.corp_profile.name }}</strong>"
+        {% endif %}
+        {% trans "because it has reached the maximum allowed corporate members." %}
+    </p>
+
+    <p>{% blocktrans with reps_pluralize=reps.count|pluralize %}Please contact your membership representative{{ reps_pluralize }} to upgrade your corporate membership.{% endblocktrans %}
+        {% if reps %}
+        <br />
+        {% for rep in reps %}
+        {{ rep.user.get_full_name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% endif %}
+    </p>
+
+
+    {% if email_sent %}
+    <p>{% blocktrans with reps_pluralize=reps.count|pluralize %}A notification email has also been sent to your membership representative{{ reps_pluralize }}.{% endblocktrans %}</p>
+    {% endif %}
+
+    {% if join_as_indiv_url %}
+    <p>{% blocktrans %}As an alternative, you can opt in to join as an individual membership if you'd like,<br />
+        <a role="button" href="{{ join_as_indiv_url }}"><button class="btn btn-primary">Join as Individual Membership</button></a>{% endblocktrans %}
+    </p>
+    {% endif %}
+
+    {% if is_admin %}
+    <p>
+    <strong>ADMIN</strong>: <br />
+    <a role="button"  href="{{ upgrade_link }}"><button class="btn btn-primary">{% trans "Upgrade the Corporate Membership" %}</button></a>
+    </p>
+    {% endif %}
+</div>
+{% endblock %}

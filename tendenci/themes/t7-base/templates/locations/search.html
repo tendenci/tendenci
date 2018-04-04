@@ -1,0 +1,56 @@
+{% extends "locations/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load locations_tags %}
+{% load search_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }} {% trans 'List' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %} {% trans "List" %}</h1>
+
+    {% autopaginate locations 10 %}
+    {% location_search %}
+    <span><em>{{ paginator.count }} {% firstof MODULE_LOCATIONS_LABEL_PLURAL trans 'Locations' %} {% trans "Found" %}</em></span>
+
+    <div class="locations-wrap">
+    {% for location in locations %}
+        {% search_result location %}
+    {% empty %}
+
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    var countryFilter = $('form.search-form select#id_country');
+    var stateFilter = $('form.search-form select#id_state');
+    var cityFilter = $('form.search-form select#id_city');
+    var searchForm = $('form.search-form');
+
+    countryFilter.on('change', function() {
+        // Reset the values of succeeding select fields first before submit
+        stateFilter.val('');
+        cityFilter.val('');
+        searchForm.submit();
+    });
+    stateFilter.on('change', function() {
+        // Reset the values of succeeding select fields first before submit
+        cityFilter.val('');
+        searchForm.submit();
+    });
+    cityFilter.on('change', function() {
+        searchForm.submit();
+    });
+</script>
+{% endblock %}

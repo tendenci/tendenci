@@ -1,0 +1,18 @@
+{% load file_tags %}
+{% load tagging_tags %}
+
+{% tags_for_object file as tags %}
+
+<div class="file-wrap">
+    {% if file.type == 'image' %}
+    <img src="{% url 'file' file.pk %}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" width="100" />
+    {% elif file.icon %}
+    <div class="icon"><img src="{{ file.icon }}" alt="{{ file|truncatechars:123 }}" title="{{ file|truncatechars:123 }}" /></div>
+    {% endif %}
+
+    <h2><a href="{% url 'file' file.pk %}">{{ file.get_name }}</a></h2>
+
+    <div class="download">
+        <a title="Download {{ file.ext }}" href="{% url 'file' file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
+    </div>
+</div>

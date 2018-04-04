@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load testimonial_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/thumb_up.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "Testimonials" %}{% endblock %}
+
+{% block current_app %}
+    {% if testimonial %}
+        {% testimonial_current_app request.user testimonial %}
+    {% else %}
+        {% testimonial_current_app request.user %}
+    {% endif %}
+{% endblock %}

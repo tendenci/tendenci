@@ -1,0 +1,108 @@
+{% extends "reports/base.html" %}
+{% load bootstrap_pagination_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+    .sort-arrows{
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{% trans "Corporate Memberships by Status Report" %}</h1>
+</div>
+
+<form class="search-form form-inline pull-right" action="" method="get">
+<div class="row"><label class="control-label">{% trans 'Filter by:' %}</label>
+  <div class="form-group">
+    <label for="id_days" class="control-label">{{ form.days.label }}</label>
+    {{ form.days }}
+  </div>
+  <div class="form-group">
+    <label for="id_days" class="control-label">{{ form.status_detail.label }}</label>
+    {{ form.status_detail }}
+  </div>
+</div>
+</form>
+
+<p><em>{{ corp_mems|length }} {% trans "Corporate Memberships listed" %}</em></p>
+{% autopaginate corp_mems 50 %}
+
+
+<p><a class="btn btn-default" href="{% url "reports-corp-mems-by-status" %}?output=csv{% if request.GET.days %}&days={{ request.GET.days }}{% endif %}{% if request.GET.status_detail %}&status_detail={{ request.GET.status_detail }}{% endif %}">
+  {% trans 'Download CSV File' %}</a></p>
+
+<div>
+  <table class="table table-tendenci-reports">
+    <tr>
+      <th></th>
+      <th>
+        {% trans "Company Name" %}&nbsp;
+        <span class="sort-arrows">
+        <a href="?sort=corp_profile" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-corp_profile" ><i class="fa fa-arrow-down"></i></a>
+        </span>
+      </th>
+      <th>
+        {% trans "Status" %}&nbsp;
+        <span class="sort-arrows">
+        <a href="?sort=status_detail" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-status_detail" ><i class="fa fa-arrow-down"></i></a>
+        </span>
+      </th>
+      <th>
+        {% trans "Join" %}&nbsp;
+        <span class="sort-arrows">
+        <a href="?sort=join_dt" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-join_dt" ><i class="fa fa-arrow-down"></i></a>
+        </span>
+      </th>
+      <th>
+        {% trans "Expiration" %}&nbsp;
+        <span class="sort-arrows">
+        <a href="?sort=expiration_dt" ><i class="fa fa-arrow-up"></i></a>&nbsp;
+        <a href="?sort=-expiration_dt" ><i class="fa fa-arrow-down"></i></a>
+        </span>
+      </th>
+      <th>
+        {% trans "Dues Rep Name" %}
+      </th>
+      <th>
+        {% trans "Dues Rep Email" %}
+      </th>
+      <th>
+        {% trans "Roster" %}
+      </th>
+    </tr>
+    {% for corp_mem in corp_mems %}
+    {% with corp_mem.corp_profile as corp_profile  %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td><a href="{% url 'corpmembership.view_profile' corp_profile.id %}">{{ corp_profile.name }}</a></td>
+      <td>{{ corp_mem.status_detail }}</td>
+      <td>{{ corp_mem.join_dt|date:"N j, Y" }}</td>
+      <td>{{ corp_mem.expiration_dt|date:"N j, Y" }}</td>
+      {% with corp_profile.get_dues_rep as dues_rep  %}
+      {% if dues_rep %}
+      <td><a href="{% url 'profile' dues_rep.user.username %}">{% if dues_rep.user.get_full_name %}{{ dues_rep.user.get_full_name }}{% else %}{{ dues_rep.user.username }}{% endif %}</a></td>
+      <td>{{ dues_rep.user.email }}</td>
+      {% else %}
+      <td></td>
+      <td></td>
+      {% endif %}
+      {% endwith %}
+      <td><a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corp_mem.id }}" target="_blank">{% trans "View Roster" %}</a></td>
+    </tr>
+    {% endwith %}
+    {% endfor %}
+   </table>
+</div>
+
+{% paginate %}
+<br /><br />
+
+{% endblock content %}

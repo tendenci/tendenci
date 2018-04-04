@@ -1,0 +1,70 @@
+div.id_members .field ul li {
+    float: left;
+    width: 35%;
+    margin: 0;
+    padding: 0;
+}
+div.id_payment_method ul{
+    list-style: none;
+}
+#main-forms{
+    width: 70%;
+    text-align: left;
+}
+#summary-form-wrap{
+    width:300px;
+    text-align: left;
+    margin:1em 8em 1em 1em;
+    float:right;
+}
+#summary-form-box{
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding:0.8em;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    width: 300px;
+}
+#renew-summary{
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid silver;
+    text-align: center;
+}
+#summary-price, #summary-total-price{
+    width: 98%;
+}
+#summary-price td, #summary-total-price td{
+    padding: 3px;
+}
+#summary-total-price{
+    margin-bottom: 1em;
+    padding-top: 3px;
+    border-top: 1px dotted #ccc;
+}
+.summary-header{
+    font-weight: bold;
+    text-align: center;
+}
+#total-label,#total-amount{
+    font-weight: bold;
+}
+#update_summary{
+    margin-bottom: 1em;
+    padding: 3px;
+}
+#renew-button-wrap{
+    margin-top: 1em;
+    text-align: center;
+}
+#renew-button{
+    padding: 3px;
+
+}
+.center{
+    text-align: center;
+}
+.right{
+    text-align: right;
+}

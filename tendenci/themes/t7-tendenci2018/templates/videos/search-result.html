@@ -1,0 +1,21 @@
+<div class="grid-item-content panel panel-default">
+  
+  <!-- START: PANEL BODY -->
+  <div class="panel-body">
+    <a href="{{ video.get_absolute_url }}">
+      {% if video.image %}
+      <img class="img-responsive" src="{{ video.image.url }}">
+      {% else %}
+      {% if video.thumbnail %}
+      <img class="img-responsive" src="{{ video.thumbnail }}">
+      {% else %}
+      <img class="img-responsive" src="{% static 'images/default-photo.jpg' %}">
+      {%endif%}
+      {%endif%}
+    </a>
+    <h4 title="{{ video.title }}"><a href="{{ video.get_absolute_url }}">
+      {{ video.title|truncatewords:"6" }}</a></h4>
+    <div>{{ video.description|safe|truncatewords_html:"20" }}</div>
+  </div>
+  
+</div>

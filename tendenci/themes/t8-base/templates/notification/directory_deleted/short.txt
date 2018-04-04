@@ -1,0 +1,2 @@
+
+{% blocktrans with object.headline as objhead %}Directory {{ objhead }} deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

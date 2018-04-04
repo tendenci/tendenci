@@ -1,0 +1,93 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+{% load search_tags %}
+
+
+{% block title %}
+    {% if MODULE_ARTICLES_LABEL_PLURAL %}
+        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %}
+    {% else %}
+        {% trans "Articles List" %}
+    {% endif %} - {{ block.super }}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url 'article.feed' %}" />
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>
+        {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
+        {% if MODULE_ARTICLES_LABEL_PLURAL %}
+            {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %}
+        {% else %}
+            {% trans "Articles List" %}
+        {% endif %}
+    </h1>
+
+    {% autopaginate articles 10 %}
+    {% article_search %}
+
+    <h4 class="capitalize">
+        <em>
+            {% if MODULE_ARTICLES_LABEL_PLURAL and MODULE_ARTICLES_LABEL %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} {{ MODULE_ARTICLES_LABEL }} Found
+                {% plural %}
+                    {{ obj_count }} {{ MODULE_ARTICLES_LABEL_PLURAL }} Found
+                {% endblocktrans %}
+            {% else %}
+                {% blocktrans count obj_count=paginator.count %}
+                    {{ obj_count }} Article Found
+                {% plural %}
+                    {{ obj_count }} Articles Found
+                {% endblocktrans %}
+            {% endif %}
+        </em>
+    </h4>
+
+    <section>
+        {% for article in articles %}
+            {% search_result article %}
+        {% empty %}
+            {% if user.profile.is_superuser %}
+                <p><a href="{% url 'article.add' %}">
+                    {% if MODULE_ARTICLES_LABEL %}
+                        {% blocktrans %}
+                            Add a New {{ MODULE_ARTICLES_LABEL }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add a New Article" %}
+                    {% endif %}
+                </a></p>
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    {% paginate %}
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/articles.js' %}"></script>
+    <script>
+    (function($) {
+        $(document).ready(function () {
+            var $catAndSubcatSelect = $('#id_category, #id_sub_category'),
+                $articlesSearchForm = $('#t-articles-search-form');
+
+            $catAndSubcatSelect.on('change', function (e) {
+                $articlesSearchForm.submit();
+            });
+        });
+    }(jQuery));
+
+    </script>
+{% endblock %}

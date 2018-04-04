@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load cache %}
+{% load base_filters %}
+{% load base_tags %}
+{% load photo_tags %}
+
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}" type="text/stylesheet">
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico?v=2' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+{% endblock extra_head %}
+
+{% block html_body %}
+    <div class="container">
+        <header class="{% block header_classes %}page-header{% endblock %}">
+            {% block header %}
+                {% spaceless %}{% include "header.html" %}{% endspaceless %}
+            {% endblock %}
+        </header>
+
+        {% block banner %}
+            <div class="jumbotron">
+                <div class="container text-center">
+                    <img src="{% static 'images/headers/header.jpg' %}" width="940" height="198" alt="header" title="header">
+                </div>
+            </div>
+        {% endblock %}
+
+        <div class="row">
+            <div class="{% block content_classes %}col-xs-12 col-sm-8 col-md-8 col-lg-9{% endblock %}">
+                {% block content_messages %}
+                    {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+                {% endblock %}
+
+                {% block content %}
+                    {# Main content goes here #}
+                    <div class="jumbotron">
+                        <h1>{% trans "Welcome to your Tendenci powered site!" %}</h1>
+                    </div>
+                {% endblock %}
+            </div>
+
+            <div class="{% block sidebar_classes %}col-xs-12 col-sm-4 col-md-4 col-lg-3{% endblock %}">
+                {% block sidebar %}
+                    {# Panel or sidebar goes here #}
+
+                    <h2 class="text-capitalize">{% trans "Interior page" %}</h2>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">{% trans "Search" %}</h2>
+                        </div>
+
+                        <div class="panel-body">
+                            <form action="{% url 'haystack_search' %}" method="get" class="form-inline">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="type, hit enter" size="18", maxlength="50" name="q">
+                                </div>
+
+                                <button type="submit" class="btn btn-default visible-md-inline visible-lg-inline"><span class="fa fa-search" aria-hidden="true"></span></button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2 class="panel-title text-capitalize">{% trans "What is schipul doing..." %}</h2>
+                        </div>
+
+                        <div class="panel-body">
+                            {% cache 86400 schipul_rss %}
+                            {% get_rss "https://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
+                                <ul class="list-unstyled">
+                                    {% for entry in rss.entries|slice:":3" %}
+                                        <li>{% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endcache %}
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">{% trans "Meta" %}</h2>
+                        </div>
+
+                        <div class="panel-body">
+                            <ul class="list-unstyled">
+                                {% if user.is_authenticated %}
+                                    <li><a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> {% trans "Dashboard" %}</a></li>
+                                    <li><a href="{% url 'auth_logout' %}"><i class="fa fa-sign-out"></i> {% trans "Log Out" %}</a></li>
+                                {% else %}
+                                    {% if MODULE_USERS_SELFREGISTRATION %}
+                                    <li><a href="{% url 'registration_register' %}"><i class="fa fa-sign-in"></i> {% trans "Register" %}</a></li>
+                                    {% endif %}
+                                    <li><a href="{% url 'auth_login' %}"><i class="fa fa-sign-in"></i> {% trans "Log in" %}</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+
+        <footer class="{% block footer_classes %}{% endblock %}">
+            {% block footer %}
+                {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+            {% endblock %}
+        </footer>
+    </div>
+{% endblock %}

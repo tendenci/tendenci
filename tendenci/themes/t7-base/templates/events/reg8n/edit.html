@@ -1,0 +1,58 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{% trans "Edit Registration Form" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Registration Form Edit" %}</h1>
+
+    <div class="event-wrap">
+        <div class="options">
+             <div class="quick-options">
+                {% event_options user event %}
+             </div>
+        </div>
+        <form action="{% url "event.edit.registration" event.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+
+            {# form.payment_periods #}
+
+            {# for payment_period in form.payment_periods #}
+                <!-- payment_period.label -->
+            {# endfor #}
+
+            <input type="submit" value="{% trans "Save Changes" %}" />
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_object = confirm("{% trans "Permenantly delete" %} {% firstof MODULE_EVENTS_LABEL trans 'Event' %}?");    // confirm
+                if(delete_object) $('form[name="event-delete"]').submit()
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+{% endblock %}

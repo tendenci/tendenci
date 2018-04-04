@@ -1,0 +1,5 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% firstof MODULE_NAVS_LABEL trans "Navs" %} {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}

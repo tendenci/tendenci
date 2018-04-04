@@ -1,0 +1,42 @@
+{% extends "exports/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Export Status' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    {% if export.status == "failed" %}
+        <h1>{% trans "Export Failed!" %}</h1>
+        <p class="timestamp">{{ datetime.now }}</p>
+        <p class="msg">{% trans "Please try again." %}</p>
+    {% else %}
+        {% if export.status == "completed" %}
+            <h1>{% trans "Export Completed!" %}</h1>
+            <p class="timestamp">{{ datetime.now }}</p>
+            <p class="msg">{% trans "Download" %} <a href="{% url "export.download" export.pk %}">{% trans "here" %}</a></p>
+        {% else %}
+            <h1>{% trans "Processing Export!" %}</h1>
+            <p class="timestamp">{{ datetime.now }}</p>
+            <p class="msg">{% trans "We're not done yet!" %} <img src="{% static 'images/ajax-loader.gif' %}" title="loading" alt="loading" /></p>
+            <p class="msg">{% trans "Please wait while we finish processing your export file." %}</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% if export.status == "pending" %}
+    <script type="text/javascript">
+        //reload every 10 seconds
+        setInterval(function(){
+            window.location.reload();
+        }, 10000);
+    </script>
+{% endif %}
+{% endblock %}

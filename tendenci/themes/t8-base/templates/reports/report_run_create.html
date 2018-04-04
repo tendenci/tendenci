@@ -1,0 +1,37 @@
+{% extends 'reports/report_base.html' %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<style>
+.user-completion td { padding-top: 26px; }
+#completion-details th { text-align: left; }
+.form-field > .id_report { display: none; }
+.search-form .form-field { float: left; }
+</style>
+{% endblock %}
+
+{% block title %}{% trans 'Run Report' %} {{ report.pk }} - {{ report.type|title }}{% endblock title %}
+
+{% block content %}
+<h1>{% trans 'Run Report' %} {{ report.pk }} - {{ report.type|title }}</h1>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form|styled_form }}
+
+    <input type="submit" value="{% trans 'Create Report' %}" />
+</form>
+
+{% endblock content %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+       $("#id_range_start_dt, #id_range_end_dt").live('focus', function() {
+            $(this).datepicker({ dateFormat: 'mm/dd/yy' });
+       });
+    </script>
+{% endblock %}

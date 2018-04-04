@@ -1,0 +1,21 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "New Help File Requested" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<font size="2" face="Arial, Helvetica, sans-serif">
+<p>
+{% blocktrans with object.question as question %}
+{{ question }}
+{% endblocktrans %}
+</p>
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+</font>
+</body>
+</html>

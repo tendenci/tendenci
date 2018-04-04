@@ -29,7 +29,7 @@ class Command(BaseCommand):
             k = Key(bucket)
 
             static_root = settings.STATIC_ROOT
-            static_url_to_find = '/static/'
+            static_url_to_find = settings.LOCAL_STATIC_URL
             static_url_replace_with = settings.STATIC_URL
 
             if os.path.isdir(static_root):

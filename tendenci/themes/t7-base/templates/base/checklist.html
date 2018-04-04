@@ -1,0 +1,50 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1 style="text-align:center">{% trans "Completion Status" %}</h2>
+    <h3 style="text-align:center">{% trans "Woo-hoo! Your site is" %} {{ percent }}% {% trans "original content" %}</h3>
+    <div id="progress_bar"></div>
+
+    <p>{% blocktrans %}
+    Here at Tendenci, we like to think of websites as living and breathing entities. Yes, we know they don't actually breathe, but they are constantly changing and evolving as your organization grows and evolves.
+    {% endblocktrans %}</p>
+
+    <p>{% blocktrans %}
+    So, your website will never be "complete" per se, but we want to get you on track to a healthy website with a belly full of hearty content. As you fill in new content on your website, this page will update to show you how far you've gotten and what else your website is hungry for.
+    {% endblocktrans %}</p>
+
+    <p>{% blocktrans %}
+    Don't forget -- you should always be adding fresh, new content to keep visitors coming back for more. Happy updating!
+    {% endblocktrans %}</p>
+
+    <div class="checklist">
+        <ul>
+        {% for item in checklist %}
+            <li>
+            {% if item.done %}
+                <em><del>{{ item.label|safe }}</del></em>
+            {% else %}
+                <strong>{{ item.label|safe }}</strong>
+            {% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $("#progress_bar").progressbar({
+        value : {{ percent }},
+    });
+</script>
+{% endblock %}

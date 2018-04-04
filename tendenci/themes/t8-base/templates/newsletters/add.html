@@ -1,0 +1,251 @@
+{% extends "newsletters/base.html" %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div>
+  <div class="page-header">
+    <h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
+  </div>
+
+  <div id="t-newsletters">
+    <div id="t-add">
+
+      <p>{% trans "This form will create a Tendenci newsletter for you with the following information." %}</p>
+      <p>{% trans "You will still have the ability to make edits before sending." %}</p>
+      <br />
+      {% if form.non_field_errors %}
+      {{ form.non_field_errors }}
+      {% endif %}
+
+      <form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
+        <div class="form-group">
+          <p class="headers" title="This field is required.">
+            <label>*Send To:</label>
+          </p>
+
+          {% comment %}commenting it out for now.
+          will add back later when membership is available:{% endcomment %}
+          <div>
+            {{ form.member_only }}
+            {% trans "Members Only" %}
+            &nbsp;&nbsp; or &nbsp;&nbsp;
+
+            {% if form.group.errors %}
+            {{ form.group.errors }}
+            {% endif %}
+
+            {% trans "Usergroup" %}{{ form.group }}
+          </div>
+          <!-- <p>{% trans "Include email2?" %} {{ form.send_to_email2 }}
+          {% trans "Yes, send to user's second email address" %}
+        </p> Commenting out because... does anyone use this? It's confusing! -LL -->
+
+        </div> <!-- end form group -->
+
+        <div class="form-group">
+          {% if form.subject.errors %}
+          {{ form.subject.errors }}
+          {% endif %}
+          <p class="headers" title="This field is required.">
+            <label id="title">*{% trans 'Subject' %}:</label>
+          </p>
+
+          <div>
+            {{ form.subject }}
+            <p class="newsletter-label">{% trans "Personalize: " %} &nbsp;
+              {{ form.personalize_subject_first_name }} {% trans "First Name" %}
+              {{ form.personalize_subject_last_name }}  {% trans "Last Name" %}
+            </p>
+          </div>
+
+        </div>
+
+        <div id="module-content" class="module-content">
+          <br />
+          <h2>{% trans "Add Site Content" %}</h2>
+          <hr />
+
+          <a class="btn btn-primary" href="#" onclick="javascript:clearModuleContent(this);return false;">
+            {% trans "Skip Module Content!" %}
+          </a>
+          <br />
+
+          <div id="module-options">
+
+            <div class="checkbox">
+              <label>
+                {{ form.include_login }}<p>{% trans "Include Login Information?" %}</p>
+              </label>
+            </div>
+
+            <table class="table table-responsive bottomless" border="0">
+              <tr>
+                <td class="col-sm-3"><p><label>{% trans "Jump Links:" %}</label></p></td>
+                <td class="col-sm-9">{{ form.jump_links }}</td>
+              </tr>
+              <tr>
+                <td class="col-sm-3"><p><label>{% trans "Events:" %} </label></p></td>
+                <td>{{ form.events }}</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+            <table class="table table-responsive bottomless" border="0">
+              <tr>
+                <td class="col-sm-3"><p>{% trans "Date range" %}</p></td>
+                <td class="col-sm-3">{% trans "Start Date Time" %} </td>
+                <td>{{ form.event_start_dt }}</td>
+              </tr>
+              <tr>
+                <td class="col-sm-3">&nbsp;</td>
+                <td class="col-sm-3">{% trans "End Date Time" %}</td>
+                <td>{{ form.event_end_dt }}</td>
+              </tr>
+            </table>
+
+            <table class="table table-responsive" border="0">
+              <tr>
+                <td class="col-sm-3"><p><label>{% trans "Articles:" %}</label></p></td>
+                <td>{{ form.articles }}</td>
+                <td><p>Past &nbsp;{{ form.articles_days }} Days</p></td>
+              </tr>
+              <tr >
+                <td><p><label>{% trans "News:" %}</label></p></td>
+                <td>{{ form.news }}</td>
+                <td><p>Past &nbsp;{{ form.news_days }} Days</p></td>
+              </tr>
+
+              <tr>
+                <td><p><label>{% trans "Jobs:" %}</label></p></td>
+                <td>{{ form.jobs }}</td>
+                <td><p>Past &nbsp;{{ form.jobs_days }} Days</p></td>
+              </tr>
+
+              <tr>
+                <td><p><label>{% trans "Pages:" %}</label></p></td>
+                <td>{{ form.pages }} </td>
+                <td><p>Past &nbsp;{{ form.pages_days }} Days</p></td>
+              </tr>
+
+              <tr>
+                <td><p><label>{% trans "Directories:" %}</label></p></td>
+                <td>{{ form.directories }}</td>
+                <td><p>Past &nbsp;{{ form.directories_days }} Days</p></td>
+              </tr>
+
+              <tr>
+                <td><p><label>{% trans "Resumes:" %}</label></p></td>
+                <td>{{ form.resumes }}</td>
+                <td><p>Past &nbsp;{{ form.resumes_days }} Days</p></td>
+              </tr>
+
+            </table>
+          </div>
+        </div>
+
+        {% comment %}
+        {% if form.template.errors %}
+        {{ form.template.errors }}
+        {% endif %}
+
+        {% if templates %}
+
+        <div class="template_list">
+          <ul>
+            {% for template in templates %}
+            <li>
+              <input name="template" value="{{ template }}" type="radio"  {% if template == template_selected %}checked="checked" {% endif %} />
+              <a href="{% url 'newsletter.template_content' template.pk %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {% endcomment %}
+        {% if form.default_template.errors %}
+        {{ form.default_template.errors }}
+        {% endif %}
+
+        <h2>{% trans "Newsletter Templates" %}</h2>
+        <hr />
+
+        <div class="template_list">
+          <div class="radio">
+            <ul class="list-unstyled">
+              {% for choice in form.default_template %}
+              {% if choice.choice_value %}
+
+              <li class="template-item">
+                <div class="radio">
+                  {{ choice.tag }}
+                  <a href="{% url 'newsletter.default_template' %}?template_name={{ choice.choice_value }}">
+                    &nbsp; {{ choice.choice_label }}
+                  </a>
+                  <!-- <iframe class="iframe" frameborder="0" width="100%" src="{% url 'newsletter.default_template' %}?template_name={{ choice.choice_value }}"></iframe>
+                  -->
+                </div>
+              </li>
+
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <br />
+        <h2>Template Format</h2>
+        <hr />
+
+        <div id="format-list">
+          {{ form.format }}
+        </div>
+
+        <div class="newsletter-submit">
+          <input class="btn btn-success btn-default btn-lg pull-right" name="Submit" type="submit" value="{% trans 'Continue' %}&nbsp; &rarr;">
+        </div>
+
+      </form>
+
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script>
+  function clearModuleContent(o){
+  var newsletteradd = document.getElementById("newsletteraddform");
+  newsletteradd.jump_links.options[1].selected = true;
+  newsletteradd.events.options[1].selected = true;
+  newsletteradd.articles.options[1].selected = true;
+  newsletteradd.news.options[1].selected = true;
+  newsletteradd.jobs.options[1].selected = true;
+  newsletteradd.pages.options[1].selected = true;
+  var opts = document.getElementById("module-options");
+  if (opts.style.display != 'none') {
+  opts.style.display = 'none';
+  o.innerHTML = "{% trans 'Add Module Content' %}";
+  }
+  else {
+  opts.style.display = 'block';
+  o.innerHTML = "{% trans 'Skip Module Content!' %}";
+  }
+  }
+
+</script>
+
+{% endblock %}

@@ -70,8 +70,6 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'find','very','still','non','here', 'many', 'a','s','t','ve',
               'use', 'don\'t', 'can\'t', 'wont', 'come','you\'ll', 'want']
 
-template_directory = "templates"
-THEME_ROOT = get_theme_root()
 
 def google_cmap_sign_url(url):
     """ Signs a URL and returns the URL with digital signature for Google static maps API.
@@ -459,7 +457,7 @@ def filelog(*args, **kwargs):
     if 'path' in kwargs:
         path = kwargs['path']
     else:
-        path = getattr(settings,'PROJECT_ROOT','/var/log')
+        path = settings.PROJECT_ROOT
 
     if 'filename' in kwargs:
         filename = kwargs['filename']
@@ -535,7 +533,7 @@ def url_exists(url):
 
 
 def parse_image_sources(string):
-    p = re.compile('<img[^>]* src=\"([^\"]*)\"[^>]*>')
+    p = re.compile(r'<img[^>]* src=\"([^\"]*)\"[^>]*>')
     image_sources = re.findall(p, string)
     return image_sources
 
@@ -607,7 +605,7 @@ def detect_template_tags(string):
         template tags in the system
         returns boolean
     """
-    p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
+    p = re.compile(r'{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
 
@@ -617,21 +615,16 @@ def get_template_list():
     directory that begin with 'default-'
     """
     file_list = []
-    theme = get_setting('module', 'theme_editor', 'theme')
-    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-        theme_dir = settings.ORIGINAL_THEMES_DIR
-    else:
-        theme_dir = settings.THEMES_DIR
+    theme_dir = get_theme_root()
+    template_dir = os.path.join(theme_dir, 'templates')
 
-    current_dir = os.path.join(theme_dir, theme, template_directory)
-
-    if os.path.isdir(current_dir):
-        item_list = os.listdir(current_dir)
+    if os.path.isdir(template_dir):
+        item_list = os.listdir(template_dir)
     else:
         item_list = []
 
     for item in item_list:
-        current_item = os.path.join(current_dir, item)
+        current_item = os.path.join(template_dir, item)
         path_split = os.path.splitext(current_item)
         extension = path_split[1]
         base_name = os.path.basename(path_split[0])
@@ -640,14 +633,6 @@ def get_template_list():
                 base_display_name = base_name[8:].replace('-',' ').title()
                 file_list.append((item,base_display_name,))
     return sorted(file_list)
-
-
-def check_template(filename):
-    """
-    Check to see if the file exists in the theme root
-    """
-    current_file = os.path.join(settings.ORIGINAL_THEMES_DIR, THEME_ROOT, template_directory, filename)
-    return os.path.isfile(current_file)
 
 
 def template_exists(template):
@@ -668,8 +653,8 @@ def fieldify(s):
                     will be converted to
                 "{{ first_name }}: Lisa"
     """
-    #p = re.compile('(\[([\w\d\s_-]+)\])')
-    p = re.compile('(\[(.*?)\])')
+    #p = re.compile(r'(\[([\w\d\s_-]+)\])')
+    p = re.compile(r'(\[(.*?)\])')
     return p.sub(slugify_fields, s)
 
 

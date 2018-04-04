@@ -3,16 +3,18 @@ import shutil
 import boto
 from six.moves.urllib.request import urlopen
 from datetime import datetime
-from dateutil.parser import parse
+from dateutil.parser import parse as parse_date
 from operator import itemgetter
 from functools import reduce
 
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.utils._os import safe_join
+from django.core.exceptions import SuspiciousFileOperation
 from importlib import import_module
 
-from tendenci.apps.theme.utils import get_theme_root, get_theme
+from tendenci.apps.theme.utils import get_theme_root, get_theme_info, is_builtin_theme
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3
 
@@ -20,8 +22,6 @@ from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3
 template_directory = "/templates"
 style_directory = "/media/css"
 
-THEME_ROOT = get_theme_root()
-TEMPLATES_ROOT = os.path.join(settings.PROJECT_ROOT, "templates")
 ALLOWED_EXTENSIONS = (
     '.html',
     '.css',
@@ -36,7 +36,18 @@ ALLOWED_EXTENSIONS = (
     '.svg',
 )
 
-DEFAULT_THEME_INFO = 'theme.info'
+
+def is_valid_path(root, path):
+    try:
+        safe_join(root, path)
+        return True
+    except SuspiciousFileOperation:
+        return False
+
+
+def is_theme_read_only(theme):
+    return is_builtin_theme(theme)
+
 
 # Class to hold theme info details
 class ThemeInfo(object):
@@ -54,28 +65,14 @@ class ThemeInfo(object):
         self.version = u''
         self.create_dt = datetime.now()
 
-        theme_root = get_theme_root(theme)
-        # check if theme info file exists
-        is_file = qstr_is_file(DEFAULT_THEME_INFO, ROOT_DIR=theme_root)
-        if is_file:
-            theme_file = open(os.path.join(theme_root, DEFAULT_THEME_INFO))
-            data = theme_file.readlines()
-            theme_file.close()
-            # set attributes according to data in info file
-            for datum in data:
-                datum = datum.replace('\n', '')
-                if "=" in datum:
-                    label, value = datum.split('=', 1)
-                    label = label.strip().replace(' ', '_').lower()
-                    value = value.strip()
+        for label, value in get_theme_info(theme).get('General', {}).items():
+            label = label.strip().replace(' ', '_').lower()
+            if label == 'create_dt':
+                value = parse_date(value)
+            if label in ('screenshot', 'screenshot_thumbnail'):
+                value = os.path.join('/themes', theme, value)
+            setattr(self, label, value)
 
-                    if label == 'create_dt':
-                        value = parse(value)
-
-                    if label in ('screenshot', 'screenshot_thumbnail'):
-                        value = os.path.join('/themes', theme, value)
-
-                    setattr(self, label, value)
 
 # At compile time, cache the directories to search.
 app_templates = {}
@@ -89,49 +86,7 @@ for app in settings.INSTALLED_APPS:
         app_templates[app] = template_dir
 
 
-def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
-    """Copies a file and all associated directories into TO_ROOT
-    """
-    try:
-        os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
-    except OSError:
-        pass
-
-    filecopy = os.path.join(TO_ROOT, "templates", path_to_file, filename)
-    shutil.copy(full_filename, filecopy)
-
-    # copy to s3
-    if settings.USE_S3_THEME:
-        if os.path.splitext(filename)[1] == '.html':
-            public = False
-        else:
-            public = True
-        dest_path = "/themes/%s" % filecopy
-        save_file_to_s3(full_filename, dest_path=dest_path, public=public)
-
-
-def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
-    """
-    Check to see if the query string is a directory or not
-    """
-    current_dir = os.path.join(ROOT_DIR, query_string)
-    return os.path.isdir(current_dir)
-
-
-def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
-    """
-    Check to see if the query string is a directory or not
-    """
-    if settings.USE_S3_THEME:
-        content = get_file_content(query_string)
-        if content:
-            return True
-
-    current_file = os.path.join(ROOT_DIR, query_string)
-    return os.path.isfile(current_file)
-
-
-def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_dir_list(root_dir, pwd):
     """
     Get a list of directories from within
     the theme folder based on the present
@@ -140,7 +95,7 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     the dir_list.
     """
     dir_list = []
-    current_dir = os.path.join(ROOT_DIR, pwd)
+    current_dir = os.path.join(root_dir, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
@@ -150,7 +105,7 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     return sorted(dir_list)
 
 
-def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_file_list(root_dir, pwd):
     """
     Get a list of files from within
     the theme folder based on the present
@@ -158,7 +113,7 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     """
     file_list = []
     others_list = []
-    current_dir = os.path.join(ROOT_DIR, pwd)
+    current_dir = os.path.join(root_dir, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
@@ -172,13 +127,12 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     return file_list, others_list
 
 
-def get_all_files_list(ROOT_DIR=THEME_ROOT):
+def get_all_files_list(root_dir, theme):
     """
     Get a list of files and folders from within
     the theme folder
     """
     files_folders = {}
-    root_dir = os.path.join(ROOT_DIR)
 
     start = root_dir.rfind(os.sep) + 1
     for path, dirs, files in os.walk(root_dir):
@@ -196,75 +150,76 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
 
             # Hide hidden files
             if not f.startswith('.'):
-                subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
+                path = os.path.join(path[len(root_dir) + 1:], f)
+                subdir['contents'].append({'name': f, 'path': path, 'url': '/themes/'+theme+'/'+path, 'editable': editable})
 
         subdir['contents'] = sorted(subdir['contents'], key=itemgetter('name'))
         subdir['contents'].append({'folder_path': path})
         parent = reduce(dict.get, folders[:-1], files_folders)
         parent[folders[-1]] = subdir
 
-    if settings.USE_S3_THEME:
-        s3_files_folders = {'contents': []}
-        theme_folder = "%s/%s" % (settings.THEME_S3_PATH, get_theme())
-        conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
-                               settings.AWS_SECRET_ACCESS_KEY)
-        bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    if not settings.USE_S3_THEME:
+        return files_folders
 
-        for item in bucket.list(prefix=theme_folder):
+    s3_files_folders = {'contents': []}
+    theme_folder = "%s/%s" % (settings.THEME_S3_PATH, theme)
+    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                           settings.AWS_SECRET_ACCESS_KEY)
+    bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
 
-            editable = False
-            if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
-                editable = True
+    for item in bucket.list(prefix=theme_folder):
 
-            file_path = item.name.replace(theme_folder, '').lstrip('/')
-            path_split = file_path.split('/')
-            splits = len(path_split)
+        editable = False
+        if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
+            editable = True
 
-            if splits == 1:
-                s3_files_folders['contents'].append({
-                        'name': path_split[0],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 2:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+        file_path = item.name.replace(theme_folder, '').lstrip('/')
+        path_split = file_path.split('/')
+        splits = len(path_split)
 
-                s3_files_folders[path_split[0]]['contents'].append({
-                        'name': path_split[1],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 3:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+        if splits == 1:
+            s3_files_folders['contents'].append({
+                    'name': path_split[0],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 2:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            s3_files_folders[path_split[0]]['contents'].append({
+                    'name': path_split[1],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 3:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
-                        'name': path_split[2],
-                        'path': file_path,
-                        'editable': editable})
-            elif splits == 4:
-                if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            if not path_split[1] in s3_files_folders[path_split[0]]:
+                s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
+                    'name': path_split[2],
+                    'path': file_path,
+                    'editable': editable})
+        elif splits == 4:
+            if not path_split[0] in s3_files_folders:
+                s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
-                    s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+            if not path_split[1] in s3_files_folders[path_split[0]]:
+                s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-                s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
-                        'name': path_split[3],
-                        'path': file_path,
-                        'editable': editable})
+            if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
+                s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
-        return {get_theme(): s3_files_folders}
+            s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
+                    'name': path_split[3],
+                    'path': file_path,
+                    'editable': editable})
 
-    return files_folders
+    return {theme: s3_files_folders}
 
 
-def get_file_content(file, ROOT_DIR=THEME_ROOT):
+def get_file_content(root_dir, theme, filename):
     """
     Get the content from the file that selected from
     the navigation
@@ -273,13 +228,12 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
 
     if settings.USE_S3_THEME:
         try:
-            theme = get_theme()
-            content = read_theme_file_from_s3(os.path.join(theme, file))
+            content = read_theme_file_from_s3(os.path.join(theme, filename))
         except:
             pass
 
     if not content:
-        current_file = os.path.join(ROOT_DIR, file)
+        current_file = os.path.join(root_dir, filename)
         if os.path.isfile(current_file):
             fd = open(current_file, 'r')
             content = fd.read()
@@ -287,11 +241,11 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
     return content
 
 
-def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
+def archive_file(root_dir, relative_file_path, request):
     """
     Archive the file into the database if it is edited
     """
-    file_path = os.path.join(ROOT_DIR, relative_file_path)
+    file_path = os.path.join(root_dir, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
         fd = open(file_path, 'r')
@@ -304,23 +258,28 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
         archive.save()
 
 
-def handle_uploaded_file(file_path, file_dir):
-    file_name = os.path.basename(file_path)
-    filecopy = os.path.join(THEME_ROOT, file_dir, file_name)
-    dest_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
-
-    shutil.move(file_path, dest_path)
+def copy_file_to_theme(source_full_path, to_theme, path_to_file, filename):
+    """Copies a file and all associated directories into theme
+    """
+    root_dir = get_theme_root(to_theme)
+    try:
+        os.makedirs(os.path.join(root_dir, path_to_file))
+    except OSError:
+        pass
+    dest_full_path = os.path.join(root_dir, path_to_file, filename)
+    shutil.copy(source_full_path, dest_full_path)
 
     # copy to s3
     if settings.USE_S3_THEME:
-        if os.path.splitext(file_name)[1] == '.html':
+        if os.path.splitext(filename)[1] == '.html':
             public = False
         else:
             public = True
-        dest_path = "/themes/%s" % filecopy
-        save_file_to_s3(file_path, dest_path=dest_path, public=public)
+        dest_path = os.path.join(to_theme, path_to_file, filename)
+        dest_full_path = os.path.join(settings.THEME_S3_PATH, dest_path)
+        save_file_to_s3(source_full_path, dest_path=dest_full_path, public=public)
 
-        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(THEME_ROOT)):]])
+        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', dest_path])
         cache.delete(cache_key)
 
         if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:

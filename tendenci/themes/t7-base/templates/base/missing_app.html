@@ -1,0 +1,13 @@
+{% extends "default.html" %}
+
+{% block title %}{{ block.super }} {% trans 'Missing Required App' %}{% endblock%}
+
+{% block content %}
+
+{% if exception_value %}
+    {% blocktrans with e=exception_value %}{{ e }}{% endblocktrans %}
+{% else %}
+    {% trans "Oops, it looks like you're missing a required app." %}
+{% endif %}
+
+{% endblock %}

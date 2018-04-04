@@ -1,0 +1,46 @@
+{% extends "pages/base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+{# Add your own stylesheets below before the endblock extra_head #}
+
+{% endblock extra_head %}
+
+{% comment %}
+{# in your default.html, be sure to wrap the the block body with custom_body like below #}
+
+{% block custom_body %}
+{% block content %}{{ block.super }}{% endblock content %}
+{% endblock custom_body %}
+
+{% endcomment %}
+
+{% block custom_body %}
+    {# TODO: check custom_body block #}
+<div class="t">
+    <div class="page-wrap">
+        {% if page.header_image %}
+        <div class="page-header">
+            <img src="{{ page.get_header_image_url }}" alt="{% trans 'Page Header' %}" title="{% trans 'Page Header' %}" />
+        </div>
+        {% endif %}
+
+      {% if page.title %}
+          <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
+      {% endif %}
+
+        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+
+        <!-- Insert custom template code here -->
+
+        {% include "pages/meta.html" %}
+    </div>
+</div>
+{% endblock custom_body %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{# add your javascript here. jquery will already be loaded #}
+
+{% endblock extra_body %}

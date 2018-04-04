@@ -1,0 +1,32 @@
+
+<nav aria-label="back to forums">
+  <ul class="pager">
+    <li class="previous"><a href="/forums/"><span aria-hidden="true">&larr;</span> Back to Forums Index</a></li>
+  </ul>
+</nav>
+
+{% if is_paginated %}
+
+<nav>
+  <ul class="pager">
+    <li class="previous {% if not page_obj.has_previous %}disabled{% endif %}">
+      <a href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% endif %}">
+        ← {% trans "previous page" %}</a>
+    </li>
+    {% for page in page_obj.pages %}
+    {% if page %}
+    <li {% ifequal page page_obj.number %}class="disabled"{% endifequal %}>
+      <a href="?{{ page.querystring }}" class="page">{{ page }}</a>
+    </li>
+    {% else %}
+    <li class="disabled">
+      <a href="#">...</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+    <li class="next {% if not page_obj.has_next %}disabled{% endif %}">
+      <a href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% endif %}" >{% trans "next page" %} →</a>
+    </li>
+  </ul>
+</nav>
+{% endif %}

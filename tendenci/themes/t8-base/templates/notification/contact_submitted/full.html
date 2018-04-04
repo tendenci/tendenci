@@ -1,0 +1,48 @@
+
+<div style="margin-bottom:20px;">
+<table>
+    <tr>
+        <td>{% trans "FROM" %}</td>
+        <td>{{ first_name }} {{ last_name }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "PHONE" %}</td>
+        <td>{{ phone|phone2numeric }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "EMAIL" %}</td>
+        <td>{{ email }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "WEBSITE" %}</td>
+        <td>{{ url }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "ADDRESS" %}</td>
+        <td>{{ address }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "CITY" %}</td>
+        <td>{{ city }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "STATE" %}</td>
+        <td>{{ state }}</td>
+    </tr>
+    <tr>
+        <td>{% trans "ZIPCODE" %}</td>
+        <td>{{ zipcode }}</td>
+    </tr>
+    <tr>
+        <td style="margin-right:10px;">{% trans "COUNTRY" %}</td>
+        <td>{{ country }}</td>
+    </tr>
+</table>
+</div>
+
+
+<div>{% blocktrans with m=message|linebreaks %}{{ m }}{% endblocktrans %}</div>
+
+<div style="margin-top:20px;">
+{% trans "View message online:" %} {{ message_link }}{{ contact.get_absolute_url }}
+</div>

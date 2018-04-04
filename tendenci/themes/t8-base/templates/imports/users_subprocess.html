@@ -1,0 +1,18 @@
+
+    {% if is_completed %}
+        {% trans "INSERTS:" %} <b>{{ count_insert }}</b><br>
+        {% trans "UPDATES:" %} <b>{{ count_update }}</b><br>
+        {% trans "INVALID:" %} <b>{{ count_invalid }}</b><br>
+        <b>{% trans "TOTAL:" %} {{ total }}</b><br /><br />
+
+        <a href="{% url "import.user_upload_recap" id %}">{% trans "Download recap" %}</a>
+        <br /><br />
+        <a href="{% url "profile.search" %}">{% trans "Search Users" %}</a>
+        <a href="{% url "import.user_upload_add" %}">{% trans "Import More Users" %}</a>
+
+    {% else %}
+        <div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
+            <img src="{% static 'images/icons/loading.gif' %}" alt="loading"/>
+             {% trans "loading ..." %}" <span style="color:red;">{% blocktrans %}{{ total_done  }}</span>/{{ total }} completed{% endblocktrans %}
+        </div>
+    {%endif%}

@@ -1,0 +1,40 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Group Add Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>
+  {% if request.user.is_superuser %}{% blocktrans with request.user.get_full_name as requser %}The following group was
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{ requser }}(superuser){% endblocktrans %}{% else %}{% blocktrans with request.user.get_full_name as requser%}The following group was
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{ requser }} and needs to be activated{% endblocktrans %}{% endif %}:</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Name:" %}</td>
+    <td width="75%"><b>{% blocktrans with n=object.name %}{{ n }}{% endblocktrans %}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Label:" %}</td>
+    <td width="75%"><b>{% blocktrans with l=object.label %}{{ l }}{% endblocktrans %}</b></td>
+  </tr>
+</table>
+<p>{% blocktrans %}To view the details of this
+  group, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "group.detail" object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url "group.detail" object.slug %}</a></b><br>
+
+{% if object.status_detail != 'active' %}
+  <br>
+<p>{% blocktrans %}To activate this group,
+  go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url "group.edit" object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url "group.edit" object.slug %}</a></b> </p>
+{% endif %}
+
+<P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

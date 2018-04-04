@@ -1,0 +1,95 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load committee_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+
+{% has_perm user committees.change_committee committee as can_edit %}
+{% has_perm user committees.delete_committee committee as can_delete %}
+{% tags_for_object committee as tags %}
+
+<ul class="list-unstyled t-meta-data">
+    {% with committee.category_set as committee_cat %}
+        {% if committee_cat %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'committees.search' %}?q=category:{{ committee_cat.category }}">{{ committee_cat.category }}</a></li>
+                    {% if committee_cat.sub_category %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'committees.search' %}?q=sub_category:{{ committee_cat.sub_category }}">{{ committee_cat.sub_category }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in tags %}
+                <a class="label label-default" href="{% url 'committees.search' %}?q={{ tag }}&search_category=tags__icontains">{{ tag }}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_superuser %}
+        <li>
+            Created {{ committee.create_dt|date:"long" }} by
+            <a href="{{ committee.creator.get_absolute_url }}">
+                {% if committee.creator.first_name %}
+                    {{ committee.creator.first_name }} {{ committee.creator.last_name }}
+                {% else %}
+                    {{ committee.creator }}
+                {% endif %}
+            </a>
+        </li>
+        <li>
+            Last updated {{ committee.update_dt|date:"long" }} by
+            <a href="{{ committee.owner.get_absolute_url }}">
+                {% if committee.owner.first_name %}
+                    {{ committee.owner.first_name }} {{ committee.owner.last_name }}
+                {% else %}
+                    {{ committee.owner }}
+                {% endif %}
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+
+{% if can_edit %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{committee.obj_perms }}</li>
+                    <li>{{committee.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=committees&object_id={{ committee.pk }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'committees.edit' committee.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'committees.delete' committee.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'committees.edit.meta' committee.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category.update' committee.opt_app_label committee.opt_module_name committee.pk %}">{% trans "Edit Categories" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

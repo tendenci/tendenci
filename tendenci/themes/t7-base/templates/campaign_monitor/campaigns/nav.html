@@ -1,0 +1,66 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user campaign_monitor.add_campaign as can_add_campaign %}
+{% has_perm user campaign_monitor.add_template as can_add_template %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Campaigns' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Campaigns" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            <li><a href="{% url "campaign_monitor.campaign_index" %}">{% trans "Search Campaigns" %}</a></li>
+            {% if can_add_campaign %}
+                <li><a href="{% url "campaign_monitor.campaign_generate" %}">{% trans "Add Campaign" %}</a></li>
+                <li><a href="{% url "campaign_monitor.campaign_sync" %}">{% trans "Sync Campaigns" %}</a></li>
+                {% if cm_url %}
+                <li class="divider"></li>
+                <li><a href="{{ cm_url }}" target="_blank">{% trans "Go to Campaign Monitor" %}</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+        {% comment %}
+        {% if nav_object %}
+            <ul>
+                <li class="heading">{% trans "This Campaign" %}</li>
+                <li class="divider"></li>
+                <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Campaign Page" %}</a></li>
+                <li><a href="{{ nav_object.preview_url }}">{% trans "View Preview" %}</a></li>
+                {% if campaign.status == 'S' %}
+                {% else %}
+                <li><a class="option-link" href="{{ cm_url }}/createSend/snapshot.aspx?cID={{ nav_object.campaign_id }}">{% trans "View Snapshot" %}</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+        {% endcomment %}
+        </div>
+    </li>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Templates" %}</a>
+        <ul class="dropdown-menu">
+            <li><a href="{% url "campaign_monitor.template_index" %}">{% trans "Search Templates" %}</a></li>
+            {% if can_add_template %}
+                <li><a href="{% url "campaign_monitor.template_add" %}">{% trans "Add Template" %}</a></li>
+                <li><a href="{% url "campaign_monitor.template_sync" %}">{% trans "Sync Templates" %}</a></li>
+            {% endif %}
+        </ul>
+    </li>
+</ul>
+{% endif %}

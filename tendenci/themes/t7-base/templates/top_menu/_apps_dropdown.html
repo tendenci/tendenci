@@ -1,0 +1,448 @@
+
+
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <img class="nav-icon" src="{% static 'famfamfam/icons/application_view_tile.png' %}"/><span class="nav-label">{% trans "Apps" %}</span>
+        <span class="caret"></span>
+    </a>
+
+    <ul id="t-admin-megamenu-apps-dd" class="dropdown-menu apps-dropdown" role="menu">
+        <li>
+            <div class="yamm-content content-dropdown">
+                <div class="row">
+                    <div class="col-sm-12 content-dropdown-col">
+                        <div id="accordion" class="panel-group" role="tablist" aria-multiselectable="true">
+
+                           <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingZero">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseZero">{% trans '1. Admin' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseZero" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingZero">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                {% if USER_IS_SUPERUSER %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'admin:index'%}">
+                                                            <img class="nav-icon" src="{% static 'famfamfam/icons/house.png' %}"/><span class="nav-label">{% trans 'Admin Backend' %}</span>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="{% url 'reports-memberships_overview' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="{% url 'apps.list' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/application_view_list.png' %}"/><span class="nav-label">{% trans 'App List' %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                <li class="content-item">
+                                                     <a href="{% url 'dashboard' %}"
+                                                         ><img class="nav-icon" src="{% static 'famfamfam/icons/controller.png' %}"/><span class="nav-label">{% trans 'Dashboard' %}</span>
+                                                     </a>
+                                                 </li>
+                                            </ul>
+
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                            {% if USER_IS_SUPERUSER %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'settings.index' 'site' 'global' %}">
+                                                        <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"><span class="nav-label">{% trans 'Site Settings' %}</span>
+                                                    </a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'settings' %}">
+                                                        <img class="nav-icon" src="{% static 'famfamfam/icons/wrench.png' %}"/><span class="nav-label">{% trans 'Full Settings' %}</span>
+                                                    </a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="/explorer/"><img class="nav-icon" src="{% static 'famfamfam/icons/application.png' %}"/><span class="nav-label">{% trans 'Database Export' %}</span></a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="{% url 'theme_editor.editor' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme Editor' %}</span>
+                                                        </a>
+                                                    </li>
+                                            {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">{% trans '2. Content' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                            {% if USER_IS_SUPERUSER %}
+                                                {% if MODULE_PAGES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'pages' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_stack.png' %}"/><span class="nav-label">{% firstof MODULE_PAGES_LABEL_PLURAL trans "Pages" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_STORIES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'stories' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/book_open.png' %}"/><span class="nav-label">{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+
+                                                {% if MODULE_NEWS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'news' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/newspaper.png' %}"/><span class="nav-label">{% firstof MODULE_NEWS_LABEL_PLURAL trans "News" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_ARTICLES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'articles' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_green.png' %}"/><span class="nav-label">{% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_FORMS_ENABLED and USER_IS_SUPERUSER %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'forms' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/application_form.png' %}"/><span class="nav-label">{% firstof MODULE_FORMS_LABEL trans "Forms" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_FILES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'files' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/folder.png' %}"/><span class="nav-label">{% firstof MODULE_FILES_LABEL trans "Files" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                            </ul>
+
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                {% if MODULE_DIRECTORIES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'directories' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/folder_page_white.png' %}"/><span class="nav-label">{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_JOBS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'jobs' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/briefcase.png' %}"/><span class="nav-label">{% firstof MODULE_JOBS_LABEL_PLURAL trans "Jobs" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_RESUMES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'resumes' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_attach.png' %}"/><span class="nav-label">{% firstof MODULE_RESUMES_LABEL trans "Resumes" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+
+                                                {% if MODULE_HELP_FILES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'help_files' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/help.png' %}"/><span class="nav-label">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans "Help Files" %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_TESTIMONIALS_ENABLED and USER_IS_SUPERUSER %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'testimonials' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/thumb_up.png' %}"/><span class="nav-label">{% firstof MODULE_TESTIMONIALS_LABEL_PLURAL trans "Testimonials" %}</span>
+                                                    </a>
+                                                </li>
+                                                {% endif %}
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">{% trans '3. Events' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            {% if MODULE_EVENTS_ENABLED %}
+                                              <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                    <li class="content-item">
+                                                        <a href="{% url 'event.month' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/calendar.png' %}"/><span class="nav-label">{% trans 'Calendar' %}</span>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="{% url 'event.search' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/><span class="nav-label">{% trans 'Events List' %}</span>
+                                                        </a>
+                                                    </li>
+
+                                                </ul>
+
+                                                <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                    {% if USER_IS_SUPERUSER %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'event.reports.financial' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Reports' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    {% if MODULE_SPEAKERS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'speakers' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/user_suit.png' %}"/><span class="nav-label">{% trans 'Speakers' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                </ul>
+                                            {% endif %}
+
+
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingThree">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">{% trans '4. Member Engagement' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                    <div class="panel-body">
+                                        <div class="row">
+
+                                                <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                 {% if MODULE_PHOTOS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'photoset_latest' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/photos.png' %}"/><span class="nav-label">{% trans 'Photo Album' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    {% if MODULE_VIDEOS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'video' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/camera.png' %}"/><span class="nav-label">{% trans 'Video' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+
+                                                    {% if MODULE_NEWSLETTERS_ENABLED and USER_IS_SUPERUSER %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'newsletter.list' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/email_go.png' %}"/><span class="nav-label">{% trans 'Newsletters' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                </ul>
+
+                                                <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                    {% if MODULE_FORUMS_ENABLED and USER_IS_SUPERUSER %}
+                                                        <li class="content-item">
+                                                            <a href="{% url 'admin:app_list' 'announcements'%}">
+                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/bell.png' %}"/><span class="nav-label">{% trans 'Announcements' %}</span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                    {% if MODULE_FORUMS_ENABLED %}
+                                                        <li class="content-item">
+                                                            <a href="{% url 'pybb:index' %}">
+                                                                <img class="nav-icon" src="{% static 'famfamfam/icons/comments.png' %}"/><span class="nav-label">{% trans 'Forums' %}</span>
+                                                            </a>
+                                                        </li>
+                                                    {% endif %}
+                                                </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFour">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">{% trans '5. Organization' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                               {% if MODULE_STAFF_ENABLED and USER_IS_SUPERUSER %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'staff' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/drive_user.png' %}"/><span class="nav-label">{% trans 'Staff' %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'studygroups.search' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/group_go.png' %}"/><span class="nav-label">{% trans 'Study Groups' %}</span>
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                            {% if USER_IS_SUPERUSER %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'admin:app_list' 'entities' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/world_link.png' %}"/><span class="nav-label">{% trans 'Entities' %}</span>
+                                                    </a>
+                                                </li>
+                                               {% endif %}
+                                               {% if MODULE_COMMITTEES_ENABLED %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'committees.search' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/group.png' %}"/><span class="nav-label">{% trans 'Committees' %}</span>
+                                                    </a>
+                                                </li>
+                                               {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                            {% if USER_IS_SUPERUSER %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFive">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">{% trans '6. Financial' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                {% if MODULE_INVOICES_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'invoices' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_width.png' %}"/><span class="nav-label">{% trans 'Invoices' %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                <li class="content-item">
+                                                    <a href="/reports/"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Invoicing Reports' %}</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                {% if MODULE_DISCOUNTS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'discounts' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/money_delete.png' %}"/><span class="nav-label">{% trans 'Discounts' %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if MODULE_DONATIONS_ENABLED %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'donation.search' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/money.png' %}"/><span class="nav-label">{% trans 'Donations' %}</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+                            {% endif %}
+
+                            {% if USER_IS_SUPERUSER %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingSix">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">{% trans '7. Layout' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                    <li class="content-item">
+                                                        <a href="{% url 'theme_editor.editor' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/layout_edit.png' %}"/><span class="nav-label">{% trans 'Theme Editor' %}</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="content-item">
+                                                        <a href="{% url 'admin:navs_nav_changelist' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/folder_explore.png' %}"/><span class="nav-label">{% trans 'Navigation' %}</span>
+                                                        </a>
+                                                    </li>
+                                            </ul>
+
+                                            <ul class="list-unstyled col-sm-6 col-xs-12">
+                                                    <li class="content-item">
+                                                        <a href="{% url 'admin:boxes_box_changelist' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/box.png' %}"/><span class="nav-label">{% trans 'Boxes' %}</span>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="content-item">
+                                                        <a href="{% url 'redirects' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/arrow_turn_right.png' %}"/><span class="nav-label">{% trans 'Redirects' %}</span>
+                                                        </a>
+                                                    </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</li>

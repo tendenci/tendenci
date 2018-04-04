@@ -1,0 +1,124 @@
+{% extends "events/base.html" %}
+{% load base_filters %}
+{% load bootstrap_pagination_tags %}
+{% load event_tags %}
+
+{% block title %}{{ block.super }}{% trans "Registrant Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/events-reg-search.css' %}">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+{% endblock %}
+
+{% block content %}
+
+<div class="global-reg-search">
+
+    {% global_registrant_search %}
+
+    {% autopaginate registrants 5 %}
+    {% for reg in registrants %}
+    <div class="registrant-wrap">
+        <div class="registration-status">
+            {% if reg.registration.canceled %}
+            <div class="not-registered">{% trans "Registration cancelled." %}</div>
+            {% endif %}
+
+            {% if reg.registration.status == 'payment-required' %}
+            <div class="almost-registered">{% trans "Almost registered. Payment is still required." %}"
+                {% if reg.pricing.reg_conf.can_pay_online %}
+                <a href="{% url "payment.pay_online" reg.registration.invoice.pk reg.registration.invoice.guid %}">
+                    {% trans "Complete registration." %}</a>
+                {% endif %}
+                </div>
+            {% endif %}
+
+            {% if reg.registration.status == 'registered-with-balance' %}
+            <div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is {{ regbal|format_currency }}. {% endblocktrans %}
+                {% if reg.pricing.reg_conf.can_pay_online and reg.registration.invoice.balance > 0 %}
+                <a href="{% url "payment.pay_online" reg.registration.invoice.pk reg.registration.invoice.guid %}">
+                    {% trans "Pay online." %}</a>
+                {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="registrant-details">
+            {% if reg.get_name %}
+                {% if reg.user %}
+                <div><h2><a href="{% url "profile" reg.user.username %}">
+                    {{ reg.get_name }}</a></h2></div>
+                {% else %}
+                <div><h2>{{ reg.get_name }} {{ reg.user.pk }}</h2></div>
+                {% endif %}
+            {% else %}
+                <div>{% trans "Anonymous Guest" %}</div>
+            {% endif %}
+
+            {% if reg.phone and reg.email %}
+                <div>{{ reg.phone|phonenumber }} &middot; {{ reg.email }}</div>
+            {% else %}
+                {% if reg.phone %}
+                <div>{{ reg.phone|phonenumber }}</div>
+                {% else %}
+                    {% if reg.email %}
+                    <div>{{ reg.email }}</div>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            {% if reg.position_title and reg.company_name %}
+                <div>{% blocktrans with reg.position_title as postitle %}{{ postitle }}{% endblocktrans %}
+                {% blocktrans with reg.company_name as regcomp %} at {{ regcomp }}{% endblocktrans %}</div>
+            {% else %}
+                {% if reg.position_title %}
+                <div>{% blocktrans with reg.position_title as postitle %}{{ postitle }}{% endblocktrans %}</div>
+                {% else %}
+                    {% if reg.company_name %}
+                    <div>{% blocktrans with reg.company_name as regcomp %}Works at {{ regcomp }}{% endblocktrans %}</div>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="registration-details">
+            <div>{% trans "Registration Number: " %}
+                <a href="{% url "event.registration_confirmation" reg.registration.event.pk reg.registration.pk %}">{{ reg.registration.pk }}</a>
+            </div>
+            <div>{% trans "Registration Date: "%}{{ reg.registration.create_dt }}</div>
+
+            <div>{% trans "Event: " %}
+                <a href="{% url "event" reg.registration.event.pk %}">{{ reg.registration.event }}</a>
+            </div>
+            <div>{% trans "Event Start: "%}{{ reg.registration.event.start_dt }}</div>
+        </div>
+
+        <div class="invoice-details">
+            {% if reg.registration.invoice %}
+                <div>{% trans "Invoice ID: " %}
+                    <a href="{% url "invoice.view" reg.registration.invoice.pk reg.registration.invoice.guid %}">{{ reg.registration.invoice.pk }}</a>
+                </div>
+            {% endif %}
+            <div>{% trans "Invoice Balance: "%}{{ reg.registration.invoice.balance|format_currency }}</div>
+            <div>{% trans "Invoice Total: " %}{{ reg.registration.invoice.total|format_currency }}</div>
+        </div>
+    </div>
+    {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+       $(document).ready(function () {
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+    </script>
+{% endblock %}

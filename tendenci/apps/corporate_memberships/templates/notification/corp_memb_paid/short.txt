@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with object.corp_profile.name as objname %}Payment Received for Corporate Membership Application - ({{ objname }}){% endblocktrans %}

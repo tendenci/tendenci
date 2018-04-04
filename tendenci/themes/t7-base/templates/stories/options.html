@@ -1,0 +1,29 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm request.user stories.change_story opt_object as can_edit %}
+{% has_perm request.user stories.delete_story opt_object as can_delete %}
+
+<div class="t-iconrow">
+
+    {% if can_edit %}
+    <span>{{ opt_object.status_detail|capfirst }}</span>
+    {% endif %}
+
+<ul>
+    {% if can_edit %}
+        <li><a href="{% url "story.edit" opt_object.pk  %}" title="Edit Story" class="option-link edit">{% trans 'Edit' %}</a></li>
+        <li>
+        {% if opt_object.object %}
+                <a href="{% url "category.update" opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+        {% else %}
+                <a href="{% url "category.update" opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">{% trans "Edit Categories" %}</a>
+        {% endif %}
+        </li>
+    {% endif %}
+    {% if can_delete %}
+        <li><a href="{% url "story.delete" opt_object.pk  %}" class="option-link delete" title="{% trans 'Delete Story' %}">{% trans "Delete" %}</a></li>
+    {% endif %}
+
+</ul>
+</div>

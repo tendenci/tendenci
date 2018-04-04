@@ -1,0 +1,294 @@
+{% extends "photos/base-wide.html" %}
+
+{% load photo_tags %}
+{% load base_tags %}
+{% load bootstrap_pagination_tags %}
+
+{% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/photos.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t" style="width: 100%;">
+        <div id="progress_bar"></div>
+        <h1>{% trans "Bulk edit photos" %}</h1>
+
+        <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
+            <div class="minimize-wrap-link">
+                <h3><a href="#" class="minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
+            </div>
+            <div class="clearfix"></div>
+            <div class="side-panel">
+
+                <div class="float-anchor"><!-- ie7 fix --></div>
+                <div class="float-window">
+                    <div class="photo-bulk-editor">
+                        <div class="title-wrap">
+                            <div class="label"><label>{% trans "Replace all titles" %}:</label></div>
+                            <div class="field"><input class="title" type="text" /></div>
+                        </div>
+                        <div class="caption-wrap">
+                            <div class="label"><label>{% trans "Replace all captions" %}:</label></div>
+                            <div class="field"><textarea class="caption"></textarea></div>
+                        </div>
+                        <div class="photographer-wrap">
+                            <div class="label"><label>{% trans "Replace all photographers" %}:</label></div>
+                            <div class="field"><input class="photographer" type="text" /></div>
+                        </div>
+                        <div class="tags-wrap">
+                            <div class="label"><label>{% trans "Replace all tags" %}:</label></div>
+                            <div class="field"><input class="tags" type="text" /></div>
+                            <div class="field help-text">{{ tag_help_text }}</div>
+                        </div>
+                    </div>
+
+                    <div class="bulk-license">
+                        <div class="label"><label>{% trans "Replace all Licenses" %}:</label></div>
+                        <div class="field"><select>
+                            <option value=""> {% trans "--- SELECT A LICENSE ---" %} </option>
+                            {% for l in cc_licenses %}
+                            <option value="{{ l.pk }}">{{ l.name }}</option>
+                            {% endfor %}
+                        </select></div>
+                    </div>
+                    <div class="bulk-group">
+                        <div class="label"><label>{% trans "Update all Groups" %}:</label></div>
+                        <div class="field"><select>
+                            <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
+                            {% for g in groups %}
+                            <option value="{{ g.pk }}"{% if g.pk == default_group_id %} selected="selected"{% endif %}>{{ g }}</option>
+                            {% endfor %}
+                        </select></div>
+                    </div>
+                    <div class="save-wrap">
+                        <input type="submit" value="{% trans 'Save all changes to these photos' %}" onclick="event.preventDefault(); save_changes('{% url "photoset_details" photo_set.id %}');"/>
+                    </div>
+                </div>
+            </div>
+
+                {{ photo_formset.management_form }}
+            <div class="sortable-photos clearfix">
+                {% for photo_form in photo_formset.forms %}
+
+                <div class="edit-wrap">
+
+                    {{ photo_form.id }}
+
+                    {% for error in photo_form.errors %}
+                        <li><strong>{{ error|escape }}</strong></li>
+                    {% endfor %}
+
+                    <div class="photo-wrap">
+                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" alt="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/>
+                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" alt="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/>
+                    </div>
+                    <div class="set-wrap">
+                        {{ photo_form.photoset }}
+                    </div>
+                    <div style="clear:both;"><!-- ie7 fix --></div>
+                    <div class="title-wrap">
+                        <div class="label">{{ photo_form.title.label_tag }}</div>
+                        <div class="field">{{ photo_form.title }}</div>
+                    </div>
+                    <div class="caption-wrap">
+                        <div class="label">{{ photo_form.caption.label_tag }}</div>
+                        <div class="field">{{ photo_form.caption }}</div>
+                    </div>
+                    <div class="photographer-wrap">
+                        <div class="label">{{ photo_form.photographer.label_tag }}</div>
+                        <div class="field">{{ photo_form.photographer }}</div>
+                    </div>
+                    <div class="position-wrap">
+                        <div class="label">{{ photo_form.position.label_tag }}</div>
+                        <div class="field">{{ photo_form.position }}</div>
+                    </div>
+
+                    <div style="position:relative;">
+                        <div class="tags-wrap">
+                            <div class="label">{{ photo_form.tags.label_tag }}</div>
+                            <div class="field">{{ photo_form.tags }}</div>
+                            <div class="field help-text">{{ photo_form.tags.help_text }}</div>
+                        </div>
+                        <div class="license-wrap">
+                            <div class="label">{{ photo_form.license.label_tag }}</div>
+                            <div class="field">{{ photo_form.license }}</div>
+                        </div>
+
+                        <div class="group-wrap">
+                            <div class="label">{{ photo_form.group.label_tag }}</div>
+                            <div class="field">{{ photo_form.group }}</div>
+                        </div>
+                        <div class="cover-wrap">
+                            <div class="field">
+                                <input type="radio" name="album_cover" value="{{ photo_form.initial.id }}" {% if photo_form.initial.id == photo_set.albumcover.photo.id %}selected{% endif %}>
+                            </div>
+                            <div class="label">{% trans "Set as album cover" %}</div>
+                        </div>
+                        <div class="delete-wrap">
+                            <div class="field"><input name="delete" type="checkbox" /></div>
+                            <div class="label">{% trans 'Delete' %}</div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>{% trans "All photos have been approved, nothing to see here." %}</p>
+            {% endfor %}
+            </div>
+        </form>
+
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    $(".photo-bulk-editor .title").keyup(function(event){
+        $('.title-wrap input').val($(this).val())
+    });
+    $(".photo-bulk-editor .caption").keyup(function(event){
+        $('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
+    });
+    $(".photo-bulk-editor .tags").keyup(function(event){
+        $('.tags-wrap input').val($(this).val())
+    });
+
+    $(".photo-bulk-editor .photographer").keyup(function(event){
+        $('.photographer-wrap input').val($(this).val())
+    });
+
+    $(".bulk-license select").change(function(event) {
+        $(".license-wrap select").val($(this).val());
+    });
+
+    $(".bulk-group select").change(function(event) {
+        $(".group-wrap select").val($(this).val());
+    });
+
+    $('.position-wrap').hide();
+
+    $(function() {
+        $( ".minimize-link" ).click(function(){
+            $(this).parent().toggleClass('minimize-photo');
+            $(this).parent().find('.title-wrap').toggle();
+            $(this).parent().find('.caption-wrap').toggle();
+            $(this).parent().find('.photographer-wrap').toggle();
+            $(this).parent().find('.license-wrap').toggle();
+            $(this).parent().find('.tags-wrap').toggle();
+            $(this).parent().find('.group-wrap').toggle();
+            $(this).parent().find('.cover-wrap').toggle();
+            $(this).parent().find('.delete-wrap').toggle();
+            //var text = $(this).text() == '{% trans "Hide Photo Details" %}' ? '{% trans "Show Photo Details" %}' : '{% trans "Hide Photo Details" %}';
+            //$(this).find('a').text(text);
+            if ($(this).text() == '{% trans "Hide Photo Details" %}') {
+                $(this).find('a').text('{% trans "Show Photo Details" %}');
+                var all_min = true;
+                $('.edit-wrap').each(function(){
+                    if( !$(this).hasClass('minimize-photo') ){
+                        all_min = false;
+                    }
+                });
+                if (all_min){
+                    $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
+                }
+            }else {
+                $(this).find('a').text('{% trans "Hide Photo Details" %}');
+                var all_rest = true;
+                $('.edit-wrap').each(function(){
+                    if( $(this).hasClass('minimize-photo') ){
+                        all_rest = false;
+                    }
+                });
+                if (all_rest){
+                    $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
+                }
+            }
+        });
+    });
+
+    function save_changes(path) {
+        $("#progress_bar").progressbar({
+            max : $("#id_form-TOTAL_FORMS").val(),
+        });
+        var csrfstring = $(".batch-edit-form input[name='csrfmiddlewaretoken']").serialize()
+        var id_regex = new RegExp('(form-\\d+-)');
+        $(".edit-wrap").each(function(i){
+            var current_wrap = $(this)
+            $(this).find('.position-wrap input').val(i+1);
+            // get the POST data for one form
+            var string = csrfstring + '&';
+            $(this).find(".field").each(function(){
+                if ($(this).children().serialize() != ''){
+                    string = string + $(this).children().serialize().replace(id_regex, '') + '&';}
+            });
+            string = string + $(this).children('input:first-child').serialize().replace(id_regex, '');
+            // send an ajax request for an individual form
+            $.ajax({
+                type: 'POST',
+                url: '{% url "photos_batch_edit" photo_set.id %}',
+                async: true,
+                data: string,
+                success: function(xmlRequestObject, successString){
+                    console.log(successString);
+                }
+            }).done(function(data){
+                // hide the current form
+                current_wrap.hide();
+                // update the progress bar
+                var progressSoFar = $( "#progress_bar" ).progressbar( "value" );
+                $( "#progress_bar" ).progressbar( "value", progressSoFar + 1 );
+                // check if progress bar has finished
+                if (progressSoFar + 1 == $("#id_form-TOTAL_FORMS").val()){
+                    window.location=path;}
+            });
+        });
+    }
+
+    function minimizeAll() {
+        if ($('.minimize-all-button').text() == '{% trans "Enable Photo Drag/Drop Reordering" %}') {
+            $( ".sortable-photos" ).css("width", "100%");
+            $( ".side-panel" ).css("display", "none");
+            $( ".sortable-photos" ).sortable({
+                disabled: false,
+                items: 'div.edit-wrap',
+                update: function() {
+                    $(this).find('div.edit-wrap').each(function(i) {
+                        $(this).find('.position-wrap input').val(i+1);
+                    });
+                }
+            });
+            $( ".sortable-photos" ).disableSelection();
+            $('.edit-wrap').each(function(){
+                $(this).addClass('minimize-photo');
+                $(this).find('.title-wrap').hide();
+                $(this).find('.caption-wrap').hide();
+                $(this).find('.photographer-wrap').hide();
+                $(this).find('.license-wrap').hide();
+                $(this).find('.tags-wrap').hide();
+                $(this).find('.group-wrap').hide();
+                $(this).find('.cover-wrap').hide();
+                $(this).find('.delete-wrap').hide();
+            });
+            $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
+        } else {
+            $( ".sortable-photos" ).css("width", "63%");
+            $( ".side-panel" ).css("display", "inline");
+            $( ".sortable-photos" ).sortable({ disabled: true});
+            $('.edit-wrap').each(function(){
+                $(this).removeClass('minimize-photo');
+                $(this).find('.title-wrap').show();
+                $(this).find('.caption-wrap').show();
+                $(this).find('.photographer-wrap').show();
+                $(this).find('.license-wrap').show();
+                $(this).find('.tags-wrap').show();
+                $(this).find('.group-wrap').show();
+                $(this).find('.cover-wrap').show();
+                $(this).find('.delete-wrap').show();
+            });
+            $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
+        }
+    }
+</script>
+{% endblock %}

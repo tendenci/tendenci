@@ -1,0 +1,25 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "New Page Added" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<font size="2" face="Arial, Helvetica, sans-serif">
+<p>{% blocktrans with object.title as objtitle %}A new page has been added on the
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ objtitle }}</b>{% endblocktrans %}</p>
+<p>{% blocktrans with object.get_absolute_url as objget%}To view the detail of this page, go to: <b>
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ objget }}">{{ SITE_GLOBAL_SITEURL }}{{ objget }}</a></b><br>
+To approve this page and make it visible to the public, go to
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ objget }}">{{ SITE_GLOBAL_SITEURL }}{{ objget }}</a>{% endblocktrans %}
+</p>
+
+<br>{% trans "Thanks!" %}
+
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
+</font>
+</body>
+</html>

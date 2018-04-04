@@ -1,0 +1,14 @@
+{% extends form_template %}
+
+{% block extra_head %}
+<title>{% blocktrans with t=form.title  %}{{ t }}{% endblocktrans %}</title>
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h2>{% blocktrans with t=form.title  %}{{ t }}{% endblocktrans %}</h2>
+    {% blocktrans with r=form.response|safe|urlize %}{{ r }}{% endblocktrans %}
+</div>
+{% endblock %}

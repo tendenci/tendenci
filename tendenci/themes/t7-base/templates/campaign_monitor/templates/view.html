@@ -1,0 +1,67 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load campaign_monitor_tags %}
+{% load perm_tags %}
+
+
+{% block title %}{{ template.name }}{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    {% template_nav request.user %}
+    <div class="template-wrap">
+
+        <div class="options options-search">
+            <div class="quick-options">
+                {% template_options request.user template %}
+            </div>
+        </div>
+        <h1>{{ template.name }}</h1>
+        <div class="content">
+            <div>
+                {% if template.cm_screenshot_url %}
+                    <p><b>{% trans "Screenshot:" %}</b></p><a href="{{ template.cm_preview_url }}">
+                        <img src="{{ template.cm_screenshot_url }}" alt="{{ template.name|truncatechars:123 }}" title="{{ template.name|truncatechars:123 }}">
+                    </a>
+                {% else %}
+                    <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>
+                {% endif %}
+                {% if template.html_file %}
+                    <p><b>{% trans "Html File:" %}</b> <a href="{{ template.get_html_original_url }}">{% trans "Download" %}</a></p>
+                {% endif %}
+                {% if template.zip_file %}
+                    <p><b>{% trans "Zip File:" %}</b><a href="{{ template.get_zip_url }}">{% trans "Download" %}</a></p>
+                {% endif %}
+                {% if template.screenshot_file %}
+                    <p><b>{% trans "Screenshot File:" %}</b><a href="{{ template.get_screenshot_url }}">{% trans "Download" %}</a></p>
+                {% endif %}
+                <p>
+                    {% blocktrans %}
+                    Click <a href="{{ template.cm_preview_url }}">here</a>
+                    to view the rendered version on Campaign Monitor.
+                    {% endblocktrans %}
+                </p>
+                {% if template.html_file %}
+                <p>
+                    {% url "campaign_monitor.template_render" template.template_id as rendered_url %}
+                    {% blocktrans %}
+                    Click <a href="{{ rendered_url }}">here</a>
+                    to view a rendered version of the html with the latest data.
+                    {% endblocktrans %}
+                </p>
+                <p>
+                    {% url "campaign_monitor.template_update" template.template_id as update_url %}
+                    {% blocktrans %}
+                    Click <a href="{{ update_url }}">here</a>
+                    to use the same files to update this template.
+                    {% endblocktrans %}
+                </p>
+                {% endif %}
+            </div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

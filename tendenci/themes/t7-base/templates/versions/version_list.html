@@ -1,0 +1,37 @@
+{% extends "default.html" %}
+
+{% block content %}
+{% if versions %}
+    {% for version in versions %}
+    {% if forloop.first %}
+    <h1>Versions for {{ version.get_object }}</h1>
+    <table>
+    <tr>
+        <th>{% trans 'Number' %}</th>
+        <th>{% trans 'Version Date' %}</th>
+        <th>{% trans 'Creator' %}</th>
+        <th>{% trans 'Link' %}</th>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ version.create_dt }}</td>
+        <td>{{ version.user.username }}</td>
+        <td><a href="{{ version.get_object_version_url }}">{% trans 'View' %}</a></td>
+    <tr>
+    {% if forloop.last %}
+    <tr>
+        <td>Current</td>
+        <td>{{ version.get_object.update_dt }}</td>
+        <td>{{ version.get_object.owner_username }}</td>
+        <td><a href="{{ version.get_object.get_absolute_url }}">{% trans 'View' %}</a></td>
+    </tr>
+    {% endif %}
+
+    {% endfor %}
+</table>
+{% else %}
+<h1>{% trans 'No Old Versions Found' %}</h1>
+{% endif %}
+
+{% endblock content %}

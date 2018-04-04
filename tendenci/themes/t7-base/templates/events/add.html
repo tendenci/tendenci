@@ -1,0 +1,152 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{{ block.super }}{% trans 'Add' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
+
+    <form id="t-events-form" class="form-horizontal" action="{% url 'event.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {{ multi_event_forms|styled_multi_forms }}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                    {% if MODULE_EVENTS_LABEL %}
+                        {% blocktrans with module_events_label=MODULE_EVENTS_LABEL %}
+                            Add {{ module_events_label }}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "Add Event" %}
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+    <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
+    <script type="text/javascript" src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/events_formset.js' %}"></script>
+    <script type="text/javascript">
+
+        //script for hiding and showing the 'On weekend' field
+        //when nesessary.
+        $(document).ready(function() {
+            weekend = $('#id_on_weekend').closest('.form-group');
+            start_dt = $('input#id_start_dt_0');
+            start_dt_val = start_dt.val();
+            end_dt =  $('input#id_end_dt_0');
+            end_dt_val = end_dt.val();
+
+            if(start_dt_val != end_dt_val){
+                weekend.show();
+            } else {
+                weekend.hide();
+            }
+
+            start_dt.change(function() {
+                if ($(this).val() == end_dt_val) {
+                    weekend.hide();
+                } else {
+                    weekend.show();
+                }
+            });
+
+            end_dt.change(function() {
+                if ($(this).val() == start_dt_val) {
+                    weekend.hide();
+                } else {
+                    weekend.show();
+                }
+            });
+
+            allDay = $('#id_all_day');
+            start_dt_field = $('input#id_start_dt_0').closest('.form-group');
+            end_dt_field = $('input#id_end_dt_0').closest('.form-group');
+            start_event_dt_field = $('input#id_start_event_date').closest('.form-group');
+            end_event_dt_field = $('input#id_end_event_date').closest('.form-group');
+            if (allDay.prop('checked')) {
+                start_dt_field.hide();
+                end_dt_field.hide();
+                start_event_dt_field.show();
+                end_event_dt_field.show();
+            } else {
+                start_dt_field.show();
+                end_dt_field.show();
+                start_event_dt_field.hide();
+                end_event_dt_field.hide();
+            }
+            $('#id_all_day').change(function() {
+                if($(this).prop('checked')) {
+                    start_dt_field.hide();
+                    end_dt_field.hide();
+                    start_event_dt_field.show();
+                    end_event_dt_field.show();
+                } else {
+                    start_dt_field.show();
+                    end_dt_field.show();
+                    start_event_dt_field.hide();
+                    end_event_dt_field.hide();
+                }
+            });
+
+            $('.regconfpricing_formset .section-description').addClass('well');
+
+            var hide_forms_on_enabled_fn = function() {
+                var $elem = $('input#id_regconf-enabled')
+                    $price = $('input[id$="-price"]'),
+                    forms = [];
+
+                // display attendees
+                forms.push($('#t-formsbuilder-form-display-attendees'));
+
+                // pricing
+                forms.push($('#t-formsbuilder-form-pricings'));
+
+                // other registration fields
+                $('#t-formsbuilder-form-registration .form-group').each(function(k, v) {
+                    if(!$(v).find($elem).length) forms.push($(v));
+                });
+
+                // set price value to 0 if blank
+                $.each($price, function(k, v) { if ($(v).val()=='') { $(v).val(0); } })
+
+                $.each(forms, function(index, form) { if($elem.prop('checked')) form.show(); else form.hide(); });
+            }
+            $('input#id_regconf-enabled').change(hide_forms_on_enabled_fn);
+            hide_forms_on_enabled_fn();
+        });
+    </script>
+
+    <script type="text/javascript">
+        {% include 'events/include/event_dates.js' %}
+    </script>
+
+    <script type="text/javascript">
+        {% include 'events/include/event_place.js' %}
+    </script>
+
+<script type="text/javascript">
+{% include 'events/include/event_form_custom_reg.js' %}
+</script>
+{% include 'tags/autocomplete.html' %}
+
+{% endblock %}

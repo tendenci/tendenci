@@ -1,0 +1,29 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user photos.view_photoset as can_view %}
+{% has_perm user photos.add_photoset as can_add %}
+{% has_perm user photos.change_photoset as can_change %}
+{% has_perm user photos.delete_photoset as can_delete %}
+
+
+{% if can_change %}
+<li><a href="{% url 'photoset_edit' opt_object.pk %}">{% trans "Edit Set" %}</a></li>
+{% endif %}
+
+{% if can_delete %}
+<li><a class="delete-set" href="{% url 'photoset_delete' opt_object.pk %}">{% trans "Delete Set" %}</a></li>
+{% endif %}
+
+{% if can_change %}
+<li><a href="{% url 'photos_batch_add' opt_object.pk %}">{% trans "Add Photos" %}</a></li>
+<li><a href="{% url 'photos_batch_edit' opt_object.pk %}">{% trans "Edit Photos" %}</a></li>
+{% endif %}
+
+{% comment %}
+
+{% if user.profile.is_superuser %}
+<li><a href="{% url 'photoset_zip' opt_object.pk %}">{% trans "Download Zip" %}</a></li>
+{% endif %}
+
+{% endcomment %}

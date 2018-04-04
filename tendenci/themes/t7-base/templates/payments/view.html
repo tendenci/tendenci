@@ -1,0 +1,252 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'View a Payment' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/payments.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t payment-view">
+<h1>{% trans "View a Payment" %}</h1>
+
+<p class="payment-view-intro">
+{% trans "Payments are created with " %}
+<a href="{% url "invoice.search" %}">{% trans "invoices" %}</a>.
+{% blocktrans %}
+There can be, theoretically, multiple payments for one invoice.
+Only a TENDERED invoice can have a payment created for it, but if the payment
+were to not be approved then it is possible for the user to initiate payment
+again resulting in more than one payment per invoice. The real trail is on the accounting side - note the yellow &quot;accounting&quot; link below for more information. <br><br>***Reversing a payment does *NOT* issue a credit or refund.  It will simply reverse
+the payment entries in the general ledger for accounting purposes.
+{% endblocktrans %}<p>
+
+<div class="payment-view-block">
+<h2>{% trans "Admin / Owner Block" %}</h2>
+<table width="100%">
+<tr>
+<td width="30%"><div class="label">{% trans "Payment ID:" %}</div></td>
+<td width="20%">{{ payment.id }}</td>
+<td class="label" width="30%">{% trans "Status Detail:" %}</td>
+<td width="20%">{{ payment.status_detail }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Invoice ID:" %}</div></td>
+<td width="20%"><a href="{% url "invoice.view" payment.invoice.id %}">{{ payment.invoice.id }}</a>
+<span class="body-copy-yellow"><a href="{% url "invoice.detail" payment.invoice.id %}">{% trans "accounting" %}</a></span>
+</td>
+<td class="label" width="30%">{% trans "Payment Status:" %}</td>
+<td width="20%">{% if payment.status%}1{% else %}0{% endif %}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Payment GUID:" %}</div></td>
+<td colspan="2">{{ payment.guid }}</td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Created:" %}</div></td>
+<td colspan="2">&nbsp;</td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">&nbsp;</div></td>
+<td colspan="2"><b>{{ payment.create_dt|date:'long' }}</b></td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Creator:" %}</div></td>
+<td width="20%">{% if payment.creator%}<a href="{% url "profile" payment.creator.username %}">{{ payment.creator.username }}</a>{%endif%}</td>
+<td class="label" width="30%">{% trans "Owner:" %}</td>
+<td width="20%">{% if payment.owner%}<a href="{% url "profile" payment.owner.username %}">{{ payment.owner.username }}</a>{%endif%}</td>
+</tr>
+</table>
+</div>
+
+<div class="payment-view-block">
+<h2>{% trans "Transaction Details" %}</h2>
+<table width="100%">
+<tr>
+<td width="30%"><div class="label">{% trans "Response Code:" %}</div></td>
+<td width="20%">{{ payment.response_code }}</td>
+<td class="label" width="30%">{% trans "Response Subcode:" %}</td>
+<td width="20%">{{ payment.response_subcode }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Response Reason Code:" %}</div></td>
+<td colspan="3">{{ payment.response_reason_code }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Response Reason Text:" %}</div></td>
+<td colspan="3">{{ payment.response_reason_text }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Response Page:" %}</div></td>
+<td colspan="3">{{ payment.response_page }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Trans ID:" %}</div></td>
+<td colspan="2">{{ payment.trans_id }}</td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "PO Number:" %}</div></td>
+<td width="20%">{{ payment.po_num}}</td>
+<td class="label" width="30%">{% trans "Authorization Code:" %}</td>
+<td width="20%">{{ payment.auth_code }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Amount:" %}</div></td>
+<td width="20%">&nbsp;</td>
+<td><div class="label">{% trans "Method:" %}</div></td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">&nbsp;</div></td>
+<td width="20%"><b>{{ payment.amount|format_currency }}</b></td>
+<td>&nbsp;</td>
+<td width="20%"><b>{{ payment.method }}</b></td>
+</tr>
+
+<tr>
+<td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Invoice Number:" %}</div></td>
+<td width="20%">{{ payment.invoice_num_}}</td>
+<td class="label" width="30%">{% trans "AVS Result Code:" %}</td>
+<td width="20%">{{ payment.avs_code }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Description:" %}</div></td>
+<td colspan="3">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">&nbsp;</div></td>
+<td colspan="3"><b>{{ payment.description }}</b></td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "MD5 Hash:" %}</div></td>
+<td colspan="2"><b>{{ payment.md5_hash }}</b></td>
+<td width="20%">&nbsp;</td>
+</tr>
+
+</table>
+</div>
+
+<div class="payment-view-block">
+<h2>{% trans "Customer Name and Billing Address" %}</h2>
+<table width="100%">
+<tr>
+<td width="30%"><div class="label">{% trans "Cardholder Name:" %}</div></td>
+<td width="20%">{% if payment.first_name %}{{ payment.first_name }}{% endif %} {% if payment.last_name %}{{ payment.last_name }}{% endif %}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Company:" %}</div></td>
+<td width="20%">{% if payment.companye %}{{ payment.company }}{% endif %}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Billing Address:" %}</div></td>
+<td width="20%">{% if payment.address %}{{ payment.address}}{% endif %}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "City:" %}</div></td>
+<td width="20%">{% if payment.city %}{{ payment.city}}{% endif %}</td>
+<td class="label" width="30%">State:</td>
+<td width="20%">{% if payment.state_name %}{{ payment.state }}{% endif %}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Zip:" %}</div></td>
+<td width="20%">{% if payment.zip %}{{ payment.zip}}{% endif %}</td>
+<td class="label" width="30%">Country:</td>
+<td width="20%">{% if payment.country %}{{ payment.country }}{% endif %}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Phone:" %}</div></td>
+<td width="20%">{% if payment.phone %}{{ payment.phone}}{% endif %}</td>
+<td class="label" width="30%">Fax:</td>
+<td width="20%">{% if payment.fax %}{{ payment.fax }}{% endif %}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Email:" %}</div></td>
+<td width="20%">{% if payment.email %}{{ payment.email|obfuscate_email }}{% endif %}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+</table>
+</div>
+
+
+<div class="payment-view-block">
+<h2>{% trans "Customer Shipping Address" %}</h2>
+<table width="100%">
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to First Name:" %}</div></td>
+<td width="20%">{{ payment.ship_to_first_name }}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to Last Name:" %}</div></td>
+<td width="20%">{{ payment.ship_to_last_name }}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to Company:" %}</div></td>
+<td width="20%">{{ payment.ship_to_company }}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to Address:" %}</div></td>
+<td width="20%">{{ payment.ship_to_address}}</td>
+<td colspan="2">&nbsp;</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to City:" %}</div></td>
+<td width="20%">{{ payment.ship_to_city}}</td>
+<td class="label" width="30%">{% trans "Ship to State:" %}</td>
+<td width="20%">{{ payment.ship_to_state }}</td>
+</tr>
+
+<tr>
+<td width="30%"><div class="label">{% trans "Ship to Zip:" %}</div></td>
+<td width="20%">{{ payment.ship_to_zip}}</td>
+<td class="label" width="30%">{% trans "Ship to Country:" %}</td>
+<td width="20%">{{ payment.ship_to_country }}</td>
+</tr>
+
+</table>
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user committees.add_committee as can_add_committee %}
+{% has_perm user committees.add_position as can_add_position %}
+
+{% if nav_object %}
+    {% has_perm user committees.view_committee nav_object as can_view_committee %}
+    {% has_perm user committees.change_committee nav_object as can_edit_committee %}
+    {% has_perm user committees.delete_committee nav_object as can_delete_committee %}
+{% else %}
+    {% has_perm user committees.view_committee as can_view_committee %}
+    {% has_perm user committees.change_committee as can_edit_committee %}
+{% endif %}
+
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_COMMITTEES_LABEL 'Committees' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Committees" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "committees" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "committees.search" %}">{% trans "Search Committees" %}</a></li>
+            {% if can_add_committee %}
+                <li><a href="{% url "committees.add" %}">{% trans "Add Committee" %}</a></li>
+            {% endif %}
+            {% if can_add_position %}
+                <li><a href="{% url "admin:committees_position_add" %}">{% trans "Add Position" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_committee or can_edit_committee %}
+            <ul>
+                <li class="heading">{% trans "This Committee" %}</li>
+                <li class="divider"></li>
+                {% if can_view_committee %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Committee" %}</a></li>
+                {% endif %}
+                {% if can_edit_committee %}
+                    <li><a href="{% url "committees.edit" nav_object.pk %}">{% trans "Edit Committee" %}</a></li>
+                    <li><a href="{% url "committees.edit.meta" nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url "category.update" nav_object.opt_app_label committee.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
+                {% endif %}
+                {% if can_delete_committee %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "committees.delete" nav_object.pk %}">{% trans "Delete Committee" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if nav_object and request.user.is_authenticated %}
+    <li><a href="{% url "files" %}?group={{ nav_object.group_id }}">{% trans 'Files' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

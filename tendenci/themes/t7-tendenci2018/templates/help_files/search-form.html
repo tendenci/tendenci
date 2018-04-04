@@ -1,0 +1,32 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user help_files.add_helpfile as can_add_helpfile %}
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="form-inline" action="{% url 'help_files.search' %}" method="get" role="search">
+  <div class="form-group">
+    <div class="input-group">
+      <input type="text" class="form-control" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
+    </div>
+  <button class="btn btn-default" type="submit">
+    <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
+  </button>
+    
+ </div>
+  
+  <div class="form-group pull-right">
+    <a class="btn btn-success" href="{% url "help_files.request" %}">
+      {% trans "Request" %} 
+      {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}
+    </a>
+    {% if user.profile.is_staff and can_add_helpfile %}
+    <a class="btn btn-primary" href="{% url "help_files.add" %}">
+      {% trans "Add a Help File" %}
+    </a>
+    {% endif %}
+  </div>
+</form>
+{% endif %}
+
+

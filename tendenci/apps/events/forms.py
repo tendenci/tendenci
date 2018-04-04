@@ -265,7 +265,7 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 field_class = getattr(forms, field_class)
             field_args = {"label": mark_safe(field.label), "required": field.required}
-            arg_names = field_class.__init__.__func__.__code__.co_varnames
+            arg_names = field_class.__init__.__code__.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
@@ -1462,13 +1462,13 @@ class Reg8nForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup_pattern = re.compile(r'<[^>]*?>', re.I and re.M)
         markup = markup_pattern.search(data)
         if markup:
             raise forms.ValidationError(_("Markup is not allowed in the name field"))
 
         # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern_string = r'\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
         pattern = re.compile(pattern_string, re.I and re.M)
         domain_extension = pattern.search(data)
         if domain_extension or "://" in data:
@@ -1632,7 +1632,7 @@ class RegistrantForm(forms.Form):
                     field_args['label'] = field_name.title()
                 else:
                     field_class = getattr(forms, field_class)
-                arg_names = field_class.__init__.__func__.__code__.co_varnames
+                arg_names = field_class.__init__.__code__.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = 100
                 if "choices" in arg_names:
@@ -1695,13 +1695,13 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        pattern = re.compile('<[^>]*?>', re.I and re.M)
+        pattern = re.compile(r'<[^>]*?>', re.I and re.M)
         markup = pattern.search(data)
         if markup:
             raise forms.ValidationError(_("Markup is not allowed in the name field"))
 
         # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern_string = r'\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
         pattern = re.compile(pattern_string, re.I and re.M)
         domain_extension = pattern.search(data)
         if domain_extension or "://" in data:

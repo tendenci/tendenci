@@ -41,7 +41,7 @@ class Category(models.Model):
         ordering = ('name',)
         app_label = 'directories'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class Directory(TendenciBaseModel):
@@ -130,7 +130,7 @@ class Directory(TendenciBaseModel):
     def get_renew_url(self):
         return reverse('directory.renew', args=[self.id])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.headline
 
     def save(self, *args, **kwargs):
@@ -255,7 +255,7 @@ class DirectoryPricing(models.Model):
         permissions = (("view_directorypricing", _("Can view directory pricing")),)
         app_label = 'directories'
 
-    def __unicode__(self):
+    def __str__(self):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
         return "%d days for %s" % (self.duration, price)

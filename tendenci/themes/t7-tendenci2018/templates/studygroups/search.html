@@ -1,0 +1,32 @@
+{% extends "studygroups/base.html" %}
+
+{% load search_tags %}
+{% load pagination_tags %}
+{% load studygroup_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'StudyGroups' %}" href="{% url 'studygroups.feed' %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate studygroups 10 %}
+<div id="study-groups">
+  <div class="page-header">
+    <h1>{% trans 'Study Group List' %}</h1>
+  </div>
+  
+    {% studygroup_search %}
+  
+  <br />
+  
+    <div>
+    {% for studygroup in studygroups %}
+        {% search_result studygroup %}
+    {% empty %}
+        <p>{% trans '0 studygroups found' %}</p>
+    {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}

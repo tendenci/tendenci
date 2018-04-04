@@ -1,0 +1,4 @@
+
+<font face=Arial size=2 color=#000000>
+    You are receiving this email because your email is subscribed to our mailing list. Want to to Unsubscribe from this newsletter? Click <a href="[unsubscribe_url]">here</a>.
+</font>

@@ -1,0 +1,73 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" href="{% static 'css/popover.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Edit" %}</h1>
+
+    <div class="news-wrap">
+         <div class="options">
+             <div class="quick-options">
+                {% news_options request.user news %}
+             </div>
+        </div>
+
+        <form action="{% url "news.edit" news.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes' %}" />
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/gplus-helptexts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");    // confirm
+                if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:    'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:        'more-options-target'
+    });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step':15});
+        });
+        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

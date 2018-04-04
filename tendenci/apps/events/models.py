@@ -43,7 +43,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.libs.abstracts.models import OrderingBaseModel
 
 # from south.modelsinspector import add_introspection_rules
-# add_introspection_rules([], ["^timezone_field.TimeZoneField"])
+# add_introspection_rules([], [r'^timezone_field\.TimeZoneField'])
 
 EMAIL_DEFAULT_ONLY = 'default'
 EMAIL_CUSTOM_ONLY = 'custom'
@@ -67,7 +67,7 @@ class TypeColorSet(models.Model):
     class Meta:
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s #%s' % (self.pk, self.bg_color)
 
 
@@ -98,7 +98,7 @@ class Type(models.Model):
     def border_color(self):
         return '#%s' % self.color_set.border_color
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def event_count(self):
@@ -137,7 +137,7 @@ class Place(models.Model):
         super(Place, self).__init__(*args, **kwargs)
         self._original_name = self.name
 
-    def __unicode__(self):
+    def __str__(self):
         str_place = '%s %s %s %s %s' % (
             self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
         return str(str_place.strip())
@@ -306,7 +306,7 @@ class RegConfPricing(OrderingBaseModel):
         self.status = False
         self.save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
@@ -456,7 +456,7 @@ class Registration(models.Model):
         permissions = (("view_registration",_("Can view registration")),)
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Registration - %s' % self.event.title
 
     @property
@@ -529,7 +529,7 @@ class Registration(models.Model):
         for registrant in registrants:
             #registrant.assign_mapped_fields()
             if registrant.custom_reg_form_entry:
-                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                registrant.name = str(registrant.custom_reg_form_entry)
             else:
                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
@@ -783,7 +783,7 @@ class Registrant(models.Model):
         permissions = (("view_registrant", _("Can view registrant")),)
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.custom_reg_form_entry:
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
@@ -950,7 +950,7 @@ class PaymentMethod(models.Model):
     class Meta:
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 
@@ -999,7 +999,7 @@ class Organizer(models.Model):
         super(Organizer, self).__init__(*args, **kwargs)
         self._original_name = self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -1026,7 +1026,7 @@ class Speaker(models.Model):
         super(Speaker, self).__init__(*args, **kwargs)
         self._original_name = self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def files(self):
@@ -1174,7 +1174,7 @@ class Event(TendenciBaseModel):
         if self.image:
             set_s3_file_permission(self.image.file, public=self.is_public())
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     @property
@@ -1456,7 +1456,7 @@ class CustomRegForm(models.Model):
         verbose_name_plural = _("Custom Registration Forms")
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -1561,7 +1561,7 @@ class CustomRegFormEntry(models.Model):
     class Meta:
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         name = self.get_name()
         if name:
             return name
@@ -1674,7 +1674,7 @@ class Addon(models.Model):
             # actual delete of an Addon
             super(Addon, self).delete(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def available(self):
@@ -1698,7 +1698,7 @@ class AddonOption(models.Model):
     class Meta:
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -1720,7 +1720,7 @@ class RegAddon(models.Model):
     class Meta:
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.registration.pk, self.addon.title)
 
 
@@ -1736,6 +1736,6 @@ class RegAddonOption(models.Model):
         unique_together = (('regaddon', 'option'),)
         app_label = 'events'
 
-    def __unicode__(self):
+    def __str__(self):
         #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
         return "%s: %s" % (self.regaddon.pk, self.option.title)

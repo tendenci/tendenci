@@ -20,7 +20,7 @@ from django.utils.cache import patch_vary_headers, patch_response_headers
 
 import tendenci.libs.tinymce.settings as tinymce_settings
 
-safe_filename_re = re.compile("^[a-zA-Z][a-zA-Z0-9_/-]*$")
+safe_filename_re = re.compile(r'^[a-zA-Z][a-zA-Z0-9_/-]*$')
 
 
 def get_file_contents(filename):

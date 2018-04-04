@@ -1,0 +1,33 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Membership Application Renewal" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Submission" %}</div>
+
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type and membership.membership_type.price as membership_type_price %}Membership Type: {{ membership_type }} ${{ membership_type_price }}{% endblocktrans %}</div>
+    {% else %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type %}Membership Type: {{ membership_type }} Free{% endblocktrans %}</div>
+    {% endif %}
+
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_current_membership_url }}">
+        {% trans "View Submitted Application" %}
+    </a></div>
+
+    <div>========================</div>
+
+    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.app.get_absolute_url }}">
+        {% blocktrans with app.create_dt|date as create_date and app.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
+    </a><div>
+
+</body>
+</html>

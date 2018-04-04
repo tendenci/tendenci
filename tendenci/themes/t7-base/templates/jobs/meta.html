@@ -1,0 +1,83 @@
+{% load base_filters %}
+{% load base_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    <li class="pull-right"><a href="{% url 'job.print_view' job.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
+
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe job.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% with job.cat as job_cat %}
+        {% if job_cat %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'jobs' %}?cat={{ job_cat.pk }}">{{ job_cat.name }}</a></li>
+                    {% if job.sub_cat %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'jobs' %}?cat={{ job_cat.pk }}&sub_cat={{ job.sub_cat.pk }}">{{ job.sub_cat.name }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if job.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in job.tags|tag_split %}
+                <a class="label label-default" href="{% url 'jobs' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
+            {% if user == job.creator or user == job.owner %}
+                <li><strong>{% trans "Owned by you" %}</strong></li>
+                {% if not job.status_detail == "active" %}
+                    <li><strong>{% trans "Status:" %}</strong> <span>{{ job.obj_status }}</span></li>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if user.profile.is_superuser or user == job.creator or user == job.owner %}
+            {% meta_creator_owner job %}
+        {% endif %}
+    {% endif %}
+
+</ul>
+
+{% if user.profile.is_superuser %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ job.obj_perms }}</li>
+                    <li>{{ job.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'job.edit' job.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'job.delete' job.pk %}">{% trans "Delete" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'job.edit.meta' job.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

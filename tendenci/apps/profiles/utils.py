@@ -191,11 +191,11 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     max_length = django_max_un_length - 3  # to account for appended numbers
 
     # only letters and digits
-    fn = re.sub('[^A-Za-z0-9]', u'', fn)
-    ln = re.sub('[^A-Za-z0-9]', u'', ln)
+    fn = re.sub(r'[^A-Za-z0-9]', u'', fn)
+    ln = re.sub(r'[^A-Za-z0-9]', u'', ln)
 
     # only letters digits underscores dashes @ + .
-    em = re.sub('[^\w@+.-]', u'', em)
+    em = re.sub(r'[^\w@+.-]', u'', em)
 
     if fn and ln:
         un = '%s.%s' % (fn, ln)
@@ -663,7 +663,7 @@ class ImportUsers(object):
             em=user_data.get('email', u''))
 
         # clean username
-        user.username = re.sub('[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
 
         # make sure username is unique.
         if action_info['action'] == 'insert':

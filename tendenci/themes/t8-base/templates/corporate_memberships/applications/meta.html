@@ -1,0 +1,61 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load corporate_memberships_tags %}
+
+
+{% allow_edit_corp corporate_membership request.user as allow_edit %}
+<ul class="list-unstyled t-meta-data">
+    {% if user.is_authenticated %}
+        {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
+            {% if corporate_membership.is_pending and corporate_membership.anonymous_creator and corporate_membership.anonymous_creathor.first_name %}
+                {% blocktrans with create_date=corporate_membership.create_dt|date:"long" first_name=corporate_membership.anonymous_creator.first_name last_name=corporate_membership.anonymous_creator.last_name email=corporate_membership.anonymous_creator.email %}
+                    <li><strong>Created on {{ create_date }} by:</strong> <span>{{ first_name }} {{ last_name }} ({{ email }})</span></li>
+                {% endblocktrans %}
+            {% else %}
+                {% meta_creator_owner corporate_membership %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</ul>
+
+{% if allow_edit %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ corporate_membership.obj_perms }}</li>
+                    <li>{{ corporate_membership.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    {% if user.profile.is_superuser %}
+                        <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ corporate_membership.pk }}&source={{ corporate_membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    {% endif %}
+                    {% if corporate_membership.status_detail != "archive" %}
+                        {% if corporate_membership.is_active or corporate_membership.is_expired %}
+                            <li><a class="t-meta-edit-link" href="{% url 'corpmembership.edit' corporate_membership.pk %}">{% trans "Edit" %}</a></li>
+                        {% endif %}
+
+                        <li class="dropup">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                                {% trans "Options" %} <span class="caret"></span>
+                            {% endspaceless %}</a>
+
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}{{corporate_memberhsip.status_detail }}</a>
+                                </li>
+
+                                {% if user.profile.is_superuser %}
+                                <li>
+                                    <a class="t-meta-delete-link" href="{% url 'corpmembership.delete' corporate_membership.pk %}">{% trans "Delete" %}</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

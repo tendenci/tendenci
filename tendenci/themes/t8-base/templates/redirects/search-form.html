@@ -1,0 +1,7 @@
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url 'redirects' %}" method="get">
+<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<input type="submit" value="{% trans 'Search' %}" />
+</form>
+{% endif %}

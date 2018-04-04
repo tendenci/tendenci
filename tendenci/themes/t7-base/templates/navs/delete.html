@@ -1,0 +1,30 @@
+{% extends "navs/base.html" %}
+{% load base_tags %}
+
+{% block title %}{% trans "Delete Nav" %} {% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/navs.css' %}">
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="nav-wrap">
+        <h1>{% trans "Delete a Nav" %}</h1>
+        <div class="content">
+        <h2>{% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}</h2>
+        </div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this nav?" %}
+        </div>
+        <div class="delete-form">
+            <form action="{% url "navs.delete" current_nav.id %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans 'Confirm Delete' %}" />
+            </form>
+        </div>
+        <div class="back-search"><a href="{% url "navs.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_NAVS_LABEL 'navs' %} </a></div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends "corporate_memberships/base.html" %}
+{% load base_filters %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'css/timepicker.css' %}">
+
+    {% comment %}
+    <style>
+    .inline-block{
+        display: inline-block;
+    }
+    div.short-label{
+        width: 135px;
+    }
+    div.float-left{
+        float: left;
+        margin-right: 3px;
+    }
+    div.clear{
+        clear: both;
+    }
+    div.field-row{
+        margin: 5px 0;
+    }
+    div.admin-only-header{
+        color: #CC0000;
+    }
+    div.section-break{
+        margin: 2em 0 1em 0;
+    }
+    div.field-row{
+        margin-left: 2em;
+    }
+    div.float-right{
+        float: right;
+        margin-right: 1em;
+    }
+    div.corp-timeline{
+        background-color: #F7F7F9;
+        border: 1px solid #E1E1E8;
+        padding: 8px;
+        margin: 2em 0px;
+    }
+    .fp-usage-tbl th{
+    background-color: #73B530;
+    letter-spacing: 1px;
+    text-align: left;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: normal;
+    }
+    .fp-usage-tbl td, .fp-usage-tbl th{
+    padding: 3px 3px 3px 6px;
+    }
+    .fp-usage-tbl{
+    border: 1px solid #CCCCCC;
+    }
+
+    </style>
+    {% endcomment %}
+{% endblock %}
+
+{% block content %}
+    {% corpmemb_options request.user corporate_membership %}
+
+    <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">
+        <div class="page-header">
+            <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small>{{ corp_profile.name }}</small></h1>
+        </div>
+
+        {% if corp_profile.logo %}
+         <div class="t-corp-membership-logo">
+             <img class="img-responsive" src="{{ corp_profile.get_logo_url }}" alt="{{ corp_profile.name }}" title="{{ corp_profile.name }}">
+         </div>
+       {% endif %}
+
+        <div class="t-corpmemberships-corpmembership-body">
+            {% for field_obj in app_fields %}
+                <section id="t-corpmemberships-application-field-{{ field_obj.id }}" class="t-corpmemberships-application-field">
+                    {# We have a section label #}
+                    {% if field_obj.field_name == "" %}
+                        {% if not forloop.last %}
+                            <h3 class="t-field-sectionlabel t-corpmemberships-application-field-sectionlabel
+                                           {% if field_obj.admin_only%} t-admin-only-header{% endif %}
+                                           {% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}"
+                                >{{ field_obj.label }}</h3>
+                        {% endif %}
+                    {% else %}
+                        <div class="t-field-sectionrow t-corpmemberhsips-application-field-sectionrow
+                                        {% if field_obj.admin_only %} t-admin-only{% endif %}
+                                        {% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
+                            {% if field_obj.field_name == "reps" %}
+                                {% if field_obj.value %}
+                                    <table class="table table-striped t-corpmemberships-reps-field" id="t-corpmemberships-reps-field-{{ field_obj.pk }}">
+                                        <thead>
+                                            <tr>
+                                                <th>{% trans "Name" %}</th>
+                                                <th>{% trans "Is Dues Rep." %}</th>
+                                                <th>{% trans "Is Member Rep." %}</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {% for rep in field_obj.value.all %}
+                                                <tr>
+                                                    <td><a href="{% url 'profile' rep.user.username %}">{{ rep.user.get_full_name }} ({{ rep.user.email }})</a></td>
+                                                    <td>{% if rep.is_dues_rep %}{% trans "True" %}{% endif %}</td>
+                                                    <td>{% if rep.is_member_rep %}{% trans "True" %}{% endif %}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    {% if corporate_membership.status_detail != "archive" %}
+                                        <a href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Add/Edit Representatives" %}</a>
+                                    {% endif %}
+                                {% else %}
+                                    <h3><em>{% trans "No representatives available" %}</em></h3>
+
+                                    {% if corporate_membership.status_detail != "archive" %}
+                                        <a class="btn btn-primary" href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}">{% trans "Add Representatives" %}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                {% if field_obj.field_name != "" and field_obj.value != "" %}
+                                    <dl class="dl-horizontal">
+                                    <dt class="t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
+                                                  {% if field_obj.short_label %} t-short-label{% endif %}
+                                                  {% if field_obj.required %} t-required{% endif %}
+                                                  {% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
+                                        {% blocktrans with label=field_obj.label %}{{ label }}:{% endblocktrans %}
+                                    </dt>
+
+                                    <dd class="t-field-fieldvalue t-corpmemberships-application-field-fieldvalue{% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
+                                        {% if field_obj.is_date %}
+                                            {{ field_obj.value|date:"long" }}
+                                        {% else %}
+                                            {% if field_obj.field_name == "url" %}
+                                                {{ field_obj.value|safe|urlize }}
+                                            {% elif field_obj.field_name == "tax_exempt" %}
+                                                {{ field_obj.value|yesno:"Yes,No" }}
+                                            {% else %}
+                                                {% if field_obj.field_type == "FileField" %}
+                                                    <a href="{% url 'corpmembership.download_file' corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
+                                                {% else %}
+                                                    {{ field_obj.value }}
+                                                {% endif %}
+                                            {% endif %}
+
+                                            {% if field_obj.field_name == "payment_method" %}
+                                                {% if corporate_membership.invoice %}
+                                                    - <a href="{% url 'invoice.view' corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </dd>
+                                    </dl>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </section>
+            {% endfor %}
+
+            {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+                <section class="t-corpmemberships-free-passes">
+                    <h3 class="t-field-sectionlabel t-corpmemberships-free-passes-label">{% trans "Free Passes" %}</h3>
+
+                    <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
+                        <div>
+                            <strong>{% trans "Total Allowed:" %}</strong>
+                            <span>{{ corporate_membership.free_pass_total }}</span>
+                            {% if request.user.is_superuser %}
+                                 &nbsp;&nbsp;&nbsp;<a href="{% url 'corpmembership.free_passes_edit' corporate_membership.id %}"><span class="glyphicon glyphicon-edit"></span> {% trans "Edit" %}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
+                        <div><strong>{% trans "# Used:" %}</strong>
+                            <span>{{ corporate_membership.free_pass_used }}</span>
+                        </div>
+                    </div>
+
+                    <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
+                        <div><strong>{% trans "# Available:" %}</strong>
+                            <span>{{ corporate_membership.free_pass_avail }}</span>
+                        </div>
+                    </div>
+
+                    {% if corporate_membership.free_pass_used > 0 %}
+                        <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Used By" %}</th>
+                                        <th>{% trans "For Event" %}</th>
+                                        <th>{% trans "Date" %}</th>
+                                        <th>{% trans "Processed By" %}</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for fp in corporate_membership.passes_used.all %}
+                                        <tr>
+                                            <td>
+                                                {% if fp.user %}
+                                                    <a href="{% url 'profile' fp.user.username %}">{{ fp.user.username }}</a>
+                                                {% else %}
+                                                    {{ fp.registrant.first_name }}
+                                                    {{ fp.registrant.last_name }}
+                                                    {{ fp.registrant.email }}
+                                                {% endif %}
+                                            </td>
+
+                                            <td>{% if fp.event %}<a href="{% url 'event' fp.event.id %}">{% blocktrans with title=fp.event.title|truncatechars:30 %}{{ title }}{% endblocktrans %}</a>{% endif %}</td>
+
+                                            <td>{{ fp.create_dt|date:"n/j/Y P" }}</td>
+                                            <td>{% if fp.creator %}<a href="{% url 'profile' fp.creator.username %}">{{ fp.creator_username }}</a>{% endif %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </section>
+            {% endif %}
+
+            {% include "corporate_memberships/timeline.html" %}
+        </div>
+    </article>
+{% endblock %}

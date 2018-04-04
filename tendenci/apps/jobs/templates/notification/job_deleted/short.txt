@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans %}Job deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}({% firstof object.title "Untitled" %})

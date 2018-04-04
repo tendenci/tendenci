@@ -667,7 +667,7 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
         password_requirements = get_setting('module', 'users', 'password_text')
         if password_regex:
             # At least MIN_LENGTH long
-            # "^(?=.{8,})(?=.*[0-9=]).*$"
+            # r'^(?=.{8,})(?=.*[0-9=]).*$'
             if not re.match(password_regex, password1):
                 raise forms.ValidationError(mark_safe("The new password does not meet the requirements </li><li>%s" % password_requirements))
 

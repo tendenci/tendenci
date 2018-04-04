@@ -1,0 +1,36 @@
+{% extends "reports/base.html" %}
+{% load base_filters %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Top Spenders" %} ({{ SITE_GLOBAL_CURRENCY }})</h1>
+</div>
+<p>{% trans "Lists the top 10 users with the highest expenses." %}</p>
+<table class="table table-tendenci-reports">
+  <tr>
+    <th>{% trans "#" %}</th>
+    <th>{% trans "Username" %}</th>
+    <th>{% trans "UserID" %}</th>
+    <th>{% trans "Last Name" %}</th>
+    <th>{% trans "First Name" %}</th>
+    <th>{% trans "Email" %}</th>
+    <th>{% trans "Total Expenses" %}</th>
+  </tr>
+  {% for user in entry_list %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td><a href="{% url "profile" user.username %}">{{ user.username }}</a></td>
+    <td>{{ user.pk }}</td>
+    <td>{{ user.last_name }}</td>
+    <td>{{ user.first_name }}</td>
+    <td>{{ user.email|obfuscate_email }}</td>
+    <td>
+      <a href="{% url "invoices" %}?search_criteria=owner_id&search_text={{ user.pk }}&search_method=exact">
+        {{ user.profile.total_spend|format_currency }}
+      </a> &nbsp;
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<br />
+{% endblock content %}

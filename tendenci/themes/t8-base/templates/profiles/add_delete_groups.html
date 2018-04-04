@@ -1,0 +1,59 @@
+{% extends "profiles/base-wide.html" %}
+{% load profile_tags %}
+
+
+{% block title %}{% trans 'Join/Leave User Groups' %}{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="t" id="add-delete-groups">
+        <h1>{% trans 'Join/Leave User Groups' %}</h1>
+
+        <h2>
+            User: <a href="{{ user_this.get_absolute_url}}">{{ user_this.get_full_name }} ({{ user_this.username}})</a>
+        </h2>
+        <form method="post" action=".">{% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="errors">
+                    {{ form.non_field_errors|striptags }}
+                </div>
+            {% endif %}
+
+            <div class="row">
+                {% if form.groups.errors %}
+                    <div class="errors">{{ form.groups.errors|striptags }}</div>
+                {% endif %}
+
+                {{ form.groups }}
+               </div>
+            <div class="row">
+            <button id='add_groups_submit'  type="submit" class="btn btn-default">{% trans 'Save' %}</button>
+           </div>
+
+        </form>
+
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            jQuery.each($("select[multiple]"), function () {
+             SelectFilter2.init(this.id, "Groups", 0, "/media/");
+            });
+            $("#add_groups_submit").click(function(){
+                SelectBox.filter('id_groups_to', '');
+                $("#id_groups_input2").val('');
+            });
+        });
+    </script>
+{% endblock %}

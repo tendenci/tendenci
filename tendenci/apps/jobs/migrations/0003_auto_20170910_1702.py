@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import os
 from django.db import migrations
 from django.template.defaultfilters import slugify
-from django.conf import settings
 
 
 def migrate_customized_jobs_templates():
@@ -23,10 +22,10 @@ def migrate_customized_jobs_templates():
      </fieldset>
 
     Replace:
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"> </script>
 
     With:
-    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"> </script>
     <script type="text/javascript">{% include 'jobs/include/get_subcategories.js' %} </script>
 
 
@@ -118,8 +117,8 @@ def migrate_customized_jobs_templates():
 
     """
     import re
-    from tendenci.apps.site_settings.utils import get_setting
-    dir_path = '{0}/{1}'.format(settings.THEMES_DIR, get_setting('module', 'theme_editor', 'theme'))
+    from tendenci.apps.theme.utils import get_theme_root
+    dir_path = get_theme_root()
 
     # jobs/add.html and edit.html
     files_list = ['{}/templates/jobs/add.html'.format(dir_path),
@@ -136,9 +135,9 @@ def migrate_customized_jobs_templates():
                 content = re.sub(p, '', content)
 
                 # add js link
-                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js">'),
+                p = r'{0}\s*{1}'.format(re.escape('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}">'),
                                         re.escape('</script>'))
-                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"> </script>',
+                content = re.sub(p, '{0}\n{1}'.format('<script type="text/javascript" src="{% static \'js/email-verification.js\' %}"> </script>',
                                                       '<script type="text/javascript">{% include \'jobs/include/get_subcategories.js\' %} </script>)'),
                                  content)
             with open(file_path, 'w') as f:

@@ -1,0 +1,18 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "Approve Resume" %}</h1>
+
+    <div class="resume-wrap">
+    <p><a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</a></p>
+    <p>{% trans "Are you sure you want to approve this resume?" %}</p>
+    <form action="{% url "resume.approve" resume.pk %}" method="post">{% csrf_token %}
+    <div class="forms">
+        <input type="submit" value="{% trans 'Yes, approve it.' %}" /> {% trans "or" %} <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+    </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

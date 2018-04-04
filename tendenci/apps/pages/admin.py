@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import reverse
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
@@ -10,6 +9,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.pages.models import Page
 from tendenci.apps.pages.forms import PageAdminForm
+from tendenci.apps.theme.templatetags.static import static
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -46,7 +46,7 @@ class PageAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            static('js/global/tinymce.event_handlers.js'),
         )
 
     @mark_safe
@@ -66,7 +66,7 @@ class PageAdmin(admin.ModelAdmin):
 
     @mark_safe
     def view_on_site(self, obj):
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" alt="%s" title="%s" /></a>' % (
             reverse('page', args=[obj.slug]),
             obj.title,

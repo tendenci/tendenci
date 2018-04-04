@@ -1,0 +1,22 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit Meta Information" %}{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Meta Information for" %}<br />
+    {% blocktrans with headline=directory.headline %}{{ headline }}{% endblocktrans %}</h1>
+
+    <div class="directory-wrap">
+        <form action="{% url "directory.edit.meta" directory.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="{% trans 'Save Changes'%}" />
+             {% trans 'or' %} <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

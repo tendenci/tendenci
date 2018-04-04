@@ -1,0 +1,24 @@
+.t .cs-search-wrap { width: 100%; }
+.t .cs-search-item { border: 0; margin: 0; padding: 0; }
+.cs-search-wrap ul { list-style: none; margin: 0 10px 10px 0; padding: 0; float: left; width: 200px; }
+.cs-search-wrap ul li.cs-search-item { background: #bebebe; margin: 0; position: relative; }
+.cs-search-wrap ul li.cs-search-item:hover { z-index: 99; }
+.cs-search-wrap ul li.cs-search-item .cs-item { position: relative; background: #ebebeb; padding: 10px; width: 180px; min-height: 178px; height:auto !important; height: 178px; }
+.cs-search-wrap ul li.cs-search-item .cs-item a.cs-img-link { display: block; width: 180px; height: 130px; box-shadow: 0 0 4px #333; -moz-box-shadow: 0 0 4px #333; -webkit-box-shadow: 0 0 4px #333; position: relative; z-index: 10; margin-bottom: 10px; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 { font-size: 14px; line-height: 18px; margin: 0 0 2px 0; padding: 0; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 a { color: #D8A02F; font-size: 14px; line-height: 18px; }
+
+.cs-search-wrap ul li.cs-search-item .cs-full { width: 180px; display: none; position: absolute; top: 0; left: 0; }
+
+.cs-search-wrap ul li.cs-search-item:hover { background: #D7A030; color: #fff; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a { color: #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a:hover { color: #000; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item { background: #D7A030; z-index: 999; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full { background: #D7A030; display: block; padding: 210px 10px 10px 10px; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p { color: #444; margin: 0; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p.services { padding-top: 6px; border-top: 1px dashed #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a { color: #fff; text-decoration: none; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a:hover { text-decoration: underline; }
+
+#add-case-study { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
+#add-case-study:hover { background: #444; color: #fff; }

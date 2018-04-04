@@ -1,0 +1,176 @@
+{% extends "memberships/base-wide.html" %}
+{% load membership_tags %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+  .mems-wrap{
+  width: 95%;
+  margin: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Memberships Overview" %}</h1>
+</div>
+
+<div class="row mems-wrap">
+  <div class="col-md-6">
+    <div id="chart_bystatus_div" ></div>
+  </div>
+
+  <div class="col-md-6">
+    <div id="chart_bytype_div"></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div id="chart_summary_div"></div>
+  </div>
+</div>
+
+<div class="mems-wrap">
+  <table class="table table-tendenci-reports">
+    <thead>
+      <tr>
+        <th>{% trans 'Type' %}</th>
+        <th>{% trans 'Active' %}</th>
+        <th>{% trans 'Pending' %}</th>
+        <th>{% trans 'Expired' %}</th>
+        <th><strong>{% trans 'Total' %}</strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for type in summary %}
+      <tr>
+        <td><a href="{% url "admin:memberships_membershiptype_change" type.type.id %}">{{ type.type.name }}</a></td>
+        <td>{{ type.active }}</td>
+        <td>{{ type.pending }}</td>
+        <td>{{ type.expired }}</td>
+        <td>
+             <strong>
+             {% if type.total %}
+                <a href="{% url "admin:memberships_membershipdefault_changelist" %}?membership_type__id__exact={{ type.type.id  }}">{{ type.total }}</a>
+             {% else %}
+                 {{ type.total }}
+             {% endif %}
+             </strong>
+        </td>
+       </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+           <td><strong>{% trans 'Total' %}</strong></td>
+            <td>
+               <strong>
+                   {% if total.total_active > 0 %}
+                    <a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=active">{{ total.total_active }}</a>
+                    {% else %}
+                    {{ total.total_active }}
+                    {% endif %}
+                </strong>
+            </td>
+            <td>
+               <strong>
+                   {% if total.total_pending > 0 %}
+                    <a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending">{{ total.total_pending }}</a>
+                    {% else %}
+                    {{ total.total_pending }}
+                    {% endif %}
+                </strong>
+            </td>
+            <td>
+               <strong>
+                   {% if total.total_expired > 0 %}
+                    <a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=expired">{{ total.total_expired }}</a>
+                    {% else %}
+                    {{ total.total_expired }}
+                    {% endif %}
+                </strong>
+            </td>
+            <td><strong>{{ total.total_total }}</strong></td>
+       </tr>
+    </tfoot>
+  </table>
+</div>
+
+<p>&nbsp;</p>
+
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+  var options = {
+  title: 'By Status',
+  colors: ['#1c91c0', '#e49307', '#DC3912']
+  };
+
+  var status_data = google.visualization.arrayToDataTable([
+  ['{% trans 'Status' %}', '{% trans 'Count' %}'],
+  ['{% trans 'Active' %}',  {{ total.total_active  }}],
+  ['{% trans 'Pending' %}',  {{ total.total_pending }}],
+  ['{% trans 'Expired' %}',  {{ total.total_expired}}]
+  ]);
+
+  var chart = new google.visualization.PieChart(document.getElementById('chart_bystatus_div'));
+  chart.draw(status_data, options);
+
+  options = {
+  title: 'By Membership Type'
+  };
+  var type_data = google.visualization.arrayToDataTable([
+  ['{% trans 'Corporate Membership Type' %}', '{% trans 'Count' %}'],
+  {% for type in summary %}
+  ['{{ type.type.name }}',  {{ type.total }}],
+  {% endfor %}
+  ]);
+
+  var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
+  chart.draw(type_data, options);
+
+
+  var data = google.visualization.arrayToDataTable([
+  ['{% trans 'Membership Type' %}',
+  '{% trans 'Active' %}', '{% trans 'Pending' %}',
+  '{% trans 'Expired' %}'],
+  {% for type in summary %}
+  ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
+  {{ type.expired }}],
+  {% empty %}
+  ['', 0, 0, 0],
+  {% endfor %}
+  ]);
+
+  options = {
+  title: 'By Membership Type and Status',
+  legend: { position: 'top', maxLines: 3 },
+  bar: { groupWidth: '75%' },
+  isStacked: true,
+  height: 400,
+  colors: ['#1c91c0', '#e49307', '#DC3912'],
+  hAxis: {title: '{% trans 'Membership Type' %}', titleTextStyle: {color: 'black'}}
+  };
+
+  chart = new google.visualization.ColumnChart(document.getElementById('chart_summary_div'));
+  chart.draw(data, options);
+
+  }
+
+</script>
+
+{% endblock extra_body %}

@@ -1,0 +1,14 @@
+{% load base_filters %}
+
+<tr>
+    <td>
+        {% if obj %}
+            {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} #<a href="{% url "directory" obj.slug %}" title="{% trans 'View' %}">{{ obj.id }}</a> {% blocktrans with headline=obj.headline|truncatewords:5 %}{{ headline }}{% endblocktrans %}
+        {% else %}
+            {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans 'information not available' %}.
+        {% endif%}
+    </td>
+    <td class="td-right">
+        {{ invoice.total|format_currency }}
+    </td>
+</td>

@@ -1,0 +1,665 @@
+[
+{
+    "fields": {
+        "creator": 1,
+        "allow_user_view": false,
+        "pricing_name": "Pricings",
+        "entity": 1,
+        "email_text": "",
+        "send_email": false,
+        "intro": "<p>Thank you for your interest in our organization!</p>",
+        "owner": 1,
+        "create_dt": "2012-12-31T13:22:50.064",
+        "group": 1,
+        "update_dt": "2015-10-12T16:45:47.037",
+        "custom_payment": false,
+        "slug": "contact-us",
+        "completion_url": "",
+        "template": "",
+        "owner_username": "",
+        "allow_anonymous_view": true,
+        "status": true,
+        "intro_name": "Intro",
+        "recurring_payment": false,
+        "email_copies": "",
+        "status_detail": "published",
+        "creator_username": "m_stripe",
+        "response": "<p>Thank you for contacting us! We will be in touch shortly.</p>",
+        "pricing_position": 3,
+        "allow_user_edit": false,
+        "title": "Contact Us",
+        "fields_name": "Fields",
+        "allow_member_view": false,
+        "payment_methods": [],
+        "intro_position": 1,
+        "fields_position": 2,
+        "allow_member_edit": false,
+        "subject_template": "[title] - [first name]  [last name] - [phone]",
+        "email_from": ""
+    },
+    "model": "forms.form",
+    "pk": 1
+},
+{
+    "fields": {
+        "creator": 1,
+        "allow_user_view": false,
+        "pricing_name": "Pricings",
+        "entity": 1,
+        "email_text": "",
+        "send_email": false,
+        "intro": "<p>This is an example of using a custom form in Tendenci to manage grant requests to your organization. Examples range from someone applying for a scholarship to applying for an award.</p>\r\n<p>Descriptive text about the qualifications for the grant would be here. Instead here is a bit of lorem ipsum text&nbsp;</p>\r\n<p>Qualifications to Apply:</p>\r\n<ol>\r\n<li>Pellentesque vel massa vitae libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus. Curabitur sit amet dolor urna. Sed efficitur bibendum mollis. Maecenas sollicitu din euismod ex vitae ultrices. Etiam ipsum velit, fermentum vitae aliquet eu, sollicitudin tempus ligula. Maecenas nec lacus at nibh convallis pellentesque quis sed felis.</li>\r\n<li>libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus.</li>\r\n<li><span class=\"s1\">Donec congue aliquam bibendum. Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;temp us metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</span></li>\r\n</ol>\r\n<p>&nbsp;</p>",
+        "owner": 1,
+        "create_dt": "2015-10-14T14:56:28.205",
+        "group": 1,
+        "update_dt": "2015-11-06T16:13:09.537",
+        "custom_payment": false,
+        "slug": "grant-request-npo",
+        "completion_url": "/volunteer/",
+        "template": "",
+        "owner_username": "",
+        "allow_anonymous_view": true,
+        "status": true,
+        "intro_name": "Grant Application for an Example Grant",
+        "recurring_payment": false,
+        "email_copies": "",
+        "status_detail": "published",
+        "creator_username": "open",
+        "response": "<p>Thank you for applying for a grant with our organization. The next steps in the process and the timelines are:</p>\r\n<ol>\r\n<li>Your grant will be evaluated by a committee in the coming months. Some of the criteria we look at include</li>\r\n<li>Donec ac elementum urna, a fringilla erat. Etiam at tristiqueest. Vestibulum ullamcorper laoreet tristique. Mauris nibh turpis, tempor eu eleifend vel, viverra et augue. Nam tincidunt viverra nulla, commodo vestibulum ipsum ferm entum et. Vivamus metus magna, aliquet ac quam at, facilisis lacinia lacus. Vestibulum nec euismod massa.</li>\r\n<li>Morbi id nisi quis risus interdum blandit. Duis a ccumsan ligula ac arcu hendrerit, quis venenatis magna malesuada. Cras at arcu at sapien condimentum luctus. Donec congue aliquam bibendum.</li>\r\n<li>Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;tempus metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</li>\r\n</ol>\r\n<p>We have a lot of qualified applicants for our grants so please understand that if you are not chosen to receive a grant this year then you are free to apply again next year.</p>",
+        "pricing_position": 3,
+        "allow_user_edit": false,
+        "title": "Grant Request For NPO",
+        "fields_name": "Criteria",
+        "allow_member_view": false,
+        "payment_methods": [],
+        "intro_position": 1,
+        "fields_position": 2,
+        "allow_member_edit": false,
+        "subject_template": "[title] - [first name]  [last name] - [phone]",
+        "email_from": "no-reply@tendenci.com"
+    },
+    "model": "forms.form",
+    "pk": 2
+},
+{
+    "fields": {
+        "creator": 1,
+        "allow_user_view": false,
+        "pricing_name": "",
+        "entity": 1,
+        "email_text": "",
+        "send_email": false,
+        "intro": "<p>Stay in touch! Get updates about our events, articles, and other news.</p>",
+        "owner": 1,
+        "create_dt": "2017-02-16T00:36:57.316",
+        "group": 1,
+        "update_dt": "2017-03-01T18:30:34.551",
+        "custom_payment": false,
+        "slug": "get-updates",
+        "completion_url": "",
+        "template": "",
+        "owner_username": "",
+        "allow_anonymous_view": true,
+        "status": true,
+        "intro_name": "",
+        "recurring_payment": false,
+        "email_copies": "",
+        "status_detail": "published",
+        "creator_username": "lluce",
+        "response": "<p>Thanks for signing up for updates from Willow!</p>",
+        "pricing_position": 3,
+        "allow_user_edit": false,
+        "title": "Get Updates",
+        "fields_name": "",
+        "allow_member_view": false,
+        "payment_methods": [],
+        "intro_position": 1,
+        "fields_position": 2,
+        "allow_member_edit": false,
+        "subject_template": "[title] - [first name]  [last name] - [phone]",
+        "email_from": ""
+    },
+    "model": "forms.form",
+    "pk": 3
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "First Name",
+        "field_function": "EmailFirstName",
+        "position": 1,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 1
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Last Name",
+        "field_function": "EmailLastName",
+        "position": 2,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 2
+},
+{
+    "fields": {
+        "field_type": "EmailVerificationField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Email address",
+        "field_function": null,
+        "position": 3,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 3
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Phone Number",
+        "field_function": "EmailPhoneNumber",
+        "position": 4,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 4
+},
+{
+    "fields": {
+        "field_type": "CharField/django.forms.Textarea",
+        "form": 1,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Message",
+        "field_function": null,
+        "position": 5,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 5
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Your Information",
+        "field_function": null,
+        "position": 1,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 6
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "First Name",
+        "field_function": "EmailFirstName",
+        "position": 2,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 7
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Last Name",
+        "field_function": "EmailLastName",
+        "position": 3,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 8
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Contact Number",
+        "field_function": "EmailPhoneNumber",
+        "position": 4,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 9
+},
+{
+    "fields": {
+        "field_type": "EmailVerificationField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Email",
+        "field_function": null,
+        "position": 5,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 10
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "No",
+        "required": false,
+        "label": "Qualifications",
+        "field_function": null,
+        "position": 6,
+        "choices": "Yes"
+    },
+    "model": "forms.field",
+    "pk": 11
+},
+{
+    "fields": {
+        "field_type": "ChoiceField",
+        "form": 2,
+        "visible": true,
+        "default": "No",
+        "required": true,
+        "label": "Do you live in the City",
+        "field_function": null,
+        "position": 7,
+        "choices": "Yes"
+    },
+    "model": "forms.field",
+    "pk": 12
+},
+{
+    "fields": {
+        "field_type": "MultipleChoiceField/django.forms.CheckboxSelectMultiple",
+        "form": 2,
+        "visible": true,
+        "default": "Yes",
+        "required": true,
+        "label": "Previous Applicant",
+        "field_function": null,
+        "position": 9,
+        "choices": "No, this is my first time"
+    },
+    "model": "forms.field",
+    "pk": 13
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "A 3 Word Description of Yourself",
+        "field_function": null,
+        "position": 10,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 14
+},
+{
+    "fields": {
+        "field_type": "CharField/django.forms.Textarea",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "What sets you apart?",
+        "field_function": null,
+        "position": 12,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 15
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Past Awards/Honors",
+        "field_function": null,
+        "position": 13,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 16
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Briefly describe your previous awards",
+        "field_function": null,
+        "position": 14,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 17
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Surprise us!",
+        "field_function": null,
+        "position": 16,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 18
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "What makes you \"The One\"",
+        "field_function": null,
+        "position": 17,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 19
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Next Steps",
+        "field_function": null,
+        "position": 19,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 20
+},
+{
+    "fields": {
+        "field_type": "BooleanField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "May we email you?",
+        "field_function": null,
+        "position": 20,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 21
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "When do you need to hear back?",
+        "field_function": null,
+        "position": 21,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 22
+},
+{
+    "fields": {
+        "field_type": "DateField/django.forms.extras.SelectDateWidget",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Response Date",
+        "field_function": null,
+        "position": 22,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 23
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Thank you for applying!",
+        "field_function": null,
+        "position": 27,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 24
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Differentiators",
+        "field_function": null,
+        "position": 18,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 25
+},
+{
+    "fields": {
+        "field_type": "CharField/django.forms.Textarea",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "Previous Awards",
+        "field_function": null,
+        "position": 15,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 26
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Have you applied for a grant with us within the last year?",
+        "field_function": null,
+        "position": 8,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 27
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": true,
+        "label": "3 Words",
+        "field_function": null,
+        "position": 11,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 28
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Header",
+        "form": 2,
+        "visible": false,
+        "default": "",
+        "required": false,
+        "label": "Committee Review",
+        "field_function": null,
+        "position": 28,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 29
+},
+{
+    "fields": {
+        "field_type": "MultipleChoiceField/django.forms.CheckboxSelectMultiple",
+        "form": 2,
+        "visible": false,
+        "default": "No",
+        "required": false,
+        "label": "Meets Criteria",
+        "field_function": null,
+        "position": 30,
+        "choices": "Yes,No"
+    },
+    "model": "forms.field",
+    "pk": 30
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "How did you hear about this grant?",
+        "field_function": null,
+        "position": 23,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 31
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "Referral Source",
+        "field_function": null,
+        "position": 24,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 32
+},
+{
+    "fields": {
+        "field_type": "ChoiceField",
+        "form": 2,
+        "visible": true,
+        "default": "0-5",
+        "required": false,
+        "label": "Volunteer",
+        "field_function": null,
+        "position": 26,
+        "choices": "0-5,6-10,11-15,16-20,More than 20"
+    },
+    "model": "forms.field",
+    "pk": 33
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 2,
+        "visible": false,
+        "default": "Undecided",
+        "required": false,
+        "label": "Decision",
+        "field_function": null,
+        "position": 29,
+        "choices": "Approved,Declined,Undecided"
+    },
+    "model": "forms.field",
+    "pk": 34
+},
+{
+    "fields": {
+        "field_type": "CharField/tendenci.apps.forms_builder.forms.widgets.Description",
+        "form": 2,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "How many hours have you volunteered in the last year?",
+        "field_function": null,
+        "position": 25,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 35
+},
+{
+    "fields": {
+        "field_type": "CharField",
+        "form": 3,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "E-mail Address",
+        "field_function": null,
+        "position": 1,
+        "choices": ""
+    },
+    "model": "forms.field",
+    "pk": 36
+}
+]

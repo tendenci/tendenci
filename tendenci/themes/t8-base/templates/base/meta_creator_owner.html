@@ -1,0 +1,24 @@
+{% load base_filters %}
+
+
+{% if obj.creator.username %}
+    {% url "profile" obj.creator.username as creator_profile_url %}
+    {% blocktrans with create_date=obj.create_dt|date:"long" creator_username=obj.creator.username creator_profile_url=creator_profile_url %}
+        <li><strong>Created on {{ create_date }} by:</strong> <a href="{{ creator_profile_url }}">{{ creator_username }}</a></li>
+    {% endblocktrans %}
+{% else %}
+    {% blocktrans with create_date=obj.create_dt|date:"long" %}
+        <li><strong>Created on:</strong> {{ create_date }}</li>
+    {% endblocktrans %}
+{% endif %}
+
+{% if obj.owner.username %}
+    {% url "profile" obj.owner.username as owner_profile_url %}
+    {% blocktrans with update_date=obj.update_dt|date:"long" owner_username=obj.owner.username owner_profile_url=owner_profile_url %}
+        <li><strong>Last updated {{ update_date }} by:</strong> <a href="{{ owner_profile_url }}">{{ owner_username }}</a></li>
+    {% endblocktrans %}
+{% else %}
+    {% blocktrans with update_date=obj.update_dt|date:"long" %}
+        <li><strong>Last updated:</strong> {{ update_date }}</li>
+    {% endblocktrans %}
+{% endif %}

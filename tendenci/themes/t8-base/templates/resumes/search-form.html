@@ -1,0 +1,4 @@
+{% if SITE_GLOBAL_SEARCHINDEX %}
+    {% url "resumes" as form_action %}
+    {% include "base/simple_search_form.html" with module_name="resumes" form_action=form_action %}
+{% endif %}

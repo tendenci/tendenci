@@ -1,0 +1,9 @@
+{% extends "django_admin_bootstrapped:admin/change_form.html" %}
+{% load admin_urls admin_static admin_modify bootstrapped_goodies_tags %}
+
+{% block extrahead %}
+{{ block.super }}
+<script type="text/javaScript">
+{% include 'files/include/categories.js' %}
+</script>
+{% endblock %}

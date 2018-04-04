@@ -1,0 +1,1 @@
+{% blocktrans %}Thank you for your payment attempt to {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

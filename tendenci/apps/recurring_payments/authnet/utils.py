@@ -1,4 +1,3 @@
-
 import re
 from django.conf import settings
 from django.urls import reverse
@@ -98,7 +97,7 @@ def to_camel_case(d):
             return match.group(1).upper()
 
         def to_camel(x):
-            return re.sub("_([a-z])", to_upper, x)
+            return re.sub(r'_([a-z])', to_upper, x)
 
         return dict([(to_camel(x[0]), x[1]) for x in d.items()])
     return d

@@ -142,12 +142,25 @@ Copy any site specific settings from ``/var/www/tendenci.t7/conf/local_settings.
 how/where to configure most of the settings you are likely to need to change.  Avoid copying any
 standard/default settings.
 However, be sure to copy:
+
   - SECRET_KEY
   - SITE_SETTINGS_KEY
   - The settings in DATABASES
   - TIME_ZONE
   - Payment Gateway Settings
   - EMail Settings
+
+Note that the length recommendations for SECRET_KEY and SITE_SETTINGS_KEY have changed.  Old keys
+will continue to work, but you should consider changing your keys to meet the new guidelines.
+If you change SECRET_KEY, then all currently logged in users will be logged out, and all active
+password reset tokens will be invalidated.  If you change SITE_SETTINGS_KEY, then all settings on
+the "Site Settings" and "Full Settings" pages in Tendenci will be reset.
+Since SECRET_KEY is a critical component of the Django security model, and since changing SECRET_KEY
+is relatively non-disruptive, we strongly recommend changing SECRET_KEY to a new value that meets
+the new recommendations.
+However, since changing SITE_SETTINGS_KEY is relatively disruptive, and since it is a less critical
+component of the security model, we recommend that you do not change your SITE_SETTINGS_KEY at this
+time.
 
 If you have made site specific changes to INSTALLED_APPS, Tendenci now adds the following apps to
 INSTALLED_APPS by default, so your ``INSTALLED_APPS += [...]`` setting no longer needs to include
@@ -201,10 +214,18 @@ instructions can be found in the new urls.py file.
 If you made any changes to the new urls.py file, be sure to uncomment ``ROOT_URLCONF = 'conf.urls'``
 in the new settings.py file.
 
+If you are using NGINX, edit ``/etc/nginx/sites-available/tendenci`` and change
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {`` to
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/(media|static)/ {``
+
 Skip to Step 5 to continue.
 
 Step 4B: Update Existing Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are using NGINX, edit ``/etc/nginx/sites-available/tendenci`` and change
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/media/ {`` to
+``location ~ /themes/([a-zA-Z0-9\-\_]+)/(media|static)/ {``
 
 Edit ``/var/www/tendenci/conf/local_settings.py``.
 
@@ -306,10 +327,10 @@ Set up /var/log/tendenci:
     sudo chown www-data:"$(id -u -n)" /var/log/tendenci/
     chmod -R g+rwX /var/log/tendenci/
 
-The group configured above will enable your user account to run `python manage.py ...` without sudo,
-which is safer than performing management/upgrades using sudo.  The configured group should include
-your normal user account but not other inappropriate users.  Ubuntu creates a dedicated group for
-each user by default, so that is what is used here.
+The group configured above will enable your user account to run ``python manage.py ...`` without
+sudo, which is safer than performing management/upgrades using sudo.  The configured group should
+include your normal user account but not other inappropriate users.  Ubuntu creates a dedicated
+group for each user by default, so that is what is used here.
 
 Create ``/etc/logrotate.d/tendenci`` containing:
 ::
@@ -328,12 +349,12 @@ Create ``/etc/logrotate.d/tendenci`` containing:
     }
 
 To ensure that the log files remain readable/writable by your normal user account, change the second
-`www-data` in `create 0660 www-data www-data` to a group that includes your normal user account but
-not other inappropriate users (Ubuntu creates a dedicated group for each user by default with the
-same name as the associated user, so you can use that here).
+``www-data`` in ``create 0660 www-data www-data`` to a group that includes your normal user account
+but not other inappropriate users (Ubuntu creates a dedicated group for each user by default with
+the same name as the associated user, so you can use that here).
 
 
-Step 6: Update Database and Static Files
+Step 6: Upgrade Database and Static Files
 ----------------------------------------
 
 Configure some settings for the database account used by Tendenci:
@@ -358,6 +379,15 @@ Run:
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
+
+Tendenci 8 makes significant changes to the layout of ``/var/www/tendenci/static/`` and may leave
+lots of abandoned files in that directory after the upgrade.  You can optionally clean these up
+using ``python manage.py collectstatic --clear --link --no-input``, however note that this will
+delete ALL of the files in that directory and then re-populate them from the installed Django apps.
+If you have manually added or modified any files in that directory (this is unsupported and
+discouraged, although there is nothing technically preventing you from doing it), then your
+files/changes will be lost.  Make sure you have a backup copy of that directory before attempting
+to clean it up.  If you followed Step 3, there should be a copy in ``/var/www/tendenci.t7/static/``
 
 
 Step 7: Update/Fix Permissions

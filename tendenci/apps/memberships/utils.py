@@ -1450,7 +1450,7 @@ class ImportMembDefault(object):
             em=memb_data.get('email', u''))
 
         # clean username
-        user.username = re.sub('[^\w+-.@]', u'', user.username)
+        user.username = re.sub(r'[^\w+-.@]', u'', user.username)
 
         # make sure username is unique.
         if action_info['user_action'] == 'insert':

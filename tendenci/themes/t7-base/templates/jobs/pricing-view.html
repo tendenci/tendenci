@@ -1,0 +1,105 @@
+{% extends "jobs/base-pricing.html" %}
+{% load job_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}{% blocktrans %}View Price Details:{% endblocktrans %} {% firstof MODULE_JOBS_LABEL trans 'Job' %} {% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% blocktrans %}View Price Details:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL trans 'Job' %} </h1>
+
+    <div class="jobpricing-details">
+
+        <div class="quick-options">
+            {% job_pricing_options request.user job_pricing %}
+          </div>
+
+        <div class="clear"></div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 align-right text-right">{% trans "Duration:" %}</div>
+            <div><b>{{ job_pricing.duration }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Title:" %}</div>
+            <div><b>{{ job_pricing.get_title }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Regular Price:" %}</div>
+            <div><b>{{ job_pricing.regular_price|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Premium Price:" %}</div>
+            <div><b>{{ job_pricing.premium_price|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Regular Price:" %}</div>
+            <div><b>{{ job_pricing.regular_price_member|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Member Premium Price:" %}</div>
+            <div><b>{{ job_pricing.premium_price_member|format_currency }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Include Tax:" %}</div>
+            <div><b>{{ job_pricing.include_tax }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Tax Rate:" %}</div>
+            <div><b>{{ job_pricing.tax_rate }}</b></div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right">{% trans "Show Member Pricing:" %}</div>
+            <div><b>{{ job_pricing.show_member_pricing }}</b></div>
+        </div>
+
+        <div class="sep-line"></div>
+
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Status:" %}</b></div>
+            <div>{% if job_pricing.status %}Active{%else%}Inactive{%endif%}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created by:" %}</b></div>
+            <div><a href="{% if job_pricing.creator_username %}{% url "profile" job_pricing.creator_username %}{% else %}#{% endif %}">{{ job_pricing.creator_username }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-5 col-md-3 text-right"><b>{% trans "Created on:" %}</b></div>
+            <div>{{ job_pricing.create_dt|date:"long" }}</div>
+        </div>
+
+
+         <!-- delete-job_pricing form -->
+            <form name="job-pricing-delete" method="POST" action="{% url "job_pricing.delete" job_pricing.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+    </div>
+
+
+</div>
+{% endblock %}
+{{ block.super }}
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_job_pricing = confirm("Permenantly delete this job price?");    // confirm
+                if(delete_job_pricing) $(this).parents('.jobpricing-details').find('form[name="job-pricing-delete"]').submit() // delete: if OK
+                return false;    // cancel
+            });
+        });
+    </script>
+
+{% endblock %}

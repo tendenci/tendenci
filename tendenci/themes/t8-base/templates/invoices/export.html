@@ -1,0 +1,55 @@
+{% extends "invoices/base.html" %}
+{% load invoice_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<style>
+    .ui-datepicker {z-index: 999 !important;}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+     <div class="invoices-wrap">
+        <h1>{% trans "Invoices Export" %}</h1>
+        <div class="content">
+            <p>{% blocktrans %}Pick your start and end dates (the default is the last 30 days) for your invoices export. An email will be sent to you at <strong>{{ request.user.email }}</strong> once the export is ready.{% endblocktrans %}</p>
+            <form action="." method="POST" >{% csrf_token %}
+                <div class="form-field clearfix">
+                    <div class="id_start_dt" style="float: left; margin-right: 20px;">
+                            <div class="label">
+                                <label for="start_dt">{% trans 'Start Date' %}</label>
+                            </div>
+                            <div class="field">
+                                <input style="width: 100px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
+                            </div>
+                     </div>
+                     <div class="id_end_dt">
+                            <div class="label">
+                                <label for="end_dt">{% trans 'End Date' %}</label>
+                            </div>
+                            <div class="field">
+                                <input style="width: 100px;" type="text" class="datepicker" name="end_dt" value="{{ end_dt|date:"Y-m-d" }}" />
+                            </div>
+                     </div>
+                </div>
+                <br />
+                <input type="submit" value="{% trans 'Export' %}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+       $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+       });
+    </script>
+{% endblock extra_body %}

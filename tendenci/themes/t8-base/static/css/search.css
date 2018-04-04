@@ -1,0 +1,450 @@
+.search-table {
+	width: 100%;
+}
+
+.search-table td {
+	padding: 3px;
+}
+
+#id_q {
+	width: 97%;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 5px;
+	color: #555;
+}
+
+.search-table-submit {
+	padding: 5px;
+	cursor: pointer;
+}
+
+.search-adv {
+	padding-left: 3px;
+}
+
+.search-adv-models {
+	padding: 5px;
+	background-color: #f2f2f2;
+	display: none;
+	width: 80%;
+}
+
+p.search-adv-header {
+	font-weight: bold;
+	margin: 2px;
+}
+
+.search-adv-models ul {
+	padding: 10px;
+	margin: 0;
+	list-style-type: none;
+}
+
+.search-results {
+	padding-left: 3px;
+	margin-top: 15px;
+	width: 90%;
+}
+
+.wrap-search-result {
+    border: 1px solid #CCC;
+    margin-bottom: 20px;
+}
+
+.wrap-search-item {
+    margin-bottom: 0px;
+    border-bottom: none;
+}
+
+.wrap-search-item .item-content {
+    margin-top: 10px;
+}
+
+.quick-options {
+	float: right;
+	margin-right: 5px;
+}
+
+.quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.dropdown-options {
+	float: right;
+	display: none;
+}
+
+.dropdown-options span {
+	font-size: .7em;
+}
+
+.dropdown-options ul {
+	display: none;
+}
+
+/* EVENTS */
+
+.event-wrap {
+    background-color: #EEE;
+    padding: 0;
+}
+
+.event-info .options {
+    float: right;
+}
+
+.event-wrap h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.event-wrap div.description {
+    margin-bottom: 10px;
+}
+
+.event-wrap div.time-stamp {
+    float: left;
+    width: 80px;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 15px 0 0 15px
+}
+
+.event-wrap div.time-stamp .age-msg {
+    font-weight: normal;
+    font-size: .8em;
+}
+
+.event-wrap .event-info {
+    background-color: white;
+    padding: 10px;
+    margin-left: 110px;
+
+}
+
+.event-wrap .meta {
+    margin-top: 0px;
+    border-top: solid 1px #CCC;
+}
+
+.event-info .attend-wrap {
+    border-top: 1px solid #DDD;
+}
+
+.event-info .attend-wrap .attend {
+    border: 1px solid silver;
+    float: right;
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #F7F7F7;
+}
+
+.event-info .attend-wrap .attend a {
+    text-decoration: none;
+}
+
+.event-info .time-period {
+    margin-bottom: 10px;
+}
+
+.event-info .options {
+    top: 0;
+}
+
+.event-info .registered .attend {
+    background-color: orange;
+    border: 1px solid orange;
+}
+
+.event-info .registered .attend a {
+    color: white;
+}
+
+.event-info .closed .attend {
+    background-color: darkred;
+    border: 1px solid darkred;
+}
+
+.event-info .closed .attend a {
+    color: white;
+}
+
+/* VIDEOS */
+
+.video-wrap {
+    padding: 10px 10px 0px 10px;
+}
+
+.video-wrap .video-img {
+    float: left;
+    padding-right: 10px;
+}
+
+.video-wrap .video-info {
+}
+
+/* JOBS */
+.job-search-item .job-info {
+    padding: 10px;
+}
+
+.job-search-item .content {
+    margin-bottom: 0px;
+}
+
+.job-search-item .premium {
+    background-color: #ffffcc;
+}
+
+.job-search-item .meta {
+    margin-top: 0px;
+}
+
+/* PHOTOS */
+
+.photo-search-item .photo-search-photo {
+    padding: 5px;
+    border: 1px solid gray;
+}
+
+.photo-search-item .photo-search-info {
+    padding: 5px;
+}
+
+/* PHOTO SETS */
+
+.photo-set {
+	padding: 10px;
+	background-color: white;
+    position: relative;
+}
+.photo-set table {
+	width: 100%;
+}
+.photo-set table td {
+	vertical-align: top;
+}
+.photo-set table td.image {
+	width: 1%;
+}
+.photo-set table td.image img {
+	padding: 5px;
+	border: 1px solid gray;
+}
+.photo-set table td.info h2 {
+	margin: 0 0 10px;
+}
+.photo-set table td.info div.actions a {
+	margin: 0 1px;
+}
+.photo-set td.image a {
+    position: relative;
+}
+.photo-set td.image a .photo-count {
+    color: white;
+    font-weight: bold;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    padding: 7px 12px;
+
+    background: darkgreen;
+    background: -moz-linear-gradient(top, #26bc12 0%, darkgreen 100%);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#26bc12), to(darkgreen));
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+}
+.photo-set td.image {
+    padding-right: 20px;
+}
+.photo-set .info {
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.photo-set .info .actions {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.photo-set .info .visibility {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.photo-set .info .actions a {
+    text-decoration: underline;
+}
+
+.photo-set .extra-info {
+    font-size: 12px;
+    height: 35px;
+}
+
+/* TESTIMONIALS */
+
+.tsm-search-item p.tsm-person-info {
+    font-style: italic;
+    margin: 0 !important;
+    padding: 2px;
+}
+
+.tsm-search-item div.tsm-person-box {
+    background-color: #f2f2f2;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* CORPORATE MEMBERSHIPS */
+clear-left{
+    clear: left;
+}
+.corpmember-box .corpmember-left{
+    width: 65%;
+}
+.corpmember-box .corpmember-right{
+    width: 35%;
+}
+.corpmember-box .float-left{
+    float: left;
+}
+.corpmember-box .corpmember-box-header{
+    font-size: 1.4em;
+    background-color: #f2f2f2;
+    padding: 3px;
+}
+.corpmember-box .corpmember-box-body{
+    margin-bottom: 1em;
+    padding: 0 2em;
+    line-height: 1.5em;
+}
+.corpmember-box .label{
+    font-weight: bold;
+}
+
+/* MEMBERSHIP APP ENTRY SEARCH */
+.appentry-wrap-search {
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+	border: 1px solid #DDD;
+	border-top: none;
+}
+
+.appentry-wrap-search:last-child {
+	margin-bottom: 0;
+}
+
+.result-head {
+	padding: 10px;
+
+}
+.result-head.approved {
+	border-top: 10px solid #7AE309;
+}
+.result-head.disapproved {
+	border-top: 10px solid #E30918;
+}
+.result-head.pending {
+	border-top: 10px solid #FFE44B;
+}
+.result-head .member-requires-approval {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-number {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-subscription {
+	float: left;
+	margin-top: 4px;
+}
+
+.result-head .member-status {
+	text-align: right;
+}
+.result-head .member-status a {
+	color: black;
+	text-decoration: underline;
+}
+.result-head .member-date {
+	font-size: .8em;
+	text-align: right;
+	margin-top: 4px;
+	float: right;
+}
+.result-head .balance {
+	text-align: right;
+	padding-top: 10px;
+}
+
+.result-content {
+	margin-top: 4px;
+	float: left;
+}
+
+.result-content .member-name {
+	margin-bottom: 3px;
+}
+/* ---END MEMBERSHIP APP ENTRY SEARCH */
+
+
+/*===========BEGIN PERMS STYLES=========== */
+.perm-public {font-weight: bold; color: green;}
+.perm-users,
+.perm-members,
+.perm-groups {font-weight: bold; color: darkblue;}
+.perm-private {font-weight: bold; color: red;}
+.status-active {font-weight: bold; color: green;}
+.status-pending, .status-draft {font-weight: bold; color: orange;}
+.status-inactive, .status-expired {font-weight: bold; color: red;}
+.role-superuser{font-weight: bold; color: #D32E2E;}
+.role-staff{font-weight: bold; color: #E5600D;}
+/*===========END PERMS STYLES=========== */
+
+.wrap-search-item {border-bottom: 1px solid #CCC; margin-bottom: 20px;}
+.search-item {padding: 10px 10px 0 10px;}
+.meta {padding: 10px 10px 5px; background-color: transparent; margin-top: 10px; font-size: 13px; position: relative; clear: both;}
+
+.meta .submitted,
+.meta .categories,
+.meta .tags,
+.meta .contact {margin-bottom: 2px; line-height: 16px;}
+
+.meta-left {left: 0; width: 74%;}
+.meta-right {right:8px; bottom:10px; position:absolute;}
+/*
+.meta .print-link {float: right;}
+.meta .share-link {float: right; margin-right: 40px; display: none;}
+*/
+.editor-bar {background-color: #efd; padding:0 5px 0; border-top: solid 1px #ccc;font-size: 12px; min-height: 28px; line-height: 18px; font-family: arial, tahoma, sans-serif;}
+.editor-bar .bar-label {font-size: 10px; color: #999; display: block;}
+.editor-bar .perm-status {float: left;padding-top: 5px;margin-left: 5px;}
+.editor-bar .perm-status ul {margin: 0;}
+.editor-bar .perm-status li {margin: 0 10px 0 0;}
+
+.editor-bar .edit-links {float: right; position: relative; font-size: 12px; padding: 0;}
+.editor-bar ul {margin: 0; padding: 0; font-size: 12px; list-style: none;}
+.editor-bar li {float: left; list-style-type: none; margin-left: 14px; font-size: 12px;}
+.editor-bar li a {display: block; padding: 6px 0; font-size: 12px; text-decoration: underline; color: #06C;}
+.editor-bar li a:hover {color: #026;}
+.options-link small {font-size: 10px;}
+
+.options-list {bottom: 31px; right: -6px;position: absolute;display: none; background-color: #efd; padding: 0 6px 0 4px; border: solid 1px #ccc; border-bottom: none;}
+.options-list ul {margin-left: 0;}
+.editor-bar li:hover .options-list { display: block; }
+.editor-bar li li {float: none;}
+.editor-bar li li a { display: block; text-align: right; padding: 3px;margin: 0;}
+
+.editor-bar ul li li a.delete,
+.form-delete-link a.delete {color: #c00;}
+.editor-bar ul li li a.delete:hover,
+.form-delete-link a.delete:hover {color: #800;}

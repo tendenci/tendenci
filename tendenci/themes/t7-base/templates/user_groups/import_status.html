@@ -1,0 +1,34 @@
+{% extends "user_groups/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}{% trans 'Import Subscribers' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+<div id="import-wrap" class="finished">
+    {% if task.status == "FAILED" or task.status == "REVOKED" %}
+    <h1>{% trans "Subscriber Import Failed!" %}</h1>
+    <p class="msg">{% blocktrans %}Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>{% endblocktrans %}
+    {% else %}
+    <h1>{% trans "Processing Subscriber Import!" %}</h1>
+    <p class="msg">{% trans "We're not done yet! Come back and check on us again later. Thanks!" %}</p>
+    {% endif %}
+
+    <p class="link"><a href="{% url "group.detail" group.slug %}">{% trans "Back to" %} {{ group.name }}</a></p>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+    //reload every 30 seconds
+    setInterval(function(){
+            window.location.reload();
+        }, 30000);
+</script>
+{% endblock %}

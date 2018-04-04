@@ -1,0 +1,51 @@
+{% extends "videos/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% load video_tags %}
+{% load video_filters %}
+
+{% block title %}{{ video.title }} - {{ video.category|title }} Videos{% endblock %}
+{% block meta_description %}{{ video.category }} Videos from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ video.title }} - {{ video.description|striptags|truncatewords:40 }}{% endblock %}
+
+{% block content %}
+<div id="video-details">
+  {% tags_for_object video as tags %}
+  
+  <div class="page-header">
+    <h1>{{ video.title }}</h1>
+  </div>
+  
+  <div class="embed-responsive embed-responsive-16by9">
+    <div class="embed-responsive-item">
+      {{ video|video_embed:"600" }}
+    </div>
+  </div>
+  
+  <br>
+  
+  <p>{{ video.description|safe }}</p>
+  
+  <nav class="navbar navbar-default">   
+    <div class="container-fluid">    
+      {% if tags %}
+      <div class="tags">
+        Tags: {% for tag in tags %}
+        <a href="{% url 'video.search' %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if video.status_detail != "active" %}
+      
+        <li><span class="copyright body-copy-alerts"><em>{{ video.status_detail }}</em></span></li>
+        {% endif %}
+      <ul class="nav navbar-nav">
+        {% video_options request.user video %}
+      </ul>
+    </div>
+  </nav>  
+  
+</div>
+{% endblock %}
+

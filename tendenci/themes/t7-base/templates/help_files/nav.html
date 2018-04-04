@@ -1,0 +1,82 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user help_files.add_helpfile as can_add_helpfile %}
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+
+{% if nav_object %}
+    {% has_perm user help_files.view_helpfile nav_object as can_view_helpfile %}
+    {% has_perm user help_files.change_helpfile nav_object as can_edit_helpfile %}
+    {% has_perm user help_files.delete_helpfile nav_object as can_delete_helpfile %}
+{% else %}
+    {% has_perm user help_files.view_helpfile as can_view_helpfile %}
+    {% has_perm user help_files.change_helpfile as can_edit_helpfile %}
+    {% has_perm user help_files.delete_helpfile as can_delete_helpfile %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "help_files" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "help_files" %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} {% trans 'Topics' %}</a></li>
+            {% if user.profile.is_staff and can_add_helpfile %}
+                <li><a href="{% url "admin:help_files_helpfile_add" %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+            {% elif can_add_helpfile %}
+                <li><a href="{% url "help_files.add" %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url "admin:help_files_request_changelist" %}">{% trans "Requests List" %}</a></li>
+                <li><a href="{% url "help_files.export" %}">{% trans "Export" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_helpfile or can_edit_helpfile %}
+            <ul>
+                <li class="heading">{% trans "This" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</li>
+                <li class="divider"></li>
+                {% if can_view_helpfile %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                {% endif %}
+                {% if user.profile.is_staff and can_edit_helpfile %}
+                    <li><a href="{% url "admin:help_files_helpfile_change" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                {% elif can_edit_helpfile %}
+                    <li><a href="{% url "help_files.edit" nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                {% endif %}
+                {% if can_delete_helpfile %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "admin:help_files_helpfile_delete" nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_NEWS_ENABLED %}
+    <li><a href="{% url "news" %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    {% endif %}
+    {% if MODULE_ARTICLES_ENABLED %}
+    <li><a href="{% url "news" %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+    {% endif %}
+</ul>
+{% endif %}

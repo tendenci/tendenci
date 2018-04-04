@@ -1,0 +1,30 @@
+
+
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+<li class="dropdown">
+    {% with request.user.profile.lang as user_lang %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <i class="fa fa-globe"></i>{% trans 'Language:' %} {% get_language_info for user_lang as l %}<span class="nav-label">{{ l.name_local }}</span><span class="caret"></span>
+        </a>
+
+        <ul id="t-megamenu-lang-dd" class="dropdown-menu lang-dropdown" role="menu">
+            {% get_language_info_list for LANGUAGES as languages %}
+
+            {% for language in languages %}
+                <li{% if language.code == user_lang %} class="active"{% endif %}>
+                    <a href="javascript:void(0);" data-lang="{{ language.code }}">{{ language.name_local }} ({{ language.code }})</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <form id="t-megamenu-lang-form" class="hidden" action="{% url 'base.set_language' %}" method="post">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ redirect_to }}" />
+            <input id="t-megamenu-lang-input" name="language" type="hidden" value="{{ user_lang }}">
+        </form>
+    {% endwith %}
+</li>
+
+</ul>
+</div>

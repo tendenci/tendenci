@@ -1,0 +1,14 @@
+.t h1 {
+	margin-bottom: 0;
+}
+.t div.event-title {
+	font-size: 1.2em;
+	margin-bottom: 10px;
+}
+
+.price {
+	font-size: 1.6em;
+	margin-bottom: 10px;
+	background-color: #FFC;
+	padding: 10px;
+}

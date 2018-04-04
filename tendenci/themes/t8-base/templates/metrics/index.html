@@ -1,0 +1,112 @@
+{% extends "metrics/base.html" %}
+
+{% block extra_head %}
+{{ block.super }}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawTrafficChart);
+      google.setOnLoadCallback(drawUsersChart);
+      google.setOnLoadCallback(drawMembersChart);
+
+      function drawTrafficChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Date');
+        data.addColumn('number', 'Traffic');
+        data.addRows([
+        {% for metric in last_week %}
+        ['{{ metric.create_dt|date:"m-j" }}', {{ metric.visits }}]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]);
+        var chart = new google.visualization.LineChart(document.getElementById('traffic-chart'));
+        chart.draw(data, {lineWidth: 3,pointSize: 5, width: 300, height: 150, legend: 'none', colors: ['#6d8'], vAxes: [{format:'#,###'}]});
+      }
+
+      function drawUsersChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Date');
+        data.addColumn('number', 'Users');
+        data.addRows([
+        {% for metric in last_week %}
+        ['{{ metric.create_dt|date:"m-j" }}', {{ metric.users }}]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]);
+        var chart = new google.visualization.LineChart(document.getElementById('users-chart'));
+        chart.draw(data, {lineWidth: 3,pointSize: 5, width: 300, height: 150, legend: 'none', colors: ['#58d'], vAxes: [{format:'#,###'}]});
+      }
+
+      function drawMembersChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Date');
+        data.addColumn('number', 'Members');
+        data.addRows([
+        {% for metric in last_week %}
+        ['{{ metric.create_dt|date:"m-j" }}', {{ metric.members }}]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]);
+        var chart = new google.visualization.LineChart(document.getElementById('members-chart'));
+        chart.draw(data, {lineWidth: 3,pointSize: 5, width: 300, height: 150, legend: 'none', colors: ['#d76'], vAxes: [{format:'#,###'}]});
+      }
+
+    </script>
+{% endblock extra_head %}
+
+{% block content %}
+<h1>{% trans "Tendenci stats" %}</h1>
+
+<table>
+    <tr>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Users' %}</th>
+        <th>{% trans 'Members' %}</th>
+        <th>{% trans 'Visits' %}</th>
+        <th>{% trans 'Storage' %}</th>
+    </tr>
+{% for metric in last_week %}
+{% if not forloop.last %}
+    <tr>
+        <td>{{ metric.create_dt|date:"m-j-Y" }}</td>
+        <td>{{ metric.users }} {{ metric.users_delta }}</td>
+        <td>{{ metric.members }} {{ metric.members_delta }}</td>
+        <td>{{ metric.visits }} {{ metric.visits_delta }}</td>
+        <td>{{ metric.disk_usage|filesizeformat }} <span class="{{ metric.disk_usage_css }}">{{ metric.disk_usage_delta|filesizeformat }}</span></td>
+    </tr>
+{% else %}
+    <tr>
+        <th>{% trans 'Last 7 days' %}</th>
+        <th>{{ metric.users }}</th>
+        <th>{{ metric.members }}</th>
+        <th>{{ week_sums.total_visits }}</th>
+        <th>{{ metric.disk_usage|filesizeformat }}</th>
+    </tr>
+    <tr>
+        <th>{% trans 'Last 30 days' %}</th>
+        <th>{{ metric.users }}</th>
+        <th>{{ metric.members }}</th>
+        <th>{{ month_sums.total_visits }}</th>
+        <th>{{ metric.disk_usage|filesizeformat }}</th>
+    </tr>
+{% endif %}
+{% endfor %}
+</table>
+
+
+<div id="users-wrap">
+    <p>{% trans'Users over the last 7 days' %}</p>
+    <div id="users-chart"></div>
+</div>
+
+<div id="members-wrap">
+    <p>{% trans 'Members over the last 7 days' %}</p>
+    <div id="members-chart"></div>
+
+</div>
+
+<div id="traffic-wrap">
+    <p>{% trans 'Web traffic for the last 7 days' %}</p>
+    <div id="traffic-chart"></div>
+    <p>{% trans 'Last 7 days Total' %} {{ week_sums.total_visits }}<br />
+    {% trans 'Last 30 days Total' %} {{ month_sums.total_visits }}</p>
+    <p>{% trans 'Storage' %}: {{ yesterday.disk_usage|filesizeformat }}</p>
+</div>
+{% endblock content %}

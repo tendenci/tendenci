@@ -1,0 +1,293 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+{% load membership_tags %}
+{% load styled_forms %}
+
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href=" ">{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/memberships.css' %}">
+    <style>
+        .inline-block{
+            display: inline-block;
+        }
+        div.short-label{
+            width: 125px;
+        }
+        div.float-left{
+            float: left;
+        }
+        div.clear{
+            clear: both;
+        }
+        div.form-field{
+            margin: 3px 0;
+        }
+        div.admin-only-header{
+            color: #CC0000;
+        }
+        div.section-break{
+            margin: 2em 0 1em 0;
+        }
+        div.form-field ul{
+            list-style-type: none;
+        }
+        div.form-field{
+            margin-left: 2em;
+        }
+        div.form-field .error{
+            color: #990000;
+        }
+        div.form-errors{
+            margin-left: 0;
+            background-color: #ffebe8;
+            border: 2px solid #ff8b78;
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 75%;
+        }
+        span.help-text.checkmultiple {
+            display: block;
+            margin: 10px 0;
+        }
+
+        div.fileinputbox {
+            margin-left: 125px;
+        }
+        #t-memberships-application-form.form-horizontal .control-label {
+          text-align: right !important;
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px !important;
+        }
+        .form-group ul{
+            list-style: none;
+        }
+        .donation-option-value ul{
+            padding-left: 0;
+        }
+        .donation-option-value ul li label{
+            font-weight: normal !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+       <h1>{{ app.name }}</h1>
+      {% if app.description %}<p>{{ app.description|safe }}</p>{% endif %}
+    </div>
+
+    {% if is_edit %}
+        {% url "membership.details" membership.pk as mem_url %}
+        {% blocktrans with mem_url=mem_url %}
+            <p>Update your membership information.</p>
+            <span>Go back to your <a href="{{ mem_url }}">Membership Info</a></span>
+        {% endblocktrans %}
+    {% endif %}
+
+    <form id="t-memberships-application-form" class="form-horizontal clearfix" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or education_form.errors.values or captcha_form.errors.values and not is_edit %}
+            <div class="form-errors">
+                {% trans 'There were some problems in the form. Please review. Thanks!' %}
+
+                {% if user_form.errors.values %}
+                    {% for error in user_form.non_field_errors %}
+                        <p>{{ error}}</p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if profile_form.errors.values %}
+                    {% for error in profile_form.non_field_errors %}
+                        <p><a href="#">{{ error }}</a></p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if education_form.errors.values %}
+                    {% for error in education_form.non_field_errors %}
+                        <p><a href="#">{{ error }}</a></p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if demographics_form.errors.values %}
+                    {% for error in demographics_form.non_field_errors %}
+                        <p><a href="#">{{ error }}</a></p>
+                    {% endfor %}
+                {% endif %}
+
+                {% if membership_form.errors.values %}
+                    {% for error in membership_form.non_field_errors %}
+                        <p><a href="#">{{ error }}</a></p>
+                    {% endfor %}
+                {% endif %}
+
+                {% for field in user_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for field in profile_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for field in education_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for field in demographics_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for field in membership_form %}
+                    {% if field.errors %}
+                          {% for error in field.errors %}
+                            <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                          {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if not is_edit %}
+                    {% for field in captcha_form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% for field_obj in app_fields %}
+            {% render_membership_field request field_obj user_form profile_form demographics_form membership_form education_form %}
+            {% if field_obj.field_name == 'membership_type' %}
+
+                {% if membership_form.donation_option_value %}
+                    <div class="form-group clearfix donation-option-value" style="margin-top: 1.5em;">
+                        <label for="{{ membership_form.donation_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donation_option_value.label }}</label>
+
+                        <div class="col-sm-8">
+                            {{ membership_form.donation_option_value }}
+                        </div>
+                    </div>
+
+                {% endif %}
+            {% endif %}
+            {% if field_obj.field_name == 'payment_method' %}
+                {% if membership_form.auto_renew %}
+                    <div class="form-group clearfix">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-8">
+                        {% if membership_form.auto_renew.errors %}
+                            <div class="error">
+                                {% for error in membership_form.auto_renew.errors %}
+                                    <div><br />{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                            {{ membership_form.auto_renew }} <label for="{{ membership_form.auto_renew.id_for_label }}" class="control-label">{{ membership_form.auto_renew.label }}</label>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if membership_form.discount_code %}
+            <div class="form-group">
+                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount Code" %}</label>
+
+                <div class="col-sm-9">
+                    {{ membership_form.discount_code }}
+
+                        <p id="{{ membership_form.discount_code.id_for_label }}-help-block" class="help-block">
+                            {{ membershrip_form.discount_code.errors.as_text }}
+                        </p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="button" id="discount_check" class="btn btn-default">{% trans "Check Discount" %}</button>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if not is_edit %}
+            <div class="form-group">
+                <label for="{{ captcha_form.captcha.id_for_label }}" class="col-sm-3 control-label">{{ captcha_form.captcha.label }}</label>
+                <div class="col-sm-9">
+                    {{ captcha_form.captcha }}
+
+                    {% if captcha_form.captcha.errors %}
+                        <p id="{{ captcha_form.captcha.id_for_label }}-help-block" class="help-block">
+                            {{ captcha_form.captcha.errors.as_text }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+      <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+      <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+      <script type="text/javascript">
+      (function($){
+        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        $('.timepicker').timepicker({'step':15});
+        $('#discount_check').click(function(){
+            var code = $('#id_discount_code').val();
+            var model = 'membershipset';
+            var prices = '0';
+
+            $.post(
+                '{% url "discount.check_discount" %}',
+                {
+                    'code':code,
+                    'prices':prices,
+                    'model':model
+                },
+                function(data, textStatus, jqXHR){
+                    json = $.parseJSON(data);
+                    //alert(json['message'])
+                    $('#{{ membership_form.discount_code.id_for_label }}-help-block').html(json["message"]);
+                }
+            );
+        });
+      })(jQuery);
+        $(document).ready(function(){
+
+        });
+      </script>
+{% endblock extra_body %}

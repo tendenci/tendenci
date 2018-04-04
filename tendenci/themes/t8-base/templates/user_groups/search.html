@@ -1,0 +1,38 @@
+{% extends "user_groups/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load user_group_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load search_tags %}
+
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/usergroups.css' %}">
+{% endblock %}
+
+{% block content_classes %}{{ block.super }} t-search-view{% endblock %}
+
+{% block content %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %}</h1>
+
+    {% autopaginate groups 10 %}
+    {% group_search %}
+
+     <h4 class="capitalize">
+    <span><em>{{ paginator.count }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %} {% trans "Found" %}</em></span>
+    </h4>
+
+    <section>
+    {% for group in groups %}
+            {% search_result group %}
+    {% empty %}
+
+    {% endfor %}
+    </section>
+
+    {% paginate %}
+
+{% endblock %}

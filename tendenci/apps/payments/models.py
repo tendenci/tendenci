@@ -114,8 +114,8 @@ class Payment(models.Model):
                     self.response_reason_code == '1',
                     self.status_detail == 'approved'])
 
-    def __unicode__(self):
-        return u"response_code: %s, trans_id: %s, amount: %.2f" % (
+    def __str__(self):
+        return "response_code: %s, trans_id: %s, amount: %.2f" % (
                                        self.response_code,
                                        self.trans_id,
                                        self.amount)
@@ -238,7 +238,7 @@ class PaymentMethod(models.Model):
     class Meta:
         app_label = 'payments'
 
-    def __unicode__(self):
+    def __str__(self):
         name = "%s" % (self.human_name, )
 
         if self.is_online:

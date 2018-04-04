@@ -1,0 +1,1 @@
+../../../../themes/t8-base/static/js/gplus-helptexts.js

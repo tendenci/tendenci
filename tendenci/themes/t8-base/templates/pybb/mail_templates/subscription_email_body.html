@@ -1,0 +1,18 @@
+{% load pybb_tags %}
+{% pybb_get_profile user=post.user as profile %}
+
+{% if is_new_topic %}
+{% trans "User" %} {{ profile.get_display_name }} {% trans "added a new topic" %} ({{ post.topic.name|safe }}) {% trans "to the forum" %} {{site_url}}{{ forum_url }}
+
+{% trans "Link to the new topic:" %} {{site_url}}{{ post.topic.get_absolute_url }}
+
+-----
+{% trans "You're reciving notifications on new topics because you are the moderator of the forum:" %} {{site_url}}{{ forum_url }}
+{% else %}
+{% trans "User" %} {{ profile.get_display_name }} {% trans "replied in topic to which you are subscribed." %} ({{ post.topic.name }})
+{% trans "Link to post:" %} {{site_url}}{{ post.get_absolute_url }}
+{% trans "Link to topic:" %} {{site_url}}{{ post.topic.get_absolute_url }}
+
+-----
+{% trans "If you don't want to recive notifications on new messages in this topic visit following link:" %} {{site_url}}{{ delete_url }}
+{% endif %}

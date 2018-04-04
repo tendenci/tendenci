@@ -1,0 +1,34 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+
+{% block content %}
+<h1>{% trans "Corporate Membership Report" %}</h1>
+<div class="corp-mems-wrap stat-table">
+    <table>
+        <tr>
+            <th>{% trans 'Corp Mem Type' %}</th>
+            <th>{% trans 'Active' %}</th>
+            <th>{% trans 'Pending' %}</th>
+            <th>{% trans 'Expired' %}</th>
+            <th>{% trans 'Total' %}</th>
+        </tr>
+        {% for type in summary %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td>{{ type.type.name }}</td>
+            <td>{{ type.active }}</td>
+            <td>{{ type.pending }}</td>
+            <td>{{ type.expired }}</td>
+            <td>{{ type.total }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>{% trans 'Total' %}</td>
+            <td>{{ total.0 }}</td>
+            <td>{{ total.1 }}</td>
+            <td>{{ total.2 }}</td>
+            <td>{{ total.3 }}</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,47 @@
+{% load testimonial_tags %}
+
+    <div class="tsm-search-item">
+        <div class="quick-options">
+            {% testimonial_options request.user testimonial %}
+        </div>
+        <p class="tsm-search-item-desc">
+            {% filter truncatewords:"20" %}
+            {{ testimonial.testimonial|striptags|safe }}
+            {% endfilter %}
+        </p>
+
+        <div class="tsm-person-box">
+        <p class="tsm-person-info">
+            {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
+            {% if testimonial.title %}
+             &nbsp;&ndash;&nbsp;{{ testimonial.title }}
+            {% endif %}
+            {% if testimonial.company %}
+            &nbsp;&ndash;&nbsp;{{ testimonial.company }}
+            {% endif %}
+        </p>
+        {% if testimonial.website %}
+        <p class="tsm-person-info">
+            {{ testimonial.website|urlize }}
+        </p>
+        {% endif %}
+        {%  if testimonial.country or testimonial.city or testimonial.state %}
+        <p class="tsm-person-info">
+            {% if testimonial.city %}
+                {{ testimonial.city }}
+            {% endif %}
+            {% if testimonial.state and testimonial.city %}
+                ,&nbsp;{{ testimonial.state }}
+            {% else %}
+                &nbsp;{{ testimonial.state }}
+            {% endif %}
+            {% if testimonial.country %}
+                &nbsp;{{ testimonial.country }}
+            {% endif %}
+        </p>
+        {% endif %}
+        </div>
+        <a href="{{ testimonial.get_absolute_url }}" title="View testimonial by {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}">
+            &raquo;&nbsp;View testimonial by {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
+        </a>
+    </div>

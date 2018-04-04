@@ -1,0 +1,4 @@
+div.mce-fullscreen {
+    top: 30px !important;
+    z-index: 1050 !important;
+}

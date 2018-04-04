@@ -1,0 +1,100 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Add" %}</h1>
+
+        <form action="{% url "directory.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {% if MODULE_DIRECTORIES_DIRECTORIESREQUIRESPAYMENT %}
+             <div class="pricing-table-block">
+             <h4>{% trans 'Directory Pricing' %}</h4>
+            {% directory_pricing_table %}
+            <a href="{% url "directory_pricing.add" %}">{% trans "Add pricing options" %}</a>
+            </div>
+            {% endif %}
+            {{ form|styled_form }}
+            <input class="btn btn-primary" type="submit" value="{% trans 'Add' %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}" />
+        </div>
+        </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="{% static 'timepicker/timepicker.js' %}" type="text/javascript"></script>
+    <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+
+    <script type="text/javascript">
+    {% include 'directories/include/get_subcategories.js' %}
+    </script>
+    <script type="text/javascript">
+        var slugit = new Slugify({
+            input_element : 'input#id_headline',
+            slug_element : 'input#id_slug',
+            submit_element : 'input[type="submit"]',
+            help: false,
+            limit : 150
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timepicker({'step': 15});
+        });
+    </script>
+
+    {% if require_payment %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var payment_method_block =  $('.id_payment_method');
+        var pricing_select = $('#id_pricing');
+        var list_type_select = $('#id_list_type');
+
+        var toggle_payment_method = function(){
+            var pricing_id = pricing_select.val();
+            var list_type = list_type_select.val();
+
+            if (pricing_id && list_type){
+                $.ajax({
+                   type: "POST",
+                   url: "{% url "directory.query_price" %}",
+                   data: {'pricing_id': pricing_id, 'list_type': list_type},
+                   success: function(ret_data){
+                       var obj = $.parseJSON(ret_data);
+                       var price = obj.price;
+                       if (!isNaN(price) && parseFloat(price) <= 0){
+                           payment_method_block.hide();
+                       }else{
+                           payment_method_block.show();
+                       }
+                     }
+                });
+            }
+        };
+        toggle_payment_method();
+        $('#id_pricing').change(function(){
+            toggle_payment_method();
+        })
+        $('#id_list_type').change(function(){
+            toggle_payment_method();
+        })
+
+     });
+    </script>
+    {% endif %}
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

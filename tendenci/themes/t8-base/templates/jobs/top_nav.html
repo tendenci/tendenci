@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load job_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/briefcase.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_JOBS_LABEL_PLURAL trans "Jobs" %}{% endblock %}
+
+{% block current_app %}
+    {% if job %}
+        {% job_current_app request.user job %}
+    {% else %}
+        {% job_current_app request.user %}
+    {% endif %}
+{% endblock %}

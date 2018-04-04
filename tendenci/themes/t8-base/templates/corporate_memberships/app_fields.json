@@ -1,0 +1,331 @@
+[
+    {
+    "label": "Section 1. Company Details",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Logo",
+    "field_name": "logo_file",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Parent Entity",
+    "field_name": "parent_entity",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Company Name",
+    "field_name": "name",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
+    "label": "Address",
+    "field_name": "address",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Address2",
+    "field_name": "address2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+   {
+    "label": "City",
+    "field_name": "city",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "State",
+    "field_name": "state",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Zip Code",
+    "field_name": "zip",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Country",
+    "field_name": "country",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Phone",
+    "field_name": "phone",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Phone2",
+    "field_name": "phone2",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Email",
+    "field_name": "email",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "URL",
+    "field_name": "url",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Industry",
+    "field_name": "industry",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Region",
+    "field_name": "region",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Number Employees",
+    "field_name": "number_employees",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+   {
+    "label": "Tax Exempt",
+    "field_name": "tax_exempt",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Annual Revenue",
+    "field_name": "annual_revenue",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Annual Ad Expenditure",
+    "field_name": "annual_ad_expenditure",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Section 2. Membership Details",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Membership Type",
+    "field_name": "corporate_membership_type",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
+    "label": "Chapter",
+    "field_name": "chapter",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Authorized Domain",
+    "field_name": "authorized_domain",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
+    "label": "Secret Code",
+    "field_name": "secret_code",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
+    "label": "Description",
+    "field_name": "description",
+    "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Expectations",
+    "field_name": "expectations",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Notes",
+    "field_name": "notes",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Section 3. Referral Details",
+    "field_name": "",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Source",
+    "field_name": "referral_source",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Source Other",
+    "field_name": "referral_source_other",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Member Name",
+    "field_name": "referral_source_member_name",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Member Number",
+    "field_name": "referral_source_member_number",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Payment Method",
+    "field_name": "payment_method",
+    "display": "true",
+    "required": "true",
+    "admin_only": "false"
+    },
+    {
+    "label": "Section 5. Admin Only",
+    "field_name": "",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
+    "label": "Admin Notes",
+    "field_name": "admin_notes",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
+    "label": "Expiration Date",
+    "field_name": "expiration_dt",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
+    "label": "Status",
+    "field_name": "status",
+    "display": "false",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
+    "label": "Status Detail",
+    "field_name": "status_detail",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
+    "label": "ud1",
+    "field_name": "ud1",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud2",
+    "field_name": "ud2",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud3",
+    "field_name": "ud3",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud4",
+    "field_name": "ud4",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud5",
+    "field_name": "ud5",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud6",
+    "field_name": "ud6",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud7",
+    "field_name": "ud7",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "ud8",
+    "field_name": "ud8",
+    "display": "false",
+    "required": "false",
+    "admin_only": "false"
+    }
+]

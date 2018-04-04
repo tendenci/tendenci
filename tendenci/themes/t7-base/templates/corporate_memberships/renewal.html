@@ -1,0 +1,553 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans "Corporate Membership Renewal" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+div.id_members .field ul li {
+    float: left;
+    width: 35%;
+    margin: 0;
+    padding: 0;
+}
+div.id_payment_method ul{
+    list-style: none;
+}
+#main-forms{
+    text-align: left;
+}
+#summary-form-wrap{
+    /*width:300px;*/
+    text-align: left;
+    border-top: 1px solid #d5d5d5;
+    border-bottom: 1px solid #d5d5d5;
+}
+#summary-form-box{
+    background-color: #fff;
+    -moz-border-radius: 8px;
+    width: 500px;
+}
+
+#summary-price, #summary-total-price{
+    width: 98%;
+}
+#summary-price td, #summary-total-price td{
+    padding: 3px;
+}
+#summary-total-price{
+    margin-bottom: 1em;
+    padding-top: 3px;
+    border-top: 1px dotted #ccc;
+}
+.summary-header{
+    font-weight: bold;
+    text-align: right;
+}
+#total-label,#total-amount{
+    font-weight: bold;
+}
+#update_summary{
+    margin-bottom: 1em;
+    padding: 3px;
+}
+#renew-button-wrap{
+    margin-top: 1em;
+    text-align: center;
+}
+.center{
+    text-align: center;
+}
+.right{
+    text-align: right;
+}
+
+#summary-content{
+   padding: 10px;
+}
+div.forms{
+    width: 100%;
+}
+#renewal_form label{
+    font-weight: normal !important;
+}
+#renewal_form .field-label{
+    font-weight: bolder;
+    font-size: 1.3em;
+    margin: 1em 0 3px;
+}
+#renewal_form ul{
+    list-style: none;
+    margin: 5px 1.5em;
+}
+.submit-btn-wrap{
+    margin: 1em 0 1em;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+     <h1>{% trans "Corporate Membership Renewal" %}</h1>
+
+<form action="" method="post">{% csrf_token %}
+
+<div id="main-forms">
+<div class="forms" id="renewal_form">
+    <p>
+     <a href="{% url "corpmembership.view" corp_membership.id %}" target="_blank">{{ corp_profile.name }}</a><br />
+        {% if corp_profile.address %}
+            {{ corp_profile.address }}
+            {% if corp_profile.address2 %}
+                {{ corp_profile.address2 }}
+            {% endif %}
+            <br />
+        {% endif %}
+
+        {% if corp_profile.city or corp_profile.state or corp_profile.zip %}
+        {% if corp_profile.city %}
+            {{ corp_profile.city }}
+        {% endif %}
+        {% if corp_profile.state %}
+            {{ corp_profile.state }}
+        {% endif %}
+        {% if corp_profile.zip %}
+            {{ corp_profile.zip }}
+        {% endif %}
+        <br />
+        {% endif %}
+        {% if corp_profile.phone %}
+            {{ corp_profile.phone }} <br />
+        {% endif %}
+        {% if corp_profile.email %}
+            {{ corp_profile.email }} <br />
+        {% endif %}
+        {% trans "Join Date:" %} {{ corp_membership.join_dt }}<br />
+        <b>{% trans "Expiration Date" %}</b>: {{ corp_membership.expiration_dt }}
+        {% if corp_membership.is_expired %}
+            {% if corp_membership.is_in_grace_period %}
+                <span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
+            {% else %}
+                <span style="color:red">{% trans "(expired)" %}</span>
+            {% endif %}
+        {% endif %}
+        <br />
+     </p>
+
+   <div style="height:1px;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+
+  {% if form.errors %}<p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>{% endif %}
+
+    {% if form.errors.values %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in form.non_field_errors %}
+            <p><a href="#" class="alert-link">{{ error }}</a></p>
+            {% endfor %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
+                        {{ field.label }} - {{ error }}
+                        </a></p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="form-field">
+        <div class="{{ form.corporate_membership_type.auto_id }}{{ form.corporate_membership_type.field.css_classes }}">
+            <div class="field-label{% if form.corporate_membership_type.field.required %} required{% endif %}">
+                  {{ form.corporate_membership_type.label_tag }}
+              </div>
+              {% if form.corporate_membership_type.errors %}
+              <div class="alert alert-danger" role="alert">
+                  {% for error in form.corporate_membership_type.errors %}
+                  <p>{{ error }}</p>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <div class="field">
+                  {{ form.corporate_membership_type }}
+              </div>
+              {% if form.corporate_membership_type.help_text %}
+              <div class="help-text">{{ form.corporate_membership_type.help_text }}</div>
+              {% endif %}
+           </div>
+        </div>
+
+
+     <div class="form-field">
+        <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
+            <div class="field-label{% if form.members.field.required %} required{% endif %}">
+                  {{ form.members.label_tag }}
+              </div>
+              {% if form.members.errors %}
+              <div class="alert alert-danger" role="alert">
+                  {% for error in form.members.errors %}
+                  <p>{{ error }}</p>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <div class="field_members_all">
+                <ul>
+                <li>
+                <label for="id_select_all_members">
+                {{ form.select_all_members }}
+                <span style="background:yellow">{% trans "Renew all individual members" %}</span>
+                </label>
+                </li>
+                </ul>
+              </div>
+              <div class="field">
+                  {{ form.members }}
+              </div>
+              {% if form.members.help_text %}
+              <div class="help-text">{{ form.members.help_text }}</div>
+              {% endif %}
+           </div>
+        <div style="clear: both"></div>
+     </div>
+
+     <div class="form-field">
+        <div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
+          <div class="field-label{% if form.payment_method.field.required %} required{% endif %}">
+              {{ form.payment_method.label_tag }}
+          </div>
+          {% if form.payment_method.errors %}
+          <div class="alert alert-danger" role="alert">{{ error }}</div>
+          {% endif %}
+          <div class="field">
+              {{ form.payment_method }}
+          </div>
+          {% if form.payment_method.help_text %}
+          <div class="help-text">{{ form.payment_method.help_text }}</div>
+          {% endif %}
+       </div>
+    </div>
+   </div>
+
+
+   <div id="summary-form-wrap" class="clearfix">
+    <div id="summary-form-box" class="pull-right">
+        <div id="summary-content">
+            <table id="summary-price">
+                <tr>
+                    <td width="26%" class="summary-header">&nbsp;</td>
+                    <td width="20%" class="summary-header">{% trans "Qty" %}</td>
+                    <td width="27%" class="summary-header">{% trans "Unit Price" %}</td>
+                    <td width="27%" class="summary-header">{% trans "Sub-total" %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Corporate" %}</td>
+                    <td class="center">1</td>
+                    <td class="right">
+                        <span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-price">{{ summary_data.corp_price }}</span>
+                    </td>
+                    <td class="right">
+                        <span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-sub-total">{{ summary_data.corp_price }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Individuals" %}</td>
+                    <td class="center" id="ind-qty" data-total_individual_count={{ summary_data.total_individual_count }}>{{ summary_data.individual_count }}</td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-price">{{ summary_data.individual_price }}</span>
+                    </td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-sub-total">{{ summary_data.individual_total }}</span>
+                    </td>
+                </tr>
+                {% if cap_enabled %}
+                <tr id="above-cap-ind">
+                    <td>{% trans "Individuals (above cap)" %}</td>
+                    <td class="center" id="above-cap-ind-qty">{{ summary_data.above_cap_individual_count }}</td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="above-cap-ind-price">{{ summary_data.above_cap_price }}</span>
+                    </td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="above-cap-ind-sub-total">{{ summary_data.above_cap_individual_total }}</span>
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+            <table id="summary-total-price">
+                <tr>
+                    <td><div id="total-label">{% trans "Total" %}</div></td>
+                    <td align="right">
+                        <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                        <span id="total-amount">{{ summary_data.total_amount }}</span>
+                    </td>
+                </tr>
+            </table>
+            <div class="text-danger" id="cap-error-msg"></div>
+            <noscript>
+                <div>
+                    <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="{% trans 'Update Summary' %}" />
+                </div>
+            </noscript>
+
+
+        </div>
+    </div>
+</div>
+
+
+    <div class="submit-btn-wrap pull-right">
+        <input type="submit" value="{% trans 'Renew Now' %}" class="btn btn-primary" />
+    </div>
+
+    </div>
+
+<div style="clear:both;"></div>
+
+</form>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script type="text/javascript">
+
+    function IndUpdateSummary(memb){
+        var corp_type = $("input[name=corporate_membership_type]:checked");
+        var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
+        var total_individual_count = parseInt($("#ind-qty").data('total_individual_count'));
+
+        var ind_qty = parseInt($("#ind-qty").html());
+        var ind_price = parseFloat($("#ind-price").html());
+        var ind_sub_total = parseFloat($("#ind-sub-total").html());
+        var total_amount = parseFloat($("#total-amount").html());
+
+        var above_cap_ind_qty = parseInt($("#above-cap-ind-qty").html());
+        var above_cap_ind_price = parseFloat($("#above-cap-ind-price").html());
+        var above_cap_ind_sub_total = parseFloat($("#above-cap-ind-sub-total").html());
+        $("#cap-error-msg").html("");
+
+
+        if (cap_obj && cap_obj.apply_cap === "True"){
+            if(memb.checked){
+                total_individual_count = total_individual_count + 1;
+                if (total_individual_count <= cap_obj.membership_cap || cap_obj.allow_above_cap === "False"){
+                    ind_qty = parseInt(ind_qty) + 1;
+                    if (isNaN(ind_price)==false && ind_price > 0){
+                        ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price);
+                        total_amount = parseFloat(total_amount) + parseFloat(ind_price);
+                    }
+                    if (total_individual_count > cap_obj.membership_cap){
+                        $("#cap-error-msg").html("Membership cap has been reached! Limit to " + cap_obj.membership_cap + " please!");
+                    }
+                }else{
+                    if (cap_obj.allow_above_cap === "True"){
+                        $("#above-cap-ind").show();
+                        above_cap_ind_qty = above_cap_ind_qty + 1;
+                        if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
+                            above_cap_ind_sub_total = above_cap_ind_sub_total + above_cap_ind_price;
+                            total_amount = total_amount + above_cap_ind_price;
+                        }
+                    }
+                }
+
+            }else{
+                total_individual_count = total_individual_count - 1;
+                if (!isNaN(above_cap_ind_qty) && above_cap_ind_qty > 0){
+                    above_cap_ind_qty = above_cap_ind_qty -1;
+                    if (isNaN(above_cap_ind_price)==false && above_cap_ind_price > 0){
+                        above_cap_ind_sub_total = above_cap_ind_sub_total - above_cap_ind_price;
+                        total_amount = total_amount - above_cap_ind_price;
+                    }
+                }else{
+                    ind_qty = ind_qty - 1;
+                    if (isNaN(ind_price)==false && ind_price > 0){
+                        ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price);
+                        total_amount = parseFloat(total_amount) - parseFloat(ind_price);
+                    }
+                }
+
+            }
+
+        }else{
+
+            if(memb.checked){
+                total_individual_count = total_individual_count + 1;
+                ind_qty = total_individual_count;
+                if (isNaN(ind_price)==false && ind_price > 0){
+                    ind_sub_total = ind_sub_total + ind_price;
+                    total_amount = total_amount + ind_price;
+                }
+            }else{
+                total_individual_count = total_individual_count - 1
+                ind_qty = total_individual_count;
+                if (isNaN(ind_price)==false && ind_price > 0){
+                    ind_sub_total = ind_sub_total - ind_price;
+                    total_amount = total_amount - ind_price;
+                }
+            }
+
+        }
+
+        $("#ind-qty").html(ind_qty);
+        $("#ind-sub-total").html(ind_sub_total.toFixed(2));
+        $("#total-amount").html(total_amount.toFixed(2));
+        $("#above-cap-ind-qty")
+        $("#above-cap-ind-qty").html(above_cap_ind_qty);
+        $("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
+
+        $("#ind-qty").data('total_individual_count', total_individual_count);
+    }
+
+
+    function TypeUpdateSummary(corp_type){
+        var corp_price = $("#corp-price").html();
+        var ind_qty = $("#ind-qty").html();
+        var total_individual_count = parseInt($("#ind-qty").data('total_individual_count'));
+        //console.log(total_individual_count);
+        var ind_price = $("#ind-price").html();
+        var ind_sub_total = $("#ind-sub-total").html();
+        //var total_amount = $("#total-amount").html();
+        var above_cap_ind_sub_total = 0;
+        var total_amount = 0;
+
+        var cap_obj = $(corp_type).closest('li').find('.type-cap').data('cap');
+
+        if (cap_obj.apply_cap === "True"){
+            var above_cap_ind_qty;
+        }
+
+        //console.log(cap_obj);
+        //console.log(cap_obj.apply_cap);
+        //console.log(cap_obj.membership_cap);
+        //console.log(cap_obj.allow_above_cap);
+        //console.log(cap_obj.above_cap_price);
+
+        var new_corp_price = $(corp_type).parent().find(".type-corp-price").html();
+        var new_ind_price = $(corp_type).parent().find(".type-ind-price").html();
+
+        new_corp_price = parseFloat(new_corp_price);
+        if (isNaN(new_corp_price) == true){
+            new_corp_price = 0
+        }
+        new_corp_price = new_corp_price.toFixed(2);
+
+        new_ind_price = parseFloat(new_ind_price);
+        if (isNaN(new_ind_price) == true){
+            new_ind_price = 0
+        }
+        new_ind_price = new_ind_price.toFixed(2);
+
+        var update_total = false;
+
+        // update corp. price and total
+        if (parseFloat(new_corp_price) != parseFloat(corp_price)){
+            $("#corp-price").html(new_corp_price);
+            $("#corp-sub-total").html(new_corp_price);
+            update_total = true;
+        }
+
+        // update individual price and total
+            $("#above-cap-ind-qty").html(0);
+            $("#above-cap-ind-price").html("0.00");
+            $("#above-cap-ind-sub-total").html("0.00");
+            $("#above-cap-ind").hide();
+            $("#cap-error-msg").html("");
+            if (cap_obj && cap_obj.apply_cap === "True"){
+                var membership_cap = parseInt(cap_obj.membership_cap);
+                if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "True"){
+                    ind_sub_total = membership_cap * parseFloat(new_ind_price);
+                    if (cap_obj.allow_above_cap === "True"){
+                        $("#above-cap-ind").show();
+                        above_cap_ind_qty = total_individual_count - membership_cap;
+                        ind_qty = membership_cap;
+                        above_cap_ind_sub_total = above_cap_ind_qty * parseFloat(cap_obj.above_cap_price);
+                        $("#above-cap-ind-qty").html(above_cap_ind_qty);
+                        $("#above-cap-ind-price").html(parseFloat(cap_obj.above_cap_price).toFixed(2));
+                        $("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
+                        total_amount = above_cap_ind_sub_total;
+                    }
+                }else{
+                    ind_qty = total_individual_count
+                    ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
+                    if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "False"){
+                        $("#cap-error-msg").html("Whoops! You'll need to de-select some member(s) because the limit of individual members is " + membership_cap);
+                    }
+                }
+            }else{
+                ind_qty = total_individual_count
+                ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
+            }
+            $("#ind-qty").html(ind_qty);
+            $("#ind-price").html(new_ind_price);
+            $("#ind-sub-total").html(ind_sub_total);
+            update_total = true;
+
+        // update total amount
+        if (update_total){
+            total_amount = (above_cap_ind_sub_total + parseFloat(new_corp_price) + parseFloat(ind_sub_total)).toFixed(2);
+            $("#total-amount").html(total_amount);
+        }
+
+    }
+
+    $(document).ready(function()
+    {
+        if ($("input#id_select_all_members:checked").length > 0){
+            $("#id_members").hide();
+        }else{
+            $("#id_members").show();
+        }
+        //$("input[name=members]").each(function()
+        //    {
+        //        IndUpdateSummary(this);
+        //});
+
+        $("#id_select_all_members").click(function()
+        {
+            var checked_status = this.checked;
+            $("input[name=members]").each(function()
+            {
+                var old_status = this.checked;
+                this.checked = checked_status;
+                if (old_status != checked_status){
+                    IndUpdateSummary(this);
+                }
+            });
+
+            if(checked_status){
+                $("#id_members").hide();
+            }else{
+                $("#id_members").show();
+            }
+        });
+
+        $("input[name=members]").change(function()
+        {
+            IndUpdateSummary(this);
+        });
+
+        $("input[name=corporate_membership_type]").change(function()
+        {
+            TypeUpdateSummary(this);
+        });
+
+        {% if summary_data.apply_cap and summary_data.allow_above_cap %}
+        $("#above-cap-ind").show();
+        {% else %}
+        $("#above-cap-ind").hide();
+        {% endif %}
+
+
+    });
+
+
+    </script>
+
+
+
+{% endblock %}

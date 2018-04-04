@@ -1,0 +1,45 @@
+{% if is_paginated %}
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" aria-label="{% trans 'Previous' %}">
+                        <span aria-hidden="true">&laquo; {% trans "Previous" %}</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <a href="#" aria-label="{% trans 'Previous' %}">
+                        <span aria-hidden="true">&laquo; {% trans "Previous" %}</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in pages %}
+                {% if page %}
+                    {% ifequal page page_obj.number %}
+                        <li class="active"><a href="#">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ page }}{{ getvars }}{{ hashtag }}">{{ page }}</a></li>
+                    {% endifequal %}
+                {% else %}
+                    <li class="disabled"><a href="#">...</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" aria-lael="{% trans 'Next' %}">
+                        <span aria-hidden="true">{% trans "Next" %} &raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="disabled">
+                    <a href="#" aria-label="{% trans 'Next' %}">
+                        <span>{% trans "Next" %} &raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

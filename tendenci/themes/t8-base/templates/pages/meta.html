@@ -1,0 +1,127 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+
+
+{% has_perm user pages.change_page page as can_edit_page %}
+{% has_perm user pages.delete_page page as can_delete_page %}
+{% tags_for_object page as tags %}
+{% tags_hash_tags page as hash_tags %}
+{% tags_strip_hash page as nonhash_tags %}
+
+
+<ul class="list-unstyled t-meta-data">
+    {% if page.slug %}<li class="pull-right"><a href="{% url 'page.print_view' page.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
+    {% comment %}
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe news.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% if show_source|default:False and news.source %}
+        <li><strong>{% trans "Source:" %}</strong> <a href="{% url 'news' %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></li>
+    {% endif %}
+
+    <li><strong>{% trans "Released:" %}</strong> <span>{{ news.release_dt|date:"long" }}</span></li>
+
+    {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %}
+        {% if news.first_name or news.last_name %}
+            <li><strong>{% trans "Author:" %}</strong> <span>{{ news.first_name }} {{ news.last_name }}</span></li>
+        {% endif %}
+
+        {% if news.phone %}
+            <li><strong>{% trans "Phone:" %}</strong> <span>{{ news.phone|phonenumber }}</span></li>
+        {% endif %}
+
+        {% if news.fax %}
+            <li><strong>{% trans "Fax:" %}</strong> <span>{{ news.fax }}</span></li>
+        {% endif %}
+
+        {% if news.email %}
+            <li><strong>{% trans "Email:" %}</strong> <span>{{ news.email|obfuscate_email }}</span></li>
+        {% endif %}
+
+        {% if news.website %}
+            <li><strong>{% trans "Website:" %}</strong> <span>{{ news.website|urlize }}</span></li>
+        {% endif %}
+    {% endif %}
+    {% endcomment %}
+
+    {% with page.category_set as page_cat %}
+        {% if page_cat.category %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category }}">{{ page_cat.category }}</a></li>
+                    {% if page_cat.sub_category %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'page.search' %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if nonhash_tags or hash_tags %}
+        <li>
+            {% if nonhash_tags or can_edit_page %}<strong>{% trans "Tag(s):" %}</strong>{% endif %}
+            {% for tag in nonhash_tags %}
+                <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+            {% endfor %}
+
+            {% if hash_tags and can_edit_page %}
+                {% for tag in nonhash_tags %}
+                    <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                {% endfor %}
+            {% endif %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if user.profile.is_superuser or user.id == page.creator_id or user.id == page.owner_id %}
+            {% meta_creator_owner page %}
+        {% endif %}
+    {% endif %}
+
+</ul>
+
+
+{% if request.user.is_authenticated and can_edit_page %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ page.obj_perms }}</li>
+                    <li>{{ page.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-versions-link" href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'page.edit' page.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            {% if page.status and can_delete_page %}
+                                <li>
+                                    <a class="t-meta-delete-link" href="{% url 'page.delete' page.pk %}">{% trans "Delete" %}</a>
+                                </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'page.edit.meta' page.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'category.update' page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

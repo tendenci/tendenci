@@ -1,0 +1,683 @@
+{% load base_filters %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "User Self Add - Admin Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans %}The following user's account has been updated/modified at {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are listed below: {% endblocktrans %}</p>
+<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="11%"><strong>{% trans "Name:" %}</strong></td>
+    <td width="89%">{{ profile.user.get_full_name}}</td>
+  </tr>
+</table>
+<p><br>
+{% trans "The list of updated items include:" %} </p>
+<p>
+
+    <table width="100%"  border="0" cellspacing="0" cellpadding="0">
+
+    <tr class="bold_body_copy">
+      <td width="30%" valign="top"><div align="left">
+         <font face="Arial, Helvetica, sans-serif" size="2"><b>
+    {% trans 'Field' %}</b></font></div></td>
+      <td width="35%" valign="top"><div align="left">
+         <font face="Arial, Helvetica, sans-serif" size="2"><b>
+    {% trans 'Old Value' %}</b></font></div></td>
+      <td width="35%" valign="top"><div align="left">
+         <font face="Arial, Helvetica, sans-serif" size="2"><b>
+    {% trans 'New Value' %}</b></font></div></td>
+    </tr>
+
+    {% if old_user.first_name != profile.user.first_name %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "First Name" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_user.first_name %}
+                    {{ old_user.first_name }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.user.first_name }}</font></div></td>
+                </tr>
+
+    {% endif %}
+
+    {% if old_profile.initials != profile.initials %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Initial" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.initials %}
+                    {{ old_profile.initials }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.initials}}</font></div></td>
+                </tr>
+
+    {% endif %}
+
+    {% if old_user.last_name != profile.user.last_name %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Last Name" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_user.last_name %}
+                    {{ old_user.last_name }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.user.last_name }}</font></div></td>
+                </tr>
+
+    {% endif %}
+
+    {% if old_profile.position_title != profile.position_title %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Position Title" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.position_title %}
+                    {{ old_profile.position_title }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.position_title}}</font></div></td>
+                </tr>
+
+    {% endif %}
+
+
+    {% if old_profile.display_name != profile.display_name %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Display Name" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.display_name %}
+                    {{ old_profile.display_name }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.display_name}}</font></div></td>
+                </tr>
+
+    {% endif %}
+
+    {% if old_profile.phone != profile.phone %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Phone" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.phone %}
+                    {{ old_profile.phone|phonenumber }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.phone|phonenumber}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.phone2 != profile.phone2 %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Phone2" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.phone2 %}
+                    {{ old_profile.phone2|phonenumber }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.phone2|phonenumber}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.home_phone != profile.home_phone %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Home Phone" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.home_phone %}
+                    {{ old_profile.home_phone|phonenumber }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.home_phone|phonenumber}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.work_phone != profile.work_phone %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Work Phone" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.work_phone %}
+                    {{ old_profile.work_phone|phonenumber }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.work_phone|phonenumber}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.fax != profile.fax %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                Fax</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.fax %}
+                    {{ old_profile.fax }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.fax}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.mobile_phone != profile.mobile_phone %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Mobile Phone" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.mobile_phone %}
+                    {{ old_profile.mobile_phone }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.mobile_phone}}</font></div></td>
+                </tr>
+    {% endif %}
+
+
+    {% if old_profile.email2 != profile.email2 %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Email2" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.email2 %}
+                    {{ old_profile.email2 }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.email2}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.url != profile.url %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Website" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.url %}
+                    {{ old_profile.url }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.url}}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.direct_mail != profile.direct_mail %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Receive Email" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.direct_mail %}
+                    {% trans "Yes" %}</font></div></td>
+                {% else %}
+                    {% trans "No" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                     {% if profile.direct_mail %}
+                        {% trans "Yes" %}</font></div></td>
+                    {% else %}
+                        {% trans "No" %}</font></div></td>
+                    {% endif %}
+                </tr>
+    {% endif %}
+
+    {% if old_profile.company != profile.company %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Company" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.company %}
+                    {{ old_profile.company }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.company }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.department != profile.department %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Department" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.department %}
+                    {{ old_profile.department }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.department }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.mailing_name != profile.mailing_name %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Mailing Name" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.mailing_name %}
+                    {{ old_profile.mailing_name }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.mailing_name }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.address != profile.address %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Address" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.address %}
+                    {{ old_profile.address }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.address }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.address2 != profile.address2 %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Address2" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.address2 %}
+                    {{ old_profile.address2 }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.address2 }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.city != profile.city %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "City" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.city %}
+                    {{ old_profile.city }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.city }}</font></div></td>
+                </tr>
+    {% endif %}
+
+
+    {% if old_profile.state != profile.state %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "City" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.state %}
+                    {{ old_profile.state }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.state }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.zipcode != profile.zipcode %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Zipcode" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.zipcode %}
+                    {{ old_profile.zipcode }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.zipcode }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.country != profile.country %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Country" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.country %}
+                    {{ old_profile.country }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.country }}</font></div></td>
+                </tr>
+    {% endif %}
+
+
+{% if old_user.username != profile.user.username %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Username" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_user.username %}
+                    {{ old_user.username }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.user.username }}</font></div></td>
+                </tr>
+    {% endif %}
+
+{% if old_user.is_active != profile.user.is_active %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Interactive" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_user.is_active %}
+                    {% trans "Yes" %}</font></div></td>
+                {% else %}
+                    {% trans "No" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                     {% if profile.user.is_active %}
+                        {% trans "Yes" %}</font></div></td>
+                    {% else %}
+                        {% trans "No" %}</font></div></td>
+                    {% endif %}
+                </tr>
+    {% endif %}
+
+    {% if old_profile.status != profile.status %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Status" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.status %}
+                    {{ old_profile.status }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.status }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.notes != profile.notes %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Notes" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.notes %}
+                    {{ old_profile.notes }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.notes }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.time_zone != profile.time_zone %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Time Zone" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.time_zone %}
+                    {{ old_profile.time_zone }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.time_zone }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.language != profile.language %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Language" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.language %}
+                    {{ old_profile.language }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.language }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.sex != profile.sex %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Gender" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.sex %}
+                    {{ old_profile.sex }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.sex }}</font></div></td>
+                </tr>
+    {% endif %}
+
+    {% if old_profile.spouse != profile.spouse %}
+                <tr class="body_copy">
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {% trans "Spouse" %}</font></div></td>
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+
+                {% if old_profile.spouse %}
+                    {{ old_profile.spouse }}</font></div></td>
+                {% else %}
+                    {% trans "BLANK" %}</font></div></td>
+                {% endif %}
+
+                  <td valign="top"><div align="left">
+                     <font face="Arial, Helvetica, sans-serif" size="2">
+                {{ profile.spouse }}</font></div></td>
+                </tr>
+    {% endif %}
+
+</table>
+
+</p>
+<p><br>
+  {% blocktrans %}To view this user's record, click here:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url 'profile' profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url 'profile' profile.user.username %}</a>
+
+<P>{% blocktrans %}Time submitted:{% endblocktrans %}  {% now "D d M Y P" %}</P>
+
+</body>
+</html>

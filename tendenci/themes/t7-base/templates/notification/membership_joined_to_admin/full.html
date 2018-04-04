@@ -1,0 +1,36 @@
+
+{% load perm_tags %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>{% trans "Membership Application Submission" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Submission" %}</div>
+
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type and membership.membership_type.price as membership_type_price %}Membership Type: {{ membership_type }} ${{ membership_type_price }}{% endblocktrans %}</div>
+    {% else %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type %}Membership Type: {{ membership_type }} (Free) {% endblocktrans %}</div>
+    {% endif %}
+
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">{% trans "View Submitted Application" %}</a>
+        (<span style="color:{% if membership.is_pending %}red{% else %}green{% endif %};">{{ membership.get_status }}</span>)
+    </a></div>
+
+    {% if membership.is_pending %}
+    <div>
+       {% trans "To approve this membership, go to: " %}<br />
+       <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}</a>
+    </div>
+    {% endif %}
+    <p>&nbsp;</p>
+
+</body>
+</html>

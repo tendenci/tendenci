@@ -1,0 +1,1 @@
+../../../../themes/t8-base/static/js/theme_color_admin.js

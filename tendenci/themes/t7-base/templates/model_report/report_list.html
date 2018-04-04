@@ -1,0 +1,13 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% trans "Report list" %}{% endblock %}
+
+{% block body_class %}reports{% endblock %}
+
+
+{% block content %}
+    <h1>{% trans "Report list" %}</h1>
+    <ul id="report-list">
+        {% include "model_report/includes/report_nav.html" %}
+    </ul>
+{% endblock %}

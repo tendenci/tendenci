@@ -1,0 +1,15 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user case_study.change_case_study opt_object as can_edit %}
+{% has_perm user case_study.delete_case_study opt_object as can_delete %}
+
+<div class="t-iconrow">
+    <a class="option-link print" href="{% url "case_study.print_view" opt_object.pk %}">{% trans 'Print' %}</a>
+    {% if can_edit %}
+        <a class="option-link edit" href="{% url "admin:case_studies_casestudy_change" opt_object.pk %}?next={{ request.path }}">{% trans 'Edit' %}</a>
+    {% endif %}
+    {% if can_delete %}
+        <a class="option-link delete" href="{% url "admin:case_studies_casestudy_delete" opt_object.pk %}">{% trans 'Delete' %}</a>
+    {% endif %}
+</div>

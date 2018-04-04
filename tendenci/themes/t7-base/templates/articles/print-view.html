@@ -1,0 +1,35 @@
+{% extends "articles/base-print.html" %}
+{% load article_tags %}
+{% load base_filters %}
+
+{% block title %}{% blocktrans with title=article.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
+{% block meta_description %}{% blocktrans with description=article.get_description %}{{ description }}{% endblocktrans %}{% endblock %}
+{% block meta_keywords %}{% blocktrans with keywords=article.get_keywords %}{{ keywords }}{% endblocktrans %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/articles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t-print">
+
+    <div class='hide-this'>
+        <h1>{% trans "Print View" %}</h1>
+
+        <div class="guide">
+            <div><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to the" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a></div>
+        </div>
+    </div>
+
+    <div class="article-wrap">
+        <h2>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h2>
+        <div class="content">{% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}</div>
+        <div class="meta">
+            <div class="submitted">{% blocktrans with article.create_dt|date:"long" as date and article.creator as creator %}Submitted on {{ date }} by {{ creator }}{% endblocktrans %}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+.t {
+	width: 98%;
+}
+.t h2 {
+	margin: 8px auto 8px 0;
+}
+
+.t ul.files-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.files-nav li {
+	display: inline;
+}
+
+.t .files-found {
+    padding-bottom:  10px;
+}
+
+.t .files-wrap {
+	margin-bottom: 20px;
+}
+
+.t .files-wrap .file-wrap.list-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .files-wrap .file-wrap.grid-wrap {
+	width: 215px;
+	height: 330px;
+  	float: left;
+	margin: 0 7px 12px;
+  	position: relative;
+  	background-color: #F6F6F6;
+  	word-wrap: break-word;
+}
+
+.t .files-wrap .grid-wrap .download {
+	margin-left: 15px;
+}
+
+.t .files-wrap .file-wrap.grid-wrap .categories,
+.t .files-wrap .file-wrap.grid-wrap .tags,
+.t .files-wrap .file-wrap.grid-wrap .related-content {
+	display: none;
+}
+
+.t .files-wrap .file-wrap.list-wrap h2 {
+	width: 85%;
+	margin-bottom: 6px;
+}
+
+.t .files-wrap .file-wrap.grid-wrap h2 {
+	text-align: center;
+}
+
+.t .files-wrap .file-wrap.grid-wrap h2 a {
+	font-size: 16px;
+}
+
+.t .files-wrap .file-wrap .content {
+	margin-bottom: 10px;
+}
+
+.t .files-wrap .file-wrap .related-content {
+	margin-bottom: 3px;
+}
+
+.t .files-wrap .file-wrap .submitted {
+	background-color: #F6F6F6;
+	padding: 10px;
+}
+.t .files-wrap-search .file-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .file-wrap.list-wrap .icon {
+	float: left;
+	margin-right: 10px;
+}
+
+.t .file-wrap.grid-wrap .icon {
+	height: 192px;
+	width: 192px;
+	margin: 12px;
+  	position: relative;
+	/* overflow: hidden; */
+}
+
+.t .file-wrap.grid-wrap .icon img {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	margin: auto;
+}
+
+.t .file-wrap .meta {
+	margin-top: 20px;
+}
+
+.t .files-wrap .grid-wrap .meta {
+	margin-left: -5px;
+	margin-top: -6px;
+}
+
+.t .file-wrap h2 a.broken {
+	text-decoration: line-through;
+}
+
+.t .files-wrap-search .file-wrap h2 {
+	width: 85%;
+}
+.t .files-wrap-search .file-wrap .content {
+	margin-bottom: 10px;
+}
+.t .files-wrap-search .file-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .file-wrap.grid-wrap .options {
+	display: none;
+}
+.t .file-wrap.grid-wrap:hover .options {
+	display: block;
+}
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #F6F6F6;
+	padding: 10px 3px 10px 10px;
+	white-space: nowrap;
+	z-index: 999;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+	vertical-align: top;
+}
+
+/* Most Viewed */
+.t.most-viewed table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.t.most-viewed th {
+	text-align: left;
+	font-weight: normal;
+	padding-bottom: 3px;
+	border-bottom: 1px solid silver;
+}
+
+.t.most-viewed td {
+	vertical-align: middle;
+}
+
+.t.most-viewed .files-wrap .file-wrap {
+	border: none;
+	border-bottom: 1px solid #EEE;
+}
+
+.t.most-viewed td.clicks {
+	text-align: center;
+}
+.t.most-viewed td.clicks,
+.t.most-viewed td.change,
+.t.most-viewed td.delete {
+	padding: 5px;
+}
+.t.most-viewed td.file-type {
+	padding: 5px 0;
+}
+.t.most-viewed td.file-name {
+
+}
+.t.most-viewed td.change,
+.t.most-viewed td.delete {
+	font-size: .8em;
+}
+.t.most-viewed td .create-dt {
+	margin-top: 3px;
+	font-size: .8em;
+}
+
+.t.most-viewed #results {
+	font-size: .9em;
+	margin-bottom: 20px;
+}
+
+#id_start_dt,
+#id_end_dt {
+	width: 150px;
+}

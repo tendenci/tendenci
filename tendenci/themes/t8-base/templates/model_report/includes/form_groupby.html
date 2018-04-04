@@ -1,0 +1,10 @@
+{% if form_groupby %}
+    <div class="col-xs-12 col-md-4">
+    {% with form_groupby as form %}
+        <fieldset>
+            <legend>{% trans "Group by" %}</legend>
+            {% include "model_report/includes/form_fields.html" %}
+        </fieldset>
+    {% endwith %}
+    </div>
+{% endif %}

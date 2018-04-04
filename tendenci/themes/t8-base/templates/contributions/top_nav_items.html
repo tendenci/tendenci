@@ -1,0 +1,25 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+<ul id="t-admin-megamenu-contributions-dd" class="dropdown-menu" role="menu">
+    <li>
+        <div class="yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'contribution.search' %}">{% trans "All Contributions" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'profile.index' %}">{% trans "My Contributions" %}</a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>
+</ul>

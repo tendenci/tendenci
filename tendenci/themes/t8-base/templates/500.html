@@ -1,0 +1,12 @@
+{% extends "default.html" %}
+
+{% block title %}{{ block.super }}{% trans 'Error' %}{% endblock%}
+
+{% block content %}
+    <h1>{% if user.is_authenticated %}{% blocktrans with user.username as use %}Oops {{ use }}, we caused a problem{% endblocktrans %}
+    {% else %}{% trans 'Oops, we caused a problem' %}
+    {% endif %}
+      </h1>
+    <p>{% trans "We have been notified of this and will be working on it quickly." %}</p>
+    <p>{% blocktrans with request.get_full_path as reqpath %}You may want to <a href="{{ reqpath }}">try this page again</a> in a little bit.{% endblocktrans %}</p>
+{% endblock %}

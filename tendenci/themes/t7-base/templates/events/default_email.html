@@ -1,0 +1,14 @@
+<h2 class="event-title">Event: {% blocktrans with title=event_title %}{{ title }}{% endblocktrans %}</h2>
+<div class="event-time"><strong>{% trans 'Date' %}</strong>:
+    {{ event_date }}
+</div>
+
+<div>
+    <p>{{ event_location }}</p>
+
+</div>
+{% blocktrans %}
+<p>Form more information click here {{ event_link }}</p>
+
+<p>You're receiving this email because you have registered for this event.</p>
+{% endblocktrans %}

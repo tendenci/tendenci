@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load case_study_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/folder_table.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Case Studies' %}{% endblock %}
+
+{% block current_app %}
+    {% if case_study %}
+        {% case_study_current_app request.user case_study %}
+    {% else %}
+        {% case_study_current_app request.user %}
+    {% endif %}
+{% endblock %}

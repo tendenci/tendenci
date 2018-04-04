@@ -1,0 +1,94 @@
+{% extends "invoices/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load invoice_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Invoice Search' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+  <div class="t-invoice">
+    <div class="t-search">
+
+      <div class="page-header">
+        <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
+      </div>
+
+      {% invoice_search %}
+
+      <br />
+      <table class="table table-tendenci-reports">
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>No.</td>
+            <td>Member/User</td>
+            <td>Item</td>
+            <td>Total Amount</td>
+            <td>Status</td>
+            <td>Action</td>
+          </tr>
+        </thead>
+
+        {% autopaginate invoices 25 %}
+
+        {% if query %}
+        <div>{{ INDEX_UPDATE_NOTE }}</div>
+        {% endif %}
+        {% for invoice in invoices %}
+        {% with invoice|get_object as invoice %}
+        <div class="invoice-row">
+          <div class="invoice-row-inner">
+            {% invoices_search_results_line request invoice %}
+          </div>
+        </div>
+        {% endwith %}
+        {% empty %}
+        <div>{% trans "0 Results Found" %}</div>
+        {% endfor %}
+
+        {% paginate %}
+
+      </table>
+      <br />
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+  //Hide advanced options
+
+  var event_type = $("select#id_invoice_type").val();
+  if(event_type != 'events') {
+  $('div.eventFields').hide();
+  }
+  });
+
+  $(document).ready(function () {
+  $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+  });
+
+  $("select#id_invoice_type").change(function() {
+  if($(this).val() == 'events') {
+  $('div.eventFields').show();
+  }
+  else {
+  $('div.eventFields').hide();
+  }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user forms.delete_form as can_delete %}
+
+<div class="t-iconrow">
+<ul>
+    {% if can_delete %}
+        <li><a class="option-link delete" href="{% url 'form_entry_delete' opt_object.pk %}">{% trans "Delete" %}</a></li>
+    {% endif %}
+</ul>
+</div>

@@ -1,0 +1,64 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+
+{% block title %}{{ block.super }}{% trans 'Types' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="t">
+    <h1>{% firstof MODULE_EVENTS_LABEL trans 'Event' %} {% trans "Types" %}</h1>
+
+    <div class="event-wrap">
+
+        <div class="options">
+             <div class="quick-options">
+                {# event_options request.user event #}
+             </div>
+        </div>
+
+        <div class="forms">
+        <form action="{% url "event.types" %}" method="post">{% csrf_token %}
+
+            {{ formset.management_form }}
+            {% for form in formset.forms %}
+            {{ form.id }}
+
+                <div class="item">
+                    <div class="errs">{{ form.name.errors }}</div>
+                    <div class="label">{{ form.name.label_tag }}</div>
+                    <div class="field">{{ form.name }}</div>
+                    <div class="help">{{ form.name.help_text }}</div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="item">
+                    <div class="errs">{{ form.color_set.errors }}</div>
+                    <div class="label">Color</div>
+                    <div class="field colors">{{ form.color_set }}</div>
+                    <div class="help">{{ form.color_set.help_text }}</div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="item-checkbox">
+                    <div class="errs">{{ form.DELETE.errors }}</div>
+                    <div class="field">{{ form.DELETE}}</div>
+                    <div class="label">{{ form.DELETE.label_tag }}</div>
+                    <div class="help">{{ form.DELETE.help_text }}</div>
+                    <div class="clear"></div>
+                </div>
+
+            {% endfor %}
+
+            <input type="Submit" value="{% trans 'Save Changes' %}" />
+
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

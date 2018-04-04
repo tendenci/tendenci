@@ -1,0 +1,143 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user directories.change_directory directory as can_edit_directory %}
+{% has_perm user directories.delete_directory directory as can_delete_directory %}
+
+
+<ul class="list-unstyled t-meta-data">
+    {% if directory.slug %}<li class="pull-right"><a href="{% url 'directory.print_view' directory.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
+    {% if show_fb_connect|default:False %}
+        <li>{% fb_like_button_iframe directory.get_absolute_url height=20 %}</li>
+    {% endif %}
+
+    {% if show_source|default:False and directory.source %}
+        <li><strong>{% trans "Source:" %}</strong> <span>{{ directory.source|urlize }}</span></li>
+    {% endif %}
+
+    {% if show_contact|default:False %}
+        <address>
+            {% if directory.first_name and directory.last_name %}
+                {{ directory.first_name }} {{ directory.last_name }}<br>
+            {% endif %}
+
+            {% if directory.address %}
+                {{ directory.address }}<br>
+            {% endif %}
+
+            {% if directory.address2 %}
+                {{ directory.address2 }}<br>
+            {% endif %}
+
+            {% if directory.city or directory.state or directory.zip_code %}
+                {% if directory.city %}{{ directory.city }}<br>{% endif %}
+                {% if directory.state %}{{ directory.state }}<br>{% endif %}
+                {% if directory.zip_code %}{{ directory.zip_code }}<br>{% endif %}
+            {% endif %}
+
+            {% if directory.country %}
+                {{ directory.country }}<br>
+            {% endif %}
+
+            {% if directory.phone %}
+                {{ directory.phone|phonenumber }}<br>
+            {% endif %}
+
+            {% if directory.phone2 %}
+                {{ directory.phone2|phonenumber }}<br>
+            {% endif %}
+
+            {% if directory.fax %}{% blocktrans with fax=directory.fax %}
+                {{ fax }} fax.<br>
+            {% endblocktrans %}{% endif %}
+
+            {% if directory.email %}
+                {{ directory.email|obfuscate_email }}<br>
+            {% endif %}
+
+            {% if directory.email2 %}
+                {{ directory.email2|obfuscate_email }}<br>
+            {% endif %}
+
+            {% if directory.website %}
+                {{ directory.website|urlize }}<br>
+            {% endif %}
+        </address>
+    {% endif %}
+
+    {% with directory.cat as directory_cat %}
+        {% if directory_cat %}
+            <li>
+                <ul class="list-inline">
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}">{{ directory_cat.name }}</a></li>
+                    {% if directory.sub_cat %}
+                        <li>|</li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endwith %}
+
+    {% if directory.tags %}
+        <li>
+            <strong>{% trans "Tag(s):" %}</strong>
+            {% for tag in directory.tags|tag_split %}
+                <a class="label label-default" href="{% url 'directories' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+           {% endfor %}
+        <li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% if not user.profile.is_superuser %}
+            {% if user == directory.creator or user == directory.owner %}
+                <li><strong>{% trans "Owned by you" %}</strong></li>
+                {% if not directory.status_detail == "active" %}
+                    <li><strong>{% trans "Status:" %}</strong> <span>{{ directory.obj_status }}</span></li>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% if user.profile.is_superuser or user == directory.creator or user == directory.owner %}
+            {% meta_creator_owner directory %}
+        {% endif %}
+    {% endif %}
+
+</ul>
+
+{% if user.is_authenticated and can_edit_directory %}
+    <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-perm-status">
+                    <li>{{ directory.obj_perms }}</li>
+                    <li>{{ directory.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?object_id={{ directory.pk }}&source={{ directory.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+                    <li><a class="t-meta-edit-link" href="{% url 'directory.edit' directory.pk %}">{% trans "Edit" %}</a></li>
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                           {% if can_delete_directory %}
+                            <li>
+                                <a class="t-meta-delete-link" href="{% url 'directory.delete' directory.pk %}">{% trans "Delete" %}</a>
+                            </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'directory.edit.meta' directory.pk %}">{% trans "Edit Meta" %}</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

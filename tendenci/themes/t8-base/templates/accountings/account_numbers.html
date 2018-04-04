@@ -1,0 +1,22 @@
+{% extends "accountings/base.html" %}
+
+{% block title %}{% trans "General Ledger Account Numbers" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% trans "General Ledger Account Numbers" %}</h1>
+
+    <div class="accounting-wrap">
+    <p>A = Asset &nbsp; L = Liabilities &nbsp; I = Income &nbsp; E = Expense &nbsp; Q = Owners Equity</p>
+    {% for acct in accts %}
+        {{acct.account_number}} = {% blocktrans with d=acct.description %}{{ d }}{% endblocktrans %} ({{acct.type}}) {{2|add:-1}}<br />
+    {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

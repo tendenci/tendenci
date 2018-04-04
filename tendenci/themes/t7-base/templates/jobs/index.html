@@ -1,0 +1,10 @@
+
+<h1>{% firstof MODULE_JOBS_LABEL trans 'Jobs' %} {% trans "Index Page" %}</h1>
+
+<ul>
+    <li><a href="{% url "job.search" %}">{% trans "Search" %}</a></li>
+    <li><a href="{% url "job.view" %}">{% trans "View" %}</a></li>
+    <li><a href="{% url "job.print_view" %}">{% trans "Print View" %}</a></li>
+    <li><a href="{% url "job.edit" %}">{% trans "Edit" %}</a></li>
+    <li><a href="{% url "job.delete" %}">{% trans "Delete%}</a></li>
+</ul>

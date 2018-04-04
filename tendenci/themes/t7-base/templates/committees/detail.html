@@ -1,0 +1,76 @@
+{% extends "committees/base.html" %}
+{% load committee_tags %}
+
+{% block content %}
+<div class="t">
+    <div class="committee-wrap">
+        <div class="committee-title">
+            {% trans 'COMMITTEE' %} {{ committee.title }}
+        </div>
+
+        <div class="committee-mission">
+            {{ committee.mission|safe }}
+        </div>
+
+        <div class="committee-content">
+            {{ committee.content|safe }}
+        </div>
+
+        <div class="committee-officers">
+            <div class="label">
+                <label for="officer-table">OFFICERS</label>
+            </div>
+            <table id="officer-table">
+                <thead>
+                    <tr>
+                        <th class="officer-position">Position</th>
+                        <th class="officer-name">Name</th>
+                        <th class="officer-phone">Phone</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for officer in officers %}
+                    <tr>
+                        <td class="officer-position">{{ officer.position }}</td>
+
+                        <td class="officer-name">
+                            <a href="{% url 'profile' officer.user.username  %}">
+                                {% if officer.user.get_full_name %}
+                                {{ officer.user.get_full_name }}
+                                {% else %}
+                                {{ officer.user }}
+                                {% endif %}
+                            </a>
+                        </td>
+
+                        <td class="officer-phone">{{ officer.phone }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if admin %}
+        <div class="committee-notes">
+            {{ committee.notes|safe }}
+        </div>
+        {% endif %}
+
+        <div class="committee-files">
+            Files {% if admin %}<a href="{% url "file.add" %}">Add a File</a>{% endif %}
+            <ul class="file-list">
+            {% for file in files %}
+                <li class="file-list">
+                    <a href="{% url "file" file.pk %}">{{ file.get_name }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+
+
+
+        {% include "committees/meta.html" %}
+    </div>
+</div>
+{% endblock %}

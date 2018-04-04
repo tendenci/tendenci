@@ -1,0 +1,27 @@
+{% extends "stories/base.html" %}
+{% load story_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/stories.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="t">
+    <div class="stories-wrap">
+
+        <h1>{% trans "Stories Export" %}</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

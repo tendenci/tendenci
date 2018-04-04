@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
 
-SHA1_RE = re.compile('^[a-f0-9]{40}$')
+SHA1_RE = re.compile(r'^[a-f0-9]{40}$')
 
 
 class RegistrationManager(models.Manager):
@@ -219,8 +219,8 @@ class RegistrationProfile(models.Model):
         verbose_name = _('registration profile')
         verbose_name_plural = _('registration profiles')
 
-    def __unicode__(self):
-        return u"Registration information for %s" % self.user
+    def __str__(self):
+        return "Registration information for %s" % self.user
 
     def activation_key_expired(self):
         """

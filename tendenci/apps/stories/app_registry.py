@@ -1,9 +1,9 @@
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.stories.models import Story
+from tendenci.apps.theme.templatetags.static import static
 
 
 class StoryRegistry(CoreRegistry):
@@ -12,7 +12,7 @@ class StoryRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = _('Stories can be created and rotated on '
                   'a specified area on the site')
-    icon = '%simages/icons/stories-color-64x64.png' % settings.STATIC_URL
+    icon = static('images/icons/stories-color-64x64.png')
 
     event_logs = {
         'story':{

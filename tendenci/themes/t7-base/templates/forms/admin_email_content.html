@@ -1,0 +1,77 @@
+{% load base_filters %}
+{% load forms_tags %}
+<h3>{{ form.title }}</h3>
+<table>
+{% for field in fields %}
+    {% if field.field.field_type == 'FileField' %}
+    <tr>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#4f6b72;">{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</span>
+            </td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#000000;"><a href="{{ site_url }}{{ field|media_url }}">{% blocktrans with n=field.value|str_basename %}{{ n }}{% endblocktrans %}</a></span></td>
+    </tr>
+    {% else %}
+        {% if field.field.field_type == 'BooleanField' %}
+        <tr>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#4f6b72;">{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</span>
+            </td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#000000;">{% blocktrans with v=field.value|yesno:"Yes,No" %}{{ v }}{% endblocktrans %}</span>
+            </td>
+        </tr>
+        {% else %}
+            {% if "Header" in field.field.field_type %}
+            <tr>
+              <td colspan="2" style="padding:0in 0in 0in 0in">
+              <span style="font-size:12.0pt">&nbsp;</span>
+              </td>
+            </tr>
+                <tr>
+                <td colspan="2" bgcolor="#F2F2F2" style="border:solid #d8dfea 1.0pt;background:#f2f2f2;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                    <span style="font-size:9.0pt;color:#4f6b72;">{% trans 'Section' %} - {% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</span>
+                </td>
+                </tr>
+            {% else %}
+                {% if "Description" in field.field.field_type %}
+                    <tr>
+                    <td colspan="2" bgcolor="#F2F2F2" style="border:solid #d8dfea 1.0pt;background:#f2f2f2;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                        <span style="font-size:9.0pt;color:#4f6b72;">{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</span>
+                    </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                            <span style="font-size:9.0pt;color:#4f6b72;">{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</span>
+                        </td>
+                        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                            <span style="font-size:9.0pt;color:#000000;">{% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</table>
+
+{% if form.custom_payment or form.recurring_payment %}
+    <h2>{% trans 'Payment Details' %}</h2>
+    <p>
+    <strong>{% trans 'Type' %}:</strong> {{ form.get_payment_type }}<br />
+    <strong>{% trans 'Method' %}:</strong> {{ entry.payment_method }}<br />
+    <strong>{% trans 'Pricing' %}:</strong> {{ entry.pricing.label }}<br />
+    <strong>{% trans 'Price' %}:</strong> {% if entry.pricing.price %}{{ entry.pricing.price|format_currency }}{% else %}{{ custom_price|format_currency }}{% endif %}<br />
+    </p>
+{% endif %}
+
+{% if form.send_email %}
+<br />
+    {% if form.email_text %}
+        <p>{% trans 'The recipient received the following message in an email' %}:</p>
+        {% blocktrans with t=form.email_text|linebreaks|safe %}{{ t }}{% endblocktrans %}
+    {% else %}
+        {% trans 'The form submitter did not receive an email because no Email Text to Submitter was entered.' %}
+    {% endif %}
+{% endif %}

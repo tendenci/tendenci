@@ -1,0 +1,106 @@
+{% extends "pages/base.html" %}
+{% load base_tags %}
+{% load page_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans 'Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+<link href="{% static 'css/jquery.tagit.css' %}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{% static 'css/popover.css' %}">
+<style type="text/css">
+    div.forms input[type="button"].previewButton {
+        margin-top: 15px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Edit" %}</h1>
+
+    <div class="page-wrap">
+        <form action="{% url "page.edit" page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <fieldset class="boxy-grey" >
+                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+                <div id="category-form">
+                    {{ categoryform|styled_form }}
+                </div>
+            </fieldset>
+            <fieldset class="boxy-grey">
+                <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
+                <div id="meta-form">
+                    {{ metaform|styled_form }}
+                </div>
+            </fieldset>
+            <input type="hidden" id="id_preview_for" name="preview_for"/>
+            <input type="submit" value="{% trans 'Save Page Changes' %}" />
+            <input class="previewButton" type="button" value="Preview"/>
+            {% if page.status %}
+            <div class="form-delete-link">
+                <a class="delete" title="{% trans 'Link to delete confirmation page' %}" href="{% url "page.delete" page.pk %}">
+                    {% trans "Delete" %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'js/tag-it.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static 'js/popover.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/gplus-helptexts.js' %}"></script>
+    <script type="text/javascript">
+        gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
+
+        {% include 'categories/include/add_categories.js' %}
+    </script>
+    <script type="text/javascript">
+        $('#meta-form').hide();
+        $('#category-form').hide();
+        $('#meta-title').click(function() {
+            $('#meta-form').slideToggle('fast');
+            if ($('#meta-title span').text() == '+') {
+                $('#meta-title span').text('-');}
+            else {$('#meta-title span').text('+');}
+        });
+        $('#category-title').click(function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        });
+        $("#id_tags").tagit({
+            availableTags: [{% all_tags_list %}],
+            allowSpaces: true
+        });
+
+        //Set preview button
+        $('input.previewButton').click(function() {
+            var form = $('div.page-wrap > form');
+            var url = form.attr('action');
+            $('form #id_preview_for').val('edit');
+            form.attr('action', "{% url "page.preview" page.pk %}");
+            form.attr('target', '_blank');
+            form.submit();
+
+            form.attr('action', url);
+            form.attr('target', '');
+        });
+    </script>
+    {% include 'tags/autocomplete.html' %}
+{% endblock %}

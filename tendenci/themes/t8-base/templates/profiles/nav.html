@@ -1,0 +1,88 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user profiles.add_profile as can_add_profile %}
+
+{% if nav_object %}
+    {% has_perm user profiles.view_profile nav_object as can_view_profile %}
+    {% has_perm user profiles.change_profile nav_object as can_edit_profile %}
+    {% has_perm user profiles.delete_profile nav_object as can_delete_profile %}
+{% else %}
+    {% has_perm user profiles.view_profile as can_view_profile %}
+    {% has_perm user user.change_user as can_edit_profile %}
+{% endif %}
+
+{% if not SITE_GLOBAL_HIDEALLTABS %}
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
+            <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url "auth_logout" %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% firstof MODULE_USERS_LABEL 'People' %}</a>
+        <div class="dropdown-menu">
+        {% if nav_object %}
+        <ul class="first">
+            <li class="heading">{% trans "All Users" %}</li>
+            <li class="divider"></li>
+        {% else %}
+        <ul>
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url "settings.index" "module" "users" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url "profile.search" %}">{% trans "Search Users" %}</a></li>
+            {% if can_add_profile %}
+                <li><a href="{% url "profile.add" %}">{% trans "Add a User" %}</a></li>
+            {% endif %}
+
+            {% if user.profile.is_superuser %}
+            <li><a href="{% url "profile.similar" %}">{% trans "Similar Users List" %}</a></li>
+            {% endif %}
+
+            {% if user.profile.is_staff %}
+                <li><a href="{% url "reports-memberships" %}">{% trans "Membership Reports" %}</a></li>
+                <li><a href="{% url "profile.admins" %}">{% trans "Admin List" %}</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url "profiles.user_import" %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url "profile.export" %}">{% trans "Export" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {# Edit links need to point to the user_this instead of nav_object since the views for profile pull from auth.user #}
+            {% if can_view_profile or can_edit %}
+            <ul>
+                <li class="heading">{% trans "This User" %}</li>
+                <li class="divider"></li>
+                {% if can_view_profile %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
+                {% endif %}
+                {% if can_edit %}
+                    <li><a href="{% url "profile.edit" user_this.id %}">{% trans "Edit User Profile" %}</a></li>
+                    <li><a href="{% url "profile.edit_groups" user_this.username %}">{% trans "Edit Groups" %}</a></li>
+                {% endif %}
+                {% if user.profile.is_staff %}
+                    <li class="divider"></li>
+                    <li><a href="{% url "profile.edit_perms" user_this.id %}">{% trans "Edit Permissions" %}</a></li>
+                    <li><a href="{% url 'auth_password_change' user_this.id %}">{% trans "Change Password" %}</a></li>
+                {% endif %}
+                {% if can_delete_profile %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url "profile.delete" user_this.pk %}">{% trans "Delete User" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    <li><a href="{% url 'groups' %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url "corp_memb.search" %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
+</ul>
+{% endif %}

@@ -1,0 +1,5 @@
+title:{{ object.title }}
+intro:{{ object.intro }}
+response:{{ object.response }}
+status_detail:{{ object.status_detail }}
+pk:{{ object.pk }}

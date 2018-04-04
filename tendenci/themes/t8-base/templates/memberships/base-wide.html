@@ -1,0 +1,25 @@
+{% extends "base-wide.html" %}
+
+
+{% block title %}{% spaceless %}{% blocktrans with site_global_siteprimarykeywords=SITE_GLOBAL_SITEPRIMARYKEYWORDS site_global_sitedisplayname=SITE_GLOBAL_SITEDISPLAYNAME site_global_sitegeographiclocation=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+    {{ site_global_siteprimarykeywords }} Membership Application for {{ site_global_sitedisplayname }} in {{ site_global_sitegeographiclocation }}
+{% endblocktrans %}{% endspaceless %}{% endblock %}
+
+{% block meta_description %}{% spaceless %}{% blocktrans with site_global_siteprimarykeywords=SITE_GLOBAL_SITEPRIMARYKEYWORDS site_global_sitedisplayname=SITE_GLOBAL_SITEDISPLAYNAME site_global_sitegeographiclocation=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
+    {{ site_global_siteprimarykeywords }}: Membership Application {{ site_global_sitedisplayname }} in {{ site_global_sitegeographiclocation }}
+{% endblocktrans %}{% endspaceless %}{% endblock %}
+
+{% block meta_keywords %}{% trans "Membership Application" %}, {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
+
+{% block banner %}{% endblock %}
+
+{% block top_bar %}
+    {% if request.user.is_authenticated %}
+        {% include "memberships/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{% trans "Memberships by Join Date" %}</h1>
+</div>
+
+<form action="" method="POST" class="form-inline pull-right">
+  {% csrf_token %}
+  {{ form.membership_type }}
+  {{ form.membership_status }}
+  {{ form.start_date }}
+  {{ form.end_date }}
+  <button type="submit" class="btn btn-primary">{% trans 'Filter Memberships' %}</button>
+</form>
+
+{% comment %}
+<a class="btn btn-default" href="{% url "reports-memberships-joins-pdf" %}?start_date={{ start_date|date:"Y-m-d" }}&amp;end_date={{ end_date|date:"Y-m-d" }}&amp;mem_type={{ membership_type.pk }}&amp;mem_stat={{ membership_status }}">{% trans "Download PDF version" %}</a>
+<br /><br />
+{% endcomment %}
+
+<table class="table table-tendenci-reports">
+  <tr>
+    <th>{% trans "#" %}</th>
+    <th>{% trans "First Name" %}</th>
+    <th>{% trans "Last Name" %}</th>
+    <th>{% trans "Email" %}</th>
+    <th>{% trans "Member Type" %}</th>
+    <th>{% trans "Paid" %}</th>
+    <th>{% trans "Pay Method" %}</th>
+    <th>{% trans "Start Date" %}</th>
+    <th>{% trans "Expire Date" %}</th>
+    <th>{% trans "Status" %}</th>
+  </tr>
+
+  {% for membership in memberships %}
+
+  {% if membership.is_active %}
+  <tr>
+    {% elif membership.is_pending %}
+    <tr>
+      {% elif membership.is_expired %}
+      <tr>
+        {% elif membership.is_archived %}
+        <tr>
+          {% endif %}
+          <td>{{ forloop.counter }}</td>
+          <td>{{ membership.user.first_name }}</td>
+          <td>{{ membership.user.last_name }}</td>
+          <td>{{ membership.user.email }}</td>
+          <td>{{ membership.membership_type }}</td>
+          <td><a href="{{ membership.get_invoice.get_absolute_url }}">{{ membership.get_invoice.total }}</a></td>
+          <td style="white-space: nowrap;">{{ membership.payment_method.human_name }}</td>
+          <td style="white-space: nowrap;">{{ membership.join_dt|date:"N j, Y" }}</td>
+          <td style="white-space: nowrap;">{{ membership.expire_dt|date:"N j, Y" }}</td>
+          <td><a href="{{ membership.get_absolute_url }}">{{ membership.status_detail|title }}</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+
+        {% endblock content %}
+
+        {% block extra_body %}
+        {{ block.super }}
+        <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+        <script type="text/javascript">
+          var nowTemp = new Date();
+          var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+
+          var checkin = $('#id_start_date').datepicker(
+          ).on('changeDate', function(ev) {
+          if (ev.date.valueOf() > checkout.date.valueOf()) {
+          var newDate = new Date(ev.date)
+          newDate.setDate(newDate.getDate() + 1);
+          checkout.setValue(newDate);
+          }
+          checkin.hide();
+          $('#id_end_date')[0].focus();
+          }).data('datepicker');
+
+          var checkout = $('#id_end_date').datepicker({
+          onRender: function(date) {
+          return date.valueOf() <= checkin.date.valueOf() ? 'disabled' : '';
+          }
+          }).on('changeDate', function(ev) {
+          checkout.hide();
+          }).data('datepicker');
+
+          </script>
+
+          <script type="text/javascript">
+            $('#reportrange').daterangepicker(
+            {
+            ranges: {
+            'Today': ['today', 'today'],
+            'Yesterday': ['yesterday', 'yesterday'],
+            'Last 7 Days': [Date.today().add({ days: -6 }), 'today'],
+            'Last 30 Days': [Date.today().add({ days: -29 }), 'today'],
+            'This Month': [Date.today().moveToFirstDayOfMonth(), Date.today().moveToLastDayOfMonth()],
+            'Last Month': [Date.today().moveToFirstDayOfMonth().add({ months: -1 }), Date.today().moveToFirstDayOfMonth().add({ days: -1 })]
+            }
+            },
+            function(start, end) {
+            $('#reportrange span').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+            }
+            );
+          </script>
+
+          {% endblock %}
