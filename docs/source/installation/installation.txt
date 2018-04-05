@@ -252,7 +252,7 @@ Initialize the database and static files:
     python manage.py initial_migrate
     python manage.py deploy
     chmod -R -x+X /var/www/tendenci/media/
-    python manage.py load_creative_defaults
+    python manage.py load_tendenci2018_defaults
 
 Set the "Site URL" setting appropriately:
 ::

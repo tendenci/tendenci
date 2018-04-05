@@ -10,19 +10,20 @@
         "intro": "<p>Thank you for your interest in our organization!</p>",
         "owner": 1,
         "create_dt": "2012-12-31T13:22:50.064",
+        "group": 1,
         "update_dt": "2015-10-12T16:45:47.037",
         "custom_payment": false,
         "slug": "contact-us",
         "completion_url": "",
         "template": "",
-        "owner_username": "system_generated",
+        "owner_username": "",
         "allow_anonymous_view": true,
         "status": true,
         "intro_name": "Intro",
         "recurring_payment": false,
         "email_copies": "",
         "status_detail": "published",
-        "creator_username": "system_generated",
+        "creator_username": "m_stripe",
         "response": "<p>Thank you for contacting us! We will be in touch shortly.</p>",
         "pricing_position": 3,
         "allow_user_edit": false,
@@ -47,23 +48,24 @@
         "entity": 1,
         "email_text": "",
         "send_email": false,
-        "intro": "<p>This is an example of using a custom form in Tendenci to manage grant requests to your organization. Examples range from someone applying for a scholarship to applying for an award.</p>\r\n<p>Descriptive text about the qualifications for the grant would be here. Instead here is a bit of lorem ipsum text&nbsp;</p>\r\n<p>Qualifications to Apply:</p>\r\n<ol>\r\n<li>Pellentesque vel massa vitae libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus. Curabitur sit amet dolor urna. Sed efficitur bibendum mollis. Maecenas sollicitudin euismod ex vitae ultrices. Etiam ipsum velit, fermentum vitae aliquet eu, sollicitudin tempus ligula. Maecenas nec lacus at nibh convallis pellentesque quis sed felis.</li>\r\n<li>libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus.</li>\r\n<li><span class=\"s1\">Donec congue aliquam bibendum. Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;tempus metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</span></li>\r\n</ol>\r\n<p>&nbsp;</p>",
+        "intro": "<p>This is an example of using a custom form in Tendenci to manage grant requests to your organization. Examples range from someone applying for a scholarship to applying for an award.</p>\r\n<p>Descriptive text about the qualifications for the grant would be here. Instead here is a bit of lorem ipsum text&nbsp;</p>\r\n<p>Qualifications to Apply:</p>\r\n<ol>\r\n<li>Pellentesque vel massa vitae libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus. Curabitur sit amet dolor urna. Sed efficitur bibendum mollis. Maecenas sollicitu din euismod ex vitae ultrices. Etiam ipsum velit, fermentum vitae aliquet eu, sollicitudin tempus ligula. Maecenas nec lacus at nibh convallis pellentesque quis sed felis.</li>\r\n<li>libero sollicitudin elementum. In lacus risus, finibus ac orci ac, faucibus mollis eros. Sed in consequat sem, id fringilla nisi. Mauris gravida dui a leo suscipit rhoncus.</li>\r\n<li><span class=\"s1\">Donec congue aliquam bibendum. Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;temp us metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</span></li>\r\n</ol>\r\n<p>&nbsp;</p>",
         "owner": 1,
         "create_dt": "2015-10-14T14:56:28.205",
+        "group": 1,
         "update_dt": "2015-11-06T16:13:09.537",
         "custom_payment": false,
         "slug": "grant-request-npo",
         "completion_url": "/volunteer/",
         "template": "",
-        "owner_username": "system_generated",
+        "owner_username": "",
         "allow_anonymous_view": true,
         "status": true,
         "intro_name": "Grant Application for an Example Grant",
         "recurring_payment": false,
         "email_copies": "",
         "status_detail": "published",
-        "creator_username": "system_generated",
-        "response": "<p>Thank you for applying for a grant with our organization. The next steps in the process and the timelines are:</p>\r\n<ol>\r\n<li>Your grant will be evaluated by a committee in the coming months. Some of the criteria we look at include</li>\r\n<li>Donec ac elementum urna, a fringilla erat. Etiam at tristique est. Vestibulum ullamcorper laoreet tristique. Mauris nibh turpis, tempor eu eleifend vel, viverra et augue. Nam tincidunt viverra nulla, commodo vestibulum ipsum fermentum et. Vivamus metus magna, aliquet ac quam at, facilisis lacinia lacus. Vestibulum nec euismod massa.</li>\r\n<li>Morbi id nisi quis risus interdum blandit. Duis accumsan ligula ac arcu hendrerit, quis venenatis magna malesuada. Cras at arcu at sapien condimentum luctus. Donec congue aliquam bibendum.</li>\r\n<li>Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;tempus metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</li>\r\n</ol>\r\n<p>We have a lot of qualified applicants for our grants so please understand that if you are not chosen to receive a grant this year then you are free to apply again next year.</p>",
+        "creator_username": "open",
+        "response": "<p>Thank you for applying for a grant with our organization. The next steps in the process and the timelines are:</p>\r\n<ol>\r\n<li>Your grant will be evaluated by a committee in the coming months. Some of the criteria we look at include</li>\r\n<li>Donec ac elementum urna, a fringilla erat. Etiam at tristiqueest. Vestibulum ullamcorper laoreet tristique. Mauris nibh turpis, tempor eu eleifend vel, viverra et augue. Nam tincidunt viverra nulla, commodo vestibulum ipsum ferm entum et. Vivamus metus magna, aliquet ac quam at, facilisis lacinia lacus. Vestibulum nec euismod massa.</li>\r\n<li>Morbi id nisi quis risus interdum blandit. Duis a ccumsan ligula ac arcu hendrerit, quis venenatis magna malesuada. Cras at arcu at sapien condimentum luctus. Donec congue aliquam bibendum.</li>\r\n<li>Vivamus documented evidence of having done a proper Elvis impersonation &nbsp;tempus metus odio, pretium pulvinar nulla pulvinar at. Vestibulum quis magna sed quam</li>\r\n</ol>\r\n<p>We have a lot of qualified applicants for our grants so please understand that if you are not chosen to receive a grant this year then you are free to apply again next year.</p>",
         "pricing_position": 3,
         "allow_user_edit": false,
         "title": "Grant Request For NPO",
@@ -78,6 +80,47 @@
     },
     "model": "forms.form",
     "pk": 2
+},
+{
+    "fields": {
+        "creator": 1,
+        "allow_user_view": false,
+        "pricing_name": "",
+        "entity": 1,
+        "email_text": "",
+        "send_email": false,
+        "intro": "<p>Stay in touch! Get updates about our events, articles, and other news.</p>",
+        "owner": 1,
+        "create_dt": "2017-02-16T00:36:57.316",
+        "group": 1,
+        "update_dt": "2017-03-01T18:30:34.551",
+        "custom_payment": false,
+        "slug": "get-updates",
+        "completion_url": "",
+        "template": "",
+        "owner_username": "",
+        "allow_anonymous_view": true,
+        "status": true,
+        "intro_name": "",
+        "recurring_payment": false,
+        "email_copies": "",
+        "status_detail": "published",
+        "creator_username": "lluce",
+        "response": "<p>Thanks for signing up for updates from Willow!</p>",
+        "pricing_position": 3,
+        "allow_user_edit": false,
+        "title": "Get Updates",
+        "fields_name": "",
+        "allow_member_view": false,
+        "payment_methods": [],
+        "intro_position": 1,
+        "fields_position": 2,
+        "allow_member_edit": false,
+        "subject_template": "[title] - [first name]  [last name] - [phone]",
+        "email_from": ""
+    },
+    "model": "forms.form",
+    "pk": 3
 },
 {
     "fields": {
@@ -411,7 +454,7 @@
 },
 {
     "fields": {
-        "field_type": "DateField/django.forms.widgets.SelectDateWidget",
+        "field_type": "DateField/django.forms.extras.SelectDateWidget",
         "form": 2,
         "visible": true,
         "default": "",
@@ -606,297 +649,17 @@
 },
 {
     "fields": {
-        "entry_time": "2016-02-08T21:04:35.771",
-        "entry_path": "",
-        "form": 1,
-        "creator": 1,
-        "payment_method": null,
-        "update_dt": "2016-02-08T21:04:35.912",
-        "create_dt": "2016-02-08T21:04:35.771",
-        "pricing": null
+        "field_type": "CharField",
+        "form": 3,
+        "visible": true,
+        "default": "",
+        "required": false,
+        "label": "E-mail Address",
+        "field_function": null,
+        "position": 1,
+        "choices": ""
     },
-    "model": "forms.formentry",
-    "pk": 1
-},
-{
-    "fields": {
-        "entry_time": "2016-05-11T17:59:21.171",
-        "entry_path": "",
-        "form": 1,
-        "creator": 1,
-        "payment_method": null,
-        "update_dt": "2016-05-11T17:59:21.334",
-        "create_dt": "2016-05-11T17:59:21.171",
-        "pricing": null
-    },
-    "model": "forms.formentry",
-    "pk": 2
-},
-{
-    "fields": {
-        "entry_time": "2016-05-28T20:28:48.106",
-        "entry_path": "",
-        "form": 1,
-        "creator": 1,
-        "payment_method": null,
-        "update_dt": "2016-05-28T20:28:48.230",
-        "create_dt": "2016-05-28T20:28:48.106",
-        "pricing": null
-    },
-    "model": "forms.formentry",
-    "pk": 3
-},
-{
-    "fields": {
-        "entry_time": "2016-06-09T19:26:10.054",
-        "entry_path": "",
-        "form": 1,
-        "creator": 1,
-        "payment_method": null,
-        "update_dt": "2016-06-09T19:26:10.088",
-        "create_dt": "2016-06-09T19:26:10.054",
-        "pricing": null
-    },
-    "model": "forms.formentry",
-    "pk": 4
-},
-{
-    "fields": {
-        "entry_time": "2016-06-17T09:00:29.158",
-        "entry_path": "/forms/contact-us/",
-        "form": 1,
-        "creator": 1,
-        "payment_method": null,
-        "update_dt": "2016-06-17T09:00:29.273",
-        "create_dt": "2016-06-17T09:00:29.158",
-        "pricing": null
-    },
-    "model": "forms.formentry",
-    "pk": 5
-},
-{
-    "fields": {
-        "entry": 1,
-        "value": "Jack",
-        "field": 1
-    },
-    "model": "forms.fieldentry",
-    "pk": 1
-},
-{
-    "fields": {
-        "entry": 1,
-        "value": "McKinney",
-        "field": 2
-    },
-    "model": "forms.fieldentry",
-    "pk": 2
-},
-{
-    "fields": {
-        "entry": 1,
-        "value": "jackdmckinney@twc.com",
-        "field": 3
-    },
-    "model": "forms.fieldentry",
-    "pk": 3
-},
-{
-    "fields": {
-        "entry": 1,
-        "value": "859-233-4299",
-        "field": 4
-    },
-    "model": "forms.fieldentry",
-    "pk": 4
-},
-{
-    "fields": {
-        "entry": 1,
-        "value": "Login did not work.\r\nEmail contained:\r\n\r\nPlease click here to activate your account: http://create-project.tendenci.net/accounts/activate/32e65194568684b923e1510b46448f4fe4e239a7/. There are 7 days left to do it.\r\n\r\nAny suggestions?",
-        "field": 5
-    },
-    "model": "forms.fieldentry",
-    "pk": 5
-},
-{
-    "fields": {
-        "entry": 2,
-        "value": "Peter",
-        "field": 1
-    },
-    "model": "forms.fieldentry",
-    "pk": 6
-},
-{
-    "fields": {
-        "entry": 2,
-        "value": "Sarfas",
-        "field": 2
-    },
-    "model": "forms.fieldentry",
-    "pk": 7
-},
-{
-    "fields": {
-        "entry": 2,
-        "value": "mhbcevents@gmail.com",
-        "field": 3
-    },
-    "model": "forms.fieldentry",
-    "pk": 8
-},
-{
-    "fields": {
-        "entry": 2,
-        "value": "9018329354",
-        "field": 4
-    },
-    "model": "forms.fieldentry",
-    "pk": 9
-},
-{
-    "fields": {
-        "entry": 2,
-        "value": "I signed up for the trial and the password reset will not work.  I am unable to sign in.",
-        "field": 5
-    },
-    "model": "forms.fieldentry",
-    "pk": 10
-},
-{
-    "fields": {
-        "entry": 3,
-        "value": "Marina",
-        "field": 1
-    },
-    "model": "forms.fieldentry",
-    "pk": 11
-},
-{
-    "fields": {
-        "entry": 3,
-        "value": "Lobanova",
-        "field": 2
-    },
-    "model": "forms.fieldentry",
-    "pk": 12
-},
-{
-    "fields": {
-        "entry": 3,
-        "value": "marina.lobanova@gmail.com",
-        "field": 3
-    },
-    "model": "forms.fieldentry",
-    "pk": 13
-},
-{
-    "fields": {
-        "entry": 3,
-        "value": "0424628415",
-        "field": 4
-    },
-    "model": "forms.fieldentry",
-    "pk": 14
-},
-{
-    "fields": {
-        "entry": 3,
-        "value": "Can'r reset the password - the reset doesn't work",
-        "field": 5
-    },
-    "model": "forms.fieldentry",
-    "pk": 15
-},
-{
-    "fields": {
-        "entry": 4,
-        "value": "Marina",
-        "field": 1
-    },
-    "model": "forms.fieldentry",
-    "pk": 16
-},
-{
-    "fields": {
-        "entry": 4,
-        "value": "Lobanova",
-        "field": 2
-    },
-    "model": "forms.fieldentry",
-    "pk": 17
-},
-{
-    "fields": {
-        "entry": 4,
-        "value": "marina.lobanova@gmail.com",
-        "field": 3
-    },
-    "model": "forms.fieldentry",
-    "pk": 18
-},
-{
-    "fields": {
-        "entry": 4,
-        "value": "0424628415",
-        "field": 4
-    },
-    "model": "forms.fieldentry",
-    "pk": 19
-},
-{
-    "fields": {
-        "entry": 4,
-        "value": "Please, cancel my account asap.\r\n\r\nThank you\r\nMarina",
-        "field": 5
-    },
-    "model": "forms.fieldentry",
-    "pk": 20
-},
-{
-    "fields": {
-        "entry": 5,
-        "value": "Marc",
-        "field": 1
-    },
-    "model": "forms.fieldentry",
-    "pk": 21
-},
-{
-    "fields": {
-        "entry": 5,
-        "value": "Ronez",
-        "field": 2
-    },
-    "model": "forms.fieldentry",
-    "pk": 22
-},
-{
-    "fields": {
-        "entry": 5,
-        "value": "marcronez@gmail.com",
-        "field": 3
-    },
-    "model": "forms.fieldentry",
-    "pk": 23
-},
-{
-    "fields": {
-        "entry": 5,
-        "value": "",
-        "field": 4
-    },
-    "model": "forms.fieldentry",
-    "pk": 24
-},
-{
-    "fields": {
-        "entry": 5,
-        "value": "Hi, I signed up last week for a free 30 days trial. However my attempt to log in and reset the password have been unsuccessful so far as I keep getting error messages. \r\n\r\nAs part of the sign process for the free trial I was required to provide my credit card details for validation. I realise that your organization may automatically debit my account at the end of the trial period. Now without the ability to log in to stop this process and after having sent message to your organization through this contact us form about this issue without getting any reply from your side, I am starting to think that this whole experience is actually a form of SCAM.\r\n\r\nIf I do not receive appropriate reply from your side by tomorrow, I will take any appropriate actions to deal with this very unsatisfactory situation.\r\n\r\nRegards,\r\nMarc Ronez ",
-        "field": 5
-    },
-    "model": "forms.fieldentry",
-    "pk": 25
+    "model": "forms.field",
+    "pk": 36
 }
 ]
