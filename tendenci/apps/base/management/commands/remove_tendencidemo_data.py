@@ -21,7 +21,7 @@ cores_list = [
 
 
 class Command(BaseCommand):
-    help = "Remove non-profit-organization default data"
+    help = "Remove content with the tendencidemo tag"
 
 def add_arguments(self, parser):
 
