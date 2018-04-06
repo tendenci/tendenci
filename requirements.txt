@@ -14,7 +14,7 @@ dj-pagination>=2.3.0
 django-picklefield>=0.1.6
 django-simple-captcha==0.5.6
 django-nocaptcha-recaptcha==0.0.20
-django-tagging==0.4.3
+django-tagging==0.4.6
 django-haystack==2.6.0
 django-debug-toolbar>=1.9.1
 django-sql-explorer==1.1.1

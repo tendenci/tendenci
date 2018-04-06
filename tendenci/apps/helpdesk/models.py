@@ -1046,7 +1046,7 @@ class UserSettings(models.Model):
             import six.moves.cPickle as pickle
         except ImportError:
             import pickle
-        from tendenci.apps.helpdesk.lib import b64encode
+        from base64 import b64encode
         self.settings_pickled = b64encode(pickle.dumps(data)).decode()
 
     def _get_settings(self):
@@ -1055,7 +1055,7 @@ class UserSettings(models.Model):
             import six.moves.cPickle as pickle
         except ImportError:
             import pickle
-        from tendenci.apps.helpdesk.lib import b64decode
+        from base64 import b64decode
         try:
             return pickle.loads(b64decode(str(self.settings_pickled).encode()))
         except pickle.UnpicklingError:

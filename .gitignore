@@ -17,6 +17,7 @@ _notes/
 .*
 
 # Ignore all pyc file
+__pycache__/
 *.pyc
 
 # except for .gitignore
