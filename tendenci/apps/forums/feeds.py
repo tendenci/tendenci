@@ -13,6 +13,10 @@ from .permissions import perms
 class PybbFeed(Feed):
     feed_type = Atom1Feed
 
+    def __init__(self):
+        super(PybbFeed, self).__init__()
+        self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
+
     def link(self):
         return reverse('pybb:index')
 

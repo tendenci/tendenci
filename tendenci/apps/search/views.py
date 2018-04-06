@@ -25,6 +25,7 @@ class SearchView(object):
     form = None
 
     def __init__(self, template=None, load_all=False, form_class=ModelSearchForm, searchqueryset=None):
+        self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
         self.load_all = load_all
         self.form_class = form_class
         self.searchqueryset = searchqueryset
