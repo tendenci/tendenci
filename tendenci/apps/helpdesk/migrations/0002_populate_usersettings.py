@@ -13,7 +13,7 @@ def pickle_settings(data):
         import six.moves.cPickle as pickle
     except ImportError:
         import pickle
-    from tendenci.apps.helpdesk.lib import b64encode
+    from base64 import b64encode
     return b64encode(pickle.dumps(data)).decode()
 
 

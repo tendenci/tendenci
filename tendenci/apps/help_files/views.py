@@ -24,7 +24,7 @@ def index(request, template_name="help_files/index.html"):
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
 
     topics = Topic.objects.filter(id__in=HelpFile.objects.values_list('topics')).order_by('title')
-    m = len(topics) / 2
+    m = int(len(topics) / 2)
     topics = topics[:m], topics[m:] # two columns
     most_viewed = HelpFile.objects.filter(filters).order_by('-view_totals').distinct()[:5]
     featured = HelpFile.objects.filter(filters).filter(is_featured=True).distinct()[:5]

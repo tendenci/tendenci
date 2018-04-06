@@ -86,7 +86,7 @@ def dashboard(request):
 
     # all tickets, reported by current user
     all_tickets_reported_by_current_user = ''
-    if settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
+    if helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
         all_tickets_reported_by_current_user = Ticket.objects.select_related('queue').filter(
             Q(creator=request.user) | Q(owner=request.user)
         ).order_by('status')
@@ -749,7 +749,7 @@ def ticket_list(request):
             import six.moves.cPickle as pickle
         except ImportError:
             import pickle
-        from tendenci.apps.helpdesk.lib import b64decode
+        from base64 import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
     elif not (  'queue' in request.GET
             or  'assigned_to' in request.GET
@@ -864,7 +864,7 @@ def ticket_list(request):
         import six.moves.cPickle as pickle
     except ImportError:
         import pickle
-    from tendenci.apps.helpdesk.lib import b64encode
+    from base64 import b64encode
     urlsafe_query = b64encode(pickle.dumps(query_params)).decode()
 
     user_saved_queries = SavedSearch.objects.filter(Q(user=request.user) | Q(shared__exact=True))
@@ -1060,7 +1060,7 @@ def run_report(request, report):
             import six.moves.cPickle as pickle
         except ImportError:
             import pickle
-        from tendenci.apps.helpdesk.lib import b64decode
+        from base64 import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
         report_queryset = apply_query(report_queryset, query_params)
 

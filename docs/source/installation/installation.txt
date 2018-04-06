@@ -204,8 +204,6 @@ Create a new Django project based on the Tendenci template:
     django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/tendenci8.zip tendenci
     sudo chown root /var/www/
 
-The above step will download around 70MB of data, so it may take some time to complete.
-
 Set up some directories appropriately:
 ::
 
