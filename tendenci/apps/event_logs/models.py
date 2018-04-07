@@ -51,7 +51,7 @@ class EventLog(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.uuid:
-            self.uuid = str(uuid.uuid1())
+            self.uuid = str(uuid.uuid4())
         super(EventLog, self).save(*args, **kwargs)
 
     def color(self):

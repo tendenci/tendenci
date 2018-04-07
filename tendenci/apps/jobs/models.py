@@ -129,7 +129,7 @@ class BaseJob(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
 
         super(BaseJob, self).save(*args, **kwargs)
 
@@ -253,7 +253,7 @@ class JobPricing(models.Model):
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
             if user and user.id:
                 self.creator = user
                 self.creator_username = user.username

@@ -104,7 +104,7 @@ class News(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         self.assign_release_dt_local()
 
         photo_upload = kwargs.pop('photo', None)

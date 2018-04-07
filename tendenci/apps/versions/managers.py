@@ -37,7 +37,7 @@ class VersionManager(Manager):
                 version.object_repr = str(old_instance)[:50]
                 version.user = old_instance.owner
                 version.create_dt = old_instance.update_dt
-                version.hash = str(uuid.uuid1())
+                version.hash = str(uuid.uuid4())
 
                 version.object_changes = json.dumps(changes)
 

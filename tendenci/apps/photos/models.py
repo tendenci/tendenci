@@ -61,7 +61,7 @@ ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
 
 def get_storage_path(instance, filename):
     # AWS S3 max key length: 260 characters
-    return os.path.join('photos', uuid.uuid1().get_hex()[:8], filename)
+    return os.path.join('photos', uuid.uuid4().hex[:8], filename)
 
 # Quality options for JPEG images
 JPEG_QUALITY_CHOICES = (
@@ -578,7 +578,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
 
         super(PhotoSet, self).save()
 
@@ -734,7 +734,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     def save(self, *args, **kwargs):
         initial_save = not self.id
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
 
         super(Image, self).save(*args, **kwargs)
         # clear the cache

@@ -155,7 +155,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
 
             # assign position
             [last] = CorporateMembershipType.objects.all().order_by('-position')[:1] or [None]
@@ -253,7 +253,7 @@ class CorpProfile(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.guid:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         if not self.entity:
             # create an entity
             entity = Entity.objects.create(
@@ -452,7 +452,7 @@ class CorpMembership(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.guid:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         if not self.entity:
             self.entity = self.corp_profile.entity
         self.allow_anonymous_view = False
@@ -1409,7 +1409,7 @@ class CorpMembershipApp(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         super(CorpMembershipApp, self).save(*args, **kwargs)
 
         if not self.memb_app.use_for_corp:
@@ -1725,7 +1725,7 @@ class IndivEmailVerification(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         super(IndivEmailVerification, self).save(*args, **kwargs)
 
 
@@ -1752,7 +1752,7 @@ class IndivMembershipRenewEntry(models.Model):
 def get_import_file_path(instance, filename):
     filename = correct_filename(filename)
     return "imports/corpmemberships/{uuid}/{filename}".format(
-                            uuid=uuid.uuid1().get_hex()[:8],
+                            uuid=uuid.uuid4().hex[:8],
                             filename=filename)
 
 
@@ -2101,7 +2101,7 @@ class Notice(models.Model):
         return True
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
         super(Notice, self).save(*args, **kwargs)
 
 

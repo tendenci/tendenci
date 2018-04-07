@@ -529,7 +529,7 @@ def handle_uploaded_photo(request, photoset_id, file_path):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
 
     # truncate; make unique; append extension
-    filename = filename[:70] + '-' + str(uuid.uuid1())[:5] + extension
+    filename = filename[:70] + '-' + str(uuid.uuid4())[:5] + extension
 
     photo.image.save(filename, File(open(file_path, 'rb')))
 

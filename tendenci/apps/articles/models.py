@@ -97,7 +97,7 @@ class Article(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         self.assign_release_dt_local()
         super(Article, self).save(*args, **kwargs)
 

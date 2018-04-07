@@ -34,7 +34,7 @@ class Contribution(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
 
         super(Contribution, self).save(*args, **kwargs)
 

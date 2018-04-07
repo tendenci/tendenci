@@ -131,7 +131,7 @@ class File(TendenciBaseModel):
     def save(self, *args, **kwargs):
         created = False
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
             created = True
         self.f_type = self.type()
 

@@ -207,7 +207,7 @@ class SocialAuthBackend(ModelBackend):
         """
         def get_random_username():
             """Return hash from unique string cut at username max length"""
-            return uuid4().get_hex()[:USERNAME_MAX_LENGTH]
+            return uuid4().hex[:USERNAME_MAX_LENGTH]
 
         if FORCE_RANDOM_USERNAME:
             username = get_random_username()
@@ -241,7 +241,7 @@ class SocialAuthBackend(ModelBackend):
                 # increasing an index.
                 if len(username) + UUID_MAX_LENGTH > USERNAME_MAX_LENGTH:
                     username = username[:USERNAME_MAX_LENGTH - UUID_MAX_LENGTH]
-                name = username + uuid4().get_hex()[:UUID_MAX_LENGTH]
+                name = username + uuid4().hex[:UUID_MAX_LENGTH]
 
         return final_username
 

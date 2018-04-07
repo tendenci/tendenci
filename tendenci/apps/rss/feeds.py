@@ -23,7 +23,8 @@ class GlobalFeed(Feed):
     description = site_description
 
     def __init__(self):
-        Feed.__init__(self)
+        super(GlobalFeed, self).__init__()
+        self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
         self.all_items = []     # all items for this rss feed
         self.feed_for_item = {}   # item -> feed cache
         self.load_feeds_items() # load items

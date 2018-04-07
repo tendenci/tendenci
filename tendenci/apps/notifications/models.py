@@ -215,7 +215,7 @@ class NoticeEmail(models.Model):
         return reverse('notification_email', args=[self.guid])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
         super(NoticeEmail, self).save(*args, **kwargs)
 
     def resend(self):

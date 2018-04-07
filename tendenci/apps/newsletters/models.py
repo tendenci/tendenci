@@ -455,7 +455,7 @@ class Newsletter(models.Model):
 
     def save(self, *args, **kwargs):
         if self.security_key == '' or self.security_key is None:
-            self.security_key = uuid.uuid1()
+            self.security_key = uuid.uuid4()
         if self.actionname != self.subject:
             self.actionname = self.subject
         if "log" in kwargs:
