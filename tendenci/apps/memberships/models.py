@@ -175,7 +175,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         Save GUID if GUID is not set.
         Save MembershipType instance.
         """
-        self.guid = self.guid or uuid.uuid1().get_hex()
+        self.guid = self.guid or uuid.uuid1().hex
         super(MembershipType, self).save(*args, **kwargs)
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
@@ -603,7 +603,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         Set GUID if not already set.
         """
-        self.guid = self.guid or uuid.uuid1().get_hex()
+        self.guid = self.guid or uuid.uuid1().hex
         # set the status_detail to pending if not specified
         # the default 'active' is causing problems
         if not self.status_detail:
@@ -2016,7 +2016,7 @@ class MembershipDefault(TendenciBaseModel):
 
 def get_import_file_path(instance, filename):
     return "imports/memberships/{uuid}/{filename}".format(
-                            uuid=uuid.uuid1().get_hex()[:8],
+                            uuid=uuid.uuid1().hex[:8],
                             filename=filename)
 
 

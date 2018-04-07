@@ -1376,7 +1376,7 @@ class Event(TendenciBaseModel):
         Returns newly generated slug
         Option: length (default: 7)
         """
-        return uuid.uuid1().get_hex()[:length]
+        return uuid.uuid1().hex[:length]
 
     def get_private_slug(self, absolute_url=False):
         """

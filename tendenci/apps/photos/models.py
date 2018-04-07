@@ -61,7 +61,7 @@ ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
 
 def get_storage_path(instance, filename):
     # AWS S3 max key length: 260 characters
-    return os.path.join('photos', uuid.uuid1().get_hex()[:8], filename)
+    return os.path.join('photos', uuid.uuid1().hex[:8], filename)
 
 # Quality options for JPEG images
 JPEG_QUALITY_CHOICES = (

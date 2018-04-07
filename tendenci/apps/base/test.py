@@ -49,7 +49,7 @@ class TestCase(TestCase):
             user = User.objects.create_user(
                 settings.TEST_USER['username'],
                 settings.TEST_USER['email'],
-                settings.TEST_USER['password'] or uuid1().get_hex()
+                settings.TEST_USER['password'] or uuid1().hex
             )
 
         user.first_name = settings.TEST_USER['first_name']

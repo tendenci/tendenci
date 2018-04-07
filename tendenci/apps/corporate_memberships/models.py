@@ -1752,7 +1752,7 @@ class IndivMembershipRenewEntry(models.Model):
 def get_import_file_path(instance, filename):
     filename = correct_filename(filename)
     return "imports/corpmemberships/{uuid}/{filename}".format(
-                            uuid=uuid.uuid1().get_hex()[:8],
+                            uuid=uuid.uuid1().hex[:8],
                             filename=filename)
 
 

@@ -416,7 +416,7 @@ class Profile(Person):
             user = User.objects.create_user(**{
                 'username': un or Profile.spawn_username(fn[:1], ln),
                 'email': em,
-                'password': pw or uuid.uuid1().get_hex()[:6],
+                'password': pw or uuid.uuid1().hex[:6],
             })
 
         user.first_name = fn
@@ -489,7 +489,7 @@ class Profile(Person):
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(
-                            uuid=uuid.uuid1().get_hex()[:8],
+                            uuid=uuid.uuid1().hex[:8],
                             filename=filename)
 
 
@@ -499,7 +499,7 @@ class UserImport(BaseImport):
         (False, _('Not Interactive (no login)')),
     )
 
-#     UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().get_hex()[:8]
+#     UPLOAD_DIR = "imports/profiles/%s" % uuid.uuid1().hex[:8]
 
     upload_file = models.FileField(_("Upload File"), max_length=260,
                                    upload_to=get_import_file_path,
