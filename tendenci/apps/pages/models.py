@@ -48,7 +48,7 @@ class BasePage(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.guid:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         super(BasePage, self).save(*args, **kwargs)
         if self.header_image:
             if self.is_public():

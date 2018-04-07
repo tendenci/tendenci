@@ -36,7 +36,7 @@ class TestCase(TestCase):
         self.browser.quit()
 
     def get_or_create_user(self):
-        from uuid import uuid1
+        from uuid import uuid4
 
         if not hasattr(settings, 'TEST_USER'):
             raise Exception('TEST_USER required in local_settings')
@@ -49,7 +49,7 @@ class TestCase(TestCase):
             user = User.objects.create_user(
                 settings.TEST_USER['username'],
                 settings.TEST_USER['email'],
-                settings.TEST_USER['password'] or uuid1().hex
+                settings.TEST_USER['password'] or uuid4().hex
             )
 
         user.first_name = settings.TEST_USER['first_name']

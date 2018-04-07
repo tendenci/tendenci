@@ -118,7 +118,7 @@ class Location(TendenciBaseModel):
         return arc * 3960
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
 
         # update latitude and longitude
         if not all((self.latitude, self.longitude)):

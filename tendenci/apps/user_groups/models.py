@@ -66,7 +66,7 @@ class Group(TendenciBaseModel):
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self.guid:
-            self.guid = uuid.uuid1()
+            self.guid = uuid.uuid4()
 
         if not self.slug:
             self.slug = slugify(self.name)
@@ -216,11 +216,11 @@ class GroupMembership(models.Model):
         if not self.is_newsletter_subscribed:
             self.is_newsletter_subscribed = True
             # change newsletter_key when subscribing
-            self.newsletter_key = uuid.uuid1()
+            self.newsletter_key = uuid.uuid4()
             self.save()
             return True
         elif self.newsletter_key is None:
-            self.newsletter_key = uuid.uuid1()
+            self.newsletter_key = uuid.uuid4()
             self.save()
             return True
         return False
@@ -229,7 +229,7 @@ class GroupMembership(models.Model):
         if self.is_newsletter_subscribed:
             self.is_newsletter_subscribed = False
             # change newsletter_key when unsubscribing
-            self.newsletter_key = uuid.uuid1()
+            self.newsletter_key = uuid.uuid4()
             self.save()
             return True
 
@@ -239,7 +239,7 @@ class GroupMembership(models.Model):
     def noninteractive_unsubscribe_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
         if not self.newsletter_key:
-            self.newsletter_key = uuid.uuid1()
+            self.newsletter_key = uuid.uuid4()
             self.save()
         unsubscribe_path = reverse('group.newsletter_unsubscribe_noninteractive', kwargs={
             'group_slug': self.group.slug,

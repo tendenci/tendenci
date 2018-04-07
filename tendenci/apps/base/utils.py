@@ -304,7 +304,7 @@ def get_unique_username(user):
         if user.first_name and user.last_name:
             user.username = '%s%s' % (user.first_name[0], user.last_name)
     if not user.username:
-        user.username = str(uuid.uuid1())[:7]
+        user.username = str(uuid.uuid4())[:7]
     if len(user.username) > 20:
         user.username = user.username[:7]
 

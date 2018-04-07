@@ -56,7 +56,7 @@ class Education(TendenciBaseModel):
 #        return reverse('education', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
         if self.graduation_year and not self.graduation_dt:
             # placeholder to contain value for the datetime graduation field
             self.graduation_dt = datetime(year=self.graduation_year, month=1, day=1)

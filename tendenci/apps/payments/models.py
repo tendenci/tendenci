@@ -90,7 +90,7 @@ class Payment(models.Model):
 
     def save(self, user=None):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
             if user and user.id:
                 self.creator = user
                 self.creator_username = user.username

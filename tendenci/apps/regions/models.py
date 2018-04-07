@@ -36,6 +36,6 @@ class Region(TendenciBaseModel):
 #        return reverse('industry', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
 
         super(Region, self).save(*args, **kwargs)

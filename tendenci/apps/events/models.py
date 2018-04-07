@@ -593,7 +593,7 @@ class Registration(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         super(Registration, self).save(*args, **kwargs)
 
     def get_invoice(self):
@@ -1168,7 +1168,7 @@ class Event(TendenciBaseModel):
         return reverse('registration_event_register', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
         super(Event, self).save(*args, **kwargs)
 
         if self.image:
@@ -1376,7 +1376,7 @@ class Event(TendenciBaseModel):
         Returns newly generated slug
         Option: length (default: 7)
         """
-        return uuid.uuid1().hex[:length]
+        return uuid.uuid4().hex[:length]
 
     def get_private_slug(self, absolute_url=False):
         """

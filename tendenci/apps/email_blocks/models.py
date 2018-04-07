@@ -16,7 +16,7 @@ class EmailBlock(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.guid:
-            self.guid = str(uuid.uuid1())
+            self.guid = str(uuid.uuid4())
         self.email = self.email.lower()
         self.email_domain = self.email_domain.lower()
 

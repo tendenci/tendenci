@@ -190,7 +190,7 @@ class Invoice(models.Model):
         Set guid, creator and owner if any of
         these fields are missing.
         """
-        self.guid = self.guid or uuid.uuid1().hex
+        self.guid = self.guid or uuid.uuid4().hex
 
         if hasattr(user, 'pk') and not user.is_anonymous:
             self.set_creator(user)

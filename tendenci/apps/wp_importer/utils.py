@@ -75,7 +75,7 @@ def get_posts(item, user):
 
         article = {
             'headline': title,
-            'guid': str(uuid.uuid1()),
+            'guid': str(uuid.uuid4()),
             'slug': slug[:100],
             'body': body,
             'tags': ','.join(tags_list),
@@ -137,7 +137,7 @@ def get_pages(item, user):
 
         page = {
             'title': title,
-            'guid': str(uuid.uuid1()),
+            'guid': str(uuid.uuid4()),
             'slug': slug[:100],
             'content': body,
             #'timezone': 'US/Central',
@@ -191,7 +191,7 @@ def get_media(item, user):
             f.write(source)
             file_path = f.name
 
-        new_media = File(guid=str(uuid.uuid1()), file=file_path, creator=user, owner=user)
+        new_media = File(guid=str(uuid.uuid4()), file=file_path, creator=user, owner=user)
         new_media.save()
 
     temporary = AssociatedFile(post_id=post_id, file=new_media)

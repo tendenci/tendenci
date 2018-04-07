@@ -108,7 +108,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         return url
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or str(uuid.uuid1())
+        self.guid = self.guid or str(uuid.uuid4())
         photo_upload = kwargs.pop('photo', None)
 
         if self.pk is None:

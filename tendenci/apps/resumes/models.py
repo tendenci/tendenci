@@ -113,7 +113,7 @@ class Resume(TendenciBaseModel):
         return reverse('resume', args=[self.slug])
 
     def save(self, *args, **kwargs):
-        self.guid = self.guid or uuid.uuid1()
+        self.guid = self.guid or uuid.uuid4()
         super(Resume, self).save(*args, **kwargs)
 
     def __str__(self):

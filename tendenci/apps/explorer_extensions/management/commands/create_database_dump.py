@@ -71,7 +71,7 @@ class Command(BaseCommand):
         content = BytesIO()
         call_command('dumpdata', format=fmt, stdout=content, exclude=['captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
 
-        dump_obj.dbfile.save(str(uuid.uuid1()), File(content))
+        dump_obj.dbfile.save(str(uuid.uuid4()), File(content))
 
         dump_obj.status = "completed"
         dump_obj.end_dt = datetime.datetime.now() + datetime.timedelta(days=3)
