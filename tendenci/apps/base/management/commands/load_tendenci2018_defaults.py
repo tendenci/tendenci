@@ -2,7 +2,6 @@ from __future__ import print_function
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -21,7 +20,6 @@ class Command(BaseCommand):
         self.number_used = []
 
         self.call_loaddata(reset_nav)
-
 
     def call_loaddata(self, reset_nav=False):
         """
