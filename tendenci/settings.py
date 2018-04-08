@@ -561,7 +561,7 @@ SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 # ---------------------------------------------------------------------------- #
 
 #TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'tinymce')
-TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tiny_mce/tinymce.min.js'
+TINYMCE_JS_URL = 'tiny_mce/tinymce.min.js'
 TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 TINYMCE_FILEBROWSER = True

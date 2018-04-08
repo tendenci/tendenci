@@ -7,7 +7,6 @@ http://code.djangoproject.com/wiki/CustomWidgetsTinyMCE
 """
 from __future__ import unicode_literals
 
-import tendenci.libs.tinymce.settings as tinymce_settings
 from django import forms
 from django.conf import settings
 from django.contrib.admin import widgets as admin_widgets
@@ -28,6 +27,8 @@ except ImportError:
         from django.utils.encoding import smart_text
     except ImportError:
         from django.forms.util import smart_text
+import tendenci.libs.tinymce.settings as tinymce_settings
+from tendenci.apps.theme.templatetags.static import static
 
 
 class TinyMCE(forms.Textarea):
@@ -111,8 +112,8 @@ class TinyMCE(forms.Textarea):
             js = [tinymce_settings.JS_URL]
         if tinymce_settings.USE_FILEBROWSER:
             js.append(reverse('tinymce-filebrowser'))
-        js.append('tiny_mce/init_tinymce.js')
-        css = {'all': ('tiny_mce/custom.css',)}
+        js.append(static('tiny_mce/init_tinymce.js'))
+        css = {'all': (static('tiny_mce/custom.css'),)}
         return forms.Media(js=js, css=css)
     media = property(_media)
 

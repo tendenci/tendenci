@@ -2,12 +2,13 @@ from warnings import warn
 from datetime import datetime
 from django.conf import settings
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.templatetags.static import static
 
 
 def static_url(request):
     context = {}
     context['STOCK_STATIC_URL'] = settings.STOCK_STATIC_URL
-    context['TINYMCE_JS_URL'] = settings.TINYMCE_JS_URL
+    context['TINYMCE_JS_URL'] = static(settings.TINYMCE_JS_URL)
 
     # Backward compatibility for old themes
     def warn_static_url(value=settings.STATIC_URL):
