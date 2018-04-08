@@ -11,7 +11,6 @@ from django.conf import settings
 from tendenci.apps.news.models import News
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
@@ -37,7 +36,7 @@ class NewsForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style': 'width:100%;'},
         mce_attrs={'storme_app_label': News._meta.app_label,
         'storme_model': News._meta.model_name.lower()}))
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'))
+    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'))
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
     email = EmailVerificationField(label=_("Email"), required=False)

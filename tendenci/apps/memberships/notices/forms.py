@@ -2,14 +2,13 @@ from datetime import datetime, timedelta
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tendenci.apps.base.fields import SplitDateTimeField
 
 from tendenci.apps.memberships.notices.utils import get_membership_notice_choices
 
 class NoticeLogSearchForm(forms.Form):
-    start_dt = SplitDateTimeField(label=_('Sent Start Date/Time'),
+    start_dt = forms.SplitDateTimeField(label=_('Sent Start Date/Time'),
         initial=(datetime.now()-timedelta(days=30)), required=False)
-    end_dt = SplitDateTimeField(label=_('Sent End Date/Time'),
+    end_dt = forms.SplitDateTimeField(label=_('Sent End Date/Time'),
         initial=datetime.now(), required=False)
     notice_id = forms.ChoiceField(required=False)
 

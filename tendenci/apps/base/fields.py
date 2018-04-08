@@ -43,42 +43,6 @@ class SlugField(CharField):
         return super(SlugField, self).formfield(**defaults)
 
 
-class SplitDateTimeField(fields.MultiValueField):
-    """
-        Custom split date time widget
-        Modified version of http://www.copiesofcopies.org/webl/?p=81
-    """
-    widget = SplitDateTimeWidget
-
-    def __init__(self, *args, **kwargs):
-        """
-        Have to pass a list of field types to the constructor, else we
-        won't get any data to our compress method.
-        """
-        all_fields = (
-            fields.CharField(max_length=10),
-            fields.CharField(max_length=8),
-            )
-        super(SplitDateTimeField, self).__init__(all_fields, *args, **kwargs)
-
-    def compress(self, data_list):
-        """
-        Takes the values from the MultiWidget and passes them as a
-        list to this function. This function needs to compress the
-        list into a single object to save.
-        """
-        if data_list:
-            if not (data_list[0] and data_list[1]):
-                raise ValidationError(_("Field is missing data."))
-            try:
-                input_time = strptime("%s" % (data_list[1]), "%I:%M %p")
-                datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
-            except:
-                raise ValidationError(_("Time Format is incorrect. Must be Hour:Minute AM|PM"))
-            return datetime_string
-        return None
-
-
 class DictField(models.TextField):
     """
     A dictionary field

@@ -9,7 +9,6 @@ from django.forms.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 
-from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.apps.base.utils import normalize_field_names
 from tendenci.apps.perms.forms import TendenciBaseForm
@@ -675,9 +674,9 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
 
 
 class UserMembershipForm(TendenciBaseForm):
-    join_dt = SplitDateTimeField(label=_('Subscribe Date/Time'),
+    join_dt = forms.SplitDateTimeField(label=_('Subscribe Date/Time'),
         initial=datetime.datetime.now())
-    expire_dt = SplitDateTimeField(label=_('Expire Date/Time'), required=False)
+    expire_dt = forms.SplitDateTimeField(label=_('Expire Date/Time'), required=False)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 

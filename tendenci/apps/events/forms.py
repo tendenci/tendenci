@@ -34,7 +34,7 @@ from form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
+from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.emails.models import Email
@@ -547,9 +547,9 @@ class EventForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Event._meta.app_label,
         'storme_model':Event._meta.model_name.lower()}))
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'),
                                   initial=datetime.now()+timedelta(days=30))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'),
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'),
                                 initial=datetime.now()+timedelta(days=30, hours=2))
     all_day = forms.BooleanField(label=_('All Day'), required=False, initial=False)
     start_event_date = forms.DateField(
@@ -1090,8 +1090,8 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
@@ -2290,8 +2290,8 @@ def add_months(sourcedate, months):
 
 
 class EventReportFilterForm(forms.Form):
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), required=False)
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), required=False)
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), required=False)
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), required=False)
 
     def __init__(self, *args, **kwargs):
         super(EventReportFilterForm, self).__init__(*args, **kwargs)

@@ -9,7 +9,6 @@ from django.template.defaultfilters import filesizeformat
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
@@ -26,8 +25,8 @@ END_DT_INITIAL = datetime.now() + timedelta(weeks=2)
 
 class StoryForm(TendenciBaseForm):
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     expires = forms.BooleanField(
         label=_('Expires'),
         required=False,
@@ -174,8 +173,8 @@ class StoryForm(TendenciBaseForm):
 
 
 class StoryAdminForm(TendenciBaseForm):
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     expires = forms.BooleanField(
         label=_('Expires'),
         required=False,

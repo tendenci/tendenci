@@ -9,7 +9,7 @@ from django.forms.utils import ErrorList
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
-from tendenci.apps.base.fields import SplitDateTimeField, PriceField
+from tendenci.apps.base.fields import PriceField
 from tendenci.apps.discounts.utils import assign_discount
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
@@ -60,8 +60,8 @@ class DiscountForm(TendenciBaseForm):
                     })
                     ]
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
 

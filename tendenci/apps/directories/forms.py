@@ -14,7 +14,6 @@ from django.urls import reverse
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
@@ -135,8 +134,8 @@ class DirectoryForm(TendenciBaseForm):
                                                               ('premium', _('Premium')),))
     payment_method = forms.CharField(error_messages={'required': _('Please select a payment method.')})
 
-    activation_dt = SplitDateTimeField(initial=datetime.now())
-    expiration_dt = SplitDateTimeField(initial=datetime.now())
+    activation_dt = forms.SplitDateTimeField(initial=datetime.now())
+    expiration_dt = forms.SplitDateTimeField(initial=datetime.now())
 
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)

@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from tendenci.apps.base.fields import SplitDateTimeField
 from form_utils.forms import BetterForm
 
 from .utils import get_app_list_choices
@@ -33,12 +32,12 @@ class EventsFilterForm(forms.Form):
 
 
 class EventLogSearchForm(BetterForm):
-    start_dt = SplitDateTimeField(
+    start_dt = forms.SplitDateTimeField(
         label=_('Start Date/Time'),
         initial=INITIAL_START_DT,
         required=False
     )
-    end_dt = SplitDateTimeField(
+    end_dt = forms.SplitDateTimeField(
         label=_('End Date/Time'),
         initial=INITIAL_END_DT,
         required=False

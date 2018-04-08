@@ -1,7 +1,6 @@
 from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.payments.models import Payment, PaymentMethod
 
 PAYMENT_METHODS = PaymentMethod.objects.filter().values_list(
@@ -14,7 +13,7 @@ class MarkAsPaidForm(forms.ModelForm):
         max_length=20,
         widget=forms.Select(choices=PAYMENT_METHODS))
 
-    submit_dt = SplitDateTimeField(
+    submit_dt = forms.SplitDateTimeField(
         label=_('Submit Date and Time'),
         initial=datetime.now())
 

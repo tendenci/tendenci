@@ -10,7 +10,7 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField
+from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.perms.utils import get_query_filters
@@ -115,7 +115,7 @@ class ArticleForm(TendenciBaseForm):
         mce_attrs={'storme_app_label': Article._meta.app_label,
         'storme_model': Article._meta.model_name.lower()}))
 
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'),)
+    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'),)
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Article.CONTRIBUTOR_AUTHOR,
