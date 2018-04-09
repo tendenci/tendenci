@@ -8,6 +8,13 @@ from tendenci.apps.theme.utils import (get_active_theme, get_theme,
 def theme(request):
     context = {}
 
+    if 'theme' in request.GET and request.user.profile.is_superuser:
+        theme = request.GET.get('theme')
+        if theme:
+            request.session['theme'] = theme
+        elif 'theme' in request.session:
+            del request.session['theme']
+
     context['ACTIVE_THEME'] = get_active_theme()
     context['THEME'] = theme = get_theme(context['ACTIVE_THEME'])
 

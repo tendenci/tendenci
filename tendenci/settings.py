@@ -120,9 +120,9 @@ TEMPLATES = [
         'tendenci.apps.base.context_processors.newrelic',
       ],
       'loaders': [
-        ('django.template.loaders.cached.Loader', [
+        ('tendenci.apps.theme.template_loaders.CachedLoader', [
           'app_namespace.Loader',
-          'tendenci.apps.theme.template_loader.Loader',
+          'tendenci.apps.theme.template_loaders.ThemeLoader',
           'django.template.loaders.filesystem.Loader',
           'django.template.loaders.app_directories.Loader',
         ])
