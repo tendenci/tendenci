@@ -42,7 +42,8 @@
             &nbsp;&ndash;&nbsp;{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}
             {% else %}
             &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
-            <br /><br />
+            {% endif %}
+            {% endfor %}
           </a>
         </li>
         
@@ -54,9 +55,6 @@
             </a>
           </div>
         </li>
-        
-        {% endif %}
-        {% endfor %}
         
       </ul>
     </div>
