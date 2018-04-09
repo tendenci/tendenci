@@ -267,6 +267,9 @@ shown in the "Custom Application Settings" section of the latest
 `settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci8/conf/settings.py>`_
 file.
 
+If present, replace ``tendenci.apps.theme.template_loaders.Loader`` with
+``tendenci.apps.theme.template_loaders.ThemeLoader``
+
 Tendenci now enables logging by default.  Review the "Logging Settings" section of the latest
 `settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci8/conf/settings.py>`_
 file to determine whether you need to make any site specific changes to the default logging

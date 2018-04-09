@@ -7,7 +7,8 @@ import errno
 from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.base import Origin
-from django.template.loaders.base import Loader
+from django.template.loaders.base import DjangoLoader
+from django.template.loaders.cached import Loader as DjangoCachedLoader
 
 from django.utils._os import safe_join
 from django.core.cache import cache
@@ -20,25 +21,16 @@ from tendenci.apps.theme.middleware import get_current_request
 from tendenci.libs.boto_s3.utils import read_theme_file_from_s3
 
 
-class Loader(Loader):
-    """Loader that includes a theme's templates files that enables
-    template overriding similar to how a project's templates dir overrides
-    an app's templates dir. In other words this takes advantage of django's
-    template prioritization.
+class ThemeLoader(DjangoLoader):
+    """
+    Loader that searches for templates in Tendenci themes.  This can be used to
+    override both the project's templates dir and the app templates dirs using
+    themes.
     """
 
     def __init__(self, engine, *args, **kwargs):
-        # Hold the theme_root in self.theme_root instead of calling
-        # get_theme_root() in get_template_sources(). This significantly reduces
-        # the number of queries for
-        # get_setting('module', 'theme_editor', 'theme').
-        # (reduced # of queries from 3316 to 233 when testing on my local for an
-        # article view. - @jennyq)
-        # Reverted in daa0910b02 because it prevents theme changes without server
-        # restart.
-        #self.theme_root = get_theme_root()
         self.cached_theme_search_info = (None, None)
-        super(Loader, self).__init__(engine)
+        super(ThemeLoader, self).__init__(engine)
 
     def get_template_sources(self, template_name, template_dirs=None):
         """
@@ -47,8 +39,8 @@ class Loader(Loader):
         Any paths that don't lie inside one of the template dirs are excluded
         from the result set for security reasons.
         """
-        current_request = get_current_request()
-        mobile = (current_request and current_request.mobile)
+        request = get_current_request()
+        mobile = (request and request.mobile)
 
         active_theme = get_active_theme()
         theme = get_theme(active_theme)
@@ -128,3 +120,25 @@ class Loader(Loader):
                 cache.set(cache_group_key, cache_group_list)
 
             return template
+
+
+class CachedLoader(DjangoCachedLoader):
+    """
+    Wrapper around django.template.loaders.cached.Loader which allows caching to
+    be disabled on a per-request basis.  This is used to support theme previews.
+    """
+
+    def get_template(self, *args, **kwargs):
+        request = get_current_request()
+        disable_cache = (request and 'theme' in request.session)
+
+        if not disable_cache:
+            return super(CachedLoader, self).get_template(*args, **kwargs)
+
+        # django.template.loaders.cached.Loader calls super().get_template()
+        # (where super is django.template.loaders.base.Loader) to get templates
+        # that are not in the cache.  To skip the cache, we do the same, except
+        # we must call django.template.loaders.base.Loader directly instead of
+        # using super() since super is django.template.loaders.cached.Loader in
+        # this case.
+        return DjangoLoader.get_template(self, *args, **kwargs)

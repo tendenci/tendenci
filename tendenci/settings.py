@@ -1,4 +1,5 @@
 import os.path
+from django import __path__ as django_path
 
 
 # ---------------------------------------------------------------------------- #
@@ -119,9 +120,9 @@ TEMPLATES = [
         'tendenci.apps.base.context_processors.newrelic',
       ],
       'loaders': [
-        ('django.template.loaders.cached.Loader', [
+        ('tendenci.apps.theme.template_loaders.CachedLoader', [
           'app_namespace.Loader',
-          'tendenci.apps.theme.template_loader.Loader',
+          'tendenci.apps.theme.template_loaders.ThemeLoader',
           'django.template.loaders.filesystem.Loader',
           'django.template.loaders.app_directories.Loader',
         ])
@@ -137,11 +138,18 @@ TEMPLATES = [
         'django.templatetags.i18n',
       ],
     },
-    'DIRS': [os.path.join(TENDENCI_ROOT, 'templates')]
+    'DIRS': [django_path[0]+'/forms/templates'],
   }
 ]
 def disable_template_cache():  # For use in site-specific settings.py
     TEMPLATES[0]['OPTIONS']['loaders'] = TEMPLATES[0]['OPTIONS']['loaders'][0][1]
+# The form renderer does not use the TEMPLATES setting by default.  Configure it to use the
+# TEMPLATES setting so that form widget templates can be overridden in themes.
+# This requires either adding 'django.forms' to INSTALLED_APPS or adding
+# django_path[0]+'/forms/templates' to TEMPLATES['DIRS'].  Since adding 'django.forms' to
+# INSTALLED_APPS creates an app name conflict with 'tendenci.apps.forms_builder.forms', we must
+# use TEMPLATES['DIRS'] instead.
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 INSTALLED_APPS = [
     'django_admin_bootstrapped',

@@ -1,6 +1,5 @@
 from builtins import str
 import re
-from time import strptime, strftime
 #from south.modelsinspector import add_introspection_rules
 
 from django.forms import fields, ValidationError
@@ -12,7 +11,7 @@ from django.core import exceptions
 from django_countries import countries as COUNTRIES
 
 from tendenci.apps.base import forms
-from tendenci.apps.base.widgets import SplitDateTimeWidget, EmailVerificationWidget, PriceWidget
+from tendenci.apps.base.widgets import EmailVerificationWidget, PriceWidget
 from tendenci.apps.site_settings.utils import get_setting
 
 
