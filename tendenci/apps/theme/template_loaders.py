@@ -7,7 +7,7 @@ import errno
 from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.base import Origin
-from django.template.loaders.base import DjangoLoader
+from django.template.loaders.base import Loader as DjangoLoader
 from django.template.loaders.cached import Loader as DjangoCachedLoader
 
 from django.utils._os import safe_join
