@@ -15,7 +15,6 @@ class Command(BaseCommand):
         from tendenci.apps.exports.tasks import TendenciExportTask
         export_id = options['export_id']
         if export_id:
-#             export_id = int(args[0])
             try:
                 export = Export.objects.get(pk=export_id)
             except Export.DoesNotExist:
@@ -40,11 +39,6 @@ class Command(BaseCommand):
                 from tendenci.apps.pages.tasks import PagesExportTask
                 result = PagesExportTask()
                 response = result.run()
-#             elif export.app_label == 'memberships' and export.model_name == 'membership':
-#                 from tendenci.apps.memberships.tasks import MembershipsExportTask
-#                 kwargs = {'app': export.memb_app}
-#                 result = MembershipsExportTask()
-#                 response = result.run(**kwargs)
             elif export.app_label == 'profiles' and export.model_name == 'profile':
                 from tendenci.apps.profiles.tasks import ExportProfilesTask
                 result = ExportProfilesTask()
