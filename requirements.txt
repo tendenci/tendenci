@@ -28,8 +28,7 @@ beautifulsoup4==4.6.0
 oauth2>=1.5.167
 #python_openid>=2.2  # Used by the social_auth app, but does not support Python 3
 createsend==4.2.7
-celery==3.1.23
-django-celery==3.1.17
+django-celery==3.2.2
 mimeparse>=0.1.3
 python-dateutil==2.5.3
 pdfminer.six==20170720
