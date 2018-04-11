@@ -45,8 +45,9 @@
     <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-            $('.timepicker').timepicker({'step': 15});
+        	// Release Datetime
+            $('#id_release_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_release_dt_1').timepicker({'timeFormat': 'h:i A'}); 
         });
         gplusHelpTextsInit('{{ SITE_GLOBAL_SITEURL }}');
     </script>

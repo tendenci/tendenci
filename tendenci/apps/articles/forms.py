@@ -115,7 +115,9 @@ class ArticleForm(TendenciBaseForm):
         mce_attrs={'storme_app_label': Article._meta.app_label,
         'storme_model': Article._meta.model_name.lower()}))
 
-    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'),)
+    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'),
+                          input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                          input_time_formats=['%I:%M %p', '%H:%M:%S'])
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Article.CONTRIBUTOR_AUTHOR,
