@@ -1229,7 +1229,7 @@ class Reg8nConfPricingForm(BetterModelForm):
 class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     label = _('Registration')
     limit = forms.IntegerField(
-            _('Registration Limit'),
+            label=_('Registration Limit'),
             initial=0,
             help_text=_("Enter the maximum number of registrants. Use 0 for unlimited registrants")
     )
@@ -1238,7 +1238,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
         initial=[1,2,3]) # first three items (inserted via fixture)
-    use_custom_reg = UseCustomRegField(label="Custom Registration Form")
+    use_custom_reg = UseCustomRegField(label="Custom Registration Form", required=False)
 
     registration_email_text = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
