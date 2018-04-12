@@ -22,10 +22,11 @@ class UploaderNode(Node):
     def render(self, context):
         template = context.template.engine.get_template('uploader/body.html')
         uploader_options = self.nodelist.render(context)
-        return template.render(context={'uploader_options': uploader_options})
+        context['uploader_options'] = uploader_options
+        return template.render(context=context)
 
 @register.tag
 def uploader(parser, token):
-    nodelist = parser.parse('end_uploader',)
+    nodelist = parser.parse(('end_uploader',))
     parser.delete_first_token()
     return UploaderNode(nodelist)
