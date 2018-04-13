@@ -253,6 +253,15 @@ def run_a_recurring_payment(rp, verbosity=0):
         if rp_invoices:
             require_payment_profile = True
             if rp.platform == 'stripe':
+                if not rp.customer_profile_id:
+                    # no payment method set up yet
+                    # email admin - payment profile not set up
+                    # to admin
+                    rp_email_notice.email_admins_no_payment_profile(rp)
+                    # to customer
+                    rp_email_notice.email_customer_no_payment_profile(rp)
+                    return
+                
                 require_payment_profile = False
 
             if require_payment_profile:
