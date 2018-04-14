@@ -906,7 +906,7 @@ def user_import_parse_csv(mimport):
     """
     normalize_newline(mimport.upload_file.name)
     csv_reader = csv.reader(
-        default_storage.open(mimport.upload_file.name, 'rb'))
+        default_storage.open(mimport.upload_file.name, 'rU'))
     fieldnames = next(csv_reader)
     fieldnames = normalize_field_names(fieldnames)
 
