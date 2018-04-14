@@ -303,11 +303,15 @@ for theme in os.listdir(BUILTIN_THEMES_DIR):
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 60*60*24*30,  # 30 days
     }
 }
+try:
+    import pylibmc
+except ImportError:
+    CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
 
 LOGGING = {
     'version': 1,
