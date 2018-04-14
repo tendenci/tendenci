@@ -53,9 +53,7 @@ Fork us at github.com/tendenci  -->
     {% if request.user.is_superuser and THEME_INFO.SSU.color %}
     {% endif %}
     
-    {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
     <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
-    {% endif %}
     
     <link href="{% static 'css/websymbols.css' %}" rel="stylesheet" type="text/css">
     
@@ -101,18 +99,10 @@ Fork us at github.com/tendenci  -->
     {% if request.user.is_superuser %}
     {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
     {% if request.user.is_authenticated %}
-    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-    {% include "top_menu/user_top.html" %}
-    {% else %}
     {% include "top_menu/user_top-new.html" %}
     {% endif %}
-    {% endif %}
-    {% else %}
-    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-    {% include "top_menu/admin_top.html" %}
     {% else %}
     {% include "top_menu/admin_top-new.html" %}
-    {% endif %}
     
     {% if request.session.theme %}
     {% include "themes/theme_top.html" %}
@@ -120,11 +110,7 @@ Fork us at github.com/tendenci  -->
     {% endif %}
     {% else %}
     {% if request.user.is_authenticated %}
-    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-    {% include "top_menu/user_top.html" %}
-    {% else %}
     {% include "top_menu/user_top-new.html" %}
-    {% endif %}
     {% endif %}
     {% endif %}
     
