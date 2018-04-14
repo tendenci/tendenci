@@ -178,6 +178,7 @@ def theme_copy(request, form_class=ThemeNameForm):
         new_theme_name = form.cleaned_data['theme_name']
         if is_valid_theme(new_theme_name):
             ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+            return HttpResponse(json.dumps(ret_dict))
         if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
             raise Http403
         new_theme_root = get_theme_root(new_theme_name)
@@ -209,6 +210,7 @@ def theme_rename(request, form_class=ThemeNameForm):
         new_theme_name = form.cleaned_data['theme_name']
         if is_valid_theme(new_theme_name):
             ret_dict['err'] = _('Theme "%(name)s" already exists' % {'name': new_theme_name})
+            return HttpResponse(json.dumps(ret_dict))
         if not is_valid_path(settings.ORIGINAL_THEMES_DIR, new_theme_name):
             raise Http403
         new_theme_root = get_theme_root(new_theme_name)
