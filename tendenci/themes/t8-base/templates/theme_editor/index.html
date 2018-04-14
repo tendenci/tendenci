@@ -22,7 +22,7 @@
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
-<div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span> in theme <span class="highlight">{{ current_theme }}</span></big>
+<div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span> in theme <span class="highlight">{{ current_theme }}</span></big></div>
 {% endif %}
 <table id="file-editor" width="100%">
     <tr>
