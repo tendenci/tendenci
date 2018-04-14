@@ -1,6 +1,5 @@
 import time as ttime
 from datetime import datetime, date, time
-import csv
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -8,6 +7,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.articles.models import Article
+from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -41,8 +41,8 @@ def process_export(identifier, user_id):
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/articles/%s_temp.csv' % (identifier)
 
-    with default_storage.open(file_name_temp, 'w') as csvfile:
-        csv_writer = csv.writer(csvfile)
+    with default_storage.open(file_name_temp, 'wb') as csvfile:
+        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
         csv_writer.writerow(field_list)
 
         articles = Article.objects.filter(status_detail='active')
