@@ -5,7 +5,7 @@ from django.apps import apps
 class Command(BaseCommand):
     args = '<export_pk, field, field, field...>'
     help = "Runs an export task for the specified model."
-    
+
     def add_arguments(self, parser):
         parser.add_argument('export_id', type=int)
         parser.add_argument('fields', nargs='*')
