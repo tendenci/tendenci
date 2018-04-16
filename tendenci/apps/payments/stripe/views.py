@@ -125,7 +125,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
 def update_card(request, rp_id):
     rp = get_object_or_404(RecurringPayment, pk=rp_id, platform='stripe')
     if not has_perm(request.user, 'recurring_payments.change_recurringpayment', rp) \
-        and not (rp.owner is request.user):
+        and not (rp.user and rp.user.id == request.user.id):
         raise Http403
     
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
