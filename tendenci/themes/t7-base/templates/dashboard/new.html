@@ -182,7 +182,7 @@
                     <li><a href="{% url 'profiles.user_import' %}">{% trans "Import Users" %}</a></li>
                     <li><a href="{% url 'settings' %}">{% trans "Enable/Disable modules" %}</a></li>
                     <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache BIG TIME" %}</a></li>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}?file=templates/homepage.html">{% trans "Theme Editor" %} </a></li>
                     <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
 
                     {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
@@ -197,11 +197,11 @@
                 <h3>{% trans "Update Theme" %}</h3>
 
                 <ul>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=/media/css/bootstrap-theme.css">{% trans "Update Styles" %}</a></li>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=/templates/header.html">{% trans "Update Header" %}</a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}?file=media/css/bootstrap-theme.css">{% trans "Update Styles" %}</a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}?file=templates/homepage.html">{% trans "Update Template" %} </a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}?file=templates/header.html">{% trans "Update Header" %}</a></li>
                     <li><a href="{% url 'admin:navs_nav_changelist' %}">{% trans "Update Navigation" %}</a></li>
-                    <li><a href="{% url 'theme_editor.editor' %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
+                    <li><a href="{% url 'theme_editor.editor' %}?file=templates/footer.html">{% trans "Update Footer" %}</a></li>
                     <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
                 </ul>
             </div>

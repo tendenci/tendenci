@@ -594,7 +594,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'media_poster': 'false',
     'cache_suffix': '?v=4.3.8',
     # Specify your css to apply to the editable area
-    #'content_css': '/themes/<theme name>/media/css/styles.css',
+    #'content_css': '/static/themes/<theme name>/css/styles.css',
     'resize': 'both',
     'link_class_list': [
         {'title': 'None', 'value': ''},
