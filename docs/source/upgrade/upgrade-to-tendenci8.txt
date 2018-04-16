@@ -19,6 +19,10 @@ Make sure the required system dependencies are installed:
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
     sudo apt-get install curl wget
 
+If this is a live site using memcached, also make sure libmemcached-dev is installed:
+::
+
+    sudo apt-get install libmemcached-dev
 
 Shut down Tendenci:
 ::
@@ -60,6 +64,9 @@ Tendenci and Python upgrades):
 
     cd /var/www/tendenci/
     source /srv/tendenci/bin/activate
+    # For development installations:
+    pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
+    # For live sites:
     pip install --no-binary psycopg2 -r requirements/prod.txt --upgrade
 
 
@@ -100,6 +107,9 @@ Upgrade Tendenci and its dependencies:
     sudo chown -Rh "$(id -u -n)": /srv/tendenci/
     source /srv/tendenci/venv/bin/activate  # For Python 2
     source /srv/tendenci/bin/activate  # For Python 3
+    # For development installations:
+    pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
+    # For live sites:
     pip install --no-binary psycopg2 -r requirements/prod.txt --upgrade
 
 
@@ -266,6 +276,9 @@ default INSTALLED_APPS, you can add ``INSTALLED_APPS.remove('tendenci.apps.name'
 shown in the "Custom Application Settings" section of the latest
 `settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci8/conf/settings.py>`_
 file.
+
+Replace ``django.core.cache.backends.memcached.MemcachedCache`` with
+``django.core.cache.backends.memcached.PyLibMCCache``
 
 If present, replace ``tendenci.apps.theme.template_loaders.Loader`` with
 ``tendenci.apps.theme.template_loaders.ThemeLoader``

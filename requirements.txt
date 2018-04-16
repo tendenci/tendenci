@@ -43,7 +43,6 @@ chardet==3.0.3
 psycopg2>=2.7,<2.8
 gunicorn==19.5.0
 django-storages==1.4.1
-python-memcached==1.59
 Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==2.53.2

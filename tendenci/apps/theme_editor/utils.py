@@ -134,6 +134,7 @@ def get_all_files_list(root_dir, theme):
     """
     files_folders = {}
 
+    theme_base_url = '/themes/'+theme+'/'
     start = root_dir.rfind(os.sep) + 1
     for path, dirs, files in os.walk(root_dir):
         folders = path[start:].split(os.sep)
@@ -150,8 +151,9 @@ def get_all_files_list(root_dir, theme):
 
             # Hide hidden files
             if not f.startswith('.'):
-                path = os.path.join(path[len(root_dir) + 1:], f)
-                subdir['contents'].append({'name': f, 'path': path, 'url': '/themes/'+theme+'/'+path, 'editable': editable})
+                file_path = os.path.join(path[len(root_dir) + 1:], f)
+                file_url = theme_base_url+file_path
+                subdir['contents'].append({'name': f, 'path': file_path, 'url': file_url, 'editable': editable})
 
         subdir['contents'] = sorted(subdir['contents'], key=itemgetter('name'))
         subdir['contents'].append({'folder_path': path})
@@ -162,7 +164,8 @@ def get_all_files_list(root_dir, theme):
         return files_folders
 
     s3_files_folders = {'contents': []}
-    theme_folder = "%s/%s" % (settings.THEME_S3_PATH, theme)
+    theme_folder = settings.THEME_S3_PATH+'/'+theme
+    theme_base_url = settings.AWS_LOCATION+'/'+theme_folder+'/'
     conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
                            settings.AWS_SECRET_ACCESS_KEY)
     bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
@@ -174,6 +177,7 @@ def get_all_files_list(root_dir, theme):
             editable = True
 
         file_path = item.name.replace(theme_folder, '').lstrip('/')
+        file_url = theme_base_url+file_path
         path_split = file_path.split('/')
         splits = len(path_split)
 
@@ -181,6 +185,7 @@ def get_all_files_list(root_dir, theme):
             s3_files_folders['contents'].append({
                     'name': path_split[0],
                     'path': file_path,
+                    'url': file_url,
                     'editable': editable})
         elif splits == 2:
             if not path_split[0] in s3_files_folders:
@@ -189,6 +194,7 @@ def get_all_files_list(root_dir, theme):
             s3_files_folders[path_split[0]]['contents'].append({
                     'name': path_split[1],
                     'path': file_path,
+                    'url': file_url,
                     'editable': editable})
         elif splits == 3:
             if not path_split[0] in s3_files_folders:
@@ -200,6 +206,7 @@ def get_all_files_list(root_dir, theme):
             s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
                     'name': path_split[2],
                     'path': file_path,
+                    'url': file_url,
                     'editable': editable})
         elif splits == 4:
             if not path_split[0] in s3_files_folders:
@@ -214,6 +221,7 @@ def get_all_files_list(root_dir, theme):
             s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
                     'name': path_split[3],
                     'path': file_path,
+                    'url': file_url,
                     'editable': editable})
 
     return {theme: s3_files_folders}
