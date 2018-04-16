@@ -975,7 +975,8 @@ def corp_renew(request, id,
     if not has_perm(request.user,
                     'corporate_memberships.change_corpmembership',
                     corp_membership):
-        if not corp_membership.allow_edit_by(request.user):
+        # allow renewal for reps - reps are supposed to have the change permission, but they might not have for some reason
+        if not (corp_membership.allow_edit_by(request.user) or corp_membership.is_rep(request.user)):
             raise Http403
 
     if corp_membership.is_renewal_pending:
@@ -1054,6 +1055,10 @@ def corp_renew(request, id,
                                         **opt_d)
                 new_corp_membership.invoice = inv
                 new_corp_membership.save()
+                
+                # assign object permissions
+                corp_membership_update_perms(new_corp_membership)
+
 
                 EventLog.objects.log(instance=corp_membership)
 
