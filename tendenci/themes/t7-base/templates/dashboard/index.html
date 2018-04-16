@@ -212,7 +212,7 @@
         <li><a href="{% url 'settings' %}">{% trans "Enable/Disable modules" %}</a></li>
         <!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
-       <li><a href="{% url "theme_editor.editor" %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
+       <li><a href="{% url "theme_editor.editor" %}?file=templates/homepage.html">{% trans "Theme Editor" %} </a></li>
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
         <li><a href="{% url "recurring_payment.customers" %}">{% trans "Recurring Payments" %}</a></li>
@@ -223,10 +223,10 @@
     <div class="theme-management">
     <h3>{% trans "Update Theme" %}</h3>
     <ul>
-        <li><a href="{% url "theme_editor.editor" %}?file=/media/css/styles.css">{% trans "Update Styles" %}</a></li>
-        <li><a href="{% url "theme_editor.editor" %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
-        <li><a href="{% url "theme_editor.editor" %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
-        <li><a href="{% url "theme_editor.editor" %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
+        <li><a href="{% url "theme_editor.editor" %}?file=media/css/styles.css">{% trans "Update Styles" %}</a></li>
+        <li><a href="{% url "theme_editor.editor" %}?file=templates/homepage.html">{% trans "Update Template" %} </a></li>
+        <li><a href="{% url "theme_editor.editor" %}?file=templates/nav.html">{% trans "Update Navigation" %}</a></li>
+        <li><a href="{% url "theme_editor.editor" %}?file=templates/footer.html">{% trans "Update Footer" %}</a></li>
         <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
     </ul>
     </div>
