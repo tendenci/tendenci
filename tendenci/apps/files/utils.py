@@ -15,7 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
-from tendenci.apps.base.utils import image_rescale
+from tendenci.apps.base.utils import image_rescale, apply_orientation
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.apps.files.models import File as TFile
@@ -75,6 +75,8 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
             image = Image.open(file.path)  # get image
         else:
             raise Http404
+        
+    image = apply_orientation(image)
 
     image_options = {'quality': quality}
     if image.format == 'GIF':

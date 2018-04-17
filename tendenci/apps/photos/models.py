@@ -38,6 +38,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.fields import DictField
+from tendenci.apps.base.utils import apply_orientation
 from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
@@ -221,6 +222,7 @@ class ImageModel(models.Model):
         return False
 
     def resize_image(self, im, photosize):
+        im = apply_orientation(im)
         cur_width, cur_height = im.size
         new_width, new_height = photosize.size
         if photosize.crop:
@@ -261,8 +263,6 @@ class ImageModel(models.Model):
         return im
 
     def create_size(self, photosize):
-        from django.core.files.storage import default_storage
-
         if self.size_exists(photosize):
             return
 
