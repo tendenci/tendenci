@@ -69,6 +69,7 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
+ORIENTATION_EXIF_TAG_KEY = 274
 
 def google_cmap_sign_url(url):
     """ Signs a URL and returns the URL with digital signature for Google static maps API.
@@ -549,11 +550,45 @@ def make_image_object_from_url(image_url):
     return im
 
 
+def apply_orientation(im):
+    """
+    Some photos are taken with camera rotated. The rotated info is stored in the EXIF metadata.
+    But EXIF metadata gets lost when an image is cropped or modified, which can lead to unintended
+    position.
+
+    Extract the orientation info and apply the rotation if needed (before cropping or modifying an image).
+
+    Parameters
+    -----------
+    im : Image
+        An Image instance
+    
+    Returns
+    -------
+    Image 
+        A rotated or original image instance
+    """
+
+    try:
+        if hasattr(im, '_getexif'): # only present in JPEGs
+            image_exif = im._getexif()       # returns None if no EXIF data
+            if image_exif is not None:
+                image_orientation = image_exif.get(ORIENTATION_EXIF_TAG_KEY)
+                if image_orientation:
+                    if image_orientation == 3:
+                        return im.rotate(180)
+                    if image_orientation == 6:
+                        return im.rotate(-90)
+                    if image_orientation == 8:
+                        return im.rotate(90)
+    except:
+        pass 
+    return im
+
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
     format = img.format  # temp. save format
     max_width, max_height = size
-
     if not force:
         img.thumbnail((max_width, max_height), pil.ANTIALIAS)
     else:
