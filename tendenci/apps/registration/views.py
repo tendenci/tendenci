@@ -93,7 +93,8 @@ def activate(request, activation_key,
 
     if extra_context is None:
         context = {}
-    context = {k: (callable(v) and v() or v) for (k, v) in extra_context}
+    else:
+        context = {k: (callable(v) and v() or v) for (k, v) in extra_context.items()}
     context['account'] = account
     context['expiration_days'] = settings.ACCOUNT_ACTIVATION_DAYS
 
