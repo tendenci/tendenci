@@ -217,5 +217,8 @@ def password_reset(request):
     extra_context = {
         'from_registration': from_registration,
     }
-    auth_password_reset = PasswordResetView.as_view()
-    return auth_password_reset(request, form_class=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context=extra_context)
+    auth_password_reset = PasswordResetView.as_view(
+                            form_class = PasswordResetForm,
+                            template_name='accounts/password_reset_form.html',
+                            email_template_name='registration/password_reset_email_user_list.html')
+    return auth_password_reset(request, extra_context=extra_context)

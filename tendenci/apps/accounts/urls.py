@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
         auth_views.password_reset_confirm,
         {'set_password_form': forms.SetPasswordCustomForm, 'template_name': 'registration/custom_password_reset_confirm.html'},
-        name='auth_password_reset_confirm'),
+        name='password_reset_confirm'),
 
     url(r'^password/reset/complete/$',
         auth_views.password_reset_complete,
