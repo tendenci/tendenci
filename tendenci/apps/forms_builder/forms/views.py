@@ -587,9 +587,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     return redirect('invoice.view', invoice.id, invoice.guid)
 
             # default redirect
-            form.completion_url = form.completion_url.strip(' ')
             if form.completion_url:
-                return HttpResponseRedirect(form.completion_url)
+                return HttpResponseRedirect(form.completion_url.strip())
             return redirect("form_sent", form.slug)
 
     # set form's template to forms/base.html if no template or template doesn't exist
