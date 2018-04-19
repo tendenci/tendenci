@@ -356,7 +356,8 @@ class MembershipSet(models.Model):
 
     @property
     def group(self):
-        return self.memberships()[0].group
+        [membership] = self.memberships()[:1] or [None]
+        return membership and membership.group
 
     @property
     def membership_type(self):
@@ -1088,7 +1089,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.status_detail == 'archive':
             return False
 
-        self.status = True,
+        self.status = True
         self.status_detail = 'pending'
 
         # application approved ---------------
