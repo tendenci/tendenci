@@ -749,7 +749,7 @@ def normalize_newline(file_path):
 
     ```file_path``` is a relative path.
     """
-    data = default_storage.open(file_path).read()
+    data = default_storage.open(file_path).read().decode('utf-8')
     data = data.replace('\r\n', '\n').replace('\r', '\n')
     f = default_storage.open(file_path, 'w')
     f.write(data)

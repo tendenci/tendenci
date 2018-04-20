@@ -322,7 +322,7 @@ class MembershipDefaultUploadForm(forms.ModelForm):
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
-        file_content = upload_file.read()
+        file_content = upload_file.read().decode("utf-8")
         upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]

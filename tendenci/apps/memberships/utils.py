@@ -920,17 +920,17 @@ def memb_import_parse_csv(mimport):
     Parse csv data into a dictionary.
     """
     normalize_newline(mimport.upload_file.name)
-    csv_reader = csv.reader(
-        default_storage.open(mimport.upload_file.name, 'rU'))
-    fieldnames = next(csv_reader)
-    fieldnames = normalize_field_names(fieldnames)
-
-    data_list = []
-
-    for row in csv_reader:
-        data_list.append(dict(zip(fieldnames, row)))
-
-    return fieldnames, data_list
+    with default_storage.open(mimport.upload_file.name, "rt") as csvfile:
+        csv_reader = csv.reader(csvfile)
+        fieldnames = next(csv_reader)
+        fieldnames = normalize_field_names(fieldnames)
+    
+        data_list = []
+    
+        for row in csv_reader:
+            data_list.append(dict(zip(fieldnames, row)))
+    
+        return fieldnames, data_list
 
 
 def check_missing_fields(memb_data, key, **kwargs):
