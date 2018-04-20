@@ -257,7 +257,11 @@ def assign_fields(form, app_field_objs, instance=None):
             if obj.field_name == 'payment_method':
                 if 'payment_method' in form.fields:
                     del form.fields['payment_method']
-                obj.display_content = instance.payment_method
+                if instance.payment_method:
+                    obj.display_content = instance.payment_method
+                else:
+                    obj.display_only = False
+                
                 if instance.invoice:
                     obj.display_content = """%s - <a href="%s">View Invoice</a>
                                         """ % (obj.display_content,
