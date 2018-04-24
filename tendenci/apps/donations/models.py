@@ -39,6 +39,12 @@ class Donation(models.Model):
         app_label = 'donations'
 
     def save(self, user=None, *args, **kwargs):
+        for field in self._meta.fields:
+            # avoid saving as null for the string-based fields
+            field_name = field.name
+            if getattr(self, field_name) is None and field.null and field.get_internal_type() in ['CharField', 'CharField']:
+                setattr(self,field_name, field.get_default())
+            
         if not self.id:
             self.guid = str(uuid.uuid4())
             if user and user.id:
