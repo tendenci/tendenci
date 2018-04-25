@@ -56,7 +56,7 @@ class GenerateForm(forms.Form):
 
 
 class OldGenerateForm(forms.ModelForm):
-    default_template = forms.ChoiceField(widget=forms.RadioSelect, choices=get_default_template_choices())
+    default_template = forms.ChoiceField(widget=forms.RadioSelect, choices=())
     class Meta:
         model = Newsletter
         fields = "__all__"
@@ -74,6 +74,7 @@ class OldGenerateForm(forms.ModelForm):
         'date_created', 'date_submitted', 'date_email_sent', 'email_sent_count',
         'date_last_resent', 'resend_count']
         self.fields['default_template'].blank = False
+        self.fields['default_template'].choices = get_default_template_choices()
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
         self.fields['event_start_dt'].initial = datetime.date.today()

@@ -175,25 +175,20 @@
 
         <h2>{% trans "Newsletter Templates" %}</h2>
         <hr />
-
         <div class="template_list">
           <div class="radio">
-            <ul class="list-unstyled">
+            <ul>
               {% for choice in form.default_template %}
-              {% if choice.choice_value %}
-
               <li class="template-item">
                 <div class="radio">
                   {{ choice.tag }}
-                  <a href="{% url 'newsletter.default_template' %}?template_name={{ choice.choice_value }}">
+                  <a href="{% url 'newsletter.default_template' %}?template_name={{ choice.data.value }}">
                     &nbsp; {{ choice.choice_label }}
                   </a>
-                  <!-- <iframe class="iframe" frameborder="0" width="100%" src="{% url 'newsletter.default_template' %}?template_name={{ choice.choice_value }}"></iframe>
+                  <!-- <iframe class="iframe" frameborder="0" width="100%" src="{% url 'newsletter.default_template' %}?template_name={{ choice.data.value }}"></iframe>
                   -->
                 </div>
               </li>
-
-              {% endif %}
               {% endfor %}
             </ul>
           </div>
