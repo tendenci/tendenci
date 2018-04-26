@@ -247,6 +247,7 @@ def run_a_recurring_payment(rp, verbosity=0):
         rp_invoices = RecurringPaymentInvoice.objects.filter(
                                              recurring_payment=rp,
                                              invoice__balance__gt=0,
+                                             invoice__is_void=False,
                                              billing_dt__lte=datetime.now()
                                              ).order_by('id')
 
