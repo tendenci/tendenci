@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
+from tendenci.apps.theme.templatetags.static import static
 
 from markdown import Markdown
 import bleach
@@ -12,15 +13,15 @@ class MarkdownWidget(Textarea):
     class Media:
         css = {
             'all': (
-                'markitup/skins/simple/style.css',
-                'markitup/sets/markdown/style.css',
+                static('markitup/skins/simple/style.css'),
+                static('markitup/sets/markdown/style.css'),
             ),
         }
         js = (
-            'markitup/ajax_csrf.js',
-            'markitup/jquery.markitup.js',
-            'markitup/sets/markdown/set.js',
-            'pybb/js/markitup.js',
+            static('markitup/ajax_csrf.js'),
+            static('markitup/jquery.markitup.js'),
+            static('markitup/sets/markdown/set.js'),
+            static('pybb/js/markitup.js'),
         )
 
     def render(self, *args, **kwargs):

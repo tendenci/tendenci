@@ -116,7 +116,7 @@ class PostForm(forms.ModelForm):
                 del self.fields['slug']
 
         self.available_smiles = {
-            smile: defaults.PYBB_SMILES_PREFIX+url for smile, url in defaults.PYBB_SMILES
+            smile: defaults.PYBB_SMILES_PREFIX+url for smile, url in defaults.PYBB_SMILES.items()
         }
 
         # add form-control class
