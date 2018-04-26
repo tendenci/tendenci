@@ -182,7 +182,7 @@ class RecurringPaymentEmailNotices(object):
                                                 'site_display_name': self.site_display_name,
                                                 'site_url': self.site_url
                                                 })
-                self.email.body = email_content + self.self.email_footer
+                self.email.body = email_content + self.email_footer
                 self.email.content_type = "html"
                 self.email.subject = _('Please update your payment method for %(rp)s on %(dname)s' % {
                                     'rp': recurring_payment.description,
