@@ -2,7 +2,6 @@ Django>=1.8,<1.9
 django-formtools>=1.0
 pisa
 Reportlab==3.3.0
-html5lib==0.9999999
 Pillow==4.2.1
 anyjson>=0.2.4
 django-authority>=0.4
@@ -65,6 +64,6 @@ Embedly>=0.5.0
 django-bootstrap-form>=3.1,<4
 email-reply-parser
 django-markdown-deux
-xhtml2pdf
+xhtml2pdf==0.2.2
 python-magic
 XlsxWriter==0.9.6
