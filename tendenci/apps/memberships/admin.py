@@ -132,7 +132,7 @@ def disapprove_selected(modeladmin, request, queryset):
     qs_pending = Q(status_detail='pending')
     qs_active = Q(status_detail='active')
 
-    memberships = queryset.filter(qs_pending, qs_active)
+    memberships = queryset.filter(qs_pending | qs_active)
 
     for membership in memberships:
         is_renewal = membership.is_renewal()
