@@ -380,10 +380,13 @@ class RecurringPayment(models.Model):
     def get_last_billing_cycle(self):
         rp_invs = RecurringPaymentInvoice.objects.filter(
                             recurring_payment=self).order_by('-billing_cycle_start_dt')
-        if rp_invs and self.billing_start_dt <= rp_invs[0].billing_cycle_start_dt:
-            return (rp_invs[0].billing_cycle_start_dt, rp_invs[0].billing_cycle_end_dt)
-        else:
-            return None
+        if rp_invs:
+            if self.has_trial_period and self.within_trial_period():
+                return (rp_invs[0].billing_cycle_start_dt, rp_invs[0].billing_cycle_end_dt)
+
+            if self.billing_start_dt <= rp_invs[0].billing_cycle_start_dt:
+                return (rp_invs[0].billing_cycle_start_dt, rp_invs[0].billing_cycle_end_dt)
+        return None
 
     def billing_cycle_t2d(self, billing_cycle):
         # convert tuple to dict
