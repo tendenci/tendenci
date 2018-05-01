@@ -1406,6 +1406,10 @@ class CorpMembershipApp(TendenciBaseModel):
 
         return current_app and current_app.id == self.id
 
+    def is_active(self):
+        """Check if status application is 'active'."""
+        return self.status and self.status_detail == 'active'
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -1422,9 +1426,14 @@ class CorpMembershipApp(TendenciBaseModel):
                 self.add_member_reps_group()
 
     def application_form_link(self):
-        if self.is_current():
-            return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
-                                            self.slug)
+        if self.is_active():
+            if self.is_current():
+                return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
+                                                self.slug)
+            else:
+                return '<a href="%s">%s</a>' % (reverse('corpmembership.add',
+                                                        kwargs={'slug': self.slug}
+                                                        ), self.slug)
         return '--'
 
     application_form_link.allow_tags = True
