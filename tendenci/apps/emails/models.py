@@ -94,7 +94,7 @@ class Email(TendenciBaseModel):
         if self.sender_display:
             # Add quotes around display name to prevent errors on sending
             # When display name contains comma or other control characters,
-            headers['From'] = '"%s"<%s>' % (self.sender_display, self.sender)
+            headers['From'] = '"%s" <%s>' % (self.sender_display, self.sender)
         if self.priority and self.priority == 1:
             headers['X-Priority'] = '1'
             headers['X-MSMail-Priority'] = 'High'
