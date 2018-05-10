@@ -10,12 +10,12 @@
 }
 
 .levelLeft {
-	background-image: url('/static/images/arrow-left.jpg');
+	background-image: url('../../images/arrow-left.jpg');
 }
 
 .levelRight {
 	margin-left: 10px;
-	background-image: url('/static/images/arrow-right.jpg');
+	background-image: url('../../images/arrow-right.jpg');
 }
 
 
