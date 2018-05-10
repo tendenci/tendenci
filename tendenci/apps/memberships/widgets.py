@@ -400,7 +400,7 @@ class CustomRadioSelect(forms.RadioSelect):
     option_template_name = 'widgets/custom_radio_option.html'
     def create_option(self, *args, **kwargs):
         option = super(CustomRadioSelect, self).create_option(*args, **kwargs)
-        option['label'] = mark_safe(conditional_escape(force_text(self.choice_label)))
+#         option['label'] = mark_safe(conditional_escape(force_text(self.choice_label)))
         return option
 
 
