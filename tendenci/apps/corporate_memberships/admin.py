@@ -616,6 +616,13 @@ class CorpMembershipRepAdmin(admin.ModelAdmin):
     
     ordering = ['corp_profile']
     
+    def get_queryset(self, request):
+        """
+        Excludes those associated with the deleted corp profiles
+        """
+        return super(CorpMembershipRepAdmin, self).get_queryset(request
+                    ).filter(corp_profile__status=True)
+    
     def profile(self, instance):
         return '<a href="%s">%s</a>' % (
               reverse('admin:corporate_memberships_corpprofile_change',
