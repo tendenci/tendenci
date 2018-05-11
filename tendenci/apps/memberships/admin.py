@@ -678,7 +678,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         for i, field in enumerate(form.type_exp_method_fields):
             if field == 'fixed_option2_can_rollover':
                 if type_exp_method_list[i] == '':
-                    type_exp_method_list[i] = ''
+                    type_exp_method_list[i] = False
             else:
                 if type_exp_method_list[i] == '':
                     type_exp_method_list[i] = "0"
