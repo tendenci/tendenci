@@ -9,7 +9,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from .utils import get_embedly_client
 
 class VideoForm(TendenciBaseForm):
-    release_dt = forms.DateTimeField(label=_('Release Date/Time'))
+    release_dt = forms.SplitDateTimeField(label=_('Release Date/Time'))
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Video._meta.app_label,

@@ -741,6 +741,6 @@ except ImportError:
     pass
 
 def EXPLORER_PERMISSION_VIEW(u):
-    u.is_superuser
+    return u.is_superuser
 def EXPLORER_PERMISSION_CHANGE(u):
-    u.is_superuser
+    return u.is_superuser
