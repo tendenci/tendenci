@@ -9,6 +9,7 @@ from tendenci.apps.stories.forms import StoryAdminForm
 from tendenci.apps.stories.utils import copy_story
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.theme.templatetags.static import static
 
 
 class StoryAdmin(TendenciBaseModelAdmin):
@@ -46,13 +47,13 @@ class StoryAdmin(TendenciBaseModelAdmin):
 
     class Media:
         css = {
-            "all": ("css/websymbols.css",)
+            "all": (static("css/websymbols.css"),)
         }
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            'js/admin/admin-list-reorder.js',
-            'js/global/tinymce.event_handlers.js',
+            static('js/admin/admin-list-reorder.js'),
+            static('js/global/tinymce.event_handlers.js'),
         )
 
     def save_model(self, request, object, form, change):
@@ -130,7 +131,7 @@ class RotatorAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             'js/admin/rotator-story-inline-ordering.js',
         )
-        css = {'all': ['css/admin/dynamic-inlines-with-sort.css'], }
+        css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
 
 
 admin.site.register(Story, StoryAdmin)

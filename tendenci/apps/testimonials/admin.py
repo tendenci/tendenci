@@ -9,6 +9,7 @@ from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.testimonials.models import Testimonial
 from tendenci.apps.testimonials.forms import TestimonialForm
 from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.theme.templatetags.static import static
 
 
 class TestimonialAdmin(TendenciBaseModelAdmin):
@@ -61,7 +62,7 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            'js/admin/admin-list-reorder.js',
+            static('js/admin/admin-list-reorder.js'),
         )
 
     def save_model(self, request, object, form, change):

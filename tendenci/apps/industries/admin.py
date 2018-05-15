@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.industries.forms import IndustryForm
+from tendenci.apps.theme.templatetags.static import static
 
 
 class IndustryAdmin(TendenciBaseModelAdmin):
@@ -40,8 +41,8 @@ class IndustryAdmin(TendenciBaseModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            'js/admin/admin-list-reorder.js',
-            'js/global/tinymce.event_handlers.js',
+            static('js/admin/admin-list-reorder.js'),
+            static('js/global/tinymce.event_handlers.js'),
         )
 
 admin.site.register(Industry, IndustryAdmin)

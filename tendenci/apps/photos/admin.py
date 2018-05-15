@@ -5,6 +5,7 @@ from tendenci.apps.photos.forms import PhotoSet, PhotoSetAddForm
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.theme.templatetags.static import static
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'update_dt', 'create_dt', 'tags', 'position')
@@ -38,7 +39,7 @@ class PhotoAdmin(admin.ModelAdmin):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
-            'js/admin/admin-list-reorder.js',
+            static('js/admin/admin-list-reorder.js'),
         )
 
     def log_deletion(self, request, object, object_repr):
