@@ -27,12 +27,12 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_to_company = make_payment.company
     inv.ship_to_address = '%s %s' % (make_payment.address,
                                      make_payment.address2)
-    inv.ship_to_city = make_payment.city
-    inv.ship_to_state = make_payment.state
-    inv.ship_to_zip_code =  make_payment.zip_code
-    inv.ship_to_country = make_payment.country
-    inv.ship_to_phone =  make_payment.phone
-    inv.ship_to_email = make_payment.email
+    inv.ship_to_city = make_payment.city or ''
+    inv.ship_to_state = make_payment.state or ''
+    inv.ship_to_zip_code =  make_payment.zip_code or ''
+    inv.ship_to_country = make_payment.country or ''
+    inv.ship_to_phone =  make_payment.phone or ''
+    inv.ship_to_email = make_payment.email or ''
     inv.terms = "Due on Receipt"
     inv.due_date = datetime.now()
     inv.ship_date = datetime.now()
