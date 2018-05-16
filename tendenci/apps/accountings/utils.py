@@ -76,7 +76,7 @@ def make_acct_entries_sale(user, obj, acct_entry, amount, **kwargs):
     #CREDIT SALES
     acct_number = ''
     if obj and hasattr(obj, 'get_acct_number'):
-        acct_number = obj.get_acct_number
+        acct_number = obj.get_acct_number()
         if not Acct.objects.filter(account_number=acct_number).exists():
             acct_number = ''
 
@@ -214,7 +214,7 @@ def make_acct_entries_sale_reversing(user,
     # DEBIT SALES
     acct_number = ''
     if obj and hasattr(obj, 'get_acct_number'):
-        acct_number = obj.get_acct_number
+        acct_number = obj.get_acct_number()
         if not Acct.objects.filter(account_number=acct_number).exists():
             acct_number = ''
 
