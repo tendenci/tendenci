@@ -59,42 +59,6 @@ def get_admin_auth_group(name="Admin"):
 
     return auth_group
 
-def user_add_remove_admin_auth_group(user, auth_group=None):
-    """
-    if user is admin and not on admin auth group, add them.
-    if user is not admin but on admin auth group, remove them
-    """
-    if user.is_staff and (not user.is_superuser):   # they are admin
-        if not auth_group:
-            if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
-                auth_group_name = settings.ADMIN_AUTH_GROUP_NAME
-            else:
-                auth_group_name = 'Admin'
-            auth_group = get_admin_auth_group(name=auth_group_name)
-
-        if not user.id: # new user
-            user.groups = [auth_group]
-            user.save()
-
-        else:           # existing user
-            group_updated = False
-            user_edit_auth_groups = user.groups.all()
-            if user_edit_auth_groups:
-                if auth_group not in user_edit_auth_groups:
-                    user_edit_auth_groups.append(auth_group)
-                    user.groups = user_edit_auth_groups
-                    group_updated = True
-            else:
-                user.groups = [auth_group]
-                group_updated = True
-
-            if group_updated:
-                user.save()
-
-    else:
-        if user.id:
-            user.groups = []
-            user.save()
 
 def get_groups(user, filter=None):
     """

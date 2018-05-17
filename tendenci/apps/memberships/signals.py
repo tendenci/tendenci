@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_noop as _
 from tendenci.apps.memberships.models import MembershipDefault, MembershipApp
 from tendenci.apps.contributions.signals import save_contribution
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.perms.utils import update_admin_group_perms
 
 
 def check_and_update_membs_app_id(sender, **kwargs):
@@ -100,13 +99,7 @@ def create_notice_types(app, verbosity, **kwargs):
         verbosity=verbosity)
 
 
-# assign models permissions to the admin auth group
-def assign_permissions(app, **kwargs):
-    update_admin_group_perms()
-
-
 post_save.connect(save_contribution, sender=MembershipDefault, weak=False)
 post_delete.connect(update_membs_app_id, sender=MembershipApp, weak=False)
 post_save.connect(check_and_update_membs_app_id, sender=MembershipApp, weak=False)
-post_migrate.connect(create_notice_types, sender=notification)
-post_migrate.connect(assign_permissions, sender=__file__)
+post_migrate.connect(create_notice_types, sender=MembershipDefault)

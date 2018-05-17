@@ -304,26 +304,6 @@ def get_notice_recipients(scope, scope_category, setting_name):
     return recipients
 
 
-# create Admin auth group if not exists and assign all permisstions (but auth) to it
-def update_admin_group_perms():
-    if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
-        name = settings.ADMIN_AUTH_GROUP_NAME
-    else:
-        name = 'Admin'
-
-    try:
-        auth_group = Auth_Group.objects.get(name=name)
-    except Auth_Group.DoesNotExist:
-        auth_group = Auth_Group(name=name)
-        auth_group.save()
-
-    # assign permission to group, but exclude the auth content
-    content_to_exclude = ContentType.objects.filter(app_label='auth')
-    permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
-    auth_group.permissions = permissions
-    auth_group.save()
-
-
 def _specific_view(user, obj):
     """
     determines if a user has specific permissions to view the object.

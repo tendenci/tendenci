@@ -498,8 +498,6 @@ SSL_ENABLED = False
 SITE_CACHE_KEY = 'tendenci'
 CACHE_PRE_KEY = SITE_CACHE_KEY
 
-# Initial Admin Group
-ADMIN_AUTH_GROUP_NAME = 'Admin'
 
 # This is the number of days users will have to activate their
 # accounts after registering. If a user does not activate within
