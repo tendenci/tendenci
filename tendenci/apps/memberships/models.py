@@ -941,7 +941,7 @@ class MembershipDefault(TendenciBaseModel):
         else:
             return False
 
-        dupe.status = True,
+        dupe.status = True
         dupe.status_detail = 'active'
 
         dupe.renewal = True
@@ -1002,7 +1002,7 @@ class MembershipDefault(TendenciBaseModel):
 
         NOW = datetime.now()
 
-        self.status = True,
+        self.status = True
         self.status_detail = 'disapproved'
 
         # application approved/denied ---------------
