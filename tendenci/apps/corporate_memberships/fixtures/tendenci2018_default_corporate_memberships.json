@@ -1433,6 +1433,27 @@
 },
 {
     "fields": {
+        "default_value": "",
+        "field_type": "FileField",
+        "corp_app": 1,
+        "description": "",
+        "css_class": "",
+        "required": false,
+        "label": "Logo",
+        "help_text": "",
+        "field_layout": "1",
+        "admin_only": false,
+        "position": 0,
+        "choices": null,
+        "field_name": "logo_file",
+        "display": false,
+        "size": "m"
+    },
+    "model": "corporate_memberships.corpmembershipappfield",
+    "pk": 48
+},
+{
+    "fields": {
         "name": "tendenci.com",
         "corp_profile": 1
     },
