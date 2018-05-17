@@ -238,7 +238,7 @@ def assign_fields(form, app_field_objs, instance=None):
     field_names = [field.field_name for field in app_field_objs
                    if field.field_name != '' and
                    field.field_name in form.fields]
-    for name in form.fields:
+    for name in list(form.fields):
         if name not in field_names:
             del form.fields[name]
     # update the field attrs - label, required...
