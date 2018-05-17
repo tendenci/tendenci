@@ -190,8 +190,8 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             'instance': object,
         })
 
-    def log_addition(self, request, object):
-        super(CustomRegFormAdmin, self).log_addition(request, object)
+    def log_addition(self, request, object, message):
+        super(CustomRegFormAdmin, self).log_addition(request, object, message)
         log_defaults = {
             'event_id': 176100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,

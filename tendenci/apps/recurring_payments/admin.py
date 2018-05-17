@@ -186,8 +186,8 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         }
         EventLog.objects.log(**log_defaults)
 
-    def log_addition(self, request, object):
-        super(RecurringPaymentAdmin, self).log_addition(request, object)
+    def log_addition(self, request, object, message):
+        super(RecurringPaymentAdmin, self).log_addition(request, object, message)
         log_defaults = {
             'event_id' : 1120100,
             'event_data': '%s for %s(%d) added by %s' % (object._meta.object_name,

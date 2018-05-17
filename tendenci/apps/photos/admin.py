@@ -68,8 +68,8 @@ class PhotoAdmin(admin.ModelAdmin):
         }
         EventLog.objects.log(**log_defaults)
 
-    def log_addition(self, request, object):
-        super(PhotoAdmin, self).log_addition(request, object)
+    def log_addition(self, request, object, message):
+        super(PhotoAdmin, self).log_addition(request, object, message)
         log_defaults = {
             'event_id' : 990100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,
