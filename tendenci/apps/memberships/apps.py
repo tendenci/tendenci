@@ -1,4 +1,6 @@
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
+
 
 class MembershipsConfig(AppConfig):
     name = 'tendenci.apps.memberships'
@@ -6,4 +8,6 @@ class MembershipsConfig(AppConfig):
 
     def ready(self):
         super(MembershipsConfig, self).ready()
-        import tendenci.apps.memberships.signals  # noqa:F401
+        from tendenci.apps.memberships.signals import init_signals, create_notice_types
+        init_signals()
+        post_migrate.connect(create_notice_types, sender=self)

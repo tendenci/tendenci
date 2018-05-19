@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, post_delete, post_migrate
+from django.db.models.signals import post_save, post_delete
 from django.utils.translation import ugettext_noop as _
 from tendenci.apps.memberships.models import MembershipDefault, MembershipApp
 from tendenci.apps.contributions.signals import save_contribution
@@ -31,7 +31,8 @@ def switch_memberships_app_id(app_from):
         MembershipDefault.objects.filter(app_id=app_from.id).update(app=app)
 
 
-def create_notice_types(app, verbosity, **kwargs):
+def create_notice_types(sender, **kwargs):
+    verbosity = kwargs.get('verbosity', 2)
     notification.create_notice_type(
         "user_welcome",
         _("User Welcome"),
@@ -99,7 +100,7 @@ def create_notice_types(app, verbosity, **kwargs):
         verbosity=verbosity)
 
 
-post_save.connect(save_contribution, sender=MembershipDefault, weak=False)
-post_delete.connect(update_membs_app_id, sender=MembershipApp, weak=False)
-post_save.connect(check_and_update_membs_app_id, sender=MembershipApp, weak=False)
-post_migrate.connect(create_notice_types, sender=MembershipDefault)
+def init_signals():
+    post_save.connect(save_contribution, sender=MembershipDefault, weak=False)
+    post_delete.connect(update_membs_app_id, sender=MembershipApp, weak=False)
+    post_save.connect(check_and_update_membs_app_id, sender=MembershipApp, weak=False)

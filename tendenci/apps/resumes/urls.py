@@ -1,10 +1,7 @@
 from django.conf.urls import url
-from tendenci.apps.resumes.signals import init_signals
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
 from .feeds import LatestEntriesFeed
-
-init_signals()
 
 urlpath = get_setting('module', 'resumes', 'url')
 if not urlpath:

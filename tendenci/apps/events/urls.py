@@ -1,10 +1,7 @@
 from django.conf.urls import url
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.events.signals import init_signals
 from . import views
 from .feeds import LatestEntriesFeed
-
-init_signals()
 
 urlpath = get_setting('module', 'events', 'url')
 if not urlpath:

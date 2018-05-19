@@ -1,5 +1,60 @@
+from __future__ import print_function
+from django.utils.translation import ugettext_noop as _
+
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.notifications import models as notification
+
+def create_notice_types(sender, **kwargs):
+    verbosity = kwargs.get('verbosity', 2)
+    notification.create_notice_type(
+                "corp_memb_added",
+                _("Corporate Membership Added"),
+                _("A corporate membership has been added."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_added_user",
+                _("Corporate Membership Added User Notice"),
+                _("A corporate membership has been added " +
+                  "- notice to user."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_edited",
+                _("Corporate Membership Edited"),
+                _("A corporate membership  has been edited."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_renewed",
+                _("Corporate Membership Renewed"),
+                _("A corporate membership has been renewed."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_renewed_user",
+                _("Corporate Membership Renewal User Notice"),
+                _("A corporate membership has been renewed " +
+                  "- notice to user."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_join_approved",
+                _("Corporate Membership Approved"),
+                _("A new corporate membership has been approved."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_renewal_approved",
+                _("Corporate Membership Renewal Approved"),
+                _("The corporate membership renewal has been approved."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_paid",
+                _("Payment Received for Corporate Membership"),
+                _("Payment for a corporate membership has been received."),
+                verbosity=verbosity)
+    notification.create_notice_type(
+                "corp_memb_notice_email",
+                _("Corporate Membership Notice Email"),
+                _("Custom Notice for Corporate Memberships"),
+                verbosity=verbosity)
+
 
 group_id = get_setting('module', 'corporate_memberships', 'corpmembershiprepsgroupid')
 reps_group = None

@@ -1,9 +1,6 @@
 from django.conf.urls import url
-from tendenci.apps.user_groups.signals import init_signals
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
-
-init_signals()
 
 urlpath = get_setting('module', 'user_groups', 'url')
 if not urlpath:
