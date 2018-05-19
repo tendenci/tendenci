@@ -304,9 +304,9 @@ def get_formatted_messages(formats, label, context):
         template_ext = splitext(format)[1]
 
         if template_ext == '.txt':
-            context.autoescape = False
+            context['autoescape'] = False
         else:
-            context.autoescape = True
+            context['autoescape'] = True
 
         list_of_templates = (
             'notification/%s/%s' % (label, format),
@@ -370,9 +370,10 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     })
 
     # test for request in the extra_context
-    request = None
     if 'request' in extra_context:
         request = extra_context['request']
+    else:
+        request = None
 
     # get prerendered format messages
     messages = get_formatted_messages(formats, label, extra_context)
