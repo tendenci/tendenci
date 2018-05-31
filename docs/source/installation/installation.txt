@@ -201,7 +201,7 @@ Create a new Django project based on the Tendenci template:
 
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/tendenci8.zip tendenci
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/tendenci11.zip tendenci
     sudo chown root /var/www/
 
 Set up some directories appropriately:
