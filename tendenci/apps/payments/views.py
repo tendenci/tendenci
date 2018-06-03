@@ -1,5 +1,3 @@
-import logging
-
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -17,10 +15,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 
 
-logger = logging.getLogger(__name__)
-
-
-def pay_online(request, invoice_id, guid="", merchant_account=None, template_name="payments/pay_online.html"):
+def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.html"):
     # check if they have the right to view the invoice
     invoice = get_object_or_404(Invoice, pk=invoice_id)
     if not invoice.allow_view_by(request.user, guid):
@@ -41,7 +36,7 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
 
     # post payment form to gateway and redirect to the vendor so customer can pay from there
     if boo:
-        merchant_account = merchant_account or (get_setting("site", "global", "merchantaccount")).lower()
+        merchant_account = (get_setting("site", "global", "merchantaccount")).lower()
 
         if merchant_account == 'stripe':
             return HttpResponseRedirect(reverse('stripe.payonline', args=[payment.id]))
@@ -67,9 +62,6 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
                 form = prepare_paypal_form(request, payment)
                 post_url = settings.PAYPAL_POST_URL
             else:   # more vendors
-                logger.error(
-                    '"{}" did not match a known online payment method. Check the PaymentMethod.machine_name.'.format(
-                    merchant_account))
                 form = None
                 post_url = ""
     else:
