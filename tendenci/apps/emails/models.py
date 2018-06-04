@@ -11,7 +11,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.email_blocks.models import EmailBlock
-from tendenci.apps.base.utils import add_tendenci_footer
+from tendenci.apps.base.utils import add_tendenci_footer, is_valid_domain
 
 
 class Email(TendenciBaseModel):
@@ -103,11 +103,11 @@ class Email(TendenciBaseModel):
         # remove blocked from recipient_list and recipient_bcc_list
         temp_recipient_list = copy.copy(recipient_list)
         for e in temp_recipient_list:
-            if self.is_blocked(e):
+            if self.is_blocked(e) or not is_valid_domain(e):
                 recipient_list.remove(e)
         temp_recipient_bcc_list = copy.copy(recipient_bcc_list)
         for e in temp_recipient_bcc_list:
-            if self.is_blocked(e):
+            if self.is_blocked(e) or not is_valid_domain(e):
                 recipient_bcc_list.remove(e)
 
         if recipient_list or recipient_bcc_list:

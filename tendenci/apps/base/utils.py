@@ -43,6 +43,7 @@ from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html, strip_tags
 from django.utils.translation import ugettext as _
+from django.core.validators import EmailValidator
 
 from django.utils.functional import Promise
 from django.core.serializers.json import DjangoJSONEncoder
@@ -72,6 +73,15 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 
 ORIENTATION_EXIF_TAG_KEY = 274
+
+
+def is_valid_domain(email_domain):
+    """
+    Check if it's a valid email domain.
+    """
+    if '@' in email_domain:
+        email_domain = email_domain.rsplit('@', 1)[1]
+    return EmailValidator().validate_domain_part(email_domain)
 
 
 def google_cmap_sign_url(url):
@@ -986,7 +996,7 @@ def truncate_words(s, num, end_text='...'):
 def validate_email(s, quiet=True):
     try:
         _validate_email(s)
-        return True
+        return is_valid_domain(s)
     except Exception as e:
         if not quiet:
             raise e
