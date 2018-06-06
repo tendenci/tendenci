@@ -764,6 +764,7 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         search_field_names_list = kwargs.pop('names_list')
+        user = kwargs.pop('user')
         super(CorpMembershipSearchForm, self).__init__(*args, **kwargs)
         # add industry field if industry exists
         app = CorpMembershipApp.objects.current_app()
@@ -799,6 +800,8 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
             if len(label) > 30:
                 label = '%s...' % label[:30]
             search_choices.append((field.field_name, label))
+        if user and user.is_superuser:
+            search_choices.append(('status_detail', 'Status Detail'))
         self.fields['search_criteria'].choices = search_choices
 
 
