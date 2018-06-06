@@ -1,0 +1,39 @@
+Community support
+=================
+
+There are a number of possible ways to interact with the Tendenci community,
+they are listed in approximately descending order of immediacy.
+
+
+Community Matrix.org channel
+----------------------------
+
+Several members of the Tendenci community use a channel - tendenci-dev - on
+Matrix.org for closer-to-real-time discussion. They can be joined via the `Riot
+web client`_ or an installed app of your choice.
+
+.. _Riot web client: https://riot.im/app/#/directory
+
+
+GitHub
+------
+
+Tendenci has a number of repositories hosted on GitHub and their issue trackers
+can be used for user support where needed though the preferred location for most
+issues is the `Tendenci`_ repository.
+
+GitHub should also be used for queries related to development of Tendenci.
+
+.. _Tendenci: https://github.com/tendenci/tendenci/issues
+
+
+Forum for other discussion
+--------------------------
+
+If you would like a forum instead, Tendenci `offers a forum`_ on their domain.
+The forum can't be subscribed to, so there is an element of chance whether
+someone will see a post.
+
+.. _offers a forum: https://www.tendenci.com/forums/
+
+
