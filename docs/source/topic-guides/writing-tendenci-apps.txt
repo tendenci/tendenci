@@ -1,0 +1,122 @@
+Installing Existing software
+============================
+
+Tendenci comes with many `applications built in`_ but sometimes it doesn't meet all possible requirements.
+
+.. _applications built in: https://github.com/tendenci/tendenci/tree/master/tendenci/apps
+
+Did you know that almost all Django applications can be integrated with Tendenci? That means almost all of the packages at `Django packages`_ or `Awesome Django`_ can be integrated with your Tendenci site - with a little work - to augment its function.
+
+.. _Django packages: https://djangopackages.org
+.. _Awesome Django: http://awesome-django.com
+
+
+Developing custom extensions or Wrapping existing software
+==========================================================
+
+If you want to make a Django app in to a full Tendenci application some extra
+work is required on top of the work required to `build a Django application`.
+
+.. _build a Django application: https://docs.djangoproject.com/en/2.0/#first-steps
+
+When writing a Tendenci specific app - or wrapping an existing Django project
+in a blanket of Tendenci - the following must to be kept in mind.
+
+
+Application Registry
+--------------------
+
+`app_registry.py`_ is used to register various bits of information about apps
+which can be divided in to four broad categories:
+
+.. app_registry.py: https://github.com/tendenci/tendenci/blob/master/tendenci/apps/registry/register.py
+
+- Core: Applications which are part of Tendenci (where possible avoid this)
+- Apps: Applications which are addons (probably for you!)
+- People: Applications which manage people
+- Logs: Applications which log, but don't fit in the two categories above
+
+If includeded app_registry.py must (should?) contain some registrations.
+
+Registration contents
+^^^^^^^^^^^^^^^^^^^^^
+
+While optional, registration gives Tendenci access to more metadata (and configuration
+preferences) for your application.
+
+TODO: why is that useful?
+
+In its simplest form, an applications model is registered to CoreRegistry using
+auto detected values
+
+::
+
+  from my.custom.models import HandyExtension
+  site.register(HandyExtension)
+
+
+A comprehensive example based on the 'newsletter' app with all valid fields
+follows, but the full list of fields (and further example) are available in
+`apps.registry.base`_.
+
+.. `apps.registry.base`: https://github.com/tendenci/tendenci/blob/master/tendenci/apps/registry/base.py#L57
+
+::
+
+  from tendenci.apps.registry.sites import site
+  from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+  from tendenci.apps.newsletters.models import Newsletter
+
+  class NewsletterRegistry(CoreRegistry):
+      __doc__ = "This is an example of a Tendenci application"
+      version = '0.1'
+      author = 'Tendenci contributor'
+      author_email = 'tendenci@example.com'
+      description = 'Do special things to enhance Tendenci'
+      packages = ('somepackage', 'anotherpackage')
+      icon = '/path/to/icon.png'
+
+      # TODO: what are the numbers?
+      event_logs = {
+          'newsletter':{
+              'add': ('136000','DD3300'),
+              'edit': ('136100', 'DD3311'),
+              'detail': ('136200', 'DD3322'),
+              'send': ('136300', 'DD3333'),
+              'resend': ('136400', 'DD3344')
+          }
+      }
+      # TODO: do these map directly to urls on the app?
+      url = {
+          'add': lazy_reverse('newsletter.orig.generator'),
+          'search': lazy_reverse('newsletter.list'),
+      }
+
+  site.register(Newsletter, NewsletterRegistry)
+
+
+Templates
+---------
+
+Custom templates are discussed in :doc:`../topic-guides/custom_templates` and
+covered in depth by Djangos `templates`_ documentation.
+
+.. templates: https://docs.djangoproject.com/en/2.0/ref/templates/
+
+Remember if you are making a wrapper around a Django application you will
+probably need to customise its templates in your Tendenci wrapper application.
+
+
+Memberships are key
+-------------------
+
+Tendenci's main connection between apps is via its membership models
+
+TBD
+
+
+
+other tendenci specifics
+------------------------
+
+
