@@ -1,6 +1,6 @@
 # Contributing To Tendenci
 
-Tendenci is an open source AMS. All contributions are welcome here. There are many ways you can contribute to the project -   you can report or fix bugs, make improvements, help with tests and documations, and/or get involved in translations.
+Tendenci is an open source AMS (Association Management System). All contributions are welcome here. There are many ways you can contribute to the project - you can report or fix bugs, make improvements, help with tests, supply documentation, and/or get involved in translations.
 
 For code style, please follow python [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [Django Coding style](https://docs.djangoproject.com/en/dev/internals/contributing/writing-code/coding-style/).
 
