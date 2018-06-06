@@ -732,7 +732,8 @@ def corpmembership_search(request, my_corps_only=False,
                    'email', 'url']
 
     search_form = CorpMembershipSearchForm(request.GET,
-                                           names_list=names_list)
+                                           names_list=names_list,
+                                           user=request.user)
     try:
         cp_id = int(request.GET.get('cp_id'))
     except:
