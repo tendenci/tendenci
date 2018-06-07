@@ -124,6 +124,13 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
 @login_required
 def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
     can_add_active = has_perm(request.user, 'resumes.add_resume')
+    
+    if not any([request.user.profile.is_superuser,
+               can_add_active,
+               get_setting('module', 'resumes', 'usercanadd'),
+               (request.user.profile.is_member and get_setting('module', 'resumes', 'userresumesrequiresmembership'))
+               ]):
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.POST or None, user=request.user)
@@ -174,7 +181,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
 @login_required
 def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     resume = get_object_or_404(Resume, pk=id)
-    print(request.FILES)
+
     form = form_class(request.POST or None, request.FILES or None, instance=resume, user=request.user)
     if has_perm(request.user,'resumes.change_resume',resume):
         if request.method == "POST":
