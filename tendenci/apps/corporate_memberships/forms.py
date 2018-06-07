@@ -761,6 +761,9 @@ class CorpMembershipSearchForm(FormControlWidgetMixin, forms.Form):
         choices=SEARCH_METHOD_CHOICES,
         required=False
     )
+    active_only = forms.BooleanField(label=_('Show Active Only'),
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
 
     def __init__(self, *args, **kwargs):
         search_field_names_list = kwargs.pop('names_list')
