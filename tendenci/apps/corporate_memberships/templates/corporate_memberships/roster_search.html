@@ -40,7 +40,13 @@
     .roster-search-wrap .editor-bar, .roster-search-wrap .options-list{
     	background-color: #EFFBFB;
     }
-
+    @media print {
+	   .wrap-search-item {page-break-inside: avoid;}
+	   .roster-search-form, .t-search-result-footer, .sidebar, nav .pagination{display: none;}
+	   a[href]:after {content: none !important;}
+	  }
+	}
+}
 </style>
 {% endblock %}
 
@@ -135,7 +141,7 @@
                             ({{ m_user.username }})
                         </a>
                     </h2>
-                    <div class="col-md-3 col-xs-12" style="line-height:46px;">
+                    <div class="col-md-3 col-xs-12 hidden-print" style="line-height:46px;">
                         {% if request.user.profile.is_superuser %}
                             <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
                         {% endif %}
