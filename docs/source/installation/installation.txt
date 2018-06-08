@@ -414,6 +414,17 @@ With a working test setup you can upgrade it to a fully functional, scalable ins
 All of the commands below should be run on the command line after you are
 connected to the server and build on the work done in the previous sections.
 
+How far will it scale?
+----------------------
+
+But first, how far will Tendenci scale?
+
+Scalability is one of Tendenci's strengths, with memory as your limit. t2 instances at AWS scale, Linode (or similar) offer the best economics for clients with fewer than 10k active users.
+
+There are Tendenci installations with significantly over 100k active users. Those usually self host (for example regulatory reasons) but you should have no problem whatsoever with fewer than 100k users on a large VM with a lot of RAM.
+
+Once you cross 100k people, deployments will almost certainly need a combination of multiple front end servers, central authentication, and a cluster database.
+
 Extra packages
 ---------------
 
