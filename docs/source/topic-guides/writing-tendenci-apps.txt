@@ -95,6 +95,20 @@ follows, but the full list of fields (and further example) are available in
   site.register(Newsletter, NewsletterRegistry)
 
 
+AppConfig
+---------
+
+- part of djagno
+- used by tendenci? i see some apps provide name/verbose_name.
+
+
+Themes
+------
+
+See existing themeing documentation at THEMING.md and docs/blah/theme_*
+TBD: waiting on query in tendenci issues (#690?)
+
+
 Templates
 ---------
 
