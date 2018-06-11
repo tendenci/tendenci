@@ -1,0 +1,96 @@
+On a production site taking backups and restoring them for testing/recovery
+purposes is a critical part of site setup and maintenance.
+
+Setting up a server to store your backups on is beyond the scope of this
+document, so here we cover automatically saving the data of your Tendenci site,
+plus its restoration.
+
+Backups
+=======
+
+A backup of Tendenci needs to be a copy of the website and database at a single
+point in time. For sites with predictable low activity periods a scheduled job
+to run early in the morning and perform the backup will be sufficient.
+
+Website
+-------
+
+Depending on your preferences, files can either be saved to an archive then
+synced to a backup location or simply copied there as a set of files.
+
+For automated backups, drop a script fragment in
+`/etc/cron.daily/tendenci-daily-backup.sh` and let cron take care of
+scheduling.
+
+
+Archiving before sending off site:
+
+::
+
+  tar -cjf /var/tmp/tendenci-nightly-backup.tar.bz2 /path/to/tendenci-website/
+  rsync --quiet /var/tmp/tendenci-nightly-backup.tar.bz2 user@remoteserver:/path/to/backups/
+
+Copying Tendenci directory directly:
+
+::
+
+  rsync --delete --quiet /path/to/tendenci-website/ user@remoteserver:/path/to/backup-tendenci-website
+
+
+Database
+--------
+
+As with the website files, this can be compressed or not but note for a
+moderately large site compression will save considerable amounts of space and
+network bandwidth.
+
+Backing up the databse (with compression) is a single command:
+
+::
+  sudo -u postgres pg_dump -Fc -f /tmp/tendenci-daily.sql postgres tendenci_db_name
+
+Or if compression isn't desirable:
+
+::
+
+  sudo -u postgres pg_dump tendenci > /tmp/tendenci-daily.sql
+
+Thile files can then be copied to the backup site:
+
+::
+
+  rsync --delete --quiet /path/to/tendenci-daily.sql user@remoteserver:/path/to/backup-tendenci-website
+
+Take care to keep the website and backup files in sync!
+
+
+Restore
+=======
+
+Restore is pretty much the same as the steps for installing, but with a couple of differences.
+
+Database
+--------
+
+Restoring is as easy as taking the backup was:
+
+::
+
+  rsync user@remoteserver:/path/to/backup-tendenci-website /path/to/tendenci-daily.sql
+  sudo -u postgres psql tendenci < /path/to/tendenci-daily.sql
+
+This should be done AFTER the DB setup steps in the install instructions.
+
+Website
+-------
+
+Restoring the website replaces the instructions on using tendenci-base-template
+and related install/configuration steps, but does not replace external setup
+like installing packages from pip or setting up Nginx.
+
+::
+
+  rsync user@remoteserver:/path/to/backup-tendenci-website /path/to/tendenci-website/
+
+
+
