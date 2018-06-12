@@ -813,14 +813,21 @@ form.connect-with li {
 }
 
 /* Member Roster */
+#member-roster-wrap{
+	margin: 5px auto;
+}
 .member-roster-membership {
+	display: inline-block;
     border: 1px #000 solid;
-    margin: 5px;
+    margin: 10px;
     padding: 5px;
-    float: left;
     height: 200px;
-    width: 350px;
+    width: 410px;
     line-height: 20px;
+}
+@media print {
+   .member-roster-membership {page-break-inside: avoid;}
+   a[href]:after {content: none !important;}
 }
 
 /* Members YTD by Type */
