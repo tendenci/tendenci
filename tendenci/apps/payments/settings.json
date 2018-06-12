@@ -49,5 +49,22 @@
         "scope_category": "payments",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "Stripe Connect client ID", 
+        "data_type": "string",
+        "update_dt": "2018-05-01 12:25:00",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "stripe_connect_client_id", 
+        "value": "", 
+        "label": "Stripe Connect Client ID", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "payments", 
+        "store": true, 
+        "updated_by": ""
     }
  ]
