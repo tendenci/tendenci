@@ -1,0 +1,15 @@
+{% extends "payments/stripe/connect/base.html" %}
+
+{% block content %}
+
+<h1>{% trans 'Connect with Stripe' %}</h1>
+<div>
+{% if MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID %}
+<p>{% trans 'Please click the button below to connect with Stripe.' %}</p>
+<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id={{ MODULE_PAYMENTS_STRIPE_CONNECT_CLIENT_ID }}&scope=read_only&state={{ csrf_token }}">
+<img src="{% static 'images/stripe-blue-on-light.png' %}" alt="Connect with stripe"></a>
+{% else %}
+{% trans 'The Stripe connect is not enabled.' %}
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "payments/stripe/connect/base.html" %}
+
+{% block title %}Revoke Stripe Connect{% endblock %}
+
+{% block content %}
+
+<h1>{% trans 'Revoke Stripe Connect' %}</h1>
+<div>
+  <table class="table">
+	{% if sa.account_name %}
+	<tr>
+		<th>{% trans 'Account Name' %}</th><th>{% trans 'Stripe User ID' %}</th>	
+	</tr>
+	{% endif %}
+	<tr>
+	 <td>{{ sa.account_name }}</td><td>{{ sa.stripe_user_id }}</td>
+	</tr>
+  </table>
+  <p class="text-danger">{% trans "Are you sure you want to revoke this Stripe Connect?" %}</p>
+  <div>
+     <form name="revoke-connect" method="POST" action="{% url "stripe_connect.deauthorize" sa.pk %}">{% csrf_token %}
+         <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Confirm Revoke' %}">
+     </form>
+ </div>
+</div>
+{% endblock %}
