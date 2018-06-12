@@ -149,14 +149,14 @@ Step 4: Remove south and common addons modules from environment
 ---------------------------------------------------------------
 ::
 
-    pip uninstall South
-    pip uninstall tendenci-case-studies
-    pip uninstall tendenci-committees
-    pip uninstall tendenci-donations
-    pip uninstall tendenci-speakers
-    pip uninstall tendenci-staff
-    pip uninstall tendenci-studygroups
-    pip uninstall tendenci-videos
+    pip uninstall -y South
+    pip uninstall -y tendenci-case-studies
+    pip uninstall -y tendenci-committees
+    pip uninstall -y tendenci-donations
+    pip uninstall -y tendenci-speakers
+    pip uninstall -y tendenci-staff
+    pip uninstall -y tendenci-studygroups
+    pip uninstall -y tendenci-videos
 
 
 .. Note::
