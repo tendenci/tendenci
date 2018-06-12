@@ -40,7 +40,13 @@
     .roster-search-wrap .editor-bar, .roster-search-wrap .options-list{
     	background-color: #EFFBFB;
     }
-
+    @media print {
+	   .wrap-search-item {page-break-inside: avoid;}
+	   .roster-search-form, .t-search-result-footer, .sidebar, nav .pagination{display: none;}
+	   a[href]:after {content: none !important;}
+	  }
+	}
+}
 </style>
 {% endblock %}
 
@@ -77,8 +83,19 @@
             <td width="40%">{{ corp_membership.join_dt|date:'Y-n-j' }}</td>
         </tr>
         <tr>
+        	{% with corp_profile.reps.all as reps %}
+        	{% if reps %}
+        	<td width="20%">{% trans "Rep(s)" %}</td>
+        	<td width="40%">
+			{% for rep in reps %}
+            	<a href="{% url 'profile' rep.user.username %}">{{ rep.user.get_full_name }}{% if rep.is_dues_rep %}(Dues Rep){% endif %}</a>{% if not forloop.last %},{% endif %}
+            {% endfor %}
+			</td>
+        	{% else %}
             <td width="20%">{% trans "Member Type:" %}</td>
             <td width="40%">{{ corp_membership.corporate_membership_type.name }}</td>
+            {% endif %}
+        	{% endwith %}
             <td width="20%">{% trans "Expiration Date:" %}</td>
             <td width="40%">{% if corp_membership.expiration_dt %}
                                             {{ corp_membership.expiration_dt|date:'Y-n-j' }}
@@ -135,7 +152,7 @@
                             ({{ m_user.username }})
                         </a>
                     </h2>
-                    <div class="col-md-3 col-xs-12" style="line-height:46px;">
+                    <div class="col-md-3 col-xs-12 hidden-print" style="line-height:46px;">
                         {% if request.user.profile.is_superuser %}
                             <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
                         {% endif %}

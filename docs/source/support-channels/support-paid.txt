@@ -1,0 +1,28 @@
+Paid support
+============
+
+There are also some organisations offering commercial support for Tendenci.
+
+Tendenci contact form
+---------------------
+
+First and foremost, Schipul/Tendenci `offer support for the project`_ including
+`hosting`_ and `professional services`_.
+
+If you want to support Tendenci, this is the place to start!
+
+.. _offer support for the project: https://www.tendenci.com/contact/
+.. _hosting: https://www.tendenci.com/pricing/
+.. _professional services: https://www.tendenci.com/professional-services/
+
+
+Community Partners List
+-----------------------
+
+Several organisations offer services in the Tendenci space and those who
+support Tendenci can be found `on the Tendenci website`_.
+
+.. _on the Tendenci website: www.tendenci.com/directories/
+
+
+

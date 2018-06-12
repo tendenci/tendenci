@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% if request.user.is_superuser or is_rep %}
-<div class="editor-bar">
+<div class="editor-bar hidden-print">
     <div class="perm-status">
     <ul>
         <li>{{ membership.obj_status }}</li>

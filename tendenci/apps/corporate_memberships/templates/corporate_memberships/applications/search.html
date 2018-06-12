@@ -29,6 +29,11 @@
            height: 30px;
            vertical-align: top;
         }
+        @media print {
+		   article {page-break-inside: avoid;}
+		   .t-search-form, .t-search-result-footer, .sidebar, nav .pagination{display: none;}
+		   a[href]:after {content: none !important;}
+		}
     </style>
 {% endblock %}
 

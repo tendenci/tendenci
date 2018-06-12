@@ -733,7 +733,8 @@ def corpmembership_search(request, my_corps_only=False,
                    'email', 'url']
 
     search_form = CorpMembershipSearchForm(request.GET,
-                                           names_list=names_list)
+                                           names_list=names_list,
+                                           user=request.user)
     try:
         cp_id = int(request.GET.get('cp_id'))
     except:
@@ -790,10 +791,15 @@ def corpmembership_search(request, my_corps_only=False,
         search_criteria = search_form.cleaned_data['search_criteria']
         search_text = search_form.cleaned_data['search_text']
         search_method = search_form.cleaned_data['search_method']
+        active_only = search_form.cleaned_data['active_only']
     else:
         search_criteria = None
         search_text = None
         search_method = None
+        active_only = False
+  
+    if active_only:
+        corp_members = corp_members.filter(status_detail='active')
 
     if search_criteria and search_text:
         search_type = '__iexact'
