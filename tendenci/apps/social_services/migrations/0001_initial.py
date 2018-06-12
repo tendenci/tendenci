@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.contrib.gis.db.models.fields
-import tinymce.models
+import tendenci.libs.tinymce.models
 from django.conf import settings
 
 
@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
                 ('gas', models.BooleanField(default=False, verbose_name='gas')),
                 ('prescription', models.BooleanField(default=False, verbose_name='prescription care')),
                 ('other_service', models.CharField(help_text=b'Specify additional services needed.', max_length=100, null=True, verbose_name='other', blank=True)),
-                ('case_notes', tinymce.models.HTMLField(null=True, verbose_name='case notes', blank=True)),
-                ('items_provided', tinymce.models.HTMLField(null=True, verbose_name='items provided', blank=True)),
+                ('case_notes', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='case notes', blank=True)),
+                ('items_provided', tendenci.libs.tinymce.models.HTMLField(null=True, verbose_name='items provided', blank=True)),
                 ('loc', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],

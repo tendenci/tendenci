@@ -7,7 +7,7 @@ In the :doc:`../topic-guides/pages` app on your Tendenci site, you can select a 
 
 The first step is to create the custom template. Custom templates replace the ``default.html`` template when a page is loaded. Copy that template and rename it as ``default-`` then your custom template name, using -'s instead of spaces or underscores. An example would be ``default-blue-background.html`` or ``default-google-landing-page.html``. Your custom template can include template code to dynamically pull in content from other apps, as well as rearranging the elements on the page or removing certain elements. Once your template file is created, add it to the theme directory as you would with other template files.
 
-These templates will appear in the dropdown on the page add and edit screen. Select the template there, and your page will then use it instead of the normal ``default.html`` template.
+These templates will appear in the dropdown on the page add and edit screen. Select the template there, and your page will then use it instead of the normal ``default.html`` template.  You can find more information on tags by referring to the auto-generated django docs at: yourdomain/admin/doc/tags/.
 
 Best Practices
 --------------
@@ -34,29 +34,296 @@ Then, in your new template file, ``default-custom-name.html``, we will add the f
    :emphasize-lines: 1,12,25
 
    {% extends "pages/base.html" %}
-   
+
    {% block title %}{{ page.get_title }}{% endblock %}
    {% block meta_description %}{{ page.get_description }}{% endblock %}
    {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
    {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
    {% block extra_head %}
    {{ block.super }}
-   <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
    {% endblock %}
-   
+
    {% block custom_body %}
    <div class="t">
        <div class="page-wrap">
            {% if page.title %}
-           <h1>{{ page.title }}</h1> 
+           <h1>{{ page.title }}</h1>
            {% endif %}
            <div class="content">{{ page.content|safe }}</div>
-           
+
            <!-- Insert custom template code here -->
-           
+
            {% include "pages/meta.html" %}
        </div>
    </div>
    {% endblock custom_body %}
 
 Now the custom template will only affect the interior area of a page, so we can create pages that use other Tendenci template tags. This is great for creating pages with rss feeds or other dynamic content like upcoming events and news.
+
+
+Navigation Bar
+--------------
+
+Adding a button
+^^^^^^^^^^^^^^^
+
+.. image:: img/navbarbutton.png
+
+.. Tip::
+
+    The Navigation Bar is set up through the Navs App.
+
+    .. image:: img/navbar.png
+
+    In the Navs App, Links can be assigned their own CSS Class.  This is helpful for targeting individual links to emphasize in your design.
+
+    .. image:: img/navsappcss.png
+
+    For this example, I added the class "top-nav-button" to the "Attend Orientation" Nav Link.
+
+    .. hidden-code-block:: css
+        :label: + Show Added CSS
+
+            .top-nav-button {
+              color: #fbce42;
+              border: 2px solid #fbce42;
+              border-radius: 40px;
+              margin-left:25px;
+              font-weight:700;
+            }
+            .top-nav-button:hover,
+            .top-nav-button:active,
+            .top-nav-button:focus {
+              color: #f6ba17;
+              border-radius: 40px;
+              border: 2px solid #f6ba17;
+              background-color: rgba(255,255,255,.3);
+            }
+
+Adding Font-Awesome Icons
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: img/fontawesomenav.png
+
+.. Tip::
+
+    Also using the Nav App Classes, you can add Font Awesome Icons to your navigation bar. Just add the Font Awesome tag into the CSS Class and leave the Label blank.
+
+    .. image:: img/fontawesomenavapp.png
+
+Font-Awesome After Nav Items
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: img/dropdownicons.png
+
+.. Tip::
+
+    To add a dropdown caret or other icons to the Tendenci Navbar, use FontAwesome in the css.  For this application, I added a css class ("t-caret") to the navbar items that I wanted to have a dropdown caret.
+
+    .. image:: img/t-caret.png
+
+    .. hidden-code-block:: css
+        :label: + Show Added css
+
+            a.t-caret.dropdown-toggle:after {
+                content: "\f0d7";
+                font-family: FontAwesome, 'Roboto', sans-serif;
+            }
+
+Simple Search Bar w/ Font-Awesome Icon
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: img/simplesearch.png
+
+.. Tip::
+
+    .. hidden-code-block:: html
+        :label: + Show Added HTML
+
+            <div class="globalSearch pull-right" id="global-search">
+               <form method="get" action="/search/">
+                 <input type="text" name="q" size="28" maxlength="300" title="Search" class="searchbox blur" onfocus="clearDefault(this)">
+                 <input type="submit" value="&#xf002;" class="fa fa-search">
+               </form>
+             </div>
+
+    .. hidden-code-block:: css
+        :label: + Show Added CSS
+
+            /* SEARCH ICON */
+            input.fa.fa-search {
+              border: none;
+              background: none;
+            }
+            /* SEARCH BOX */
+            .searchbox {
+              border: none;
+              border-bottom: 1px solid gray;
+              background: transparent;
+            }
+            /* SEARCH BOX FOCUS */
+            input.searchbox.blur {
+              box-shadow: none;
+              outline: none;
+            }
+
+Bootstrap Search Bar w/ Font-Awesome Icon
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: img/bootstrapsearch.png
+
+.. Tip::
+
+    This example is from the Case Studies module, but can be used in other modules by swapping the action url.  There is no added css for this snippet.  You can also change the look and feel by adding Bootswatch themes.
+
+    .. hidden-code-block:: html
+        :label: + Show Added HTML
+
+            {% load i18n %}
+
+            {% if SITE_GLOBAL_SEARCHINDEX %}
+            <form class="form-inline" action="{% url 'case_study' %}" method="get" role="search">
+              <div class="form-group">
+                <div class="input-group">
+                  <input type="text" class="form-control" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
+                </div>
+              <button class="btn btn-default" type="submit">
+                <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
+              </button>
+
+             </div>
+
+            </form>
+            {% endif %}
+
+
+
+Basic Footer
+--------------
+
+In Tendenci, the Footer is usually set up inside a box to make it easy for clients to make changes to their links.
+
+.. image:: img/basicfooter.png
+
+.. Tip::
+
+    I like to set up my Footer links in a bulleted list.  The bullets can be removed later in html or in css.
+
+    HTML is added inside the Footer links box.
+
+    .. image:: img/footerlinks.png
+
+    .. hidden-code-block:: html
+        :label: + Show HTML
+
+            <div class="col-md-3 col-sm-3">
+                <h4 class="text-center" style="text-align: left;">Quick Links</h4>
+                    <ul class="list-unstyled">
+                        <li class="text-center" style="text-align: left;"><a href="/jobs/">Jobs</a></li>
+                        <li class="text-center" style="text-align: left;"><a href="/coaching/">Coaching</a></li>
+                        <li class="text-center" style="text-align: left;"><a href="/curriculum/">Classes</a></li>
+                        <li class="text-center" style="text-align: left;"><a href="/orientation/">Orientation</a></li>
+                        <li class="text-center" style="text-align: left;"><a href="/news/">News</a></li>
+                    </ul>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <h4>About</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="/orientation/">About</a></li>
+                        <li><a href="/orientation/">Support</a></li>
+                        <li><a href="/orientation/">Contact Us</a></li>
+                        <li><a href="/orientation/">Privacy Policy</a></li>
+                        <li><a href="/login/">Login</a></li>
+                    </ul>
+            </div>
+            <div class="col-md-3 col-sm-3">
+                <h4 class="text-center" style="text-align: left;">Your Company</h4>
+                    <ul class="list-unstyled">
+                        <li class="text-center" style="text-align: left;">1234 Your Address</li>
+                        <li class="text-center" style="text-align: left;">Your City, State</li>
+                        <li class="text-center" style="text-align: left;">(123) 456-7891</li>
+                    </ul>
+            </div>
+            <div class="col-md-3 col-sm-3 text-right">
+                <p class="fa fa-twitter fa-2x">&nbsp;</p>
+                <p class="fa fa-facebook fa-2x">&nbsp;</p>
+                <p class="fa fa-linkedin fa-2x">&nbsp;</p>
+                <p class="fa fa-rss fa-2x">&nbsp;</p>
+            </div>
+            <div class="col-md-12">
+            <h5 class="text-center" style="text-align: center;">Site by:&nbsp;<a href="http://tendenci.com">Tendenci &reg; - Open Source&nbsp;For Associations and Nonprofits</a></h5>
+            </div>
+
+    .. hidden-code-block:: css
+        :label: + Show CSS
+
+            footer {
+              margin-top: 0px;
+              background-color: #236188;
+              padding: 35px 0px 0px;
+            }
+            footer p,
+            footer a,
+            footer li {
+              color: #f1f1f2;
+              font-weight: 300;
+            }
+            footer a:hover {
+              text-decoration:none;
+              color: #f1f1f2;
+              opacity: .5;
+            }
+            footer h4,
+            footer h5,
+            footer h5>a {
+              color: #3298cc;
+              text-transform: uppercase;
+            }
+            footer h4 {
+              border-bottom:1px solid #3298cc;
+              padding-bottom:5px;
+              color:white;
+            }
+            footer {
+              font-family: FontAwesome, 'Assistant', sans-serif;
+            }
+            footer .fa:hover {
+              opacity:.5;
+            }
+
+Embed Forms in Bootstrap Modals
+-------------------------------
+
+Embed forms in Bootstrap Modals to declutter your pages.
+
+.. image:: img/formmodal.png
+
+.. Tip::
+
+    Don't forget to add ``{% load forms_tags %}`` at the top of your template.
+
+    This code references W3schools and is for educational purposes only!  Original here: https://www.w3schools.com/bootstrap/bootstrap_modal.asp
+
+    .. hidden-code-block:: html
+        :label: + Show HTML
+
+              <!-- BUTTON -->
+              <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                Sign up Now</button>
+              <!-- MODAL -->
+              <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Sign up Now</h4>
+                    </div>
+                    <div class="modal-body">
+                <!-- EMBED FORM HERE -->
+                      {% embed_form 2 %}
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- END -->

@@ -5,6 +5,7 @@ from collections import OrderedDict
 from django.contrib.auth.models import User
 from django import forms
 from django.forms.widgets import RadioFieldRenderer, RadioChoiceInput
+from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
@@ -13,6 +14,7 @@ from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.memberships.models import NOTICE_TYPES, MembershipDefault
+from tendenci.apps.site_settings.utils import get_setting
 
 
 PERIOD_UNIT_CHOICE = (
@@ -107,7 +109,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
         # expiration_method
         JOIN_EXP_METHOD_CHOICE = (
                                   ("0", _("End of full period")),
-                                  ("1", mark_safe("%s day(s) at signup month" % \
+                                  ("1", mark_safe("%s day(s) at signup month" %
                                                   rendered_rolling_option1_day)),)
         rolling_option_widget = self.pos_d['rolling_option'][1]
         rolling_option_widget.choices=JOIN_EXP_METHOD_CHOICE
@@ -130,9 +132,9 @@ class TypeExpMethodWidget(forms.MultiWidget):
         # renew_expiration_method
         RENEW_EXP_METHOD_CHOICE = (
                                   ("0", _("End of full period")),
-                                  ("1", mark_safe("%s day(s) at signup month" % \
+                                  ("1", mark_safe("%s day(s) at signup month" %
                                                   rendered_rolling_renew_option1_day)),
-                                  ("2", mark_safe("%s day(s) at renewal month" % \
+                                  ("2", mark_safe("%s day(s) at renewal month" %
                                                   rendered_rolling_renew_option2_day)),)
         rolling_renew_option_widget = self.pos_d['rolling_renew_option'][1]
         rolling_renew_option_widget.choices=RENEW_EXP_METHOD_CHOICE
@@ -184,7 +186,7 @@ class TypeExpMethodWidget(forms.MultiWidget):
                                   ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
                                                       rendered_fixed_option1_day,
                                                       rendered_fixed_option1_year))),
-                                  ("1", mark_safe("%s %s of current year" % \
+                                  ("1", mark_safe("%s %s of current/next year" %
                                                   (rendered_fixed_option2_month,
                                                    rendered_fixed_option2_day))))
 
@@ -239,8 +241,6 @@ class TypeExpMethodWidget(forms.MultiWidget):
 
         return mark_safe(output_html)
 
-
-
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
         id_ = id
@@ -255,7 +255,6 @@ class TypeExpMethodWidget(forms.MultiWidget):
             final_attrs = dict(attrs, id='%s_%s' % (id_, i))
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
-
 
     def decompress(self, value):
         if value:
@@ -317,8 +316,6 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         return mark_safe(output_html)
 
-
-
     def render_widget(self, widget, name, value, attrs, index=0, id=None):
         i = index
         id_ = id
@@ -334,11 +331,73 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
 
         return widget.render(name+'_%s' %i, widget_value, final_attrs)
 
-
     def decompress(self, value):
         if value:
             return value.split(",")
         return None
+
+
+class DonationOptionAmountWidget(forms.MultiWidget):
+    def __init__(self, attrs=None, default_amount=None):
+        self.attrs = attrs
+        self.default_amount = default_amount
+        self.pos_d = {'donation_option': (0, forms.RadioSelect()),
+                      'donation_amount': (1, forms.TextInput()),
+                       }
+        self.widgets = ()
+        if self.pos_d:
+            items = self.pos_d.values()
+            items.sort()
+            self.widgets = [item[1] for item in items]
+
+        super(DonationOptionAmountWidget, self).__init__(self.widgets, attrs)
+
+    def render(self, name, value, attrs=None):
+        if not isinstance(value, list):
+            value = self.decompress(value)
+
+        final_attrs = self.build_attrs(attrs)
+        id_ = final_attrs.get('id', None)
+        currency_symbol = get_setting('site', 'global', 'currencysymbol')
+
+        # donation_amount
+        donation_amount_widget = self.pos_d['donation_amount'][1]
+        donation_amount_widget.attrs = {'size':'8'}
+        rendered_donation_amount = self.render_widget(donation_amount_widget,
+                                    name, value, final_attrs, self.pos_d['donation_amount'][0], id_)
+
+        # donation_option
+        OPTION_CHOICE = (
+                          ("default", "%s%s" % (currency_symbol, self.default_amount)),
+                          ("custom", mark_safe('%s %s' %
+                                          (currency_symbol, rendered_donation_amount))),
+                        )
+        donation_option_widget = self.pos_d['donation_option'][1]
+        donation_option_widget.choices=OPTION_CHOICE
+        output_html = self.render_widget(donation_option_widget,
+                                          name, value, final_attrs,
+                                          self.pos_d['donation_option'][0], id_)
+
+        return mark_safe(output_html)
+
+    def render_widget(self, widget, name, value, attrs, index=0, id=None):
+        i = index
+        id_ = id
+        if value:
+            try:
+                widget_value = value[i]
+            except IndexError:
+                self.fields['donation_option_value'].initial = None
+        else:
+            widget_value = None
+        if id_:
+            final_attrs = dict(attrs, id='%s_%s' % (id_, i))
+
+        return widget.render(name+'_%s' %i, widget_value, final_attrs)
+
+    def decompress(self, value):
+        return value
+
 
 # removed the label when any of the radio select contains another input field
 class CustomRadioInput(RadioChoiceInput):
@@ -397,21 +456,21 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
     required_fields = ('first_name', 'last_name', 'email',
                        'membership_type', 'payment_method',
                        'status', 'status_detail')
-    user_fields = OrderedDict([(field.name, field) \
-                        for field in User._meta.fields \
-                        if field.get_internal_type() != 'AutoField' \
+    user_fields = OrderedDict([(field.name, field)
+                        for field in User._meta.fields
+                        if field.get_internal_type() != 'AutoField'
                               and field.name not in ('last_login',
                                                      'date_joined',
                                                      'is_active',
                                                      'is_superuser',
                                                      'is_staff')])
-    profile_fields = OrderedDict([(field.name, field) \
-                        for field in Profile._meta.fields \
-                        if field.get_internal_type() != 'AutoField' and \
+    profile_fields = OrderedDict([(field.name, field)
+                        for field in Profile._meta.fields
+                        if field.get_internal_type() != 'AutoField' and
                         field.name not in ['user', 'guid']])
-    membership_fields = OrderedDict([(field.name, field) \
-                        for field in MembershipDefault._meta.fields \
-                        if field.get_internal_type() != 'AutoField' and \
+    membership_fields = OrderedDict([(field.name, field)
+                        for field in MembershipDefault._meta.fields
+                        if field.get_internal_type() != 'AutoField' and
                         field.name not in ['user', 'guid']])
     all_fields_dict = {}
     all_fields_dict.update(user_fields)
@@ -549,4 +608,3 @@ class AppFieldSelectionWidget(CheckboxSelectMultiple):
             output.append(u'</div>')
         output.append(u'</div>')
         return mark_safe(u'\n'.join(output))
-

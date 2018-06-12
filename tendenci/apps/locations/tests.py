@@ -20,7 +20,6 @@ class LocationLocationTest(TestCase):
         self.user.is_active = True
         self.user.save()
 
-
     def tearDown(self):
         self.client = None
         self.location = None
@@ -43,5 +42,3 @@ class LocationLocationTest(TestCase):
         self.location.save()
 
         self.assertEquals(type(self.location.id), long)
-
-

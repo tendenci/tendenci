@@ -174,9 +174,10 @@
     {% if user.is_superuser %}
         <div id="t-dashboard-admin-quick-links" class="panel panel-default t-dashboard-sidebar-panel t-dashboard-sidebar-panel-gray">
             <div class="panel-body">
-                <h3>{% trans "Admin Quick Links" %}</h3>
+                <h3>{% trans "Quick Links" %}</h3>
 
                 <ul>
+                    <li><a href="/" title="Home">{% trans "Home Page" %}</a></li>
                     {% if MODULE_PAGES_ENABLED %}
                         <li><a href="{% url 'page.add' %}">{% trans "Add a page" %}</a></li>
                     {% endif %}
@@ -184,7 +185,7 @@
                     <li><a href="{% url 'haystack_search' %}">{% trans "Search All Modules" %}</a></li>
                     <li><a href="{% url 'profiles.user_import' %}">{% trans "Import Users" %}</a></li>
                     <li><a href="{% url 'settings' %}">{% trans "Enable/Disable modules" %}</a></li>
-                    <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache" %}</a></li>
+                    <li><a href="{% url 'clear_cache' %}">{% trans "Clear Cache BIG TIME" %}</a></li>
                     <li><a href="{% url 'theme_editor.editor' %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
                     <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
 
@@ -205,7 +206,6 @@
                     <li><a href="{% url 'theme_editor.editor' %}?file=/templates/header.html">{% trans "Update Header" %}</a></li>
                     <li><a href="{% url 'admin:navs_nav_changelist' %}">{% trans "Update Navigation" %}</a></li>
                     <li><a href="{% url 'theme_editor.editor' %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
-                    <li><a href="{% url 'theme_editor.picker' %}">{% trans "Change Themes" %}</a></li>
                     <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
                 </ul>
             </div>
@@ -216,7 +216,7 @@
         <div class="panel-body">
             <h3>{% trans "Tendenci Blog" %}</h3>
 
-            <a href="http://blog.tendenci.com/">{% trans "View latest posts" %}</a>
+            <a href="https://blog.tendenci.com/">{% trans "View latest posts" %}</a>
         </div>
     </div>
 
@@ -226,7 +226,7 @@
         </div>
 
         {% cache 86400 tendenci_help_rss %}
-            {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
+            {% get_rss "https://www.tendenci.com/help-files/feed/" as rss %}
             <ul class="list-group">
                 {% for entry in rss.entries|slice:":3" %}
                     <li class="list-group-item clearfix">
@@ -244,25 +244,38 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{% static 'js/bar-graph.js' %}"></script>
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        $(function() {
-            var $membersInfo = $('#t-dashboard-js-statistics-members-info');
+    google.charts.load('current', {'packages':['corechart']});
 
-            var activeCount = $membersInfo.data('new');
-            var pendingCount = $membersInfo.data('pending');
-            var expiredCount = $membersInfo.data('expired');
+    $(function() {
+    	
+	    google.charts.setOnLoadCallback(drawChart);
+	    function drawChart() {
+	  		var options = {
+	  	          title: '{% trans "Last 30 days" %}',
+	  	          legend: { position: "none" }
+	  	        };
+	  	
+	  		var $membersInfo = $('#t-dashboard-js-statistics-members-info');
+	        var member_data = google.visualization.arrayToDataTable([
+              ['Membership', 'number'],
+	          ['{% trans "New" %}', $membersInfo.data('new')],
+	          ['{% trans "Pending" %}', $membersInfo.data('pending')],
+	          ['{% trans "Expired" %}', $membersInfo.data('expired')]
+	        ]);
+	
+	        var chart = new google.visualization.ColumnChart(document.getElementById("t-dashboard-js-statistics-members-graph"));
+	        chart.draw(member_data, options);
+	    }
+	
+	    $('#t-dashboard-js-icons-toggle').click(function (e) {
+	        e.preventDefault();
+	
+	       $('#t-dashboard-js-modules-list').toggleClass('hidden');
+	    });
 
-            var d = [parseInt(activeCount, 10), parseInt(pendingCount, 10), parseInt(expiredCount, 10)];
-            var c = ['{% trans "New" %}', '{% trans "Pending" %}', '{% trans "Expired" %}'];
-            var h = '{% trans "Last 30 days" %}';
-            $('#t-dashboard-js-statistics-members-graph').graph({data:d,categories:c,legend:h,width:400});
-
-            $('#t-dashboard-js-icons-toggle').click(function (e) {
-                e.preventDefault();
-
-                $('#t-dashboard-js-modules-list').toggleClass('hidden');
-            });
-        });
+   });
     </script>
 {% endblock %}
+​

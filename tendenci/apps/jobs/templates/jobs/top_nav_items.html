@@ -43,6 +43,12 @@
                     </li>
 
                     {% if user.is_authenticated %}
+                    	<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'job.add' %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
+                            </span>
+                        </li>
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'myjobs' %}">{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL trans 'Jobs' %}</a>
@@ -52,12 +58,6 @@
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'jobs' %}?my_pending_jobs=True">{% trans "My Pending" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
-                            </span>
-                        </li>
-
-                        <li class="content-item">
-                            <span class="app-name">
-                                <a href="{% url 'job.add' %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL trans 'Job' %}</a>
                             </span>
                         </li>
                     {% endif %}
@@ -83,6 +83,15 @@
                             </span>
                         </li>
                     {% endif %}
+
+                    {% if request.user.is_superuser %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'admin:jobs_category_changelist' %}">{% trans "Manage Categories" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
                 </ul>
 
                 {% if app_object %}
@@ -113,11 +122,6 @@
                                     </span>
                                 </li>
 
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'category.update' app_object.opt_app_label job.opt_module_name app_object.pk %}">{% trans "Edit Categories" %}</a>
-                                    </span>
-                                </li>
                             {% endif %}
 
                             {% if can_delete_job %}

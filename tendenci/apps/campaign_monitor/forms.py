@@ -47,7 +47,7 @@ class CampaignForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(CampaignForm, self).__init__(*args, **kwargs)
-        
+
         types_list = [('',_('All'))]
         try:
             from tendenci.apps.events.models import Type

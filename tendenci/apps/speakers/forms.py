@@ -5,7 +5,7 @@ from django import forms
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.speakers.models import Speaker, SpeakerFile
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -27,7 +27,7 @@ class SpeakerForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
             mce_attrs={'storme_app_label':Speaker._meta.app_label,
             'storme_model':Speaker._meta.model_name.lower()}))
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
     def clean_photo(self):

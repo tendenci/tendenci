@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -42,7 +43,7 @@ class Command(BaseCommand):
                     ).delete()
                 # -----
 
-                print membership
+                print(membership)
 
         else:  # private
             MembershipDefault.objects.update(

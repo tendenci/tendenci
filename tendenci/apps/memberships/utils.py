@@ -5,8 +5,8 @@ from decimal import Decimal
 from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
-from sets import Set
 import time as ttime
+from dateutil.relativedelta import relativedelta
 
 from django.http import HttpResponseServerError
 from django.conf import settings
@@ -17,7 +17,6 @@ from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.core import exceptions
-from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
@@ -34,10 +33,11 @@ from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipAppField,
                                                 MembershipFile,
                                                 VALID_MEMBERSHIP_STATUS_DETAIL)
-from tendenci.apps.base.utils import normalize_newline, UnicodeWriter, tcurrency
+from tendenci.apps.base.utils import normalize_newline, UnicodeWriter
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
+from tendenci.apps.educations.models import Education
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -76,23 +76,20 @@ def get_default_membership_corp_fields():
     return corp_field_list
 
 
-def get_corporate_membership_choices():
+def get_corporate_membership_choices(active_only=True):
     cm_list = [(0, 'SELECT ONE')]
-    from django.db import connection
-    # use the raw sql because we cannot import CorporateMembership
-    # in the memberships app
-    cursor = connection.cursor()
-    cursor.execute(
-        """SELECT cm.id, cp.name
-        FROM corporate_memberships_corpmembership cm
-        INNER JOIN corporate_memberships_corpprofile cp
-        ON cm.corp_profile_id=cp.id
-        WHERE cm.status=True AND cm.status_detail='active'
-        ORDER BY cp.name"""
-    )
+    from tendenci.apps.corporate_memberships.models import CorpMembership
 
-    for row in cursor.fetchall():
-        cm_list.append((row[0], row[1]))
+    corp_membs = CorpMembership.objects.exclude(status_detail='archive')
+    if active_only:
+        corp_membs = corp_membs.filter(status_detail='active')
+    corp_membs = corp_membs.order_by('corp_profile__name')
+
+    for corp_memb in corp_membs:
+        if corp_memb.status_detail == 'active':
+            cm_list.append((corp_memb.id, corp_memb.corp_profile.name))
+        else:
+            cm_list.append((corp_memb.id, '%s (%s)' % (corp_memb.corp_profile.name, corp_memb.status_detail)))
 
     return cm_list
 
@@ -133,8 +130,8 @@ def get_selected_demographic_fields(membership_app, forms):
     """
     Get the selected demographic fields for the app.
     """
-    demographic_field_dict = dict([(field.name, field) \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_dict = dict([(field.name, field)
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField'])
     demographic_field_names = demographic_field_dict.keys()
     app_fields = MembershipAppField.objects.filter(
@@ -159,8 +156,8 @@ def get_selected_demographic_field_names(membership_app=None):
     """
     if not membership_app:
         membership_app = MembershipApp.objects.current_app()
-    demographic_field_names = [field.name \
-                        for field in MembershipDemographic._meta.fields \
+    demographic_field_names = [field.name
+                        for field in MembershipDemographic._meta.fields
                         if field.get_internal_type() != 'AutoField']
     app_field_names = MembershipAppField.objects.filter(
                                 membership_app=membership_app,
@@ -356,11 +353,13 @@ def process_export(
             if not field.__class__ == AutoField]
         profile_field_list = [
             name for name in profile_field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
-        profile_field_list.remove('status')
-        profile_field_list.remove('status_detail')
+        if 'status' in profile_field_list:
+            profile_field_list.remove('status')
+        if 'status_detail' in profile_field_list:
+            profile_field_list.remove('status_detail')
 
         # demographic -----
         demographic_field_list = [
@@ -395,7 +394,7 @@ def process_export(
         'degree4',
         'graduation_dt4',
     ]
-    
+
     profile_field_list.extend(['profile_status', 'profile_status_detail'])
 
     title_list = (
@@ -427,7 +426,7 @@ def process_export(
             field.name for field in MembershipDefault._meta.fields
             if isinstance(field, (ForeignKey, OneToOneField))]
 
-        fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+        fks = set(user_fks + profile_fks + demographic_fks + membership_fks)
 
     membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
     app_ids_dict = dict(MembershipApp.objects.all().values_list('id', 'name'))
@@ -692,7 +691,7 @@ def get_over_time_stats():
     """
     today = date.today()
     year = datetime(day=1, month=1, year=today.year)
-    times = [
+    time_ranges = [
         ("Last Month", months_back(1)),
         ("Last 3 Months", months_back(3)),
         ("Last 6 Months", months_back(6)),
@@ -702,8 +701,8 @@ def get_over_time_stats():
     ]
 
     stats = []
-    for time in times:
-        start_dt = time[1]
+    for time_range in time_ranges:
+        start_dt = time_range[1]
         d = {}
         active_mems = MembershipDefault.objects.filter(
                         status=True,
@@ -712,7 +711,7 @@ def get_over_time_stats():
                      ).distinct('user__id', 'membership_type__id')
         d['new'] = active_mems.filter(renewal=False).count()
         d['renewing'] = active_mems.filter(renewal=True).count()
-        d['time'] = time[0]
+        d['time'] = time_range[0]
         d['start_dt'] = start_dt
         stats.append(d)
 
@@ -810,11 +809,18 @@ def get_notice_token_help_text(notice=None):
 
     other_labels = ['member_number',
                     'membership_type',
-                    'membership_link',
+                    'membership_price',
+                    'donation_amount',
+                    'total_amount',
                     'referer_url',
+                    'membership_link',
+                    'view_link',
+                    'invoice_link',
                     'renew_link',
-                    'expire_dt',
-                    'site_contact_name',
+                    'expire_dt',]
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+        other_labels += ['link_to_setup_auto_renew']
+    other_labels += ['site_contact_name',
                     'site_contact_email',
                     'site_display_name',
                     'time_submitted',
@@ -836,7 +842,7 @@ def get_notice_token_help_text(notice=None):
                                 $('#notice_token_list').toggle();
                             });
                         });
-                    }(jQuery));                  
+                    }(jQuery));
                 </script>
                 """
 
@@ -1023,7 +1029,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -1042,21 +1048,26 @@ class ImportMembDefault(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
-        self.membershipdemographic_fields = dict([(field.name, field) \
-                            for field in MembershipDemographic._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.membershipdemographic_fields = dict([(field.name, field)
+                            for field in MembershipDemographic._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user']])
+        self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
+                                  'school2', 'major2', 'degree2', 'graduation_year2',
+                                  'school3', 'major3', 'degree3', 'graduation_year3',
+                                  'school4', 'major4', 'degree4', 'graduation_year4',]
         self.should_handle_demographic = False
-        self.membership_fields = dict([(field.name, field) \
-                            for field in MembershipDefault._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.should_handle_education = False
+        self.membership_fields = dict([(field.name, field)
+                            for field in MembershipDefault._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -1097,11 +1108,11 @@ class ImportMembDefault(object):
                     else:
                         self.membership_types_to_apps_map[
                                     mt_id][0].append(app.id)
-        [self.default_membership_type_id] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
-        [self.default_membership_type_id_for_corp_indiv] = [key for key in \
-                    self.membership_types_to_apps_map.keys() \
+        [self.default_membership_type_id_for_corp_indiv] = [key for key in
+                    self.membership_types_to_apps_map.keys()
             if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
 
         apps = MembershipApp.objects.filter(
@@ -1159,7 +1170,7 @@ class ImportMembDefault(object):
 
             if str(value).isdigit():
                 value = int(value)
-                if not value in self.all_membership_type_ids:
+                if value not in self.all_membership_type_ids:
                     is_valid = False
                     error_msg = 'Invalid membership type "%d"' % value
                 else:
@@ -1204,14 +1215,14 @@ class ImportMembDefault(object):
 
             if str(value).isdigit():
                 value = int(value)
-                if not value in self.membership_app_ids_dict:
+                if value not in self.membership_app_ids_dict:
                     is_valid = False
                     error_msg = 'Invalid app "%d"' % value
                 else:
                     memb_data['app'] = value
             else:
                 # check for app name
-                if not value in self.membership_app_names_dict:
+                if value not in self.membership_app_names_dict:
                     is_valid = False
                     error_msg = 'Invalid app "%s"' % value
                 else:
@@ -1264,6 +1275,16 @@ class ImportMembDefault(object):
         Check if import has demographic fields.
         """
         for field_name in self.membershipdemographic_fields.keys():
+            if field_name in field_names:
+                return True
+
+        return False
+
+    def has_education_fields(self, field_names):
+        """
+        Check if import has education fields.
+        """
+        for field_name in self.education_fields:
             if field_name in field_names:
                 return True
 
@@ -1469,13 +1490,16 @@ class ImportMembDefault(object):
         self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
 
-        if profile.status == None or profile.status == '' or \
-            self.memb_data.get('status', '') == '':
-            profile.status = True
+        profile.status = True
+
         if not profile.status_detail:
             profile.status_detail = 'active'
         else:
             profile.status_detail = profile.status_detail.lower()
+
+        # this is membership import - the 'expired' status_detail shouldn't be assigned to profile
+        if profile.status_detail == 'expired':
+            profile.status_detail = 'active'
 
         if profile.status_detail == 'active' and not profile.status:
             profile.status = True
@@ -1486,6 +1510,8 @@ class ImportMembDefault(object):
         if self.mimport.num_processed == 0:
             self.should_handle_demographic = self.has_demographic_fields(
                                         self.memb_data.keys())
+            self.should_handle_education = self.has_education_fields(
+                                        self.memb_data.keys())
 
         if self.should_handle_demographic:
             # process only if we have demographic fields in the import.
@@ -1494,6 +1520,28 @@ class ImportMembDefault(object):
             self.assign_import_values_from_dict(demographic,
                                                 action_info['user_action'])
             demographic.save()
+
+        if self.should_handle_education:
+            educations = user.educations.all().order_by('pk')[0:4]
+            for x in xrange(1, 5):
+                school = memb_data.get('school%s' % x, '')
+                major = memb_data.get('major%s' % x, '')
+                degree = memb_data.get('degree%s' % x, '')
+                graduation_year = memb_data.get('graduation_year%s' % x, 0)
+                try:
+                    graduation_year = int(graduation_year)
+                except ValueError:
+                    graduation_year = 0
+                if any([school, major, degree, graduation_year]):
+                    try:
+                        education = educations[x-1]
+                    except IndexError:
+                        education = Education(user=user)
+                    education.school =school
+                    education.major = major
+                    education.degree = degree
+                    education.graduation_year = graduation_year
+                    education.save()
 
         # membership
         if not memb:
@@ -1514,9 +1562,10 @@ class ImportMembDefault(object):
         if not memb.lang:
             memb.lang = 'eng'
 
-        if memb.status == None or memb.status == '' or \
-            self.memb_data.get('status', '') == '':
-            memb.status = True
+        # Set status to True
+        # The False status means DELETED - It would defeat the purpose of import
+        memb.status = True
+
         if not memb.status_detail:
             memb.status_detail = 'active'
         else:
@@ -1565,10 +1614,9 @@ class ImportMembDefault(object):
         memb.is_active = self.is_active(memb)
 
         # member_number
-        # TODO: create a function to assign a member number
         if not memb.member_number:
             if memb.is_active:
-                memb.member_number = 5100 + memb.pk
+                memb.member_number = memb.set_member_number()
                 memb.save()
         if memb.member_number:
             if not profile.member_number:
@@ -1618,9 +1666,9 @@ class ImportMembDefault(object):
                 if any([
                         action == 'insert',
                         self.mimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.memb_data[field_name]
                     value = self.clean_data(value, assign_to_fields[field_name])
@@ -1633,7 +1681,7 @@ class ImportMembDefault(object):
                 if field_name not in self.private_settings.keys():
                     value = self.get_default_value(assign_to_fields[field_name])
 
-                    if value != None:
+                    if value is not None:
                         setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):
@@ -1662,8 +1710,11 @@ class ImportMembDefault(object):
             return 0
 
         if field_type == 'ForeignKey':
-            [value] = field.related.parent_model.objects.all(
-                                        )[:1] or [None]
+            try:
+                model = field.related.parent_model()
+            except AttributeError:
+                model = field.related.model
+            [value] = model.objects.all()[:1] or [None]
             return value
 
         return ''
@@ -1748,8 +1799,11 @@ class ImportMembDefault(object):
                 value = None
 
             if value:
-                [value] = field.related.parent_model.objects.filter(
-                                            pk=value)[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
             # they entered name instead of id
@@ -1758,8 +1812,11 @@ class ImportMembDefault(object):
 
             if not value and not field.null:
                 # if the field doesn't allow null, grab the first one.
-                [value] = field.related.parent_model.objects.all(
-                                        ).order_by('id')[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value
 
@@ -1798,5 +1855,58 @@ def get_membership_app(membership):
             mt_ids = app.membership_types.all().values_list('id', flat=True)
             if membership.membership_type_id in mt_ids:
                 return app
-                
-    return None 
+
+    return None
+
+
+def get_membership_summary_data():
+    summary = []
+    memb_types = MembershipType.objects.all()
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_in_grace_period = 0
+    total_total = 0
+    now = datetime.now()
+    for membership_type in memb_types:
+        grace_period = membership_type.expiration_grace_period
+        date_to_expire = now - relativedelta(days=grace_period)
+        mems = MembershipDefault.objects.filter(
+                    membership_type=membership_type)
+        active = mems.filter(status=True, status_detail='active')
+        expired = mems.filter(status=True,
+                              status_detail='expired')
+        in_grace_period = mems.filter(status=True,
+                              status_detail='active',
+                              expire_dt__lte=now,
+                              expire_dt__gt=date_to_expire)
+        pending = mems.filter(status=True, status_detail__contains='ending')
+
+        active_count = active.count()
+        pend_count = pending.count()
+        expired_count = expired.count()
+        in_grace_period_count = in_grace_period.count()
+        type_total = sum([active_count,
+                          pend_count,
+                          expired_count])
+
+        total_active += active_count
+        total_pending += pend_count
+        total_expired += expired_count
+        total_in_grace_period += in_grace_period_count
+        total_total += type_total
+        summary.append({
+            'type': membership_type,
+            'active': active_count,
+            'pending': pend_count,
+            'expired': expired_count,
+            'in_grace_period': in_grace_period_count,
+            'total': type_total,
+        })
+
+    return (sorted(summary, key=lambda x: x['type'].name),
+        {'total_active': total_active,
+         'total_pending': total_pending,
+         'total_expired': total_expired,
+         'total_in_grace_period': total_in_grace_period,
+         'total_total': total_total})

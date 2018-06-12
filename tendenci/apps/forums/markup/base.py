@@ -46,7 +46,7 @@ class BaseParser(object):
     def get_widget_cls(cls, **kwargs):
         """
         Returns the form widget class to use with this parser
-        It allows you to define your own widget with custom class Media to add your 
+        It allows you to define your own widget with custom class Media to add your
         javascript and CSS and/or define your custom "render" function
         which will allow you to add specific markup or javascript.
         """

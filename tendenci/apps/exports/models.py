@@ -20,10 +20,12 @@ class Export(models.Model):
     date_done = models.DateTimeField(auto_now=True)
     #memb_app = models.ForeignKey(App, blank=True, null=True)
 
+    class Meta:
+        app_label = 'exports'
+
     @models.permalink
     def get_absolute_url(self):
         return ("export.status", [self.app_label, self.model_name])
 
     def __unicode__(self):
         return "Export for %s %s" % (self.app_label, self.model_name)
-

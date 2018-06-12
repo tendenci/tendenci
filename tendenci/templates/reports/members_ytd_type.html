@@ -3,104 +3,118 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
 {% endblock %}
 
 {% block content %}
-<h1>{% trans "Members YTD by type" %}</h1>
-<div class="mems-wrap stat-table">
-{% blocktrans with year=year %}
-    Currently showing data for {{ year }}.
-{% endblocktrans %}
-<form class="search-form" action="{% url "reports-members-ytd-type" %}" method="get">
-<label for="id_year">{% trans "Year" %}:</label><select name="year" id="id_year" onchange="this.form.submit();">
-<option value="" selected="selected">-----------</option>
-{% for year in years %}
-    <option value="{{ year }}">{{ year }}</option>
-{% endfor %}
-</select>
-</form>
+<div class="page-header">
+  <h1>{% trans "Members YTD by type" %}</h1>
+</div>
+<div>
 
-<h2>{% trans "New Members" %}</h2>
-<table class="larger-font">
-    <tr>
-        <th>{% trans "Type" %}</th>
-        {% for month in months %}
-            <th>{{ month }}</th>
+  <form class="search-form form-inline pull-right" action="{% url "reports-members-ytd-type" %}" method="get">
+    <div class="form-group">
+      <label class="control-label" for="id_year">{% trans "Year" %}:</label>
+      <select class="form-control" name="year" id="id_year" onchange="this.form.submit();">
+        <option value="" selected="selected">-----------</option>
+        {% for year in years %}
+        <option value="{{ year }}">{{ year }}</option>
         {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% blocktrans with year=year %}
+  <p>Currently showing data for {{ year }}.</p>
+  {% endblocktrans %}
+
+  <h2>{% trans "New Members" %}</h2>
+  <table class="table table-tendenci-reports">
+    <tr>
+      <th>{% trans "Type" %}</th>
+      {% for month in months %}
+      <th>{{ month }}</th>
+      {% endfor %}
     </tr>
 
+    {% for k, v in types_new.items %}
     <tr>
-        {% for type in types_new %}
-            {% if forloop.counter = 1 %}
-                <td>{{ type.name }}</td>
-            {% endif %}
-            <td>{{ type.new_mems }}</td>
-        {% endfor %}
+      <td>{{ k }}</td>
+      {% for count in v %}
+      <td>{{ count }}</td>
+      {% endfor %}
     </tr>
+    {% endfor %}
 
-    <tr class="totals-row">
-        <td><strong>{% trans "Totals" %}</strong></td>
+    <tfoot>
+      <tr>
+        <td><strong>{% trans "Total" %}</strong></td>
         {% for total in totals_new %}
-            <td>{{ total }}</td>
+        <td>{{ total }}</td>
         {% endfor %}
-    </tr>
+      </tr>
+    </tfoot>
 
-</table>
+  </table>
 
-<h2>{% trans "Renewed Members" %}</h2>
-<table class="larger-font">
+  <h2>{% trans "Renewed Members" %}</h2>
+  <table class="table table-tendenci-reports">
     <tr>
-        <th>{% trans "Type" %}</th>
-        {% for month in months %}
-            <th>{{ month }}</th>
-        {% endfor %}
+      <th>{% trans "Type" %}</th>
+      {% for month in months %}
+      <th>{{ month }}</th>
+      {% endfor %}
     </tr>
 
+    {% for k, v in types_renew.items %}
     <tr>
-        {% for type in types_renew %}
-            {% if forloop.counter = 1 %}
-                <td>{{ type.name }}</td>
-            {% endif %}
-            <td>{{ type.renew_mems }}</td>
-        {% endfor %}
+      <td>{{ k }}</td>
+      {% for count in v %}
+      <td>{{ count }}</td>
+      {% endfor %}
     </tr>
+    {% endfor %}
 
-    <tr class="totals-row">
-        <td><strong>{% trans "Totals" %}</strong></td>
+    <tfoot>
+      <tr>
+        <td><strong>{% trans "Total" %}</strong></td>
         {% for total in totals_renew %}
-            <td>{{ total }}</td>
+        <td>{{ total }}</td>
         {% endfor %}
-    </tr>
+      </tr>
+    </tfoot>
 
-</table>
+  </table>
 
-<h2>{% trans "Expired Members" %}</h2>
-<table class="larger-font">
+  <h2>{% trans "Expired Members" %}</h2>
+  <table class="table table-tendenci-reports">
     <tr>
-        <th>{% trans "Type" %}</th>
-        {% for month in months %}
-            <th>{{ month }}</th>
-        {% endfor %}
+      <th>{% trans "Type" %}</th>
+      {% for month in months %}
+      <th>{{ month }}</th>
+      {% endfor %}
     </tr>
 
+
+    {% for k, v in types_expired.items %}
     <tr>
-        {% for type in types_expired %}
-            {% if forloop.counter = 1 %}
-                <td>{{ type.name }}</td>
-            {% endif %}
-            <td>{{ type.expired_mems }}</td>
-        {% endfor %}
+      <td>{{ k }}</td>
+      {% for count in v %}
+      <td>{{ count }}</td>
+      {% endfor %}
     </tr>
+    {% endfor %}
 
-    <tr class="totals-row">
-        <td><strong>{% trans "Totals" %}</strong></td>
+    <tfoot>
+      <tr>
+        <td><strong>{% trans "Total" %}</strong></td>
         {% for total in totals_expired %}
-            <td>{{ total }}</td>
+        <td>{{ total }}</td>
         {% endfor %}
-    </tr>
+      </tr>
+    </tfoot>
 
-</table>
+  </table>
+  <br />
 
 </div>
 

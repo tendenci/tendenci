@@ -1,9 +1,4 @@
-label.required:after,
-div.label.required:after {
+label.required:after {
     content: '*';
-    }
-
-.forms .label,
-.label {
-    color: #000;
+    color: #ED6270;
     }

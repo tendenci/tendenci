@@ -67,6 +67,25 @@
             {% blocktrans with desc=event.description|striptags|safe|truncatewords:40 %}{{ desc }}{% endblocktrans %}
         </div>
 
+
+        {% if event.groups.count > 0 %}
+	        <div><strong>{% trans "Group(s):" %}</strong>
+	        {% for group in event.groups.all %}
+	        	<a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+	        {% endfor %}
+	        </div>
+        {% endif %}
+
+        {% with event.organizers as organizers %}
+        {% if organizers %}
+        <div><strong>{% trans "Organizer:" %}</strong>
+        {% for organizer in organizers %}
+        {{ organizer.name }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         {% if event.registration_configuration.enabled %}
 
             {% if now > event.end_dt or now > event.registration_configuration.end_dt %}

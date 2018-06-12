@@ -61,23 +61,4 @@
         $('.search-form input[type="text"]').inputFieldText('Search past, present, and future events', 'search-hint');
     </script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-    <script type="text/javascript">
-        // Dialog
-        $('#event_export_dialog').dialog({
-            autoOpen: false,
-            width: 600,
-            buttons: {
-                "Close": function() {
-                    $(this).dialog("close");
-                }
-            }
-        });
-        // Dialog Link
-        $('#event_export_link').click(function(){
-            $('#event_export_dialog').show();
-            $('#event_export_dialog').dialog('open');
-
-            return false;
-        });
-    </script>
 {% endblock %}

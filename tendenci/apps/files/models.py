@@ -27,13 +27,13 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_notice_recipients
 from tendenci.apps.files.managers import FileManager
-from tendenci.apps.base.utils import extract_pdf
+from tendenci.apps.base.utils import extract_pdf, correct_filename
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._-]+', '_', filename)
+    filename = correct_filename(filename)
     m = hashlib.md5()
     m.update(filename)
 
@@ -44,7 +44,7 @@ def file_directory(instance, filename):
             content_type = instance.content_type()
         else:
             content_type = instance.content_type
-        content_type = re.sub(r'[^a-zA-Z0-9._]+', '_', unicode(content_type))
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(content_type))
         return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
     return 'files/files/%s/%s' % (hex_digest, filename)
@@ -55,7 +55,9 @@ class File(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     name = models.CharField(max_length=250, blank=True)
     description = models.TextField(blank=True)
-    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL)
+    # file type - image, video, or text...
+    f_type = models.CharField(max_length=20, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     group = models.ForeignKey(
@@ -105,7 +107,6 @@ class File(TendenciBaseModel):
 
         return False
 
-
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])
@@ -132,6 +133,7 @@ class File(TendenciBaseModel):
         if not self.id:
             self.guid = unicode(uuid.uuid1())
             created = True
+        self.f_type = self.type()
 
         super(File, self).save(*args, **kwargs)
 
@@ -297,6 +299,12 @@ class File(TendenciBaseModel):
         except Exception:
             return (0, 0)
 
+    def get_size(self):
+        try:
+            return self.file.size
+        except:
+            return 0
+
     def read(self):
         """Returns a file's text data
         For now this only considers pdf files.
@@ -326,11 +334,18 @@ class File(TendenciBaseModel):
 
     def get_file_public_url(self):
         if self.is_public_file():
-            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                return self.file.url
-            else:
-                return "%s%s" % (settings.MEDIA_URL, self.file)
+            return self.get_full_url()
         return None
+
+    def get_full_url(self):
+        """
+        This link can be used for the performance reason but it doesn't have the security check.
+        Use carefully.
+        """
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            return self.file.url
+        else:
+            return "%s%s" % (settings.MEDIA_URL, self.file)
 
     def get_content(self):
         if self.content_type and self.object_id:

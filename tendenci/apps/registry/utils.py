@@ -49,7 +49,7 @@ class RegisteredApps(object):
                     registry.fields['enabled'] = True
                     registry.fields['has_settings'] = False
 
-                if not 'settings' in registry.fields['url'].keys():
+                if 'settings' not in registry.fields['url'].keys():
                     registry.fields['url'].update({
                         'settings': lazy_reverse('settings.index', args=[
                             'module',
@@ -93,7 +93,7 @@ class RegisteredApps(object):
                         app['enabled'] = True
                         app['has_settings'] = False
 
-                    if not 'settings' in app['url'].keys():
+                    if 'settings' not in app['url'].keys():
                         app['url'].update({
                             'settings': lazy_reverse('settings.index', args=[
                                 'module',
@@ -152,7 +152,7 @@ def get_addons(installed_apps, addon_folder_path):
         try:
             __import__(addon_package)
             new_addons.append(addon_package)
-        except:
+        except ImportError:
             pass
 
     return new_addons
@@ -174,7 +174,7 @@ def get_url_patterns():
         try:
             __import__('.'.join([addon, 'urls']))
             items.append((r'', include('%s.urls' % addon,)))
-        except:
+        except ImportError:
             pass
 
     return patterns('', *items)

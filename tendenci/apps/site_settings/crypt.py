@@ -1,3 +1,4 @@
+from __future__ import print_function
 import base64
 from Crypto.Cipher import AES
 
@@ -36,4 +37,4 @@ def test():
         code = encrypt(x.value)
         decode = decrypt(code)
         if x.value != decode:
-            print "not equal!"
+            print("not equal!")

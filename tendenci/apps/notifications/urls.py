@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns, url
 
 from tendenci.apps.notifications.views import (notices, mark_all_seen, feed_for_user,
     single, email)

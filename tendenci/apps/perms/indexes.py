@@ -30,11 +30,9 @@ class TendenciBaseSearchIndex(indexes.SearchIndex):
     update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
 
     # permission fields
+    primary_key = indexes.IntegerField(model_attr='pk')
     users_can_view = indexes.MultiValueField(null=True)
     groups_can_view = indexes.MultiValueField(null=True)
-
-    # PK: needed for exclude list_tags
-    primary_key = indexes.CharField(model_attr='pk')
 
     # add order field for sorting. the subclasses can override
     # the prepare_order method to sort by a different field
@@ -116,4 +114,3 @@ class TendenciBaseSearchIndex(indexes.SearchIndex):
         (app_label).view_(module_name)
         """
         return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.model_name), obj)
-

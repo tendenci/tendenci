@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import django.db.models.deletion
 from django.conf import settings
-import tinymce.models
+import tendenci.libs.tinymce.models
 
 
 class Migration(migrations.Migration):
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=True, verbose_name=b'Active')),
                 ('status_detail', models.CharField(default=b'active', max_length=50)),
                 ('title', models.CharField(max_length=250, verbose_name='Title')),
-                ('content', tinymce.models.HTMLField(verbose_name='Content')),
+                ('content', tendenci.libs.tinymce.models.HTMLField(verbose_name='Content')),
                 ('enabled', models.BooleanField(default=True, verbose_name='Enabled')),
                 ('creator', models.ForeignKey(related_name='announcements_emergencyannouncement_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='announcements_emergencyannouncement_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),

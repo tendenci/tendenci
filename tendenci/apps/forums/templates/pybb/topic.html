@@ -1,7 +1,5 @@
 {% extends 'pybb/base.html' %}
 
-{% load url from future %}
-
 {% load pybb_tags i18n %}
 
 {% block title %}{{ topic }}{% endblock %}
@@ -31,6 +29,10 @@
 
         {% if topic.poll_type %}
             {% include 'pybb/poll.html' %}
+        {% endif %}
+
+        {% if not user.is_authenticated %}
+                {% include 'pybb/_need_to_login_message.html' %}
         {% endif %}
 
         <div class="posts">
@@ -82,10 +84,6 @@
 
         {% if user|pybb_may_create_post:topic %}
             {% include "pybb/post_form.html" %}
-        {% else %}
-            {% if not user.is_authenticated %}
-                {% include 'pybb/_need_to_login_message.html' %}
-            {% endif %}
         {% endif %}
 
         {% if user.is_staff %}

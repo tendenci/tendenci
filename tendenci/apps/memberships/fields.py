@@ -1,8 +1,9 @@
 from django import forms
 from django.utils.safestring import mark_safe
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget,
+from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget, DonationOptionAmountWidget,
                      AppFieldSelectionWidget)
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -20,16 +21,38 @@ class TypeExpMethodField(forms.MultiValueField):
     def compress(self, data_list):
         for i in range(0, len(data_list)):
             if type(data_list[i]) is bool:
-                if data_list[i] == False:
+                if not data_list[i]:
                     data_list[i] = ''
                 else:
                     data_list[i] = '1'
-            if data_list[i] == None:
+            if data_list[i] is None:
                 data_list[i] = ''
 
         if data_list:
             return ','.join(data_list)
         return None
+
+
+class DonationOptionAmountField(forms.MultiValueField):
+    def __init__(self, required=True, widget=DonationOptionAmountWidget(attrs=None),
+                label=None, initial=None, help_text=None):
+        myfields = ()
+        super(DonationOptionAmountField, self).__init__(myfields, required, widget,
+                                          label, initial, help_text)
+
+    def clean(self, value):
+        return self.compress(value)
+
+    def compress(self, data_list):
+        for i in range(0, len(data_list)):
+            if type(data_list[i]) is bool:
+                if not data_list[i]:
+                    data_list[i] = ''
+                else:
+                    data_list[i] = '1'
+            if data_list[i] is None:
+                data_list[i] = ''
+        return data_list
 
 
 class NoticeTimeTypeField(forms.MultiValueField):
@@ -79,6 +102,19 @@ class AppFieldSelectionField(forms.MultipleChoiceField):
 
 class MembershipTypeModelChoiceField(forms.ModelChoiceField):
     customer = None
+    corp_membership = None
 
     def label_from_instance(self, obj):
-        return obj.get_price_display(self.customer)
+        return obj.get_price_display(self.customer, self.corp_membership)
+
+    def to_python(self, value):
+        if value in self.empty_values:
+            return None
+        try:
+            key = self.to_field_name or 'pk'
+            if type(value) == list:
+                value = value[0]
+            value = self.queryset.get(**{key: value})
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            raise ValidationError(self.error_messages['invalid_choice'], code='invalid_choice')
+        return value

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import traceback
 
@@ -16,11 +17,10 @@ class Command(BaseCommand):
         example:
         python manage.py import_corp_memberships 10 1
     """
- 
+
     def add_arguments(self, parser):
         parser.add_argument('import_id', type=int)
         parser.add_argument('user_id', type=int)
-
 
     def handle(self, *args, **options):
         from tendenci.apps.corporate_memberships.models import CorpMembershipImport
@@ -44,12 +44,12 @@ class Command(BaseCommand):
             # catch any error
             try:
                 imd.process_corp_membership(cmemb_data)
-            except Exception, e:
+            except Exception as e:
                 # mimport.status = 'error'
                 # TODO: add a field to log the error
                 # mimport.save()
                 # raise  Exception(traceback.format_exc())
-                print e
+                print(e)
 
             mimport.num_processed += 1
             # save the status

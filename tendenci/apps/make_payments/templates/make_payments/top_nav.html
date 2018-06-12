@@ -3,18 +3,14 @@
 {% load static from staticfiles %}
 {% load make_payment_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/money_add.png' %}{% endblock %}
+
+{% block nav_label %}{% trans "Make Payments" %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/money_add.png' %}"/>{% trans "Make Payments" %}
-    </a>
-
     {% if mp %}
         {% make_payment_current_app mp %}
     {% else %}
         {% make_payment_current_app %}
     {% endif %}
-</li>
 {% endblock %}
-

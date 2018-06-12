@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
@@ -15,10 +16,10 @@ class Command(BaseCommand):
             user.is_superuser = True
             user.save()
 
-            print 'User "%s(%s)" -- added' % (user.get_full_name(), user.username)
-        print
+            print('User "%s(%s)" -- added' % (user.get_full_name(), user.username))
+        print()
         count = len(users)
         if count == 1:
-            print '1 user added.'
+            print('1 user added.')
         else:
-            print '%d users added.' % count
+            print('%d users added.' % count)

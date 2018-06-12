@@ -3,17 +3,14 @@
 {% load static from staticfiles %}
 {% load studygroup_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/medal_gold_1.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Study Groups' %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/medal_gold_1.png' %}"/>{% trans 'Study Groups' %}
-    </a>
-
     {% if study_group %}
         {% studygroup_current_app request.user study_group %}
     {% else %}
         {% studygroup_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}

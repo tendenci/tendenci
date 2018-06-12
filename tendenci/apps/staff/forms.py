@@ -6,7 +6,7 @@ from django import forms
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.staff.models import Staff, StaffFile
 #from tendenci.apps.files.models import File
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -28,7 +28,7 @@ class StaffForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
             mce_attrs={'storme_app_label':Staff._meta.app_label,
             'storme_model':Staff._meta.model_name.lower()}))
-    
+
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
     def clean_photo(self):
@@ -62,7 +62,7 @@ class StaffForm(TendenciBaseForm):
             'department',
             'positions',
             'biography',
-            'cv',         
+            'cv',
             'email',
             'phone',
             'personal_sites',

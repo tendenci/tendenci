@@ -1,257 +1,27 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
 from django.utils.translation import ugettext_lazy as _
+from django import VERSION as django_version
+from django.apps import apps
 
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
-COUNTRIES = (
-    ('', '-----------'),
-    ('AD', _('Andorra')),
-    ('AE', _('United Arab Emirates')),
-    ('AF', _('Afghanistan')),
-    ('AG', _('Antigua & Barbuda')),
-    ('AI', _('Anguilla')),
-    ('AL', _('Albania')),
-    ('AM', _('Armenia')),
-    ('AN', _('Netherlands Antilles')),
-    ('AO', _('Angola')),
-    ('AQ', _('Antarctica')),
-    ('AR', _('Argentina')),
-    ('AS', _('American Samoa')),
-    ('AT', _('Austria')),
-    ('AU', _('Australia')),
-    ('AW', _('Aruba')),
-    ('AZ', _('Azerbaijan')),
-    ('BA', _('Bosnia and Herzegovina')),
-    ('BB', _('Barbados')),
-    ('BD', _('Bangladesh')),
-    ('BE', _('Belgium')),
-    ('BF', _('Burkina Faso')),
-    ('BG', _('Bulgaria')),
-    ('BH', _('Bahrain')),
-    ('BI', _('Burundi')),
-    ('BJ', _('Benin')),
-    ('BM', _('Bermuda')),
-    ('BN', _('Brunei Darussalam')),
-    ('BO', _('Bolivia')),
-    ('BR', _('Brazil')),
-    ('BS', _('Bahama')),
-    ('BT', _('Bhutan')),
-    ('BV', _('Bouvet Island')),
-    ('BW', _('Botswana')),
-    ('BY', _('Belarus')),
-    ('BZ', _('Belize')),
-    ('CA', _('Canada')),
-    ('CC', _('Cocos (Keeling) Islands')),
-    ('CF', _('Central African Republic')),
-    ('CG', _('Congo')),
-    ('CH', _('Switzerland')),
-    ('CI', _('Ivory Coast')),
-    ('CK', _('Cook Iislands')),
-    ('CL', _('Chile')),
-    ('CM', _('Cameroon')),
-    ('CN', _('China')),
-    ('CO', _('Colombia')),
-    ('CR', _('Costa Rica')),
-    ('CU', _('Cuba')),
-    ('CV', _('Cape Verde')),
-    ('CX', _('Christmas Island')),
-    ('CY', _('Cyprus')),
-    ('CZ', _('Czech Republic')),
-    ('DE', _('Germany')),
-    ('DJ', _('Djibouti')),
-    ('DK', _('Denmark')),
-    ('DM', _('Dominica')),
-    ('DO', _('Dominican Republic')),
-    ('DZ', _('Algeria')),
-    ('EC', _('Ecuador')),
-    ('EE', _('Estonia')),
-    ('EG', _('Egypt')),
-    ('EH', _('Western Sahara')),
-    ('ER', _('Eritrea')),
-    ('ES', _('Spain')),
-    ('ET', _('Ethiopia')),
-    ('FI', _('Finland')),
-    ('FJ', _('Fiji')),
-    ('FK', _('Falkland Islands (Malvinas)')),
-    ('FM', _('Micronesia')),
-    ('FO', _('Faroe Islands')),
-    ('FR', _('France')),
-    ('FX', _('France, Metropolitan')),
-    ('GA', _('Gabon')),
-    ('GB', _('United Kingdom (Great Britain)')),
-    ('GD', _('Grenada')),
-    ('GE', _('Georgia')),
-    ('GF', _('French Guiana')),
-    ('GH', _('Ghana')),
-    ('GI', _('Gibraltar')),
-    ('GL', _('Greenland')),
-    ('GM', _('Gambia')),
-    ('GN', _('Guinea')),
-    ('GP', _('Guadeloupe')),
-    ('GQ', _('Equatorial Guinea')),
-    ('GR', _('Greece')),
-    ('GS', _('South Georgia and the South Sandwich Islands')),
-    ('GT', _('Guatemala')),
-    ('GU', _('Guam')),
-    ('GW', _('Guinea-Bissau')),
-    ('GY', _('Guyana')),
-    ('HK', _('Hong Kong')),
-    ('HM', _('Heard & McDonald Islands')),
-    ('HN', _('Honduras')),
-    ('HR', _('Croatia')),
-    ('HT', _('Haiti')),
-    ('HU', _('Hungary')),
-    ('ID', _('Indonesia')),
-    ('IE', _('Ireland')),
-    ('IL', _('Israel')),
-    ('IN', _('India')),
-    ('IO', _('British Indian Ocean Territory')),
-    ('IQ', _('Iraq')),
-    ('IR', _('Islamic Republic of Iran')),
-    ('IS', _('Iceland')),
-    ('IT', _('Italy')),
-    ('JM', _('Jamaica')),
-    ('JO', _('Jordan')),
-    ('JP', _('Japan')),
-    ('KE', _('Kenya')),
-    ('KG', _('Kyrgyzstan')),
-    ('KH', _('Cambodia')),
-    ('KI', _('Kiribati')),
-    ('KM', _('Comoros')),
-    ('KN', _('St. Kitts and Nevis')),
-    ('KP', _('Korea, Democratic People\'s Republic of')),
-    ('KR', _('Korea, Republic of')),
-    ('KW', _('Kuwait')),
-    ('KY', _('Cayman Islands')),
-    ('KZ', _('Kazakhstan')),
-    ('LA', _('Lao People\'s Democratic Republic')),
-    ('LB', _('Lebanon')),
-    ('LC', _('Saint Lucia')),
-    ('LI', _('Liechtenstein')),
-    ('LK', _('Sri Lanka')),
-    ('LR', _('Liberia')),
-    ('LS', _('Lesotho')),
-    ('LT', _('Lithuania')),
-    ('LU', _('Luxembourg')),
-    ('LV', _('Latvia')),
-    ('LY', _('Libyan Arab Jamahiriya')),
-    ('MA', _('Morocco')),
-    ('MC', _('Monaco')),
-    ('MD', _('Moldova, Republic of')),
-    ('MG', _('Madagascar')),
-    ('MH', _('Marshall Islands')),
-    ('ML', _('Mali')),
-    ('MN', _('Mongolia')),
-    ('MM', _('Myanmar')),
-    ('MO', _('Macau')),
-    ('MP', _('Northern Mariana Islands')),
-    ('MQ', _('Martinique')),
-    ('MR', _('Mauritania')),
-    ('MS', _('Monserrat')),
-    ('MT', _('Malta')),
-    ('MU', _('Mauritius')),
-    ('MV', _('Maldives')),
-    ('MW', _('Malawi')),
-    ('MX', _('Mexico')),
-    ('MY', _('Malaysia')),
-    ('MZ', _('Mozambique')),
-    ('NA', _('Namibia')),
-    ('NC', _('New Caledonia')),
-    ('NE', _('Niger')),
-    ('NF', _('Norfolk Island')),
-    ('NG', _('Nigeria')),
-    ('NI', _('Nicaragua')),
-    ('NL', _('Netherlands')),
-    ('NO', _('Norway')),
-    ('NP', _('Nepal')),
-    ('NR', _('Nauru')),
-    ('NU', _('Niue')),
-    ('NZ', _('New Zealand')),
-    ('OM', _('Oman')),
-    ('PA', _('Panama')),
-    ('PE', _('Peru')),
-    ('PF', _('French Polynesia')),
-    ('PG', _('Papua New Guinea')),
-    ('PH', _('Philippines')),
-    ('PK', _('Pakistan')),
-    ('PL', _('Poland')),
-    ('PM', _('St. Pierre & Miquelon')),
-    ('PN', _('Pitcairn')),
-    ('PR', _('Puerto Rico')),
-    ('PT', _('Portugal')),
-    ('PW', _('Palau')),
-    ('PY', _('Paraguay')),
-    ('QA', _('Qatar')),
-    ('RE', _('Reunion')),
-    ('RO', _('Romania')),
-    ('RU', _('Russian Federation')),
-    ('RW', _('Rwanda')),
-    ('SA', _('Saudi Arabia')),
-    ('SB', _('Solomon Islands')),
-    ('SC', _('Seychelles')),
-    ('SD', _('Sudan')),
-    ('SE', _('Sweden')),
-    ('SG', _('Singapore')),
-    ('SH', _('St. Helena')),
-    ('SI', _('Slovenia')),
-    ('SJ', _('Svalbard & Jan Mayen Islands')),
-    ('SK', _('Slovakia')),
-    ('SL', _('Sierra Leone')),
-    ('SM', _('San Marino')),
-    ('SN', _('Senegal')),
-    ('SO', _('Somalia')),
-    ('SR', _('Suriname')),
-    ('ST', _('Sao Tome & Principe')),
-    ('SV', _('El Salvador')),
-    ('SY', _('Syrian Arab Republic')),
-    ('SZ', _('Swaziland')),
-    ('TC', _('Turks & Caicos Islands')),
-    ('TD', _('Chad')),
-    ('TF', _('French Southern Territories')),
-    ('TG', _('Togo')),
-    ('TH', _('Thailand')),
-    ('TJ', _('Tajikistan')),
-    ('TK', _('Tokelau')),
-    ('TM', _('Turkmenistan')),
-    ('TN', _('Tunisia')),
-    ('TO', _('Tonga')),
-    ('TP', _('East Timor')),
-    ('TR', _('Turkey')),
-    ('TT', _('Trinidad & Tobago')),
-    ('TV', _('Tuvalu')),
-    ('TW', _('Taiwan, Province of China')),
-    ('TZ', _('Tanzania, United Republic of')),
-    ('UA', _('Ukraine')),
-    ('UG', _('Uganda')),
-    ('UM', _('United States Minor Outlying Islands')),
-    ('US', _('United States of America')),
-    ('UY', _('Uruguay')),
-    ('UZ', _('Uzbekistan')),
-    ('VA', _('Vatican City State (Holy See)')),
-    ('VC', _('St. Vincent & the Grenadines')),
-    ('VE', _('Venezuela')),
-    ('VG', _('British Virgin Islands')),
-    ('VI', _('United States Virgin Islands')),
-    ('VN', _('Viet Nam')),
-    ('VU', _('Vanuatu')),
-    ('WF', _('Wallis & Futuna Islands')),
-    ('WS', _('Samoa')),
-    ('YE', _('Yemen')),
-    ('YT', _('Mayotte')),
-    ('YU', _('Yugoslavia')),
-    ('ZA', _('South Africa')),
-    ('ZM', _('Zambia')),
-    ('ZR', _('Zaire')),
-    ('ZW', _('Zimbabwe')),
-    ('ZZ', _('Unknown or unspecified country')),
-)
+
+def get_setting_key(items=[]):
+    """
+    Generate a setting key string from a list of string items.
+    Spaces are also removed as memcached doesn't allow space characters.
+    """
+    if not items:
+        return None
+
+    key = ('.'.join([d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY] + items)).replace(' ', '')
+    return key
 
 
 def delete_all_settings_cache():
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
-    key = '.'.join(keys)
+    key = get_setting_key(['all'])
     cache.delete(key)
 
 
@@ -260,13 +30,8 @@ def cache_setting(scope, scope_category, name, value):
     Caches a single setting within a scope
     and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-
-    key = '.'.join(keys)
-    is_set = cache.add(key, value)
-    if not is_set:
-        cache.set(key, value)
+    key = get_setting_key([scope, scope_category, name])
+    cache.set(key, value)
 
 
 def cache_settings(scope, scope_category):
@@ -280,12 +45,8 @@ def cache_settings(scope, scope_category):
     settings = Setting.objects.filter(**filters)
     if settings:
         for setting in settings:
-            keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
-                    setting.scope, setting.scope_category, setting.name]
-            key = '.'.join(keys)
-            is_set = cache.add(key, setting.get_value())
-            if not is_set:
-                cache.set(key, setting.get_value())
+            key = get_setting_key([setting.scope, setting.scope_category, setting.name])
+            cache.set(key, setting.get_value())
 
 
 def delete_setting_cache(scope, scope_category, name):
@@ -293,9 +54,7 @@ def delete_setting_cache(scope, scope_category, name):
         Deletes a single setting within a
         scope and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
+    key = get_setting_key([scope, scope_category, name])
     cache.delete(key)
 
 
@@ -310,9 +69,7 @@ def delete_settings_cache(scope, scope_category):
     }
     settings = Setting.objects.filter(**filters)
     for setting in settings:
-        keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
-                setting.scope, setting.scope_category, setting.name]
-        key = '_'.join(keys)
+        key = get_setting_key([setting.scope, setting.scope_category, setting.name])
         cache.delete(key)
 
 
@@ -323,14 +80,19 @@ def get_setting(scope, scope_category, name):
         Returns the value of the setting if it exists
         otherwise it returns an empty string
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
+    key = get_setting_key([scope, scope_category, name])
 
-    # setting = cache.get(key)
-    setting = None
+    if django_version < (1, 10) and not apps.ready:
+        # django.setup() loads haystack, which imports a bunch of Tendenci
+        # models, some of which indirectly call get_setting() at import time.
+        # Calling cache.get() from within django.setup() on Django 1.7-1.9 will
+        # cause a deadlock.
+        # See https://github.com/django/django/pull/6044
+        setting = None
+    else:
+        setting = cache.get(key)
 
-    if not setting:
+    if setting is None:
         #setting is not in the cache
         try:
             #try to get the setting and cache it
@@ -345,7 +107,7 @@ def get_setting(scope, scope_category, name):
             setting = None
 
     #check if the setting has been set and evaluate the value
-    if setting:
+    if setting is not None:
         try:
             # test is get_value will work
             value = setting.get_value().strip()
@@ -381,20 +143,15 @@ def get_module_setting(scope_category, name):
 
 def check_setting(scope, scope_category, name):
     #check cache first
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name]
-    key = '.'.join(keys)
-
+    key = get_setting_key([scope, scope_category, name])
     setting = cache.get(key)
-    if setting:
+    if setting is not None:
         return True
 
-    missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
-            scope_category, name, "missing"]
-    missing_key = '.'.join(missing_keys)
+    missing_key = get_setting_key([scope, scope_category, name, "missing"])
 
     missing = cache.get(missing_key)
-    if not missing:
+    if missing is None:
         #check the db if it is not in the cache
         exists = Setting.objects.filter(scope=scope,
             scope_category=scope_category, name=name).exists()
@@ -403,9 +160,7 @@ def check_setting(scope, scope_category, name):
         if not exists:
             #set to True to signify that it is missing so we do not
             #come back into this if statement and query db again
-            is_set = cache.add(missing_key, True)
-            if not is_set:
-                cache.set(missing_key, True)
+            cache.set(missing_key, True)
 
         return exists
     return False
@@ -479,4 +234,3 @@ def get_group_list(user):
         choices.append((group.pk, group.name))
 
     return choices, initial_group.id
-

@@ -3,17 +3,17 @@
 <head>
 	<title>{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% block title %}{% endblock %}</title>
    	<meta charset="UTF-8">
-    
+
     {% block extra_head %}
     <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css" />
     {% endblock %}
 </head>
 <body>
 <div id="content">
-  
+
     <div id="body">
     {% block content %}
-    
+
     {% endblock %}
     </div>
 </div>

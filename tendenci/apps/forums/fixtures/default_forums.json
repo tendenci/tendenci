@@ -1,0 +1,346 @@
+[
+{
+    "fields": {
+        "position": 0,
+        "hidden": false,
+        "name": "General Topics",
+        "slug": "general-topics",
+        "creator": null,
+        "creator_username": "system",
+        "owner": null,
+        "owner_username": "system",
+        "allow_anonymous_view": true,
+        "allow_user_view": false,
+        "allow_member_view": false,
+        "allow_member_edit": false,
+        "create_dt": "2015-11-19T12:12:56.448",
+        "update_dt": "2015-11-19T12:13:26.290",
+        "entity": 1,
+        "status": true,
+        "status_detail": "active"
+    },
+    "model": "forums.category",
+    "pk": 1
+},
+{
+    "fields": {
+        "position": 5,
+        "hidden": false,
+        "name": "Services",
+        "slug": "services",
+        "creator": null,
+        "creator_username": "system",
+        "owner": null,
+        "owner_username": "system",
+        "allow_anonymous_view": true,
+        "allow_user_view": false,
+        "allow_member_view": false,
+        "allow_member_edit": false,
+        "create_dt": "2015-11-19T12:12:56.448",
+        "update_dt": "2015-11-19T12:13:26.290",
+        "entity": 1,
+        "status": true,
+        "status_detail": "active"
+    },
+    "model": "forums.category",
+    "pk": 2
+},
+{
+    "fields": {
+        "position": 10,
+        "hidden": false,
+        "name": "Communication",
+        "slug": "communication",
+        "creator": null,
+        "creator_username": "system",
+        "owner": null,
+        "owner_username": "system",
+        "allow_anonymous_view": true,
+        "allow_user_view": false,
+        "allow_member_view": false,
+        "allow_member_edit": false,
+        "create_dt": "2015-11-19T12:12:56.448",
+        "update_dt": "2015-11-19T12:13:26.290",
+        "entity": 1,
+        "status": true,
+        "status_detail": "active"
+    },
+    "model": "forums.category",
+    "pk": 3
+},
+{
+    "fields": {
+        "position": 15,
+        "hidden": true,
+        "name": "Private Forums",
+        "slug": "private-forums",
+        "creator": null,
+        "creator_username": "system",
+        "owner": null,
+        "owner_username": "system",
+        "allow_anonymous_view": true,
+        "allow_user_view": false,
+        "allow_member_view": false,
+        "allow_member_edit": false,
+        "create_dt": "2015-11-19T12:12:56.448",
+        "update_dt": "2015-11-19T12:13:26.290",
+        "entity": 1,
+        "status": true,
+        "status_detail": "active"
+    },
+    "model": "forums.category",
+    "pk": 4
+},
+{
+    "fields": {
+        "category": 2,
+        "updated": null,
+        "name": "Membership Benefits",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 1,
+        "hidden": false,
+        "slug": "membership-benefits",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 1
+},
+{
+    "fields": {
+        "category": 2,
+        "updated": null,
+        "name": "Activities",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 5,
+        "hidden": false,
+        "slug": "activities",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 2
+},
+{
+    "fields": {
+        "category": 2,
+        "updated": null,
+        "name": "Young Professionals",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 10,
+        "hidden": false,
+        "slug": "young-professionals",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 3
+},
+{
+    "fields": {
+        "category": 1,
+        "updated": null,
+        "name": "Welcome! Test your posts here.",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 50,
+        "hidden": false,
+        "slug": "welcome-test-your-posts-here",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 4
+},
+{
+    "fields": {
+        "category": 1,
+        "updated": null,
+        "name": "Opportunities for Members",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 5,
+        "hidden": false,
+        "slug": "opportunities-for-members",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 5
+},
+{
+    "fields": {
+        "category": 1,
+        "updated": null,
+        "name": "Volunteer Opportunities",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 10,
+        "hidden": false,
+        "slug": "volunteer-opportunities",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 6
+},
+{
+    "fields": {
+        "category": 1,
+        "updated": null,
+        "name": "How to Get the Best Value from Your Membership",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 1,
+        "hidden": false,
+        "slug": "how-to-get-the-best-value-from-your-membership",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 7
+},
+{
+    "fields": {
+        "category": 3,
+        "updated": null,
+        "name": "Announcements",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 1,
+        "hidden": false,
+        "slug": "announcements",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 8
+},
+{
+    "fields": {
+        "category": 3,
+        "updated": null,
+        "name": "Newsletter Submission Requests",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 10,
+        "hidden": false,
+        "slug": "newsletter-submission-requests",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 9
+},
+{
+    "fields": {
+        "category": 3,
+        "updated": null,
+        "name": "Feedback - how are we doing?",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 30,
+        "hidden": false,
+        "slug": "feedback-how-are-we-doing",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 10
+},
+{
+    "fields": {
+        "category": 4,
+        "updated": null,
+        "name": "Common Sense on Hidden Forums",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 5,
+        "hidden": false,
+        "slug": "common-sense-on-hidden-forums",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 11
+},
+{
+    "fields": {
+        "category": 4,
+        "updated": null,
+        "name": "Board Member Discussions",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 10,
+        "hidden": false,
+        "slug": "board-member-discussions",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 12
+},
+{
+    "fields": {
+        "category": 4,
+        "updated": null,
+        "name": "Executive Committee Discussions",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 20,
+        "hidden": false,
+        "slug": "executive-committee-discussions",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 13
+},
+{
+    "fields": {
+        "category": 4,
+        "updated": null,
+        "name": "Fundraising Ideas",
+        "parent": null,
+        "post_count": 0,
+        "topic_count": 0,
+        "headline": null,
+        "moderators": [],
+        "position": 30,
+        "hidden": false,
+        "slug": "fundraising-ideas",
+        "description": ""
+    },
+    "model": "forums.forum",
+    "pk": 14
+}
+]

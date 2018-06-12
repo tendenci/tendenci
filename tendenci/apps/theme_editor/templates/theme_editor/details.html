@@ -32,10 +32,14 @@
             {% endif %}
         </div>
 
+		{% if current_theme == theme.orig_name %}
+		<div class="text-primary">{% trans  "Current Active Theme " %}</div>
+		{% else %}
         <form class="theme_picker_form" method="post" action="">{% csrf_token %}
             <input type="hidden" id="id_theme_choices" name="theme" value="{{theme.orig_name}}">
             <input class="theme_picker_submit" type="submit" value="{% trans 'Make this my active theme' %}"/>
         </form>
+        {% endif %}
 
         <div class="extra-info">
             {% if theme.tags %}

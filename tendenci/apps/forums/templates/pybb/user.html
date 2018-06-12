@@ -1,7 +1,5 @@
 {% extends 'pybb/base.html' %}
 
-{% load url from future %}
-
 {% load pybb_tags i18n %}
 
 {% block title %}
@@ -15,6 +13,9 @@
     <div class="userinfo">
         {% include 'pybb/avatar.html' with user=target_user %}
         <div class="info">
+        	<div>
+        	<a href="//gravatar.com/" target="_blank">Create / update your gravatar</a>
+        	</div>
             <div class="label">{% trans "Statistics" %}</div>
             <div>
                 <a href="{% url 'pybb:user_topics' target_user.get_username %}">

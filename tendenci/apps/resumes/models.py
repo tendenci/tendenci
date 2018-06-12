@@ -7,16 +7,17 @@ from django.contrib.contenttypes.fields import GenericRelation
 
 from tagging.fields import TagField
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.resumes.managers import ResumeManager
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.resumes.module_meta import ResumeMeta
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    filename = correct_filename(filename)
     return 'resumes/%d/%s' % (instance.id, filename)
 
 
@@ -87,7 +88,7 @@ class Resume(TendenciBaseModel):
     # status = models.NullBooleanField("Active", default=True)
     # status_detail = models.CharField(max_length=50, default='active')
 
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     perms = GenericRelation(ObjectPermission,

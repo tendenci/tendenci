@@ -36,9 +36,9 @@ apps_not_to_search = [
 ]
 
 registered_apps = registry_site.get_registered_apps()
-registered_apps_names = [app['model']._meta.model_name for app in registered_apps \
+registered_apps_names = [app['model']._meta.model_name for app in registered_apps
                         if app['verbose_name'].lower() not in apps_not_to_search]
-registered_apps_models = [app['model'] for app in registered_apps \
+registered_apps_models = [app['model'] for app in registered_apps
                          if app['verbose_name'].lower() not in apps_not_to_search]
 
 
@@ -234,7 +234,7 @@ class ModelSearchForm(SearchForm):
                     registered_apps_names.append(app['model']._meta.model_name)
         else:
             for app in registered_apps:
-                if app['verbose_name'].lower() == 'user':
+                if app['verbose_name'].lower() in ['user', 'membership']:
                     try:
                         models_index = registered_apps_models.index(app['model'])
                         registered_apps_models.pop(models_index)
@@ -249,7 +249,7 @@ class ModelSearchForm(SearchForm):
     def get_models(self):
         """Return an alphabetical list of model classes in the index."""
         search_models = self.models
-        if self.cleaned_data['models']:
+        if self.cleaned_data.get('models', []):
             search_models = []
             for model in self.cleaned_data['models']:
                 class_model = models.get_model(*model.split('.'))

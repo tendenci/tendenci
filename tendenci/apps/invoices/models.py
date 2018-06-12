@@ -72,7 +72,7 @@ class Invoice(models.Model):
     bill_to_city = models.CharField(max_length=50, blank=True, null=True)
     bill_to_state = models.CharField(max_length=50, blank=True, null=True)
     bill_to_zip_code = models.CharField(max_length=20, blank=True, null=True)
-    bill_to_country = models.CharField(max_length=50, blank=True, null=True)
+    bill_to_country = models.CharField(max_length=255, blank=True, null=True)
     bill_to_phone = models.CharField(max_length=50, blank=True, null=True)
     bill_to_fax = models.CharField(max_length=50, blank=True, null=True)
     bill_to_email = models.CharField(max_length=100, blank=True, null=True)
@@ -84,7 +84,7 @@ class Invoice(models.Model):
     ship_to_city = models.CharField(max_length=50, blank=True)
     ship_to_state = models.CharField(max_length=50, blank=True)
     ship_to_zip_code = models.CharField(max_length=20, blank=True)
-    ship_to_country = models.CharField(max_length=50, blank=True)
+    ship_to_country = models.CharField(max_length=255, blank=True)
     ship_to_phone = models.CharField(max_length=50, blank=True, null=True)
     ship_to_fax = models.CharField(max_length=50, blank=True, null=True)
     ship_to_email = models.CharField(max_length=100, blank=True, null=True)
@@ -177,13 +177,12 @@ class Invoice(models.Model):
     def get_absolute_url_with_guid(self):
         return ('invoice.view', [self.id, self.guid])
 
-    @models.permalink
     def get_discount_url(self):
         from tendenci.apps.discounts.models import Discount
         if self.discount_code:
             try:
                 discount = Discount.objects.get(discount_code=self.discount_code)
-                return ('discount.detail', [discount.id])
+                return discount.get_absolute_url
             except Discount.DoesNotExist:
                 return ''
         return ''
@@ -247,6 +246,12 @@ class Invoice(models.Model):
             _object = None
         return _object
 
+    def get_donation_amount(self):
+        obj = self.get_object()
+        if obj and hasattr(obj, 'donation_amount'):
+            return obj.donation_amount
+        return None
+
     def get_status(self):
         """
         Return status (string)
@@ -256,7 +261,6 @@ class Invoice(models.Model):
             return u'void'
 
         return self.status_detail
-
 
     @property
     def is_tendered(self):
@@ -289,7 +293,8 @@ class Invoice(models.Model):
             return True
 
         if user2_compare.is_authenticated():
-            if user2_compare in [self.creator, self.owner]:
+            if user2_compare in [self.creator, self.owner] or \
+                    user2_compare.email == self.bill_to_email:
                 return self.status
 
         return False
@@ -308,7 +313,8 @@ class Invoice(models.Model):
                     return True
 
                 if self.creator == user2_compare or \
-                        self.owner == user2_compare:
+                        self.owner == user2_compare or \
+                        self.bill_to_email == user2_compare.email:
                     if self.status == 1:
                         # user can only edit a non-tendered invoice
                         if not self.is_tendered:

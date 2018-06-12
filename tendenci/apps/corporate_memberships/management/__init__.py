@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.db.models.signals import post_syncdb
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
@@ -13,7 +14,7 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type(
                     "corp_memb_added_user",
                     _("Corporate Membership Added User Notice"),
-                    _("A corporate membership has been added " + \
+                    _("A corporate membership has been added " +
                       "- notice to user."))
         notification.create_notice_type(
                     "corp_memb_edited",
@@ -26,7 +27,7 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type(
                     "corp_memb_renewed_user",
                     _("Corporate Membership Renewal User Notice"),
-                    _("A corporate membership has been renewed " + \
+                    _("A corporate membership has been renewed " +
                       "- notice to user."))
         notification.create_notice_type(
                     "corp_memb_join_approved",
@@ -47,4 +48,4 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
-    print "Corporate Memberships: Skipping creation of NoticeTypes as notification app not found"
+    print("Corporate Memberships: Skipping creation of NoticeTypes as notification app not found")

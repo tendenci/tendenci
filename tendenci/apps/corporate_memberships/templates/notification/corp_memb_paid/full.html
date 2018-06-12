@@ -2,7 +2,7 @@
 
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd"> 
+"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <title>{% trans "Corporate Membership Payment Received" %}</title>
@@ -60,7 +60,7 @@
                 </tr>
               </table>              <p>                  <br>
                {% trans "To view this corporate membership, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url "corpmembership.view" object.pk %}</strong>
-             {% if profile %}  
+             {% if profile and profile.id %}
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
              {% endif %}
               <p>{% trans "If you have received this in error, please contact the webmaster below." %} </p>

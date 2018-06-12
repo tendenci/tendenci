@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from optparse import make_option
 from random import randint
@@ -17,8 +18,9 @@ class Command(BaseCommand):
             from explorer.models import Query
             queries = (
 ('All Interactive Users',
-"""SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,  
-        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2, 
+'All Interactive Users - People Who Can Login to the Site',
+"""SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,
+        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2,
         p.member_number, p.city, p.state, p.zipcode, p.country, p.url, p.sex,
         p.address_type, p.phone2, p.fax, p.work_phone, p.home_phone, p.mobile_phone,
         p.notes, p.admin_notes
@@ -27,7 +29,8 @@ ON u.id=p.user_id
 WHERE u.is_active=True
 AND p.status=True
 AND p.status_detail='active'"""),
-('All Members',
+('All Memberships',
+'All Memberships',
 """SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,
         p.salutation, p.company, p.position_title, p.phone, p.address, p.address2,
         p.member_number, p.city, p.state, p.zipcode, p.country, p.url, p.sex,
@@ -47,35 +50,66 @@ ON m.user_id=u.id
 WHERE u.is_active=True
 AND p.status=True
 AND m.status_detail <> 'archive'"""),
-('All Corporate Members',
+('All Corporate Memberships',
+'All corporate memberships',
  """SELECT cp.name, cp.address, cp.address2, cp.city, cp.state, cp.zip, cp.country,
      cp.phone, cp.email, cp.url, cp.number_employees, cp.chapter, cp.tax_exempt,
      cp.annual_revenue, cp.annual_ad_expenditure, cp.description, cp.expectations,
      cp.notes, cp.referral_source, cp.ud1, cp.ud2, cp.ud3, cp.ud4, cp.ud5, cp.ud6,
      cp.ud7, cp.ud8, cm.corporate_membership_type_id, cm.renewal, cm.renew_dt,
-     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail 
+     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail
 FROM corporate_memberships_corpprofile cp
 INNER JOIN corporate_memberships_corpmembership cm
 ON cp.id=cm.corp_profile_id
 WHERE cm.status_detail <> 'archive'"""),
-('All Users in a Specific Group (replace <YOUR GROUP ID> with your group id)',
- """SELECT ug.name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
-     u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
-     p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
-     p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,
-     p.home_phone, p.mobile_phone
-FROM auth_user u INNER JOIN profiles_profile p
-ON u.id=p.user_id INNER JOIN user_groups_groupmembership ugm 
-on u.id=ugm.member_id INNER JOIN user_groups_group ug on ug.id=ugm.group_id 
-WHERE ug.id=<YOUR GROUP ID> 
-AND ugm.status=True 
+('Users By Group ID (All Groups)',
+'All groups - dump this into Excel and filter by the group_name field as needed',
+"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
+      u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
+      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
+      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,
+      p.home_phone, p.mobile_phone
+FROM auth_user u
+INNER JOIN profiles_profile p ON u.id=p.user_id
+INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id
+INNER JOIN user_groups_group ug on ug.id=ugm.group_id
+WHERE ug.id>0
+AND ugm.status=True
 AND ugm.status_detail='active'"""),
-                       )
-            for title, sql in queries:
+('Users By Group ID (Edit the Group ID)',
+'Users by Group ID - this query shows group id = 1 on line number 10, so edit that for whichever group you are looking for.',
+"""SELECT ug.name as group_name, u.first_name, u.last_name, u.email, u.username, u.is_staff,
+      u.is_superuser, p.salutation, p.company, p.position_title, p.phone,
+      p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,
+      p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,
+      p.home_phone, p.mobile_phone
+FROM auth_user u
+INNER JOIN profiles_profile p ON u.id=p.user_id
+INNER JOIN user_groups_groupmembership ugm on u.id=ugm.member_id
+INNER JOIN user_groups_group ug on ug.id=ugm.group_id
+WHERE ug.id=1
+AND ugm.status=True
+AND ugm.status_detail='active'"""),
+('Tables - List All Database Tables',
+'A list of all tables including system tables',
+"""select tablename from pg_tables"""),
+('Users In the Database On The Site, Not All Can Login',
+'This lists everyone in the auth_user table which is the default django table for authentication but also used for anyone who has filled out a contact form. The passwords are encrypted and cant be decrypted (no way around that) but it does have the basics of all humans (does NOT mean they can login.)',
+"""select id, first_name, last_name, email, username, last_login, is_superuser, is_staff, is_active, date_joined  from auth_user;"""),
+('Users in Database with Membership Details',
+'Users in Database with Membership Details',
+"""select u.id, u.first_name, u.last_name, u.email, u.username, u.last_login, u.is_superuser, u.is_staff, u.is_active, m.member_number, m.join_dt, m.expire_dt
+from auth_user u
+inner join memberships_membershipdefault m on m.user_id = u.id
+where m.status=true
+and m.status_detail<>'archive'"""),
+)
+            for title, description, sql in queries:
                 query = Query(title=title,
+                              description=description,
                               sql=sql)
                 query.save()
-                print 'Inserted: ', title
-                
+                print('Inserted: ', title)
+
         else:
-            print 'NO default sqls loaded for SQL Explorer because django-sqlexplorer is not installed'
+            print('NO default sqls loaded for SQL Explorer because django-sqlexplorer is not installed')

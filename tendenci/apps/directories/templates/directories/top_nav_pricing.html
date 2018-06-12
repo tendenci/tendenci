@@ -4,9 +4,10 @@
 
 {% block current_app %}
 <li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
+    <button type="button" class="btn btn-primary"  class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img class="nav-icon" src="{{ STATIC_URL }}famfamfam/icons/folder_page_white.png"/>{% trans "Directories Pricing" %}
-    </a>
+      <span class="caret"></span>
+    </button>
     {% if directory_pricing %}
     {% directory_pricing_current_app request.user directory_pricing %}
     {% else %}
@@ -14,4 +15,3 @@
     {% endif %}
 </li>
 {% endblock %}
-

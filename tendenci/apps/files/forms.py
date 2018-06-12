@@ -1,23 +1,19 @@
+import os
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.utils.safestring import mark_safe
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.template.defaultfilters import filesizeformat
 
-from tendenci.apps.categories.forms import (CategoryForm, CategoryField, category_defaults,
-    sub_category_defaults)
-
-from tendenci.apps.categories.models import CategoryItem, Category
+from tendenci.apps.categories.models import Category
 from tendenci.apps.files.fields import MultiFileField
 from tendenci.apps.files.models import File, FilesCategory
-from tendenci.apps.files.utils import get_max_file_upload_size
-from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
+from tendenci.apps.files.utils import get_max_file_upload_size, get_allowed_upload_file_exts
+from tendenci.apps.perms.fields import GroupPermissionField, UserPermissionField, MemberPermissionField
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
 from tendenci.apps.user_groups.models import Group
 from form_utils.forms import BetterForm
+from tendenci.apps.files.validators import FileValidator
 
 
 class FileForm(TendenciBaseForm):
@@ -109,16 +105,8 @@ class FileForm(TendenciBaseForm):
             if file_cat and file_cat != '0' and file_cat != u'':
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
-
-    def clean_file(self):
-        data = self.cleaned_data.get('file')
-        max_upload_size = get_max_file_upload_size(file_module=True)
-        if data.size > max_upload_size:
-            raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'data_size': filesizeformat(data.size)})
-
-        return data
+        if 'file' in self.fields:
+            self.fields['file'].validators = [FileValidator()]
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
@@ -130,20 +118,16 @@ class FileForm(TendenciBaseForm):
             raise forms.ValidationError(_('Invalid group selected.'))
 
 
-class SwfFileForm(TendenciBaseForm):
+class TinymceUploadForm(forms.ModelForm):
+    app_label = forms.CharField(required=True, max_length=100, error_messages={'required': "App label is required."})
+    model = forms.CharField(required=True, max_length=50, error_messages={'required': "Model name is required."})
+    object_id = forms.IntegerField(required=False)
+    upload_type = forms.CharField(required=False, max_length=10)
 
     class Meta:
         model = File
-
         fields = (
-            'file',
-            'name',
-            'allow_anonymous_view',
-            'user_perms',
-            'member_perms',
-            'group_perms',
-            'status',
-        )
+            'file',)
 
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
@@ -151,7 +135,30 @@ class SwfFileForm(TendenciBaseForm):
         else:
             self.user = None
 
-        super(SwfFileForm, self).__init__(*args, **kwargs)
+        super(TinymceUploadForm, self).__init__(*args, **kwargs)
+
+    def clean_file(self):
+        data = self.cleaned_data.get('file')
+        # file size check
+        max_upload_size = get_max_file_upload_size(file_module=True)
+        if data.size > max_upload_size:
+            raise forms.ValidationError(_('%(file_name)s - Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
+                                            'file_name': data.name,
+                                            'max_upload_size': filesizeformat(max_upload_size),
+                                            'data_size': filesizeformat(data.size)})
+        return data
+
+    def clean(self):
+        # file type check
+        data = self.cleaned_data
+        upload_type = data.get('upload_type', u'').strip()
+        file = data.get('file', None)
+        allowed_exts = get_allowed_upload_file_exts(upload_type)
+        ext = os.path.splitext(file.name)[-1]
+        if ext not in allowed_exts:
+            raise forms.ValidationError(_('{file_name} - File extension "{extension}" not supported.').format(file_name=file.name, extension=ext))
+
+        return data
 
 
 class MostViewedForm(forms.Form):
@@ -223,6 +230,10 @@ class FileSearchForm(forms.Form):
             self.fields['file_sub_cat'].queryset = sub_categories
 
 
+class FileSearchMinForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+
+
 class FilewithCategoryForm(TendenciBaseForm):
 
     group = forms.ChoiceField(required=True, choices=[])
@@ -285,15 +296,8 @@ class FilewithCategoryForm(TendenciBaseForm):
                 file_cat = FilesCategory.objects.get(pk=int(file_cat))
                 self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
 
-    def clean_file(self):
-        data = self.cleaned_data.get('file')
-        max_upload_size = get_max_file_upload_size(file_module=True)
-        if data.size > max_upload_size:
-            raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'data_size': filesizeformat(data.size)})
-
-        return data
+        if 'file' in self.fields:
+            self.fields['file'].validators = [FileValidator()]
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
@@ -340,7 +344,7 @@ class FilewithCategoryForm(TendenciBaseForm):
 
 
 class MultiFileForm(BetterForm):
-    files = MultiFileField(min_num=1)
+    files = MultiFileField(min_num=1, validators=[FileValidator()])
     group = forms.ChoiceField(required=True, choices=[])
     tags = forms.CharField(required=False)
 
@@ -412,17 +416,6 @@ class MultiFileForm(BetterForm):
                 [file_cat] = FilesCategory.objects.filter(pk=int(file_cat))[:1] or [None]
                 if file_cat:
                     self.fields['file_sub_cat'].queryset = FilesCategory.objects.filter(parent=file_cat)
-
-    def clean_files(self):
-        files = self.cleaned_data.get('files')
-        max_upload_size = get_max_file_upload_size(file_module=True)
-        for data in files:
-            if data.size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'data_size': filesizeformat(data.size)})
-
-        return files
 
     def clean_user_perms(self):
         user_perm_bits = []

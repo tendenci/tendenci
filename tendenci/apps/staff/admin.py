@@ -82,6 +82,11 @@ class StaffAdmin(TendenciBaseModelAdmin):
 
         formset.save()
 
+
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+    prepopulated_fields = {'slug': ['name']}
+
 admin.site.register(Staff, StaffAdmin)
-admin.site.register(Department)
+admin.site.register(Department, DepartmentAdmin)
 admin.site.register(Position)

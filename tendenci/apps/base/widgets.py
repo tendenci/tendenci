@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.forms.widgets import MultiWidget, DateInput, TextInput
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -32,8 +33,10 @@ class SplitDateTimeWidget(MultiWidget):
 
     def decompress(self, value):
         if value:
-            date = strftime("%Y-%m-%d", value.timetuple())
-            time = strftime("%I:%M %p", value.timetuple())
+            if value < datetime(1900, 1, 1):
+                value = datetime(1900, 1, 1)
+            date = value.strftime("%Y-%m-%d")
+            time = value.strftime("%I:%M %p")
             return (date, time)
         else:
             return (None, None)

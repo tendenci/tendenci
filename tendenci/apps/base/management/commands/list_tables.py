@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.db.models import get_models, get_app
@@ -49,8 +50,8 @@ class Command(BaseCommand):
         related_tables = {}
         # get a list of related tables for each table
         for table in tables_list:
-            related_tables[table] = [field.rel.to._meta.db_table \
-                        for field in models_d[table]._meta.fields \
+            related_tables[table] = [field.rel.to._meta.db_table
+                        for field in models_d[table]._meta.fields
                         if isinstance(field, (ForeignKey, OneToOneField))
                         and field.rel.to._meta.db_table != table
                         ]
@@ -87,7 +88,7 @@ class Command(BaseCommand):
             n = n - 1
 
         if related_tables:
-            print "ERROR: Sorting not completed."
+            print("ERROR: Sorting not completed.")
 
         # copy the list to your conf.yml file
-        print '-', '\n- '.join(sorted_list)
+        print('-', '\n- '.join(sorted_list))

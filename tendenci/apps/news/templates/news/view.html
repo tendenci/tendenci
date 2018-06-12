@@ -23,8 +23,6 @@
 {% block content %}
     {% tags_for_object news as tags %}
 
-    {% news_options request.user news %}
-
     <article id="t-news-news-{{ news.pk }}" class="t-news-news">
         <div class="page-header">
             <h1>{% blocktrans with headline=news.headline %}{{ headline }}{% endblocktrans %}</h1>

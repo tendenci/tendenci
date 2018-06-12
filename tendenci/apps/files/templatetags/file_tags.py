@@ -53,7 +53,7 @@ def file_thumbnail(context, layout, file_obj):
 @register.inclusion_tag('files/reports/most-viewed-result.html', takes_context=True)
 def most_viewed_result(context):
     event_log = context['event_log']
-    context['file'] = File.objects.get(pk=event_log['object_id'])
+    [context['file']] = File.objects.filter(pk=event_log['object_id'])[:1] or [None]
     return context
 
 

@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -12,7 +11,16 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+
+                	{% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'files' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'files' %}">{% trans 'File List' %}</a>
@@ -26,11 +34,6 @@
                             </span>
                         </li>
 
-                        <li class="content-item">
-                            <span class="app-name">
-                                <a href="{% url 'file.bulk_add' %}">{% trans 'Add Multiple Files' %}</a>
-                            </span>
-                        </li>
                     {% endif %}
 
                     {% if user.profile.is_staff %}

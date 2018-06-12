@@ -5,7 +5,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
-{% load avatar_tags %}
+{% load profile_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}{% trans 'Search' %}{% endblock %}
@@ -26,7 +26,6 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="t">
 
     <table id="wrap">
@@ -97,7 +96,7 @@
                     </div>
 
                     <div class="image-wrap">
-                        {% avatar registrant.user 80 %}
+                        {% gravatar registrant.user 80 %}
                     </div>
 
                     <div class="registrant-info">

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 import random
@@ -99,7 +100,7 @@ def sync_templates(request=None):
             template.cm_preview_url = t.PreviewURL
             template.cm_screenshot_url = t.ScreenshotURL
         except Exception as e:
-            print 'sync template exception', e
+            print('sync template exception', e)
 
         #set up urls
         site_url = get_setting('site', 'global', 'siteurl')
@@ -124,21 +125,21 @@ def sync_templates(request=None):
             cst = CST(auth, template_id=template.template_id)
             cst.update(unicode(template.name), html_url, zip_url)
             success = True
-        except BadRequest, e:
+        except BadRequest as e:
             success = False
             if request:
                 msg_string = 'Bad Request %s: %s' % (e.data.Code, e.data.Message)
                 messages.add_message(request, messages.ERROR, _(msg_string))
             else:
-                print e.data.Code, e.data.Message
+                print(e.data.Code, e.data.Message)
                 return
-        except Exception, e:
+        except Exception as e:
             success = False
             if request:
                 msg_string = 'Error: %s' % e
                 messages.add_message(request, messages.ERROR, _(msg_string))
             else:
-                print e.data.Code, e.data.Message
+                print(e.data.Code, e.data.Message)
                 return
 
         #get campaign monitor details
@@ -198,5 +199,5 @@ def update_subscription(profile, old_email):
                 subscriber = Subscriber(auth, listmap.list_id, old_email)
                 try:
                     subscriber.update(user.email, user.get_full_name(), [], False)
-                except BadRequest, e:
-                    print e
+                except BadRequest as e:
+                    print(e)

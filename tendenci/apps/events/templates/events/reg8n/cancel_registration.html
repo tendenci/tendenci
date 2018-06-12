@@ -1,7 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
-{% load avatar_tags %}
+{% load profile_tags %}
 {% load base_filters %}
 {% load i18n %}
 
@@ -27,7 +27,7 @@
     <div class="event-registrants">
         <h4>{% trans "Cancelling" %}</h4>
         {% for registrant in registrants %}
-            <div class='avatar'>{% avatar registrant.user 56 %}</div>
+            <div class='avatar'>{% gravatar registrant.user 56 %}</div>
             <div class="info">
 
                 <div class="name">
@@ -57,7 +57,7 @@
     <div class="event-registrants-cancelled">
         <h4>{% trans "Already Cancelled" %}</h4>
         {% for registrant in cancelled_registrants %}
-            <div class='avatar'>{% avatar registrant.user 56 %}</div>
+            <div class='avatar'>{% gravatar registrant.user 56 %}</div>
             <div class="info">
 
                 <div class="name">

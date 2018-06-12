@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.base.decorators import flash_login_required
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.base.managers import SubProcessManager
 from tendenci.apps.base.models import UpdateTracker
@@ -31,6 +31,7 @@ from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_fi
 from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
 from tendenci.libs.boto_s3.utils import save_file_to_s3
+from tendenci.libs.uploader import uploader
 
 DEFAULT_FILE = 'templates/homepage.html'
 
@@ -171,7 +172,7 @@ def create_new_template(request, form_class=AddTemplateForm):
         template_name = form.cleaned_data['template_name'].strip()
         template_full_name = 'default-%s.html' % template_name
         existing_templates = [t[0] for t in get_template_list()]
-        if not template_full_name in existing_templates:
+        if template_full_name not in existing_templates:
             # create a new template and assign default content
             use_s3_storage = getattr(settings, 'USE_S3_STORAGE', '')
             if use_s3_storage:
@@ -209,7 +210,6 @@ def create_new_template(request, form_class=AddTemplateForm):
             ret_dict['template_name'] = template_full_name
         else:
             ret_dict['err'] = _('Template "%(name)s" already exists' % {'name':template_full_name})
-
 
     return HttpResponse(json.dumps(ret_dict))
 
@@ -352,7 +352,7 @@ def delete_file(request):
     return redirect('theme_editor.editor')
 
 
-@flash_login_required
+@login_required
 def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):
@@ -362,30 +362,23 @@ def upload_file(request):
         form = UploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            upload = request.FILES['upload']
             file_dir = form.cleaned_data['file_dir']
             overwrite = form.cleaned_data['overwrite']
-            full_filename = os.path.join(file_dir, upload.name)
 
-            if os.path.isfile(full_filename) and not overwrite:
-                msg_string = 'File %s already exists in that folder.' % (upload.name)
-                messages.add_message(request, messages.ERROR, _(msg_string))
-                return HttpResponse('invalid', content_type="text/plain")
-            else:
-                handle_uploaded_file(upload, file_dir)
-                msg_string = 'Successfully uploaded %s.' % (upload.name)
-                messages.add_message(request, messages.SUCCESS, _(msg_string))
-
-                EventLog.objects.log()
-                # returning a response of "ok" (flash likes this)
-                # response is for flash, not humans
-                return HttpResponse('valid', content_type="text/plain")
+            def callback(file_path, uuid, file_dir=file_dir, overwrite=overwrite):
+                file_name = os.path.basename(file_path)
+                full_filename = os.path.join(file_dir, file_name)
+                if os.path.isfile(full_filename) and not overwrite:
+                    msg_string = 'File %s already exists in that folder.' % (file_name)
+                    raise uploader.CallbackError(msg_string)
+                else:
+                    handle_uploaded_file(file_path, file_dir)
+                    EventLog.objects.log()
+            return uploader.post(request, callback)
 
         else:  # not valid
             messages.add_message(request, messages.ERROR, form.errors)
             return HttpResponse('invalid', content_type="text/plain")
-    else:
-        form = UploadForm()
 
     return HttpResponseRedirect('/theme-editor/editor/')
 
@@ -449,7 +442,7 @@ def get_themes(request, template_name="theme_editor/get_themes.html"):
         return HttpResponse(tracker.is_updating)
 
     if request.method == 'POST':
-        process = SubProcessManager.set_process(["python", "manage.py", "install_theme", "--all"])
+        process = SubProcessManager.set_process([python_executable(), "manage.py", "install_theme", "--all"])
         return render_to_response(template_name, context_instance=RequestContext(request))
 
     raise Http404

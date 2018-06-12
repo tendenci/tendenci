@@ -15,19 +15,21 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
+from tendenci.apps.perms.decorators import is_enabled
 from tagging.models import Tag, TaggedItem
 from tagging.utils import parse_tag_input
 from tendenci.apps.committees.models import Committee, Officer, Position
 from tendenci.apps.committees.forms import CommitteeForm, CommitteeAdminForm, OfficerForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
-from tendenci.apps.event_logs.models import EventLog
 
 try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
 
+
+@is_enabled('committees')
 def detail(request, slug, template_name="committees/detail.html"):
     committee = get_object_or_404(Committee, slug=slug)
 
@@ -63,6 +65,7 @@ def detail(request, slug, template_name="committees/detail.html"):
         raise Http403
 
 
+@is_enabled('committees')
 def search(request, template_name="committees/search.html"):
     query = request.GET.get('q', None)
     if query:
@@ -78,60 +81,62 @@ def search(request, template_name="committees/search.html"):
     return render_to_response(template_name, {'committees': committees},
         context_instance=RequestContext(request))
 
+
+@is_enabled('committees')
 @login_required
 def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="committees/add.html"):
 
     if not has_perm(request.user,'committees.add_committee'):
         raise Http403
-    
+
     content_type = get_object_or_404(ContentType, app_label='committees',model='committee')
-        
+
     #OfficerFormSet = inlineformset_factory(Committee, Officer, form=OfficerForm, extra=1)
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
-        
+
         #formset = OfficerFormSet(request.POST, prefix="officers")
-        
+
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             committee = form.save(commit=False)
             committee = update_perms_and_save(request, form, committee)
-            
+
             #save meta
             meta = metaform.save()
             committee.meta = meta
-            
+
             #setup categories
             category = Category.objects.get_for_object(committee,'category')
             sub_category = Category.objects.get_for_object(committee,'sub_category')
-            
+
             ## update the category of the committee
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
+            if category != '0':
                 Category.objects.update(committee ,category,'category')
             else: # remove
                 category_removed = True
                 Category.objects.remove(committee ,'category')
                 Category.objects.remove(committee ,'sub_category')
-            
+
             if not category_removed:
                 # update the sub category of the committee
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
+                if sub_category != '0':
                     Category.objects.update(committee, sub_category,'sub_category')
                 else: # remove
-                    Category.objects.remove(committee,'sub_category')  
-            
+                    Category.objects.remove(committee,'sub_category')
+
             #save relationships
             committee.save()
-            
+
             EventLog.objects.log()
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % committee)
-            
+
             if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'committees', 'committeerecipients')
@@ -152,8 +157,8 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
         form = form_class(user=request.user)
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
-        
-    return render_to_response(template_name, 
+
+    return render_to_response(template_name,
             {
                 'form':form,
                 'metaform':metaform,
@@ -161,20 +166,21 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
             },
             context_instance=RequestContext(request))
 
+@is_enabled('committees')
 @login_required
 def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="committees/edit.html"):
-        
+
     committee = get_object_or_404(Committee, pk=id)
-    
+
     if not has_perm(request.user,'committees.change_committee',committee):
         raise Http403
-        
+
     content_type = get_object_or_404(ContentType, app_label='committees',model='committee')
-    
+
     #setup categories
     category = Category.objects.get_for_object(committee,'category')
     sub_category = Category.objects.get_for_object(committee,'sub_category')
-        
+
     initial_category_form_data = {
         'app_label': 'committees',
         'model': 'committee',
@@ -190,9 +196,9 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         form = form_class(request.POST, request.FILES, instance=committee, user=request.user)
         metaform = meta_form_class(request.POST, instance=committee.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
-            
+
         formset = OfficerFormSet(request.POST, instance=committee, prefix="officers")
-        
+
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             committee = form.save(commit=False)
             # update all permissions and save the model
@@ -201,27 +207,27 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
             #save meta
             meta = metaform.save()
             committee.meta = meta
-            
+
             officers = formset.save()
-                
+
             ## update the category of the committee
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
+            if category != '0':
                 Category.objects.update(committee ,category,'category')
             else: # remove
                 category_removed = True
                 Category.objects.remove(committee ,'category')
                 Category.objects.remove(committee ,'sub_category')
-            
+
             if not category_removed:
                 # update the sub category of the committee
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
+                if sub_category != '0':
                     Category.objects.update(committee, sub_category,'sub_category')
                 else: # remove
-                    Category.objects.remove(committee,'sub_category')    
-            
+                    Category.objects.remove(committee,'sub_category')
+
             #save relationships
             committee.save()
 
@@ -259,6 +265,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         context_instance=RequestContext(request))
 
 
+@is_enabled('committees')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-meta.html"):
     """
@@ -296,6 +303,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="committees/edit-m
         context_instance=RequestContext(request))
 
 
+@is_enabled('committees')
 @login_required
 def delete(request, id, template_name="committees/delete.html"):
     committee = get_object_or_404(Committee, pk=id)

@@ -1,4 +1,3 @@
-{% load url from future %}
 {% load i18n %}
 
 {{ widget_output }}
@@ -21,7 +20,7 @@ if(!window.pybb.get_markitup_settings){
             {name:'{% trans "Heading 4" %}', key:'4', openWith:'#### ', placeHolder:'{% trans "Your title here..." %}' },
             {name:'{% trans "Heading 5" %}', key:'5', openWith:'##### ', placeHolder:'{% trans "Your title here..." %}' },
             {name:'{% trans "Heading 6" %}', key:'6', openWith:'###### ', placeHolder:'{% trans "Your title here..." %}' },
-            {separator:'---------------' },        
+            {separator:'---------------' },
             {name:'{% trans "Bold" %}', key:'B', openWith:'**', closeWith:'**'},
             {name:'{% trans "Italic" %}', key:'I', openWith:'_', closeWith:'_'},
             {separator:'---------------' },
@@ -32,7 +31,7 @@ if(!window.pybb.get_markitup_settings){
             {separator:'---------------' },
             {name:'{% trans "Picture" %}', key:'P', replaceWith:'![[![Alternative text]!]]([![Url:!:http://]!] "[![Title]!]")'},
             {name:'{% trans "Link" %}', key:'L', openWith:'[', closeWith:']([![Url:!:http://]!] "[![Title]!]")', placeHolder:'{% trans "Your text to link here..." %}' },
-            {separator:'---------------'},    
+            {separator:'---------------'},
             {name:'{% trans "Quotes" %}', openWith:'> '},
             {name:'{% trans "Code Block / Code" %}', openWith:'(!(\t|!|`)!)', closeWith:'(!(`)!)'},
             {separator:'---------------'},

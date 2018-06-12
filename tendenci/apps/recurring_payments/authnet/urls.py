@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
 urlpatterns = patterns('tendenci.apps.recurring_payments.authnet.views',

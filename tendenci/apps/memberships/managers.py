@@ -1,11 +1,10 @@
 import operator
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
-from django.db.models import Manager
 from django.db.models import Q
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 
-from haystack.query import SearchQuerySet
 from tendenci.apps.perms.managers import TendenciBaseManager
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -134,145 +133,6 @@ def impersonation(user):
     return user
 
 
-class MembershipManager(Manager):
-    def search(self, query=None, *args, **kwargs):
-        """
-        Use Django Haystack search index
-        Returns a SearchQuerySet object
-        """
-        sqs = SearchQuerySet()
-        user = kwargs.get('user', AnonymousUser())
-        user = impersonation(user)
-
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
-
-        if user.profile.is_superuser:
-            sqs = sqs.all()  # admin
-        else:
-            if user.is_anonymous():
-                sqs = anon_sqs(sqs)  # anonymous
-            elif user.profile.is_member:
-                sqs = member_sqs(sqs, user=user)  # member
-            else:
-                sqs = user_sqs(sqs, user=user)  # user
-
-        return sqs.models(self.model)
-
-    def first(self, **kwargs):
-        """
-        Returns first instance that matches filters.
-        If no instance is found then a none type object is returned.
-        """
-        try:
-            instance = self.get(**kwargs)
-        except self.model.MultipleObjectsReturned:
-            instance = self.filter(**kwargs)[0]
-        except self.model.DoesNotExist:
-            instance = None
-
-        return instance
-
-    def active_strict(self, **kwargs):
-        """
-        This method is just like the active method except,
-        it considers the grace period which is expensive.
-        Only recommended when query returns few results.
-        Returns back list instead of query set.
-        """
-        from datetime import datetime
-        from itertools import chain
-        from django.db.models import Q
-        from tendenci.apps.memberships.models import MembershipType
-
-        kwargs['status'] = kwargs.get('status', True)
-        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-
-        order = kwargs.get('order_by', 'pk')
-        if 'order_by' in kwargs:
-            kwargs.pop('order_by')
-
-        query_sets = []
-        for membership_type in MembershipType.objects.all().order_by(order):
-            grace_period = membership_type.expiration_grace_period
-            grace_now = datetime.now() - relativedelta(days=grace_period)
-            query_sets.append(
-                self.filter(
-                    Q(expire_dt__gt=grace_now) | Q(expire_dt__isnull=True),
-                    membership_type=membership_type,
-                    **kwargs)
-            )
-
-        return list(chain(*query_sets))
-
-    def active(self, **kwargs):
-        """
-        Returns membership records with status=True
-        and status_detail='active'
-        """
-        from datetime import datetime
-        from django.db.models import Q
-
-        kwargs['status'] = kwargs.get('status', True)
-        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-        return self.filter(
-            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
-
-    def expired(self, **kwargs):
-        """
-        Returns membership records that are 'active' and
-        passed their expiration date. Does not consider grace period.
-        Query is too heavy.
-        """
-        from datetime import datetime
-        kwargs['status'] = kwargs.get('status', True)
-        return self.filter(expire_dt__lte=datetime.now(), **kwargs)
-
-    def corp_roster_search(self, query=None, *args, **kwargs):
-        """
-        Use Django Haystack search index
-        Used by the corporate membership roster search
-        which requires different security check
-        """
-        sqs = SearchQuerySet()
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
-
-        return sqs.models(self.model)
-
-    def get_membership(self):
-        """
-        Get newest membership record
-        Return membership object
-        """
-        memberships = self.filter(status=True, status_detail='active').order_by('-pk')
-        if memberships:
-            return memberships[0]
-
-        return None
-
-    def silence_old_memberships(self, user):
-        """
-        Silence old memberships within their renewal period
-        that belong to this user.  Returns a list of the memberships silenced.
-        """
-        silenced_memberships = []
-
-        # We are only silencing memerships within
-        # their renewal period per user, not globally.
-        # If user is missing; then we abort.
-        if not user:
-            return silenced_memberships
-
-        for membership in user.memberships.all():
-            if membership.can_renew():
-                membership.send_notice = False
-                membership.save()
-                silenced_memberships.append(membership)
-
-        return silenced_memberships
-
-
 class MembershipDefaultManager(TendenciBaseManager):
     def first(self, **kwargs):
         """
@@ -282,12 +142,20 @@ class MembershipDefaultManager(TendenciBaseManager):
         [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
         return instance
 
+    def active(self, **kwargs):
+        """
+        Returns active memberships
+        """
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(
+            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
+
     def expired(self, **kwargs):
         """
         Returns memberships records that are expired. Considers records
         that are expired, include records that have a status detail of 'expired'.
         """
-        from datetime import datetime
         from tendenci.apps.memberships.models import MembershipType
 
         qs = self.none()

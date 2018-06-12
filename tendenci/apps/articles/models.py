@@ -15,7 +15,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.articles.managers import ArticleManager
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.articles.module_meta import ArticleMeta
 
@@ -59,7 +59,7 @@ class Article(TendenciBaseModel):
     not_official_content = models.BooleanField(_('Official Content'), blank=True, default=True)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",

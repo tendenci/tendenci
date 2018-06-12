@@ -14,6 +14,8 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     event_url = None
     if event: event_url = event.get_absolute_url()
 
+    next = kwargs.pop('next', '')
+
     site_url = get_setting('site', 'global', 'siteurl')
     subject = render_to_string('registration/activation_email_subject.txt',
                                        { 'site_url': site_url })
@@ -24,7 +26,8 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
                                { 'activation_key': registration_profile.activation_key,
                                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
                                  'event_url': event_url,
-                                 'site_url': site_url })
+                                 'site_url': site_url,
+                                 'next': next })
 
     from_email = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
 

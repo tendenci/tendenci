@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -22,7 +21,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}</span>
@@ -74,7 +73,7 @@
 
                 {% if app_object %}
                     {% if can_view_helpfile or can_edit_helpfile %}
-                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}</span>
                             </li>

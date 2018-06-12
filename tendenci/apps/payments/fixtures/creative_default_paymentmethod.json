@@ -1,0 +1,32 @@
+[
+{
+    "fields": {
+        "human_name": "Credit Card",
+        "machine_name": "credit-card",
+        "admin_only": false,
+        "is_online": true
+    },
+    "model": "payments.paymentmethod",
+    "pk": 1
+},
+{
+    "fields": {
+        "human_name": "Check",
+        "machine_name": "check",
+        "admin_only": false,
+        "is_online": false
+    },
+    "model": "payments.paymentmethod",
+    "pk": 2
+},
+{
+    "fields": {
+        "human_name": "Cash",
+        "machine_name": "cash",
+        "admin_only": false,
+        "is_online": false
+    },
+    "model": "payments.paymentmethod",
+    "pk": 3
+}
+]

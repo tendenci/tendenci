@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 from django.core.management.base import BaseCommand
 
@@ -8,7 +9,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         import os
-        from Tendenci50.settings import MEDIA_ROOT
+        from django.conf import settings
         from site_settings.utils import get_setting
         from events.models import Event
         from events.utils import get_vevents
@@ -23,7 +24,7 @@ class Command(BaseCommand):
         else:
             d['domain_name'] = ""
 
-        absolute_directory = os.path.join(MEDIA_ROOT, 'files/ics')
+        absolute_directory = os.path.join(settings.MEDIA_ROOT, 'files/ics')
         if not os.path.exists(absolute_directory):
             os.makedirs(absolute_directory)
 
@@ -46,4 +47,4 @@ class Command(BaseCommand):
         destination = open(file_path, 'w+')
         destination.write(ics_str)
         destination.close()
-        print 'Created ics for user %s pk=%s' % (user, user.pk)
+        print('Created ics for user %s pk=%s' % (user, user.pk))

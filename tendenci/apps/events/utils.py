@@ -1,14 +1,12 @@
 # NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
 import ast
-import calendar
-import csv
 import re
 import os.path
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
-from dateutil.rrule import *
+from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
 
 from django.contrib.auth.models import User
@@ -16,9 +14,7 @@ from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db import models
-from django.db.models import Q, Max, Count
-from django.db.models.fields import FieldDoesNotExist
-from django.forms.models import modelformset_factory
+from django.db.models import Max, Count
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
@@ -30,19 +26,13 @@ from pytz import UnknownTimeZoneError
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
-    TypeColorSet, RecurringEvent, EventPhoto)
-from tendenci.apps.events.forms import (FormForCustomRegForm, Reg8nEditForm,
-    EMAIL_AVAILABLE_TOKENS, EventForm, PlaceForm, SpeakerForm, OrganizerForm,
-    Reg8nConfPricingForm, RegConfPricingBaseModelFormSet, ApplyRecurringChangesForm,
-    DisplayAttendeesForm)
+    TypeColorSet, RecurringEvent)
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import format_datetime_range, UnicodeWriter
-from tendenci.apps.files.models import File
-from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 
@@ -114,6 +104,8 @@ def render_event_email(event, email):
 
 
 def get_default_reminder_template(event):
+    from tendenci.apps.events.forms import EMAIL_AVAILABLE_TOKENS
+
     context = {}
     for token in EMAIL_AVAILABLE_TOKENS:
         context[token] = '{{ %s }}' % token
@@ -153,7 +145,6 @@ def get_ACRF_queryset(event=None):
         rcp = ''
     sql = sql % (rc, rcp)
 
-
     # need to return a queryset not raw queryset
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -177,7 +168,7 @@ def get_ACRF_queryset(event=None):
             for regfield in data:
                 regfield['fields']['form'] = form
                 CustomRegField.objects.create(**regfield['fields'])
-                if regfield['fields'].has_key('map_to_field'):
+                if 'map_to_field' in regfield['fields']:
                     map_to_fields.append(regfield['fields']['map_to_field'])
 
             for field in map_to_fields:
@@ -498,7 +489,7 @@ def degrade_tags(str):
     return str
 
 
-def next_month(month, year):
+def get_next_month(month, year):
     # TODO: cleaner way to get next date
     next_month = (month+1)%13
     next_year = year
@@ -508,16 +499,7 @@ def next_month(month, year):
 
     return (next_month, next_year)
 
-def check_month(month, year, type):
-    current_date = datetime(month=month, day=1, year=year)
-    nextmonth, nextyear = next_month(month, year)
-    next_date = datetime(month=nextmonth, day=1, year=nextyear)
-    latest_event = Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=type)
-    if latest_event.count() > 0:
-        return True
-    return False
-
-def prev_month(month, year):
+def get_prev_month(month, year):
     # TODO: cleaner way to get previous date
     prev_month = (month-1)%13
     prev_year = year
@@ -533,7 +515,6 @@ def email_registrants(event, email, **kwargs):
     reg8ns = Registration.objects.filter(event=event)
 
     payment_status = kwargs.get('payment_status', 'all')
-
 
     if payment_status == 'all':
         registrants = event.registrants()
@@ -566,9 +547,12 @@ def email_registrants(event, email, **kwargs):
             email.body = email.body.replace('[firstname]', first_name)
             email.body = email.body.replace('[lastname]', last_name)
             invoice = registrant.registration.get_invoice()
-            invoicelink = invoice.get_absolute_url_with_guid()
-            invoicelink = '<a href="%s%s">%s%s</a>' % (site_url, invoicelink, site_url, invoicelink)
-            email.body = email.body.replace('[invoicelink]', invoicelink)
+            if invoice:
+                invoicelink = invoice.get_absolute_url_with_guid()
+                invoicelink = '<a href="%s%s">%s%s</a>' % (site_url, invoicelink, site_url, invoicelink)
+                email.body = email.body.replace('[invoicelink]', invoicelink)
+            else:
+                email.body = email.body.replace('[invoicelink]', '')
             email.send()
 
         email.body = tmp_body  # restore to the original
@@ -578,14 +562,14 @@ def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
     notice_recipients = get_setting('site', 'global', 'allnoticerecipients').split(',')
-    email_list = [admin.strip() for admin in admins]
+    email_list = [admin.strip() for admin in admins if admin.strip()]
 
     # additional check just in case admin emails in event settings
     #are also in all notice recipients set on global site settings
     # to avoid email duplications
     for recipient in notice_recipients:
         clean_recipient = recipient.strip()
-        if clean_recipient and (not clean_recipient in email_list):
+        if clean_recipient and (clean_recipient not in email_list):
             email_list.append(clean_recipient)
 
     notification.send_emails(
@@ -702,7 +686,7 @@ def split_table_price(total_price, quantity):
     avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
 
-    if diff <> 0:
+    if diff != 0:
         return (avg+diff, avg)
     return (avg, avg)
 
@@ -716,34 +700,19 @@ def apply_discount(amount, discount_amount):
     return amount - discount_amount, 0
 
 
-def add_registration(*args, **kwargs):
-    """
-    Add the registration
-    Args are split up below into the appropriate attributes
-    """
-    # arguments were getting kinda long
-    # moved them to an unpacked version
+def get_registrants_prices(*args):
+    # Get the list of final prices for registrants
     (request, event, reg_form, registrant_formset, addon_formset,
     price, event_price) = args
-
-    total_amount = 0
-    count = 0
-    event_price = Decimal(str(event_price))
-
-    #kwargs
-    admin_notes = kwargs.get('admin_notes', None)
-    custom_reg_form = kwargs.get('custom_reg_form', None)
 
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
         override_table = reg_form.cleaned_data.get('override_table', False)
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
-        if override_price_table == None:
+        if override_price_table is None:
             override_price_table = 0
 
-
-    # get the list of amount for registrants.
     amount_list = []
     if event.is_table:
         if override_table:
@@ -770,7 +739,6 @@ def add_registration(*args, **kwargs):
 
             amount_list.append(amount)
 
-
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -780,6 +748,38 @@ def add_registration(*args, **kwargs):
                         apps__model=RegistrationConfiguration._meta.model_name)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+    return amount_list, discount_amount, discount_list
+
+
+def add_registration(*args, **kwargs):
+    """
+    Add the registration
+    Args are split up below into the appropriate attributes
+    """
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    (request, event, reg_form, registrant_formset, addon_formset,
+    price, event_price) = args
+
+    total_amount = 0
+    count = 0
+    event_price = Decimal(str(event_price))
+
+    #kwargs
+    admin_notes = kwargs.get('admin_notes', None)
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+
+    override_table = False
+    override_price_table = Decimal(0)
+    if event.is_table and request.user.is_superuser:
+        override_table = reg_form.cleaned_data.get('override_table', False)
+        override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
+        if override_price_table is None:
+            override_price_table = 0
+
+    # get the list of amount for registrants.
+    amount_list, discount_amount, discount_list = get_registrants_prices(*args)
+
     invoice_discount_amount = discount_amount
 
     reg8n_attrs = {
@@ -799,6 +799,10 @@ def add_registration(*args, **kwargs):
 
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
+    discount_code = reg_form.cleaned_data.get('discount_code', None)
+    if discount_code:
+        [discount] = Discount.objects.filter(discount_code=discount_code,
+                        apps__model=RegistrationConfiguration._meta.model_name)[:1] or [None]
 
     if event.is_table:
         table_individual_first_price, table_individual_price = amount_list[0], Decimal('0')
@@ -851,7 +855,7 @@ def add_registration(*args, **kwargs):
 #                override_price = amount
 
         # the table registration form does not have the DELETE field
-        if event.is_table or not form in registrant_formset.deleted_forms:
+        if event.is_table or form not in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
                 event,
@@ -879,7 +883,6 @@ def add_registration(*args, **kwargs):
                 if registrant.user:
                     free_pass_stat.user = registrant.user
                 free_pass_stat.save()
-
 
     # create each regaddon
     for form in addon_formset.forms:
@@ -920,6 +923,8 @@ def create_registrant_from_form(*args, **kwargs):
     NOTE: When updating this be sure to check with the anonymous registration
     impementation of events in the registration module.
     """
+    from tendenci.apps.events.forms import FormForCustomRegForm
+
     # arguments were getting kinda long
     # moved them to an unpacked version
     form, event, reg8n, \
@@ -949,21 +954,21 @@ def create_registrant_from_form(*args, **kwargs):
             entry.set_group_subscribers(user)
         registrant.initialize_fields()
     else:
-        registrant.salutation = form.cleaned_data.get('salutation', '')
-        registrant.first_name = form.cleaned_data.get('first_name', '')
-        registrant.last_name = form.cleaned_data.get('last_name', '')
-        registrant.mail_name = form.cleaned_data.get('mail_name', '')
-        registrant.email = form.cleaned_data.get('email', '')
-        registrant.position_title = form.cleaned_data.get('position_title', '')
-        registrant.company_name = form.cleaned_data.get('company_name', '')
-        registrant.phone = form.cleaned_data.get('phone', '')
-        registrant.address = form.cleaned_data.get('address', '')
-        registrant.city = form.cleaned_data.get('city', '')
-        registrant.state = form.cleaned_data.get('state', '')
-        registrant.zip = form.cleaned_data.get('zip_code', '')
-        registrant.country = form.cleaned_data.get('country', '')
-        registrant.meal_option = form.cleaned_data.get('meal_option', '')
-        registrant.comments = form.cleaned_data.get('comments', '')
+        registrant.salutation = form.cleaned_data.get('salutation', '') or ''
+        registrant.first_name = form.cleaned_data.get('first_name', '') or ''
+        registrant.last_name = form.cleaned_data.get('last_name', '') or ''
+        registrant.mail_name = form.cleaned_data.get('mail_name', '') or ''
+        registrant.email = form.cleaned_data.get('email', '') or ''
+        registrant.position_title = form.cleaned_data.get('position_title', '') or ''
+        registrant.company_name = form.cleaned_data.get('company_name', '') or ''
+        registrant.phone = form.cleaned_data.get('phone', '') or ''
+        registrant.address = form.cleaned_data.get('address', '') or ''
+        registrant.city = form.cleaned_data.get('city', '') or ''
+        registrant.state = form.cleaned_data.get('state', '') or ''
+        registrant.zip = form.cleaned_data.get('zip_code', '') or ''
+        registrant.country = form.cleaned_data.get('country', '') or ''
+        registrant.meal_option = form.cleaned_data.get('meal_option', '') or ''
+        registrant.comments = form.cleaned_data.get('comments', '') or ''
 
         if registrant.email:
             users = User.objects.filter(email=registrant.email)
@@ -1027,7 +1032,6 @@ def get_pricing(user, event, pricing=None):
             reg_conf=event.registration_configuration,
             status=True,
         )
-
 
     # iterate and create a dictionary based
     # on dates and permissions
@@ -1280,7 +1284,6 @@ def copy_event(event, user, reuse_rel=False):
         description = event.description,
         timezone = event.timezone,
         type = event.type,
-        group = event.group,
         image = event.image,
         start_dt = event.start_dt,
         end_dt = event.end_dt,
@@ -1306,6 +1309,7 @@ def copy_event(event, user, reuse_rel=False):
         status = event.status,
         status_detail = event.status_detail,
     )
+    new_event.groups.add(*list(event.groups.all()))
 
     #copy place
     place = event.place
@@ -1481,7 +1485,7 @@ def event_import_process(import_i, preview=True):
     in the event_object_dict. Then it updates the database
     if preview=False.
     """
-    #print "START IMPORT PROCESS"
+    #print("START IMPORT PROCESS")
     data_dict_list = extract_from_excel(unicode(import_i.file))
 
     event_obj_list = []
@@ -1514,13 +1518,13 @@ def event_import_process(import_i, preview=True):
             try:
                 datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
                 datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
-            except ValueError, e:
+            except ValueError as e:
                 invalid = True
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
 
             try:
                 timezone(event_object_dict["timezone"])
-            except UnknownTimeZoneError, e:
+            except UnknownTimeZoneError as e:
                 invalid = True
                 invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 
@@ -1551,12 +1555,12 @@ def event_import_process(import_i, preview=True):
         if not preview:  # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()
 
-    #print "END IMPORT PROCESS"
+    #print("END IMPORT PROCESS")
     return event_obj_list, invalid_list
 
 
@@ -1670,26 +1674,25 @@ def add_sf_attendance(registrant, event):
 
             elif all(contact_requirements):
                 # Query for a duplicate entry in salesforce
-                result = sf.query("SELECT Id FROM Contact WHERE FirstName='%s' AND LastName='%s' AND Email='%s'"
-                                  %(registrant.first_name, registrant.last_name, registrant.email) )
+                # saleforce blocks the request if email is already in their system - so just checking email
+                result = sf.query("SELECT Id FROM Contact WHERE Email='%s'" % registrant.email.replace("'", "''"))
                 if result['records']:
                     contact_id = result['records'][0]['Id']
                 else:
                     contact = sf.Contact.create({
                         'FirstName':registrant.first_name,
                         'LastName':registrant.last_name,
-                        'Email':registrant.email,
                         'Title':registrant.position_title,
+                        'Email':registrant.email,
                         'Phone':registrant.phone,
                         'MailingStreet':registrant.address,
                         'MailingCity':registrant.city,
                         'MailingState':registrant.state,
                         'MailingCountry':registrant.country,
-                        'MailingPostalCode':registrant.zip,
-                        'Title': registrant.position_title
+                        'MailingPostalCode':registrant.zip
                         })
                     # update field Company_Name__c
-                    if registrant.company_name and contact.has_key('Company_Name__c'):
+                    if registrant.company_name and 'Company_Name__c' in contact:
                         sf.Contact.update(contact['id'], {'Company_Name__c': registrant.company_name})
 
                     contact_id = contact['id']
@@ -1978,4 +1981,3 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             subject=subject,
             body=body)
         email.send()
-

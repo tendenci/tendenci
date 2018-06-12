@@ -6,12 +6,13 @@ from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
 
@@ -62,6 +63,8 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
         label=_(u'Search by')
     )
     q = forms.CharField(required=False)
+    category = CategoryField(label=_('All Categories'), choices=[], required=False)
+    sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     filter_date = forms.BooleanField(required=False)
     date = forms.DateField(initial=date.today(), required=False)
 
@@ -71,6 +74,16 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
+
+        categories, sub_categories = Article.objects.get_categories()
+
+        categories = [(cat.name, cat) for cat in categories]
+        categories.insert(0, ('', _('All Categories (%d)' % len(categories))))
+        sub_categories = [(cat.name, cat) for cat in sub_categories]
+        sub_categories.insert(0, ('', _('All Subcategories (%d)' % len(sub_categories))))
+
+        self.fields['category'].choices = categories
+        self.fields['sub_category'].choices = sub_categories
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -102,8 +115,7 @@ class ArticleForm(TendenciBaseForm):
         mce_attrs={'storme_app_label': Article._meta.app_label,
         'storme_model': Article._meta.model_name.lower()}))
 
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'),
-        initial=datetime.now())
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'),)
 
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Article.CONTRIBUTOR_AUTHOR,
@@ -191,7 +203,6 @@ class ArticleForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
-
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
         if self.user and not self.user.profile.is_superuser:
@@ -212,6 +223,8 @@ class ArticleForm(TendenciBaseForm):
         self.fields['group'].choices = groups_list
         self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
+        
+        self.fields['release_dt'].initial = datetime.now()
 
     def clean_group(self):
         group_id = self.cleaned_data['group']

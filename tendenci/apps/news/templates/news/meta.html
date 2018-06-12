@@ -4,6 +4,22 @@
 
 
 <ul class="list-unstyled t-meta-data">
+    {% if news.slug %}<li class="pull-right"><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
+    {% if news.groups.count > 0 %}
+        <li><strong>{% trans "Group(s):" %}</strong>
+        {% if request.user.is_superuser %}
+        {% for group in news.groups.all %}
+        <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% else %}
+        {% for group in news.groups.all %}
+        {{ group.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        {% endif %}
+        </li>
+    {% endif %}
+
     {% if show_fb_connect|default:False %}
         <li>{% fb_like_button_iframe news.get_absolute_url height=20 %}</li>
     {% endif %}
@@ -56,7 +72,7 @@
             {% for tag in news.tags|tag_split %}
                 <a class="label label-default" href="{% url 'news' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
            {% endfor %}
-        <li>
+        </li>
     {% endif %}
 
     {% comment %}
@@ -76,7 +92,6 @@
     {% endif %}
     {% endcomment %}
 
-    {% if news.slug %}<li><a href="{% url 'news.print_view' news.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
 </ul>
 
 {% if user.profile.is_superuser %}

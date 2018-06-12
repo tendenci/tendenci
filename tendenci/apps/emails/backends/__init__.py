@@ -13,5 +13,5 @@ class NewsletterEmailBackend(EmailBackend):
                        'password': settings.NEWSLETTER_EMAIL_HOST_PASSWORD,
                        'use_tls': settings.NEWSLETTER_EMAIL_USE_TLS,
                        'fail_silently': fail_silently})
-        
+
         super(NewsletterEmailBackend, self).__init__(**kwargs)

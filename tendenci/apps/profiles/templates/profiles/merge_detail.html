@@ -1,4 +1,3 @@
-{% load avatar_tags %}
 {% load profile_tags %}
 {% load profile_filters %}
 {% load perm_tags %}
@@ -24,7 +23,7 @@
 
 	<div class="panel-body">	
 	    <div class="profile-avatar-left pull-left">
-	        {% avatar profile.user 56 %}
+	        {% gravatar profile.user 56 %}
 	        {% if profile.is_member %}
 	            {% if profile|allow_edit_by:user %}
 	                <div class="member-icon text-success">{% trans 'Member ID' %}:<br />{{ profile.member_number }}</div>
@@ -48,7 +47,7 @@
 	        <b>{% trans "Invoice Count:" %}</b> {{ profile.user|invoice_count }}<br />
 	        <b>{% trans "Number of Contributions:" %}</b> {{ profile.user.contributions_contribution_owner.count }}<br />
 	        <b>{% trans "Number of Group Memberships:" %}</b> {{ profile.get_groups|length }}<br />
-	    </div>  
+	    </div>
    </div>
 </div>
 {% endif %}

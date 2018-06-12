@@ -4,6 +4,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import IncludeNode
 from django.utils.translation import ugettext_lazy as _
+from haystack.models import SearchResult
 
 register = Library()
 
@@ -19,8 +20,7 @@ class SearchResultNode(IncludeNode):
 
         try:
             result = self.result.resolve(context)
-
-            if hasattr(result, 'object'):
+            if isinstance(result, SearchResult):
                 result_object = result.object
             else:
                 result_object = result

@@ -15,14 +15,95 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.template_tags import parse_tag_kwargs
-from tendenci.apps.base.utils import url_exists
+from tendenci.apps.base.utils import url_exists, google_cmap_sign_url
 from tendenci.apps.profiles.models import Profile
 
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.utils import generate_image_cache_key
+from tendenci.apps.site_settings.utils import get_setting
 
 register = Library()
 
+GOOGLE_SMAPS_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap'
+class GoogleCMapsURL(Node):
+    def __init__(self, location, origin=None, **kwargs):
+        self.size = kwargs.get("size", "200x200")
+        self.markers = kwargs.get("markers", 'color:red|label:A')
+        self.markers_origin = kwargs.get("markers_origin", 'color:green|label:B')
+        self.zoom = kwargs.get("zoom", None)
+        self.location = Variable(location)
+        if origin:
+            self.origin = Variable(origin)
+        else:
+            self.origin = None
+
+    def render(self, context):
+        location = self.location.resolve(context)
+        if self.origin:
+            origin = self.origin.resolve(context)
+        else:
+            origin = None
+        
+        url = '{base_url}?center={lat}%2C{lng}&size={size}&markers={markers}%7C{lat}%2C{lng}'.format(
+                                                    base_url=GOOGLE_SMAPS_BASE_URL,
+                                                    lat=location.latitude,
+                                                    lng=location.longitude,
+                                                    size=self.size,
+                                                    markers=self.markers.replace(':', '%3A').replace('|', '%7C'))
+        if self.zoom:
+            url = url + '&zoom=' + self.zoom
+            
+        if origin:
+            url = url + '&markers={markers_origin}%7C{origin_lat}%2C{origin_lng}'.format(
+                            markers_origin=self.markers_origin.replace(':', '%3A').replace('|', '%7C'),
+                            origin_lat=origin['lat'],
+                            origin_lng=origin['lng'])
+
+        api_key = get_setting('module', 'locations', 'google_maps_api_key')
+        if api_key:
+            url = url + '&key=' + api_key
+ 
+            if settings.GOOGLE_SMAPS_URL_SIGNING_SECRET:
+                # sign url with signing secret
+                url = google_cmap_sign_url(url)
+
+        return url
+
+
+@register.tag
+def google_cmaps_url(parser, token):
+    """
+    Creates a url for a google static map URL.
+
+    Examples::
+
+        <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=8 %}" />
+        <img src="{% google_cmaps_url location origin size=200x200 markers=color:red|label:A markers_origin=color:green|label:B zoom=8 %}" />
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    if len(bits) < 2:
+        message = "'%s' tag requires more than 1 argument" % bits[0]
+        raise TemplateSyntaxError(_(message))
+    
+    location = bits[1]
+
+    if not '=' in bits[2]:
+        origin = bits[2]
+    else:
+        origin = None
+
+    for bit in bits:
+        if "size=" in bit:
+            kwargs["size"] = bit.split("=")[1]
+        if "markers=" in bit:
+            kwargs["markers"] = bit.split("=")[1]
+        if "markers_origin=" in bit:
+            kwargs["markers_origin"] = bit.split("=")[1]
+        if "zoom=" in bit:
+            kwargs["zoom"] = bit.split("=")[1]
+
+    return GoogleCMapsURL(location, origin=origin, **kwargs)
 
 @register.inclusion_tag("base/fb_like_iframe.html")
 def fb_like_button_iframe(url, show_faces='false', width=400, height=40):
@@ -126,14 +207,14 @@ def callMethod(obj, methodName):
     """
     method = getattr(obj, methodName)
 
-    if obj.__dict__.has_key("__callArg"):
+    if "__callArg" in obj.__dict__:
         ret = method(*obj.__callArg)
         del obj.__callArg
         return ret
     return method()
 
 def args(obj, arg):
-    if not obj.__dict__.has_key("__callArg"):
+    if "__callArg" not in obj.__dict__:
         obj.__callArg = []
 
     obj.__callArg += [arg]
@@ -250,10 +331,10 @@ def reset(parser, token):
     try:
         variable = bits[1]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least three arguments." % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least three arguments." % {'b':bits[0]}))
 
     if bits[1] == 'as':
-        raise TemplateSyntaxError, _("'%(b)s' first argument must be a context var." % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' first argument must be a context var." % {'b':bits[0]}))
 
     # get the user
     try:
@@ -264,7 +345,7 @@ def reset(parser, token):
         context = None
 
     if not variable and not context:
-        raise TemplateSyntaxError, _("'%(b)s' missing arguments. Syntax {% reset var1 as var2 %}" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' missing arguments. Syntax {% reset var1 as var2 %}" % {'b':bits[0]}))
 
     return ResetNode(variable, context=context)
 
@@ -308,12 +389,12 @@ def image_preview(parser, token):
     try:
         instance = bits[1]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least 2 arguments" % {'b':bits[0]}))
 
     try:
         size = bits[2]
     except:
-        raise TemplateSyntaxError, _("'%(b)s' requires at least 2 arguments" % {'b':bits[0]})
+        raise TemplateSyntaxError(_("'%(b)s' requires at least 2 arguments" % {'b':bits[0]}))
 
     try:
         context = bits[4]
@@ -379,7 +460,7 @@ def get_rss(parser, token):
         ``cache``
            The length of time to cache the feed in seconds. **Default: 300**
 
-    Example::
+    Example 1::
 
         {% get_rss "http://www.freesound.org/blog/?feed=rss2" as rss %}
         {% for entry in rss.entries %}
@@ -391,6 +472,88 @@ def get_rss(parser, token):
                 <a href="{{entry.link}}">read more...</a>
             </p>
         {% endfor %}
+
+
+    Example 2::
+
+        {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
+        {% if rss.feed.image %}
+            <img src="{{ rss.feed.image.href }}" alt="" />
+        {% endif %}
+        {% for entry in rss.entries %}
+        <div class="row entry-item">
+
+             <div class="col-xs-4 col-md-3">
+             {# media image #}
+              {% if entry.media_content %}
+                  {% for media in entry.media_content %}
+                      {% if media.medium == 'image' %}
+                      <img src="{{ media.url }}" width="{{ media.width }}" height="{{ media.height }}" alt="" />
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+               </div>
+
+              <div class="col-xs-8 col-md-9">
+                  {# title #}
+                  <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
+
+                  {# pubdate #}
+                  <div class="small">Published on: {{entry.published}}</div>
+
+                  {# authors #}
+                  {% if entry.authors %}
+                      <div class="small">Author{{ entry.authors|pluralize }}:
+                      {% for author in entry.authors %}
+                          {{ author.name }}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+
+                {# categories #}
+                {% if entry.tags %}
+                      <div class="small">Categories:
+                      {% for tag in entry.tags %}
+                          {% if tag.scheme  %}
+                          <a href="{{ tag.scheme }}">{{ tag.term }}</a>
+                          {% else  %}
+                          {{ tag.term }}
+                          {% endif %}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+
+                {# description #}
+                {% if entry.content %}
+                  {% for content in entry.content %}
+                      <div>{{ content.value|safe }}</div>
+                  {% endfor %}
+                {% elif entry.summary %}
+                  <div>{{ entry.summary|safe }}</div>
+                {% endif %}
+
+                {# enclosure #}
+                {% if entry.links %}
+                  {% for link in entry.links %}
+                      {% if link.rel == 'enclosure' %}
+                      <div>
+                       <audio controls>
+                          <source src="{{ link.href }}" type="{{ link.type }}">
+                        </audio>
+                        {{ link.length|filesizeformat }}
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+
+              <a href="{{entry.link}}">read more...</a>
+           </div>
+
+        </div>
+        {% endfor %}
+
+
+
     """
     args, kwargs = [], {}
     bits = token.split_contents()

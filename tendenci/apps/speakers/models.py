@@ -2,12 +2,14 @@ import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.fields import GenericRelation
 
 from tagging.fields import TagField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.speakers.managers import SpeakerManager
 from tendenci.apps.files.models import File
 from tendenci.apps.files.managers import FileManager
+from tendenci.apps.perms.object_perms import ObjectPermission
 
 
 def file_directory(instance, filename):
@@ -28,7 +30,7 @@ class Speaker(TendenciBaseModel):
     slug = models.SlugField(max_length=75)
     company = models.CharField(blank=True, max_length=150)
     position = models.CharField(blank=True, max_length=150)
-    track = models.ForeignKey(Track, null=True)
+    track = models.ForeignKey(Track, null=True, on_delete=models.SET_NULL)
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     ordering = models.IntegerField(_('order'))
@@ -40,14 +42,16 @@ class Speaker(TendenciBaseModel):
     flickr = models.CharField(blank=True, max_length=100)
     slideshare = models.CharField(blank=True, max_length=100)
 
-
     personal_sites = models.TextField(
         _('Personal Sites'),
         blank=True,
         help_text='List personal websites followed by a return')
 
-    
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
+
+    perms = GenericRelation(ObjectPermission,
+                  object_id_field="object_id",
+                  content_type_field="content_type")
 
     objects = SpeakerManager()
 
@@ -64,13 +68,13 @@ class Speaker(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("speaker.view", [self.slug])
-        
+
     def professional_photo(self):
         try:
             return self.speakerfile_set.filter(photo_type__iexact='professional')[0]
         except:
             return False
-    
+
     def fun_photo(self):
         try:
             return self.speakerfile_set.filter(photo_type__iexact='fun')[0]
@@ -79,13 +83,17 @@ class Speaker(TendenciBaseModel):
 
 
 class SpeakerFile(File):
+
+    PHOTO_TYPE_PROFESSIONAL = 'professional'
+    PHOTO_TYPE_FUN = 'fun'
+
+    PHOTO_TYPE_CHOICES = (
+            (PHOTO_TYPE_PROFESSIONAL, 'Professional'),
+            (PHOTO_TYPE_FUN, 'Fun'),
+    )
+
     speaker = models.ForeignKey(Speaker)
-    photo_type = models.CharField(
-        max_length=50,
-        choices=(
-            ('professional','Professional'),
-            ('fun','Fun'),
-        ))
+    photo_type = models.CharField(max_length=50, choices=PHOTO_TYPE_CHOICES)
     position = models.IntegerField(blank=True)
 
     objects = FileManager()

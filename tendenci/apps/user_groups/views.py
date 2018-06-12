@@ -1,4 +1,5 @@
-import subprocess
+from __future__ import print_function
+import subprocess, os
 from datetime import datetime
 from datetime import date
 import time as ttime
@@ -22,6 +23,7 @@ from django.http import Http404
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import superuser_required
@@ -35,7 +37,7 @@ from tendenci.apps.event_logs.utils import request_month_range, day_bars
 from tendenci.apps.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
-from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, MessageForm
+from tendenci.apps.user_groups.forms import MessageForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
@@ -83,6 +85,7 @@ def search_redirect(request):
 @login_required
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if not has_view_perm(request.user,'user_groups.view_group',group):
         raise Http403
@@ -96,10 +99,13 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     EventLog.objects.log(instance=group)
 
-    groupmemberships = GroupMembership.objects.filter(
-        group=group,
-        status=True,
-        status_detail='active').order_by('member__last_name')
+    if request.user.profile.is_superuser or membership_view_perms != 'private':
+        groupmemberships = GroupMembership.objects.filter(
+            group=group,
+            status=True,
+            status_detail='active').order_by('member__last_name')
+    else:
+        groupmemberships = GroupMembership.objects.none()
 
     count_members = len(groupmemberships)
     return render_to_response(
@@ -128,14 +134,13 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         request=request,
         num_members=num_members)
 
-
     if request.method == 'POST' and form.is_valid():
 
         email = Email()
         email.sender_display = request.user.get_full_name()
         email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         email.reply_to = email.sender
-        email.content_type = 'text/html'
+        email.content_type = email.CONTENT_TYPE_HTML
         email.subject = form.cleaned_data['subject']
         email.body = form.cleaned_data['body']
         email.save(request.user)
@@ -168,8 +173,7 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         return redirect('group.detail', group_slug=group_slug)
 
     else:
-        print 'form errors', form.errors.items()
-
+        print('form errors', form.errors.items())
 
     return render(request, template_name, {
         'group': group,
@@ -529,7 +533,7 @@ def group_members_export(request, group_slug, export_target='all'):
                                             identifier)
     default_storage.save(temp_export_path, ContentFile(''))
     # start the process
-    subprocess.Popen(["python", "manage.py",
+    subprocess.Popen([python_executable(), "manage.py",
                   "group_members_export",
                   '--group_id=%d' % group.id,
                   '--export_target=%s' % export_target,
@@ -609,7 +613,7 @@ def group_members_export_download(request, group_slug, export_target, identifier
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="membership_export_%s"' % file_name
     response.content = default_storage.open(export_path).read()
     return response
 
@@ -625,7 +629,7 @@ def group_member_export(request, group_slug):
         raise Http403
 
     import xlwt
-    from ordereddict import OrderedDict
+    from collections import OrderedDict
     from django.db import connection
 
     # create the excel book and sheet
@@ -693,7 +697,7 @@ def group_member_export(request, group_slug):
                 sheet.write(row, col, val, style=style)
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=group_%s_member_export.xls' % group.pk
+    response['Content-Disposition'] = 'attachment; filename="group_%s_member_export.xls"' % group.pk
     book.save(response)
     return response
 
@@ -757,7 +761,7 @@ def group_subscriber_export(request, group_slug):
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=group_%s_subscriber_export.xls' % group.pk
+    response['Content-Disposition'] = 'attachment; filename="group_%s_subscriber_export.xls"' % group.pk
     book.save(response)
     return response
 
@@ -832,7 +836,7 @@ def group_all_export(request, group_slug):
 
     # index the group key mappings and insert them into the sheet.
     for key in group_mappings.keys():
-        if not key in col_index:
+        if key not in col_index:
             col = len(col_index.keys())
             col_index[key] = col
             sheet.write(0, col, key, style=default_style)
@@ -842,7 +846,7 @@ def group_all_export(request, group_slug):
         for row, row_data in enumerate(values_list):
             for col, val in enumerate(row_data):
 
-                if not row in row_index:
+                if row not in row_index:
                     # assign the row if it is not yet available
                     row_index[row] = row + 1
 
@@ -894,7 +898,7 @@ def group_all_export(request, group_slug):
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=group_%s_all_export.xls' % group.pk
+    response['Content-Disposition'] = 'attachment; filename="group_%s_all_export.xls"' % group.pk
     book.save(response)
     return response
 
@@ -1031,7 +1035,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    subprocess.Popen(['python', 'manage.py', 'import_groups', str(import_id)])
+    subprocess.Popen([python_executable(), 'manage.py', 'import_groups', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,
@@ -1058,13 +1062,18 @@ def import_download_template(request, file_ext='.csv'):
 # Newsletter stuff here:
 @login_required
 def subscribe_to_newsletter_interactive(request, group_slug):
-    group = get_object_or_404(Group, slug=group_slug)
+    group = get_object_or_404(Group, slug=group_slug,
+                              allow_self_add=True,
+                              status_detail='active')
 
-    groupmembership = get_object_or_404(GroupMembership,
+    [groupmembership] = GroupMembership.objects.filter(
                         group=group,
                         member=request.user,
                         status=True,
-                        status_detail='active')
+                        status_detail='active')[:1] or [None]
+    if not groupmembership:
+        groupmembership = GroupMembership.add_to_group(group=group,
+                                                       member=request.user)
 
     if groupmembership.subscribe_to_newsletter():
         messages.success(request, _('Successfully subscribed to Newsletters.'))
@@ -1104,4 +1113,3 @@ def unsubscribe_to_newsletter_noninteractive(request, group_slug, newsletter_key
         raise Http404
 
     return render(request, 'user_groups/newsletter_unsubscribe.html')
-

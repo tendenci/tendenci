@@ -9,26 +9,40 @@ from django.core.exceptions import FieldError
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.utils.translation import ugettext, ugettext_lazy
 from django.utils.timezone import now as tznow
+from django.utils.translation import ugettext_lazy as _
+from tendenci.apps.perms.forms import TendenciBaseForm
 
 import compat, defaults, util
-from .models import Topic, Post, Attachment, PollAnswer
+from .models import Topic, Post, Attachment, PollAnswer, Category
 
 
 User = compat.get_user_model()
 username_field = compat.get_username_field()
 
 
-class AttachmentForm(forms.ModelForm):
-    class Meta(object):
-        model = Attachment
-        fields = ('file', )
+class CategoryAdminForm(TendenciBaseForm):
+    status_detail = forms.ChoiceField(
+        choices=(('active',_('Active')),('inactive',_('Inactive')),))
+    class Meta:
+        model = Category
+        fields = (
+        'name',
+        'position',
+        'hidden',
+        'slug',
+        'status_detail',
+        'allow_anonymous_view',
+        'user_perms',
+        'group_perms',
+        'member_perms',
+        )
 
-    def clean_file(self):
-        if self.cleaned_data['file'].size > defaults.PYBB_ATTACHMENT_SIZE_LIMIT:
-            raise forms.ValidationError(ugettext('Attachment is too big'))
-        return self.cleaned_data['file']
-
-AttachmentFormSet = inlineformset_factory(Post, Attachment, extra=1, form=AttachmentForm)
+    def __init__(self, *args, **kwargs):
+        super(CategoryAdminForm, self).__init__(*args, **kwargs)
+        self.fields['user_perms'].help_text = _('Select view/change to allow all ' +
+                            'authenticated users to view or post (change) in this category')
+        self.fields['member_perms'].help_text = _('Select view/change to allow all ' +
+                            'members to view or post (change) in this category')
 
 
 class PollAnswerForm(forms.ModelForm):
@@ -103,11 +117,10 @@ class PostForm(forms.ModelForm):
 
         self.available_smiles = defaults.PYBB_SMILES
         self.smiles_prefix = defaults.PYBB_SMILES_PREFIX
-        
+
         # add form-control class
         for k in self.fields.keys():
             self.fields[k].widget.attrs['class'] = 'form-control'
-
 
     def clean_body(self):
         body = self.cleaned_data['body']
@@ -209,6 +222,9 @@ try:
         def __init__(self, *args, **kwargs):
             super(EditProfileForm, self).__init__(*args, **kwargs)
             self.fields['signature'].widget = forms.Textarea(attrs={'rows': 2, 'cols:': 60})
+            # remove avatar upload
+            if 'avatar' in self.fields:
+                del self.fields['avatar']
 
         def clean_avatar(self):
             if self.cleaned_data['avatar'] and (self.cleaned_data['avatar'].size > defaults.PYBB_MAX_AVATAR_SIZE):

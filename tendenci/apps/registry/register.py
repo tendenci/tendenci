@@ -12,7 +12,6 @@ def autodiscover():
     not present. This forces an import on them to register any admin bits they
     may want.
     """
-    
 
     for app in settings.INSTALLED_APPS:
         mod = import_module(app)

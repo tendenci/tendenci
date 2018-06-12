@@ -27,5 +27,3 @@ class RedirectIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_order(self, obj):
         return obj.create_dt
-
-

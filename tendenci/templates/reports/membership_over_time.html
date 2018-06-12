@@ -3,18 +3,53 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% trans "New and Renewing Members Over Time" %}</h1>
-<div class="corp-mems-wrap">
+<div class="page-header">
+  <h1>{% trans "New and Renewing Members Over Time" %}</h1>
+</div>
+<div>
 
-  <table class="report">
-    <tr>
-      <td></td>
-      <td>{% trans 'Since Date' %}</td>
-      <td>{% trans 'New' %}</td>
-      <td>{% trans 'Renewal' %}</td>
-      <td>{% trans 'Totals' %}</td>
-    </tr>
-  {% for stat in stats|slice:":5" reversed %}
+  <div id="chart_div">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Months');
+      data.addColumn('number', 'New');
+      data.addColumn('number', 'Renewing');
+      data.addRows([
+      {% for stat in stats|slice:":5" reversed %}
+      {% if not forloop.last %}
+      ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}],
+      {% else %}
+      ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}]
+      {% endif %}
+      {% endfor %}
+      ]);
+      var options = {
+      width: 1000, height: 500,
+      //hAxis: {title: 'Since x Months'},
+      vAxis: {title: 'Members'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+      }
+    </script>
+  </div>
+
+  <table class="table table-tendenci-reports">
+    <thead>
+      <tr>
+        <td></td>
+        <td>{% trans 'Since Date' %}</td>
+        <td>{% trans 'New' %}</td>
+        <td>{% trans 'Renewal' %}</td>
+        <td>{% trans 'Totals' %}</td>
+      </tr>
+    </thead>
+    {% for stat in stats|slice:":5" reversed %}
     <tr>
       <td>{{ stat.time }}</td>
       <td>{{ stat.start_dt }}</td>
@@ -22,40 +57,11 @@
       <td>{{ stat.renewing }}</td>
       <td>{{ stat.new|add:stat.renewing }}</td>
     </tr>
-  {% endfor %}
+    {% endfor %}
   </table>
+  <br />
 
 </div>
 
-<div id="chart_div">
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">
-    google.load("visualization", "1", {packages:["corechart"]});
-    google.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Months');
-      data.addColumn('number', 'New');
-      data.addColumn('number', 'Renewing');
-      data.addRows([
-        {% for stat in stats|slice:":5" reversed %}
-          {% if not forloop.last %}
-          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}],
-          {% else %}
-          ['{{ stat.time }}', {{ stat.new }}, {{ stat.renewing }}]
-          {% endif %}
-        {% endfor %}
-      ]);
-      var options = {
-        width: 1000, height: 500,
-        //hAxis: {title: 'Since x Months'},
-        vAxis: {title: 'Members'}
-      };
-
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-      chart.draw(data, options);
-    }
-  </script>
-</div>
 
 {% endblock content %}

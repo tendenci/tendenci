@@ -1,10 +1,13 @@
 # -*- coding: utf-8
 from __future__ import unicode_literals
+from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from tendenci.apps.perms.utils import update_perms_and_save
 
 from .models import Category, Forum, Topic, Post, Profile, Attachment, PollAnswer
+from .forms import CategoryAdminForm
 
 import compat, util
 username_field = compat.get_username_field()
@@ -18,18 +21,42 @@ class ForumInlineAdmin(admin.TabularInline):
 
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'position', 'hidden', 'forum_count']
+    list_display = ['id', 'name', 'position', 'hidden', 'forum_count']
+    list_display_links = ('name',)
     list_per_page = 20
     ordering = ['position']
     search_fields = ['name']
     list_editable = ['position']
+    fieldsets = (
+        (None, {'fields': ('name', 'position', 'slug', 'status_detail')}),
+        (_('Permissions'), {'fields': (('hidden',), ('allow_anonymous_view',))}),
+        (_('Advanced Permissions'), {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+    )
+
+    form = CategoryAdminForm
 
     inlines = [ForumInlineAdmin]
+
+    def get_queryset(self, request):
+        qs = super(CategoryAdmin, self).get_queryset(request)
+        # filter out soft-deleted items
+        return qs.filter(status=True)
+
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+        instance = update_perms_and_save(request, form, instance)
+        instance.save()
+        return instance
 
 
 class ForumAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'category', 'hidden', 'position', 'topic_count', ]
+    list_display = ['id', 'name', 'category', 'hidden', 'position', 'topic_count', ]
+    list_display_links = ['name',]
     list_per_page = 20
     raw_id_fields = ['moderators']
     ordering = ['-category']
@@ -56,7 +83,8 @@ class PollAnswerAdmin(admin.TabularInline):
 
 class TopicAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    list_display = ['name', 'forum', 'created', 'head', 'post_count', 'poll_type',]
+    list_display = ['id', 'name', 'forum', 'created', 'head', 'post_count', 'poll_type',]
+    list_display_links = ('name',)
     list_per_page = 20
     raw_id_fields = ['user', 'subscribers']
     ordering = ['-created']
@@ -64,16 +92,24 @@ class TopicAdmin(admin.ModelAdmin):
     search_fields = ['name']
     fieldsets = (
         (None, {
-                'fields': ('forum', 'name', 'user', ('created', 'updated'), 'poll_type',)
+                'fields': ('forum', 'name', 'user', ('created', 'updated'), 'poll_type', 'poll_question',)
                 }
          ),
         (_('Additional options'), {
                 'classes': ('collapse',),
-                'fields': (('views', 'post_count'), ('sticky', 'closed'), 'subscribers', 'slug')
+                'fields': (('views', 'post_count'), ('sticky', 'closed'), 'on_moderation', 'subscribers', 'slug')
                 }
          ),
         )
     inlines = [PollAnswerAdmin, ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(TopicAdmin, self).get_form(request, obj=obj, **kwargs)
+        form.base_fields['user'].initial = request.user
+        form.base_fields['created'].initial = datetime.now()
+        form.base_fields['updated'].initial = datetime.now()
+        return form
+
 
 class TopicReadTrackerAdmin(admin.ModelAdmin):
     list_display = ['topic', 'user', 'time_stamp']
@@ -84,12 +120,13 @@ class ForumReadTrackerAdmin(admin.ModelAdmin):
     search_fields = ['user__%s' % username_field]
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['topic', 'user', 'created', 'updated', 'summary']
+    list_display = ['id', 'topic', 'user', 'created', 'updated', 'summary']
+    list_display_links = ('topic',)
     list_per_page = 20
     raw_id_fields = ['user', 'topic']
     ordering = ['-created']
     date_hierarchy = 'created'
-    search_fields = ['body']
+    search_fields = ['body', 'user__username']
     fieldsets = (
         (None, {
                 'fields': ('topic', 'user')
@@ -108,7 +145,8 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'time_zone', 'language', 'post_count']
+    list_display = ['id', 'user', 'time_zone', 'language', 'post_count']
+    list_display_links = ('user',)
     list_per_page = 20
     ordering = ['-user']
     search_fields = ['user__%s' % username_field]

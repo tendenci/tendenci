@@ -3,6 +3,8 @@
 # from __future__ import must occur at the beginning of the file
 from __future__ import unicode_literals
 import datetime, random, string
+import time
+import csv
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -10,7 +12,7 @@ from django.db.models import Q
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
@@ -29,6 +31,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
+from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
@@ -85,6 +88,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         raise Http403
 
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
+    RecurringPaymentFormSet = inlineformset_factory(Form, RecurringPayment, form=RecurringPaymentForm, extra=2)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
@@ -232,7 +236,7 @@ def copy(request, id):
 
     EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, _('Successfully added %(n)s' % {'n': new_form}))
-    return redirect('form_edit', new_form.pk)
+    return redirect('admin:forms_form_change', new_form.pk)
 
 
 @is_enabled('forms')
@@ -278,12 +282,13 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
 
-
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
         form_template = "forms/base.html"
 
-    return render_to_response(template_name, {'entry':entry, 'form_template': form_template},
+    return render_to_response(template_name, {'entry':entry,
+                                              'form': entry.form,
+                                              'form_template': form_template},
         context_instance=RequestContext(request))
 
 
@@ -311,8 +316,13 @@ def entries_export(request, id, include_files=False):
     else:
         # blank csv document
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
-        writer = csv.writer(response, delimiter=',')
+        response['Content-Disposition'] = 'attachment; filename="export_entries_%d.csv"' % time.time()
+        import six
+        delimiter = ','
+        if six.PY2:
+            # string required because unicode_literals is imported at top
+            delimiter = delimiter.encode('utf-8')
+        csv.writer(response, delimiter=delimiter)
 
     return response
 
@@ -360,7 +370,7 @@ def search(request, template_name="forms/search.html"):
     forms = Form.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
     if query:
-        forms = forms.filter(Q(title__icontains=query)|Q(intro__icontains=query)|Q(response__icontains=query))
+        forms = forms.filter(Q(title__icontains=query) | Q(intro__icontains=query) | Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
 
@@ -391,18 +401,28 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             return response
         if request.user.is_superuser and not email_field:
             messages.add_message(request, messages.WARNING,
-                    'Please edit the form to include an email field ' + \
-                    'as it is required for setting up a recurring ' + \
+                    'Please edit the form to include an email field ' +
+                    'as it is required for setting up a recurring ' +
                     'payment for anonymous users.')
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    if form.custom_payment and not form.recurring_payment:
+        billing_form = BillingForm(request.POST or None)
+        if request.user.is_authenticated():
+            billing_form.initial = {
+                        'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email}
+    else:
+        billing_form = None
+
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
             form_for_form.fields[field].initial = field_default
 
     if request.method == "POST":
-        if form_for_form.is_valid():
+        if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
             if request.user.is_anonymous():
@@ -444,6 +464,16 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             submitter_body = generate_submitter_email_body(entry, form_for_form)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
+            is_spam = Email.is_blocked(email_to)
+            if is_spam:
+                # log the spam
+                description = "Email \"{0}\" blocked because it is listed in email_blocks.".format(email_to)
+                EventLog.objects.log(instance=form, description=description)
+
+                if form.completion_url:
+                    return HttpResponseRedirect(form.completion_url)
+                return redirect("form_sent", form.slug)
+
             email = Email()
             email.subject = subject
             email.reply_to = form.email_from
@@ -463,6 +493,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
             subject = subject.encode(errors='ignore')
             email_recipients = entry.get_function_email_recipients()
+            # reply_to of admin emails goes to submitter
+            email.reply_to = email_to
 
             if email_copies or email_recipients:
                 # prepare attachments
@@ -533,7 +565,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                              owner_username=rp_user.username,
                          )
                     rp.save()
-                    rp.add_customer_profile()
+                    if rp.platform == 'authorizenet':
+                        rp.add_customer_profile()
 
                     # redirect to recurring payments
                     messages.add_message(request, messages.SUCCESS, _('Successful transaction.'))
@@ -541,14 +574,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 else:
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
-                    # log an event for invoice add
 
+                    update_invoice_for_entry(invoice, billing_form)
+
+                    # log an event for invoice add
                     EventLog.objects.log(instance=form)
 
-                    # redirect to billing form
-                    return redirect('form_entry_payment', invoice.id, invoice.guid)
+                    # redirect to online payment
+                    if (entry.payment_method.machine_name).lower() == 'credit-card':
+                        return redirect('payment.pay_online', invoice.id, invoice.guid)
+                    # redirect to invoice page
+                    return redirect('invoice.view', invoice.id, invoice.guid)
 
             # default redirect
+            form.completion_url = form.completion_url.strip(' ')
             if form.completion_url:
                 return HttpResponseRedirect(form.completion_url)
             return redirect("form_sent", form.slug)
@@ -557,11 +596,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if not form.template or not template_exists(form.template):
         form.template = "forms/base.html"
 
-    # NOTE: Temporarily use forms/base.html for the meantime
-    form.template = "forms/base.html"
-
     context = {
         "form": form,
+        'billing_form': billing_form,
         "form_for_form": form_for_form,
         'form_template': form.template,
     }
@@ -676,5 +713,5 @@ def files(request, id):
 
     EventLog.objects.log()
     response = HttpResponse(f.read(), content_type=mime_type)
-    response['Content-Disposition'] = 'filename=%s' % base_name
+    response['Content-Disposition'] = 'filename="%s"' % base_name
     return response

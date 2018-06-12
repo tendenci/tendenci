@@ -84,7 +84,6 @@ class Payment(models.Model):
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 
-
     class Meta:
         app_label = 'payments'
 
@@ -246,4 +245,3 @@ class PaymentMethod(models.Model):
         if self.is_online:
             return "%s - Online" % name
         return "%s - Offline" % name
-

@@ -1,5 +1,5 @@
 from os.path import join
-from django.conf.urls import *
+from django.conf.urls import patterns, url, include
 from django.conf import settings
 from django.views.generic import TemplateView, RedirectView
 from django.contrib import admin
@@ -7,7 +7,7 @@ from tendenci.libs.model_report import report
 from tendenci.apps.registry.register import autodiscover as registry_autodiscover
 
 registry_autodiscover()
-        
+
 # django model report
 report.autodiscover()
 
@@ -38,7 +38,6 @@ urlpatterns += patterns('',
     (r'^notifications/', include('tendenci.apps.notifications.urls')),
     (r'^base/', include('tendenci.apps.base.urls')),
     (r'^tags/', include('tendenci.apps.tags.urls')),
-    (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('tendenci.apps.dashboard.urls')),
     (r'^categories/', include('tendenci.apps.categories.urls')),
     (r'^invoices/', include('tendenci.apps.invoices.urls')),
@@ -76,7 +75,7 @@ urlpatterns += patterns('',
     url(r'^forums/', include('tendenci.apps.forums.urls', namespace="pybb")),
 
     # third party (inside environment)
-    (r'^tinymce/', include('tinymce.urls')),
+    (r'^tinymce/', include('tendenci.libs.tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', TemplateView.as_view(template_name='site_map.html'), name="site_map"),
@@ -160,8 +159,8 @@ if settings.DEBUG:
 
 # Local url patterns for development
 try:
-    from local_urls import extra_patterns
-    urlpatterns += extra_patterns
+    from conf.local_urls import extrapatterns
+    urlpatterns += extrapatterns
 except ImportError:
     pass
 
@@ -171,6 +170,12 @@ urlpatterns += get_url_patterns()
 
 urlpatterns += patterns('', url(r'^en/$', RedirectView.as_view(url='/accounts/login/', permanent=True)),)
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
+
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first
 pattern_pages = patterns('',
@@ -178,9 +183,3 @@ pattern_pages = patterns('',
     url(r'^(?P<slug>[\w\-\/]+)/$', 'tendenci.apps.pages.views.index', name="page"),
 )
 urlpatterns += pattern_pages
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns += patterns('',
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    )

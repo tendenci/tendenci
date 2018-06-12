@@ -1,16 +1,15 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.photos.models import PhotoSet, Image, Pool
-from tendenci.apps.photos.forms import PhotoSet, PhotoAdminForm, PhotoSetAddForm
+from tendenci.apps.photos.forms import PhotoSet, PhotoSetAddForm
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_save
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'update_dt', 'create_dt', 'tags', 'position')
+    list_display = ('id', 'name', 'update_dt', 'create_dt', 'tags', 'position')
+    list_display_links = ('name',)
     list_editable = ['tags', 'position']
     fieldsets = (
         (_('Photo Set Information'), {
@@ -32,7 +31,7 @@ class PhotoAdmin(admin.ModelAdmin):
     )
     form = PhotoSetAddForm
     ordering = ['position']
-    
+
     class Media:
         css = {
             "all": ("css/websymbols.css",)
@@ -42,7 +41,6 @@ class PhotoAdmin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
             'js/admin/admin-list-reorder.js',
         )
-
 
     def log_deletion(self, request, object, object_repr):
         super(PhotoAdmin, self).log_deletion(request, object, object_repr)
@@ -90,16 +88,16 @@ class PhotoAdmin(admin.ModelAdmin):
         instance = update_perms_and_save(request, form, instance)
 
         # notifications
-        if not request.user.profile.is_superuser:
-            # send notification to administrators
-            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': instance,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients, notice_type, extra_context)
+        #if not request.user.profile.is_superuser:
+        #    # send notification to administrators
+        #    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        #    if recipients:
+        #        if notification:
+        #            extra_context = {
+        #                'object': instance,
+        #                'request': request,
+        #            }
+        #            notification.send_emails(recipients, 'photo_added', extra_context)
 
         return instance
 

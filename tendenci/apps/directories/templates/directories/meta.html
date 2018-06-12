@@ -1,9 +1,15 @@
 {% load i18n %}
 {% load base_filters %}
 {% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user directories.change_directory directory as can_edit_directory %}
+{% has_perm user directories.delete_directory directory as can_delete_directory %}
 
 
 <ul class="list-unstyled t-meta-data">
+    {% if directory.slug %}<li class="pull-right"><a href="{% url 'directory.print_view' directory.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
+
     {% if show_fb_connect|default:False %}
         <li>{% fb_like_button_iframe directory.get_absolute_url height=20 %}</li>
     {% endif %}
@@ -62,14 +68,14 @@
         </address>
     {% endif %}
 
-    {% with directory.category_set as directory_cat %}
-        {% if directory_cat.category %}
+    {% with directory.cat as directory_cat %}
+        {% if directory_cat %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?q=category:{{ directory_cat.category }}">{{ directory_cat.category }}</a></li>
-                    {% if directory_cat.sub_category %}
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}">{{ directory_cat.name }}</a></li>
+                    {% if directory.sub_cat %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?q=sub_category:{{ directory_cat.sub_category }}">{{ directory_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -100,10 +106,9 @@
         {% endif %}
     {% endif %}
 
-    {% if directory.slug %}<li><a href="{% url 'directory.print_view' directory.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>{% endif %}
 </ul>
 
-{% if user.profile.is_superuser %}
+{% if user.is_authenticated and can_edit_directory %}
     <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
@@ -121,16 +126,14 @@
                         {% endspaceless %}</a>
 
                         <ul class="dropdown-menu" role="menu">
+                           {% if can_delete_directory %}
                             <li>
                                 <a class="t-meta-delete-link" href="{% url 'directory.delete' directory.pk %}">{% trans "Delete" %}</a>
                             </li>
+                            {% endif %}
 
                             <li>
                                 <a href="{% url 'directory.edit.meta' directory.pk %}">{% trans "Edit Meta" %}</a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'category.update' directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a>
                             </li>
                         </ul>
                     </li>

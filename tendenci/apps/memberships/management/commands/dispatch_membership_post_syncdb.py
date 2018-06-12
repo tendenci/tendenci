@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
@@ -18,4 +19,4 @@ class Command(BaseCommand):
         )
 
         for t in tuples:
-            print 'post_syncdb handler', t[0]
+            print('post_syncdb handler', t[0])

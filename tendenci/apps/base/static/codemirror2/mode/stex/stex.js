@@ -3,13 +3,13 @@
  * Licence: MIT
  */
 
-CodeMirror.defineMode("stex", function(cmCfg, modeCfg) 
-{    
+CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
+{
     function pushCommand(state, command) {
 	state.cmdState.push(command);
     }
 
-    function peekCommand(state) { 
+    function peekCommand(state) {
 	if (state.cmdState.length>0)
 	    return state.cmdState[state.cmdState.length-1];
 	else
@@ -20,7 +20,7 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 	if (state.cmdState.length>0) {
 	    var plug = state.cmdState.pop();
 	    plug.closeBracket();
-	}	    
+	}	
     }
 
     function applyMostPowerful(state) {
@@ -58,7 +58,7 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
     }
 
     var plugins = new Array();
-   
+
     plugins["importmodule"] = addPluginPattern("importmodule", "tag", "{[", ["string", "builtin"]);
     plugins["documentclass"] = addPluginPattern("documentclass", "tag", "{[", ["", "atom"]);
     plugins["usepackage"] = addPluginPattern("documentclass", "tag", "[", ["atom"]);
@@ -99,7 +99,7 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 	if (ch == "%") {
 	    setState(state, inCComment);
 	    return "comment";
-	} 
+	}
 	else if (ch=='}' || ch==']') {
 	    plug = peekCommand(state);
 	    if (plug) {
@@ -109,10 +109,10 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 		return "error";
 	    return "bracket";
 	} else if (ch=='{' || ch=='[') {
-	    plug = plugins["DEFAULT"];	    
+	    plug = plugins["DEFAULT"];	
 	    plug = new plug();
 	    pushCommand(state, plug);
-	    return "bracket";	    
+	    return "bracket";	
 	}
 	else if (/\d/.test(ch)) {
 	    source.eatWhile(/[\w.%]/);
@@ -154,7 +154,7 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
     return {
      startState: function() { return { f:normal, cmdState:[] }; },
 	 copyState: function(s) { return { f: s.f, cmdState: s.cmdState.slice(0, s.cmdState.length) }; },
-	 
+	
 	 token: function(stream, state) {
 	 var t = state.f(stream, state);
 	 var w = stream.current();

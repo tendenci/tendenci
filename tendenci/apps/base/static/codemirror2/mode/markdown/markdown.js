@@ -56,7 +56,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       state.indentation += match[0].length;
       return list;
     }
-    
+
     return switchInline(stream, state, state.inline);
   }
 
@@ -72,10 +72,10 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
 
   // Inline
   function getType(state) {
-    
+
     // Set defaults
     returnValue = '';
-    
+
     // Strong / Emphasis
     if(state.strong){
       if(state.em){
@@ -88,39 +88,39 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
         returnValue += (returnValue ? ' ' : '') + em;
       }
     }
-    
+
     // Header
     if(state.header){
       returnValue += (returnValue ? ' ' : '') + header;
     }
-    
+
     // Quotes
     if(state.quote){
       returnValue += (returnValue ? ' ' : '') + quote;
     }
-    
+
     // Check valud and return
     if(!returnValue){
       returnValue = null;
     }
     return returnValue;
-    
+
   }
 
   function handleText(stream, state) {
     if (stream.match(textRE, true)) {
       return getType(state);
     }
-    return undefined;        
+    return undefined;
   }
 
   function inlineNormal(stream, state) {
     var style = state.text(stream, state)
     if (typeof style !== 'undefined')
       return style;
-    
+
     var ch = stream.next();
-    
+
     if (ch === '\\') {
       stream.next();
       return getType(state);
@@ -143,7 +143,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       }
       return (state.em = !state.em) ? getType(state) : t;
     }
-    
+
     return getType(state);
   }
 
@@ -205,11 +205,11 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
     startState: function() {
       return {
         f: blockNormal,
-        
+
         block: blockNormal,
         htmlState: htmlMode.startState(),
         indentation: 0,
-        
+
         inline: inlineNormal,
         text: handleText,
         em: false,
@@ -222,11 +222,11 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
     copyState: function(s) {
       return {
         f: s.f,
-        
+
         block: s.block,
         htmlState: CodeMirror.copyState(htmlMode, s.htmlState),
         indentation: s.indentation,
-        
+
         inline: s.inline,
         text: s.text,
         em: s.em,
@@ -262,7 +262,7 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
           }
         }
         state.indentation = currentIndentation;
-        
+
         if (currentIndentation > 0) return null;
       }
       return state.f(stream, state);

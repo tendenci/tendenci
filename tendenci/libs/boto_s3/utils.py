@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from datetime import datetime
 import mimetypes
@@ -125,7 +126,7 @@ def set_s3_file_permission(file, public=False):
             else:
                 k.set_acl('private')
         else:
-            print file_path, 'does not exist.'
+            print(file_path, 'does not exist.')
 
 
 def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=False):
@@ -154,10 +155,10 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
 
     """
     if not prefix:
-        print 'No prefix, exiting..'
+        print('No prefix, exiting..')
         return
     if not os.path.isdir(to_dir):
-        print 'Destination directory does not exist.'
+        print('Destination directory does not exist.')
         return
 
     if all([settings.AWS_ACCESS_KEY_ID,
@@ -190,18 +191,18 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
                                             to_tz=src_modified_dt.tzname())
                 if dst_modified_dt == src_modified_dt:
                     # source is current, no need to update
-                    print 'Not modified %s' % s3_file_relative_path
+                    print('Not modified %s' % s3_file_relative_path)
                     continue
 
                 elif dst_modified_dt > src_modified_dt:
-                    print "Not updated. %s is current." % s3_file_relative_path
+                    print("Not updated. %s is current." % s3_file_relative_path)
                     continue
 
             if dry_run:
-                print 'Pretended to download %s' % s3_file_relative_path
+                print('Pretended to download %s' % s3_file_relative_path)
             else:
                 item.get_contents_to_filename(copy_to_fullpath)
-                print 'Downloaded %s' % s3_file_relative_path
+                print('Downloaded %s' % s3_file_relative_path)
 
 def delete_file_from_s3(file):
     conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,

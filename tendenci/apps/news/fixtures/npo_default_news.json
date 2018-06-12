@@ -14,7 +14,9 @@
             "timezone": "America/Chicago",
             "guid": "81edd582-5068-11e2-8b01-22000a1f8964",
             "create_dt": "2012-12-27T15:00:56.120",
-            "group": 1,
+            "groups": [
+            	1
+        	],
             "update_dt": "2012-12-31T15:27:07.525",
             "headline": "Adding and Editing News Items",
             "enclosure_length": 0,
@@ -58,7 +60,9 @@
             "timezone": "America/Chicago",
             "guid": "1a585a92-5382-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T13:41:42.739",
-            "group": 1,
+            "groups": [
+            	1
+        	],
             "update_dt": "2013-01-02T13:42:26.969",
             "headline": "Announcing 2013 Sponsorship Partner - Example Corporation",
             "enclosure_length": 0,
@@ -102,7 +106,9 @@
             "timezone": "America/Chicago",
             "guid": "c54074e8-5068-11e2-a861-22000a1f8964",
             "create_dt": "2012-12-27T15:02:49.069",
-            "group": 1,
+            "groups": [
+            	1
+        	],
             "update_dt": "2012-12-31T15:27:39.219",
             "headline": "New Board Member Announcement",
             "enclosure_length": 0,

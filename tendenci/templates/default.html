@@ -41,20 +41,20 @@
                 {% block content %}
                     {# Main content goes here #}
                     <div class="jumbotron">
-                        <h1>{% trans "Welcome to your Tendenci 6-powered site!" %}</h1>
+                        <h1>{% trans "Welcome to your Tendenci powered site!" %}</h1>
                     </div>
                 {% endblock %}
             </div>
 
             <div class="{% block sidebar_classes %}col-xs-12 col-sm-4 col-md-4 col-lg-3{% endblock %}">
                 {% block sidebar %}
-                    {# Panel or sidebar gose here #}
+                    {# Panel or sidebar goes here #}
 
-                    <h1 class="text-capitalize">{% trans "Interior page" %}</h1>
+                    <h2 class="text-capitalize">{% trans "Interior page" %}</h2>
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h1 class="panel-title">{% trans "Search" %}</h1>
+                            <h2 class="panel-title">{% trans "Search" %}</h2>
                         </div>
 
                         <div class="panel-body">
@@ -70,12 +70,12 @@
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h1 class="panel-title text-capitalize">{% trans "What is schipul doing..." %}</h1>
+                            <h2 class="panel-title text-capitalize">{% trans "What is schipul doing..." %}</h2>
                         </div>
 
                         <div class="panel-body">
                             {% cache 86400 schipul_rss %}
-                            {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
+                            {% get_rss "https://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
                                 <ul class="list-unstyled">
                                     {% for entry in rss.entries|slice:":3" %}
                                         <li>{% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}</li>
@@ -87,7 +87,7 @@
 
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h1 class="panel-title">{% trans "Meta" %}</h1>
+                            <h2 class="panel-title">{% trans "Meta" %}</h2>
                         </div>
 
                         <div class="panel-body">

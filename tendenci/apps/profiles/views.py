@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.db.models import Count, Q, get_app
+from django.db.models import Count, Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
@@ -23,6 +23,8 @@ from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
 import simplejson
+
+from tendenci.libs.utils import python_executable
 
 from tendenci.apps.base.decorators import ssl_required, password_required
 from tendenci.apps.base.utils import get_pagination_page_range
@@ -37,10 +39,6 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.exports.utils import render_csv
 
-# for avatar
-from avatar.models import Avatar, avatar_file_path
-from avatar.forms import PrimaryAvatarForm
-
 # for group memberships
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.user_groups.forms import GroupMembershipEditForm
@@ -48,14 +46,16 @@ from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
-UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm)
+UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm,
+ActivateForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
+from tendenci.apps.memberships.forms import EducationForm
 from tendenci.apps.invoices.models import Invoice
 
 try:
-    notification = get_app('notifications')
+    from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
 
@@ -119,7 +119,19 @@ def index(request, username='', template_name="profiles/index.html"):
             status=True) & user_this.membershipdefault_set.filter(
                 active_qs | expired_qs)
 
-    registrations = Registrant.objects.filter(user=user_this)
+    auto_renew_is_set = False
+    can_auto_renew = False
+    for m in memberships:
+        if m.can_auto_renew():
+            can_auto_renew = True
+            break
+    if can_auto_renew:
+        if user_this.recurring_payments.filter(status=True, 
+                                                 status_detail='active',
+                                                 object_content_type__model='membershipdefault').exists():
+            auto_renew_is_set = True
+        
+    registrations = Registrant.objects.filter(user=user_this, registration__event__end_dt__gte=datetime.now())
 
     EventLog.objects.log(instance=profile)
 
@@ -133,6 +145,8 @@ def index(request, username='', template_name="profiles/index.html"):
         can_edit = request.user == user_this
 
     multiple_apps = False
+    membership_reminders = ()
+
     if get_setting('module', 'memberships', 'enabled'):
         from tendenci.apps.memberships.models import MembershipApp
         membership_apps = MembershipApp.objects.filter(
@@ -143,12 +157,11 @@ def index(request, username='', template_name="profiles/index.html"):
                                          ).order_by('name')
         if len(membership_apps) > 1:
             multiple_apps = True
+
+        if request.user == user_this or request.user.profile.is_superuser:
+            membership_reminders = get_member_reminders(user_this, view_self=request.user == user_this)
     else:
         membership_apps = None
-
-    membership_reminders = ()
-    if request.user == user_this:
-        membership_reminders = get_member_reminders(user_this)
 
     return render_to_response(template_name, {
         'can_edit': can_edit,
@@ -164,13 +177,16 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,
         'membership_reminders': membership_reminders,
+        'can_auto_renew': can_auto_renew,
+        'auto_renew_is_set': auto_renew_is_set,
         }, context_instance=RequestContext(request))
 
 
-def search(request, template_name="profiles/search.html"):
+def search(request, memberships_search=False, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
+    allow_member_search = get_setting('module', 'users', 'allowmembersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if not request.user.profile.is_superuser:
@@ -186,7 +202,8 @@ def search(request, template_name="profiles/search.html"):
             if request.user.profile.is_member:  # if member
                 if membership_view_perms == 'private':
                     if not allow_user_search:
-                        raise Http403
+                        if not allow_member_search:
+                            raise Http403
             else:  # if just user
                 if not allow_user_search:
                     raise Http403
@@ -221,7 +238,7 @@ def search(request, template_name="profiles/search.html"):
 
     show_member_option = mts
 
-    form = ProfileSearchForm(request.GET, mts=mts)
+    form = ProfileSearchForm(request.GET, mts=mts, user=request.user)
     if form.is_valid():
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
@@ -231,6 +248,9 @@ def search(request, template_name="profiles/search.html"):
         search_method = form.cleaned_data['search_method']
         membership_type = form.cleaned_data.get('membership_type', None)
         member_only = form.cleaned_data.get('member_only', False)
+        group = form.cleaned_data.get('group', False)
+        if group:
+            group = int(group)
     else:
         first_name = None
         last_name = None
@@ -240,13 +260,20 @@ def search(request, template_name="profiles/search.html"):
         search_method = None
         membership_type = None
         member_only = False
+        group = False
 
     profiles = Profile.objects.filter(Q(status=True))
+    if memberships_search:
+        # this is memberships search, so only show those with member number
+        profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
-        if request.user.is_authenticated() and request.user.profile.is_member:            
-            filters = get_query_filters(request.user, 'profiles.view_profile')
-        
+        if request.user.is_authenticated() and request.user.profile.is_member:
+            if allow_member_search:
+                filters = (Q(status=True) & Q(status_detail='active'))
+            else:
+                filters = get_query_filters(request.user, 'profiles.view_profile')
+
             if membership_view_perms == 'private':
                 # show non-members only
                 profiles = profiles.filter(member_number='')  # exclude all members
@@ -264,15 +291,20 @@ def search(request, template_name="profiles/search.html"):
                                                                   status_detail='active'
                                                 ).values_list('user_id'))
                 profiles = profiles.filter(filters)
-    
-            if not allow_user_search:
+
+            if not allow_user_search and not allow_member_search:
                 # exclude non-members
                 profiles = profiles.exclude(member_number='')
-    
+
         else: # non-member
             if membership_view_perms != 'public':
                 # show non-members only
-                profiles = profiles.filter(member_number='')           
+                profiles = profiles.filter(member_number='')
+                
+    # group
+    if group:
+        profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
+                                    group__id=group).values_list('member', flat=True))
 
     profiles = profiles.distinct()
 
@@ -306,7 +338,7 @@ def search(request, template_name="profiles/search.html"):
             profiles = profiles.exclude(hide_in_search=True)
 
     if membership_type:
-        profiles = profiles.filter(
+        profiles = profiles.filter(user__membershipdefault__status_detail='active',
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
@@ -316,7 +348,8 @@ def search(request, template_name="profiles/search.html"):
             'profiles': profiles,
             'user_this': None,
             'search_form': form,
-            'show_member_option': show_member_option},
+            'show_member_option': show_member_option,
+            'memberships_search': memberships_search},
         context_instance=RequestContext(request))
 
 
@@ -455,7 +488,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                     # remove them from auth_group if any
                     user_edit.groups = []
 
-
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False
 
@@ -513,8 +545,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
         context_instance=RequestContext(request))
 
 
-
-
 def delete(request, id, template_name="profiles/delete.html"):
     user = get_object_or_404(User, pk=id)
     try:
@@ -541,7 +571,6 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-
 
         return HttpResponseRedirect(reverse('profile.search'))
 
@@ -597,70 +626,6 @@ def _get_next(request):
         next = request.path
     return next
 
-@login_required
-def change_avatar(request, id, extra_context={}, next_override=None):
-    user_edit = get_object_or_404(User, pk=id)
-    try:
-        profile = Profile.objects.get(user=user_edit)
-    except Profile.DoesNotExist:
-        profile = Profile.objects.create_profile(user=user_edit)
-
-    #if not has_perm(request.user,'profiles.change_profile',profile): raise Http403
-    if not profile.allow_edit_by(request.user): raise Http403
-
-    avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
-    if avatars.count() > 0:
-        avatar = avatars[0]
-        kwargs = {'initial': {'choice': avatar.id}}
-    else:
-        avatar = None
-        kwargs = {}
-    primary_avatar_form = PrimaryAvatarForm(request.POST or None, user=user_edit, **kwargs)
-    if request.method == "POST":
-        updated = False
-        if 'avatar' in request.FILES:
-            path = avatar_file_path(user=user_edit,
-                filename=request.FILES['avatar'].name)
-            avatar = Avatar(
-                user = user_edit,
-                primary = True,
-                avatar = path,
-            )
-            new_file = avatar.avatar.storage.save(path, request.FILES['avatar'])
-            avatar.save()
-            updated = True
-
-            messages.add_message(
-                request, messages.SUCCESS, _("Successfully uploaded a new avatar."))
-
-        if 'choice' in request.POST and primary_avatar_form.is_valid():
-            avatar = Avatar.objects.get(id=
-                primary_avatar_form.cleaned_data['choice'])
-            avatar.primary = True
-            avatar.save()
-            updated = True
-
-            messages.add_message(
-                request, messages.SUCCESS, _("Successfully updated your avatar."))
-
-        if updated and notification:
-            notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
-            #if friends:
-            #    notification.send((x['friend'] for x in Friendship.objects.friends_for_user(user_edit)), "avatar_friend_updated", {"user": user_edit, "avatar": avatar})
-        return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
-        #return HttpResponseRedirect(next_override or _get_next(request))
-    return render_to_response(
-        'profiles/change_avatar.html',
-        extra_context,
-        context_instance = RequestContext(
-            request,
-            {'user_this': user_edit,
-              'avatar': avatar,
-              'avatars': avatars,
-              'primary_avatar_form': primary_avatar_form,
-              'next': next_override or _get_next(request), }
-        )
-    )
 
 @ssl_required
 @csrf_protect
@@ -693,7 +658,6 @@ def password_change(request, id, template_name='registration/custom_password_cha
 def password_change_done(request, id, template_name='registration/custom_password_change_done.html'):
     user_edit = get_object_or_404(User, pk=id)
     return render_to_response(template_name, {'user_this': user_edit}, context_instance=RequestContext(request))
-
 
 
 ### REPORTS ###########################################################################
@@ -1005,6 +969,32 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
 
 
 @login_required
+def user_education_edit(request, username, form_class=EducationForm, template_name="profiles/edit_education.html"):
+    user = get_object_or_404(User, username=username)
+
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+
+    form = form_class(None, request.POST or None, user=user)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(user)
+            messages.add_message(request, messages.SUCCESS, _('Successfully edited education for %(full_name)s' % { 'full_name' : user.get_full_name()}))
+            return HttpResponseRedirect("%s" % (reverse('profile', args=[user.username])))
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'user_this': user,
+                            }, context_instance=RequestContext(request))
+
+
+@login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     if not request.user.profile.is_superuser:
         raise Http403
@@ -1134,7 +1124,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         raise Http403
 
     sid = str(sid)
-    if not request.session.has_key(sid):
+    if sid not in request.session:
         return redirect("profile.similar")
 
     users_ids = (request.session[sid]).get('users', [])
@@ -1155,99 +1145,124 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
             master = form.cleaned_data["master_record"]
             users = form.cleaned_data['user_list']
 
+            master_user = master.user
+
             if master and users:
                 # get description for event log before users get deleted
                 description = 'Master user: %s, merged user(s): %s.' % (
-                                '%s %s (%s)(id=%d)' % (master.user.first_name,
-                                               master.user.last_name,
-                                               master.user.username,
-                                               master.user.id),
+                                '%s %s (%s)(id=%d)' % (master_user.first_name,
+                                               master_user.last_name,
+                                               master_user.username,
+                                               master_user.id),
                                 ', '.join(['%s %s (%s)(id=%d)' % (
-                                profile.user.first_name,
-                                profile.user.last_name,
-                                profile.user.username,
-                                profile.user.id
-                                ) for profile in users if profile != master]))
-        
-                related = master.user._meta.get_all_related_objects()
-                field_names = master._meta.get_all_field_names()
-        
+                                user_profile.user.first_name,
+                                user_profile.user.last_name,
+                                user_profile.user.username,
+                                user_profile.user.id
+                                ) for user_profile in users if user_profile != master]))
+
+                related = master_user._meta.get_fields()
+                field_names = [field.name for field in master._meta.get_fields()]
+
                 valnames = dict()
                 for r in related:
-                    if not r.model is Profile:
-                        valnames.setdefault(r.model, []).append(r.field)
-        
+                    if r.related_model is not Profile:
+                        if not r.related_model:
+                            continue
+                        valnames.setdefault(r.related_model, []).append(r)
+
                 for profile in users:
+                    user_to_delete = profile.user
                     if profile != master:
                         for field in field_names:
                             if getattr(master, field) == '':
                                 setattr(master, field, getattr(profile, field))
-        
+
                         for model, fields in valnames.iteritems():
-        
+                            # skip auth_user
+                            if model is User:
+                                continue
+
                             for field in fields:
-                                if not isinstance(field, models.OneToOneField):
-                                    objs = model.objects.filter(**{field.name: profile.user})
-        
+                                if isinstance(field, models.ManyToManyField):
+                                    # handle ManyToMany
+                                    items = eval('user_to_delete.%s.all()' % field.name)
+                                    if items:
+                                        for item in items:
+                                            # add to master_user
+                                            eval('master_user.%s.add(item)' % field.name)
+                                        # clear from user_to_delete
+                                        eval('user_to_delete.%s.clear()' % field.name)
+                                    continue
+
+                                field_name = field.field.name
+                                if not isinstance(field, models.OneToOneField) and not isinstance(field, models.OneToOneRel):
+                                    objs = model.objects.filter(**{field_name: user_to_delete})
+
                                     # handle unique_together fields. for example, GroupMembership
                                     # unique_together = ('group', 'member',)
                                     [unique_together] = model._meta.unique_together[:1] or [None]
-                                    if unique_together and field.name in unique_together:
+                                    if unique_together and field_name in unique_together:
                                         for obj in objs:
-                                            field_values = [getattr(obj, field_name) for field_name in unique_together]
+                                            field_values = [getattr(obj, fieldname) for fieldname in unique_together]
                                             field_dict = dict(zip(unique_together, field_values))
                                             # switch to master user
-                                            field_dict[field.name] = master.user
+                                            field_dict[field_name] = master_user
                                             # check if the master record exists
                                             if model.objects.filter(**field_dict).exists():
-                                                obj.delete()
+                                                if hasattr(obj, 'hard_delete'):
+                                                    obj.hard_delete()
+                                                else:
+                                                    obj.delete()
                                             else:
-                                                setattr(obj, field.name, master.user)
+                                                setattr(obj, field_name, master_user)
                                                 obj.save()
                                     else:
                                         if objs.exists():
                                             try:
-                                                objs.update(**{field.name: master.user})
+                                                objs.update(**{field_name: master_user})
                                             except Exception:
                                                 connection._rollback()
                                 else:  # OneToOne
-                                    [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
+                                    [obj] = model.objects.filter(**{field_name: user_to_delete})[:1] or [None]
                                     if obj:
-                                        [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
+                                        [master_obj] = model.objects.filter(**{field_name: master_user})[:1] or [None]
                                         if not master_obj:
-                                            setattr(obj, field.name, master.user)
+                                            setattr(obj, field_name, master_user)
                                             obj.save()
                                         else:
-                                            obj_fields = master_obj._meta.get_all_field_names()
+                                            obj_fields = [field.name for field in master_obj._meta.get_fields()]
                                             updated = False
                                             for fld in obj_fields:
                                                 master_val = getattr(master_obj, fld)
                                                 if master_val == '' or master_val is None:
                                                     val = getattr(obj, fld)
-                                                    if val != '' and not val is None:
+                                                    if val != '' and val is not None:
                                                         setattr(master_obj, fld, val)
                                                         updated = True
                                             if updated:
                                                 master_obj.save()
                                             # delete obj
-                                            obj.delete()
-        
+                                            if hasattr(obj, 'hard_delete'):
+                                                obj.hard_delete()
+                                            else:
+                                                obj.delete()
+
                         master.save()
-                        profile.user.delete()
                         profile.delete()
-        
+                        user_to_delete.delete()
+
                 # log an event
                 EventLog.objects.log(description=description[:120])
                 #invalidate('profiles_profile')
                 messages.add_message(request, messages.SUCCESS, _('Successfully merged users. %(desc)s' % { 'desc': description}))
-        
+
             return redirect("profile.search")
 
     return render_to_response(template_name, {
         'form': form,
         'profiles': profiles,
     }, context_instance=RequestContext(request))
-
 
 
 @login_required
@@ -1266,7 +1281,7 @@ def profile_export(request, template_name="profiles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "profile_export_process",
                           '--export_fields=%s' % export_fields,
                           '--identifier=%s' % identifier,
@@ -1314,7 +1329,7 @@ def profile_export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=profiles_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="profiles_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
 
@@ -1441,7 +1456,7 @@ def user_import_preview(request, uimport_id, template_name='profiles/import/prev
                                      args=[uimport.id]))
         else:
             if uimport.status == 'not_started':
-                subprocess.Popen(["python", "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "users_import_preprocess",
                               str(uimport.pk)])
 
@@ -1466,7 +1481,7 @@ def user_import_process(request, uimport_id):
         uimport.num_processed = 0
         uimport.save()
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "import_users",
                           str(uimport.pk),
                           str(request.user.pk)])
@@ -1515,7 +1530,7 @@ def user_import_download_recap(request, uimport_id):
     if default_storage.exists(recap_path):
         response = HttpResponse(default_storage.open(recap_path).read(),
                                 content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
     else:
         raise Http404
@@ -1586,3 +1601,39 @@ def download_user_template(request):
     return render_csv(filename, title_list,
                         data_row_list)
 
+
+def activate_email(request):
+    """
+    Send an activation email to user to activate an inactive user account for a given an email address.
+    Optional parameter: username
+    """
+    from tendenci.apps.registration.models import RegistrationProfile
+    from tendenci.apps.accounts.utils import send_registration_activation_email
+    form = ActivateForm(request.GET)
+
+    if form.is_valid():
+        email = form.cleaned_data['email']
+        username = form.cleaned_data['username']
+        u = None
+        if email and username:
+            [u] = User.objects.filter(is_active=False, email=email, username=username)[:1] or [None]
+
+        if email and not u:
+            [u] = User.objects.filter(is_active=False, email=email).order_by('-is_active')[:1] or [None]
+
+        if u:
+            [rprofile] = RegistrationProfile.objects.filter(user=u)[:1] or [None]
+            if rprofile and rprofile.activation_key_expired():
+                rprofile.delete()
+                rprofile = None
+            if not rprofile:
+                rprofile = RegistrationProfile.objects.create_profile(u)
+            # send email
+            send_registration_activation_email(u, rprofile, next=request.GET.get('next', ''))
+            context = RequestContext(request)
+            template_name = "profiles/activate_email.html"
+            return render_to_response(template_name,
+                              { 'email': email},
+                              context_instance=context)
+
+    raise Http404

@@ -1,6 +1,16 @@
 {% load i18n %}
 
-<form class="search-form" action="{% url 'studygroups.search' %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="{% trans 'Search' %}" />
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="form-inline" action="{% url 'studygroups.search' %}" method="get" role="search">
+  <div class="form-group">
+    <div class="input-group">
+      <input type="text" class="form-control" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
+    </div>
+  <button class="btn btn-default" type="submit">
+    <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
+  </button>
+
+ </div>
+
 </form>
+{% endif %}

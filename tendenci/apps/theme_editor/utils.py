@@ -9,6 +9,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
 
 from tendenci.apps.theme.utils import get_theme_root, get_theme
@@ -31,6 +32,7 @@ ALLOWED_EXTENSIONS = (
     '.eot',
     '.ttf',
     '.woff',
+    '.woff2',
     '.svg',
 )
 
@@ -81,7 +83,7 @@ app_templates = {}
 for app in settings.INSTALLED_APPS:
     try:
         mod = import_module(app)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
     template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
     if os.path.isdir(template_dir):
@@ -181,28 +183,26 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
 
     start = root_dir.rfind(os.sep) + 1
     for path, dirs, files in os.walk(root_dir):
-        subdir = {'contents': []}
         folders = path[start:].split(os.sep)
+
+        # Hide hidden folders and folders within hidden folders
+        if any(folder.startswith('.') for folder in folders):
+            continue
+
+        subdir = {'contents': []}
         for f in files:
             editable = False
             if os.path.splitext(os.path.join(path, f))[1] in ALLOWED_EXTENSIONS:
                 editable = True
 
-            # Hide hidden folders
+            # Hide hidden files
             if not f.startswith('.'):
                 subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
 
         subdir['contents'] = sorted(subdir['contents'], key=itemgetter('name'))
+        subdir['contents'].append({'folder_path': path})
         parent = reduce(dict.get, folders[:-1], files_folders)
-
-        # Hide hidden folders
-        if not folders[-1].startswith('.'):
-            parent[folders[-1]] = subdir
-
-        for parent in files_folders:
-            # Hide hidden folders
-            if not path.split(os.sep)[-1].startswith('.'):
-                subdir['contents'].append({'folder_path': path})
+        parent[folders[-1]] = subdir
 
     if settings.USE_S3_THEME:
         s3_files_folders = {'contents': []}
@@ -305,18 +305,16 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
         archive.save()
 
 
-def handle_uploaded_file(f, file_dir):
-    filecopy = os.path.join(THEME_ROOT, file_dir, f.name)
-    file_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
+def handle_uploaded_file(file_path, file_dir):
+    file_name = os.path.basename(file_path)
+    filecopy = os.path.join(THEME_ROOT, file_dir, file_name)
+    dest_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
 
-    destination = open(file_path, 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
+    shutil.move(file_path, dest_path)
 
     # copy to s3
     if settings.USE_S3_THEME:
-        if os.path.splitext(f.name)[1] == '.html':
+        if os.path.splitext(file_name)[1] == '.html':
             public = False
         else:
             public = True

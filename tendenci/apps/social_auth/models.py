@@ -28,7 +28,7 @@ if getattr(settings, 'SOCIAL_AUTH_USER_MODEL', None):
               [name for name in RECOMMENDED_METHODS
                       if not callable(getattr(User, name, None))]
     if missing:
-        warnings.warn('Missing recommended attributes or methods '\
+        warnings.warn('Missing recommended attributes or methods '
                       'in custom User model: "%s"' % ', '.join(missing))
 else:
     from django.contrib.auth.models import User

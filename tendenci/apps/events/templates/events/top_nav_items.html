@@ -24,7 +24,7 @@
     <li>
         <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All Events" %}</span>
@@ -44,6 +44,14 @@
                             <a href="{% url 'event.search' %}">{% trans "Event List" %}</a>
                         </span>
                     </li>
+
+                     {% if can_add_event %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.add' %}">{% trans "Add an Event" %}</a>
+                            </span>
+                        </li>
+                    {% else %}
 
                     {% if request.user.is_superuser %}
                         <li class="content-item">
@@ -73,13 +81,7 @@
                         </li>
                     {% endif %}
 
-                    {% if can_add_event %}
-                        <li class="content-item">
-                            <span class="app-name">
-                                <a href="{% url 'event.add' %}">{% trans "Add an Event" %}</a>
-                            </span>
-                        </li>
-                    {% else %}
+
                         {% if can_request_event %}
                             <li class="content-item">
                                 <span class="app-name">
@@ -107,7 +109,7 @@
 
                     <li class="content-item">
                         <span class="app-name">
-                            <a href="{% url 'event.ics' %}" id="event_export_link">{% trans "Events ICS" %}</a>
+                            <a href="{% url 'event.ics' %}">{% trans "Events ICS" %}</a>
                         </span>
                     </li>
 
@@ -139,7 +141,7 @@
                 </ul>
 
                 {% if app_object %}
-                    <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                         <li>
                             <span class="content-head text-content-head">{% trans "This Event" %}</span>
                         </li>

@@ -1,57 +1,52 @@
 .. Tendenci documentation master file, created by
    sphinx-quickstart on Thu Apr  5 08:47:04 2012.
 
-Welcome to Tendenci's documentation!
-====================================
+.. image:: img/tendencidocs.png
 
-Tendenci is a content management system (CMS) designed for organizations with powerful features for event registration, membership management, and email communication.
+Tendenci - The Open Source Association Management System (AMS)
+==============================================================
+
+Tendenci is a association management system (AMS) designed for organizations with powerful features for event registration, membership management, and email communication.
 
 Tendenci allows membership management organizations to communicate, manage and conduct transactions with website visitors. Tendenci is easy to use and offers many modules as one customizable software package.
 
-Setup and Installation
-----------------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :caption: Setup and Installation
 
    installation/*
 
 
-Upgrade
-----------------------
-
 .. toctree::
    :maxdepth: 1
    :glob:
+   :caption: Upgrade
 
    upgrade/*
 
-Testing
-----------------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :caption: Testing
 
    testing/*
 
-Topic Guides
-------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
+   :caption: Topic Guides
 
    topic-guides/*
 
 
-Templating
-----------
-
 .. toctree::
    :maxdepth: 1
    :glob:
+   :caption: Templating
 
    templating/*
 
@@ -77,7 +72,7 @@ Templating
 
 
 .. Trouble Shooting
-.. ----------
+.. ----------------
 
 .. .. toctree::
 ..    :maxdepth: 1

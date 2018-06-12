@@ -1,3 +1,4 @@
+from __future__ import print_function
 from optparse import make_option
 import os
 import zipfile
@@ -5,6 +6,8 @@ import zipfile
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
+
+from tendenci.libs.utils import python_executable
 
 
 class Command(BaseCommand):
@@ -33,14 +36,14 @@ class Command(BaseCommand):
 
         addon_zip.extractall(settings.SITE_ADDONS_PATH)
 
-        print "Updating tendenci site"
-        os.system('python manage.py syncdb --noinput')
-        os.system('python manage.py migrate %s --noinput' % addon_name)
-        os.system('python manage.py update_settings %s' % addon_name)
-        os.system('python manage.py collectstatic --noinput')
+        print('Updating tendenci site')
+        os.system('"%s" manage.py syncdb --noinput' % (python_executable()))
+        os.system('"%s" manage.py migrate %s --noinput' % (python_executable(), addon_name))
+        os.system('"%s" manage.py update_settings %s' % (python_executable(), addon_name))
+        os.system('"%s" manage.py collectstatic --noinput' % (python_executable()))
 
-        print "Restarting Server"
-        os.system('sudo reload %s' % os.path.basename(settings.PROJECT_ROOT))
+        print('Restarting Server')
+        os.system('sudo reload "%s"' % os.path.basename(settings.PROJECT_ROOT))
 
-        print 'Deleting zip file'
+        print('Deleting zip file')
         default_storage.delete(path)

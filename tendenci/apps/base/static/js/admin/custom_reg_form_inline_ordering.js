@@ -1,9 +1,9 @@
 jQuery(function($) {
-    $("div.inline-group").sortable({ 
+    $("div.inline-group").sortable({
         axis: 'y',
-        placeholder: 'ui-state-highlight', 
-        forcePlaceholderSize: 'true', 
-        items: '.row1, .row2', 
+        placeholder: 'ui-state-highlight',
+        forcePlaceholderSize: 'true',
+        items: '.row1, .row2',
         update: update
     });
     //$("div.inline-group").disableSelection();
@@ -22,7 +22,7 @@ jQuery(document).ready(function($){
 	$('div.inline-related tr').css('cursor','move');
 	
     $('.add-row a').click(update);
-    
+
     $('#customregform_form').submit(function() {
         update();
     });

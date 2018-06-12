@@ -39,19 +39,19 @@ class Meta(models.Model):
 
         # check if attribute exists; else raise exception
         if not hasattr(self.object, 'get_meta'):
-            raise AttributeError, 'Method get_meta() does not exist in %s' % self.object._meta.object_name
+            raise AttributeError('Method get_meta() does not exist in %s' % self.object._meta.object_name)
 
         return getattr(self.object,'get_meta')(meta_name)
 
     def get_title(self):
         return self.__get_meta(self.title)
-    
+
     def get_keywords(self):
         return self.__get_meta(self.keywords)
-    
+
     def get_description(self):
         return self.__get_meta(self.description)
-    
+
     def get_canonical_url(self):
         return self.__get_meta(self.canonical_url)
 
@@ -62,8 +62,3 @@ class Meta(models.Model):
         """
         for field in ('keywords','title','description', 'canonical_url'):
             setattr(self,'get_%s' % field, curry(self.__get_meta, field))
-
-
-
-
-

@@ -32,7 +32,7 @@
                     </p>
                 {% endif %}
             </div>
-            
+
             <div class="form-group{% if form.search_method.errors %} has-error{% endif %}">
                 {{ form.search_method }}
 
@@ -49,13 +49,13 @@
         </fieldset>
 
         <fieldset>
-            <div class="form-group{% if form.category.errors %} has-error{% endif %}">
-                {{ form.category }}
+            <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
+                {{ form.cat }}
 
-                {% if form.category.errors %}
+                {% if form.cat.errors %}
                     <p class="help-block">
                         <ul class="list-unstyled">
-                            {% for error in form.category.errors %}
+                            {% for error in form.cat.errors %}
                                 <li>{{ error }}</li>
                             {% endfor %}
                         </ul>
@@ -63,13 +63,13 @@
                 {% endif %}
             </div>
 
-            <div class="form-group{% if form.sub_category.errors %} has-error{% endif %}">
-                {{ form.sub_category }}
+            <div class="form-group{% if form.sub_cat.errors %} has-error{% endif %}">
+                {{ form.sub_cat }}
 
-                {% if form.sub_category.errors %}
+                {% if form.sub_cat.errors %}
                     <p class="help-block">
                         <ul class="list-unstyled">
-                            {% for error in form.sub_category.errors %}
+                            {% for error in form.sub_cat.errors %}
                                 <li>{{ error }}</li>
                             {% endfor %}
                         </ul>

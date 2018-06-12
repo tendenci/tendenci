@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.cache import cache
 from django.conf import settings
 
@@ -31,7 +32,7 @@ def generate_colors():
                     color = app['event_logs'][model][event][1]
                     d[log_id] = color
     return d
-    
+
 def generate_base_colors():
     """Crete the event id to color dict for event logs that
     are not associated with any model or registry.
@@ -47,9 +48,7 @@ def generate_base_colors():
 def cache_colors(colors):
     keys = [settings.CACHE_PRE_KEY, 'event_log_colors']
     key = '.'.join(keys)
-    is_set = cache.add(key, colors)
-    if not is_set:
-        cache.set(key, colors)
+    cache.set(key, colors)
 
 def get_color(event_id):
     """Gets the hex color of an event log based on the event id
@@ -64,7 +63,7 @@ def get_color(event_id):
         cache_colors(colors)
 
     if event_id in colors:
-        print event_id
+        print(event_id)
         return colors[event_id]
     else:
         return '17ABB9'

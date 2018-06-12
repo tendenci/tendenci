@@ -28,8 +28,9 @@
 {% endblock %}
 
 {% block extra_body %}
-<script type="text/javascript">
+
 {{ block.super }}
+
 <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){

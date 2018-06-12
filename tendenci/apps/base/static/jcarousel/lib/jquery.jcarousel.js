@@ -177,7 +177,7 @@
 
         this.funcNext   = function() { self.next(); };
         this.funcPrev   = function() { self.prev(); };
-        this.funcResize = function() { 
+        this.funcResize = function() {
             if (self.resizeTimer) {
                 clearTimeout(self.resizeTimer);
             }

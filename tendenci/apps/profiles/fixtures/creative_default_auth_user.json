@@ -1,0 +1,16 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "system_generated",
+            "first_name": "",
+            "last_name": "",
+            "is_active": false,
+            "is_superuser": false,
+            "is_staff": false,
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

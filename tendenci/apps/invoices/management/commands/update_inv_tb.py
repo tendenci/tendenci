@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
@@ -17,7 +18,7 @@ class Command(BaseCommand):
         # add the object_type field
         cursor.execute("ALTER TABLE invoices_invoice ADD object_type_id int AFTER guid")
         transaction.commit_unless_managed()
-        print "Field object_type_id - Added"
+        print("Field object_type_id - Added")
 
         # assign content type to object_type based on the invoice_object_type
         try:
@@ -85,17 +86,17 @@ class Command(BaseCommand):
                                 OR invoice_object_type='corporatememberships')  """,  [ct_corp_memb.id])
             transaction.commit_unless_managed()
 
-        print "Field object_type_id - Populated"
+        print("Field object_type_id - Populated")
 
         # drop field invoice_object_type
         cursor.execute("ALTER TABLE invoices_invoice DROP invoice_object_type")
         transaction.commit_unless_managed()
 
-        print "Field invoice_object_type - Dropped"
+        print("Field invoice_object_type - Dropped")
 
         # rename invoice_object_type_id to object_id
         cursor.execute("ALTER TABLE invoices_invoice CHANGE invoice_object_type_id object_id int")
         transaction.commit_unless_managed()
-        print "Renamed invoice_object_type to object_id"
+        print("Renamed invoice_object_type to object_id")
 
-        print "done"
+        print("done")

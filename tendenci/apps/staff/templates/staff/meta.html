@@ -19,11 +19,11 @@
             {% endif %}
         {% endif %}
     </div>
-    
-    <div class="meta-right">
+
+   <!-- <div class="meta-right">
         <a class="share-link" >{% trans "Share" %}</a>
-    </div>
-    
+    </div>-->
+
 </div>
 {% if user.profile.is_superuser %}
 <nav class="navbar navbar-default t-meta-editor-bar">
@@ -33,7 +33,7 @@
             <li>{{ staff.obj_perms }}</li>
             <li>{{ staff.obj_status }}</li>
         </ul>
-    
+
 
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
         <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?object_id={{ staff.pk }}&source={{ staff.opt_app_label }}">{% trans "Eventlogs" %}</a></li>

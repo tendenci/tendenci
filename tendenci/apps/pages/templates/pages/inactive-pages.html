@@ -9,11 +9,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
 {% block content %}
-
 <div class="t">
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Pages' %} {% trans "Archive" %}</h1>
 

@@ -23,7 +23,7 @@ def index(request, template_name="help_files/index.html"):
     """List all topics and all links"""
     topic_pks = []
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
-    
+
     topics = Topic.objects.filter(id__in=HelpFile.objects.values_list('topics')).order_by('title')
     m = len(topics) / 2
     topics = topics[:m], topics[m:] # two columns

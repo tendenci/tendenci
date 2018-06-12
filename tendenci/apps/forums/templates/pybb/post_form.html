@@ -1,4 +1,3 @@
-{% load url from future %}
 {% load i18n pybb_tags %}
 <div class="col-sm-9">
 <form class="post-form" action="
@@ -25,9 +24,8 @@
 
     {% if request.user|pybb_may_create_poll and form.poll_type %}
       {% include "pybb/poll_edit_form.html" %}
-    
     {% endif %}
-    {% include "pybb/attachments_formset.html" %}
+    <div>&nbsp;</div>
     <p class="submit">{% include "pybb/_button_submit.html" %}</p>
 </form>
 </div>

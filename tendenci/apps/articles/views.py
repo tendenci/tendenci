@@ -18,6 +18,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
@@ -80,6 +81,8 @@ def search(request, template_name="articles/search.html"):
     filters = get_query_filters(request.user, 'articles.view_article')
     articles = Article.objects.filter(filters).distinct()
     cat = None
+    category = None
+    sub_category = None
 
     if not request.user.is_anonymous():
         articles = articles.select_related()
@@ -107,6 +110,8 @@ def search(request, template_name="articles/search.html"):
 
     if form.is_valid():
         cat = form.cleaned_data['search_category']
+        category = form.cleaned_data['category']
+        sub_category = form.cleaned_data['sub_category']
         filter_date = form.cleaned_data['filter_date']
         date = form.cleaned_data['date']
 
@@ -125,25 +130,10 @@ def search(request, template_name="articles/search.html"):
             articles = articles.filter(Q(release_dt_local__lte=datetime.now()) | Q(owner=request.user) | Q(creator=request.user))
 
     # Query list of category and subcategory for dropdown filters
-    category = request.GET.get('category')
-    sub_cat = request.GET.get('sub_category')
-    try:
-        category = int(category)
-    except:
-        category = 0
-    categories, sub_categories = Article.objects.get_categories(category=category)
-
-    if category > 0:
-        cat_article_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Article), category_id=category, parent_id__isnull=True).values('object_id')
-        articles = articles.filter(id__in=[c['object_id'] for c in cat_article_ids])
-
-    if sub_cat:
-        try:
-            sub_cat = int(sub_cat)
-            subcat_article_ids = CategoryItem.objects.filter(content_type_id=ContentType.objects.get_for_model(Article), parent_id=sub_cat, category_id__isnull=True).values('object_id')
-            articles = articles.filter(id__in=[c['object_id'] for c in subcat_article_ids])
-        except Exception, e:
-            pass
+    if category:
+        articles = articles.filter(categories__category__name=category)
+    if sub_category:
+        articles = articles.filter(categories__parent__name=sub_category)
 
     # don't use order_by with "whoosh"
     default_engine = settings.HAYSTACK_CONNECTIONS.get('default', {}).get('ENGINE', '')
@@ -155,7 +145,7 @@ def search(request, template_name="articles/search.html"):
     EventLog.objects.log()
 
     return render_to_response(template_name, {'articles': articles,
-        'categories': categories, 'form' : form, 'sub_categories': sub_categories},
+        'form' : form,},
         context_instance=RequestContext(request))
 
 
@@ -225,7 +215,6 @@ def edit(request, id, form_class=ArticleForm,
             }
             categoryform = category_form_class(content_type,
                                            initial=initial_category_form_data,)
-
 
         return render_to_response(template_name, {'article': article,
                                                   'form': form,
@@ -310,7 +299,6 @@ def add(request, form_class=ArticleForm,
             }
             categoryform = category_form_class(content_type,
                                                initial=initial_category_form_data,)
-
 
         return render_to_response(template_name, {'form': form,
                                                   'categoryform': categoryform,},
@@ -404,7 +392,7 @@ def export(request, template_name="articles/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "articles_export_process",
                           '--identifier=%s' % identifier,
                           '--user=%s' % request.user.id])
@@ -450,6 +438,6 @@ def export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=articles_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="articles_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response

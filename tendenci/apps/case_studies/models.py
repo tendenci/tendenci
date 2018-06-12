@@ -20,7 +20,7 @@ class CaseStudy(TendenciBaseModel):
     execution = models.TextField(blank=True, null=True)
     results = models.TextField(blank=True, null=True)
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
-    
+
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -44,25 +44,25 @@ class CaseStudy(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.view", [self.slug])
-        
+
     def featured_screenshots(self):
         try:
             return self.image_set.filter(file_type='featured')
         except:
             return False
-    
+
     def screenshots(self):
         try:
             return self.image_set.filter(file_type='screenshot')
         except:
             return False
-            
+
     def other_images(self):
         try:
             return self.image_set.filter(file_type='other')
         except:
             return False
-            
+
     def homepage_images(self):
         try:
             return self.image_set.filter(file_type='homepage')
@@ -102,19 +102,28 @@ class Technology(models.Model):
     def get_absolute_url(self):
         return ("case_study.technology", [self.pk])
 
+
 class Image(File):
+
+    FILE_TYPE_FEATURED = 'featured'
+    FILE_TYPE_SCREENSHOT = 'screenshot'
+    FILE_TYPE_HOMEPAGE = 'homepage'
+    FILE_TYPE_OTHER = 'other'
+
+    FILE_TYPE_CHOICES = (
+        (FILE_TYPE_FEATURED, 'Featured Screenshot'),
+        (FILE_TYPE_SCREENSHOT, 'Screenshot'),
+        (FILE_TYPE_HOMEPAGE, 'Homepage Image'),
+        (FILE_TYPE_OTHER,'Other'),
+    )
+
     case_study = models.ForeignKey(CaseStudy)
     file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,
-        choices=(
-            ('featured','Featured Screenshot'),
-            ('screenshot','Screenshot'),
-            ('homepage', 'Homepage Image'),
-            ('other','Other'),
-        ),
-        default='other',
+        choices=FILE_TYPE_CHOICES,
+        default=FILE_TYPE_OTHER,
     )
     position = models.IntegerField(blank=True)
 

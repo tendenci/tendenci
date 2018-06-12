@@ -6,7 +6,7 @@
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
-{% load avatar_tags %}
+{% load profile_tags %}
 {% load i18n %}
 
 
@@ -82,7 +82,7 @@
                 {% for registrant in event.registrants %}
                 <div class="attendee">
                     <div class="image-wrap">
-                        {% avatar registrant.user 80 %}
+                        {% gravatar registrant.user 80 %}
                     </div>
                     <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
                 </div>
@@ -93,4 +93,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import tendenci.apps.user_groups.utils
-import tinymce.models
+import tendenci.libs.tinymce.models
 import django.db.models.deletion
 from django.conf import settings
 import tagging.fields
@@ -35,11 +35,11 @@ class Migration(migrations.Migration):
                 ('status_detail', models.CharField(default=b'active', max_length=50)),
                 ('position', models.IntegerField(default=0, null=True, verbose_name='Position', blank=True)),
                 ('title', models.CharField(max_length=500, blank=True)),
-                ('content', tinymce.models.HTMLField()),
+                ('content', tendenci.libs.tinymce.models.HTMLField()),
                 ('tags', tagging.fields.TagField(max_length=255, blank=True)),
                 ('creator', models.ForeignKey(related_name='boxes_box_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='boxes_box_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
-                ('group', models.ForeignKey(default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
+                ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
                 ('owner', models.ForeignKey(related_name='boxes_box_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={

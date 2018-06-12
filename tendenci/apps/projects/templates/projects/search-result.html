@@ -1,0 +1,27 @@
+{% load base_tags %}
+{% load file_tags %}
+{% load project_tags %}
+{% load i18n %}
+{% load base_filters %}
+
+<div class="wrap-search-item">
+   <div class="search-item projects-search-item">
+   		<h2><a href="{{ project.get_absolute_url }}">{{ project.project_name }}</a></h2>
+        <div class="project-inline">
+            {% for picture in project.projects_photo_related.all|slice:"1" %}
+                <div class="search-project-picture">
+                  <a href="{{ project.get_absolute_url }}"><img src="{% image_url picture size=200x200 crop=True %}"/></a>
+                </div>
+            {% endfor %}
+        </div>
+
+		{% if project.end_dt %}
+   		<div>{% trans 'Year Completed:' %} {{ project.end_dt }}</div>
+   		{% endif %}
+   		
+   		{% if project.project_description %}
+        <div class="project-description">{{ project.project_description|safe|truncatewords:18|safe }}</div>
+		{% endif %}
+    </div>
+   {% include "projects/meta.html" %}
+</div>

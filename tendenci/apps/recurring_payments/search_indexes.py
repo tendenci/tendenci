@@ -32,5 +32,3 @@ class RecurringPaymentIndex(CustomSearchIndex, indexes.Indexable):
 
     def index_queryset(self, using=None):
         return self.get_model()._default_manager.all().order_by('user')
-
-

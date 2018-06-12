@@ -4,14 +4,14 @@
             key: "id",
             value: "label"
         };
-        
+
         var settings = $.extend({}, defaults, options);
-        
+
         if (!(settings.target instanceof $)) settings.target = $(settings.target);
-        
+
         return this.each(function () {
             var $$ = $(this);
-            
+
             $$.change(function () {
                 var data = null;
                 if (typeof settings.data == 'string') {
@@ -22,9 +22,9 @@
                 } else {
                     data = this.name + '=' + $$.val();
                 }
-                
+
                 settings.target.empty();
-                
+
                 $.ajax({
                     url: settings.url,
                     data: data,

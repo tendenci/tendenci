@@ -3,7 +3,7 @@ from django import forms
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.case_studies.models import CaseStudy, Image
 # from tendenci.apps.files.models import File
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 class CaseStudyForm(TendenciBaseForm):
     overview = forms.CharField(required=False,
@@ -35,7 +35,7 @@ class CaseStudyForm(TendenciBaseForm):
             self.fields['results'].widget.mce_attrs['app_instance_id'] = 0
 
     class Meta:
-        model = CaseStudy 
+        model = CaseStudy
         fields = (
             'client',
             'slug',
@@ -62,5 +62,3 @@ class FileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(FileForm, self).__init__(*args, **kwargs)
-
-    

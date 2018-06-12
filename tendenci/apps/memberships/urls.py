@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, url, include
 from tendenci.apps.site_settings.utils import get_setting
 
+from tendenci.apps.profiles.views import search as profiles_search
+
 urlpath = get_setting('module', 'memberships', 'url')
 if not urlpath:
     urlpath = "memberships"
@@ -10,8 +12,10 @@ urlpatterns = patterns(
 
     # memberships
     url(r"^%s/$" % urlpath, "membership_index", name="membership.index"),
-    url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
+#     url(r"^%s/search/$" % urlpath, "membership_search", name="membership.search"),
     url(r"^%s/(?P<id>\d+)/$" % urlpath, "membership_details", name="membership.details"),
+    url(r"^%s/delete/(?P<id>\d+)/$" % urlpath, "delete", name="membership.delete"),
+    url(r"^%s/expire/(?P<id>\d+)/$" % urlpath, "expire", name="membership.expire"),
 
     # import to membership default
     url(r"^%s/import_default/$" % urlpath, "membership_default_import_upload",
@@ -108,12 +112,18 @@ urlpatterns = patterns(
     url(r"^%s/applications/(?P<id>\d+)/edit/$" % urlpath,
         "membership_default_edit",
         name="membership_default.edit"),
+                       
+    # auto-renew set up
+    url(r"^%s/auto_renew_setup/(?P<user_id>\d+)/$" % urlpath,
+        "memberships_auto_renew_setup",
+        name="memberships.auto_renew_setup"),
 
     url(r"^%s/applications/$" % urlpath, "membership_applications", name="membership-applications"),
     url(r"^%s/referer-url/$" % urlpath, "referer_url", name="membership-referer-url"),
 
     # reports
     url(r'^%s/reports/$' % urlpath, 'report_list', name='reports-memberships'),
+    url(r'^%s/reports/overview/$' % urlpath, 'memberships_overview', name='reports-memberships_overview'),
     url(r'^%s/reports/join_summary$' % urlpath, 'membership_join_report', name='reports-memberships-joins'),
     url(r'^%s/reports/pdf/$' % urlpath, 'membership_join_report_pdf', name='reports-memberships-joins-pdf'),
     url(r'^%s/reports/active_members/$' % urlpath, 'report_active_members', name='reports-active-members'),
@@ -129,6 +139,7 @@ urlpatterns = patterns(
     url(r'^%s/reports/renewed_members/$' % urlpath, 'report_renewed_members', name='reports-renewed-members'),
     url(r'^%s/reports/active_members_ytd/$' % urlpath, 'report_active_members_ytd', name='reports-active-members-ytd'),
     url(r'^%s/reports/members_ytd_type/$' % urlpath, 'report_members_ytd_type', name='reports-members-ytd-type'),
+    url(r'^%s/reports/members_donated/$' % urlpath, 'report_members_donated', name='reports-members-donated'),
 
      url(r"^%s/entries/search/$" % urlpath, "application_entries_search", name="membership.application_entries_search"),
 
@@ -142,3 +153,5 @@ urlpatterns = patterns(
      url(r"^%s/default-application/(?P<cmb_id>\d+)?/?$" % urlpath, "application_detail_default", name="membership.application_detail_default"),
 
 )
+
+urlpatterns += [url(r'^%s/search/$' % urlpath, profiles_search, {'memberships_search': True }, name="membership.search",),]

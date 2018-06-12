@@ -24,8 +24,8 @@ def file_directory(instance, filename):
 
 class Staff(OrderingBaseModel, TendenciBaseModel):
     name = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=75)
-    department = models.ForeignKey('Department', blank=True, null=True)
+    slug = models.SlugField(max_length=75, unique=True)
+    department = models.ForeignKey('Department', blank=True, null=True, on_delete=models.SET_NULL)
     positions = models.ManyToManyField('Position', blank=True)
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
@@ -38,7 +38,6 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         blank=True,
         help_text='List personal websites followed by a return')
 
-    
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 
     perms = GenericRelation(ObjectPermission,
@@ -77,7 +76,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         delta = datetime.now().date() - self.start_date
         years = abs(round((delta.days / (365.25)), 2))
         return years
-        
+
     def featured_photo(self):
         try:
             return self.stafffile_set.get(photo_type='Featured')
@@ -86,12 +85,17 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
 
 class Department(models.Model):
     name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True)
 
     class Meta:
         app_label = 'staff'
 
     def __unicode__(self):
         return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("staff.department_view", [self.slug])
 
 
 class Position(models.Model):
@@ -105,13 +109,20 @@ class Position(models.Model):
 
 
 class StaffFile(OrderingBaseModel, File):
+
+    PHOTO_TYPE_FEATURED = 'featured'
+    PHOTO_TYPE_OTHER = 'other'
+
+    PHOTO_TYPE_CHOICES = (
+        (PHOTO_TYPE_FEATURED,'Featured'),
+        (PHOTO_TYPE_OTHER, 'Other'),
+    )
+
     staff = models.ForeignKey(Staff)
     photo_type = models.CharField(
         max_length=50,
-        choices=(
-            ('featured','Featured'),
-            ('other','Other'),
-        ))
+        choices=PHOTO_TYPE_CHOICES
+        )
 
     objects = FileManager()
 
@@ -131,7 +142,7 @@ class StaffFile(OrderingBaseModel, File):
     class Meta:
         ordering = ('position',)
         app_label = 'staff'
-        
+
 def post_save_setting(sender, **kwargs):
     instance = kwargs.get('instance', None)
     if instance and instance.name=='staff_url':

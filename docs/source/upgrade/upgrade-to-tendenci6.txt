@@ -6,9 +6,9 @@ If you want to migrate your site from T5 to the latest version of tendenci T7, y
 1) Migrate from T5 to T6
 2) Migrate from T6 to T7
 
-In this guide, we'll show you how to migrate from T5 to T6. 
+In this guide, we'll show you how to migrate from T5 to T6.
 
-In general, to migrate your site from T5 to T6, you'd need to set up a T6 site, 
+In general, to migrate your site from T5 to T6, you'd need to set up a T6 site,
 update the theme to fit your needs, then move the database and media files from your
 T5 site to the new T6 site.
 
@@ -23,7 +23,7 @@ You might also need to look at this `guide`_ for information on server setup.
 
 .. _guide: https://github.com/tendenci/tendenci/blob/tendenci6/docs/source/installation/remote.txt
 
-Note: Please write down your T6's current theme name, you will need it in the last step. 
+Note: Please write down your T6's current theme name, you will need it in the last step.
 The current theme name can be found in the theme editor.
 
 
@@ -36,7 +36,7 @@ The current theme name can be found in the theme editor.
     tar -C <path-to-site>/media -czvf <site_name>_media.tar.gz .
 
 If your T5 and T6 sites are not on the same server, you'll need to move (with scp) the database dump and media .gz file
-to your T6 server. 
+to your T6 server.
 
 
 3. Restore database on your T6 site
@@ -45,7 +45,7 @@ If your T5 and T6 sites are on the same server, skip this step.
 ::
 
 	# create and restore database
-	sudo -u postgres psql 
+	sudo -u postgres psql
 	CREATE USER <db_user> WITH PASSWORD '<db_password>';
 	CREATE DATABASE <db_name> WITH OWNER <db_user>;
 	GRANT ALL PRIVILEGES ON DATABASE <db_name> TO <db_user>;
@@ -64,7 +64,7 @@ After that, update the `DATABASES` setting in the conf/local_settings.py.
 It can include but may not limit to the following:
 
   - SECRET_KEY
-  - SITE_SETTINGS_KEY 
+  - SITE_SETTINGS_KEY
   - AWS_ACCESS_KEY_ID
   - AWS_SECRET_ACCESS_KEY
   - DEFAULT_FROM_EMAIL
@@ -76,23 +76,21 @@ It can include but may not limit to the following:
 -------------------
 ::
 
-    # set alias dj for less typing.
-    alias dj="python manage.py"
-    dj clear_cache
-    dj syncdb
-    dj migrate
+    python manage.py clear_cache
+    python manage.py syncdb
+    python manage.py migrate
 
     # We had to run the following commands. But your mileage may vary.
-    dj migrate social_auth 0001 --fake
-    dj migrate wp_exporter 0001 --fake
-    dj migrate djcelery 0001 --fake
-    dj migrate --delete-ghost-migrations
-    dj migrate user_groups 0012 --fake
-    dj migrate social_auth 0001 --fake
-    dj migrate wp_exporter 0001 --fake
-    dj migrate djcelery 0001 --fake
-    dj migrate wp_importer 0001 --fake
-    dj migrate wp_importer 0001 --fake
+    python manage.py migrate social_auth 0001 --fake
+    python manage.py migrate wp_exporter 0001 --fake
+    python manage.py migrate djcelery 0001 --fake
+    python manage.py migrate --delete-ghost-migrations
+    python manage.py migrate user_groups 0012 --fake
+    python manage.py migrate social_auth 0001 --fake
+    python manage.py migrate wp_exporter 0001 --fake
+    python manage.py migrate djcelery 0001 --fake
+    python manage.py migrate wp_importer 0001 --fake
+    python manage.py migrate wp_importer 0001 --fake
 
 
 6. Run deploy.py
@@ -104,18 +102,18 @@ It can include but may not limit to the following:
 
 7. Set theme
 ------------
-Use the theme name you wrote down in step 1. 
+Use the theme name you wrote down in step 1.
 ::
 
-    dj set_theme <your current theme>
+    python manage.py set_theme <your current theme>
 
 
 8. Clear caches
 ----------------
 ::
 
-    dj clear_cache
-    dj clear_theme_cache
+    python manage.py clear_cache
+    python manage.py clear_theme_cache
 
 
 Sometimes things can be bumpy depending on your database's state. Stay cool and try to debug.
@@ -123,5 +121,10 @@ Seek help if you're not able to resolve yourself.
 
 Finally, restart your new T6 site.
 
+.. Note::
 
+    If you want to copy over the theme from your T5 site to T6/T7:
 
+    1) Make sure the theme is bootstrap 3 compatible.
+    2) Update templates to replace `{% block body %}` with `{% block content %}`.
+    3) Update templates to add quotes to the first argument of url tags. For example, if you have url tag `{% url admin:boxes_box_change box.pk %}`, it needs to be updated to `{% url 'admin:boxes_box_change' box.pk %}`.

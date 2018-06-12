@@ -26,7 +26,6 @@ def theme(request):
 
     contexts['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
 
-
     contexts['THEME_INFO'] = get_theme_info(theme)
 
     return contexts

@@ -3,7 +3,6 @@ from datetime import datetime, date, time
 from cStringIO import StringIO
 from PIL import Image
 import time as ttime
-import csv
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -12,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
@@ -62,9 +61,9 @@ def get_duration_choices(user):
 
 def get_payment_method_choices(user):
     if user.profile.is_superuser:
-        return (('paid - check', _('User paid by check')),
-                ('paid - cc', _('User paid by credit card')),
-                ('Credit Card', _('Make online payment NOW')),)
+        return (('paid - check', gettext('User paid by check')),
+                ('paid - cc', gettext('User paid by credit card')),
+                ('Credit Card', gettext('Make online payment NOW')),)
     else:
         directory_payment_types = get_setting('module', 'directories', 'directoriespaymenttypes')
         if directory_payment_types:
@@ -215,7 +214,7 @@ def process_export(export_fields='all_fields', export_status_detail='',
             if not field.__class__ == AutoField]
         field_list = [
             name for name in field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         field_list.remove('guid')
         # append base fields at the end
         field_list = field_list + base_field_list
@@ -225,7 +224,13 @@ def process_export(export_fields='all_fields', export_status_detail='',
 
     with default_storage.open(file_name_temp, 'wb') as csvfile:
         csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_list)
+        fields_names = list(field_list)
+        for i, item in enumerate(fields_names):
+            if item == 'headline':
+                fields_names[i] = 'name'
+            if item == 'body':
+                fields_names[i] = 'description'
+        csv_writer.writerow(fields_names)
 
         directories = Directory.objects.all()
         if export_status_detail:
@@ -286,4 +291,3 @@ def process_export(export_fields='all_fields', export_status_detail='',
             subject=subject,
             body=body)
         email.send()
-

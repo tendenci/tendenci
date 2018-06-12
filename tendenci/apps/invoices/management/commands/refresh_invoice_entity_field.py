@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -7,7 +8,7 @@ class Command(BaseCommand):
     and object_id.
 
     Usage:
-        .manage.py refresh_invoice_entity_field
+        python manage.py refresh_invoice_entity_field
     """
     def handle(self, *args, **options):
         from tendenci.apps.invoices.models import Invoice
@@ -19,4 +20,4 @@ class Command(BaseCommand):
             if entity != new_entity:
                 invoice.entity = new_entity
                 invoice.save()
-        print 'done'
+        print('done')

@@ -1,0 +1,10 @@
+<form class="search-form" action="{% url 'projects.search' %}" method="get">
+<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<select name="category">
+	<option value="">Choose a category</option>
+	{% for category in categories %}
+	<option value="{{ category.id }}" {% if request.GET.category|add:"0" == category.id %}selected="selected"{% endif %}>{{ category.name }}</option>
+	{% endfor %}
+</select>
+<input type="submit" value="Search" />
+</form>

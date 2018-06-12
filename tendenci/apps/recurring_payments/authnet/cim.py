@@ -73,9 +73,6 @@ class CIMBase(object):
                 node.text = value
         return parent_node
 
-
-
-
     def process_request(self, xml_root):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
         #print request_xml_str
@@ -87,7 +84,6 @@ class CIMBase(object):
         data = response.read()
 
         return self.process_response(data)
-
 
     def process_response(self, raw_response_xml):
         """
@@ -113,7 +109,6 @@ class CIMBase(object):
 #        </directResponse>
 #        </createCustomerProfileTransactionResponse>"""
 
-
         e = ET.XML(raw_response_xml)
         d = self._recurive_parse(e)
         success = (d['messages']['result_code'].lower() == 'ok')
@@ -123,7 +118,6 @@ class CIMBase(object):
         d['message_text'] = d['messages']['message']['text']
 
         return success, d
-
 
     def _recurive_parse(self, element):
         """
@@ -154,7 +148,7 @@ class CIMBase(object):
 
             children = sub_e.getchildren()
             if not children:
-                if d.has_key(name):
+                if name in d:
                     if not type(d[name]) is list:
                         d[name] = list([d[name]])
                     d[name].append(sub_e.text)
@@ -163,6 +157,71 @@ class CIMBase(object):
             else:
                 d[name] = self._recurive_parse(sub_e)
         return d
+
+
+class CIMCustomerProfileFromTransaction(CIMBase):
+
+    def create(self, **kwargs):
+        """
+        Create a customer profile, payment profile, and shipping profile from an
+        existing successful transaction.
+        Input fields:
+            trans_id - required
+        
+        Output fields:
+            customer_profile_id
+            customer_payment_profile_id_list
+            customer_shippingaddress_id_list
+            
+        Example call:
+
+        >>> from recurring_payments.authnet.cim import CIMCustomerProfileFromTransaction
+        >>> cp = CIMCustomerProfileFromTransaction()
+        >>> success, response_d = cp.create(trans_id='621216786562')
+         
+        Sample request:
+        <?xml version="1.0" encoding="utf-8"?>
+        <createCustomerProfileFromTransactionRequest xmlns="AnetApi/xml/v1/schema/
+        AnetApiSchema.xsd">
+           <merchantAuthentication>
+              <name>API_LOGIN</name>
+              <transactionKey>TRANSACTION_KEY</transactionKey>
+           </merchantAuthentication>
+           <transId>122</transId>
+        </createCustomerProfileFromTransactionRequest>
+        
+        Sample response:
+        <?xml version="1.0" encoding="utf-8"?>
+        <createCustomerProfileFromTransactionResponse xmlns:xsi="http://
+        www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://
+        www.w3.org/2001/XMLSchema" xmlns="AnetApi/xml/v1/schema/
+        AnetApiSchema.xsd">
+           <messages>
+              <resultCode>Ok</resultCode>
+              <message>
+                 <code>I00001</code>
+                 <text>Successful.</text>
+              </message>
+           </messages>
+           <customerProfileId>38</customerProfileId>
+           <customerPaymentProfileIdList>
+              <numericString>38</numericString>
+           </customerPaymentProfileIdList>
+           <customerShippingAddressIdList>
+              <numericString>26</numericString>
+           </customerShippingAddressIdList>
+           <validationDirectResponseList />
+        </createCustomerProfileFromTransactionResponse>
+        
+        """
+        root_name = 'createCustomerProfileFromTransactionRequest'
+        xml_root = self.create_base_xml(root_name)
+        trans_id = kwargs.get('trans_id', '')
+        trans_id_node = ET.SubElement(xml_root, 'transId')
+        trans_id_node.text = trans_id
+
+        return self.process_request(xml_root)
+
 
 class CIMCustomerProfile(CIMBase):
     def __init__(self, customer_profile_id=None):
@@ -263,7 +322,6 @@ class CIMCustomerProfile(CIMBase):
 
         return self.process_request(xml_root)
 
-
     def delete(self, **kwargs):
         """
         Delete an existing customer profile along with all
@@ -280,8 +338,6 @@ class CIMCustomerProfile(CIMBase):
         customer_profile_id_node.text = self.customer_profile_id
 
         return self.process_request(xml_root)
-
-
 
     def get(self, **kwargs):
         """
@@ -316,7 +372,6 @@ class CIMCustomerProfile(CIMBase):
         xml_root = self.create_base_xml(root_name)
         return  self.process_request(xml_root)
 
-
     def update(self, **kwargs):
         """
         Update an existing customer profile on authorize.net.
@@ -345,7 +400,6 @@ class CIMCustomerProfile(CIMBase):
 
         return self.process_request(xml_root)
 
-
     def create_profile_node(self, **kwargs):
         customer_id = kwargs.get('customer_id', '')
         description = kwargs.get('description', '')
@@ -355,10 +409,10 @@ class CIMCustomerProfile(CIMBase):
 
         if mode == 'create':
             if not customer_id and not all([email, description]):
-                raise AttributeError, _("Either custom_id or email and description are required fields.")
+                raise AttributeError(_("Either custom_id or email and description are required fields."))
         else: # mode == 'update'
             if not customer_profile_id:
-                raise AttributeError, _("The customer_profile_id is a required field.")
+                raise AttributeError(_("The customer_profile_id is a required field."))
 
         profile_node = ET.Element("profile")
         if customer_id:
@@ -384,7 +438,6 @@ class CIMCustomerProfile(CIMBase):
                                                                          billing_info,
                                                                          credit_card_info)
 
-
                 profile_node.append(payment_profiles_node)
 
         return profile_node
@@ -396,7 +449,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
-
 
     def create(self, **kwargs):
         """
@@ -445,7 +497,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id:
-            raise AttributeError, "Missing customer_profile_id."
+            raise AttributeError("Missing customer_profile_id.")
 
         root_name = 'createCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -467,7 +519,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         return  self.process_request(xml_root)
 
-
     def delete(self, **kwargs):
         """
         Delete a customer payment profile from an existing customer profile.
@@ -483,7 +534,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id."))
 
         root_name = 'deleteCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -494,7 +545,6 @@ class CIMCustomerPaymentProfile(CIMBase):
         customer_payment_profile_id_node.text = self.customer_payment_profile_id
 
         return self.process_request(xml_root)
-
 
     def get(self, **kwargs):
         """
@@ -517,7 +567,7 @@ class CIMCustomerPaymentProfile(CIMBase):
         """
 
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'getCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -555,7 +605,7 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         """
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'updateCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -576,7 +626,6 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         return  self.process_request(xml_root)
 
-
     def validate(self, **kwargs):
         """
         Test if the last updated payment profile is valid.
@@ -593,7 +642,7 @@ class CIMCustomerPaymentProfile(CIMBase):
 
         """
         if not self.customer_profile_id or not self.customer_payment_profile_id:
-            raise AttributeError, _("Missing customer_profile_id or customer_payment_profile_id in input.")
+            raise AttributeError(_("Missing customer_profile_id or customer_payment_profile_id in input."))
 
         root_name = 'validateCustomerPaymentProfileRequest'
         xml_root = self.create_base_xml(root_name)
@@ -622,7 +671,6 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
-
 
     def create(self, **kwargs):
         """
@@ -656,7 +704,7 @@ class CIMCustomerProfileTransaction(CIMBase):
         if not self.customer_profile_id:
             msg_string = "%s Missing customer_profile_id in input." % \
                                 'createCustomerProfileTransactionRequest'
-            raise AttributeError, _(msg_string)
+            raise AttributeError(_(msg_string))
 
         root_name = 'createCustomerProfileTransactionRequest'
         xml_root = self.create_base_xml(root_name)
@@ -671,14 +719,12 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         return self.process_request(xml_root)
 
-
-
     def create_transaction_node(self, **kwargs):
         amount = kwargs.get('amount', 0)
         if amount <= 0:
             msg_string = '%s - the amount %.2f is not greater than 0.' % \
                                ('<createCustomerProfileTransactionRequest', amount)
-            raise ValueError, _(msg_string)
+            raise ValueError(_(msg_string))
         tax = kwargs.get('tax', '')
         shipping = kwargs.get('shipping')
         line_items_list = kwargs.get('line_items_list')
@@ -691,7 +737,6 @@ class CIMCustomerProfileTransaction(CIMBase):
 
         transaction_node = ET.Element("transaction")
         trans_auth_capture_node = ET.SubElement(transaction_node, 'profileTransAuthCapture')
-
 
         # amount node
         amount_node = ET.SubElement(trans_auth_capture_node, "amount")
@@ -763,7 +808,6 @@ class CIMCustomerProfileTransaction(CIMBase):
             split_tender_id_node = ET.SubElement(trans_auth_capture_node, "splitTenderId")
             split_tender_id_node.text = split_tender_id
 
-
         return transaction_node
 
 
@@ -790,7 +834,7 @@ class CIMHostedProfilePage(CIMBase):
         if not self.customer_profile_id:
             msg_string = "%s Missing customer_profile_id in input." % \
                                 'getHostedProfilePageRequest'
-            raise AttributeError, _(msg_string)
+            raise AttributeError(_(msg_string))
 
         root_name = 'getHostedProfilePageRequest'
         xml_root = self.create_base_xml(root_name)
@@ -816,13 +860,11 @@ class CIMHostedProfilePage(CIMBase):
         return self.process_request(xml_root)
 
 
-
 class CIMCustomerShippingAddress(CIMBase):
     def __init__(self, customer_profile_id):
         super(CIMCustomerShippingAddress, self).__init__()
 
         self.customer_profile_id = customer_profile_id
-
 
     def create(self, **kwargs):
         pass
@@ -835,5 +877,3 @@ class CIMCustomerShippingAddress(CIMBase):
 
     def update(self, **kwargs):
         pass
-
-

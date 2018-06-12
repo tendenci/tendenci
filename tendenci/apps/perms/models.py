@@ -75,19 +75,19 @@ class TendenciBaseModel(models.Model):
             value = t % ('inactive', 'Inactive')
 
         return mark_safe(value)
-    
+
     def get_title(self):
         if hasattr(self, 'meta'):
             return self.get_meta('title')
-    
+
     def get_keywords(self):
         if hasattr(self, 'meta'):
             return self.get_meta('keywords')
-    
+
     def get_description(self):
         if hasattr(self, 'meta'):
             return self.get_meta('description')
-    
+
     def get_canonical_url(self):
         if hasattr(self, 'meta'):
             return self.get_meta('canonical_url')
@@ -108,7 +108,7 @@ class TendenciBaseModel(models.Model):
                     Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
                 except Exception as e:
                     pass
-                    #print "version error: ", e
+                    #print("version error: ", e)
 
             if "log" in kwargs:
                 kwargs.pop('log')
@@ -176,4 +176,3 @@ class TendenciBaseModel(models.Model):
                 Category.objects.remove(self, 'sub_category')
             else:
                 Category.objects.update(self, subcategory_value, 'sub_category')
-

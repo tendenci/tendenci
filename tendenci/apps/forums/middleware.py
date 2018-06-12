@@ -31,14 +31,3 @@ class PybbMiddleware(object):
             request.session['django_language'] = profile.language
             translation.activate(profile.language)
             request.LANGUAGE_CODE = translation.get_language()
-            
-            # if Self Registration is on, users can post on forums per Ed.
-            # assign the add_post perm if user doesn't have it.
-            if get_setting('module', 'users', 'selfregistration'):
-                if not request.user.has_perm('forums.add_post'):
-                    [perm] = Permission.objects.filter(
-                                        content_type__app_label='forums',
-                                        content_type__model='post',
-                                        codename='add_post')[:1] or [None]
-                    if perm:
-                        request.user.user_permissions.add(perm)

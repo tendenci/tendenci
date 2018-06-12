@@ -1,4 +1,4 @@
-from ordereddict import OrderedDict
+from collections import OrderedDict
 from ast import literal_eval
 from urlparse import urlparse
 
@@ -6,14 +6,15 @@ from django import forms
 from django.core.files import File
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.utils.encoding import force_unicode, DjangoUnicodeDecodeError
+from django.utils.encoding import force_unicode, smart_text, DjangoUnicodeDecodeError
 from timezones import zones
+from django_countries import countries as COUNTRIES
+from django.utils.safestring import mark_safe
 
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.site_settings.utils import (get_form_list,
                                                get_box_list,
-                                               get_group_list,
-                                               COUNTRIES)
+                                               get_group_list)
 from tendenci.apps.base.utils import get_languages_with_local_name
 from django.utils.translation import ugettext_lazy as _
 
@@ -85,6 +86,9 @@ def save_settings_form(self):
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
                     django_site = Site.objects.get(pk=1)
+                    if urlparse(field_value).scheme == "":
+                        # prefix http:// if no scheme
+                        field_value = 'http://%s' % field_value
                     netloc = urlparse(field_value).netloc
                     django_site.domain = netloc
                     django_site.name = netloc
@@ -109,6 +113,8 @@ def build_settings_form(user, settings):
     """
     fields = OrderedDict()
     for setting in settings:
+        setting_label = mark_safe('{0} <a href="#id_{1}" title="Permalink to this setting"><i class="fa fa-link" aria-hidden="true"></i></a>'.format(
+                                    setting.label, setting.name))
 
         # Do not display standard regform settings
         if setting.scope_category == 'events' and setting.name.startswith('regform_'):
@@ -121,13 +127,14 @@ def build_settings_form(user, settings):
 
         if setting.input_type in ['text', 'textarea']:
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': setting.description,
                 'initial': setting_value,
-                'required': False
+                'required': False,
+                'label_suffix': "",
             }
             if setting.input_type == 'textarea':
-                options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30});
+                options['widget'] = forms.Textarea(attrs={'rows': 5, 'cols': 30})
 
             if setting.client_editable:
                 fields.update({"%s" % setting.name: forms.CharField(**options)})
@@ -135,7 +142,7 @@ def build_settings_form(user, settings):
                 if user.is_superuser:
                     fields.update({"%s" % setting.name: forms.CharField(**options)})
 
-        elif setting.input_type == 'select':
+        elif setting.input_type in ['select', 'selectmultiple']:
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
                 required = False
@@ -154,7 +161,10 @@ def build_settings_form(user, settings):
                 choices = get_languages_with_local_name()
                 required = True
             elif setting.input_value == '<country_list>':
-                choices = COUNTRIES
+                choices = (('', '-----------'),) + tuple(COUNTRIES)
+                required = False
+                if setting.get_value() and  setting.name == 'countrylistinitialchoices':
+                    setting_value = literal_eval(setting.get_value())
             else:
                 # Allow literal_eval in settings in order to pass a list from the setting
                 # This is useful if you want different values and labels for the select options
@@ -172,16 +182,17 @@ def build_settings_form(user, settings):
                     required = True
 
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': setting.description,
                 'initial': setting_value,
                 'choices': choices,
                 'required': required,
+                'label_suffix': "",
             }
-            if setting.client_editable:
-                fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
-            else:
-                if user.is_superuser:
+            if setting.client_editable or user.is_superuser:
+                if setting.input_type == 'selectmultiple':
+                    fields.update({"%s" % setting.name: forms.MultipleChoiceField(**options)})
+                else:
                     fields.update({"%s" % setting.name: forms.ChoiceField(**options)})
 
         elif setting.input_type == 'file':
@@ -207,10 +218,11 @@ def build_settings_form(user, settings):
             except TendenciFile.DoesNotExist:
                 file_display = "No file"
             options = {
-                'label': setting.label,
+                'label': setting_label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
                 #'initial': tfile and tfile.file, # Removed this so the file doesn't save over and over
-                'required': False
+                'required': False,
+                'label_suffix': "",
             }
             if setting.client_editable:
                 fields.update({"%s" % setting.name: forms.FileField(**options)})

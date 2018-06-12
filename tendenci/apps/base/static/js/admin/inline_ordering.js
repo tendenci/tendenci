@@ -12,7 +12,7 @@ jQuery(function($) {
                 });
             }
         });
-        
+
         $('.inline-related tbody').css('cursor', 'move');
         $('.inline-related .add-row').css('cursor', 'default');
     });

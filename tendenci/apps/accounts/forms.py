@@ -14,13 +14,15 @@ from django.utils.http import int_to_base36
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-from captcha.fields import CaptchaField, CaptchaTextInput
+from captcha.fields import CaptchaTextInput
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.accounts.utils import send_registration_activation_email
 from tendenci.apps.base.utils import create_salesforce_contact
+from tendenci.apps.emails.models import Email
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -51,7 +53,7 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10', 'class': 'form-control'}), required=False)
     country = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     zipcode = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    captcha = CaptchaField(label=_('Type the code below'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
+    captcha = CustomCatpchaField(label=_('Type the letters you see in the box'), widget=CaptchaTextInput(attrs={'class': 'form-control'}))
 
     allow_same_email = None
     similar_email_found = False
@@ -80,7 +82,6 @@ class RegistrationCustomForm(RegistrationForm):
             raise forms.ValidationError(_("Similar emails found"))
 
         return self.cleaned_data
-
 
     def save(self, profile_callback=None, event=None):
         #
@@ -139,12 +140,12 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
         # check if we need to hide the remember me checkbox
         # and set the default value for remember me
-        hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
-        remember_me_default_checked = get_setting('module', 'users', 'usersremembermedefaultchecked')
+        self.hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
+        self.remember_default = get_setting('module', 'users', 'usersremembermedefaultchecked')
 
-        if remember_me_default_checked:
+        if self.remember_default:
             self.fields['remember'].initial = True
-        if hide_remember_me:
+        if self.hide_remember_me:
             self.fields['remember'].widget = forms.HiddenInput()
 
     def clean(self):
@@ -159,7 +160,7 @@ class LoginForm(forms.Form):
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user)
 
-            if user.is_active and profile.status == True and profile.status_detail.lower() == 'active':
+            if user.is_active and profile.status and profile.status_detail.lower() == 'active':
                 self.user = user
             else:
                 raise forms.ValidationError(_("This account is currently inactive."))
@@ -177,12 +178,13 @@ class LoginForm(forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                _(u"Woohoo %(first_name)s %(last_name)s, you've successfully logged in." % {
+                _(u"Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
 
-            if self.cleaned_data['remember']:
-                request.session.set_expiry(60 * 60 * 24 * 7 * 3)
+            remember = (self.remember_default if self.hide_remember_me else self.cleaned_data['remember'])
+            if remember:
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
             else:
                 request.session.set_expiry(0)
             return True
@@ -198,7 +200,7 @@ class PasswordResetForm(forms.Form):
         email = self.cleaned_data["email"]
         self_reg = get_setting('module', 'users', 'selfregistration')
         self.email = email
-        self.users_cache = User.objects.filter(email__iexact=email)
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
         if len(self.users_cache) == 0:
             if self_reg:
                 raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an associated user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
@@ -241,5 +243,9 @@ class PasswordResetForm(forms.Form):
         }
 
         from_email = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
-        send_mail(_("Password reset on %s") % site_name,
-            t.render(Context(c)), from_email, [user.email])
+        email = Email(
+                sender=from_email,
+                recipient=user.email,
+                subject=_("Password reset on %s") % site_name,
+                body=t.render(Context(c)))
+        email.send()

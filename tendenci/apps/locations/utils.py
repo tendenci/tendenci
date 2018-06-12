@@ -5,12 +5,19 @@ from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
 
 from tendenci.apps.base.utils import normalize_newline
+from tendenci.apps.site_settings.utils import get_setting
 
 def geocode_api(**kwargs):
     import simplejson, urllib
-    GEOCODE_BASE_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
+    GEOCODE_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
     kwargs['sensor'] = kwargs.get('sensor', 'false')
+    api_key = get_setting('module', 'locations', 'google_maps_api_key')
+    if api_key:
+        kwargs.update({
+            'key': api_key
+    })
     url = '%s?%s' % (GEOCODE_BASE_URL, urllib.urlencode(kwargs))
+
     return simplejson.load(urllib.urlopen(url))
 
 def get_coordinates(address):
@@ -30,13 +37,18 @@ def distance_api(*args, **kwargs):
     import simplejson, urllib
 
     output = kwargs.get('output', 'json')
-    distance_base_url = 'http://maps.googleapis.com/maps/api/distancematrix/%s' & ouput
+    distance_base_url = 'https://maps.googleapis.com/maps/api/distancematrix/%s' & output
 
     kwargs.update({
         'origins':kwargs.get('origins',''),
         'destinations': kwargs.get('destinations',''),
         'sensor': kwargs.get('sensor', 'false')
     })
+    api_key = get_setting('module', 'locations', 'google_maps_api_key')
+    if api_key:
+        kwargs.update({
+            'key': api_key
+        })
 
     url = '%s?%s' % (distance_base_url, urllib.urlencode(kwargs))
     return simplejson.load(urllib.urlopen(url))

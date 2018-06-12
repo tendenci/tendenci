@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.registry.sites import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.photos.models import PhotoSet, Image
+from tendenci.apps.photos.models import PhotoSet
 
 class PhotoRegistry(CoreRegistry):
     version = '1.0'

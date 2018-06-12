@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.conf import settings
 from django.core.cache import cache
+from tendenci.libs.utils import python_executable
 from tendenci.apps.sitemaps import TendenciSitemap
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -34,7 +35,7 @@ def get_all_sitemaps():
 def _try_import(module):
     try:
         __import__(module)
-    except ImportError, e:
+    except ImportError as e:
         pass
 
 
@@ -46,7 +47,8 @@ def create_sitemap(request):
 
 def sitemap(request, sitemaps, section=None,
             template_name='sitemap.xml', mimetype='application/xml'):
-    req_protocol = 'https' if request.is_secure() else 'http'
+    #req_protocol = 'https' if request.is_secure() else 'http'
+    req_protocol = get_setting('site', 'global', 'siteurl').split(':')[0]
     req_site = get_current_site(request)
 
     if section is not None:
@@ -71,7 +73,7 @@ def sitemap(request, sitemaps, section=None,
             site_urls = cache.get(sitemap_cache_key)
             if not isinstance(site_urls, list):
                 if not cached:
-                    subprocess.Popen(['python', 'manage.py', 'sitemap_cache'])
+                    subprocess.Popen([python_executable(), 'manage.py', 'sitemap_cache'])
                     cached = True
                 site_urls = site.get_urls(page=page, site=req_site,
                                           protocol=req_protocol)

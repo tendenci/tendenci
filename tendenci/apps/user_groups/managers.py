@@ -162,4 +162,3 @@ class OldGroupManager(Manager):
         sqs = sqs.order_by('-create_dt')
 
         return sqs.models(self.model)
-

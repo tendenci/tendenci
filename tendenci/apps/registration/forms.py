@@ -36,12 +36,13 @@ class RegistrationForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'username'))
-    email = EmailVerificationField(label=_(u'email address'), attrs=attrs_dict)
+                                label=_(u'Username'))
+    email = EmailVerificationField(label=_(u'Email Address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password'))
+                                label=_(u'Password'),
+                                help_text=_("Use at least 8 characters and 1 number or special character"))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_(u'password (again)'))
+                                label=_(u'Password (confirm)'))
 
     def clean_username(self):
         """
@@ -49,11 +50,10 @@ class RegistrationForm(forms.Form):
         in use.
 
         """
-        try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
-        except User.DoesNotExist:
-            return self.cleaned_data['username']
-        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        value = self.cleaned_data['username']
+        if User.objects.filter(username__iexact=value).count() > 0:
+            raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        return value
 
     def clean(self):
         """

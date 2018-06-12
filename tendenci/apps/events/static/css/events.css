@@ -115,14 +115,14 @@ form.search-form select {
 
 /*= Details View
  ------------------------- */
- 
+
  .t div.event-desc {
     margin-bottom: 10px;
     /* border-bottom: 1px solid #CCC; */
 }
 
 .spots-status{
-    color: #871B1B; 
+    color: #871B1B;
 }
  /* speaker and organizer */
 .t .speaker-wrap {
@@ -222,22 +222,22 @@ div.forms div.form-field div.id_fax .field input {
 }
 
 /* start_dt */
-div.forms div.form-field 
+div.forms div.form-field
 div.id_start_dt .field input {
     margin: 0 5px 0 0;
     width: 18%;
 }
-div.forms div.form-field 
+div.forms div.form-field
 div.id_start_dt .field input#id_start_dt_1 {
     width: 80px;
 }
 /* end_dt */
-div.forms div.form-field 
+div.forms div.form-field
 div.id_end_dt .field input {
     margin: 0 5px 0 0;
     width: 18%;
 }
-div.forms div.form-field 
+div.forms div.form-field
 div.id_end_dt .field input#id_end_dt_1 {
     width: 80px;
 }
@@ -407,7 +407,7 @@ div.type-wrap .type-item .associated-events li{
 }
 .item .field .mceLayout {
     /* WYSIWYG; .1 keeps border intact */
-    width: 100.1% !important; 
+    width: 100.1% !important;
 }
 .item .field-short input,
 .item .field-short select {
@@ -470,14 +470,13 @@ ul.errorlist {;
 
 /* details page */
 .t .event-wrap {
-    background-color: #F7F7F7;
     padding: 0;
 }
 .event-wrap .info {
     padding: 10px;
     background-color: white;
-    width: 64%;
     float: left;
+    width: 67%;
 }
 
 .event-wrap .info .meta {
@@ -486,9 +485,12 @@ ul.errorlist {;
 
 .event-wrap .vitals {
     float: right;
-    margin: 60px 15px 0 0;
-    width: 30.5%;
+    margin: 0 0 15px 0;
     text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    width: 30.5%;
+    background-color: #F7F7F7;
 }
 
 .event-wrap .vitals h4.vital-header {
@@ -522,7 +524,7 @@ ul.errorlist {;
     display: block;
     text-decoration: none;
 }
-.event-wrap .vitals .register-btn a:active, 
+.event-wrap .vitals .register-btn a:active,
 .event-wrap .vitals .register-btn a:hover {
     background-color: #007F20;
 }
@@ -573,14 +575,14 @@ ul.errorlist {;
 }
 .month-view div.weekday,
 .month-view div.weekday-mobile {
-    width: 13.8470282554%;
+    width: 14.25%;
     float: left;
     text-align: center;
     border-bottom: 1px solid silver;
 }
-
 .month-view div.weekday-mobile {
     display: none;
+    width: 14.25%;
 }
 
 .month-view .calendar-wrap {
@@ -588,16 +590,16 @@ ul.errorlist {;
 }
 .month-view .month-wrap {
     float: left;
-    background-color: white;
+    background-color: transparent;
     padding-right: 10px;
-    width: 76%;
+    width: 100%;
 }
 
 .month-view div.month-grid {
     border-left: 1px solid silver;
 }
 .month-view div.day {
-    width: 13.7%;
+    width: 14.25%;
     height: 116px;
     border: 1px solid silver;
 
@@ -706,7 +708,7 @@ div.event-recurring {
     border-bottom: 1px solid #DDD;
 }
 .side-bar .types {
-    margin: 0 10px;
+    margin: 5px 10px;
     float: left;
 }
 .side-bar .types .type a {
@@ -858,7 +860,7 @@ div.pricing-list-wrap {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    text-align: center;    
+    text-align: center;
 }
 
 input.registration-green-button {

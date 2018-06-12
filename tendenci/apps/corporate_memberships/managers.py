@@ -22,3 +22,11 @@ class CorpMembershipAppManager(Manager):
                            ).order_by('id')[:1] or [None]
 
         return current_app
+
+
+class CorpProfileManager(TendenciBaseManager):
+    pass
+
+
+class CorpMembershipTypeManager(TendenciBaseManager):
+    pass

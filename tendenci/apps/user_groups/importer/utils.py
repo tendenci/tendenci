@@ -27,7 +27,7 @@ def user_groups_import_process(import_i, preview=True):
     in the group_object_dict. Then it updates the database
     if preview=False.
     """
-    #print "START IMPORT PROCESS"
+    #print("START IMPORT PROCESS")
     data_dict_list = extract_from_excel(import_i.file.name)
     data_dict_list_len = len(data_dict_list)
 
@@ -104,12 +104,12 @@ def user_groups_import_process(import_i, preview=True):
         if not preview: # save import status
             import_i.status = "completed"
             import_i.save()
-    except Exception, e:
+    except Exception as e:
         import_i.status = "failed"
         import_i.failure_reason = unicode(e)
         import_i.save()
 
-    #print "END IMPORT PROCESS"
+    #print("END IMPORT PROCESS")
     return group_obj_list, invalid_list
 
 def do_group_import(group_object_dict):

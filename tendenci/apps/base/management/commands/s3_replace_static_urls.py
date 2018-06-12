@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 
 from django.core.management.base import BaseCommand
@@ -60,7 +61,7 @@ class Command(BaseCommand):
                                         myfile.close()
                                         #k.set_contents_from_string(new_content, replace=True)
                                         k.set_acl('public-read')
-                                        print file_path
+                                        print(file_path)
 
         else:
-            print 'Site is not using S3 Storage.'
+            print('Site is not using S3 Storage.')

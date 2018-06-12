@@ -49,29 +49,29 @@
   }
   function joinLineNext(cm) {
     var cur = cm.getCursor(), ch = cur.ch, line = cm.getLine(cur.line);
-    CodeMirror.commands.goLineEnd(cm); 
+    CodeMirror.commands.goLineEnd(cm);
     if (cur.line != cm.lineCount()) {
       CodeMirror.commands.goLineEnd(cm);
       cm.replaceSelection(" ", "end");
       CodeMirror.commands.delCharRight(cm);
-    } 
+    }
   }
   function editCursor(mode) {
-    if (mode == "vim-insert") {  
+    if (mode == "vim-insert") {
       // put in your cursor css changing code
     } else if (mode == "vim") {
       // put in your cursor css changing code
     }
   }
-  function delTillMark(cm, cHar) { 
+  function delTillMark(cm, cHar) {
     var i = mark[cHar], l = cm.getCursor().line, start = i > l ? l : i, end = i > l ? i : l;
     cm.setCursor(start);
     for (var c = start; c <= end; c++) {
-      pushInBuffer("\n"+cm.getLine(start)); 
+      pushInBuffer("\n"+cm.getLine(start));
       cm.removeLine(start);
     }
   }
-  function yankTillMark(cm, cHar) { 
+  function yankTillMark(cm, cHar) {
     var i = mark[cHar], l = cm.getCursor().line, start = i > l ? l : i, end = i > l ? i : l;
     for (var c = start; c <= end; c++) {
       pushInBuffer("\n"+cm.getLine(c));
@@ -123,7 +123,7 @@
            "P": function(cm) {
 		  var cur = cm.getCursor().line;
 		  if (buf!= "") {
-                    CodeMirror.commands.goLineEnd(cm); 
+                    CodeMirror.commands.goLineEnd(cm);
 		    cm.replaceSelection(buf, "end");
 		  }
 		  cm.setCursor(cur+1);
@@ -145,7 +145,7 @@
   CodeMirror.keyMap["vim-prefix-g"] = {
     "E": countTimes(function(cm) { moveToWord(cm, word, -1, "start");}),
     "Shift-E": countTimes(function(cm) { moveToWord(cm, bigWord, -1, "start");}),
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   };
 
@@ -202,14 +202,14 @@
     "Shift-Y": function(cm) {mark["Shift-Y"] = cm.getCursor().line;},
     "Z": function(cm) {mark["Z"] = cm.getCursor().line;},
     "Shift-Z": function(cm) {mark["Shift-Z"] = cm.getCursor().line;},
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   }
-  
+
   CodeMirror.keyMap["vim-prefix-d"] = {
     "D": countTimes(function(cm) { pushInBuffer("\n"+cm.getLine(cm.getCursor().line)); cm.removeLine(cm.getCursor().line); }),
     "'": function(cm) {cm.setOption("keyMap", "vim-prefix-d'"); emptyBuffer();},
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   };
 
@@ -266,7 +266,7 @@
     "Shift-Y": function(cm) {delTillMark(cm,"Shift-Y");},
     "Z": function(cm) {delTillMark(cm,"Z");},
     "Shift-Z": function(cm) {delTillMark(cm,"Shift-Z");},
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   };
 
@@ -323,20 +323,20 @@
     "Shift-Y": function(cm) {yankTillMark(cm,"Shift-Y");},
     "Z": function(cm) {yankTillMark(cm,"Z");},
     "Shift-Z": function(cm) {yankTillMark(cm,"Shift-Z");},
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   };
 
   CodeMirror.keyMap["vim-prefix-y"] = {
     "Y": countTimes(function(cm) { pushInBuffer("\n"+cm.getLine(cm.getCursor().line+yank)); yank++; }),
     "'": function(cm) {cm.setOption("keyMap", "vim-prefix-y'"); emptyBuffer();},
-    auto: "vim", 
+    auto: "vim",
     catchall: function(cm) {/*ignore*/}
   };
 
   CodeMirror.keyMap["vim-insert"] = {
     "Esc": function(cm) {
-	     cm.setCursor(cm.getCursor().line, cm.getCursor().ch-1, true); 
+	     cm.setCursor(cm.getCursor().line, cm.getCursor().ch-1, true);
 	     cm.setOption("keyMap", "vim");
 	     editCursor("vim");
            },

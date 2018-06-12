@@ -1,6 +1,6 @@
 {% load i18n model_report %}
 
-<table class="report table table-condensed">
+<table class="report table">
     <thead>
         <tr>
             {% for column_label in column_labels %}
@@ -14,10 +14,10 @@
             {% if gruper %}
             <tr>
                 <td valign="middle" class="grouper" colspan="{{ column_labels|length }}" id="{{ gruper|default_if_none:_('Results')|slugify }}" >
-                    <h2 class="groupby">{% if not report.onlytotals and not rows.0.is_report_totals and not report.is_export %}
+                    {% if not report.onlytotals and not rows.0.is_report_totals and not report.is_export %}
                     <span class="result-collapsable expanded" row="row-{{ gruper|default_if_none:_('Results')|slugify }}">-</span>
                     {% endif %}
-                    {{ gruper|default_if_none:_('Results') }}</h2>
+                    {{ gruper|default_if_none:_('Results') }}
                     {% if report_anchors and not report.parent_report %}<a style="float: right; color: grey; font-weight: normal; font-size: 12px;" href="#data_container">{% trans "Go up" %}</a>{% endif %}
                 </td>
             </tr>

@@ -50,70 +50,83 @@ def forms_entry_options(context, user, entry):
     return context
 
 
-class GetFormNode(Node):
+# class GetFormNode(Node):
+# 
+#     def __init__(self, **kwargs):
+#         self.kwargs = kwargs
+# 
+#     def render(self, context):
+#         pk = 0
+#         template_name = 'forms/embed_form_new.html'
+# 
+#         if 'pk' in self.kwargs:
+#             try:
+#                 pk = Variable(self.kwargs['pk'])
+#                 pk = pk.resolve(context)
+#             except:
+#                 pk = self.kwargs['pk']  # context string
+# 
+#         if 'template_name' in self.kwargs:
+#             try:
+#                 template_name = Variable(self.kwargs['template_name'])
+#                 template_name = pk.resolve(context)
+#             except:
+#                 template_name = self.kwargs['template_name']  # context string
+# 
+#             template_name = template_name.replace('"', '')
+# 
+#         try:
+#             form = Form.objects.get(pk=pk)
+#             context['embed_form'] = form.object
+#             context['embed_form_for_form'] = FormForForm(form.object, AnonymousUser())
+#             template = get_template(template_name)
+#             output = '<div class="embed-form">%s</div>' % template.render(context)
+#             return output
+#         except:
+#             try:
+#                 form = Form.objects.get(pk=pk)
+#                 context['embed_form'] = form
+#                 context['embed_form_for_form'] = FormForForm(form, AnonymousUser())
+#                 template = get_template(template_name)
+#                 output = '<div class="embed-form">%s</div>' % template.render(context)
+#                 return output
+#             except:
+#                 raise
+#                 return ""
 
-    def __init__(self, **kwargs):
-        self.kwargs = kwargs
 
-    def render(self, context):
-        pk = 0
-        template_name = 'forms/embed_form.html'
-
-        if 'pk' in self.kwargs:
-            try:
-                pk = Variable(self.kwargs['pk'])
-                pk = pk.resolve(context)
-            except:
-                pk = self.kwargs['pk']  # context string
-
-        if 'template_name' in self.kwargs:
-            try:
-                template_name = Variable(self.kwargs['template_name'])
-                template_name = pk.resolve(context)
-            except:
-                template_name = self.kwargs['template_name']  # context string
-
-            template_name = template_name.replace('"', '')
-
-        try:
-            form = Form.objects.get(pk=pk)
-            context['form'] = form.object
-            context['form_for_form'] = FormForForm(form.object, AnonymousUser())
-            template = get_template(template_name)
-            output = '<div class="embed-form">%s</div>' % template.render(context)
-            return output
-        except:
-            try:
-                form = Form.objects.get(pk=pk)
-                context['form'] = form
-                context['form_for_form'] = FormForForm(form, AnonymousUser())
-                template = get_template(template_name)
-                output = '<div class="embed-form">%s</div>' % template.render(context)
-                return output
-            except:
-                return ""
-
-
-@register.tag
-def embed_form(parser, token):
+@register.simple_tag(takes_context=True)
+def embed_form(context, pk, *args, **kwargs):
     """
     Example:
-        {% embed_form 123 [template] %}
+        {% embed_form 123 [template] [gsize='compact'] %}
     """
+    if len(args) > 0:
+        template_name = args[0]
+    else:
+        template_name = 'forms/embed_form_new.html'
 
-    kwargs = {}
-    bits = token.split_contents()
-
+    [form] = Form.objects.filter(pk=pk)[:1] or [None]
+    if not form:
+        return ""
+    
+    if hasattr(form, 'object'):
+        form_obj = form.object
+    else:
+        form_obj = form
+        
     try:
-        kwargs["pk"] = bits[1]
+        context['embed_form'] = form_obj
+        context['embed_form_for_form'] = FormForForm(form_obj, AnonymousUser())
+        if 'captcha' in context['embed_form_for_form'].fields and 'gsize' in kwargs:
+            if hasattr(context['embed_form_for_form'].fields['captcha'].widget, 'gtag_attrs'):
+                context['embed_form_for_form'].fields['captcha'].widget.gtag_attrs.update(
+                                {'data-size': kwargs['gsize']})
+        template = get_template(template_name)
+        output = '<div class="embed-form">%s</div>' % template.render(context)
+        return output
     except:
-        message = "Form tag must include an ID of a form."
-        raise TemplateSyntaxError(_(message))
-    try:
-        kwargs["template_name"] = bits[2]
-    except:
-        pass
-    return GetFormNode(**kwargs)
+        return ""
 
 
 @register.filter

@@ -1,9 +1,11 @@
+from __future__ import print_function
 import uuid
 import os
 from PIL import Image as PILImage
 from PIL.ExifTags import TAGS as PILTAGS
 from PIL import ImageFile
 from PIL import ImageFilter
+from PIL import ImageEnhance
 
 from datetime import datetime
 from inspect import isclass
@@ -33,11 +35,11 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.fields import DictField
+from tendenci.apps.base.utils import apply_orientation
 from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
-from tendenci.libs.abstracts.models import OrderingBaseModel
 
 from tendenci.apps.photos.utils import EXIF
 from tendenci.apps.photos.utils.reflection import add_reflection
@@ -108,7 +110,9 @@ class ImageModel(models.Model):
     date_taken = models.DateTimeField(_('date taken'), null=True, blank=True, editable=False)
     view_count = models.PositiveIntegerField(default=0, editable=False)
     crop_from = models.CharField(_('crop from'), blank=True, max_length=10, default='center', choices=CROP_ANCHOR_CHOICES)
-    effect = models.ForeignKey('PhotoEffect', null=True, blank=True, related_name="%(class)s_related", verbose_name=_('effect'))
+    effect = models.ForeignKey('PhotoEffect', null=True, blank=True,
+                               on_delete=models.SET_NULL,
+                               related_name="%(class)s_related", verbose_name=_('effect'))
 
     class Meta:
         abstract = True
@@ -216,6 +220,7 @@ class ImageModel(models.Model):
         return False
 
     def resize_image(self, im, photosize):
+        im = apply_orientation(im)
         cur_width, cur_height = im.size
         new_width, new_height = photosize.size
         if photosize.crop:
@@ -256,8 +261,6 @@ class ImageModel(models.Model):
         return im
 
     def create_size(self, photosize):
-        from django.core.files.storage import default_storage
-
         if self.size_exists(photosize):
             return
 
@@ -265,7 +268,7 @@ class ImageModel(models.Model):
             content = default_storage.open(unicode(self.image)).read()
             im = PILImage.open(StringIO(content))
         except IOError as e:
-            print e
+            print(e)
             return
 
         im_format = im.format
@@ -293,7 +296,7 @@ class ImageModel(models.Model):
             im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
             default_storage.save(im_filename, ContentFile(buffer.getvalue()))
         except IOError as e:
-            print e
+            print(e)
             pass
 
     def remove_size(self, photosize, remove_dirs=True):
@@ -708,7 +711,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text=_("Comma delimited (eg. mickey, donald, goofy)"))
-    license = models.ForeignKey('License', null=True, blank=True)
+    license = models.ForeignKey('License', null=True, blank=True, on_delete=models.SET_NULL)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
     photographer = models.CharField(_('Photographer'),
@@ -716,7 +719,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                                     max_length=100)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, blank=True, null=True)
+    meta = models.OneToOneField(MetaTags, blank=True, null=True, on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -740,12 +743,12 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             self.guid = str(uuid.uuid1())
 
         super(Image, self).save(*args, **kwargs)
-       # # clear the cache
-       # caching.instance_cache_clear(self, self.pk)
-       # caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
+        # clear the cache
+        #caching.instance_cache_clear(self, self.pk)
+        #caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
 
-       # # re-add instance to the cache
-       # caching.instance_cache_add(self, self.pk)
+        # re-add instance to the cache
+        #caching.instance_cache_add(self, self.pk)
 
         if not self.is_public_photo() or not self.is_public_photoset():
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE and hasattr(self.image, 'file'):
@@ -787,8 +790,6 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
             # delete actual image; do not save() self.instance
             self.image.delete(save=False)
-
-
 
     @models.permalink
     def get_absolute_url(self):
@@ -850,7 +851,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         Get location via lat and lng.
         """
         if lat and lng:
-            url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
+            url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
             r = requests.get(url)
             if r.status_code == 200:
                 data = simplejson.loads(r.content)
@@ -887,11 +888,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             images = Image.objects.filter(position__gt=self.position)
         images = images.values_list("position", flat=True)
         images = images.order_by('-position')
-        if set:
-            try:
-                return Image.objects.get(photoset=set, position=min(images))
-            except (ValueError, Image.MultipleObjectsReturned):
-                return None
+        if set and images:
+            [ image ] = Image.objects.filter(photoset=set, position=min(images))[:1] or [None]
+            return image
         return None
 
     def get_prev(self, set=None):

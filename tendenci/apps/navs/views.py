@@ -21,7 +21,6 @@ from tendenci.apps.pages.models import Page
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.navs.models import Nav, NavItem
-from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
 from tendenci.apps.navs.utils import cache_nav
 
@@ -147,7 +146,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
 
     #         EventLog.objects.log(instance=nav)
 
-    #         redirect_to = request.REQUEST.get('next', '')
+    #         redirect_to = request.GET.get('next', '')
     #         if redirect_to:
     #             return HttpResponseRedirect(redirect_to)
     #         else:

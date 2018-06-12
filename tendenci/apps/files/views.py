@@ -2,13 +2,16 @@ import os
 import simplejson as json
 import urllib2
 import mimetypes
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.http import (
-    HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError)
+    HttpResponseRedirect, HttpResponse, Http404, JsonResponse, HttpResponseForbidden)
 import simplejson
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
@@ -21,24 +24,25 @@ from django.core.paginator import Paginator
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import CreateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.http import Http403
-from tendenci.apps.base.decorators import flash_login_required
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import admin_required, is_enabled
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import (
     update_perms_and_save, has_perm, has_view_perm, get_query_filters)
-from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.apps.files.models import File, FilesCategory
-from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.apps.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
+from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_max_file_upload_size, get_allowed_upload_file_exts
+from tendenci.apps.files.forms import FileForm, MostViewedForm, FileSearchForm, FileSearchMinForm, TinymceUploadForm
 
 
 @is_enabled('files')
@@ -46,6 +50,8 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     """
     Return an image response after paramters have been applied.
     """
+    file = get_object_or_404(File, pk=id)
+    
     cache_key = generate_image_cache_key(
         file=id,
         size=size,
@@ -56,11 +62,12 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         constrain=constrain)
 
     cached_image = cache.get(cache_key)
-    
-    if cached_image:
-        return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
-    file = get_object_or_404(File, pk=id)
+    if cached_image:
+        if file.type() != 'image':
+            # log an event
+            EventLog.objects.log(instance=file)
+        return redirect('%s%s' % (get_setting('site', 'global', 'siteurl'), cached_image))
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
@@ -121,7 +128,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(content_type=file.mime_type())
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
 
         params = {'quality': quality}
         if image.format == 'GIF':
@@ -167,9 +174,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # return response
     if file.get_name().endswith(file.ext()):
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name())
     else:
-        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
+        response['Content-Disposition'] = '%s filename="%s"' % (attachment, file.get_name_ext())
     return response
 
 
@@ -297,6 +304,81 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
         }, context_instance=RequestContext(request))
 
 
+class FileTinymceCreateView(CreateView):
+    model = File
+    #fields = ("file",)
+    template_name_suffix = '_tinymce_upload_form'
+    form_class = TinymceUploadForm
+
+    @method_decorator(is_enabled('files'))
+    @method_decorator(login_required)
+    @method_decorator(csrf_protect)
+    def dispatch(self, request, *args, **kwargs):
+        if not has_perm(request.user, 'files.add_file'):
+            return HttpResponseForbidden()
+        return super(FileTinymceCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(FileTinymceCreateView, self).get_context_data(**kwargs)
+        context['app_label'] = self.request.GET.get('app_label', '')
+        context['model'] = self.request.GET.get('model', '')
+        context['object_id'] = self.request.GET.get('object_id', 0)
+        context['max_file_size'] = get_max_file_upload_size(file_module=True)
+        context['upload_type'] = self.request.GET.get('type', '')
+        context['accept_file_types'] = '|'.join(x[1:] for x in get_allowed_upload_file_exts(context['upload_type']))
+
+        return context
+
+    def form_valid(self, form):
+        app_label = self.request.POST['app_label']
+        model = unicode(self.request.POST['model']).lower()
+        try:
+            object_id = int(self.request.POST['object_id'])
+        except:
+            object_id = 0
+        self.object = form.save()
+        self.object.object_id = object_id
+        try:
+            self.object.content_type = ContentType.objects.get(app_label=app_label, model=model)
+        except ContentType.DoesNotExist:
+            self.object.content_type = None
+        self.object.creator = self.request.user
+        self.object.creator_username = self.request.user.username
+        self.object.owner = self.request.user
+        self.object.owner_username = self.request.user.username
+        self.object.save()
+        f = self.object.file
+        name = self.object.basename()
+        if self.object.f_type == 'image':
+            thumbnail_url = reverse('file', args=[self.object.id, '50x50', 'crop', '88'])
+        else:
+            thumbnail_url = self.object.icon()
+        # truncate name to 20 chars length
+        if len(name) > 20:
+            name = name[:17] + '...'
+        data = {'files': [{
+            'url': self.object.get_absolute_url(),
+            'name': name,
+            'type': mimetypes.guess_type(f.path)[0] or 'image/png',
+            'thumbnailUrl': thumbnail_url,
+            'size': self.object.get_size(),
+            'deleteUrl': reverse('file.delete', args=[self.object.pk]),
+            'deleteType': 'DELETE',}]
+        }
+        return JsonResponse(data)
+
+    def form_invalid(self, form):
+        data = json.loads(form.errors.as_json()).values()
+        errors = '. '.join([x[0]['message'] for x in data])
+        data = {'files': [{
+                'errors': errors,}]
+                }
+        return JsonResponse(data)
+#         data = json.dumps(form.errors)
+#         print('data=', data)
+#         return HttpResponse(content=data, status=400, content_type='application/json')
+
+
 @is_enabled('files')
 @login_required
 def bulk_add(request, template_name="files/bulk-add.html"):
@@ -361,7 +443,7 @@ def bulk_add(request, template_name="files/bulk-add.html"):
 
         data = {'form_set': html}
         response = JSONResponse(data, {}, "application/json")
-        response['Content-Disposition'] = 'inline; filename=files.json'
+        response['Content-Disposition'] = 'inline; filename="files.json"'
         return response
     else:
         file_formset = FileFormSet({
@@ -447,12 +529,16 @@ def delete(request, id, template_name="files/delete.html"):
     if not has_perm(request.user, 'files.delete_file'):
         raise Http403
 
-    if request.method == "POST":
+    if request.method in ["POST", 'DELETE']:
         # reassign owner to current user
         file.owner = request.user
         file.owner_username = request.user.username
         file.save()
         file.delete()
+
+        if request.method == 'DELETE':
+            # used by tinymce upload
+            return HttpResponse('true')
 
         if 'ajax' in request.POST:
             return HttpResponse('Ok')
@@ -465,51 +551,46 @@ def delete(request, id, template_name="files/delete.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
-def tinymce(request, template_name="files/templates/tinymce.html"):
+def tinymce_fb(request, template_name="files/templates/tinymce_fb.html"):
     """
-    TinyMCE Insert/Edit images [Window]
-    Passes in a list of files associated w/ "this" object
-    Examples of "this": Articles, Pages, Releases module
+    Get a list of files (images) for tinymce file browser.
     """
-    from django.contrib.contenttypes.models import ContentType
-    params = {'app_label': 0, 'model': 0, 'instance_id': 0}
-    files = File.objects.none()  # EmptyQuerySet
-    all_files = File.objects.order_by('-create_dt')
-    paginator = Paginator(all_files, 10)
-    all_media = paginator.page(1)
+    query = u''
+    try:
+        page_num = int(request.GET.get('page', 1))
+    except:
+        page_num = 1
 
-    # if all required parameters are in the GET.keys() list
-    if not set(params.keys()) - set(request.GET.keys()):
-
-        for item in params:
-            params[item] = request.GET[item]
-
-        try:  # get content type
-            contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
-
-            instance_id = params['instance_id']
-            if instance_id == 'undefined':
-                instance_id = 0
-
-            files = File.objects.filter(
-                content_type=contenttype,
-                object_id=instance_id
-            )
-
-            for media_file in files:
-                file, ext = os.path.splitext(media_file.file.url)
-                media_file.file.url_thumbnail = '%s_thumbnail%s' % (file, ext)
-                media_file.file.url_medium = '%s_medium%s' % (file, ext)
-                media_file.file.url_large = '%s_large%s' % (file, ext)
-        except ContentType.DoesNotExist:
-            raise Http404
+    form = FileSearchMinForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q', '')
+    #filters = get_query_filters(request.user, 'files.view_file')
+    files = File.objects.all()
+    if not request.user.is_superuser:
+        #  non-admin: show only those images uploaded by this user
+        files = files.filter(Q(creator=request.user) | Q(owner=request.user))
+    files = files.order_by('-create_dt')
+    type = request.GET.get('type', '')
+    if type == 'image':
+        files = files.filter(f_type='image')
+    elif type == 'media':
+        files = files.filter(f_type='video')
+    if query:
+        files = files.filter(Q(file__icontains=query)|
+                             Q(name__icontains=query))
+    paginator = Paginator(files, 10)
+    files = paginator.page(page_num)
 
     return render_to_response(
         template_name, {
-            "media": files,
-            "all_media": all_media,
+            "files": files,
+            'q': query,
+            'page_num': page_num,
+            'page_range': paginator.page_range,
             'csrf_token': csrf_get_token(request),
+            'can_upload_file': has_perm(request.user, 'files.add_file')
         }, context_instance=RequestContext(request))
 
 
@@ -533,53 +614,6 @@ def tinymce_get_files(request):
     raise Http404
 
 
-@flash_login_required
-def swfupload(request):
-    """
-    Handles swfupload.
-    Saves file in session.
-    File is coupled with object on post_save signal.
-    """
-    import re
-    from django.contrib.contenttypes.models import ContentType
-
-    if request.method == "POST":
-
-        form = SwfFileForm(request.POST, request.FILES, user=request.user)
-
-        if not form.is_valid():
-            return HttpResponseServerError(
-                str(form._errors), content_type="text/plain")
-
-        app_label = request.POST['storme_app_label']
-        model = unicode(request.POST['storme_model']).lower()
-        object_id = int(request.POST['storme_instance_id'])
-
-        if object_id == 'undefined':
-            object_id = 0
-
-        file = form.save(commit=False)
-        file.name = re.sub(r'[^a-zA-Z0-9._-]+', '_', file.file.name)
-        file.object_id = object_id
-        file.content_type = ContentType.objects.get(app_label=app_label, model=model)
-        file.is_public = True
-        file.status = True
-        file.allow_anonymous_view = True
-        file.owner = request.user
-        file.owner_username = request.user.username
-        file.creator = request.user
-        file.creator_username = request.user.username
-        file.save()
-
-        d = {
-            "id": file.id,
-            "name": file.name,
-            "url": file.file.url,
-        }
-
-        return HttpResponse(json.dumps([d]), content_type="text/plain")
-
-
 @login_required
 def tinymce_upload_template(request, id, template_name="files/templates/tinymce_upload.html"):
     file = get_object_or_404(File, pk=id)
@@ -596,12 +630,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
-    from django.db.models import Count
-    from datetime import date
-    from dateutil.relativedelta import relativedelta
-
     start_dt = date.today() + relativedelta(months=-2)
-    end_dt = date.today()
+    end_dt = datetime.now()
     file_type = 'all'
 
     form = form_class(
@@ -619,8 +649,6 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(
-        event_id__in=(185000, 186000), create_dt__range=(start_dt, end_dt))
-    event_logs = event_logs | EventLog.objects.values('object_id').filter(
         application='files', action='details', create_dt__range=(start_dt, end_dt))
 
     if file_type != 'all':
@@ -676,7 +704,7 @@ class JSONResponse(HttpResponse):
     """JSON response class."""
     def __init__(self, obj='', json_opts={}, content_type="application/json", *args, **kwargs):
         content = simplejson.dumps(obj, **json_opts)
-        super(JSONResponse, self).__init__(content, mimetype, *args, **kwargs)
+        super(JSONResponse, self).__init__(content, content_type, *args, **kwargs)
 
 
 @csrf_exempt

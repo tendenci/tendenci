@@ -40,6 +40,8 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'), default=False)
     full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
     link_title = models.CharField(_('Link Title'), max_length=200, blank=True)
+    video_embed_url = models.URLField(_('Embed URL'), blank=True, null=True,
+                                      help_text=_('Embed URL for a Youtube or Vimeo video'))
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
@@ -134,7 +136,6 @@ class Story(OrderingBaseModel, TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
-
 
     @property
     def category_set(self):

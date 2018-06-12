@@ -1,3 +1,4 @@
+from __future__ import print_function
 from PIL import Image
 from os.path import exists
 from cStringIO import StringIO
@@ -7,6 +8,7 @@ import urllib
 import urllib2
 import socket
 from urlparse import urlparse
+import mimetypes
 from django.db import connection
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -14,11 +16,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
-from tendenci.apps.base.utils import image_rescale
+from tendenci.apps.base.utils import image_rescale, apply_orientation
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 from tendenci.apps.files.models import File as TFile
-from tendenci.apps.files.models import file_directory
 from tendenci.apps.site_settings.utils import get_setting
 
 
@@ -54,6 +55,10 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         return ''
 
 
+def get_image_from_path(path):
+    return Image.open(path)
+
+
 def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
     Builds a resized image based off of the original image.
@@ -71,6 +76,8 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
             image = Image.open(file.path)  # get image
         else:
             raise Http404
+        
+    image = apply_orientation(image)
 
     image_options = {'quality': quality}
     if image.format == 'GIF':
@@ -273,7 +280,7 @@ class AppRetrieveFiles(object):
 
             articles = Article.objects.all()
             for article in articles:
-                print 'Processing article - ', article.id,  article
+                print('Processing article - ', article.id,  article)
                 kwargs['instance'] = article
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   article.get_absolute_url())
@@ -286,7 +293,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.news.models import News
             news = News.objects.all()
             for n in news:
-                print 'Processing news -', n.id, n
+                print('Processing news -', n.id, n)
                 kwargs['instance'] = n
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   n.get_absolute_url())
@@ -298,7 +305,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.pages.models import Page
             pages = Page.objects.all()
             for page in pages:
-                print 'Processing page -', page.id, page
+                print('Processing page -', page.id, page)
                 kwargs['instance'] = page
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   page.get_absolute_url())
@@ -310,7 +317,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.jobs.models import Job
             jobs = Job.objects.all()
             for job in jobs:
-                print 'Processing job -', job.id, job
+                print('Processing job -', job.id, job)
                 kwargs['instance'] = job
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   job.get_absolute_url())
@@ -322,7 +329,7 @@ class AppRetrieveFiles(object):
             from tendenci.apps.events.models import Event, Speaker
             events = Event.objects.all()
             for event in events:
-                print 'Processing event -', event.id, event
+                print('Processing event -', event.id, event)
                 kwargs['instance'] = event
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   event.get_absolute_url())
@@ -334,7 +341,7 @@ class AppRetrieveFiles(object):
             # speakers
             speakers = Speaker.objects.all()
             for speaker in speakers:
-                print 'Processing event speaker -', speaker.id, speaker
+                print('Processing event speaker -', speaker.id, speaker)
                 kwargs['instance'] = speaker
                 [event] = speaker.event.all()[:1] or [None]
                 if event:
@@ -356,7 +363,7 @@ class AppRetrieveFiles(object):
                             """ % mig_file_table)
             row = cursor.fetchone()
             if row[0] == 0:
-                print 'File migration table %s does not exist. Exiting..' % mig_file_table
+                print('File migration table %s does not exist. Exiting..' % mig_file_table)
                 return
             tfiles = TFile.objects.all()
             for tfile in tfiles:
@@ -364,13 +371,13 @@ class AppRetrieveFiles(object):
                                                   tfile.get_absolute_url())
                 self.check_file(tfile, cursor, mig_file_table, **kwargs)
 
-        print "\nTotal links updated for %s: " % app_name, self.total_count
+        print("\nTotal links updated for %s: " % app_name, self.total_count)
 
     def process_content(self, content, **kwargs):
         self.replace_dict = {}
 
         matches = self.p.findall(content)
-        print '... ', len(matches), 'matches found.'
+        print('... ', len(matches), 'matches found.')
 
         for match in matches:
             link = match[1]
@@ -382,7 +389,7 @@ class AppRetrieveFiles(object):
             for url_find, url_repl in self.replace_dict.iteritems():
                 content = content.replace(url_find, url_repl)
             count = self.replace_dict.__len__()
-            print '...', count, 'link(s) replaced.'
+            print('...', count, 'link(s) replaced.')
             self.total_count += count
         else:
             updated = False
@@ -418,7 +425,7 @@ class AppRetrieveFiles(object):
                         tfile.file.save(file_path,
                                         ContentFile(
                                     urllib2.urlopen(t4_url).read()))
-                        print tfile.get_absolute_url(), 'file downloaded.'
+                        print(tfile.get_absolute_url(), 'file downloaded.')
                     else:
                         # t4_url not exist
                         self.add_broken_link(t4_url, **kwargs)
@@ -449,7 +456,7 @@ class AppRetrieveFiles(object):
                                          self.src_domain,
                                          self.src_domain.lstrip('www.')):
             if not self.link_exists(relative_url, hostname):
-                print '-- External broken link: ', link
+                print('-- External broken link: ', link)
                 self.add_broken_link(link, **kwargs)
             return
 
@@ -461,7 +468,7 @@ class AppRetrieveFiles(object):
                 tfile = self.save_file_from_url(url, kwargs.get('instance'))
                 self.replace_dict[link] = tfile.get_absolute_url()
             else:
-                print '** Broken link - ', link, "doesn't exist on both sites."
+                print('** Broken link - ', link, "doesn't exist on both sites.")
                 self.add_broken_link(link, **kwargs)
 
     def link_exists(self, relative_link, domain):
@@ -486,7 +493,7 @@ class AppRetrieveFiles(object):
         Append the broken link to the list.
         """
         key = kwargs['content_url']
-        if not key in self.broken_links.keys():
+        if key not in self.broken_links.keys():
             self.broken_links[key] = [broken_link]
         else:
             self.broken_links[key].append(broken_link)
@@ -513,8 +520,37 @@ class AppRetrieveFiles(object):
 
 
 def get_max_file_upload_size(file_module=False):
-    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or 
+    global_max_upload_size = (get_setting('site', 'global', 'maxfilesize') or
                               "26214400")  # default value if ever site setting is missing
     if file_module:
         return int(get_setting('module', 'files', 'maxfilesize') or global_max_upload_size)
     return int(global_max_upload_size)
+
+
+def get_allowed_upload_file_exts(file_type='other'):
+    types = {'image': ('.gif', '.jpeg', '.jpg', '.png', '.tif', '.tiff', '.bmp'),
+             'video': ('.wmv', '.mov', '.mpg', '.mp4', '.m4v'),
+             'other': ('.txt','.doc', '.docx', '.csv', '.xls', '.xlsx', '.ppt', '.pptx', '.pps', '.ppsx', '.vcf', '.pdf', '.zip'),
+             }
+    if settings.ALLOW_MP3_UPLOAD:
+        types['other'] += ('.mp3',)
+
+    if file_type in ['image', 'video']:
+        return types[file_type]
+
+    return types['image'] + types['video'] + types['other']
+
+
+def get_allowed_mimetypes(file_exts):
+    if not file_exts or not hasattr(file_exts, '__iter__'):
+        return None
+
+    types_map = mimetypes.types_map
+    exts = types_map.keys()
+    allowed_mimetypes = []
+    for ext in file_exts:
+        if ext in exts:
+            mime_type = types_map[ext]
+            if mime_type not in allowed_mimetypes:
+                allowed_mimetypes.append(types_map[ext])
+    return allowed_mimetypes

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import simplejson as json
 
@@ -10,7 +11,7 @@ from tendenci.apps.site_settings.models import Setting
 class Command(BaseCommand):
     """Encrypts all Setting values if they are not already encrypted
     Usage:
-        manage.py encrypt_settings
+        python manage.py encrypt_settings
     """
     help = 'Encrypt all settings if they are not already encrypted'
 
@@ -21,6 +22,6 @@ class Command(BaseCommand):
         settings = Setting.objects.all()
         for setting in settings:
             if not setting.is_secure:
-                print "Encrypting %s %s %s" % (setting.scope, setting.scope_category, setting.name)
+                print("Encrypting %s %s %s" % (setting.scope, setting.scope_category, setting.name))
                 setting.set_value(setting.value)
                 setting.save()

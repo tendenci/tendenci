@@ -10,7 +10,7 @@ class Command(BaseCommand):
     and delete all soft deleted items.
 
     Usage:
-        .manage.py delete_soft_deleted_items
+        python manage.py delete_soft_deleted_items
     """
     def handle(self, *args, **options):
         from tendenci.apps.perms.models import TendenciBaseModel
@@ -22,5 +22,5 @@ class Command(BaseCommand):
                 else:
                     items = model.objects.filter(status=False)
                 for item in items:
-                    #print 'Deleting ', item
+                    #print('Deleting ', item)
                     item.hard_delete()

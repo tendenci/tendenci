@@ -117,13 +117,12 @@ class MultipleFileAdmin(admin.ModelAdmin):
         return render(request,
             'admin/files/file/multiple_file_upload.html',{
             'adminform': form
-        });
+        })
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:multiplefile_add'))
 
 admin.site.register(MultipleFile, MultipleFileAdmin)
-
 
 
 class CategoryAdminInline(admin.TabularInline):
@@ -135,7 +134,8 @@ class CategoryAdminInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
+    list_display_links = ('name',)
     fieldsets = ((None, {'fields': ('name',)}),)
     inlines = (CategoryAdminInline,)
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group as Auth_Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
@@ -25,7 +26,7 @@ class Command(BaseCommand):
         except Auth_Group.DoesNotExist:
             auth_group = Auth_Group(name=name)
             auth_group.save()
-            print 'Successfully added admin auth group "%s".' % name
+            print('Successfully added admin auth group "%s".' % name)
 
         # assign permission to group, but exclude the auth content
         content_to_exclude = ContentType.objects.filter(app_label='auth')
@@ -33,7 +34,7 @@ class Command(BaseCommand):
         auth_group.permissions = permissions
         auth_group.save()
 
-        print "Adding users (admins) to admin auth group...\n"
+        print("Adding users (admins) to admin auth group...\n")
 
         count = 0
 
@@ -46,9 +47,9 @@ class Command(BaseCommand):
             u.save()
 
             count += 1
-            print 'User "%s(%s)" -- added' % (u.get_full_name(), u.username)
+            print('User "%s(%s)" -- added' % (u.get_full_name(), u.username))
 
         if count == 1:
-            print "1 user added"
+            print("1 user added")
         else:
-            print "%d users added" % count
+            print("%d users added" % count)

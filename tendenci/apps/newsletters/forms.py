@@ -11,7 +11,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
-from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set
+from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
 from tendenci.apps.newsletters.models import (
     THIS_YEAR,
@@ -60,14 +60,14 @@ class GenerateForm(forms.Form):
 
 
 class OldGenerateForm(forms.ModelForm):
+    default_template = forms.ChoiceField(widget=forms.RadioSelect, choices=get_default_template_choices())
     class Meta:
         model = Newsletter
         fields = "__all__"
         widgets = {
             'subject': forms.TextInput(attrs={'size': 50}),
-            'event_start_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
-            'event_end_dt': SelectDateWidget(None, range(1920, THIS_YEAR+10)),
-            'default_template': forms.RadioSelect,
+            'event_start_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
+            'event_end_dt': SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)),
             'format': forms.RadioSelect
         }
 
@@ -80,6 +80,8 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['default_template'].blank = False
         self.fields['email'].required = False
         self.fields['group'].empty_label = _('SELECT ONE')
+        self.fields['event_start_dt'].initial = datetime.date.today()
+        self.fields['event_end_dt'].initial = datetime.date.today() + datetime.timedelta(days=30)
 
         for key in not_required:
             self.fields[key].required = False
@@ -166,7 +168,7 @@ class MarketingStepThreeForm(forms.ModelForm):
 class MarketingStepFourForm(forms.ModelForm):
     class Meta:
         model = Newsletter
-        fields = ('send_to_email2', 'sla',)
+        fields = ('subject', 'send_to_email2', 'sla', 'member_only', 'group')
 
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)
@@ -178,6 +180,16 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+
+    def clean_group(self):
+        data = self.cleaned_data
+        group = data.get('group', None)
+        member_only = data.get('member_only', False)
+
+        if not member_only and not group:
+            raise forms.ValidationError(_('Usergroup field is required if Send to members only is unchecked.'))
+
+        return group
 
 
 class MarketingStepFiveForm(forms.ModelForm):
@@ -227,6 +239,3 @@ class MarketingStep2EmailFilterForm(forms.Form):
         queryset = queryset.filter(**query)
 
         return queryset
-
-
-

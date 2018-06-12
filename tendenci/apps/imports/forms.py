@@ -25,7 +25,7 @@ class UserImportForm(forms.Form):
 
     def clean(self):
         # test if the file is missing any key
-        if self.cleaned_data.has_key('key') and self.cleaned_data.has_key('file'):
+        if 'key' in self.cleaned_data and 'file' in self.cleaned_data:
             key_list = self.cleaned_data["key"].split(',')
             file = self.cleaned_data['file']
             file_content = file.read()

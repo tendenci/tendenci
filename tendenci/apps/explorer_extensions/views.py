@@ -1,3 +1,4 @@
+from __future__ import print_function
 import subprocess
 
 from django.shortcuts import get_object_or_404, render_to_response, render, redirect
@@ -11,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from explorer import app_settings
 from explorer.views import change_permission
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.explorer_extensions.models import DatabaseDumpFile
 from tendenci.apps.explorer_extensions.forms import DatabaseDumpForm
@@ -29,13 +31,13 @@ def export_page(request):
     if request.method == 'POST':
         form = DatabaseDumpForm(request.POST)
         if form.is_valid():
-            print "Form submitted is valid!"
+            print("Form submitted is valid!")
             if can_create_dump():
                 new_obj = DatabaseDumpFile()
                 new_obj.author = request.user
                 new_obj.export_format = form.cleaned_data['format']
                 new_obj.save()
-                subprocess.Popen(["python", "manage.py",
+                subprocess.Popen([python_executable(), "manage.py",
                               "create_database_dump",
                               str(request.user.pk), form.cleaned_data['format'], str(new_obj.pk) ])
                 messages.add_message(request, messages.INFO, "Success! The system is now generating your export file. Please reload in a few seconds to update the list.")
@@ -43,7 +45,6 @@ def export_page(request):
                 messages.add_message(request, messages.ERROR, "Cannot create file. You have already reached the limit of existing dump files. Please delete old unused exports and try again.")
     else:
         form = DatabaseDumpForm()
-
 
     # get all active DB Dump Files
     # if current existing DB Dump Files are less than the limit, enable form submission
@@ -67,7 +68,7 @@ def download_dump(request, dump_id):
         raise Http404
     wrapper = FileWrapper(dbdump.dbfile)
     response = HttpResponse(wrapper, content_type='application/octet-stream')
-    response['Content-Disposition'] = 'attachment; filename=db_export.%s' % dbdump.export_format
+    response['Content-Disposition'] = 'attachment; filename="db_export.%s"' % dbdump.export_format
     return response
 
 
@@ -83,4 +84,3 @@ def delete_dump(request, dump_id):
 def can_create_dump():
     db_objs = DatabaseDumpFile.objects.filter(~Q(status='expired'))
     return db_objs.count() < 3
-

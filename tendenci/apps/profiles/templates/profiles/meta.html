@@ -41,6 +41,9 @@
                 <li>
                     <a href="{% url "profile.edit_groups" profile.user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
+                 <li>
+                    <a href="{% url "profile.edit_education" profile.user.username %}" class="educations" title=="Edit Education">{% trans "Edit Education" %}</a>
+                </li>
                 {% endif %}
                 <li>
                     <a href="{% url 'auth_password_change' profile.user_id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
@@ -50,6 +53,9 @@
                 </li>
                 <li>
                     <a href="{% url "profile.edit_perms" profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
+                </li>
+                <li>
+                    <a href="{% url "user.skills_edit" profile.username %}" class="skills" title="Edit Skills">{% trans "Edit Skills" %}</a>
                 </li>
                 {% if request.user.is_superuser and MODULE_IMPERSONATION_ENABLED %}
 

@@ -109,6 +109,7 @@ class GroupForm(TendenciBaseForm):
         model = Group
         fields = ('name',
                   'label',
+                  'slug',
                   'entity',
                   'dashboard_url',
                   'type',
@@ -130,6 +131,7 @@ class GroupForm(TendenciBaseForm):
         fieldsets = [(_('Group Information'), {
                       'fields': ['name',
                                  'label',
+                                 'slug',
                                  'entity',
                                  'dashboard_url',
                                  'email_recipient',
@@ -191,7 +193,7 @@ class GroupMembershipBulkForm(forms.Form):
         self.fields['members'].choices = member_choices(group, member_label)
 
     members = forms.ModelMultipleChoiceField(
-                    queryset=User.objects.filter(is_active=True),
+                    queryset=User.objects.all(),
                     required=False)
     role = forms.CharField(required=False, max_length=255)
     status = forms.BooleanField(required=False, initial=True)

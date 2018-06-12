@@ -1,0 +1,21 @@
+[flake8]
+ignore =
+  # Unused variables
+  F841,
+  # Import issues
+  E401,E402,F401,
+  # Unnecessary lambdas
+  E731,
+
+  # Inline statement after colon
+  E701,
+  # Indentation warnings
+  E111,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,
+  # Spacing warnings within statements
+  E201,E202,E203,E221,E222,E225,E226,E228,E231,E241,E251,E271,W503,
+  # Spacing between function definitions
+  E301,E302,E305,
+  # Comment formatting issues
+  E115,E261,E262,E265,E266,
+  # Line length
+  E501

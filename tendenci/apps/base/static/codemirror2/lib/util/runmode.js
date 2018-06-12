@@ -28,7 +28,7 @@ CodeMirror.runMode = function(string, modespec, callback, options) {
         }
       }
 
-      if (style) 
+      if (style)
         accum.push("<span class=\"cm-" + CodeMirror.htmlEscape(style) + "\">" + escaped + "</span>");
       else
         accum.push(escaped);

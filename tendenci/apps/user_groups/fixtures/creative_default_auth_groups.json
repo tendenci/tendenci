@@ -1,0 +1,138 @@
+[
+{
+    "fields": {
+        "name": "Committees",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 1
+},
+{
+    "fields": {
+        "name": "Technical Interest Groups",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 2
+},
+{
+    "fields": {
+        "name": "Study Groups",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 3
+},
+{
+    "fields": {
+        "name": "The Association",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 4
+},
+{
+    "fields": {
+        "name": "Art History",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 5
+},
+{
+    "fields": {
+        "name": "Board of Directors",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 6
+},
+{
+    "fields": {
+        "name": "Digital Photography",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 7
+},
+{
+    "fields": {
+        "name": "Global Climate Change",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 8
+},
+{
+    "fields": {
+        "name": "Open Source Programming",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 9
+},
+{
+    "fields": {
+        "name": "Welcome Committee",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 10
+},
+{
+    "fields": {
+        "name": "Membership: Student",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 11
+},
+{
+    "fields": {
+        "name": "Membership: Regular",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 12
+},
+{
+    "fields": {
+        "name": "Membership: Individual Corporate Member",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 13
+},
+{
+    "fields": {
+        "name": "Membership: Basic Membership",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 14
+},
+{
+    "fields": {
+        "name": "Membership: Student membership",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 15
+},
+{
+    "fields": {
+        "name": "YOUR SITE NAME HERE",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 16
+},
+{
+    "fields": {
+        "name": "newsletter",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 17
+}
+]

@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.db.models.fields import AutoField
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
+from django.utils.html import format_html
 from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
@@ -27,7 +28,6 @@ from tendenci.apps.site_settings.utils import get_setting
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
-    from django.core.mail.message import EmailMessage
     from django.template import RequestContext
 
     subject = 'User Account Modification Notice for %s' % get_setting('site', 'global', 'sitedisplayname')
@@ -39,12 +39,13 @@ def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs)
 
     sender = settings.DEFAULT_FROM_EMAIL
     recipients = ['%s<%s>' % (r[0], r[1]) for r in settings.ADMINS]
-    msg = EmailMessage(subject, body, sender, recipients)
-    msg.content_subtype = 'html'
-    try:
-        msg.send()
-    except:
-        pass
+    email = Email(
+            sender=sender,
+            recipient=recipients,
+            subject=subject,
+            body=body)
+    email.send(fail_silently=True)
+
 
 # return admin auth group as a list
 def get_admin_auth_group(name="Admin"):
@@ -70,7 +71,6 @@ def user_add_remove_admin_auth_group(user, auth_group=None):
             else:
                 auth_group_name = 'Admin'
             auth_group = get_admin_auth_group(name=auth_group_name)
-
 
         if not user.id: # new user
             user.groups = [auth_group]
@@ -214,16 +214,25 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     return 'user.%s' % int_string
 
 
-def get_member_reminders(user):
+def get_member_reminders(user, view_self=False):
     active_qs = Q(status_detail__iexact='active')
     expired_qs = Q(status_detail__iexact='expired')
 
     memberships = user.membershipdefault_set.filter(
         status=True) & user.membershipdefault_set.filter(
             active_qs | expired_qs).order_by('expire_dt')
+    count = len(memberships)
 
     reminders = ()
     for membership in memberships:
+        # renew_link depends on membership.app
+        if not membership.app:
+            membership.get_app()
+
+        if count > 1:
+            my_msg = 'Your membership for %s' % membership.membership_type.name
+        else:
+            my_msg = 'Your membership'
 
         renew_link = u''
         if hasattr(membership, 'app') and membership.app:
@@ -238,24 +247,21 @@ def get_member_reminders(user):
         if membership.in_grace_period() or membership.is_expired():
             if membership.can_renew():
                 # expired but can renew
-                message = 'Your membership for %s has expired. Renewal is available until %s.' % (
-                    membership.membership_type.name,
-                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p'))
-                reminders += ((message, renew_link, 'Renew your membership now'),)
+                message = format_html(
+                    '{} has expired. <a href="{}">Renew Now</a> to remain an active member!',
+                    my_msg, renew_link)
+                reminders += ((message, renew_link, 'Renew Now'),)
             else:
                 # expired and out of renewal period
-                message = 'Your membership for %s has expired.' % (
-                    membership.membership_type.name)
+                message = format_html('{} has expired.', my_msg)
                 reminders += ((message, renew_link, 'Re-register as a member here'),)
         else:
             # not expired, but in renewal period
             if membership.can_renew():
-                message = 'Your membership for %s will expire on %s. Renewal is available until %s.' % (
-                    membership.membership_type.name,
-                    membership.expire_dt.strftime('%d-%b-%Y'),
-                    membership.get_renewal_period_end_dt().strftime('%d-%b-%Y %I:%M %p')
-                )
-                reminders += ((message, renew_link, 'Renew your membership here'),)
+                message = format_html(
+                    '{} will expire on {}. <a href="{}">Renew Now</a> to remain an active member!',
+                    my_msg, membership.expire_dt.strftime('%d-%b-%Y'), renew_link)
+                reminders += ((message, renew_link, 'Renew Here'),)
 
     return reminders
 
@@ -325,7 +331,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             if not field.__class__ == AutoField]
         profile_field_list = [
             name for name in profile_field_list
-            if not name in base_field_list]
+            if name not in base_field_list]
         profile_field_list.remove('guid')
         profile_field_list.remove('user')
         # append base fields at the end
@@ -438,7 +444,6 @@ def check_missing_fields(user_data, key, **kwargs):
     return is_valid, missing_field_msg
 
 
-
 def get_user_by_email(email):
     """
     Get user by email address.
@@ -467,7 +472,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     """
     Get user by first name, last name and phone.
     """
-    if not any ([first_name, last_name, phone]):
+    if not any([first_name, last_name, phone]):
         return None
 
     profiles = Profile.objects.filter(
@@ -478,7 +483,7 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
                     '-user__is_superuser',
                     '-user__is_staff')
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 def get_user_by_fn_ln_company(first_name, last_name, company):
@@ -497,7 +502,7 @@ def get_user_by_fn_ln_company(first_name, last_name, company):
                     '-user__is_staff'
                         )
     if profiles:
-        return [profile.user  for profile in profiles]
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -516,12 +521,12 @@ class ImportUsers(object):
         self.uimport = uimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.user_fields = dict([(field.name, field) \
-                            for field in User._meta.fields \
+        self.user_fields = dict([(field.name, field)
+                            for field in User._meta.fields
                             if field.get_internal_type() != 'AutoField'])
-        self.profile_fields = dict([(field.name, field) \
-                            for field in Profile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.profile_fields = dict([(field.name, field)
+                            for field in Profile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['user', 'guid']])
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
@@ -537,7 +542,6 @@ class ImportUsers(object):
             [self.uimport.group] = Group.objects.filter(id=self.uimport.group_id)[:1] or [None]
         else:
             self.uimport.group = None
-
 
     def init_summary(self):
         return {
@@ -612,7 +616,6 @@ class ImportUsers(object):
                                    self.user_data['company'])
             elif self.key == 'username':
                 users = User.objects.filter(username__iexact=self.user_data['username'])
-
 
             if users:
                 user_display['action'] = 'update'
@@ -702,7 +705,7 @@ class ImportUsers(object):
         self.assign_import_values_from_dict(profile, action_info['action'])
         profile.user = user
 
-        if profile.status == None or profile.status == '' or \
+        if profile.status is None or profile.status == '' or \
             self.user_data.get('status', '') == '':
             profile.status = True
         if not profile.status_detail:
@@ -725,7 +728,6 @@ class ImportUsers(object):
                       'owner_username': self.request_user.username}
                 self.uimport.group.add_user(user, **params)
 
-
     def assign_import_values_from_dict(self, instance, action):
         """
         Assign the import value from a dictionary object
@@ -742,9 +744,9 @@ class ImportUsers(object):
                 if any([
                         action == 'insert',
                         self.uimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.user_data[field_name]
                     value = self.clean_data(value, assign_to_fields[field_name])
@@ -757,7 +759,7 @@ class ImportUsers(object):
                 if field_name not in self.private_settings.keys():
                     value = self.get_default_value(assign_to_fields[field_name])
 
-                    if value != None:
+                    if value is not None:
                         setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):
@@ -786,8 +788,11 @@ class ImportUsers(object):
             return 0
 
         if field_type == 'ForeignKey':
-            [value] = field.related.parent_model.objects.all(
-                                        )[:1] or [None]
+            try:
+                model = field.related.parent_model()
+            except AttributeError:
+                model = field.related.model
+            [value] = model.objects.all()[:1] or [None]
             return value
 
         return ''
@@ -875,13 +880,19 @@ class ImportUsers(object):
                 value = None
 
             if value:
-                [value] = field.related.parent_model.objects.filter(
-                                            pk=value)[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.filter(pk=value)[:1] or [None]
 
             if not value and not field.null:
                 # if the field doesn't allow null, grab the first one.
-                [value] = field.related.parent_model.objects.all(
-                                        ).order_by('id')[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value
 

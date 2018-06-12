@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
@@ -19,7 +20,6 @@ class Command(BaseCommand):
         parser.add_argument('import_id', type=int)
         parser.add_argument('user_id', type=int)
 
-
     def handle(self, *args,  **options):
         from tendenci.apps.memberships.models import MembershipImport
         from tendenci.apps.memberships.models import MembershipImportData
@@ -35,8 +35,8 @@ class Command(BaseCommand):
         for idata in data_list:
             try:
                 imd.process_default_membership(idata)
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
 
             mimport.num_processed += 1
 
@@ -56,4 +56,3 @@ class Command(BaseCommand):
 
         # generate a recap file
         mimport.generate_recap()
-

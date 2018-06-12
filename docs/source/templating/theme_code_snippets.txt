@@ -2,7 +2,9 @@ Theme: Code Snippets for Dynamic Content
 ========================================
 
 You can pull various pieces of dynamic content into your Tendenci theme template. 
-Before adding the snippets below be sure that your template file has the "load" tag for that module at the top of your page. Example: if you were to add an event feed you would want `{% load event_tags %}` pasted at the very top of your html doc. 
+Before adding the snippets below be sure that your template file has the "load" tag for that module at the top of your page. Example: if you were to add an event feed you would want `{% load event_tags %}` pasted at the very top of your html doc.
+
+For more tag references, check out the docs built into your site at: yourdomain/admin/doc/tags/
 
 Event Feed
 ------------
@@ -28,7 +30,7 @@ Then add the following code snippet where you want to place your event feed:
 
 
 Single Event (featured event)
-----------------------------
+-----------------------------
 Add `{% load event_tags %}` to the very top of your html page
 
 
@@ -66,8 +68,13 @@ Then add the following code snippet where you want to place your event feed:
    </section>
 
 
+Time Display on Event Feed (hide time if all day)
+-------------------------------------------------
+{% if event.all_day %}{{ event.start_dt|date:"F j, Y" }}{% else %}{{ event.start_dt }}{% endif %}
+
+
 Articles Feed
-------------
+-------------
 Add `{% load article_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your articles feed:
@@ -75,11 +82,22 @@ Then add the following code snippet where you want to place your articles feed:
 .. code-block:: django
 
     {% list_articles as articles_list limit=3 %}
-	<ul class="list-unstyled">
-	{% for article in articles_list %}
-    <li><a href="{{ article.get_absolute_url }}"><strong>{{ article.headline }}</strong></a><br>
-      <em>{{ article.summary|striptags|safe|truncatewords:"6" }}</em></li>
-    {% endfor %}
+    <ul class="list-unstyled">
+        {% for article in articles_list %}
+        <li>
+          <a href="{{ article.get_absolute_url }}"><strong>{{ article.headline }}</strong></a>
+           <br> 
+           <span>
+             {% if article.summary %}
+             
+             {{ article.summary|striptags|truncatewords:"6"|safe }}
+              {% else %}            
+             {{ article.body|striptags|truncatewords:"6"|safe }} 
+       
+             {% endif %}
+           </span>
+       </li>
+        {% endfor %}
     </ul>
 
 
@@ -93,9 +111,155 @@ Then add the following code snippet where you want to place your box:
 .. code-block:: django
 
     {% box 13 %}
+    
+Inside the boxes interface, adding code allows you to add images, add Font-Awesome Icons, and responsive Bootstrap Layouts.
+
+.. image:: img/boxexample.png
+
+.. Tip:: 
+	
+	.. hidden-code-block:: django
+		:label: + Show Added HTML for Layout
+		
+		<div class="bg-dark">
+		      <div class="container text-left">
+			 <div class="col-md-4 call-to-action">
+			    {% box 5 %} 
+			 </div>
+			 <div class="col-md-8 call-to-action">
+			    {% box 4 %} 
+			 </div>
+		      </div>
+		</div>
+	
+	.. image:: img/insidebox.png 
+		
+	.. hidden-code-block:: html
+		:label: + Show Added HTML Inside Donation Box <> (Left)
+
+		<h3 class="fa fa-money"> &nbsp; Donate </h3>
+
+		<p>Online Donations from supporters like you allow us to achieve our purpose throughout the year. We appreciate your generous donation; please donate today using our simple online donation!</p>
+
+		<p> <a href="/donations/" target="_self"> Donate Now </a> &nbsp;</p>
+		<p> &nbsp; </p>
+		
+	.. hidden-code-block:: css
+		:label: + Show Added CSS
+		
+		/* BG-DARK HOMEPAGE */
+		.bg-dark {
+		  padding: 20px 10px 50px 20px;
+		  background: #2b2b2b;
+		}
+		#box-5 , 
+		#box-4 {
+		  border: 1px solid #54b848;
+		  border-radius: 8px;
+		  margin:20px;
+		  background-color: #323232;
+		}
+		#box-5 h3 {
+		  font-size: 45px;
+		  text-transform:none;
+		  border-bottom: 1px solid #54b848;
+		  padding:0 0 10px 30px;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  color: #54b848;
+		}
+		#box-4 h3 {
+		  font-size: 45px;
+		  text-transform:none;
+		  padding:0 0 0 30px;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  font-size:35px;
+		  color: #54b848;  
+		}
+		#box-5 p>a {
+		  background-color: #54b848;
+		  color: white;
+		  text-align: center;
+		  padding: 10px 20px;
+		  border-radius: 8px;
+		  font-weight:600;
+		  text-transform: uppercase;
+		  float: right;
+		  position: relative;
+		  left: -20%;
+		  font-size: 20px;
+		}
+		#box-5 p>a:hover {
+		  text-decoration:none;
+		  background-color: #3333ff;
+		}
+		#box-4 p>a {
+		  color:#54b848;
+		  font-weight:600;
+		  font-size:18px;
+		}
+		#box-5 p {
+		  font-weight:200;
+		  padding: 10px 30px 0 30px;
+		}
+		#box-4 p {
+		  font-weight:200;
+		  padding: 0px 30px 0 30px;
+		}
+		
+		
+		
+Bootstrap Carousel
+------------------
+Add `{% load story_tags %}` to the very top of your html page
+
+Then add the following code snippet where you want to place your carousel:
+
+.. code-block:: django
+
+	{% list_stories as stories_list limit=10 tags="rotator" quality="80" data-interval="5000" %}
+	<div id="myCarousel" class="carousel slide" data-ride="carousel">
+ 	   <ol class="carousel-indicators">
+   	     {% for story in stories_list %}
+   	     <li data-target="#myCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %} class="active"{% endif %}></li>
+   	     {% endfor %}
+ 	   </ol>
+ 	  <!-- begin: carousel-inner -->
+ 	  <div class="carousel-inner" role="listbox">
+  	    <!-- begin: item active -->
+  	    {% for story in stories_list %} 
+   	   <div class="item {% if forloop.first %} active {% endif %}">
+      	  <img class="img-responsive" src="{{ story.photo.url }}" alt="{{ story.title }}">
+      	    <div class="container-fluid">
+         	  <!-- begin: carousel-caption -->
+          	  <div class="carousel-caption">
+            	  <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+             	  <p class="story-summary">{{ story.content|safe|truncatewords:12 }}</p>
+             	  <p><a class="btn btn-lg btn-primary" href="{{ story.full_story_link }}" role="button">Read more</a></p>
+     	      </div>
+       	      <!-- end: carousel-caption -->
+     	    </div>
+   	   </div>
+   	   <!-- end: item -->
+     	{% endfor %}   
+  	 </div>
+  	 <!-- end: carousel-inner -->
+  	  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+  	   <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+ 	   <span class="sr-only">Previous</span>
+ 	  </a>
+ 	  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+ 	   <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+ 	   <span class="sr-only">Next</span>
+ 	  </a>
+    </div> 
+
 
 Directories Carousel
-----------
+--------------------
 Add `{% load directory_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your directories:
@@ -117,17 +281,17 @@ Then add the following code snippet where you want to place your directories:
                </li>
              {% endfor %}
              </ul>
-           </div><!--/.carousel-items-->
-         </div><!--/#carousel-wrap-->
+           </div><!--end: .carousel-items-->
+         </div><!--end: #carousel-wrap-->
          <div class="next" id="port-right"></div>
-       </div><!--/#carousel-container--> 
-     </div><!--/.col -->   
-  </div><!--/ #directories -->
+       </div><!--end: #carousel-container--> 
+     </div><!--end: .col -->   
+  </div><!--end: #directories -->
 
 
 
 Directories (use with flexslider)
-----------
+---------------------------------
 Add `{% load directory_tags %}` to the very top of your html page
 
 Then add the following code snippet where you want to place your directories:
@@ -164,9 +328,168 @@ Then add the following code snippet where you want to place your jobas:
    <h4>{% if user.profile.is_superuser %}<a href="/jobs/add/">{Add your first job</a>{% else %}<a href="#">Great New Job</a>{% endif %}</h4>
      <p>Houston: A new job opening is available...</p>
      {% endfor %}
+     
+Simple Job Feed Layout
+
+.. image:: img/jobboard.png 
+
+.. Tip:: 
+	
+	.. hidden-code-block:: django
+		:label: + Show HTML
+		
+			 <!-- homepage-jobs board -->
+			  <section id="homepage-jobs-board">  
+			    <div class="container">
+			      <div class="row">
+				<div class="homepage-jobs-board-inner">
+
+				  <div class="col-md-4 col-sm-12 col-xs-12">
+				    <div class="homepage-jobs-ctas">
+
+				      <div class="homepage-jobs-cta">
+					<h3>Hire in our Network</h3>
+					<p>Learn more and post a job.</p>
+					<div class="homepage-job-post-button">
+					  <a href="/jobs/add/"><h4>Post a Job</h4></a>
+					</div>
+				      </div>
+
+				      <div class="homepage-jobs-cta">
+					<h3>Get Hired</h3>
+					<p>Search our jobs board and find a job.</p>
+					<div class="homepage-job-post-button">
+					  <a href="/jobs/"><h4>Visit Job Board</h4></a>
+					</div>
+				      </div>
+
+				    </div>
+				  </div>
+
+				  <div class="col-md-8 col-sm-12 col-xs-12">
+				    <div class="homepage-jobs-list" >
+				      <h3>Job Board</h3>
+
+				      {% list_jobs as jobs_list limit=3 %}  
+				      {% for job in jobs_list %}
+
+				      <h4><a href="{{ job.get_absolute_url }}">
+					{{ job.title }} 
+					</a></h4>
+
+				      <p>{{ job.description|striptags|truncatewords:"10"|safe  }} 
+					<br /><strong>Posted on: {% now "M d" %}</strong></p>
+
+				      {% endfor %}     
+
+				      <div class="view-more-jobs">
+					<div class="col-md-12">
+					  <h4><a href="/jobs/"> View more Jobs &raquo;</a></h4>
+					</div>
+				      </div>
+
+				    </div>
+				  </div>
+
+				</div> 
+			      </div>
+			    </div>
+			  </section>
+			 <!-- end: homepage-jobs board -->
+			 
+	.. hidden-code-block:: css
+		:label: + Show CSS
+		
+			#homepage-jobs-board {
+			  background-color: white;
+			}
+			.homepage-jobs-cta {
+			  background-color: #f1f1f2;
+			}
+			.homepage-jobs-cta p {
+			  text-align:center;
+			  color: #6d6e70;  
+			  font-weight:300;
+			}
+			.homepage-jobs-ctas {
+			  padding: 60px 10px;
+			}
+			.homepage-jobs-list {
+			  padding: 60px 40px;
+			}
+			.homepage-jobs-list h3 {
+			  text-align: center;
+			  color: #f6ba17;
+			  padding-bottom:20px;
+			}
+			.homepage-jobs-cta h3,
+			.homepage-jobs-list h4>a {
+			  padding-top:30px;
+			  text-align:center;
+			  text-transform:none;
+			  color: #6d6e70;
+			  font-size:20px;
+			}
+			.homepage-jobs-list h4>a {
+			  padding-bottom: 0;
+			  padding-left: 10px;
+			}
+			.homepage-jobs-list h4 {
+			  padding-top: 15px;
+			}
+			.homepage-jobs-list p {
+			  color: #6d6e70;
+			  border-bottom: 2px #d1d2d4 solid;
+			  padding-bottom: 20px;
+			  padding-left: 10px;
+			  font-weight:300;
+			}
+			.homepage-jobs-list a:hover, 
+			.homepage-jobs-list a:active,
+			.homepage-jobs-list a:focus {
+			  text-decoration:none;
+			  opacity:.7;
+			}
+			.homepage-jobs-list p>strong {
+			  font-weight:300;
+			  font-size:14px;
+			  color: #f6ba17;
+			  float: right;
+			}
+			.homepage-job-post-button {
+			  text-align:center;
+			  width:50%;
+			  margin-left: 25%;
+			  padding-bottom:30px;
+			}
+			.homepage-job-post-button h4 {
+			  background-color: #fbce42;
+			  border-bottom: 4px solid #f6ba17;
+			  border-radius: 8px;
+			  color:white;
+			  text-transform:none;
+			  font-weight:500;
+			  padding: 10px 0;
+			}
+			.homepage-job-post-button a:hover,
+			.homepage-job-post-button a:active,
+			.homepage-job-post-button a:focus {
+			  text-decoration:none;
+			}
+			.homepage-job-post-button h4:hover{
+			  opacity: .7;
+			}
+			.view-more-jobs {
+			  text-align: center;
+			}
+			.view-more-jobs h4 {
+			  font-weight:600;
+			  margin-top:20px;
+			}
+			
 
 Photos Feed
-----------
+-----------
 
 Add `{% load photo_tags %}` to the very top of your html page
 
@@ -181,8 +504,14 @@ Then add the following code snippet where you want to place your photos:
      {% endfor %}
    </ul>
 
+Drag and drop photo albums to change the order of display on /photos/. To display photos from the top of your list in your feed - as opposed to the most recently added photos - add this order selection to your code.
+
+`{% list_photos as photos_list limit=2 order='photoset__position' %}`
+               
+
+
 Videos Feed
-----------
+-----------
 Add `{% load video_tags %}` to the very top of your html page
 Also add {% load video_filters %} to the very top of your html page 
 
@@ -198,4 +527,255 @@ Then add the following code snippet where you want to place your videos:
      </li>
      {% endfor %}
    </ul>
+
+News Feed (with Thumbnail Image)
+--------------------------------
+Add `{% load news_tags %}` to the very top of your html page
+
+Then add the following code snippet where you want to place your news feed:
+
+
+.. code-block:: django
+    
+    <!-- begin: news-innerblock -->
+	<div class="news-innerblock">
+	  {% list_news as news_list limit=3 %}
+	  <ul class="list-unstyled">
+	     {% for news_item in news_list %}
+	     <li>
+
+	       <div class="col-md-4 col-sm-12 col-xs-12 text-left">
+	   <!-- news-image -->    
+	       {% if news_item.thumbnail %}
+	       <a href="{{ news_item.get_absolute_url }}">
+		 <div class="news-item-thumbnail">
+		 <img class="img" src="{% image_url news_item.thumbnail %}" 
+		   alt="{{ news_item.headline|striptags|safe }}"  
+		   style="width:100%;height:auto;"/>
+		 </div> 
+	       </a>
+	       {% else %}
+	       <a href="{{ news_item.get_absolute_url }}">
+		 <div class="news-item-thumbnail-auto">
+		 <img src="{{ THEME_URL }}/files/quince.jpg"  
+		   style="width:100%;height:auto;"/>
+		 </div> 
+	       </a>
+	       {% endif %}                     
+	   <!-- end news-image -->   
+
+	       <a href="{{ news_item.get_absolute_url }}">
+		<h3>{% blocktrans with h=news_item.headline %}
+		  {{ h }}
+		  {% endblocktrans %}
+		</h3>
+	       </a>
+	       <br>
+		<p>
+		  {% blocktrans with c=news_item.summary|striptags|safe|truncatewords:"30" %}
+		  {{ c }}
+		  {% endblocktrans %}
+	       </p>
+	      </div>
+	     </li>
+	     {% endfor %}
+	  </ul>
+	</div>
+    <!--end: news-innerblock--> 
+
+Here's an example of what this snippet can look like:
+
+.. image:: img/newsfeed.png
+
+.. Tip:: 
+	HTML and CSS added to the above image:
+
+	.. hidden-code-block:: html
+	    :label: + Show Added HTML
+
+		<link href="https://fonts.googleapis.com/css?family=Assistant:200,300,400,600,700,800" rel="stylesheet">
+
+		<!-- begin: home-newsfeed-content-row -->
+		   <section id="services">
+		      <div class="container">
+			 <div class="row">
+			    <!-- begin: news-block -->
+			    <div class="col-lg-12 col-md-12 text-left">
+			       <h4>News</h4>
+			       <!-- ADD NEWSFEED HERE -->
+			    </div>
+			    <!-- end: news-block -->
+			</div>
+		      </div>
+		    </section>
+		<!-- end: home-newsfeed-content-row -->
+
+	.. hidden-code-block:: css
+	    :label: + Show Added CSS
+
+		section#services {
+		  background-color: #2b2b2b;
+		  padding-bottom:150px;
+		  padding-top:30px;
+		}
+		#services .container {
+		  width: 90%;
+		}
+		#services h4 {
+		  font-size: 45px;
+		  text-transform:none;
+		  width:100%;
+		  font-family: FontAwesome, "Assistant", sans-serif;
+		  font-weight:600;
+		  font-size:35px;
+		  color:white;
+		}
+		#services h3, 
+		#services a {
+		  font-size: 25px;
+		  font-weight:400;
+		  width:300px;
+		  color: #54b848;
+		  text-transform: none;
+		  margin:-10px 0;
+		  padding:0 10px;
+		  font-family: 'Assistant', sans-serif;
+		}
+		#services a:hover,
+		#services h3:hover {
+		  text-decoration:none;
+		  font-color: #3333ff;
+		}
+		#services p{
+		  color:white;
+		  font-weight: 200;
+		  font-size:16px;
+		  padding:0 10px;
+		  font-family: 'Assistant', sans-serif;
+		}
+		#services img:hover {
+		  opacity: .7;
+		}
+		#services img {
+		  padding:0 10px;
+		}
+		
+RSS Feed
+----------
+
+Add the following code snippet where you want to place your RSS Feed, include only the elements that you can to display on your page.  If the RSS feed does not contain the elements you're calling, they won't show on the page and may throw an error.
+
+.. image:: img/rssfeed.png
+
+.. code-block:: django
+	
+	   <!-- begin: subscribe-block -->
+            <div class="col-xs-12">
+               <h3>Careers</h3>
+              
+                <ul class="list-unstyled">{% get_rss "https://example.com" as rss %}                
+                  {% for entry in rss.entries|slice:":4" %}
+                  <li>
+                    <p class="rss-title"><a target="_blank" href="{{ entry.link }}">{{ entry.title }}</a><br /> 
+                      <span class="date">Posted Date: {{ entry.updated_parsed|rss_date:"F j, Y" }}</span></p>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <a class="read-more" href="/example/">View More</a>
+             
+            </div>
+            <!-- end: subscribe-block -->
+	    
+Example 2 shows more of the rss elements that could be included in your site:
+	    
+.. code-block:: django
+
+        {% get_rss "http://rss.nytimes.com/services/xml/rss/nyt/PersonalTech.xml" as rss %}
+        {% if rss.feed.image %}
+            <img src="{{ rss.feed.image.href }}" alt="" />
+        {% endif %}
+        {% for entry in rss.entries %}        
+        <div class="row entry-item">
+              
+             <div class="col-xs-4 col-md-3">
+             {# media image #}
+              {% if entry.media_content %}
+                  {% for media in entry.media_content %}
+                      {% if media.medium == 'image' %}
+                      <img src="{{ media.url }}" width="{{ media.width }}" height="{{ media.height }}" alt="" />
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+               </div>
+               
+              <div class="col-xs-8 col-md-9">
+                  {# title #}
+                  <h4 class="entry-title"><a href="{{ entry.link }}">{{entry.title}}</a></h4>
+                  
+                  {# pubdate #}
+                  <div class="small">Published on: {{entry.published}}</div>
+                  
+                  {# authors #}
+                  {% if entry.authors %}
+                      <div class="small">Author{{ entry.authors|pluralize }}:
+                      {% for author in entry.authors %}
+                          {{ author.name }}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+                
+                {# categories #}
+                {% if entry.tags %}
+                      <div class="small">Categories:
+                      {% for tag in entry.tags %}
+                          {% if tag.scheme  %}
+                          <a href="{{ tag.scheme }}">{{ tag.term }}</a>
+                          {% else  %}
+                          {{ tag.term }}
+                          {% endif %}
+                    {% endfor %}
+                      </div>
+                {% endif %}
+                {# description #}
+                {% if entry.content %}
+                  {% for content in entry.content %}
+                      <div>{{ content.value|safe }}</div>
+                  {% endfor %}
+                {% elif entry.summary %}
+                  <div>{{ entry.summary|safe }}</div>
+                {% endif %}
+                
+                {# enclosure #}
+                {% if entry.links %}
+                  {% for link in entry.links %}
+                      {% if link.rel == 'enclosure' %}
+                      <div>
+                       <audio controls>
+                          <source src="{{ link.href }}" type="{{ link.type }}">
+                        </audio> 
+                        {{ link.length|filesizeformat }}
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+                {% endif %}
+              
+              <a href="{{entry.link}}">read more...</a>
+           </div>
+            
+        </div>
+        {% endfor %}
+
+.. Tip:: 	
+	
+	Other elements you can include:
+	
+	.. code-block:: django
+
+	    {{ entry.enclosure }}
+	    {{ entry.pubdate }}
+	    {{ entry.updateddate }}
+	    {{ entry.author_name }}
+	    {{ entry.author_email}} 
+	    {{ entry.author_link }}	  
+	
 

@@ -1,4 +1,4 @@
-{% extends "recurring_payments/base.html" %}
+{% extends "recurring_payments/base-wide.html" %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -17,10 +17,6 @@
 
 <link rel="stylesheet" href="{{ STATIC_URL }}authnet_cim/paymentShipping.css">
 
-  <!--[if lte IE 6]>
-  <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
- <![endif]-->
-
  <style>
      .bs-callout-warning{
          background-color: #FEFBED;
@@ -32,6 +28,7 @@
      .rp-warning-wrap{
          margin: 1em 0;
      }
+
  </style>
 
 {% endblock %}
@@ -45,45 +42,75 @@
         <div class="not-active-alert">{% trans 'This account is' %} {{ rp.status_detail }}</div>
         {% endif %}
 
-        <h1>{% trans 'Recurring Payment Account' %} </h1>
+        <h1>{% trans 'Recurring Payment Account' %} <small> - {{ rp.description }}</small> </h1>
 
         {% if is_active %}
-        <div id="btn-pm-wrap">
-        <button id="btn-pm" class="btn primary">{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}</button>
-        {% if payment_profile %}
-        <div class="last-updated">{% trans 'Last updated by' %}{{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+        {% if rp.platform == 'stripe' %}
+        	<div class="pull-right">
+	        	<form action="{% url 'stripe.update_card' rp.id %}?next={{ request.path }}" method="POST">{% csrf_token %}
+				  <script
+				  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+				  data-key="{{ STRIPE_PUBLISHABLE_KEY }}"
+				  data-name="{{ SITE_GLOBAL_SITEDISPLAYNAME }}"
+				  data-panel-label="{% if rp.customer_profile_id %}Update Card Details{% else %}Add Card{% endif %}"
+				  data-label="{% if rp.customer_profile_id %}Update Payment Method{% else %}Add Payment Method{% endif %}"
+				  data-description="for membership auto renew"
+				  {% if SITE_GLOBAL_STRIPEDATAIMAGE %}
+				  data-image="{{ SITE_GLOBAL_STRIPEDATAIMAGE }}"
+				  {% else %}
+				  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+				  {% endif  %}
+				  data-allow-remember-me=false
+				  data-locale="auto"
+				  data-email={{ rp.user.email }}
+				  data-zip-code="true">
+				  </script>
+				</form>
+				{% with rp.get_source_data as source_data %}
+				{% if source_data %}
+				<small class="text-muted">{% trans "Current card: " %} ····{{ source_data.last4 }} &nbsp;&nbsp;&nbsp; {{ source_data.exp_month }}/{{ source_data.exp_year }}</small>
+				{% endif %}
+				{% endwith %}
+			</div>
+        {% else %}
+	        <div id="btn-pm-wrap">
+	        <form method="GET" action="{% url 'recurring_payment.authnet.update_payment_info' rp.id %}">
+	        <input class="btn btn-primary" type="submit" value="{% if payment_profile %}{% trans 'Update Payment Info' %}{% else %}{% trans 'Add Payment Method' %}{% endif %}">
+	        </form>
+	        {% if payment_profile %}
+	        <div class="last-updated">{% trans 'Last updated by' %} {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+	        {% endif %}
+	        </div>        
+	
+	        {% if not payment_profile %}
+	        <div class="rp-warning-wrap"><span class="bs-callout-warning">{% trans 'NOT complete yet!' %} <br />{% trans 'Please click the button at right to add a payment method.' %}</span></div>
+	        {% endif %}
         {% endif %}
-        </div>
         {% endif %}
-
-        {% if not payment_profile %}
-        <div class="rp-warning-wrap"><span class="bs-callout-warning">{% trans 'NOT complete yet!' %} <br />{% trans 'Please click the button at right to add a payment method.' %}</span></div>
-        {% endif %}
+        
         <div class="rp-dname">{% trans 'Name' %}: <a href="{% url "profile" rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
         {% if rp.url %}
         <div class="rp-dname">{% trans 'URL' %}: {{ rp.url|urlize }}</div>
         {% endif %}
         <div class="rp-dname">{% trans 'Description' %}: <span style="color:#669900;">{{ rp.description }}</span></div>
 
-        <div style="clear: right;"></div>
+        <div style="clear: right;"></div>    
 
         {% if num_accounts > 1 %}
-        <div><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% trans 'View all' %} {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+        <div class="text-right"><a href="{% url "recurring_payment.my_accounts" rp.user.username %}">{% if is_owner %}{% trans 'View All My RP Accounts' %}{% else %}{% blocktrans with name=rp.user.first_name %}View All {{ name }}'s RP Accounts{% endblocktrans %}{% endif %}</a></div>
           {% endif %}
 
-      <div id="rpview-tabs">
-          <ul>
-             <li><a href="#rpview-overview" id="overview"><span>{% trans "Overview" %}</span></a></li>
-
-             <li><a href="#rpview-invoices" id="invoices"><span>{% trans "Invoices" %}</span></a></li>
-
-             <li><a href="#rpview-transactions" id="transactions"><span>{% trans "Transaction History" %}</span></a></li>
-
-           </ul>
-       </div>
-
-    <div id="rpview-overview">
-          <div class="basic-info">
+      <div> <!-- Nav tabs -->
+      	  
+		  <ul class="nav nav-tabs" role="tablist">
+		    <li role="presentation" class="active"><a href="#rpview-overview" aria-controls="rpview-overview" role="tab" data-toggle="tab">{% trans "Overview" %}</a></li>
+		    <li role="presentation"><a href="#rpview-invoices" aria-controls="rpview-invoices" role="tab" data-toggle="tab">{% trans "Invoices" %}</a></li>
+		    <li role="presentation"><a href="#rpview-transactions" aria-controls="rpview-transactions" role="tab" data-toggle="tab">{% trans "Transaction History" %}</a></li>
+		  </ul>
+       
+	<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="rpview-overview">
+          <div class="basic-info" style="margin-top: 1em;">
           {% trans 'Current account balance' %}: <span class="body-bold">{{ rp.get_outstanding_balance|format_currency }}</span>
           <br />
           <br />
@@ -103,7 +130,30 @@
                   <br />
                   <br />
           {% endif %}
+		 </div>
 
+	{% if memberships %}
+		<div>
+		<table class="table">
+			<tr>
+				<th>{% trans "Membership type" %}</th>
+				<th>{% trans "Member Number" %}</th>
+				<th>{% trans "Expire date" %}</th>
+				<th>{% trans "Status detail" %}</th>
+			</tr>
+			{% for m in memberships %}
+			<tr>
+				<td>{{ m.membership_type.name }}</td>
+				<td><a href="{% url 'membership.details' m.id %}">{{ m.member_number }}</a></td>
+				<td>{{ m.expire_dt }}</td>
+				<td>{{ m.status_detail }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		</div>
+
+	{% else %}
+		<div>
           {% trans 'The number of billing cycle completed' %}: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span>
           <br />
           <br />
@@ -139,13 +189,13 @@
               </div>
 
           {% endif %}
-
+	{% endif %}
     </div>
 
 
 
 
-    <div id="rpview-invoices">
+    <div role="tabpanel" class="tab-pane" id="rpview-invoices">
     {% if rp_invoices %}
         <table width="90%" class="tablesorter" id="rpinvoicetable">
             <thead>
@@ -176,7 +226,7 @@
     {% endif %}
     </div>
 
-    <div id="rpview-transactions">
+    <div role="tabpanel" class="tab-pane" id="rpview-transactions">
 
     {% if payment_transactions %}
         <table width="90%" class="tablesorter" id="rptranstable">
@@ -210,12 +260,18 @@
     {% endif %}
 
     </div>
+    
+   </div>  <!-- End of tab-content -->
+   
+   </div> <!-- End of nav tabs -->
 
 </div>
 </div>
 </div>
+<p>&nbsp;</p>
 
  {% if is_active %}
+ {% if rp.platform == 'authorizenet' %}
 <form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
   <input type="hidden" name="Token" value="111" />
   <input type="hidden" name="PaymentProfileId" value="{% if payment_profile %}{{ payment_profile.payment_profile_id }}{% endif %}" />
@@ -239,6 +295,7 @@
 
     <div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
 {% endif %}
+{% endif %}
 {% endblock %}
 
 {% block extra_body %}
@@ -254,7 +311,9 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script>
 
- {% if is_active %}
+
+{% if is_active %}
+{% if rp.platform == 'authorizenet' %}
 <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
 
 <script type="text/javascript">
@@ -268,13 +327,34 @@
 
   AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }};
   //]]>
+  
+  (function($) {
+      AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
+      if(action_result=="successfulSave"){
+          $.ajax({
+                 type: "POST",
+                 url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
+                 data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
+                 success: function(msg){
+                   //alert( msg );
+                   {% if not payment_profile %}
+                      window.location.reload(true);
+                   {% endif %}
+                 }
+               });
+      }
+      };
+  }(jQuery));
+  
 </script>
 {% endif %}
+{% endif %}
+
 
 <script type="text/javascript">
 $(document).ready(function(){
     if(document.location.hash != ""){window.scrollTo(0,0);}
-    var $tabs = $("#rpview-tabs").tabs();
+    //var $tabs = $("#rpview-tabs").tabs();
 
     // extend the default setting to always include the zebra widget.
         $.tablesorter.defaults.widgets = ['zebra'];
@@ -326,7 +406,7 @@ $(document).ready(function(){
             }
         });
 
-     $("#btn-pm").click(function(){
+     /* $("#btn-pm").click(function(){
          $.ajax({
            type: "POST",
            url: "{% url "recurring_payment.authnet.retrieve_token" %}",
@@ -343,25 +423,9 @@ $(document).ready(function(){
               alert("An error occured. Please try again.");
            }
          });
-     });
+     }); */
 
-    {% if is_active %}
-        AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
-        if(action_result=="successfulSave"){
-            $.ajax({
-                   type: "POST",
-                   url: "{% url "recurring_payment.authnet.update_payment_profile_local" %}",
-                   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
-                   success: function(msg){
-                     //alert( msg );
-                     {% if not payment_profile %}
-                        window.location.reload(true);
-                     {% endif %}
-                   }
-                 });
-        }
-        };
-    {% endif %}
+    
 
 });
 

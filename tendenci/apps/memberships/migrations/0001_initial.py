@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import tinymce.models
+import tendenci.libs.tinymce.models
 import django.db.models.deletion
 from django.conf import settings
 import tendenci.apps.base.fields
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=155, verbose_name='Name')),
                 ('slug', models.SlugField(unique=True, max_length=200)),
                 ('description', models.TextField(help_text='Description of this application. Displays at top of application.', blank=True)),
-                ('confirmation_text', tinymce.models.HTMLField()),
+                ('confirmation_text', tendenci.libs.tinymce.models.HTMLField()),
                 ('notes', models.TextField(default=b'', blank=True)),
                 ('use_captcha', models.BooleanField(default=True, verbose_name='Use Captcha')),
                 ('allow_multiple_membership', models.BooleanField(default=False, verbose_name='Allow Multiple Membership Types')),
@@ -326,7 +326,7 @@ class Migration(migrations.Migration):
                 ('content_type', models.CharField(default=b'html', max_length=10, verbose_name='Content Type', choices=[(b'html', 'HTML')])),
                 ('sender', models.EmailField(max_length=255, null=True, blank=True)),
                 ('sender_display', models.CharField(max_length=255, null=True, blank=True)),
-                ('email_content', tinymce.models.HTMLField(verbose_name='Email Content')),
+                ('email_content', tendenci.libs.tinymce.models.HTMLField(verbose_name='Email Content')),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
                 ('creator_username', models.CharField(max_length=50, null=True)),

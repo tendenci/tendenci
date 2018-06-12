@@ -155,7 +155,6 @@ class ObjectPermBackend(object):
             if obj.owner_id == user.id:
                 return True
 
-
         if not isinstance(obj, Model):
             return False
 
@@ -169,6 +168,8 @@ class ObjectPermBackend(object):
                 index = site.get_index(obj.__class__)
                 if can_view(user, obj):
                     return True
+            except AssertionError:
+                raise
             except:
                 pass
 

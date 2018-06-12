@@ -16,7 +16,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
 from tendenci.apps.news.managers import NewsManager
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.news.module_meta import NewsMeta
 from tendenci.apps.files.models import File
@@ -44,13 +44,15 @@ class News(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    thumbnail = models.ForeignKey('NewsImage', default=None, null=True, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
+    thumbnail = models.ForeignKey('NewsImage', default=None, null=True,
+                                  on_delete=models.SET_NULL,
+                                  help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released news
     release_dt_local = models.DateTimeField(null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    groups = models.ManyToManyField(Group, default=get_default_group, related_name='group_news')
     tags = TagField(blank=True)
 
     #for podcast feeds
@@ -61,7 +63,7 @@ class News(TendenciBaseModel):
     use_auto_timestamp = models.BooleanField(_('Auto Timestamp'), default=False)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     categories = GenericRelation(CategoryItem,
                                   object_id_field="object_id",
@@ -172,7 +174,6 @@ class News(TendenciBaseModel):
             self.release_dt_local = self.release_dt + time_diff
         else:
             self.release_dt_local = self.release_dt
-
 
 
 class NewsImage(File):

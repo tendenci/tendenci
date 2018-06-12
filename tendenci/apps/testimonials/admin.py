@@ -7,15 +7,14 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.testimonials.models import Testimonial
 from tendenci.apps.testimonials.forms import TestimonialForm
-from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import update_perms_and_save
 
 
 class TestimonialAdmin(TendenciBaseModelAdmin):
-    list_display = ['image_preview', 'first_last_name', 'testimonial_parsed', 'create_dt']
+    list_display = ['image_preview', 'first_last_name', 'testimonial_parsed', 'create_dt', 'position']
+    list_editable = ['position']
     list_filter = ['last_name', 'first_name', 'create_dt']
     search_fields = ['first_name', 'last_name', 'testimonial']
-    ordering = ('-create_dt',)
     fieldsets = (
         (None, {'fields': (
             'first_name',
@@ -45,6 +44,7 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = TestimonialForm
+    ordering = ['-position']
 
     def first_last_name(self, obj):
         return '%s %s' % (obj.first_name, obj.last_name)
@@ -55,6 +55,13 @@ class TestimonialAdmin(TendenciBaseModelAdmin):
         testimonial = truncate_words(testimonial, 50)
         return testimonial
     testimonial_parsed.short_description = 'testimonial'
+
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+        )
 
     def save_model(self, request, object, form, change):
         testimonial = form.save(commit=False)

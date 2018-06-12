@@ -3,7 +3,7 @@ from operator import or_
 
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter, helpers
-from django.contrib.admin.util import get_deleted_objects, model_ngettext
+from django.contrib.admin.utils import get_deleted_objects, model_ngettext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri, force_unicode
 from django.core.urlresolvers import reverse
@@ -43,6 +43,9 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
         if 'edit_link' not in self.list_display:
             self.list_display.insert(0, 'edit_link')
+
+        if 'id' not in self.list_display:
+            self.list_display.insert(0, 'id')
 
         self.list_display_links = ('edit_link', )
 
@@ -107,7 +110,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         result = super(TendenciBaseModelAdmin, self).change_view(
             request, object_id, form_url=form_url, extra_context=extra_context)
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+        if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 

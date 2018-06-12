@@ -17,7 +17,7 @@ def update_membs_app_id(sender, **kwargs):
     app_to_be_deleted = kwargs['instance']
     switch_memberships_app_id(app_to_be_deleted)
 
-       
+
 def switch_memberships_app_id(app_from):
     # each membership has an app_id associated.
     # since this app is to be deleted, we need to update memberships
@@ -31,7 +31,7 @@ def switch_memberships_app_id(app_from):
     if app:
         MembershipDefault.objects.filter(app_id=app_from.id).update(app=app)
 
-        
+
 def create_notice_types(app, created_models, verbosity, **kwargs):
     notification.create_notice_type(
         "user_welcome",
@@ -79,10 +79,15 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
         _('Membership Application Disapproved'))
 
     notification.create_notice_type(
+        'membership_notice_email',
+        _('Membership Notice Email'),
+        _('Membership Notice Custom Email'))
+
+    notification.create_notice_type(
         'membership_corp_indiv_verify_email',
         _('Membership Corp Indiv Verify Email'),
         _('Membership Corp Indiv Email To Be Verified'))
-    
+
 
 # assign models permissions to the admin auth group
 def assign_permissions(app, created_models, verbosity, **kwargs):
@@ -94,4 +99,3 @@ post_delete.connect(update_membs_app_id, sender=MembershipApp, weak=False)
 post_save.connect(check_and_update_membs_app_id, sender=MembershipApp, weak=False)
 post_syncdb.connect(create_notice_types, sender=notification)
 post_syncdb.connect(assign_permissions, sender=__file__)
-

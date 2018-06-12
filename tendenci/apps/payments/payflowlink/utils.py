@@ -1,18 +1,14 @@
 #import time
 #import hashlib
-import urllib
 from django.conf import settings
 #from django.http import Http404
-from django.core.urlresolvers import reverse
+from django.db import transaction
 from forms import PayflowLinkPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from django.utils.encoding import smart_str
 #from tendenci.apps.site_settings.utils import get_setting
-
 
 def prepare_payflowlink_form(request, payment):
     amount = "%.2f" % payment.amount
@@ -57,21 +53,22 @@ def payflowlink_thankyou_processing(request, response_d, **kwargs):
         paymentid = int(paymentid)
     except:
         paymentid = 0
-    payment = get_object_or_404(Payment, pk=paymentid)
-    processed = False
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=paymentid)
+        processed = False
 
-    if payment.invoice.balance > 0:     # if balance==0, it means already processed
-        payment_update_payflowlink(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
-        processed = True
+        if not payment.is_approved:  # if not already processed
+            payment_update_payflowlink(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
+            processed = True
 
-        # log an event
-        log_payment(request, payment)
+            # log an event
+            log_payment(request, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
-    return payment, processed
+        return payment, processed
 
 def payment_update_payflowlink(request, response_d, payment, **kwargs):
     name = response_d.get('name', '')
@@ -112,7 +109,6 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
         payment.response_code = 0
         payment.response_reason_code = 0
 
-
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -121,7 +117,3 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
         if not payment.status_detail:
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

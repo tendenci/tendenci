@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -6,7 +7,7 @@ class Command(BaseCommand):
     Populate the invoice owner.
 
     Usage:
-        .manage.py populate_owner
+        python manage.py populate_owner
     """
     def handle(self, *args, **options):
         from tendenci.apps.invoices.models import Invoice
@@ -28,4 +29,4 @@ class Command(BaseCommand):
                     if owner:
                         invoice.set_owner(owner)
                         invoice.save()
-        print 'done'
+        print('done')

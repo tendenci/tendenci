@@ -1,0 +1,16 @@
+.t .project-wrap .project-picture img {
+    max-width: 100%;
+}
+
+.t .project-wrap .project-inline {
+    padding-top: 20px;
+}
+
+.t .project-wrap .project-inline h2 {
+    font-size: 20px;
+}
+
+.project-picture{
+	float: left;
+	margin: 3px 10px 13px 0;
+}

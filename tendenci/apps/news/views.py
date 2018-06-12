@@ -20,7 +20,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.news.models import News
-from tendenci.apps.news.forms import NewsForm
+from tendenci.apps.news.forms import NewsForm, NewsSearchForm
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.perms.utils import assign_files_perms
 
@@ -55,25 +55,46 @@ def detail(request, slug=None, template_name="news/view.html"):
 
 
 @is_enabled('news')
-def search(request, template_name="news/search.html"):
+def search(request, release_year=None, template_name="news/search.html"):
     query = request.GET.get('q', None)
+    form = NewsSearchForm(request.GET, user=request.user)
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        news = News.objects.search(query, user=request.user)
-        # use order (existing for all modules) for sorting cause the current
-        # haystack + whoosh cannot sort by release_dt correctly
-        news = news.order_by('-order')
-    else:
-        filters = get_query_filters(request.user, 'news.view_news')
-        news = News.objects.filter(filters).distinct()
-        news = news.order_by('-release_dt')
+    if form.is_valid():
+        try:
+            news_group = int(form.cleaned_data.get('news_group', None))
+        except:
+            news_group = None
 
-    if not has_perm(request.user, 'news.view_news'):
-        news = news.filter(release_dt_local__lte=datetime.now())
+        if get_setting('site', 'global', 'searchindex') and query:
+            news = News.objects.search(query, user=request.user)
+            # use order (existing for all modules) for sorting cause the current
+            # haystack + whoosh cannot sort by release_dt correctly
+            news = news.order_by('-order')
+        else:
+            filters = get_query_filters(request.user, 'news.view_news')
+            news = News.objects.filter(filters).distinct()
+            news = news.order_by('-release_dt')
+        if news_group:
+            news = news.filter(groups__in=[news_group])
+
+        if not has_perm(request.user, 'news.view_news'):
+            news = news.filter(release_dt_local__lte=datetime.now())
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'search_news': news},
+    release_years = News.objects.datetimes('release_dt', 'year', order='DESC')
+    release_years_list = [rel.year for rel in release_years]
+
+    if release_year:
+        release_year = int(release_year)
+        if release_year < 1900:
+            raise Http404
+        news = news.filter(release_dt_local__year=release_year)
+
+    return render_to_response(template_name, {'search_news': news,
+                                              'form': form,
+                                              'release_year': release_year,
+                                              'release_years_list': release_years_list},
         context_instance=RequestContext(request))
 
 
@@ -112,6 +133,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+            form.save_m2m()
 
             # save photo
             photo = form.cleaned_data['photo_upload']
@@ -181,6 +203,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+            form.save_m2m()
 
             # save photo
             photo = form.cleaned_data['photo_upload']

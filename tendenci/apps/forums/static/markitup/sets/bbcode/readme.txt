@@ -1,4 +1,4 @@
-Markup language: 
+Markup language:
 BBCode
 
 Description:

@@ -102,7 +102,7 @@
     background-image: url(next-horizontal.png);
 }
 
-.jcarousel-skin-bna .jcarousel-prev-horizontal:hover, 
+.jcarousel-skin-bna .jcarousel-prev-horizontal:hover,
 .jcarousel-skin-bna .jcarousel-prev-horizontal:focus {
     background-position: -32px 0;
 }

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -29,7 +30,7 @@ class Command(BaseCommand):
                 money_outstanding = event.money_outstanding
                 all_registrants = event.registrants()
                 registrants_with_balance = event.registrants(with_balance=True)
-                print 'Sending email to admins for event %s.' % (event, )
+                print('Sending email to admins for event %s.' % (event, ))
                 send_email_notification(
                     'event_registration_end_recap',
                     email_list,
@@ -43,7 +44,7 @@ class Command(BaseCommand):
                         'registrants_with_balance_count': len(registrants_with_balance),
                     }
                 )
-                print 'Message sent.'
+                print('Message sent.')
 
                 # Mark event as ended
                 event.mark_registration_ended = True

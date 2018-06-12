@@ -158,7 +158,7 @@ class SocialAuthBackend(ModelBackend):
                                     group.save()
                                 except:
                                     group = None
-                                
+
                             if group:
                                 gm = GroupMembership()
                                 gm.group = group
@@ -279,7 +279,7 @@ class SocialAuthBackend(ModelBackend):
         # Signal handlers must return True or False to signal instance
         # changes. Send method returns a list of tuples with receiver
         # and it's response.
-        signal_response = lambda (receiver, response): response
+        signal_response = lambda receiver_response: receiver_response[1]
 
         kwargs = {'sender': self.__class__, 'user': user,
                   'response': response, 'details': details}
@@ -385,7 +385,7 @@ class OpenIDBackend(SocialAuthBackend):
         # values
         values.update(self.values_from_response(response,
                                                 SREG_ATTR,
-                                                OLD_AX_ATTRS + \
+                                                OLD_AX_ATTRS +
                                                 AX_SCHEMA_ATTRS))
 
         fullname = values.get('fullname') or ''
@@ -402,7 +402,7 @@ class OpenIDBackend(SocialAuthBackend):
 
         values.update({'fullname': fullname, 'first_name': first_name,
                        'last_name': last_name,
-                       USERNAME: values.get(USERNAME) or \
+                       USERNAME: values.get(USERNAME) or
                                    (first_name.title() + last_name.title())})
         return values
 
@@ -434,9 +434,10 @@ class BaseAuth(object):
 
     def __init__(self, request, redirect):
         self.request = request
-        # Use request because some auth providers use POST urls with needed
-        # GET parameters on it
-        self.data = request.REQUEST
+        # Some auth providers use POST urls with needed GET parameters on it
+        self.data = request.GET.copy().dict()
+        if request.method == 'POST':
+            self.data.update(request.POST.dict())
         self.redirect = redirect
 
     def auth_url(self):
@@ -503,12 +504,12 @@ class OpenIdAuth(BaseAuth):
             kwargs.update({'response': response, self.AUTH_BACKEND.name: True})
             return authenticate(*args, **kwargs)
         elif response.status == FAILURE:
-            raise ValueError('OpenID authentication failed: %s' % \
+            raise ValueError('OpenID authentication failed: %s' %
                              response.message)
         elif response.status == CANCEL:
             raise ValueError('Authentication cancelled')
         else:
-            raise ValueError('Unknown OpenID response type: %r' % \
+            raise ValueError('Unknown OpenID response type: %r' %
                              response.status)
 
     def setup_request(self):
@@ -549,7 +550,7 @@ class OpenIdAuth(BaseAuth):
             openid_url = self.openid_url()
             try:
                 openid_request = self.consumer().begin(openid_url)
-            except DiscoveryFailure, err:
+            except DiscoveryFailure as err:
                 raise ValueError('OpenID discovery error: %s' % err)
             else:
                 setattr(self, '_openid_request', openid_request)

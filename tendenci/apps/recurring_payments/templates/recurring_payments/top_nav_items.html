@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -11,7 +10,7 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All R.P." %}</span>
@@ -40,7 +39,7 @@
                 </ul>
 
                 {% if app_object %}
-                    <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
+                    <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                         <li>
                             <span class="content-head text-content-head">{% trans "This R.P." %}</span>
                         </li>
@@ -65,13 +64,18 @@
                                     <span class="app-name">
                                         <a href="{% url 'recurring_payment.disable_account' app_object.id %}" class="disable">{% trans "Disable Account" %}</a>
                                     </span>
+                                      <!-- disable recurring payment account form -->
+									    <form name="rp-disable" method="POST" action="{% url 'recurring_payment.disable_account' app_object.id  %}">{% csrf_token %}
+									        <input type="hidden" name="action" value="Disable Account">
+									    </form>
                                 </li>
-
+								{% if SITE_GLOBAL_MERCHANTACCOUNT == "authorizenet" %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'recurring_payment.authnet.update_payment_info' app_object.id %}">{% trans "Payment Method" %}</a>
                                     </span>
                                 </li>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </ul>

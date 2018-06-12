@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.utils.encoding import force_unicode
+from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
 
@@ -10,19 +12,30 @@ def is_numeric(value):
         return False
     return True
 
-from BeautifulSoup import BeautifulStoneSoup
+try:
+    from BeautifulSoup import BeautifulStoneSoup
+except ImportError:
+    from bs4 import BeautifulStoneSoup
+
 import cgi
 
 
 def HTMLEntitiesToUnicode(text):
-    """Converts HTML entities to unicode.  For example '&amp;' becomes '&'."""
+    """
+    Converts HTML entities to unicode.  For example '&amp;' becomes '&'.
+    """
     text = unicode(BeautifulStoneSoup(text, convertEntities=BeautifulStoneSoup.ALL_ENTITIES))
     return text
 
 
 def unicodeToHTMLEntities(text):
-    """Converts unicode to HTML entities.  For example '&' becomes '&amp;'."""
-    text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
+    """
+    Converts unicode to HTML entities.  For example '&' becomes '&amp;'.
+    """
+    if text is None:
+        text = force_unicode(_('None'))
+    if isinstance(text, unicode) or isinstance(text, str):
+        text = cgi.escape(text).encode('ascii', 'xmlcharrefreplace')
     return text
 
 
@@ -71,7 +84,7 @@ class HighchartRender(object):
         })
         self.model.series.add(data)
 
-        self.model.chart.renderTo = 'container'
+        self.model.chart.renderTo = 'chart-container'
         self.model.chart.plotBackgroundColor = null,
         self.model.chart.plotBorderWidth = null,
         self.model.chart.plotShadow = false
@@ -103,7 +116,7 @@ class HighchartRender(object):
 
         serie_data = []
         xAxis_categories = []
-        yAxis_min = 0
+        yAxis_min = 0.
         for grouper, rows in report_rows:
             add_group = True
             if self.config['has_report_totals']:
@@ -123,24 +136,74 @@ class HighchartRender(object):
             grouper = unicodeToHTMLEntities(grouper)
             serie_data.append(round(value, 2))
             xAxis_categories.append(grouper)
-            yAxis_min = yAxis_min if value > yAxis_min else value
+            yAxis_min = float(yAxis_min) if value > yAxis_min else value
         data = self.model.serie_obj.create(**{
             'name': grouper,
             'data': serie_data,
         })
         self.model.series.add(data)
 
-        self.model.chart.renderTo = 'container'
+        self.model.chart.renderTo = 'chart-container'
         self.model.chart.type = 'column'
         self.model.title.text = self.config['title']
         self.model.xAxis.categories = xAxis_categories
         self.model.xAxis.min = yAxis_min
+        # For some reason, the Decimal function gets passed to js code
+        # which results in js errors. for example:  'xAxis': .... 'min': Decimal('0.00')},
+        # make sure the value is float
+        try:
+            self.model.xAxis.min = float(self.model.xAxis.min)
+        except:
+            self.model.xAxis.min = 0.0
         self.model.yAxis.title.text = ' '
         self.model.tooltip.formatter = "function() { return ''+ this.x +': '+ this.y; }"
         self.model.plotOptions.column.pointPadding = 0.2
         self.model.plotOptions.column.borderWidth = 0.0
         self.model.plotOptions.column.colorByPoint = true
         self.model.legend.enabled = false
+
+    def set_line_chart_options(self, report_rows):
+        xAxis_categories = []
+        max_length = 0
+        for grouper, rows in report_rows:
+            add_group = True
+            if self.config['has_report_totals']:
+                if len(rows) <= 2:
+                    add_group = False
+            if not add_group:
+                continue
+            serie_values = []
+            for row in rows:
+                if row.is_value():
+                    value = row[self.config['serie_field']].value
+                    if not is_numeric(value):
+                        value = 1  # TOOD: Map serie_field with posible serie_operator
+                    serie_values.append(float(value))
+
+            grouper = unicodeToHTMLEntities(grouper)
+            xAxis_categories.append(grouper)
+            data = self.model.serie_obj.create(**{
+                'name': grouper,
+                'data': serie_values,
+            })
+            self.model.series.add(data)
+            if len(serie_values) > max_length:
+                max_length = len(serie_values)
+
+        xAxis_categories = range(1, max_length + 1)
+        self.model.chart.renderTo = 'chart-container'
+        self.model.chart.type = 'line'
+
+        self.model.title.text = self.config['title']
+        self.model.xAxis.categories = xAxis_categories
+
+        self.model.yAxis.title.text = 'USD'
+
+        self.model.plotOptions.line.dataLabels.edabled = true
+        self.model.plotOptions.line.enableMouseTracking = false
+
+        self.model.tooltip.enabled = true
+        self.model.tooltip.formatter = "function() { return '<b>'+this.series.name+'</b> '+this.x+': '+this.y; }"
 
     def is_valid(self):
         if self.config:
@@ -157,11 +220,18 @@ class HighchartRender(object):
             if self.config['chart_mode'] == 'column':
                 self.model.credits.enabled = false
                 self.set_bar_chart_options(report_rows)
+            if self.config['chart_mode'] == 'line':
+                self.model.credits.enabled = false
+                self.set_line_chart_options(report_rows)
         return self
 
     @property
     def options(self):
-        import simplejson
+        try:
+            from django.utils import simplejson
+        except ImportError:
+            import json as simplejson
+
         json = unicode(self.model)
         json = simplejson.dumps(json)[1:-1]
         json = json.replace("'true'", 'true')

@@ -1,6 +1,7 @@
 """
 Management utility to create superusers.
 """
+from __future__ import print_function
 
 import getpass
 import re
@@ -29,7 +30,7 @@ def is_valid_email(value):
 
 class Command(BaseCommand):
     help = 'User to create low level user with profile'
-    
+
     def add_arguments(self, parser):
         parser.add_argument('--username',
                             dest='username',
@@ -51,7 +52,6 @@ class Command(BaseCommand):
                             action='store',
                             dest='database',
             default=DEFAULT_DB_ALIAS, help='Specifies the database to use. Default is "default".'),
-        
 
     def handle(self, *args, **options):
         from tendenci.apps.profiles.models import Profile
@@ -137,9 +137,4 @@ class Command(BaseCommand):
         Profile.objects.create_profile(user)
 
         if verbosity >= 1:
-          print 'User %s (%s) created successfully' % (user.username, user.pk)
-
-
-
-
-
+          print('User %s (%s) created successfully' % (user.username, user.pk))

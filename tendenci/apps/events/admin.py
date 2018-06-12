@@ -12,37 +12,44 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.events.models import (CustomRegForm, CustomRegField, Type, StandardRegForm,
-    CustomRegFormEntry, CustomRegFieldEntry)
+    CustomRegFormEntry, CustomRegFieldEntry, Event)
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm, StandardRegAdminForm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import delete_settings_cache
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(TendenciBaseModelAdmin):
 
     list_display = (
         'title',
-        'description',
-        'group',
+        'enable_private_slug',
         'start_dt',
-        'end_dt',
-        'timezone',
-        'allow_anonymous_view',
-        'allow_user_view',
-        'allow_user_edit',
-        'status',
         'status_detail',
     )
+    search_fields = ("title",)
+    list_filter = ('enable_private_slug',)
+    ordering = ['-start_dt']
+
+    def __init__(self, *args, **kwargs):
+        super(EventAdmin, self).__init__(*args, **kwargs)
+        if 'edit_link' in self.list_display:
+            self.list_display.remove('edit_link')
+
+    def has_add_permission(self, request):
+        return False
 
 
 class EventTypeAdmin(admin.ModelAdmin):
     form = TypeForm
     list_display = (
+        'id',
         'name',
         'bg_color',
         'event_count',
         'reassign',
     )
+    list_display_links = ('name',)
 
     def reassign(self, obj):
 
@@ -86,7 +93,8 @@ clone_forms.short_description = 'Clone selected forms'
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "preview_link", "for_event", "notes", "status",)
+    list_display = ('id', "name", "preview_link", "for_event", "notes", "status",)
+    list_display_links = ("name",)
     search_fields = ("name", "notes", "status",)
     fieldsets = (
         (None, {"fields": ("name", "notes", 'status')}),
@@ -96,11 +104,11 @@ class CustomRegFormAdmin(admin.ModelAdmin):
                                                  ('zip', 'country', 'meal_option'),
                                                  ('comments',)),
                                      'classes': ('mapped-fields',),
-                                     'description': _('The fields you selected will be automatically added to ' + \
-                                     'your form. These fields are mapped to the user fields in ' + \
-                                     'the registration. To delete a mapped field, uncheck its corresponding ' + \
-                                     'check box here. Please do not add another custom field ' + \
-                                     'if you can find a field here. To add a custom field, click Add a ' + \
+                                     'description': _('The fields you selected will be automatically added to ' +
+                                     'your form. These fields are mapped to the user fields in ' +
+                                     'the registration. To delete a mapped field, uncheck its corresponding ' +
+                                     'check box here. Please do not add another custom field ' +
+                                     'if you can find a field here. To add a custom field, click Add a ' +
                                      'Custom Field in the Fields section below.')})
     )
 
@@ -143,7 +151,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         result = super(CustomRegFormAdmin, self).change_view(request,
                         object_id, form_url=form_url, extra_context=extra_context)
 
-        if not '_addanother' in request.POST and not '_continue' in request.POST and 'next' in request.GET:
+        if '_addanother' not in request.POST and '_continue' not in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 
@@ -200,9 +208,9 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         form = get_object_or_404(CustomRegForm, id=regform_id)
         if not form.has_regconf:
             raise Http404
-        response = HttpResponse(content_type="text/csv")
-        csvname = "%s-%s.csv" % (form.for_event, slugify(datetime.now().ctime()))
-        response["Content-Disposition"] = "attachment; filename=%s" % csvname
+        response = HttpResponse(content_type='text/csv')
+        csvname = '%s-%s.csv' % (form.for_event, slugify(datetime.now().ctime()))
+        response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field
         # against its ID for building each entry row. Also store the IDs of
@@ -272,7 +280,7 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
         return render(request,
             'admin/events/standardregform/standard_reg_form_edit.html',
-            {'adminform': form});
+            {'adminform': form})
 
     def changelist_view(self, request, extra_context=None):
         return redirect(reverse('admin:standardregform_edit'))
@@ -282,3 +290,4 @@ class StandardRegFormAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StandardRegForm, StandardRegFormAdmin)
+admin.site.register(Event, EventAdmin)

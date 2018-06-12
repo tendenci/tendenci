@@ -8,7 +8,7 @@ register = Library()
 @register.inclusion_tag("invoices/nav.html", takes_context=True)
 def invoice_nav(context, invoice=None):
     context.update({
-        "nav_object" : invoice,
+        "nav_object": invoice,
     })
     return context
 
@@ -145,4 +145,3 @@ def payment_history_display(request, invoice):
     return {'request':request,
             'invoice':invoice,
             'payments': payments}
-

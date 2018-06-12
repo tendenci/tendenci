@@ -23,6 +23,7 @@ class MakePayment(models.Model):
     email = models.CharField(max_length=50, default='',  null=True)
     phone = models.CharField(max_length=50, default='', blank=True, null=True)
     referral_source = models.CharField(_('referred by'), max_length=200, default='', blank=True, null=True)
+    reference_number = models.CharField(max_length=20, default='', blank=True)
     comments = models.TextField(blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_count = models.IntegerField(blank=True, null=True)

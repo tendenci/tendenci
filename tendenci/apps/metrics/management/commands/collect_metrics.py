@@ -1,3 +1,4 @@
+from __future__ import print_function
 import commands
 from datetime import date, timedelta
 from decimal import Decimal
@@ -38,7 +39,10 @@ class Command(BaseCommand):
         # create a metric from the totals
         metric = Metric()
         metric.users = len(self.users)
-        metric.members = len(self.members)
+        if self.members:
+            metric.members = len(self.members)
+        else:
+            metric.members = 0
         metric.visits = len(self.get_visits())
         metric.disk_usage = self.get_site_size()
         metric.invoices = self.get_invoices().count()
@@ -46,13 +50,13 @@ class Command(BaseCommand):
         metric.invoice_totals = Decimal(self.get_invoice_totals())
 
         if verbosity >= 2:
-            print 'metric.users', metric.users
-            print 'metric.members', metric.members
-            print 'metric.visits', metric.visits
-            print 'metric.disk_usage', metric.disk_usage
-            print 'metric.invoices', metric.invoices
-            print 'metric.positive_invoices', metric.positive_invoices
-            print 'metric.invoice_totals', metric.invoice_totals
+            print('metric.users', metric.users)
+            print('metric.members', metric.members)
+            print('metric.visits', metric.visits)
+            print('metric.disk_usage', metric.disk_usage)
+            print('metric.invoices', metric.invoices)
+            print('metric.positive_invoices', metric.positive_invoices)
+            print('metric.invoice_totals', metric.invoice_totals)
 
         metric.save()
 
@@ -69,9 +73,9 @@ class Command(BaseCommand):
         Get all members from the memberships_membership table
         """
         try:
-            from tendenci.apps.memberships.models import Membership
+            from tendenci.apps.memberships.models import MembershipDefault
 
-            return Membership.objects.active()
+            return MembershipDefault.objects.active()
         except ImportError:
             pass
 

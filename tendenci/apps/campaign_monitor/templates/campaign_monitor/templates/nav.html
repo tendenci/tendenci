@@ -12,7 +12,7 @@
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated and not SITE_GLOBAL_HIDETENDENCITABS %}
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url "dashboard" %}" title="{% trans 'Tendenci Home Page' %}">{% trans "Dashboard" %}</a>
             <li><a href="{% url "profile.index" %}">{% trans "My Profile" %}</a></li>
@@ -21,16 +21,15 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans 'Templates' %}</a>
-        {% if nav_object %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Templates' %}</a>
         <div class="dropdown-menu">
+        {% if nav_object %}
         <ul class="first">
             <li class="heading">{% trans "All Templates" %}</li>
             <li class="divider"></li>
-            {% else %}
-            <div>
-            <ul class="dropdown-menu">
-            {% endif %}
+        {% else %}
+        <ul>
+        {% endif %}
             <li><a href="{% url "campaign_monitor.template_index" %}">{% trans "Search Templates" %}</a></li>
             {% if can_add_template %}
                 <li><a href="{% url "campaign_monitor.template_add" %}">{% trans "Add Template" %}</a></li>
@@ -56,7 +55,7 @@
         </div>
     </li>
     <li class="dropdown" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% trans "Campaigns" %}</a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans "Campaigns" %}</a>
         <ul class="dropdown-menu">
             <li><a href="{% url "campaign_monitor.campaign_index" %}">{% trans "Search Campaigns" %}</a></li>
             {% if can_add_campaign %}
@@ -71,4 +70,3 @@
     </li>
 </ul>
 {% endif %}
-

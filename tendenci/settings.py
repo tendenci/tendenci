@@ -67,17 +67,12 @@ SECRET_KEY = 's$6*!=msW0__=51^w@_tbaconjm4+fg@0+ic#bx^3rj)zc$a6i'
 SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TrakVEFplu2sd3DIli6"
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'tendenci.libs.swfupload.middleware.SWFUploadMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'tendenci.libs.swfupload.middleware.SSLRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'pagination.middleware.PaginationMiddleware',
+    'dj_pagination.middleware.PaginationMiddleware',
     'tendenci.apps.profiles.middleware.ForceLogoutProfileMiddleware',
     'tendenci.apps.profiles.middleware.ProfileMiddleware',
     'tendenci.apps.base.middleware.Http403Middleware',
@@ -87,6 +82,8 @@ MIDDLEWARE_CLASSES = (
     'tendenci.apps.base.middleware.MissingAppMiddleware',
     'tendenci.apps.memberships.middleware.ExceededMaxTypesMiddleware',
     'tendenci.apps.forums.middleware.PybbMiddleware',
+    'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'tendenci.urls'
@@ -148,7 +145,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
-            
+
                 # tendenci context processors
                 'tendenci.apps.theme.context_processors.theme',
                 'tendenci.apps.site_settings.context_processors.settings',
@@ -175,7 +172,7 @@ TEMPLATES = [
             ],
          'debug': DEBUG
         }
-     }                
+     }
 ]
 
 
@@ -195,15 +192,16 @@ INSTALLED_APPS = (
     # applications
     'formtools',
     'bootstrap3',
-    'pagination',
+    'dj_pagination',
     'tagging',
-    'avatar',
-    'tinymce',
-    'haystack',
     'captcha',
-    #'tastypie',
+    'haystack',
+    'tastypie',
+
     'tendenci',
     'tendenci.libs.model_report',
+    'tendenci.libs.tinymce',
+    'tendenci.libs.uploader',
 
     'tendenci.apps.entities',
     'tendenci.apps.base',
@@ -348,39 +346,38 @@ USE_S3_THEME = False
 # -------------------------------------- #
 #    TINYMCE
 # -------------------------------------- #
-TINYMCE_JS_ROOT = os.path.join(TENDENCI_ROOT, 'static', 'tinymce')
-TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tinymce/tiny_mce.js'
+#TINYMCE_JS_ROOT = os.path.join(TENDENCI_ROOT, 'static', 'tinymce')
+TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tiny_mce/tinymce.min.js'
 TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
+TINYMCE_FILEBROWSER = True
 
+# plugins: stormeimage codemirror
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,\
-                tabfocus,fullscreen,media,spellchecker,codemirror",
-    'gecko_spellcheck': False,
-    'theme': "advanced",
+    'theme': "modern",
+    'plugins': "image  advlist autolink lists link charmap print preview anchor \
+        searchreplace visualblocks code fullscreen \
+        insertdatetime media table contextmenu paste textcolor colorpicker hr",
+    'menubar': 'file edit insert view format table',
+    'toolbar': "code insertfile undo redo | styleselect | forecolor backcolor | bold italic hr | \
+                alignleft aligncenter alignright alignjustify | bullist numlist outdent \
+                indent | link image | fullscreen",
+    'image_advtab': 'true',
+    'image_title': 'true',
+    'media_alt_source': 'false',
+    'media_poster': 'false',
+    'cache_suffix': '?v=4.3.8',
+    # Specify your css to apply to the editable area
+    #'content_css': '/themes/<theme name>/media/css/styles.css',
+    'resize': 'both',
+    'link_class_list': [
+        {'title': 'None', 'value': ''},
+        {'title': 'Primary Button', 'value': 'btn btn-primary'},
+        {'title': 'Default Button', 'value': 'btn btn-default'}
+        ],
 
-    # theme options
-    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,\
-                                bullist,numlist,table, |,justifyleft,\
-                                justifycenter,justifyright,|,link,unlink,|,\
-                                image,|,pagebreak,fullscreen,codemirror",
-    'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
-                                forecolor,|,pastetext,pasteword,\
-                                removeformat,charmap,|,\
-                                outdent,indent,|,undo,redo",
-    'theme_advanced_buttons3': "",
-    'theme_advanced_toolbar_location': "top",
-    'theme_advanced_toolbar_align': "left",
-    'theme_advanced_statusbar_location': "bottom",
-    'theme_advanced_resizing': True,
-
-
-    'theme_advanced_resize_horizontal': True,
-    'dialog_type': "modal",
-    'tab_focus': ":prev, :next",
-    'apply_source_formatting': True,
-    'remove_line_breaks': False,
-    'convert_urls': False,
+    'tabfocus_elements': ":prev,:next",
+    'convert_urls': 'false',
     'handle_event_callback': "event_handler",
 
     # Additions - JMO
@@ -459,7 +456,7 @@ FIRSTDATA_RESPONSE_KEY = ''
 FIRSTDATA_USE_RELAY_RESPONSE = False
 
 AUTHNET_CIM_API_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
-AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"
+AUTHNET_CIM_API_URL = "https://api2.authorize.net/xml/v1/request.api"
 
 # PAYPAL PAYFLOW LINK
 PAYFLOWLINK_PARTNER = ''
@@ -487,6 +484,20 @@ ADMIN_AUTH_GROUP_NAME = 'Admin'
 # --------------------------------------#
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_IMAGE_SIZE = (172,80)
+CAPTCHA_OUTPUT_FORMAT = u'%(image)s <br />%(hidden_field)s %(text_field)s'
+
+# --------------------------------------#
+# Google reCAPTCHA SETTINGS
+# --------------------------------------#
+# Google reCAPTCHA site key
+NORECAPTCHA_SITE_KEY = ''
+# Google reCAPTCHA secret key
+NORECAPTCHA_SECRET_KEY = ''
+# Google reCAPTCHA  verify url
+NORECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
+NORECAPTCHA_WIDGET_TEMPLATE = 'base/nocaptcha_recaptcha/widget.html'
+
 
 # ------------------------------------ #
 # Django Messaging
@@ -503,11 +514,6 @@ FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 # --------------------------------------#
 MOBILE_COOKIE_NAME = "tendenci_mobile"
 
-# --------------------------------------#
-# SWFUPLOAD cookie
-# --------------------------------------#
-SWFUPLOAD_COOKIE_NAME = 'tendenci_swf'
-
 # ------------------------------------ #
 # SOCIAL AUTH SETTINGS
 # ------------------------------------ #
@@ -518,6 +524,11 @@ SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'social_associate_complete'
 SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
 SOCIAL_AUTH_CREATE_USERS = True
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
+
+# -------------------------------------------------------------------------- #
+# Google Static Maps URL signing secret used to generate a digital signature
+# ------------------------------------------------------------------------- #
+GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
 
 # ------------------------------------ #
 # CAMPAIGN MONITOR URL
@@ -550,6 +561,7 @@ from django.contrib import messages
 
 MESSAGE_TAGS = {
             messages.SUCCESS: 'alert-success success',
+            messages.INFO: 'alert-info info',
             messages.WARNING: 'alert-warning warning',
             messages.ERROR: 'alert-danger error'
 }
@@ -570,3 +582,42 @@ NEWSLETTER_EMAIL_BACKEND = 'tendenci.apps.emails.backends.NewsletterEmailBackend
 PYBB_MARKUP = 'markdown'
 PYBB_NICE_URL = True
 PYBB_ATTACHMENT_ENABLE = True
+
+# -------------------------------------- #
+# gravatar
+# -------------------------------------- #
+GAVATAR_DEFAULT_SIZE = 80
+GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
+
+# ------------------------------------------------- #
+# Allow .mp3 files to be uploaded - default to False
+# ------------------------------------------------- #
+ALLOW_MP3_UPLOAD = False
+
+# -------------------------------------- #
+# logging
+# -------------------------------------- #
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'tendenci.apps.base.log.CustomAdminEmailHandler',
+        },
+    },
+    'loggers': {
+        'send_newsletter': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+        },
+    },
+}

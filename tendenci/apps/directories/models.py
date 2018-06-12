@@ -10,9 +10,10 @@ from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.base.utils import correct_filename
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -26,17 +27,31 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    filename = correct_filename(filename)
     return 'directories/%d/%s' % (instance.id, filename)
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField()
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+
+    class Meta:
+        unique_together = ('slug', 'parent',)
+        verbose_name_plural = _("Categories")
+        ordering = ('name',)
+        app_label = 'directories'
+
+    def __unicode__(self):
+        return self.name
 
 class Directory(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
-    headline = models.CharField(max_length=200, blank=True)
+    headline = models.CharField(_('Name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = tinymce_models.HTMLField()
+    body = tinymce_models.HTMLField(_('Description'))
     source = models.CharField(max_length=300, blank=True)
     # logo = models.FileField(max_length=260, upload_to=file_directory,
     #                         help_text=_('Company logo. Only jpg, gif, or png images.'),
@@ -79,8 +94,13 @@ class Directory(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
+    cat = models.ForeignKey(Category, verbose_name=_("Category"),
+                                 related_name="directory_cat", null=True, on_delete=models.SET_NULL)
+    sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
+                                 related_name="directory_subcat", null=True, on_delete=models.SET_NULL)
+    # legacy categories needed for data migration
     categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -212,7 +232,7 @@ class Directory(TendenciBaseModel):
     def renew_window(self):
         days = get_setting('module', 'directories', 'renewaldays')
         days = int(days)
-        if datetime.now() + timedelta(days) > self.expiration_dt:
+        if self.expiration_dt and datetime.now() + timedelta(days) > self.expiration_dt:
             return True
         else:
             return False
@@ -267,4 +287,3 @@ class DirectoryPricing(models.Model):
                 return self.regular_price
             else:
                 return self.premium_price
-

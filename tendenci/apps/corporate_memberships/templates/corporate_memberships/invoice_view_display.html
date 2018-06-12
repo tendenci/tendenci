@@ -24,7 +24,7 @@
             <td>
                 <a href="{% url 'profile' renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }} #{{ renew_entry.membership.member_number }}</a>
             </td>
-            <td class="td-right">---</td>
+            <td class="td-right"></td>
         </tr>
     {% endfor %}
 {% endif%}

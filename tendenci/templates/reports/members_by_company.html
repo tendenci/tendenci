@@ -15,10 +15,12 @@
 {% endblock %}
 
 {% block content %}
-<h1>{% trans "Current Member Totals by Company" %}</h1>
+<div class="page-header">
+  <h1>{% trans "Current Members by Company" %}</h1>
+</div>
 <div class="mems-wrap">
 {% if companies %}
-<table class="tablesorter">
+<table class="table table-tendenci-reports">
     <thead>
     <tr>
         <th>{% trans "Company" %}</th>

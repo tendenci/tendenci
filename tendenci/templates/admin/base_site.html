@@ -14,9 +14,9 @@
     <a class="navbar-brand" href="{% url 'dashboard' %}"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="26" /></a>
 
     {% if user.is_authenticated %}
-        <a class="navbar-brand" href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }} ({{ SITE_GLOBAL_SITEURL }})</a>
+        <a class="navbar-brand" href="/">{{ SITE_GLOBAL_SITEURL }}</a>
     {% else %}
-        <span class="navbar-brand">{% trans 'Web Adminisration' %}</span>
+        <span class="navbar-brand">{% trans 'Web Administration' %}</span>
     {% endif %}
 {% endblock %}
 
@@ -27,7 +27,7 @@
 <footer id="footer">
     {% if user.is_authenticated %}
     <div class="container">
-    <p class="text-muted"><a href="http://tendenci.com">{% trans "Tendenci Membership Management Software" %}</a> by <a href="http://schipul.com">{% trans "Schipul - The Web Marketing Company" %}</a></p>
+    <p class="text-muted"><a href="https://github.com/tendenci/tendenci">{% trans "Tendenci Open Source Association Management System (AMS)" %}</a> by <a href="https://www.tendenci.com">{% trans "Tendenci" %}</a></p>
     </div>
     {% endif %}
 </footer>

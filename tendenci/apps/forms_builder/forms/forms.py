@@ -12,9 +12,9 @@ from tendenci.apps.base.utils import validate_email
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.payments.models import PaymentMethod
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.perms.forms import TendenciBaseForm
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.base.utils import get_template_list, tcurrency
 from tendenci.apps.base.fields import EmailVerificationField, PriceField
@@ -25,14 +25,10 @@ from tendenci.apps.recurring_payments.fields import BillingCycleField
 from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.base.fields import CountrySelectField
+from tendenci.apps.base.forms import CustomCatpchaField
 
-
-template_choices = [
-    ('', _('None')),
-    ('default.html', _('Default')),
-    ('forms/base.html', _('Forms Base'))
-]
-template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -46,7 +42,7 @@ THIS_YEAR = datetime.today().year
 class FormForForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", "creator")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", 'custom_price',  "creator")
 
     def __init__(self, form, user, *args, **kwargs):
         """
@@ -78,7 +74,9 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     field_class = forms.MultipleChoiceField
                     field_widget = 'django.forms.CheckboxSelectMultiple'
 
-                elif field.field_type == 'CountryField' or field.field_type == 'StateProvinceField':
+                elif field.field_type == 'CountryField':
+                    field_class = CountrySelectField
+                elif field.field_type == 'StateProvinceField':
                     field_class = getattr(forms, 'ChoiceField')
                 else:
                     field_class = getattr(forms, field_class)
@@ -86,7 +84,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 arg_names = field_class.__init__.im_func.func_code.co_varnames
                 if "max_length" in arg_names:
                     field_args["max_length"] = FIELD_MAX_LENGTH
-                if "choices" in arg_names:
+                if "choices" in arg_names and field.field_type != 'CountryField':
                     field_args["choices"] = field.get_choices()
                     #field_args["choices"] = zip(choices, choices)
                 if "initial" in arg_names:
@@ -111,6 +109,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                     field_args["max_length"] = FIELD_NAME_LENGTH
                 elif field.field_function == 'EmailPhoneNumber':
                     field_args["max_length"] = FIELD_PHONE_LENGTH
+                elif field.field_type == 'FileField':
+                    field_args["validators"] = [FileValidator()]
 
                 form.fields[field_key] = field_class(**field_args)
 
@@ -120,9 +120,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 else:
                     form.fields[field_key].widget.widgets[0].attrs['class'] += ' formforform-field'
                     form.fields[field_key].widget.widgets[1].attrs['class'] += ' formforform-field'
-
-                if form.fields[field_key].widget.__class__.__name__.lower() == 'selectdatewidget':
+                widget_name = form.fields[field_key].widget.__class__.__name__.lower()
+                if widget_name == 'selectdatewidget':
                     form.fields[field_key].widget.years = range(1920, THIS_YEAR + 10)
+                if widget_name in ('dateinput', 'selectdatewidget', 'datetimeinput'):
+                    form.fields[field_key].initial = datetime.now()
 
         def add_pricing_fields(form, formforform):
             # include pricing options if any
@@ -133,7 +135,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 pricing_options = []
                 for pricing in formforform.pricing_set.all():
 
-                    if pricing.price == None:
+                    if pricing.price is None:
                         pricing_options.append(
                             (pricing.pk, mark_safe(
                                 '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> <strong>%s</strong><br>%s' %
@@ -176,10 +178,9 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_pricing_fields(self, self.form)
 
         if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
-            self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+            self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
-
 
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
@@ -231,6 +232,9 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
         if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
             entry.payment_method = self.cleaned_data['payment_option']
             entry.pricing = self.cleaned_data['pricing_option']
+            custom_price = self.data.get('custom_price_%s' % entry.pricing.id)
+            if custom_price:
+                entry.custom_price = currency_check(custom_price)
             entry.save()
 
         return entry
@@ -260,7 +264,19 @@ class FormAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.model_name.lower()}))
 
+    email_text = forms.CharField(required=False, label=_('Confirmation Text'),
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Form._meta.app_label,
+        'storme_model':Form._meta.model_name.lower()}))
+
+    template_choices = [
+        ('', _('None')),
+        ('default.html', _('Default')),
+        ('forms/base.html', _('Forms Base'))
+    ]
+    template_choices += get_template_list()
     template = forms.ChoiceField(choices=template_choices, required=False)
+    group = forms.ChoiceField(required=True, choices=[])
 
     class Meta:
         model = Form
@@ -268,6 +284,7 @@ class FormAdminForm(TendenciBaseForm):
                   'slug',
                   'intro',
                   'response',
+                  'group',
                   'template',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'email_text',
@@ -301,11 +318,21 @@ class FormAdminForm(TendenciBaseForm):
         else:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['group'].initial = Group.objects.get_initial_group_id()
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+        self.fields['group'].choices = default_groups.values_list('pk', 'name')
 
         position_fields = ['intro_position', 'fields_position', 'pricing_position']
         for field in position_fields:
             self.fields[field].widget.attrs['class'] = 'position_field'
 
+    def clean_group(self):
+        group_id = self.cleaned_data['group']
+
+        try:
+            return Group.objects.get(pk=group_id)
+        except Group.DoesNotExist:
+            raise forms.ValidationError(_('Invalid group selected.'))
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
@@ -432,6 +459,7 @@ class FormForField(forms.ModelForm):
         choices = cleaned_data.get("choices")
         field_type = cleaned_data.get("field_type")
         required = cleaned_data.get("required")
+        visible = cleaned_data.get("visible")
 
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
@@ -488,7 +516,7 @@ class FormForField(forms.ModelForm):
                         if not validate_email(val[1].strip()):
                             raise forms.ValidationError(_("\"%(val)s\" is not a valid email address" % {'val':val[1]}))
 
-        if field_function != None and field_function.startswith("Email"):
+        if field_function is not None and field_function.startswith("Email"):
             if field_type != "CharField":
                 raise forms.ValidationError(_("This field's function requires Text as a field type"))
 
@@ -563,6 +591,9 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
 
                 self.fields[field].widget.attrs.update({'class': class_attr})
 
+    def clean_tax_rate(self):
+        return self.cleaned_data.get('tax_rate') or 0
+
     def save(self, **kwargs):
         pricing = super(PricingForm, self).save(**kwargs)
         if self.cleaned_data.get('billing_dt_select'):
@@ -576,7 +607,7 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
         #pricing.save()
         return pricing
 
-class BillingForm(forms.Form):
+class BillingForm(FormControlWidgetMixin, forms.Form):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     company = forms.CharField(required=False)

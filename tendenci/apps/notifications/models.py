@@ -1,5 +1,7 @@
+from __future__ import print_function
 from os.path import splitext
 import datetime
+import logging
 import uuid
 
 try:
@@ -25,9 +27,13 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
 
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import add_tendenci_footer, is_valid_domain
+
+
+logger = logging.getLogger(__name__)
 
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
 
@@ -142,7 +148,7 @@ class Notice(models.Model):
     on_site = models.BooleanField(_('on site'), default=False)
 
     objects = NoticeManager()
-    
+
     class Meta:
         ordering = ["-added"]
         verbose_name = _("notice")
@@ -264,11 +270,11 @@ def create_notice_type(label, display, description, default=2, verbosity=1):
         if updated:
             notice_type.save()
             if verbosity > 1:
-                print "Updated %s NoticeType" % label
+                print("Updated %s NoticeType" % label)
     else:
         NoticeType(label=label, display=display, description=description, default=default).save()
         if verbosity > 1:
-            print "Created %s NoticeType" % label
+            print("Created %s NoticeType" % label)
 
 
 def get_notification_language(user):
@@ -337,7 +343,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     try:
         notice_type = NoticeType.objects.get(label=label)
-    except:
+    except NoticeType.DoesNotExist as err:
+        logger.warning('Skipping notification send for "{label}": {err}'.format(
+            label=label, err=err))
         # Stop here because we need a notice_type
         return None
 
@@ -406,7 +414,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             sender = settings.DEFAULT_FROM_EMAIL
 
     sender_display = extra_context.get('sender_display', '')
-    from_display = '%s<%s>' % (sender_display, sender)
+    # Add quotes around display name to prevent errors on sending
+    # when display name contains comma or other control characters, - jennyq
+    from_display = '"%s" <%s>' % (sender_display, sender)
 
     if sender_display:
         headers['From'] = from_display
@@ -416,22 +426,24 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     # removing newlines
     subject = ''.join(subject.splitlines())
+    body = add_tendenci_footer(body)
 
     for email_addr in emails:
-        recipients = [email_addr]
+        if is_valid_domain(email_addr):
+            recipients = [email_addr]
 
-        if recipient_bcc:
-            email = EmailMessage(subject, body, sender,
-                                 recipients, recipient_bcc, headers=headers)
-        else:
-            email = EmailMessage(subject, body, sender,
-                                 recipients, headers=headers)
-        email.content_subtype = content_type
-
-        try:
-            email.send(fail_silently=True)  # should we raise exception or not?
-        except UnicodeError:
-            pass
+            if recipient_bcc:
+                email = EmailMessage(subject, body, sender,
+                                     recipients, recipient_bcc, headers=headers)
+            else:
+                email = EmailMessage(subject, body, sender,
+                                     recipients, headers=headers)
+            email.content_subtype = content_type
+    
+            try:
+                email.send(fail_silently=True)  # should we raise exception or not?
+            except UnicodeError:
+                pass
 
     to = ','.join(emails)
     bcc = ','.join(recipient_bcc)
@@ -494,6 +506,9 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         )  # TODO make formats configurable
 
         for user in users:
+            if not user.email or Email.is_blocked(user.email):
+                continue
+
             recipients = []
             headers = {}
             # get user language for user from language store defined in
@@ -553,7 +568,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
                 # headers = {'Content-Type': 'text/plain'}
                 content_type = 'text'
 
-            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
+            email = EmailMessage(subject, add_tendenci_footer(body), settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
             email.content_subtype = content_type
             email.send()
 

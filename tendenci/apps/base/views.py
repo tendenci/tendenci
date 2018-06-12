@@ -29,6 +29,7 @@ from django.views.generic import TemplateView
 
 # local
 from tendenci import __version__ as version
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.forms import PasswordForm, AddonUploadForm
@@ -300,7 +301,7 @@ def base_file(request, file_name):
     Only predefined extensions are allowed.
     """
     ext = os.path.splitext(file_name)[1].strip('.')
-    if not ext in BASEFILE_EXTENSIONS:
+    if ext not in BASEFILE_EXTENSIONS:
         raise Http404
 
     try:
@@ -334,7 +335,7 @@ def file_display(request, file_path):
     data = default_storage.open(file_path).read()
 
     response = HttpResponse(data, content_type=mime_type)
-    response['Content-Disposition'] = 'filename=%s' % base_name
+    response['Content-Disposition'] = 'filename="%s"' % base_name
 
     return response
 
@@ -407,7 +408,7 @@ def addon_upload(request, template_name="base/addon_upload.html"):
 @superuser_required
 def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.html"):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 
@@ -415,14 +416,14 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
     addon_name = addon_zip.namelist()[0]
     addon_name = addon_name.strip('/')
     if not os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon_name)):
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
 
     if request.method == "POST":
         shutil.rmtree(os.path.join(settings.SITE_ADDONS_PATH, addon_name))
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "upload_addon",
                           '--zip_path=%s' % path])
         return redirect('addon.upload.process', sid)
@@ -434,7 +435,7 @@ def addon_upload_preview(request, sid, template_name="base/addon_upload_preview.
 @superuser_required
 def addon_upload_process(request, sid, template_name="base/addon_upload_process.html"):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 
@@ -449,7 +450,7 @@ def addon_upload_process(request, sid, template_name="base/addon_upload_process.
 
 def addon_upload_check(request, sid):
 
-    if not sid in request.session:
+    if sid not in request.session:
         raise Http404
     path = request.session[sid]
 
@@ -463,21 +464,19 @@ def addon_upload_check(request, sid):
 @superuser_required
 @password_required
 def update_tendenci(request, template_name="base/update.html"):
+    from tendenci.apps.base.utils import get_latest_version
+
     if request.method == "POST":
-        process = SubProcessManager.set_process(["python", "manage.py", "update_tendenci",
-                                                 "--user=%s" % request.user.id])
-        return redirect('update_tendenci.confirmation')
+        tos = request.POST.get('tos')
 
-    pypi = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
-    latest_version = pypi.package_releases('tendenci')[0]
-
-    update_available = False
-    if latest_version != version:
-        update_available = True
+        if tos:
+            SubProcessManager.set_process([python_executable(), "manage.py", "auto_update",
+                                            "--user_id=%s" % request.user.id])
+            return redirect('update_tendenci.confirmation')
 
     return render_to_response(template_name, {
-        'latest_version': latest_version,
-        'update_available': update_available,
+        'latest_version': get_latest_version(),
+        'version': version,
     }, context_instance=RequestContext(request))
 
 

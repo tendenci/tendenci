@@ -27,35 +27,25 @@ class ProfileLanguageMiddleware(object):
     if settings.USE_I18N:
         def get_user_language(self, request):
             try:
-                lang =  getattr(request.user.profile, 'language')
+                lang =  getattr(request.user.profile, 'language').strip(' ')
             except:
                 lang = None
 
-            if not lang:
-                lang = get_setting('site', 'global', 'localizationlanguage')
-            return lang
+            return lang or get_setting('site', 'global', 'localizationlanguage') or settings.LANGUAGE_CODE
 
         def process_request(self, request):
-            """check user language and assign it to session or cookie accordingly
+            """check user language and assign it to cookie
             """
-            user_language = self.get_user_language(request)
-            if user_language:
-                if hasattr(request, 'session'):
-                    lang_code_in_session = request.session.get('django_language', None)
-                    if not lang_code_in_session or lang_code_in_session != user_language:
-                        request.session['django_language'] = user_language
-                else:
-                    lang_code_in_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
-                    if lang_code_in_cookie and lang_code_in_cookie != user_language:
-                        request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = user_language
+            lang = self.get_user_language(request)
+
+            request.COOKIES[settings.LANGUAGE_COOKIE_NAME] = lang
 
         def process_response(self, request, response):
             """assign user_language to cookie LANGUAGE_COOKIE_NAME
             """
-            user_language = self.get_user_language(request)
-            lang_code_in_cookie = request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME)
-            if user_language and (not lang_code_in_cookie or user_language != lang_code_in_cookie):
-                response.set_cookie(settings.LANGUAGE_COOKIE_NAME, user_language)
+            lang = self.get_user_language(request)
+            response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+
             return response
 
 

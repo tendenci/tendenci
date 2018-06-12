@@ -20,7 +20,7 @@ from tendenci.apps.accounts.forms import PasswordResetForm
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
 
-    redirect_to = request.REQUEST.get('next', u'')
+    redirect_to = request.GET.get('next', u'')
 
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)
@@ -38,13 +38,14 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             EventLog.objects.log(instance=request.user, application="accounts")
 
             return HttpResponseRedirect(redirect_to)
-        elif form.user_exists:
-            messages.add_message(
-                request, messages.INFO,
-                _(u"The password entered for account %(uname)s is invalid." % {
-                    'uname' : form.user_exists.username }))
-
-            return HttpResponseRedirect(reverse('auth_password_reset'))
+        # commenting it out -don't tell attacker the username exists
+#         elif form.user_exists:
+#             messages.add_message(
+#                 request, messages.INFO,
+#                 _(u"The password entered for account %(uname)s is invalid." % {
+#                     'uname' : form.user_exists.username }))
+#
+#             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
 
@@ -186,7 +187,6 @@ def register(request, success_url=None,
                         gm.owner_id =  new_user.id
                         gm.owner_username = new_user.username
                         gm.save()
-
 
             EventLog.objects.log(instance=new_user)
 

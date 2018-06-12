@@ -4,19 +4,18 @@ import uuid
 
 from django.conf import settings
 from django.db import models
-from django.template import Template as DTemplate
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.articles.models import Article
 from tendenci.apps.emails.models import Email
 from tendenci.apps.files.models import file_directory
 from tendenci.apps.newsletters.utils import extract_files
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
-from tendenci.apps.newsletters.utils import apply_template_media
 from tendenci.apps.site_settings.utils import get_setting
 
 from tendenci.apps.newsletters.utils import (
@@ -29,9 +28,6 @@ from tendenci.apps.newsletters.utils import (
     newsletter_resumes_list)
 
 from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.apps.user_groups.utils import get_default_group
-
-from tinymce import models as tinymce_models
 
 
 """
@@ -172,7 +168,7 @@ class Newsletter(models.Model):
     resumes_days = models.IntegerField(default=7, choices=DAYS_CHOICES)
 
     # default template
-    default_template = models.CharField(max_length=255, choices=DEFAULT_TEMPLATE_CHOICES, null=True)
+    default_template = models.CharField(max_length=255, null=True)
 
     # format
     format = models.IntegerField(default=0, choices=FORMAT_CHOICES)
@@ -224,6 +220,55 @@ class Newsletter(models.Model):
 
         return ''
 
+    def clone(self):
+        """
+        Clone this newsletter and return the cloned newsletter.
+        """
+        ignore_fields = [
+            'id',
+            'email',
+            'send_status',
+            'date_created',
+            'date_email_sent',
+            'date_last_resent',
+            'email_sent_count',
+            'resend_count',
+            'security_key'
+        ]
+        field_names = [field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
+
+        newsletter_new = self.__class__()
+        for name in field_names:
+            if hasattr(self, name):
+                setattr(newsletter_new, name, getattr(self, name))
+        newsletter_new.date_created = datetime.datetime.now()
+        newsletter_new.subject = '(Cloned) {}'.format(self.subject)
+        newsletter_new.actionname = newsletter_new.subject
+
+        # copy email - don't link the cloned newsletter to the same email
+        if self.email:
+            email_ignore_fields = [
+                'id',
+            ]
+            email_field_names = [field.name
+                for field in self.email.__class__._meta.fields
+                if field.name not in email_ignore_fields
+            ]
+            email_new = self.email.__class__()
+            for name in email_field_names:
+                if hasattr(self.email, name):
+                    setattr(email_new, name, getattr(self.email, name))
+            email_new.save()
+
+            newsletter_new.email = email_new
+
+        newsletter_new.save()
+
+        return newsletter_new
+
     def generate_from_default_template(self, request, template):
         data = self.generate_newsletter_contents(request)
         content = template
@@ -233,10 +278,8 @@ class Newsletter(models.Model):
 
         if '[content]' in content:
             full_content = data.get('opening_text') + \
-                            data.get('login_content') + \
-                            data.get('footer_text') + \
-                            data.get('unsubscribe_text') + \
-                            data.get('browser_text')
+                           data.get('login_content')
+
             content = content.replace('[content]', full_content)
 
         if '[articles]' in content:
@@ -259,6 +302,17 @@ class Newsletter(models.Model):
 
         if '[resumes]' in content:
             content = content.replace('[resumes]', data.get('resumes_content'))
+
+        if '[footer]' in content:
+            content = content.replace('[footer]', data.get('footer_text'))
+
+        if '[unsubscribe]' in content:
+            content = content.replace('[unsubscribe]', data.get('unsubscribe_text'))
+
+        content = content.replace('[site_url]', get_setting('site', 'global', 'siteurl'))
+        content = content.replace('[site_mailing_address]', get_setting('site', 'global', 'sitemailingaddress'))
+        content = content.replace('[site_contact_email]', get_setting('site', 'global', 'sitecontactemail'))
+        content = content.replace('[site_phone_number]', get_setting('site', 'global', 'sitephonenumber'))
 
         return content
 
@@ -364,7 +418,7 @@ class Newsletter(models.Model):
                 owner_username=user.username,
                 headline=self.email.subject,
                 slug=slugify(self.email.subject),
-                body=self.email.body)
+                body=self.email.body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))
 
             self.article = article
             self.save()
@@ -376,11 +430,12 @@ class Newsletter(models.Model):
         """
         Method that will generate the recipients of the newsletter
         """
-
+        from tendenci.apps.memberships.models import MembershipType
         if self.member_only:
             members = GroupMembership.objects.filter(
                 status=True,
                 status_detail='active',
+                group_id__in=MembershipType.objects.filter(status_detail='active').values_list('group_id', flat=True),
                 is_newsletter_subscribed=True).order_by(
                 'member__email').distinct(
                 'member__email')
@@ -398,20 +453,19 @@ class Newsletter(models.Model):
         return members
 
     def send_to_recipients(self):
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                               "send_newsletter",
                               str(self.pk)])
 
     def save(self, *args, **kwargs):
-        if self.security_key == '' or self.security_key == None:
+        if self.security_key == '' or self.security_key is None:
             self.security_key = uuid.uuid1()
+        if self.actionname != self.subject:
+            self.actionname = self.subject
+        if "log" in kwargs:
+            kwargs.pop('log')
         super(Newsletter, self).save(*args, **kwargs)
 
     def get_browser_view_url(self):
         site_url = get_setting('site', 'global', 'siteurl')
         return "%s%s?key=%s" % (site_url, reverse('newsletter.view_from_browser', args=[self.pk]), self.security_key)
-
-
-
-
-

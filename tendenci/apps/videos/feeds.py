@@ -30,7 +30,7 @@ class VideoSitemap(TendenciSitemap):
     """ Sitemap information for videos """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = Video.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items

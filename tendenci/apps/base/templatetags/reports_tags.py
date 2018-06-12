@@ -36,12 +36,11 @@ class MonthUrlNode(template.Node):
         return year, month
 
 
-
 @register.tag
 def month_url(parser, token):
     try:
         tag, kind = token.contents.split()
-        if not kind in ['next', 'previous']:
+        if kind not in ['next', 'previous']:
             raise ValueError('Not next/previous')
     except ValueError:
         raise template.TemplateSyntaxError(_('Usage {% month_url next|previous %}'))

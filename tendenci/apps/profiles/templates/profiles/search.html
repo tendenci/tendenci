@@ -1,7 +1,6 @@
 {% extends "profiles/base-wide.html" %}
 {% load i18n %}
 {% load staticfiles %}
-{% load avatar_tags %}
 {% load base_filters %}
 {% load bootstrap_pagination_tags %}
 {% load perm_tags %}
@@ -61,11 +60,9 @@
     </style>
 {% endblock %}
 
-
 {% block content %}
     <div class="t">
-
-        <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "People Search" %}{% else %}{% trans "People List" %}{% endif %}</h1>
+        <h1>{% if memberships_search  %}{% trans "Members Search" %}{% else %}{% trans "People Search" %}{% endif %}</h1>
 
         {{ MODULE_USERS_USERSEARCHSTATEMENT }}
 

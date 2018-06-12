@@ -1,4 +1,4 @@
-import subprocess
+#run_nightly_commands.py
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
@@ -23,11 +23,12 @@ class Command(BaseCommand):
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
                     'clean_old_exports',
-                    'delete_soft_deleted_items',
+                    #'delete_soft_deleted_items',
                     'update_dashboard_stats',
                     'collect_metrics',
                     'captcha_clean',
                     'cleanup_expired_dbdumps',
+                    'clearsessions',
                     )
         for c in commands:
             try:

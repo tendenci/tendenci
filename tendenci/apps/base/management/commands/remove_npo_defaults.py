@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 from optparse import make_option
 from boto.s3.connection import S3Connection
@@ -6,7 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldError
 
 
@@ -57,7 +57,6 @@ class Command(BaseCommand):
             if module is None or module == core:
                 modules_list.append( "tendenci.apps.%s.models" % core )
 
-
         contenttypes = ContentType.objects.all()
 
         for module in modules_list:
@@ -69,31 +68,29 @@ class Command(BaseCommand):
             if m.__module__ == module:
                 try:
                     instances = m.objects.filter(tags__contains='tendencidemo')
-                    print "module -- %s %s" % (m.__module__, m.__name__)
+                    print("module -- %s %s" % (m.__module__, m.__name__))
                     for instance in instances:
                         if instance.owner == instance.creator:
-                            print "%s -- %s" % (m.__name__, instance)
+                            print("%s -- %s" % (m.__name__, instance))
                             links = [rel.get_accessor_name() for rel in instance._meta.get_all_related_objects()]
-                            print "looking at related objects..."
+                            print("looking at related objects...")
                             for link in links:
                                 try:
                                     objects = getattr(instance, link).all()
                                     for obj in objects:
-                                        print "deleting %s" % obj
+                                        print("deleting %s" % obj)
                                         obj.delete()
                                 except Exception:
                                     pass
 
-                            print "deleting %s -- %s" % (m.__name__, instance)
+                            print("deleting %s -- %s" % (m.__name__, instance))
                             instance.delete()
-                    print ""
-                    print ""
+                    print("")
+                    print("")
                 except FieldError:
                     pass # model has no tag field
                 except Exception:
-                    print "Error in deleting %s -- %s" % (m.__module__, m.__name__)
+                    print("Error in deleting %s -- %s" % (m.__module__, m.__name__))
                     import sys, traceback
                     traceback.print_exc(file=sys.stdout)
                     pass
-
-

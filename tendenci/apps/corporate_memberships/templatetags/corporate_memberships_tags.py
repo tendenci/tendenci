@@ -4,6 +4,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.functions import Lower
 
 from tendenci.apps.corporate_memberships.models import CorpMembership
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
@@ -15,7 +16,7 @@ register = Library()
 
 
 @register.inclusion_tag(
-        "corporate_memberships/applications/render_corpmembership_field.html")
+        "memberships/applications/render_membership_field.html")
 def render_corpmembership_field(request, field_obj,
                                 corpprofile_form,
                             corpmembership_form):
@@ -33,7 +34,7 @@ def render_corpmembership_field(request, field_obj,
             field = None
 
     return {'request': request, 'field_obj': field_obj,
-            'field': field}
+            'field': field, 'field_pwd': None}
 
 
 @register.assignment_tag
@@ -42,7 +43,6 @@ def individual_pricing_desp(corp_membership):
     Return the description of pricing for the individual memberships
     joining under this corp_membership.
     """
-    description = ''
     if corp_membership:
         corporate_type = corp_membership.corporate_membership_type
         membership_type = corporate_type.membership_type
@@ -59,24 +59,8 @@ def individual_pricing_desp(corp_membership):
                                     membership_price,
                                     tcurrency(membership_type.admin_fee))
 
-        threshold = corporate_type.apply_threshold
-        threshold_limit = corporate_type.individual_threshold
-        threshold_price = corporate_type.individual_threshold_price
-        if not threshold_price:
-            threshold_price = 'free'
-        else:
-            threshold_price = tcurrency(threshold_price)
-
-        if threshold and threshold_limit > 0:
-            description += 'first %d %s, ' % (
-                                    threshold_limit,
-                                    threshold_price
-                                    )
-            description += 'then %s' % membership_price
-        else:
-            description += '%s' % membership_price
-    return description
-
+        return membership_price
+    return ''
 
 
 @register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
@@ -195,27 +179,29 @@ def allow_edit_corp(parser, token):
     return AllowEditCorpNode(corp_memb, user, context_var=context_var)
 
 
-class ListCorpMembershipNode(ListNode):
+class ListCorpMembershipNode(Node):
     model = CorpMembership
 
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
         self.kwargs = kwargs
-
-        if not self.model:
-            raise AttributeError(_('Model attribute must be set'))
-        if not issubclass(self.model, models.Model):
-            raise AttributeError(_('Model attribute must derive from Model'))
-        if not hasattr(self.model.objects, 'search'):
-            raise AttributeError(_('Model.objects does not have a search method'))
+        
+    def custom_model_filter(self, items, user):
+        """
+        Filters out articles that aren't yet released.
+        """
+        if 'corporate_membership_type' in self.kwargs:
+            try:
+                m_type = int(self.kwargs['corporate_membership_type'])
+                return items.filter(corporate_membership_type_id=m_type)
+            except:
+                return items
 
     def render(self, context):
-        tags = u''
         query = u''
         user = AnonymousUser()
-        limit = 3
+        limit = None
         order = '-join_dt'
-
         randomize = False
 
         allow_anonymous_search = get_setting('module',
@@ -247,11 +233,9 @@ class ListCorpMembershipNode(ListNode):
         if 'limit' in self.kwargs:
             try:
                 limit = Variable(self.kwargs['limit'])
-                limit = limit.resolve(context)
+                limit = int(limit.resolve(context))
             except:
-                limit = self.kwargs['limit']
-
-        limit = int(limit)
+                limit = None
 
         if 'query' in self.kwargs:
             try:
@@ -268,26 +252,34 @@ class ListCorpMembershipNode(ListNode):
                 order = self.kwargs['order']
 
         items = CorpMembership.objects.all()
-        if user.is_authenticated():
-            if not user.profile.is_superuser:
-                if user.profile.is_member and allow_member_search:
-                    items = items.distinct()
-                else:
-                    items = items.none()
-        else:
-            if not allow_anonymous_search:
+        if not allow_anonymous_search:
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    if user.profile.is_member and allow_member_search:
+                        items = items.distinct()
+                    else:
+                        items = items.none()
+            else:
                 items = items.none()
+                
+        items = self.custom_model_filter(items, user)
 
         objects = []
 
         # if order is not specified it sorts by relevance
         if order:
-            items = items.order_by(order)
+            if order == 'corp_profile__name':
+                items = items.order_by(Lower(order))
+            else:
+                items = items.order_by(order)
 
         if randomize:
-            objects = [item for item in random.sample(items, items.count())][:limit]
+            objects = [item for item in random.sample(items, items.count())]
         else:
-            objects = [item for item in items[:limit]]
+            objects = items
+            
+        if limit:
+            objects = objects[:limit]
 
         context[self.context_var] = objects
         return ""
@@ -319,7 +311,7 @@ def list_corporate_memberships(parser, token):
 
     Example::
 
-        {% list_corporate_memberships as corpmembership_list limit=5 %}
+        {% list_corporate_memberships as corpmembership_list limit=5 corporate_membership_type=1 %}
         {% for corpmembership in corpmembership_list %}
             {{ corpmembership.corp_profile.name }}
         {% endfor %}

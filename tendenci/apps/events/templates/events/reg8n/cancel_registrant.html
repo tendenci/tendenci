@@ -1,7 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
-{% load avatar_tags %}
+{% load profile_tags %}
 {% load base_filters %}
 {% load i18n %}
 
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="event-registrants">
-        <div class='avatar'>{% avatar registrant.user 56 %}</div>
+        <div class='avatar'>{% gravatar registrant.user 56 %}</div>
         <div class="info">
 
             <div class="name">

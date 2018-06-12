@@ -1,5 +1,5 @@
 /*
- * jQuery XDomainRequest Transport Plugin 1.1.2
+ * jQuery XDomainRequest Transport Plugin
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2011, Sebastian Tschan
@@ -12,14 +12,16 @@
  * https://github.com/jaubourg/ajaxHooks/
  */
 
-/*jslint unparam: true */
-/*global define, window, XDomainRequest */
+/* global define, require, window, XDomainRequest */
 
 (function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
         define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS:
+        factory(require('jquery'));
     } else {
         // Browser globals:
         factory(window.jQuery);
@@ -36,6 +38,7 @@
                 var xdr;
                 return {
                     send: function (headers, completeCallback) {
+                        var addParamChar = /\?/.test(s.url) ? '&' : '?';
                         function callback(status, statusText, responses, responseHeaders) {
                             xdr.onload = xdr.onerror = xdr.ontimeout = $.noop;
                             xdr = null;
@@ -44,12 +47,13 @@
                         xdr = new XDomainRequest();
                         // XDomainRequest only supports GET and POST:
                         if (s.type === 'DELETE') {
-                            s.url = s.url + (/\?/.test(s.url) ? '&' : '?') +
-                                '_method=DELETE';
+                            s.url = s.url + addParamChar + '_method=DELETE';
                             s.type = 'POST';
                         } else if (s.type === 'PUT') {
-                            s.url = s.url + (/\?/.test(s.url) ? '&' : '?') +
-                                '_method=PUT';
+                            s.url = s.url + addParamChar + '_method=PUT';
+                            s.type = 'POST';
+                        } else if (s.type === 'PATCH') {
+                            s.url = s.url + addParamChar + '_method=PATCH';
                             s.type = 'POST';
                         }
                         xdr.open(s.type, s.url);

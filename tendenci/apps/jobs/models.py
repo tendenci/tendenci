@@ -16,10 +16,33 @@ from tendenci.apps.base.utils import now_localized
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.jobs.managers import JobManager
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField()
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+
+    class Meta:
+        unique_together = ('slug', 'parent',)
+        verbose_name_plural = _("Categories")
+        ordering = ('name',)
+        app_label = 'jobs'
+
+    def __unicode__(self):
+        return self.name
+#         full_path = [self.name]
+#         p = self.parent
+#
+#         while p is not None:
+#             full_path.append(p.name)
+#             p = p.parent
+#
+#         return ' -> '.join(full_path[::-1])
 
 
 class BaseJob(TendenciBaseModel):
@@ -46,7 +69,7 @@ class BaseJob(TendenciBaseModel):
 
     # date related fields
     requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
-    pricing = models.ForeignKey('JobPricing', null=True)  # selected pricing based on requested_duration
+    pricing = models.ForeignKey('JobPricing', null=True, on_delete=models.SET_NULL)  # selected pricing based on requested_duration
     activation_dt = models.DateTimeField(null=True, blank=True)  # date job listing was activated
     post_dt = models.DateTimeField(null=True, blank=True)  # date job was posted (same as create date?)
     expiration_dt = models.DateTimeField(null=True, blank=True)  # date job expires based on activation date and duration
@@ -74,18 +97,25 @@ class BaseJob(TendenciBaseModel):
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     payment_method = models.CharField(max_length=50, blank=True, default='')
     member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
 
+    cat = models.ForeignKey(Category, verbose_name=_("Category"),
+                                 related_name="job_cat", null=True, on_delete=models.SET_NULL)
+    sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
+                                 related_name="job_subcat", null=True, on_delete=models.SET_NULL)
+
+    # needed for migration 0003
     categories = GenericRelation(
         CategoryItem,
         object_id_field="object_id",
         content_type_field="content_type"
     )
+
     perms = GenericRelation(
         ObjectPermission,
         object_id_field="object_id",
@@ -161,16 +191,6 @@ class BaseJob(TendenciBaseModel):
     @property
     def opt_module_name(self):
         return self._meta.model_name
-
-    @property
-    def category_set(self):
-        items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
-            if cat.category:
-                items["category"] = cat.category
-            elif cat.parent:
-                items["sub_category"] = cat.parent
-        return items
 
 
 class Job(BaseJob):

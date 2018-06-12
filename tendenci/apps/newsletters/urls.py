@@ -14,7 +14,8 @@ from tendenci.apps.newsletters.views import (
     MarketingActionStepFiveView,
     NewsletterDetailView,
     NewsletterResendView,
-    NewsletterDeleteView)
+    NewsletterDeleteView,
+    NewsletterCloneView)
 
 urlpath = get_setting('module', 'newsletters', 'url') or 'newsletters'
 
@@ -37,6 +38,7 @@ urlpatterns = patterns('tendenci.apps.newsletters.views',
     url(r'^%s/actions/step5/(?P<pk>\d+)/$' % urlpath, login_required(MarketingActionStepFiveView.as_view()), name='newsletter.action.step5'),
 
     url(r'^%s/view/details/(?P<pk>\d+)/$' % urlpath, login_required(NewsletterDetailView.as_view()), name='newsletter.detail.view'),
+    url(r'^%s/clone/(?P<pk>\d+)/$' % urlpath, login_required(NewsletterCloneView.as_view()), name='newsletter.clone'),
     url(r'^%s/resend/(?P<pk>\d+)/$' % urlpath, login_required(NewsletterResendView.as_view()), name='newsletter.resend.view'),
     url(r'^%s/delete/(?P<pk>\d+)/$' % urlpath, login_required(NewsletterDeleteView.as_view()), name='newsletter.delete'),
 

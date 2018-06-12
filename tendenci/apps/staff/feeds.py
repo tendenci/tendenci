@@ -30,7 +30,7 @@ class StaffSitemap(TendenciSitemap):
     """ Sitemap information for staff """
     changefreq = "monthly"
     priority = 0.5
-    
+
     def items(self):
         items = Staff.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items

@@ -22,8 +22,8 @@
 		<script type="text/javascript">
 		
 			/**
-			 * Visualize an HTML table using Highcharts. The top (horizontal) header 
-			 * is used for series names, and the left (vertical) header is used 
+			 * Visualize an HTML table using Highcharts. The top (horizontal) header
+			 * is used for series names, and the left (vertical) header is used
 			 * for category names. This function is based on jQuery.
 			 * @param {Object} table The reference to the HTML table to visualize
 			 * @param {Object} options Highcharts options
@@ -42,7 +42,7 @@
 					$('th, td', tr).each( function(j) {
 						if (j > 0) { // skip first column
 							if (i == 0) { // get the name and init the series
-								options.series[j - 1] = { 
+								options.series[j - 1] = {
 									name: this.innerHTML,
 									data: []
 								};

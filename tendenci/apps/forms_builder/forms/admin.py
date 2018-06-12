@@ -7,7 +7,7 @@ from mimetypes import guess_type
 from django.conf import settings
 from django.conf.urls import patterns, url
 from django.contrib import admin
-from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
@@ -60,14 +60,15 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(TendenciBaseModelAdmin):
 
     inlines = (PricingAdmin, FieldAdmin,)
-    list_display = ("title", "id", "intro", "email_from", "email_copies",
-        "admin_link_export", 'export_all_link', "admin_link_view")
+    list_display = ("title", "intro", "email_from", "email_copies",
+        "admin_link_export", 'export_all_link', "admin_link_view", 'group',)
     list_display_links = ("title",)
 #    list_filter = ("status",)
     search_fields = ("title", "intro", "response", "email_from",
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
     prepopulated_fields = {'slug': ['title']}
+    list_filter = ('group', )
 
     if not get_setting('module', 'recurring_payments', 'enabled'):
         payment_fields = ("custom_payment", "payment_methods")
@@ -78,7 +79,7 @@ class FormAdmin(TendenciBaseModelAdmin):
     section_name_fields = ("intro_name", "fields_name", "pricing_name")
 
     fieldsets = (
-        (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
+        (None, {"fields": ("title", "slug", "intro", "response", "completion_url", 'group', "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
@@ -118,22 +119,21 @@ class FormAdmin(TendenciBaseModelAdmin):
     export_all_link.allow_tags = True
     export_all_link.short_description = ''
 
-
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = self.get_object(request, unquote(object_id))
+        if obj:
+            #check if the form has file fields
+            extra_context = extra_context or {}
+            extra_context['has_files'] = obj.has_files()
 
-        #check if the form has file fields
-        extra_context = extra_context or {}
-        extra_context['has_files'] = obj.has_files()
-
-        for inline_class in self.inlines:
-            if inline_class.model == Field:
-                if obj.fields_name:
-                    inline_class.verbose_name = obj.fields_name
-                    inline_class.verbose_name_plural = obj.fields_name
-            elif inline_class.model == Pricing:
-                inline_class.verbose_name = obj.pricing_name
-                inline_class.verbose_name_plural = obj.pricing_name
+            for inline_class in self.inlines:
+                if inline_class.model == Field:
+                    if obj.fields_name:
+                        inline_class.verbose_name = obj.fields_name
+                        inline_class.verbose_name_plural = obj.fields_name
+                elif inline_class.model == Pricing:
+                    inline_class.verbose_name = obj.pricing_name
+                    inline_class.verbose_name_plural = obj.pricing_name
 
         return super(FormAdmin, self).change_view(request, object_id, form_url, extra_context)
 
@@ -157,9 +157,9 @@ class FormAdmin(TendenciBaseModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
-        response = HttpResponse(content_type="text/csv")
-        csvname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
-        response["Content-Disposition"] = "attachment; filename=%s" % csvname
+        response = HttpResponse(content_type='text/csv')
+        csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
+        response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field
         # against its ID for building each entry row. Also store the IDs of
@@ -192,7 +192,10 @@ class FormAdmin(TendenciBaseModelAdmin):
                 if entry.pricing:
                     row[-4] = entry_time
                     row[-3] = entry.pricing.label
-                    row[-2] = entry.pricing.price
+                    if not entry.pricing.price:
+                        row[-2] = entry.custom_price
+                    else:
+                        row[-2] = entry.pricing.price
                 row[-1] = entry.payment_method
             else:
                 row[-1] = entry_time
@@ -231,14 +234,8 @@ class FormAdmin(TendenciBaseModelAdmin):
         f = ContentFile(data)
 
         response = HttpResponse(f.read(), content_type=mime_type)
-        response['Content-Disposition'] = 'filename=%s' % base_name
+        response['Content-Disposition'] = 'filename="%s"' % base_name
         return response
 
-
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.object_id = instance.form.pk
-            instance.save()
 
 admin.site.register(Form, FormAdmin)

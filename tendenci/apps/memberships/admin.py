@@ -47,6 +47,30 @@ class MembershipStatusDetailFilter(SimpleListFilter):
             return queryset.filter(status_detail=self.value())
         else:
             return queryset
+        
+class MembershipAutoRenewFilter(SimpleListFilter):
+    title = 'auto renew'
+    parameter_name = 'auto_renew'
+ 
+    def lookups(self, request, model_admin):
+        return (
+            (1, 'Yes'),
+            (0, 'No'),
+        )
+ 
+    def queryset(self, request, queryset):
+        try:
+            value = int(self.value())
+        except:
+            value = None
+        
+        if value == None:
+            return queryset
+        
+        if value == 1:
+            return queryset.filter(auto_renew=True)
+        
+        return queryset.filter(Q(auto_renew=False) | Q(auto_renew__isnull=True))
 
 
 def approve_selected(modeladmin, request, queryset):
@@ -68,8 +92,9 @@ def approve_selected(modeladmin, request, queryset):
     ).exclude(qs_active | qs_expired | qs_archived)
 
     for membership in memberships:
+        is_renewal = membership.is_renewal()
         membership.approve(request_user=request.user)
-        membership.send_email(request, 'approve')
+        membership.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if membership.corporate_membership_id:
             # notify corp reps
             membership.email_corp_reps(request)
@@ -107,11 +132,12 @@ def disapprove_selected(modeladmin, request, queryset):
     qs_pending = Q(status_detail='pending')
     qs_active = Q(status_detail='active')
 
-    memberships = queryset.filter(qs_pending, qs_active)
+    memberships = queryset.filter(qs_pending | qs_active)
 
     for membership in memberships:
+        is_renewal = membership.is_renewal()
         membership.disapprove(request_user=request.user)
-        membership.send_email(request, 'disapprove')
+        membership.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
 disapprove_selected.short_description = u'Disapprove selected'
 
@@ -128,9 +154,10 @@ def expire_selected(modeladmin, request, queryset):
     )
 
     for membership in memberships:
-        # check expire_dt + grace_period_dt
-        if not membership.is_expired():
-            membership.expire(request_user=request.user)
+        # Since we're selecting memberships with 'active' status_detail,
+        # this `membership` is either active membership or expired
+        # but not being marked as expired yet (maybe due to a failed cron job).
+        membership.expire(request_user=request.user)
 
 expire_selected.short_description = u'Expire selected'
 
@@ -194,6 +221,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             'industry',
             'company_size',
             'promotion_code',
+            'app',
         )}
     )
 
@@ -249,6 +277,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     ]
 
     list_display = [
+        'id',
         'name',
         'email',
         'member_number',
@@ -258,11 +287,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'get_status',
         'get_invoice',
     ]
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+        list_display.append('auto_renew')
+    list_display_links = ('name',)
 
     list_filter = [
         MembershipStatusDetailFilter,
         'membership_type',
     ]
+    if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+        list_filter.append(MembershipAutoRenewFilter)
 
     actions = [
         approve_selected,
@@ -314,17 +348,18 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_status.admin_order_field = 'status_detail'
 
     def get_invoice(self, instance):
-        if instance.get_invoice():
-            if instance.get_invoice().balance > 0:
-                return '<a href="%s">Invoice %s (%s)</a>' % (
-                    instance.get_invoice().get_absolute_url(),
-                    instance.get_invoice().pk,
-                    tcurrency(instance.get_invoice().balance)
+        inv = instance.get_invoice()
+        if inv:
+            if inv.balance > 0:
+                return '<a href="%s" title="Invoice">#%s (%s)</a>' % (
+                    inv.get_absolute_url(),
+                    inv.pk,
+                    tcurrency(inv.balance)
                 )
             else:
-                return '<a href="%s">Invoice %s</a>' % (
-                    instance.get_invoice().get_absolute_url(),
-                    instance.get_invoice().pk
+                return '<a href="%s" title="Invoice">#%s</a>' % (
+                    inv.get_absolute_url(),
+                    inv.pk
                 )
         return ""
     get_invoice.short_description = u'Invoice'
@@ -342,7 +377,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return u''
     get_approve_dt.short_description = u'Approved On'
     get_approve_dt.admin_order_field = 'application_approved_dt'
-    
+
     def get_expire_dt(self, instance):
         dt = instance.expire_dt
 
@@ -397,8 +432,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
 
         do_next_url = (
-            not '_addanother' in POST_KEYS,
-            not '_continue' in POST_KEYS,
+            '_addanother' not in POST_KEYS,
+            '_continue' not in POST_KEYS,
             'next' in GET_KEYS)
 
         if all(do_next_url):
@@ -444,8 +479,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             raise Http403
 
         m = get_object_or_404(MembershipDefault, pk=pk)
+        is_renewal = m.is_renewal()
         m.approve(request_user=request.user)
-        m.send_email(request, 'approve')
+        m.send_email(request, ('approve_renewal' if is_renewal else 'approve'))
         if m.corporate_membership_id:
             # notify corp reps
             m.email_corp_reps(request)
@@ -487,8 +523,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         membershipdefault change page.
         """
         m = get_object_or_404(MembershipDefault, pk=pk)
+        is_renewal = m.is_renewal()
         m.disapprove(request_user=request.user)
-        m.send_email(request, 'disapprove')
+        m.send_email(request, ('disapprove_renewal' if is_renewal else 'disapprove'))
 
         messages.add_message(
             request,
@@ -541,14 +578,18 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'application_form_link', 'status', 'status_detail')
-    search_fields = ('name', 'status', 'status_detail')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail')
+    list_display_links = ('name',)
+    search_fields = ('name', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
                            'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
                            'include_tax', 'tax_rate',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
+        (_('Donation'), {'fields': ('donation_enabled', 'donation_label', 'donation_default_amount'),
+                         'description': _('If donation is enabled, a field will be added to the application\
+                         to allow users to select the default amount or specify an amount to donate')}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -556,7 +597,6 @@ class MembershipAppAdmin(admin.ModelAdmin):
             'group_perms',
         )}),
         (_('Status'), {'fields': (
-            'status',
             'status_detail',
         )}),
     )
@@ -578,7 +618,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
 
 
 class MembershipTypeAdmin(TendenciBaseModelAdmin):
-    list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
+    list_display = ['name', 'price', 'admin_fee', 'show_group', 'require_approval',
                      'allow_renewal', 'renewal_price', 'renewal',
                      'admin_only', 'status_detail']
     list_filter = ['name', 'price', 'status_detail']
@@ -615,6 +655,18 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     class Media:
         js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
               "%sjs/membtype.js" % settings.STATIC_URL,)
+
+    def show_group(self, instance):
+        if instance.group:
+            return '<a href="{0}" title="{1}">{1} (id: {2})</a>'.format(
+                    reverse('group.detail', args=[instance.group.slug]),
+                    instance.group,
+                    instance.group.id
+                )
+        return ""
+    show_group.short_description = u'Group'
+    show_group.allow_tags = True
+    show_group.admin_order_field = 'group'
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -686,8 +738,9 @@ class NoticeAdmin(admin.ModelAdmin):
                          reverse('membership.notice.log.search'), self.id)
     notice_log.allow_tags = True
 
-    list_display = ['notice_name', notice_log, 'content_type',
+    list_display = ['id', 'notice_name', notice_log, 'content_type',
                      'membership_type', 'status', 'status_detail']
+    list_display_links = ('notice_name',)
     list_filter = ['notice_type', 'status_detail']
 
     fieldsets = (
@@ -786,9 +839,10 @@ class AppListFilter(SimpleListFilter):
 
 class MembershipAppField2Admin(admin.ModelAdmin):
     model = MembershipAppField
-    list_display = ['label', 'field_name', 'display',
+    list_display = ['id', 'label', 'field_name', 'display',
               'required', 'admin_only', 'position',
               ]
+    list_display_links = ('label',)
 
     readonly_fields = ('membership_app', 'field_name')
 

@@ -26,15 +26,15 @@ def manage_payment_info(request, recurring_payment_id,
     gateway_error = False
 
     # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id != rp.user.id:
         raise Http403
 
     if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
         test_mode = 'true'
-        form_post_url = "https://test.authorize.net/profile/manage"
+        form_post_url = "https://test.authorize.net/customer/manage"
     else:
         test_mode = 'false'
-        form_post_url = "https://secure.authorize.net/profile/manage"
+        form_post_url = "https://accept.authorize.net/customer/manage"
 
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now
@@ -48,7 +48,6 @@ def manage_payment_info(request, recurring_payment_id,
             rp.save()
         else:
             gateway_error = True
-
 
     #payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
 
@@ -82,7 +81,7 @@ def update_payment_info(request, recurring_payment_id,
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
 
     # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id != rp.user.id:
         raise Http403
 
     rp.populate_payment_profile()
@@ -95,11 +94,9 @@ def update_payment_info(request, recurring_payment_id,
     else:
         payment_profile = None
 
-
     token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage,
                                      is_secure=request.is_secure())
     test_mode = get_test_mode()
-
 
     return render_to_response(template_name, {'rp': rp,
                                               'payment_profile': payment_profile,
@@ -120,7 +117,7 @@ def update_payment_profile_local(request):
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
 
     # only admin or user self can access this page
-    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id != rp.user.id:
         raise Http403
 
     ret_d = {}

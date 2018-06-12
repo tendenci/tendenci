@@ -21,7 +21,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views import generic
 import compat, defaults, util
 from .compat import get_atomic_func
-from .forms import PostForm, AdminPostForm, AttachmentFormSet, PollAnswerFormSet, PollForm
+from .forms import PostForm, AdminPostForm, PollAnswerFormSet, PollForm
 from .models import Category, Forum, Topic, Post, TopicReadTracker, ForumReadTracker, PollAnswerUser
 from .permissions import perms
 from .templatetags.pybb_tags import pybb_topic_poll_not_voted
@@ -74,7 +74,7 @@ class IndexView(generic.ListView):
         return ctx
 
     def get_queryset(self):
-        return perms.filter_categories(self.request.user, Category.objects.all())
+        return perms.filter_categories(self.request.user, Category.objects.filter(status=True).order_by('position'))
 
 
 class CategoryView(RedirectToLoginMixin, generic.DetailView):
@@ -166,7 +166,6 @@ class PybbFormsMixin(object):
 
     post_form_class = PostForm
     admin_post_form_class = AdminPostForm
-    attachment_formset_class = AttachmentFormSet
     poll_form_class = PollForm
     poll_answer_formset_class = PollAnswerFormSet
 
@@ -175,9 +174,6 @@ class PybbFormsMixin(object):
 
     def get_admin_post_form_class(self):
         return self.admin_post_form_class
-
-    def get_attachment_formset_class(self):
-        return self.attachment_formset_class
 
     def get_poll_form_class(self):
         return self.poll_form_class
@@ -259,9 +255,7 @@ class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.Li
         else:
             ctx['form'] = None
             ctx['next'] = self.get_login_redirect_url()
-        if perms.may_attach_files(self.request.user):
-            aformset = self.get_attachment_formset_class()()
-            ctx['aformset'] = aformset
+
         if defaults.PYBB_FREEZE_FIRST_POST:
             ctx['first_post'] = self.topic.head
         else:
@@ -336,11 +330,6 @@ class PostEditMixin(PybbFormsMixin):
 
         ctx = super(PostEditMixin, self).get_context_data(**kwargs)
 
-        if perms.may_attach_files(self.request.user) and 'aformset' not in kwargs:
-            ctx['aformset'] = self.get_attachment_formset_class()(
-                instance=getattr(self, 'object', None)
-            )
-
         if perms.may_create_poll(self.request.user) and 'pollformset' not in kwargs:
             ctx['pollformset'] = self.get_poll_answer_formset_class()(
                 instance=self.object.topic if getattr(self, 'object', None) else None
@@ -354,16 +343,7 @@ class PostEditMixin(PybbFormsMixin):
         save_poll_answers = False
         self.object, topic = form.save(commit=False)
 
-        if perms.may_attach_files(self.request.user):
-            aformset = self.get_attachment_formset_class()(
-                self.request.POST, self.request.FILES, instance=self.object
-            )
-            if aformset.is_valid():
-                save_attachments = True
-            else:
-                success = False
-        else:
-            aformset = None
+        aformset = None
 
         if perms.may_create_poll(self.request.user):
             pollformset = self.get_poll_answer_formset_class()()
@@ -397,8 +377,8 @@ class PostEditMixin(PybbFormsMixin):
                 if save_poll_answers:
                     pollformset.save()
                 return HttpResponseRedirect(self.get_success_url())
-        return self.render_to_response(self.get_context_data(form=form, 
-                                                             aformset=aformset, 
+        return self.render_to_response(self.get_context_data(form=form,
+                                                             aformset=aformset,
                                                              pollformset=pollformset))
 
 
@@ -800,7 +780,6 @@ def block_user(request, username):
                 Forum.objects.get(id=f['topic__forum_id']).update_counters()
             except Forum.DoesNotExist:
                 pass
-
 
     msg = _('User successfuly blocked')
     messages.success(request, msg, fail_silently=True)

@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import print_function
 from django.utils.timezone import now, timedelta
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Count

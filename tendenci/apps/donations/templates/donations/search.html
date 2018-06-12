@@ -1,6 +1,6 @@
 {% extends "donations/base.html" %}
 {% load pagination_tags %}
-{% load avatar_tags %}
+{% load profile_tags %}
 {% load donation_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -32,7 +32,7 @@
 
             <h2><a href="{% url 'donation.view' donation.id %}">{{ donation.first_name}} {{ donation.last_name }}</a></h2>
             {% if donation.user %}
-            	<div class="donation-item-left"><a href="{% url 'profile' donation.user.username %}">{% avatar donation.user 56 %}</a></div>
+            	<div class="donation-item-left"><a href="{% url 'profile' donation.user.username %}">{% gravatar donation.user 56 %}</a></div>
             {% endif %}
             <div class="donation-item-right">
 	            <div class="content">{% trans 'Invoice:' %}
@@ -66,4 +66,3 @@
     {% paginate %}
 </div>
 {% endblock %}
-

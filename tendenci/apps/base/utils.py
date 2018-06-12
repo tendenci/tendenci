@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 from datetime import datetime
@@ -8,6 +9,9 @@ import codecs
 import cStringIO
 import csv
 from urlparse import urlparse
+import hashlib
+import hmac
+import base64
 import urllib2
 import socket
 from PIL import Image
@@ -16,6 +20,9 @@ import requests
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
+from PIL import Image as pil
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 from django.conf import settings
 from django.utils import translation
@@ -25,16 +32,16 @@ from django.core.validators import validate_email as _validate_email
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
-from django.contrib.admin.util import NestedObjects
+from django.contrib.admin.utils import NestedObjects
 from django.utils.functional import allow_lazy
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
 from django.utils.text import capfirst, Truncator
 from django.utils.encoding import force_unicode
 from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html
+from django.utils.translation import ugettext as _
+from django.core.validators import EmailValidator
 
 from django.utils.functional import Promise
 from django.core.serializers.json import DjangoJSONEncoder
@@ -63,6 +70,52 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
+ORIENTATION_EXIF_TAG_KEY = 274
+
+def is_valid_domain(email_domain):
+    """
+    Check if it's a valid email domain.
+    """
+    if '@' in email_domain:
+        email_domain = email_domain.rsplit('@', 1)[1]
+    return EmailValidator().validate_domain_part(email_domain)
+
+def google_cmap_sign_url(url):
+    """ Signs a URL and returns the URL with digital signature for Google static maps API.
+    
+    For the detailed guides to generating a digital signature, go to:
+    https://developers.google.com/maps/documentation/static-maps/get-api-key#digital-signature
+    """
+    if not url:
+        raise Exception('A url is required.')
+
+    signing_secret = settings.GOOGLE_SMAPS_URL_SIGNING_SECRET
+    if not signing_secret:
+        return url
+    
+    url_parts = urlparse(url)
+    if not url_parts.query:
+        return url
+    
+    # don't sign if api key is not provided
+    if 'key' not in dict(map(lambda x:x.split('='), url_parts.query.split('&'))):
+        return url
+    
+    # strip off the domain portion of the request, leaving only the path and the query
+    url_parts_to_sign = url_parts.path + "?" + url_parts.query
+    
+    # retrieve the URL signing secret by decoding it - it is encoded in a modified Base64
+    decoded_signing_secret = base64.urlsafe_b64decode(signing_secret)
+    
+    # sign it  using the HMAC-SHA1 algorithm
+    signature = hmac.new(decoded_signing_secret, url_parts_to_sign, hashlib.sha1)
+    
+    # encode the resulting binary signature using the modified Base64 for URLs 
+    # to convert this signature into something that can be passed within a URL
+    encoded_signature = base64.urlsafe_b64encode(signature.digest())
+    
+    # append digital signature
+    return url + "&signature=" + encoded_signature
 
 
 class LazyEncoder(DjangoJSONEncoder):
@@ -108,7 +161,7 @@ def get_deleted_objects(objs, user):
                            get_permission_codename('delete', opts))
         if not user.has_perm(p):
             perms_needed.add(opts.verbose_name)
-                
+
         if hasattr(obj, 'get_absolute_url'):
             url = obj.get_absolute_url()
             # Display a link to the admin page.
@@ -126,47 +179,6 @@ def get_deleted_objects(objs, user):
     protected = [format_callback(obj) for obj in collector.protected]
 
     return to_delete, collector.model_count, perms_needed, protected
-
-
-# def get_deleted_objects(obj, user):
-#     """
-#     Find all objects related to ``obj`` that should also be deleted.
-# 
-#     Returns a nested list of strings suitable for display in the
-#     template with the ``unordered_list`` filter.
-# 
-#     Copied and updated from django.contrib.admin.util for front end display.
-# 
-#     """
-#     using = router.db_for_write(obj.__class__)
-#     collector = NestedObjects(using=using)
-#     collector.collect([obj])
-#     perms_needed = set()
-# 
-#     def format_callback(obj):
-#         opts = obj._meta
-# 
-#         if hasattr(obj, 'get_absolute_url'):
-#             url = obj.get_absolute_url()
-#             p = '%s.%s' % (opts.app_label,
-#                            opts.get_delete_permission())
-#             if not user.has_perm(p):
-#                 perms_needed.add(opts.verbose_name)
-#             # Display a link to the admin page.
-#             return mark_safe(u'%s: <a href="%s">%s</a>' %
-#                              (escape(capfirst(opts.verbose_name)),
-#                               url,
-#                               escape(obj)))
-#         else:
-#             # no link
-#             return u'%s: %s' % (capfirst(opts.verbose_name),
-#                                 force_unicode(obj))
-# 
-#     to_delete = collector.nested(format_callback)
-# 
-#     protected = [format_callback(obj) for obj in collector.protected]
-# 
-#     return to_delete, perms_needed, protected
 
 
 # this function is not necessary - datetime.now() *is* localized in django
@@ -367,12 +379,12 @@ def generate_meta_keywords(value):
         while search_end < value_length:
             s = one_word_pattern.search(value, search_end)
             if s:
-                word = s.group(1)
+                one_word = s.group(1)
                 # remove the : from the word
-                if word[-1] == ':':
-                    word = word[:-1]
+                if one_word[-1] == ':':
+                    one_word = one_word[:-1]
 
-                one_words.append(word)
+                one_words.append(one_word)
                 search_end = s.end()
             else: break
 
@@ -445,17 +457,17 @@ def filelog(*args, **kwargs):
         filelog(args...Nargs)
         filelog(args, mode='a+', filename='log.txt', path=path)
     """
-    if kwargs.has_key('path'):
+    if 'path' in kwargs:
         path = kwargs['path']
     else:
         path = getattr(settings,'PROJECT_ROOT','/var/log')
 
-    if kwargs.has_key('filename'):
+    if 'filename' in kwargs:
         filename = kwargs['filename']
     else:
         filename = 'filelog.txt'
 
-    if kwargs.has_key('mode'):
+    if 'mode' in kwargs:
         mode = kwargs['mode']
     else:
         mode = 'a+'
@@ -511,11 +523,11 @@ def dec_pass(password):
 
 def url_exists(url):
     o = urlparse(url)
-    
+
     if not o.scheme:
         # doesn't have a scheme, relative url
         url = '%s%s' %  (get_setting('site', 'global', 'siteurl'), url)
-        
+
     r = requests.head(url)
     return r.status_code == 200
 
@@ -547,13 +559,45 @@ def make_image_object_from_url(image_url):
     return im
 
 
+def apply_orientation(im):
+    """
+    Some photos are taken with camera rotated. The rotated info is stored in the EXIF metadata.
+    But EXIF metadata gets lost when an image is cropped or modified, which can lead to unintended
+    position.
+
+    Extract the orientation info and apply the rotation if needed (before cropping or modifying an image).
+
+    Parameters
+    -----------
+    im : Image
+        An Image instance
+    
+    Returns
+    -------
+    Image 
+        A rotated or original image instance
+    """
+
+    try:
+        if hasattr(im, '_getexif'): # only present in JPEGs
+            image_exif = im._getexif()       # returns None if no EXIF data
+            if image_exif is not None:
+                image_orientation = image_exif.get(ORIENTATION_EXIF_TAG_KEY)
+                if image_orientation:
+                    if image_orientation == 3:
+                        return im.rotate(180)
+                    if image_orientation == 6:
+                        return im.rotate(-90)
+                    if image_orientation == 8:
+                        return im.rotate(90)
+    except:
+        pass 
+    return im
+
 def image_rescale(img, size, force=True):
     """Rescale the given image, optionally cropping it to make sure the result image has the specified width and height."""
-    from PIL import Image as pil
-
     format = img.format  # temp. save format
     max_width, max_height = size
-
     if not force:
         img.thumbnail((max_width, max_height), pil.ANTIALIAS)
     else:
@@ -681,8 +725,11 @@ def is_blank(item):
     elif isinstance(item, basestring):
         l = list(item)
 
+    item = []
+
     # return not bool([i for i in l if i.strip)
-    return not bool(''.join(l).strip())
+    return not any(l)
+    #return not bool(''.join(l).strip())
 
     raise Exception
 
@@ -807,7 +854,7 @@ def get_salesforce_access():
                             sandbox=is_sandbox)
             return sf
         except:
-            print 'Salesforce authentication failed'
+            print('Salesforce authentication failed')
 
     return None
 
@@ -815,14 +862,25 @@ def get_salesforce_access():
 def create_salesforce_contact(profile):
 
     if hasattr(settings, 'SALESFORCE_AUTO_UPDATE') and settings.SALESFORCE_AUTO_UPDATE:
+        sf = get_salesforce_access()
+
         if profile.sf_contact_id:
-            return profile.sf_contact_id
-        else:
-            sf = get_salesforce_access()
-            # Make sure that user last name is not blank
-            # since that is a required field for Salesforce Contact.
-            user = profile.user
-            if sf and user.last_name:
+            # sf_contact_id might be deleted at saleforce end, check for existence
+            result = sf.query("SELECT FirstName, LastName, Email FROM Contact WHERE Id='%s'" % profile.sf_contact_id)
+            if 'records' in result and result['records']:
+                return profile.sf_contact_id
+
+        # Make sure that user last name is not blank
+        # since that is a required field for Salesforce Contact.
+        user = profile.user
+        if sf and user.last_name:
+            # Query for a duplicate entry in salesforce
+            # saleforce blocks the request if email is already in their system - so just checking email
+            if user.email:
+                result = sf.query("SELECT Id FROM Contact WHERE Email='%s'" % user.email.replace("'", "''"))
+                if result['records']:
+                    return result['records'][0]['Id']
+
                 contact = sf.Contact.create({
                     'FirstName':user.first_name,
                     'LastName':user.last_name,
@@ -837,7 +895,7 @@ def create_salesforce_contact(profile):
                     })
 
                 # update field Company_Name__c
-                if profile.company and contact.has_key('Company_Name__c'):
+                if profile.company and 'Company_Name__c' in contact:
                     sf.Contact.update(contact['id'], {'Company_Name__c': profile.company})
 
                 profile.sf_contact_id = contact['id']
@@ -914,8 +972,42 @@ truncate_words = allow_lazy(truncate_words, unicode)
 def validate_email(s, quiet=True):
     try:
         _validate_email(s)
-        return True
-    except Exception, e:
+        return is_valid_domain(s)
+    except Exception as e:
         if not quiet:
             raise e
     return False
+
+
+def get_latest_version():
+    import xmlrpclib
+    proxy = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    return proxy.package_releases('tendenci')[0]
+
+
+def add_tendenci_footer(email_content, content_type='html'):
+    if content_type == 'text':
+        footer = _("This Association is Powered by Tendenci - The Open Source AMS https://www.tendenci.com")
+        return email_content + '\n\n' + footer
+    # Sorry but have to put html code here instead of in a template
+    footer = '''<br /><div style="text-align:center; font-size:90%;">
+    {0} <a href="https://www.tendenci.com" style="text-decoration: none;">{1}</a>
+    <div>
+    <div style="margin:5px auto;">
+    <a href="https://www.tendenci.com" style="text-decoration: none;">
+    <img src="https://www.tendenci.com/media/tendenci-os-ams.jpg" width="100" height="29" alt="tendenci logo" />
+    </a>
+    </div>'''.format(_('This Association is Powered by'), _('Tendenci &ndash; The Open Source AMS'))
+    if email_content.find('</body>') != -1:
+        return email_content.replace("</body>", footer + "\n</body>")
+    return email_content + footer
+
+
+def correct_filename(filename):
+    """
+    Renames filename if needed -  replaces dots, underscores, and spaces with dashes.
+    And changes filename to lowercase.
+    """
+    root, ext = os.path.splitext(filename)
+    root = (re.sub(r'[^a-zA-Z0-9]+', '-', root)).lower()
+    return root + ext

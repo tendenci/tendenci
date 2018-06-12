@@ -8,37 +8,37 @@
 * [How to use only the basic plugin (minimal setup guide).](https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin)
 
 ## Features
-* **Multiple file upload:**  
+* **Multiple file upload:**
   Allows to select multiple files at once and upload them simultaneously.
-* **Drag & Drop support:**  
+* **Drag & Drop support:**
   Allows to upload files by dragging them from your desktop or filemanager and dropping them on your browser window.
-* **Upload progress bar:**  
+* **Upload progress bar:**
   Shows a progress bar indicating the upload progress for individual files and for all uploads combined.
-* **Cancelable uploads:**  
+* **Cancelable uploads:**
   Individual file uploads can be canceled to stop the upload progress.
-* **Resumable uploads:**  
+* **Resumable uploads:**
   Aborted uploads can be resumed with browsers supporting the Blob API.
-* **Chunked uploads:**  
+* **Chunked uploads:**
   Large files can be uploaded in smaller chunks with browsers supporting the Blob API.
-* **Client-side image resizing:**  
+* **Client-side image resizing:**
   Images can be automatically resized on client-side with browsers supporting the required JS APIs.
-* **Preview images:**  
+* **Preview images:**
   A preview of image files can be displayed before uploading with browsers supporting the required JS APIs.
-* **No browser plugins (e.g. Adobe Flash) required:**  
+* **No browser plugins (e.g. Adobe Flash) required:**
   The implementation is based on open standards like HTML5 and JavaScript and requires no additional browser plugins.
-* **Graceful fallback for legacy browsers:**  
+* **Graceful fallback for legacy browsers:**
   Uploads files via XMLHttpRequests if supported and uses iframes as fallback for legacy browsers.
-* **HTML file upload form fallback:**  
+* **HTML file upload form fallback:**
   Shows a standard HTML file upload form if JavaScript is disabled.
-* **Cross-site file uploads:**  
+* **Cross-site file uploads:**
   Supports uploading files to a different domain with Cross-site XMLHttpRequests.
-* **Multiple plugin instances:**  
+* **Multiple plugin instances:**
   Allows to use multiple plugin instances on the same webpage.
-* **Customizable and extensible:**  
+* **Customizable and extensible:**
   Provides an API to set individual options and define callBack methods for various upload events.
-* **Multipart and file contents stream uploads:**  
+* **Multipart and file contents stream uploads:**
   Files can be uploaded as standard "multipart/form-data" or file contents stream (HTTP PUT file upload).
-* **Compatible with any server-side application platform:**  
+* **Compatible with any server-side application platform:**
   Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.
 
 ## Requirements
@@ -50,8 +50,8 @@
 * [JavaScript Canvas to Blob function](https://github.com/blueimp/JavaScript-Canvas-to-Blob) v. 2.0.0+ (optional)
 * [Bootstrap CSS Toolkit](https://github.com/twitter/bootstrap/) v. 2.0+ (optional)
 
-The jQuery UI widget factory is a requirement for the basic File Upload plugin, but very lightweight without any other dependencies.  
-The jQuery Iframe Transport is required for [browsers without XHR file upload support](https://github.com/blueimp/jQuery-File-Upload/wiki/Browser-support).  
+The jQuery UI widget factory is a requirement for the basic File Upload plugin, but very lightweight without any other dependencies.
+The jQuery Iframe Transport is required for [browsers without XHR file upload support](https://github.com/blueimp/jQuery-File-Upload/wiki/Browser-support).
 The UI version of the File Upload plugin also requires the JavaScript Templates engine as well as the JavaScript Load Image and JavaScript Canvas to Blob functions (for the image previews and resizing functionality). These dependencies are marked as optional, as the basic File Upload plugin can be used without them and the UI version of the plugin can be extended to override these dependencies with alternative solutions.
 
 The User Interface is built with Twitter's [Bootstrap](https://github.com/twitter/bootstrap/) Toolkit. This enables a CSS based, responsive layout and fancy transition effects on modern browsers. The demo also includes the [Bootstrap Image Gallery Plugin](https://github.com/blueimp/Bootstrap-Image-Gallery). Both of these components are optional and not required.
@@ -67,8 +67,8 @@ The repository also includes the [jQuery XDomainRequest Transport plugin](https:
 * Opera - 10.0+
 * Microsoft Internet Explorer 6.0+
 
-Drag & Drop is only supported on Google Chrome, Firefox 4.0+, Safari 5.0+ and Opera 12.0+.  
-Microsoft Internet Explorer has no support for multiple file selection or upload progress.  
+Drag & Drop is only supported on Google Chrome, Firefox 4.0+, Safari 5.0+ and Opera 12.0+.
+Microsoft Internet Explorer has no support for multiple file selection or upload progress.
 [Extended browser support information](https://github.com/blueimp/jQuery-File-Upload/wiki/Browser-support).
 
 ## License

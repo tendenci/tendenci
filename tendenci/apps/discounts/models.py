@@ -71,6 +71,13 @@ class Discount(TendenciBaseModel):
                             ).filter(apps__model=model).exists()
         return discount_exists
 
+    def delete(self, *args, **kwargs):
+        # Append id to the discount_code to avoid IntegrityError when the discount_code
+        # is used again later
+        self.discount_code = '{0}-{1}'.format(self.discount_code, self.id)
+        super(Discount, self).delete(*args, **kwargs)
+
+
 class DiscountUse(models.Model):
     invoice = models.ForeignKey(Invoice)
     discount = models.ForeignKey(Discount)

@@ -19,7 +19,7 @@ class Command(BaseCommand):
         reg8n_configs = RegistrationConfiguration.objects.raw(select_sql)
         cursor = connection.cursor()
 
-        # add the pricing and update registations
+        # add the pricing and update registrations
         for config in reg8n_configs:
             reg_conf_pricing = RegConfPricing()
             reg_conf_pricing.title = ''
@@ -52,11 +52,11 @@ class Command(BaseCommand):
                 disable_fk_sql = "SET FOREIGN_KEY_CHECKS=0;"
                 enable_fk_sql = "SET FOREIGN_KEY_CHECKS=1;"
                 update_sql = """
-                UPDATE events_registration 
+                UPDATE events_registration
                 SET reg_conf_price_id = %s
                 WHERE id = %s;
                 """
-                # clean up the pretty sql to a 
+                # clean up the pretty sql to a
                 # usable statements
                 pattern = re.compile(r'[\s\t]+')
                 update_sql = update_sql.replace('\n',' ')

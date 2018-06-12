@@ -1,7 +1,7 @@
 import imghdr
 from os.path import splitext, basename
 from django import forms
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.testimonials.models import Testimonial
@@ -10,7 +10,7 @@ ALLOWED_LOGO_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
-    '.png' 
+    '.png'
 )
 
 class TestimonialForm(TendenciBaseForm):
@@ -55,11 +55,11 @@ class TestimonialForm(TendenciBaseForm):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
             extension = splitext(photo_upload.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-            
+
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:

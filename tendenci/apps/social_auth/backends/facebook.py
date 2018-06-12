@@ -49,12 +49,12 @@ class FacebookBackend(OAuthBackend):
 class FacebookAuth(BaseOAuth):
     """Facebook OAuth mechanism"""
     AUTH_BACKEND = FacebookBackend
-    
+
     def __init__(self, request, redirect):
         self.FACEBOOK_APP_ID = get_setting(scope='module', scope_category='users', name='facebook_app_id')
         self.FACEBOOK_API_SECRET = get_setting(scope='module', scope_category='users', name='facebook_api_secret')
         super(FacebookAuth, self).__init__(request, redirect)
-    
+
     def auth_url(self):
         """Returns redirect url"""
         args = {'client_id': self.FACEBOOK_APP_ID,
@@ -62,7 +62,7 @@ class FacebookAuth(BaseOAuth):
         if hasattr(settings, 'FACEBOOK_EXTENDED_PERMISSIONS'):
             args['scope'] = ','.join(settings.FACEBOOK_EXTENDED_PERMISSIONS)
         return FACEBOOK_AUTHORIZATION_URL + '?' + urllib.urlencode(args)
-    
+
     def auth_complete(self, *args, **kwargs):
         """Returns user, might be logged in"""
         if 'code' in self.data:

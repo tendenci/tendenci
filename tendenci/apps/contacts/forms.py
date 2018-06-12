@@ -1,9 +1,10 @@
 from tendenci.apps.contacts.models import Contact
 from django import forms
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 class ContactForm(forms.ModelForm):
@@ -36,4 +37,4 @@ class SubmitContactForm(forms.Form):
     url = forms.URLField(label=_('URL'), max_length=200, required=False)
 
     message = forms.CharField(widget=forms.Textarea)
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))

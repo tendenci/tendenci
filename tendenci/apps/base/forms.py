@@ -2,11 +2,14 @@ from re import compile
 import zipfile
 
 from django import forms
+from django.conf import settings
 
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
-from captcha.fields import CaptchaField, CaptchaTextInput
+# from captcha.fields import CaptchaField, CaptchaTextInput
+from captcha.fields import CaptchaField
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 SIMPLE_ANSWER = 22
 SIMPLE_QUESTION = _('What is 9 + 13? (security question -just so we know you\'re not a bot)')
 
@@ -30,7 +33,7 @@ class FormControlWidgetMixin(object):
         # Add .'form-control' class to all field widgets
         for field_name in self.fields.keys():
 
-            #print '%s: %s' % (field_name, self.fields[field_name].widget.__class__.__name__.lower(),)
+            #print('%s: %s' % (field_name, self.fields[field_name].widget.__class__.__name__.lower()))
             non_form_control_widgets = [
                 'checkboxinput', 'radioselect', 'checkboxselectmultiple',
                 'userpermissionwidget', 'grouppermissionwidget', 'memberpermissionwidget',
@@ -103,8 +106,14 @@ class PasswordForm(forms.Form):
         return self.cleaned_data
 
 
+def CustomCatpchaField(**kwargs):
+    if settings.NORECAPTCHA_SITE_KEY and settings.NORECAPTCHA_SECRET_KEY:
+        return NoReCaptchaField(label='', gtag_attrs={'data-size':'normal'})
+    return CaptchaField(**kwargs)
+
+
 class CaptchaForm(FormControlWidgetMixin, forms.Form):
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
 
 
 class AddonUploadForm(forms.Form):

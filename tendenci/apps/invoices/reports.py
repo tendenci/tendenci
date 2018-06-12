@@ -53,7 +53,9 @@ class InvoiceReport(ReportAdmin):
     exports = ('excel', 'pdf',)
 
     # type = report for report only, type = chart for report and charts. default is report.
-    type = 'report'
+    type = 'chart'
+    chart_types = ('pie', 'line', 'column')
+    list_serie_fields = ('balance', 'total')
 
     # override field formats by referencing a function
     override_field_formats = {
@@ -67,11 +69,12 @@ class InvoiceReport(ReportAdmin):
 
     # override the label for a field by referencing a function
     override_field_labels = {
-        'create_dt': date_label
+        'create_dt': date_label,
     }
 
     override_group_value = {
         'create_dt': date_from_datetime,
+        'object_type': obj_type_format,
         'entity': entity_format
     }
 

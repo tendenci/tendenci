@@ -9,6 +9,7 @@ from django.utils.translation import ugettext as _
 from django.template import Template
 from djcelery.models import TaskMeta
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
@@ -27,7 +28,7 @@ def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"
             result = WPExportTask.delay(form, request.user)
             #uncomment the next line if there is no celery server yet.
             #result.wait()
-            subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
+            subprocess.Popen([python_executable(), 'manage.py', 'celeryd_detach'])
 
             return redirect("export_detail", result.task_id)
     else:
@@ -65,6 +66,6 @@ def download(request, export_id):
 
     xml = export.xml
     response = HttpResponse(xml)
-    response['Content-Disposition'] = 'attachment; filename=export.xml'
+    response['Content-Disposition'] = 'attachment; filename="export.xml"'
 
     return response

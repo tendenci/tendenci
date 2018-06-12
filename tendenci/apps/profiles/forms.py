@@ -20,6 +20,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import update_user
 from tendenci.apps.base.utils import get_languages_with_local_name
+from tendenci.apps.perms.utils import get_query_filters
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -40,6 +41,7 @@ class ProfileSearchForm(forms.Form):
                         ('username', _('Username')),
                         ('member_number', _('Member Number')),
                         ('company', _('Company')),
+                        ('department', _('Department')),
                         ('position_title', _('Position Title')),
                         ('phone', _('Phone')),
                         ('city', _('City')),
@@ -60,6 +62,7 @@ class ProfileSearchForm(forms.Form):
                                      widget=forms.CheckboxInput(),
                                      initial=True, required=False)
     membership_type = forms.IntegerField(required=False)
+    group = forms.IntegerField(required=False)
     search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
                                         required=False)
     search_text = forms.CharField(max_length=100, required=False)
@@ -68,6 +71,7 @@ class ProfileSearchForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
+        self.user = kwargs.pop('user')
         super(ProfileSearchForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
         self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
@@ -81,6 +85,16 @@ class ProfileSearchForm(forms.Form):
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
+            
+        # group choices
+        filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+        group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
+                            status=True, status_detail="active"
+                             ).filter(filters).distinct().order_by('name'
+                            ).values_list('pk', 'name'))
+        self.fields['group'].widget = forms.widgets.Select(
+                                    choices=group_choices)
+        
 
 
 class ProfileForm(TendenciBaseForm):
@@ -154,7 +168,7 @@ class ProfileForm(TendenciBaseForm):
                                                                 ('superuser',_('Superuser')),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,_('Not Interactive (no login)')),))
-    direct_mail =  forms.ChoiceField(initial=1, choices=((1, _('Yes')),(0, _('No')),))
+    direct_mail =  forms.ChoiceField(initial=True, choices=((True, _('Yes')),(False, _('No')),))
     notes = forms.CharField(label=_("Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
@@ -281,7 +295,6 @@ class ProfileForm(TendenciBaseForm):
                     if field == self.fields[myfield].label:
                         self.fields[myfield].required = True
                         continue
-
 
     def clean_username(self):
         """
@@ -571,21 +584,20 @@ class UserGroupsForm(forms.Form):
         self.editor = editor
         self.request = request
         super(UserGroupsForm, self).__init__(*args, **kwargs)
-        
+
         self.fields['groups'].initial = self.fields['groups'].queryset.filter(members__in=[self.user])
 
         if not self.editor.is_superuser:
             queryset = self.fields['groups'].queryset
             queryset = queryset.filter(show_as_option=True, allow_self_add=True)
             if self.editor.profile.is_member:
-                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                queryset = queryset.filter(Q(allow_anonymous_view=True)
                                            | Q(allow_user_view=True)
                                            | Q(allow_member_view=True))
             else:
-                queryset = queryset.filter(Q(allow_anonymous_view=True) 
+                queryset = queryset.filter(Q(allow_anonymous_view=True)
                                            | Q(allow_user_view=True))
             self.fields['groups'].queryset = queryset
-        
 
     def save(self):
         data = self.cleaned_data
@@ -597,17 +609,16 @@ class UserGroupsForm(forms.Form):
             old_memberships = old_memberships.filter(group__show_as_option=True,
                                                      group__allow_self_remove=True)
             if self.editor.profile.is_member:
-                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True)
                                            | Q(group__allow_user_view=True)
                                            | Q(group__allow_member_view=True))
             else:
-                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True) 
+                old_memberships = old_memberships.filter(Q(group__allow_anonymous_view=True)
                                            | Q(group__allow_user_view=True))
-                                
 
         for old_m in old_memberships:
             if old_m.group not in data['groups']:
-                #print "membership to %s deleted" % old_m.group
+                #print("membership to %s deleted" % old_m.group)
                 log_defaults = {
                     'event_id' : 223000,
                     'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, self.editor),
@@ -756,11 +767,10 @@ class UserUploadForm(forms.ModelForm):
                ('first_name,last_name,phone', _('First Name and Last Name and Phone')),
                ('first_name,last_name,company', _('First Name and Last Name and Company')),
                ('username', 'Username'),)
-    
+
     interactive = forms.BooleanField(widget=forms.RadioSelect(
-                                    choices=((True, _('Interactive')),
-                                            (False, _('Not Interactive (no login)')),)),
-                                  initial=False, required=False)
+                                    choices=UserImport.INTERACTIVE_CHOICES),
+                                    initial=False, required=False)
     key = forms.ChoiceField(label="Key",
                             choices=KEY_CHOICES)
     group_id = forms.ChoiceField(label=_("Add Users to Group"),
@@ -781,9 +791,9 @@ class UserUploadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserUploadForm, self).__init__(*args, **kwargs)
         self.fields['key'].initial = 'email'
-        # move the choices down here to fix the error 
+        # move the choices down here to fix the error
         #  django.db.utils.ProgrammingError: relation "user_groups_group" does not exist
-        GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in \
+        GROUP_CHOICES = [(0, _('Select One'))] + [(group.id, group.name) for group in
                      Group.objects.filter(status=True, status_detail='active'
                                           ).exclude(type='membership')]
         self.fields['group_id'].choices = GROUP_CHOICES
@@ -805,7 +815,7 @@ class UserUploadForm(forms.ModelForm):
             key_list.append(key)
         missing_columns = []
         for item in key_list:
-            if not item in header_list:
+            if item not in header_list:
                 missing_columns.append(item)
         if missing_columns:
             raise forms.ValidationError(_(
@@ -815,3 +825,9 @@ class UserUploadForm(forms.ModelForm):
                         """ % {'fields' : ', '.join(missing_columns)}))
 
         return upload_file
+
+
+class ActivateForm(forms.Form):
+    email = forms.CharField(max_length=75)
+    username = forms.RegexField(regex=r'^[\w.@+-]+$',
+                                max_length=30, required=False)

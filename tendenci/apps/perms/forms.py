@@ -5,7 +5,7 @@ from form_utils.forms import BetterModelForm
 
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
-
+from tendenci.apps.user_groups.models import Group
 
 class TendenciBaseForm(FormControlWidgetMixin, BetterModelForm):
     """
@@ -93,3 +93,6 @@ class TendenciBaseForm(FormControlWidgetMixin, BetterModelForm):
                 self.fields['user_perms'].initial = user_perm_bits(instance)
             if 'member_perms' in self.fields:
                 self.fields['member_perms'].initial = member_perm_bits(instance)
+        else:
+            if 'group' in self.fields:
+                self.fields['group'].initial = Group.objects.get_initial_group_id()

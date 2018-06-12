@@ -20,7 +20,6 @@ class DirectoryTest(TestCase):
         self.user.is_active = True
         self.user.save()
 
-
     def tearDown(self):
         self.client = None
         self.directory = None
@@ -43,5 +42,3 @@ class DirectoryTest(TestCase):
         self.directory.save()
 
         self.assertEquals(type(self.directory.id), long)
-
-

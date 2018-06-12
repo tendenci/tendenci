@@ -1,5 +1,6 @@
 from django import forms
 from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.utils import get_form_list, get_box_list
 from django.utils.translation import ugettext_lazy as _
 
 class SettingForm(forms.ModelForm):

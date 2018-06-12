@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.committees.managers import CommitteeManager

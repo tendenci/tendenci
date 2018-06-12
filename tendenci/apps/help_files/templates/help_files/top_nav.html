@@ -3,18 +3,14 @@
 {% load static from staticfiles %}
 {% load help_file_tags %}
 
+{% block nav_icon_url %}{% static 'famfamfam/icons/help.png' %}{% endblock %}
+
+{% block nav_label %}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans "Help Files" %}{% endblock %}
 
 {% block current_app %}
-<li class="dropdown">
-    <a href="javascript:void(0);" data-toggle="dropdown" class="dropdown-toggle">
-        <img class="nav-icon" src="{% static 'famfamfam/icons/help.png' %}"/>{% firstof MODULE_HELP_FILES_LABEL trans "Help Files" %}
-    </a>
-
     {% if help_file %}
         {% help_file_current_app request.user help_file %}
     {% else %}
         {% help_file_current_app request.user %}
     {% endif %}
-</li>
 {% endblock %}
-

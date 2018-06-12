@@ -48,7 +48,6 @@ from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
 
 
-
 class NewsletterGeneratorView(TemplateView):
     template_name="newsletters/newsletter_generator.html"
 
@@ -259,6 +258,21 @@ class NewsletterDeleteView(NewsletterPermissionMixin, DeleteView):
     success_url = reverse_lazy('newsletter.list')
 
 
+class NewsletterCloneView(NewsletterPermissionMixin, DetailView):
+    model = Newsletter
+    newsletter_permission = 'newsletters.add_newsletter'
+
+    def get(self, request, *args, **kwargs):
+        newsletter = get_object_or_404(Newsletter, pk=kwargs['pk'])
+        cloned_newsletter = newsletter.clone()
+
+        EventLog.objects.log(instance=cloned_newsletter)
+        msg_string = 'Sucessfully cloned newsletter: {}. You can edit the new newsletter now.'.format(unicode(newsletter))
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+        return redirect(reverse('newsletter.action.step4', kwargs={'pk': cloned_newsletter.pk}))
+
+
 @login_required
 def generate(request):
     """
@@ -438,13 +452,13 @@ def default_template_view(request):
     template_name = request.GET.get('template_name', '')
     if not template_name:
         raise Http404
-    return render (request, template_name)
+    return render(request, template_name)
 
 
 def view_email_from_browser(request, pk):
     nl = get_object_or_404(Newsletter, pk=pk)
     email = nl.email
-    if email == None:
+    if email is None:
         raise Http404
     if not email.allow_view_by(request.user):
         # check if security_key is in GET

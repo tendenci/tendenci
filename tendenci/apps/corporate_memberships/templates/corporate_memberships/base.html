@@ -18,7 +18,6 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'css/corporate_memberships.css' %}">
 
     <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
 {% endblock %}
@@ -27,28 +26,10 @@
 
 {% block top_bar %}
     {% if request.user.is_authenticated %}
-        {% if request.user.is_superuser %}
-            {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                    {% include "top_menu/user_top.html" %}
-                {% else %}
-                    {% include "corporate_memberships/top_nav.html" %}
-                {% endif %}
-            {% else %}
-                {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                    {% include "top_menu/admin_top.html" %}
-                {% else %}
-                    {% include "corporate_memberships/top_nav.html" %}
-                {% endif %}
-                {% if request.session.theme %}
-                    {% include "themes/theme_top.html" %}
-                {% endif %}
-            {% endif %}
-        {% else %}
-            {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                {% include "top_menu/user_top.html" %}
-            {% else %}
-                {% include "corporate_memberships/top_nav.html" %}
+    	{% include "corporate_memberships/top_nav.html" %}
+        {% if request.user.impersonated_user and request.user.impersonated_user.is_superuser or request.user.is_superuser  %}
+            {% if request.session.theme %}
+                {% include "themes/theme_top.html" %}
             {% endif %}
         {% endif %}
     {% endif %}

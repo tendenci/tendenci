@@ -3,7 +3,7 @@ import imghdr
 import calendar
 from ast import literal_eval
 from os.path import splitext, basename
-from datetime import date, datetime, timedelta, time
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django import forms
@@ -20,7 +20,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
 
-from captcha.fields import CaptchaField
+# from captcha.fields import CaptchaField
 from tendenci.apps.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
@@ -30,7 +30,7 @@ from tendenci.apps.events.models import (
 )
 
 from form_utils.forms import BetterModelForm
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField, EmailVerificationField, CountrySelectField, PriceField
@@ -40,13 +40,14 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.models import Setting
-from tendenci.apps.site_settings.utils import get_setting, get_global_setting
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
+from tendenci.apps.base.forms import CustomCatpchaField
 
-from fields import Reg8nDtField, UseCustomRegField
+from fields import UseCustomRegField
 from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
@@ -99,6 +100,7 @@ class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
     event_type = forms.ChoiceField(required=False, choices=[])
+    event_group = forms.ChoiceField(required=False, choices=[])
     registration = forms.BooleanField(required=False)
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
     q = forms.CharField(required=False)
@@ -114,6 +116,11 @@ class EventSearchForm(forms.Form):
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
+
+        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
+        group_choices = Group.objects.filter(group_filters).distinct(
+                                        ).order_by('name').values_list('id', 'name')
+        self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
 
@@ -452,7 +459,6 @@ class FormForCustomRegForm(forms.ModelForm):
 
         return memberid
 
-
     def clean_override_price(self):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
@@ -475,7 +481,6 @@ class FormForCustomRegForm(forms.ModelForm):
             elif not corp_membership.free_pass_avail:
                 raise forms.ValidationError(_('Free pass not available for "%s".' % corp_membership.corp_profile.name))
         return use_free_pass
-
 
     def save(self, event, **kwargs):
         """
@@ -511,11 +516,9 @@ class FormForCustomRegForm(forms.ModelForm):
                     #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
                     field_entry = CustomRegFieldEntry(field=field, entry=entry, value=value)
 
-
                 field_entry.save()
             return entry
         return
-
 
 
 def _get_price_labels(pricing):
@@ -592,7 +595,7 @@ class EventForm(TendenciBaseForm):
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ChoiceField(required=True, choices=[])
+    groups = forms.MultipleChoiceField(required=True, choices=[], help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -610,7 +613,7 @@ class EventForm(TendenciBaseForm):
     repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
     frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
     end_recurring = forms.DateField(
-        label=_('Ends On'), initial=date.today()+timedelta(days=30),
+        label=_('Recurring Ends On'), initial=date.today()+timedelta(days=30),
         widget=forms.DateInput(attrs={'class':'datepicker'}))
     recurs_on = forms.ChoiceField(label=_('Recurs On'), widget=forms.RadioSelect, initial='weekday',
         choices=(('weekday', _('the same day of the week')),('date',_('the same date')),))
@@ -636,7 +639,7 @@ class EventForm(TendenciBaseForm):
             'timezone',
             'priority',
             'type',
-            'group',
+            'groups',
             'external_url',
             'photo_upload',
             'tags',
@@ -672,7 +675,7 @@ class EventForm(TendenciBaseForm):
                                   'timezone',
                                   'priority',
                                   'type',
-                                  'group',
+                                  'groups',
                                   'external_url',
                                   'photo_upload',
                                   'tags',
@@ -713,7 +716,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['enable_private_slug'].widget = forms.HiddenInput()
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            self.fields['group'].initial = Group.objects.get_initial_group_id()
+            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -742,9 +745,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('photo_upload')
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
-
-        if self.user and not self.user.profile.is_superuser:
-
+        if not self.user.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             groups = default_groups.filter(filters).distinct()
             groups_list = list(groups.values_list('pk', 'name'))
@@ -756,7 +757,7 @@ class EventForm(TendenciBaseForm):
         else:
             groups_list = default_groups.values_list('pk', 'name')
 
-        self.fields['group'].choices = groups_list
+        self.fields['groups'].choices = groups_list
         self.fields['timezone'].initial = settings.TIME_ZONE
 
     def clean_photo_upload(self):
@@ -781,14 +782,16 @@ class EventForm(TendenciBaseForm):
 
         return photo_upload
 
-    def clean_group(self):
-        group_id = self.cleaned_data['group']
-
-        try:
-            group = Group.objects.get(pk=group_id)
-            return group
-        except Group.DoesNotExist:
-            raise forms.ValidationError(_('Invalid group selected.'))
+    def clean_groups(self):
+        group_ids = self.cleaned_data['groups']
+        groups = []
+        for group_id in group_ids:
+            try:
+                group = Group.objects.get(pk=group_id)
+                groups.append(group)
+            except Group.DoesNotExist:
+                raise forms.ValidationError(_('Invalid group selected.'))
+        return groups
 
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
@@ -816,13 +819,19 @@ class EventForm(TendenciBaseForm):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
-
     def save(self, *args, **kwargs):
         event = super(EventForm, self).save(*args, **kwargs)
+
         # Reset time if All Day is selected
         if event.all_day:
-            event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
-            event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
+            if self.cleaned_data.get('start_event_date'):
+                event.start_dt = datetime.combine(self.cleaned_data.get('start_event_date'), datetime.min.time())
+            else:
+                event.start_dt = datetime.combine(event.start_dt, datetime.min.time())
+            if self.cleaned_data.get('end_event_date'):
+                event.end_dt = datetime.combine(self.cleaned_data.get('end_event_date'), datetime.max.time())
+            else:
+                event.end_dt = datetime.combine(event.end_dt, datetime.max.time())
 
         if self.cleaned_data.get('remove_photo'):
             event.image = None
@@ -1115,8 +1124,8 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
     groups = forms.MultipleChoiceField(required=False, choices=[])
@@ -1178,7 +1187,6 @@ class Reg8nConfPricingForm(BetterModelForm):
         if quantity <= 0:
             quantity = 1
         return quantity
-
 
     def clean(self):
         data = self.cleaned_data
@@ -1312,7 +1320,6 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'bind_reg_form_to_conf_only': forms.RadioSelect
         }
 
-
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
@@ -1439,8 +1446,6 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
 
         return super(Reg8nEditForm, self).save(*args, **kwargs)
 
-
-
     # def clean(self):
     #     from django.db.models import Sum
 
@@ -1448,8 +1453,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
     #     price_sum = self.instance.regconfpricing_set.aggregate(sum=Sum('price'))['sum']
     #     payment_methods = self.instance.payment_method.all()
 
-
-    #     print 'price_sum', type(price_sum), price_sum
+    #     print('price_sum', type(price_sum), price_sum)
 
     #     if price_sum and not payment_methods:
     #         raise forms.ValidationError("Please select possible payment methods for your attendees.")
@@ -1467,7 +1471,7 @@ class Reg8nForm(forms.Form):
     username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = EmailVerificationField(label=_("Email"))
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
 
     def __init__(self, event_id=None, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -1533,7 +1537,6 @@ class RegistrationPreForm(forms.Form):
         if self.table_only:
             del self.fields['is_table']
 
-
     def clean_pricing(self):
         if not self.table_only:
             is_table = self.cleaned_data['is_table'] == '1'
@@ -1551,7 +1554,7 @@ class RegistrationForm(forms.Form):
     Registration form - not include the registrant.
     """
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
-    captcha = CaptchaField(label=_('Type the code below'))
+    captcha = CustomCatpchaField(label=_('Type the code below'))
 
     def __init__(self, event, *args, **kwargs):
         """
@@ -1576,6 +1579,9 @@ class RegistrationForm(forms.Form):
             else:
                 payment_methods = reg_conf.payment_method.exclude(
                     machine_name='credit card').order_by('pk')
+
+            if not self.user or self.user.is_anonymous() or not self.user.is_superuser:
+                payment_methods = payment_methods.exclude(admin_only=True)
 
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
@@ -1607,7 +1613,6 @@ class RegistrationForm(forms.Form):
             except:
                 pass
         return None
-
 
     def clean_override_price_table(self):
         override_table = self.cleaned_data['override_table']
@@ -1720,7 +1725,6 @@ class RegistrantForm(forms.Form):
             self.fields['use_free_pass'] = forms.BooleanField(label=_("Use Free Pass"),
                                                              required=False)
 
-
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
 
@@ -1773,7 +1777,7 @@ class RegistrantForm(forms.Form):
         if self.validate_pricing:
             # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
             # Both 'validated' and 'strict' require validation.
-            if self.event.anony_setting <> 'open':
+            if self.event.anony_setting != 'open':
                 # check if user is eligiable for this pricing
                 email = self.cleaned_data.get('email', '')
                 registrant_user = self.get_user(email)
@@ -1828,14 +1832,14 @@ class RegistrantForm(forms.Form):
 
         if price_requires_member:
             if not memberid:
-                raise forms.ValidationError(_("We don't detect you as a member. " + \
+                raise forms.ValidationError(_("We don't detect you as a member. " +
                                             "Please choose another price option. "))
         else:
             if memberid:
-                raise forms.ValidationError(_("You have entered a member id but " + \
-                                            "have selected an option that does not " + \
-                                            "require membership." + \
-                                            "Please either choose the member option " + \
+                raise forms.ValidationError(_("You have entered a member id but " +
+                                            "have selected an option that does not " +
+                                            "require membership." +
+                                            "Please either choose the member option " +
                                             "or remove your member id."))
 
         return memberid
@@ -1915,10 +1919,6 @@ class RegistrantBaseFormSet(BaseFormSet):
             except IndexError:
                 pass
 
-        # Allow extra forms to be empty.
-        if i >= self.initial_form_count():
-            defaults['empty_permitted'] = True
-
         defaults.update(kwargs)
         form = self.form(**defaults)
         self.add_fields(form, i)
@@ -1988,8 +1988,6 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
                  queryset, **kwargs)
 
 
-
-
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
@@ -2023,7 +2021,7 @@ class EmailForm(forms.ModelForm):
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
-        label=_('Message'), help_text=_('Available tokens: <br />' + \
+        label=_('Message'), help_text=_('Available tokens: <br />' +
         ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
 
     class Meta:
@@ -2046,7 +2044,7 @@ class PendingEventForm(EventForm):
         fields = (
             'title',
             'description',
-            'group',
+            'groups',
             'start_dt',
             'end_dt',
             'on_weekend',
@@ -2060,7 +2058,7 @@ class PendingEventForm(EventForm):
         fieldsets = [(_('Event Information'), {
                       'fields': ['title',
                                  'description',
-                                 'group',
+                                 'groups',
                                  'start_dt',
                                  'end_dt',
                                  'on_weekend',
@@ -2299,14 +2297,13 @@ class StandardRegAdminForm(forms.Form):
                     self.fields[field_name] = forms.ChoiceField(**field_args)
                     self.fields[field_name].widget.attrs['class'] = 'form-control'
 
-
     def apply_changes(self):
         cleaned_data = self.cleaned_data
         scope = 'module'
         scope_category = 'events'
 
         for field_name, value in cleaned_data.items():
-            if not field_name in self.READONLY_FIELDS:
+            if field_name not in self.READONLY_FIELDS:
                 try:
                     setting = Setting.objects.get(scope=scope, scope_category=scope_category,
                                                   name='regform_%s' % field_name)
@@ -2358,7 +2355,7 @@ class EventReportFilterForm(forms.Form):
 
         if queryset:
             if start_dt and end_dt:
-                return queryset.filter(Q(start_dt__gte=start_dt)&Q(start_dt__lte=end_dt))
+                return queryset.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
             else:
                 return queryset
 

@@ -172,25 +172,5 @@
             "payment_method": ""
         },
         "pk": 2
-    },
-    {
-        "model": "directories.directorypricing",
-        "fields": {
-            "owner_username": "m_stripe",
-            "regular_price_member": "0.00",
-            "premium_price_member": "0.00",
-            "creator_username": "m_stripe",
-            "creator": 18,
-            "update_dt": "2012-12-31T16:36:13.873",
-            "regular_price": "0.00",
-            "status": true,
-            "owner": 18,
-            "create_dt": "2012-12-31T15:49:36.809",
-            "duration": 365,
-            "show_member_pricing": true,
-            "guid": "f8726f6e-5393-11e2-9cfb-22000a1e8c2c",
-            "premium_price": "0.00"
-        },
-        "pk": 1
     }
 ]

@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django import forms
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 from tendenci.apps.payments.paypal.forms import PayPalPaymentForm
 from tendenci.apps.payments.models import Payment
@@ -15,12 +16,11 @@ from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.site_settings.utils import get_setting
 
-
 def prepare_paypal_form(request, payment):
     amount = "%.2f" % payment.amount
-    image_url = get_setting("site", "global", "MerchantLogo")
+    image_url = get_setting('site', 'global', 'merchantlogo')
     site_url = get_setting('site', 'global', 'siteurl')
-    notify_url = '%s/%s' % (site_url, reverse('paypal.ipn'))
+    notify_url = '%s%s' % (site_url, reverse('paypal.ipn'))
     currency_code = get_setting('site', 'global', 'currency')
     if not currency_code:
         currency_code = 'USD'
@@ -50,7 +50,6 @@ def prepare_paypal_form(request, payment):
 
     return form
 
-
 def parse_pdt_validation(data):
     result_params = {}
     success = False
@@ -64,7 +63,6 @@ def parse_pdt_validation(data):
             result_params.update(cgi.parse_qsl(item))
 
     return success, result_params
-
 
 def validate_with_paypal(request, validate_type):
     """
@@ -113,18 +111,8 @@ def validate_with_paypal(request, validate_type):
     else:
         return data.strip('\n').lower() == 'verified', None
 
-
 def verify_no_fraud(response_d, payment):
-    # Has duplicate txn_id?
-    txn_id = response_d.get('txn_id')
-    if not txn_id:
-        return False
-
-    txn_id_exists = Payment.objects.filter(trans_id=txn_id).exists()
-    if txn_id_exists:
-        return False
-
-    # Does receiver_email matches?
+    # Does receiver_email match?
     receiver_email = response_d.get('receiver_email')
     if receiver_email != settings.PAYPAL_MERCHANT_LOGIN:
         return False
@@ -138,8 +126,56 @@ def verify_no_fraud(response_d, payment):
     if Decimal(payment_gross) != payment.amount:
         return False
 
-    return True
+    # Duplicate txn_id?
+    txn_id = response_d.get('txn_id')
+    if not txn_id:
+        return False
+    # To prevent a single txn_id from being used for multiple Payments by
+    # simultaneously submitting multiple requests using the same txn_id, either
+    # the Payment.trans_id column in the database must have a unique constraint,
+    # the Payment database table must be locked before checking for duplicates
+    # and the lock must be held until after the trans_id has been saved, or
+    # trans_id must be updated on the database record for the current Payment
+    # object before checking for duplicates.
+    #
+    # Since the Payment.trans_id column has existed for a long time without a
+    # unique constraint, and since it is used by multiple payment modules for
+    # independent payment processors that may not all use unique transaction
+    # IDs, adding a unique constraint to this column may not be practical.  In
+    # addition, since Django does not natively support table locks, and since
+    # table locks can lead to performance issues, it is best to avoid table
+    # locks.  Therefore this code updates trans_id before checking for
+    # duplicates.
+    #
+    # To ensure that the trans_id update can be seen by other processes before
+    # this process checks for duplicates, the database transaction associated
+    # with this update must be committed without being nested in any other
+    # transactions.  transaction.commit() ensures that this transaction is not
+    # nested in any other transactions by committing the current transaction (if
+    # autocommit is disabled), by throwing an exception (if called within a
+    # transaction.atomic block), or by doing nothing (if this transaction is not
+    # nested).  transaction.atomic() with select_for_update() ensures that
+    # payment.trans_id cannot be updated in the database by another process
+    # after this process calls get_object_or_404() and before this process calls
+    # payment.save().
+    transaction.commit()
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment.id)
+        if payment.trans_id == '':
+            payment.trans_id = txn_id
+            payment.save()
+        elif payment.trans_id != txn_id:
+            return False
+    txn_id_exists = Payment.objects.filter(trans_id=txn_id).exclude(pk=payment.id).exists()
+    if txn_id_exists:
+        with transaction.atomic():
+            payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment.id)
+            if payment.trans_id == txn_id:
+                payment.trans_id = ''
+                payment.save()
+        return False
 
+    return True
 
 def paypal_thankyou_processing(request, response_d, **kwargs):
 
@@ -156,6 +192,12 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     if not success:
         raise Http404
 
+    charset = response_d.get('charset', '')
+    # make sure data is encoded in utf-8 before processing
+    if charset and charset not in ('ascii', 'utf8', 'utf-8'):
+        for k in response_d.keys():
+            response_d[k] = response_d[k].decode(charset).encode('utf-8')
+
     paymentid = response_d.get('invoice', 0)
 
     try:
@@ -165,7 +207,10 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     payment = get_object_or_404(Payment, pk=paymentid)
     processed = False
 
-    # To prevent the fraud, verify the following:
+    if payment.is_approved:  # if already processed
+        return payment, processed
+
+    # To prevent fraud, verify the following before updating the database:
     # 1) txn_id is not a duplicate to prevent someone from reusing an old,
     #    completed transaction.
     # 2) receiver_email is an email address registered in your PayPal
@@ -173,13 +218,16 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     #    account.
     # 3) Other transaction details, such as the item number and price,
     #    to confirm that the price has not been changed.
+    if not verify_no_fraud(response_d, payment):
+        return payment, processed
 
-    # if balance==0, it means already processed
-    if payment.invoice.balance > 0:
-        # verify before updating database
-        is_valid = verify_no_fraud(response_d, payment)
-
-        if is_valid:
+    with transaction.atomic():
+        # verify_no_fraud() cannot be run within a transaction, so we must
+        # re-retrieve payment and re-check payment.is_approved within a
+        # transaction after calling verify_no_fraud() in order to prevent
+        # duplicate processing of simultaneous redundant payment requests
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=paymentid)
+        if not payment.is_approved:  # if not already processed
             payment_update_paypal(request, response_d, payment)
             payment_processing_object_updates(request, payment)
             processed = True
@@ -191,7 +239,6 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
             send_payment_notice(request, payment)
 
     return payment, processed
-
 
 def payment_update_paypal(request, response_d, payment, **kwargs):
     payment.first_name = response_d.get('first_name', '')
@@ -221,7 +268,6 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
         payment.response_subcode = '1'
         payment.response_reason_code = '1'
         payment.status_detail = 'approved'
-        payment.trans_id = response_d.get('txn_id')
         payment.response_reason_text = 'This transaction has been approved.'
     else:
         payment.response_code = 0
@@ -237,4 +283,3 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
         if not payment.status_detail:
             payment.status_detail = 'not approved'
         payment.save()
-

@@ -16,7 +16,7 @@
 
 <meta property="og:title" content="{{ photo_set.name }}" />
 <meta property="og:type" content="image/jpeg" />
-<meta property="og:image" content="{{ photo_set.get_cover_photo.get_small_url }}" />
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{{ photo_set.get_cover_photo.get_small_url }}" />
 
 {% if photo_set.description %}
 <meta property="og:description" content="{{ photo_set.description|striptags }}" />
@@ -27,8 +27,8 @@
 {% block content %}
 
 <div class="t" style="width:100%;">
-
     <h1 class="set-name">{{ photo_set.name }}</h1> {% fb_like_button_iframe photo_set.get_absolute_url %}
+
     <div class="back-to-photo-sets"><a href="{% url "photoset_latest" %}">&larr; {% trans "Back to Albums" %}</a></div>
     <table class="wrap">
         <tr><td class="set-info">

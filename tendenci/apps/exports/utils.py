@@ -4,6 +4,7 @@ import csv
 from StringIO import StringIO
 from django.http import HttpResponse
 from django.conf import settings
+from tendenci.libs.utils import python_executable
 from tendenci.apps.exports.models import Export
 
 
@@ -17,7 +18,7 @@ def full_model_to_dict(instance, fields=None, exclude=None):
     opts = instance._meta
     data = {}
     for f in opts.fields + opts.many_to_many:
-        if fields and not f.name in fields:
+        if fields and f.name not in fields:
             continue
         if exclude and f.name in exclude:
             continue
@@ -40,7 +41,7 @@ def render_csv(filename, title_list, data_list):
     Returns .csv response
     """
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=' + filename
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
 
     csv_writer = csv.writer(response)
 
@@ -55,7 +56,8 @@ def render_csv(filename, title_list, data_list):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                 elif isinstance(row_item_list[i], datetime.time):
                     row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
-                row_item_list[i] = row_item_list[i].encode("utf-8")
+                elif isinstance(row_item_list[i], basestring):
+                    row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
 
     return response
@@ -68,7 +70,7 @@ def run_export_task(app_label, model_name, fields):
     )
 
     if settings.USE_SUBPROCESS:
-        subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
+        subprocess.Popen([python_executable(), 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
     else:
         from django.core.management import call_command
         args = [unicode(export.pk)] + fields

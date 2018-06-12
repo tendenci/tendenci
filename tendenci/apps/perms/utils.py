@@ -1,3 +1,4 @@
+from __future__ import print_function
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
@@ -66,7 +67,7 @@ def update_perms_and_save(request, form, instance, **kwargs):
         try:
             instance.save()
         except Exception as e:
-            print 'boom! in update_perms_and_save()', e
+            print('boom! in update_perms_and_save()', e)
 
     # assign permissions for selected groups
     if 'group_perms' in form.cleaned_data:
@@ -235,8 +236,8 @@ def get_query_filters(user, perm, **kwargs):
 
             if '.' in perm and perms_field:
                 group_perm = Q(perms__codename=perm.split(".")[-1])
-            
-            # skip checking the allow_xxx_view for profiles 'cause those fields are not editable in profiles 
+
+            # skip checking the allow_xxx_view for profiles 'cause those fields are not editable in profiles
             if perm == 'profiles.view_profile':
                 return (Q(status=True) & group_perm & Q(status_detail='active')) | (Q(creator=user) | Q(owner=user))
 
@@ -348,6 +349,10 @@ def _specific_view(user, obj):
         sqs = sqs.filter(q_primary_key & q_users)
 
     if sqs:
+        # Make sure the index isn't doing something unexpected with the query,
+        # like when the Whoosh StopFilter caused the primary_key portion of the
+        # query to be ignored.
+        assert len(sqs) == 1, "Index returned an unexpected result set when searching for view permissions on an object"
         return True
 
     return False

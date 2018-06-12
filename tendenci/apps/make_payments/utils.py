@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.emails.models import Email
 
 def make_payment_inv_add(user, make_payment, **kwargs):
     inv = Invoice()
@@ -66,14 +67,15 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
     subject = render_to_string('make_payments/email_user_subject.txt',
                                {'make_payment':make_payment},
                                context_instance=RequestContext(request))
+    subject = subject.replace('\n', ' ')
     body = render_to_string('make_payments/email_user.txt', {'make_payment':make_payment,
                                                              'invoice':invoice},
                                                              context_instance=RequestContext(request))
     sender = settings.DEFAULT_FROM_EMAIL
     recipient = make_payment.email
-    msg = EmailMessage(subject, body, sender, [recipient])
-    msg.content_subtype = 'html'
-    try:
-        msg.send()
-    except:
-        pass
+    email = Email(
+            sender=sender,
+            recipient=recipient,
+            subject=subject,
+            body=body)
+    email.send(fail_silently=True)

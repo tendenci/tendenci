@@ -36,4 +36,3 @@ def download(request, ics_id):
         return response
 
     return redirect("ics.status", ics_id)
-

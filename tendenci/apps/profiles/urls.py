@@ -15,7 +15,6 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
     url(r'^%s/similar/$' % urlpath, 'similar_profiles', name="profile.similar"),
     url(r'^%s/merge/(?P<sid>\d+)/$' % urlpath, 'merge_profiles', name="profile.merge_view"),
     url(r'^%s/edit_perms/(?P<id>\d+)/$' % urlpath, 'edit_user_perms', name="profile.edit_perms"),
-    url(r'^%s/avatar/(?P<id>\d+)/$' % urlpath, 'change_avatar', name="profile.change_avatar"),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="profile.delete"),
 
     # export profiles
@@ -51,8 +50,12 @@ urlpatterns = patterns('tendenci.apps.profiles.views',
         "user_import_download_recap",
         name="profiles.user_import_download_recap"),
 
+    # activate inactive user account
+    url(r'^%s/activate-email/$' % urlpath, 'activate_email', name="profile.activate_email"),
+
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/$' % urlpath, 'index', name='profile'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/groups/edit/$' % urlpath, 'user_groups_edit', name='profile.edit_groups'),
+    url(r'^%s/(?P<username>[+-.\w\d@\s]+)/education/edit/$' % urlpath, 'user_education_edit', name='profile.edit_education'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/groups/(?P<membership_id>\d+)/edit/$' % urlpath, 'user_role_edit', name='profile.edit_role'),
     url(r'^%s/(?P<username>[+-.\w\d@\s]+)/memberships/add/$' % urlpath, 'user_membership_add', name='profile.add_membership'),
 )

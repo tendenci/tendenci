@@ -1,0 +1,27 @@
+{% extends "projects/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load project_tags %}
+{% load theme_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Projects' %}" href="{% url 'projects.feed' %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate projects 10 %}
+<div class="t">
+<h1>{% trans 'Project Categories' %}</h1>
+<div class="category-wrap clearfix">
+{% for category in categories %}
+{% theme_include "projects/category-result.html" %}
+{% empty %}
+<p>{% trans '0 projects found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock %}

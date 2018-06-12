@@ -1,3 +1,5 @@
+{% load i18n %}
+{% load l10n %}
 {% load styled_forms %}
 {% load committee_tags %}
 {% load base_filters %}
@@ -49,48 +51,45 @@ There were some problems in the form. Please review. Thanks!
 		        {% committee_officer_formset formset %}
 		    {% endif %}
 
-		    <div class="form-field">
-		        <div class="{{ field.auto_id }}">
-		        	{% if field|is_checkbox %}
-		            	<div class="checkbox-input">
-		               		{% if field.errors %}
-		                    <div class="error">
-		                        {% for error in field.errors %}
-		                        <p>{{ error }}</p>
-		                        {% endfor %}
-		                    </div>
-		                    {% endif %}
-		                    <div class="field">
-		                        {{ field }}
-		                    </div>
-		                    <div class="label{% if field.field.required %} required{% endif %}">
-		                        {{ field.label_tag }}
-		                    </div>
-		                    {% if field.help_text %}
-		                    <div class="help-text">{{ field.help_text|safe }}</div>
-		                    {% endif %}
-		                </div>
-		                <div style="clear: both"><!-- IE7 --></div>
-		            {% else %}
-		                <div class="label{% if field.field.required %} required{% endif %}">
-		                    {{ field.label_tag }}
-		                </div>
-		                {% if field.errors %}
-		                <div class="error">
-		                    {% for error in field.errors %}
-		                    <p>{{ error }}</p>
-		                    {% endfor %}
-		                </div>
-		                {% endif %}
-		                <div class="field">
-		                    {{ field }}
-		                </div>
-		                {% if field.help_text %}
-		                <div class="help-text">{{ field.help_text|safe }}</div>
-		                {% endif %}
-		            {% endif %}
-		         </div>
-		    </div>
+		    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
+             <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+
+             <div class="col-sm-9">
+                 {% if field|is_checkbox %}
+                     <div class="checkbox">
+                         <label>{{ field }}</label>
+                     </div>
+                 {% elif field|is_checkboxselectmultiple %}
+                     {% for choice in field.field.choices %}
+                         <div class="checkbox">
+                             <label>
+                                 <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                             </label>
+                         </div>
+                     {% endfor %}
+                 {% elif field|is_radioselect %}
+                     {% for choice in field.field.choices %}
+                         <div class="radio">
+                             <label>
+                                 <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                             </label>
+                         </div>
+                     {% endfor %}
+                 {% else %}
+                     {{ field }}
+                 {% endif %}
+
+                 {% if field.errors %}
+                     {% for error in field.errors %}
+                         <span class="help-block">{{ error }}</span>
+                     {% endfor %}
+                 {% endif %}
+
+                 {% if field.help_text %}
+                     <span class="help-block">{{ field.help_text|safe }}</span>
+                 {% endif %}
+             </div>
+         </div>
 		{% endif %}
 		{% endfor %}
 	  </fieldset>
@@ -101,56 +100,45 @@ There were some problems in the form. Please review. Thanks!
 	{% if field.is_hidden %}
 	    {{ field }}
 	{% else %}
-	    <div class="form-field">
-	        <div class="{{ field.auto_id }}{{ field.field.css_classes }}">
-	        	{% if field|is_checkbox %}
-	            	<div class="checkbox-input">
-	               		{% if field.errors %}
-	                    <div class="error">
-	                        {% for error in field.errors %}
-	                        <p>{{ error }}</p>
-	                        {% endfor %}
-	                    </div>
-	                    {% endif %}
-	                    <div class="field">
-	                        {{ field }}
-	                    </div>
-	                    <div class="label{% if field.field.required %} required{% endif %}">
-	                        {{ field.label_tag }}
-	                    </div>
-	                    {% if field.help_text %}
-	                    <div class="help-text">{{ field.help_text|safe }}</div>
-	                    {% endif %}
-	                </div>
-	                <div style="clear: both"><!-- IE7 --></div>
-	            {% else %}
-                    {% if field|is_header or field|is_description %}
-                        {% if field|is_header %}
-                            <div class="section-header">{{ field.label }}</div>
-                        {% else %}
-                            <div class="section-description">{{ field.label }}</div>
-                        {% endif %}
+	    <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
+                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+
+                <div class="col-sm-9">
+                    {% if field|is_checkbox %}
+                        <div class="checkbox">
+                            <label>{{ field }}</label>
+                        </div>
+                    {% elif field|is_checkboxselectmultiple %}
+                        {% for choice in field.field.choices %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    {% elif field|is_radioselect %}
+                        {% for choice in field.field.widget.choices %}
+                            <div class="radio">
+                                <label>
+                                    <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                </label>
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <div class="label{% if field.field.required %} required{% endif %}">
-                            {{ field.label_tag }}
-                        </div>
-                        {% if field.errors %}
-                        <div class="error">
-                            {% for error in field.errors %}
-                            <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        <div class="field">
-                            {{ field }}
-                        </div>
-                        {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text|safe }}</div>
-                        {% endif %}
+                        {{ field }}
                     {% endif %}
-	            {% endif %}
-	         </div>
-	    </div>
+
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <span class="help-block">{{ field.help_text|safe }}</span>
+                    {% endif %}
+                </div>
+            </div>
 	{% endif %}
 	{% endfor %}
 {% endif %}

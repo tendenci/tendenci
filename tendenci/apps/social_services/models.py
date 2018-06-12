@@ -3,7 +3,7 @@ import requests
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 
 ETHNICITY_CHOICES = (
@@ -166,10 +166,10 @@ class ReliefAssessment(models.Model):
 
     def get_address(self):
         return "%s %s %s, %s %s %s" % (
-            self.address, 
-            self.address2, 
-            self.city, 
-            self.state, 
+            self.address,
+            self.address2,
+            self.city,
+            self.state,
             self.zipcode,
             self.country
         )

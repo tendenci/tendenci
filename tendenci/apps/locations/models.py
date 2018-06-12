@@ -9,7 +9,7 @@ from tendenci.apps.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.locations.managers import LocationManager
-from tendenci.apps.locations.utils import get_coordinates
+from tendenci.apps.locations.utils import get_coordinates, distance_api
 from tendenci.apps.files.models import File
 
 
@@ -35,7 +35,8 @@ class Location(TendenciBaseModel):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     logo = models.ForeignKey(File, null=True, default=None,
-                             help_text=_('Only jpg, gif, or png images.'))
+                             help_text=_('Only jpg, gif, or png images.'),
+                             on_delete=models.SET_NULL)
     hq = models.BooleanField(_('Headquarters'), default=False)
 
     perms = GenericRelation(ObjectPermission,
@@ -63,17 +64,6 @@ class Location(TendenciBaseModel):
             self.state,
             self.zipcode
         )
-
-    def distance_api(self, **kwargs):
-        import simplejson, urllib
-        DISTANCE_BASE_URL = 'http://maps.googleapis.com/maps/api/distancematrix/json?'
-        kwargs.update({
-            'origins':kwargs.get('origin',''),
-            'destinations':self.get_address(),
-            'sensor':'false',
-            })
-        url = '%s?%s' % (DISTANCE_BASE_URL, urllib.urlencode(kwargs))
-        return simplejson.load(urllib.urlopen(url))
 
     def get_distance(self, **kwargs):
         """

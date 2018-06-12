@@ -13,7 +13,7 @@ class ZipPhotoSetTask(Task):
         Compile all photos of a photo set into a single zip file.
         """
 
-         #create zip files directory if it doesn't already exist
+        #create zip files directory if it doesn't already exist
         try:
             os.makedirs(os.path.join(settings.MEDIA_ROOT, 'zip_files'))
         except OSError:

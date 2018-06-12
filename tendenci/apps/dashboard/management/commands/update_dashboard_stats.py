@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime, timedelta
 from decimal import Decimal
 import simplejson as json
@@ -14,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from tendenci.apps.dashboard.models import DashboardStat, DashboardStatType
 
-        print "Creating dashboard statistics for upcoming events"
+        print("Creating dashboard statistics for upcoming events")
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_upcoming")
         if created:
             stat_type.description = "Upcoming 5 Events"
@@ -23,7 +24,7 @@ class Command(BaseCommand):
         events.value = json.dumps(self.get_events(5), use_decimal=True)
         events.save()
 
-        print "Creating dashboard statistics for form submissions"
+        print("Creating dashboard statistics for form submissions")
         stat_type,created = DashboardStatType.objects.get_or_create(name="forms_30_submissions")
         if created:
             stat_type.description = "Top 5 Forms"
@@ -32,7 +33,7 @@ class Command(BaseCommand):
         forms.value = json.dumps(self.get_forms(5, 30))
         forms.save()
 
-        print "Creating dashboard statistics for pages traffic", datetime.now()
+        print("Creating dashboard statistics for pages traffic", datetime.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="pages_30_traffic")
         if created:
             stat_type.description = "Top 5 Pages"
@@ -41,7 +42,7 @@ class Command(BaseCommand):
         pages_traffic.value = json.dumps(self.get_pages_traffic(5, 30))
         pages_traffic.save()
 
-        print "Creating dashboard statistics for events traffic", datetime.now()
+        print("Creating dashboard statistics for events traffic", datetime.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="events_30_traffic")
         if created:
             stat_type.description = "Top 5 Events"
@@ -50,7 +51,7 @@ class Command(BaseCommand):
         events_traffic.value = json.dumps(self.get_events_traffic(5, 30))
         events_traffic.save()
 
-        print "Creating dashboard statistics for memberships", datetime.now()
+        print("Creating dashboard statistics for memberships", datetime.now())
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_count")
         if created:
             stat_type.description = "Members"
@@ -59,7 +60,7 @@ class Command(BaseCommand):
         members.value = json.dumps(self.get_membership_count(30))
         members.save()
 
-        print "Creating dashboard statistics for new memberships"
+        print("Creating dashboard statistics for new memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_new")
         if created:
             stat_type.description = "Memberships in the Past 30 Days"
@@ -68,7 +69,7 @@ class Command(BaseCommand):
         mem_new.value = json.dumps(self.get_new_memberships(5, 30))
         mem_new.save()
 
-        print "Creating dashboard statistics for renewed memberships"
+        print("Creating dashboard statistics for renewed memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_renew")
         if created:
             stat_type.description = "Renewed Memberships in the Past 30 days"
@@ -77,7 +78,7 @@ class Command(BaseCommand):
         mem_renew.value = json.dumps(self.get_renew_memberships(5, 30))
         mem_renew.save()
 
-        print "Creating dashboard statistics for expired memberships"
+        print("Creating dashboard statistics for expired memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expired")
         if created:
             stat_type.description = "Expired memberships in the Past 30 days"
@@ -86,7 +87,7 @@ class Command(BaseCommand):
         mem_expired.value = json.dumps(self.get_expired_memberships(5, 30))
         mem_expired.save()
 
-        print "Creating dashboard statistics for expiring memberships"
+        print("Creating dashboard statistics for expiring memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="memberships_30_expiring")
         if created:
             stat_type.description = "Upcoming Expiring Memberships"
@@ -95,7 +96,7 @@ class Command(BaseCommand):
         mem_expiring.value = json.dumps(self.get_expiring_memberships(5, 30))
         mem_expiring.save()
 
-        print "Creating dashboard statistics for new corporate memberships"
+        print("Creating dashboard statistics for new corporate memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_new")
         if created:
             stat_type.description = "Corporate Memberships in the Past 30 Days"
@@ -104,7 +105,7 @@ class Command(BaseCommand):
         corp_new.value = json.dumps(self.get_new_corp_memberships(5, 30))
         corp_new.save()
 
-        print "Creating dashboard statistics for renewed corporate memberships"
+        print("Creating dashboard statistics for renewed corporate memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_renew")
         if created:
             stat_type.description = "Renewed Corporate Memberships in the Past 30 Days"
@@ -113,7 +114,7 @@ class Command(BaseCommand):
         corp_renew.value = json.dumps(self.get_renew_corp_memberships(5, 30))
         corp_renew.save()
 
-        print "Creating dashboard statistics for expired corporate memberships"
+        print("Creating dashboard statistics for expired corporate memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_expired")
         if created:
             stat_type.description = "Expired Corporate Memberships in the Past 30 Days"
@@ -122,7 +123,7 @@ class Command(BaseCommand):
         corp_expired.value = json.dumps(self.get_expired_corp_memberships(5, 30))
         corp_expired.save()
 
-        print "Creating dashboard statistics for expiring corporate memberships"
+        print("Creating dashboard statistics for expiring corporate memberships")
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_memberships_30_expiring")
         if created:
             stat_type.description = "Upcoming Expiring Corporate Memberships"
@@ -131,7 +132,7 @@ class Command(BaseCommand):
         corp_expiring.value = json.dumps(self.get_expiring_corp_memberships(5, 30))
         corp_expiring.save()
 
-        print "Creating dashboard statistics for top corporate members"
+        print("Creating dashboard statistics for top corporate members")
         stat_type,created = DashboardStatType.objects.get_or_create(name="corp_members_top")
         if created:
             stat_type.description = "Top Corporate Memberships"
@@ -185,10 +186,10 @@ class Command(BaseCommand):
 
         dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days)
         forms = Form.objects.extra(select={
-            'submissions': "SELECT COUNT(*) " + \
-                           "FROM forms_formentry " + \
-                           "WHERE forms_formentry.form_id = " + \
-                               "forms_form.id AND " + \
+            'submissions': "SELECT COUNT(*) " +
+                           "FROM forms_formentry " +
+                           "WHERE forms_formentry.form_id = " +
+                               "forms_form.id AND " +
                                "forms_formentry.create_dt >= TIMESTAMP '%s'" % dt})
         forms = forms.order_by("-submissions")[:items]
         forms_list = []
@@ -293,7 +294,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        corp_memberships = CorpMembership.objects.filter(active_qs|expired_qs)
+        corp_memberships = CorpMembership.objects.filter(active_qs | expired_qs)
         corp_memberships = corp_memberships.filter(expiration_dt__gte=dt, expiration_dt__lte=now)
         corp_memberships = corp_memberships.order_by("-expiration_dt")[:items]
         corp_mem_list = []
@@ -301,7 +302,6 @@ class Command(BaseCommand):
             corp_mem_list.append([corp_mem.corp_profile.name,
                                   corp_mem.get_absolute_url()])
         return corp_mem_list
-
 
     def get_expiring_corp_memberships(self, items, days):
         from tendenci.apps.corporate_memberships.models import CorpMembership
@@ -324,10 +324,10 @@ class Command(BaseCommand):
 
         total = MembershipDefault.QS_ACTIVE().exclude(corp_profile_id=0).count()
         corp_memberships = CorpMembership.objects.filter(status_detail='active').extra(select={
-            'members': "SELECT COUNT(*) " + \
-                           "FROM memberships_membershipdefault " + \
-                           "WHERE memberships_membershipdefault.corp_profile_id = " + \
-                               "corporate_memberships_corpmembership.corp_profile_id AND " +\
+            'members': "SELECT COUNT(*) " +
+                           "FROM memberships_membershipdefault " +
+                           "WHERE memberships_membershipdefault.corp_profile_id = " +
+                               "corporate_memberships_corpmembership.corp_profile_id AND " +
                                "memberships_membershipdefault.status_detail = 'active'"}) \
                                 .order_by('-members')[:items].iterator()
 
@@ -401,7 +401,7 @@ class Command(BaseCommand):
         active_qs = Q(status_detail__iexact='active')
         expired_qs = Q(status_detail__iexact='expired')
 
-        memberships = MembershipDefault.objects.filter(active_qs|expired_qs)
+        memberships = MembershipDefault.objects.filter(active_qs | expired_qs)
         memberships = memberships.filter(expire_dt__gte=dt, expire_dt__lte=now)
         count = memberships.count()
         mem_list = [count]

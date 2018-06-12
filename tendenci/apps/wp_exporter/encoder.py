@@ -25,4 +25,3 @@ class XML():
             txt += "    "
         self.content += txt
         self.content += "</%s>\n" % name
-

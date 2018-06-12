@@ -18,22 +18,20 @@
 {% block content %}
 <div class="t">
      <h1>{% trans "Corporate Membership Submission" %}</h1>
-     {% if corporate_membership.is_pending %}
-     <div class="alert alert-warning" role"alert" align="center">
-        <strong>{% trans 'Pending' %}</strong>
-     </div>
-     {% endif %}
 
      <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              {{ field_labels.name }}:
          </div>
          <div class="block-inline">
              <strong><a href="{% url "corpmembership.view" corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
+             {% if corporate_membership.is_pending %}
+             <span class="text-danger">({% trans 'Pending' %})</span>
+             {% endif %}
          </div>
      </div>
      <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              {{ field_labels.address }}:
          </div>
          <div class="block-inline">
@@ -58,7 +56,7 @@
 
      {% if corporate_membership.corp_profile.phone %}
      <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              {{ field_labels.phone }}:
          </div>
          <div class="block-inline">
@@ -69,7 +67,7 @@
 
      {% if corporate_membership.corp_profile.email %}
      <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              {{ field_labels.email }}:
          </div>
          <div class="block-inline">
@@ -79,7 +77,7 @@
      {% endif %}
      <br />
     <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              <strong>{% trans "Join Date"%}</strong>:
          </div>
          <div class="block-inline">
@@ -88,7 +86,7 @@
      </div>
 
      <div>
-         <div class="label block-inline">
+         <div class="field-label block-inline">
              <strong>{% trans "Expiration Date"%}</strong>:
          </div>
          <div class="block-inline">
@@ -148,8 +146,8 @@
 <div class="corp-approv-form">
 <form action="" method="post">{% csrf_token %}
     {{ approve_form.as_p }}
-<input type="submit" id="approve-btn" name="approve" value="Approve" />&nbsp;&nbsp; or &nbsp;&nbsp;
-<input type="submit" id="disapprove-btn" name="disapprove" value="Disapprove" />
+<input type="submit" class="btn btn-primary" name="approve" value="Approve" />&nbsp;&nbsp; or &nbsp;&nbsp;
+<input type="submit" class="btn btn-default" name="disapprove" value="Disapprove" />
 </form>
 </div>
 

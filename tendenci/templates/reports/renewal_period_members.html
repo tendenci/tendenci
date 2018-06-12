@@ -3,12 +3,14 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% trans "Members in Renewal Period" %}</h1>
+<div class="page-header">
+  <h1>{% trans "Members in Renewal Period" %}</h1>
+</div>
 <div class="mems-wrap stat-table">
 
 {% if members %}
 <p>{% trans "These members are in their renewal period based on the renewal period start and end times set in their membership types." %}
-    <table>
+    <table class="table table-tendenci-reports">
         <tr>
             <th>{% trans 'Member Number' %}</th>
             <th>{% trans 'Name' %}</th>

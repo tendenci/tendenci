@@ -433,6 +433,9 @@ div.pending-entries {
     margin-left: 110px;
     width: 75%;
 }
+#t-memberships-application-form .error{
+	color: red;
+}
 .clear {
     clear: both;
 }
@@ -832,4 +835,8 @@ form.connect-with li {
 
 div.label {
     text-align: left !important;
+}
+
+.t p{
+	margin: 1em 0;
 }

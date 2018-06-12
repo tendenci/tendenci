@@ -10,7 +10,6 @@
 {{ block.super }}
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}timepicker/timepicker.css" />
-<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -19,7 +18,7 @@
 
     <div class="resume-wrap">
         <div class="forms">
-        <form enctype="multipart/form-data" action="{% url "resume.add" %}" method="post">{% csrf_token %}
+        <form enctype="multipart/form-data" class="form-horizontal" action="{% url "resume.add" %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_RESUMES_LABEL trans 'Resume' %}" />
         </form>
@@ -31,6 +30,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    {{ form.media }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
     <script src="{{ STATIC_URL }}timepicker/timepicker.js" type="text/javascript"></script>

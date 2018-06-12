@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
@@ -15,4 +16,4 @@ class Command(BaseCommand):
             user.set_password(user.password)
             user.save()
 
-        print "%s User passwords converted" % len(users)
+        print("%s User passwords converted" % len(users))

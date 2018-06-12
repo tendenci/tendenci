@@ -34,14 +34,16 @@ function update_form_fields(form, original_form, form_number, total, remove) {
 
     // update the name attribute in each for input
     form.find(':input').each(function() {
-        var name = $(this).attr('name').replace(search, replacement);
-        var id = 'id_' + name;
-        var type = $(this).attr('type');
-        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
-
-        if (type == 'checkbox') {
-            $(this).removeAttr('value')
-        }
+    	if ($(this).attr('name')){
+	        var name = $(this).attr('name').replace(search, replacement);
+	        var id = 'id_' + name;
+	        var type = $(this).attr('type');
+	        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+	
+	        if (type == 'checkbox') {
+	            $(this).removeAttr('value')
+	        }
+    	}
     });
 
     // update the label attribute wrapped on each form input

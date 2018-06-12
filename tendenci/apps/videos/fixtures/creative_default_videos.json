@@ -1,0 +1,50 @@
+[
+{
+    "fields": {
+        "name": "tendencidemo",
+        "slug": "tendencidemo"
+    },
+    "model": "videos.category",
+    "pk": 1
+},
+{
+    "fields": {
+        "video_url": "https://www.youtube.com/watch?v=ge0aNH2G45I&feature=youtu.be",
+        "creator": 1,
+        "allow_user_view": false,
+        "entity": 1,
+        "owner": 1,
+        "category": 1,
+        "create_dt": "2015-09-21T14:46:47.268",
+        "update_dt": "2015-09-21T16:18:27.548",
+        "position": 0,
+        "image": "",
+        "owner_username": "system_generated",
+        "allow_anonymous_view": true,
+        "status": true,
+        "description": "<p>Learn how to use your admin menu!</p>",
+        "tags": "",
+        "video_type": null,
+        "status_detail": "active",
+        "creator_username": "system_generated",
+        "slug": "tendenci-admin-menu",
+        "allow_user_edit": false,
+        "title": "Tendenci Admin Menu",
+        "allow_member_view": false,
+        "allow_member_edit": false
+    },
+    "model": "videos.video",
+    "pk": 1
+},
+{
+    "fields": {
+        "url": "https://www.youtube.com/watch?v=ge0aNH2G45I&feature=youtu.be",
+        "width": 600,
+        "code": "<iframe class=\"embedly-embed\" src=\"//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2Fge0aNH2G45I%3Ffeature%3Doembed&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3Dge0aNH2G45I%26feature%3Dyoutu.be&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2Fge0aNH2G45I%2Fhqdefault.jpg&key=8d5ae2d56a6b4d06b10e8f924b9d7682&type=text%2Fhtml&schema=youtube\" width=\"600\" height=\"338\" scrolling=\"no\" frameborder=\"0\" allowfullscreen></iframe>",
+        "thumbnail": "https://i.ytimg.com/vi/ge0aNH2G45I/hqdefault.jpg",
+        "height": 400
+    },
+    "model": "videos.oembedlycache",
+    "pk": 1
+}
+]

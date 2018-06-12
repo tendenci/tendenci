@@ -22,4 +22,3 @@ class EmergencyAnnouncementAdmin(TendenciBaseModelAdmin):
     )
 
 admin.site.register(EmergencyAnnouncement, EmergencyAnnouncementAdmin)
-

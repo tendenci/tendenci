@@ -43,7 +43,7 @@ def search(request, template_name="testimonials/search.html"):
         testimonials = Testimonial.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             testimonials = testimonials.select_related()
-    testimonials = testimonials.order_by('-create_dt')
+    testimonials = testimonials.order_by('-position', '-create_dt')
 
     EventLog.objects.log()
 

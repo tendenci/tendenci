@@ -1,3 +1,4 @@
+from __future__ import print_function
 from datetime import datetime
 import csv
 from dateutil.relativedelta import relativedelta
@@ -43,9 +44,11 @@ def get_user_corp_membership(member_number='', email=''):
     return None
 
 
-def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
+def get_corpmembership_type_choices(user, corpmembership_app, renew=False, exclude_list=None):
     cmt_list = []
     corporate_membership_types = corpmembership_app.corp_memb_type.all()
+    if exclude_list:
+        corporate_membership_types = corporate_membership_types.exclude(id__in=exclude_list)
 
     if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
@@ -58,20 +61,28 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:
-                indiv_renewal_price = 'Free<span class="type-ind-price"></span>'
+                indiv_renewal_price = '%s<span class="type-ind-price"></span>' % _('Free')
             else:
                 indiv_renewal_price = """
                     %s<span class="type-ind-price">%0.2f</span>
                     """ % (currency_symbol, indiv_renewal_price)
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
+            if cmt.apply_cap:
+                indiv_renewal_price = '%s %s %s' % (indiv_renewal_price, _('Limit'), cmt.membership_cap)
+                if cmt.allow_above_cap:
+                    indiv_renewal_price = '%s - then %s / member' % (indiv_renewal_price,
+                                                          tcurrency(cmt.above_cap_price))
 
+            data_cap = '\'{"apply_cap": "%s", "membership_cap":"%s", "allow_above_cap": "%s", "above_cap_price": "%s"}\'' % (
+                         cmt.apply_cap, cmt.membership_cap, cmt.allow_above_cap, cmt.above_cap_price)
             price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span>
                             </b>(individual members:
-                            <b>%s</b>)""" % (cmt.name,
+                            <b>%s</b>)<span class="type-cap" data-cap=%s></span>""" % (cmt.name,
                                             currency_symbol,
                                             cmt.renewal_price,
-                                            indiv_renewal_price)
+                                            indiv_renewal_price,
+                                            data_cap)
         price_display = mark_safe(price_display)
         cmt_list.append((cmt.id, price_display))
 
@@ -93,7 +104,7 @@ def corp_membership_rows(corp_profile_field_names,
         row_items = []
         corp_profile = corp_membership.corp_profile
         for field_name in corp_profile_field_names:
-            if field_name in ['authorized_domains', 'dues_rep']:
+            if field_name in ['authorized_domains', 'dues_rep', 'member_rep']:
                 if field_name == 'authorized_domains':
                     auth_domains = corp_profile.authorized_domains.values_list(
                                             'name', flat=True)
@@ -104,6 +115,12 @@ def corp_membership_rows(corp_profile_field_names,
                                         ).values_list(
                                             'user__username', flat=True)
                     item = ', '.join(dues_reps)
+                if field_name == 'member_rep':
+                    member_reps = corp_profile.reps.filter(
+                                        is_member_rep=True
+                                        ).values_list(
+                                            'user__username', flat=True)
+                    item = ', '.join(member_reps)
 
             else:
                 item = getattr(corp_profile, field_name)
@@ -146,7 +163,7 @@ def get_indiv_memberships_choices(corp_membership):
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
                                     reverse('profile',
                                             args=[membership.user.username]),
-                                        membership.user.get_full_name())
+                                        membership.user.get_full_name() or membership.user.username)
         indiv_memb_display = mark_safe(indiv_memb_display)
         im_list.append((membership.id, indiv_memb_display))
 
@@ -187,6 +204,7 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
     renewal_total = kwargs.get('renewal_total', 0)
     if not corp_memb.invoice or renewal:
         inv = Invoice()
+        inv.entity = corp_profile.entity
         inv.object_type = ContentType.objects.get(
                                       app_label=corp_memb._meta.app_label,
                                       model=corp_memb._meta.model_name)
@@ -283,8 +301,8 @@ def dues_rep_emails_list(corp_memb):
                                 corp_profile=corp_memb.corp_profile,
                                 is_dues_rep=True)
     if dues_reps:
-        return [dues_rep.user.email \
-                for dues_rep in dues_reps \
+        return [dues_rep.user.email
+                for dues_rep in dues_reps
                 if dues_rep.user.email]
     return []
 
@@ -666,7 +684,7 @@ def create_salesforce_lead(sf, corporate_profile):
                 'Email':corporate_profile.email,
                 'Website':corporate_profile.url})
         except:
-            print 'Salesforce lead not found'
+            print('Salesforce lead not found')
 
     else:
         # Create a new Salesforce Lead object

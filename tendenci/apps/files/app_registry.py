@@ -10,8 +10,8 @@ class FileRegistry(CoreRegistry):
     version = '1.0'
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = _('Stores file links and infomation for files ' \
-                  'uploaded through wysiwyg and other parts in ' \
+    description = _('Stores file links and infomation for files '
+                  'uploaded through wysiwyg and other parts in '
                   'the system')
     icon = '%simages/icons/files-color-64x64.png' % settings.STATIC_URL
 

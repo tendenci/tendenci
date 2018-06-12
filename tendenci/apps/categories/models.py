@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.categories.utils import prep_category
 
@@ -30,7 +31,6 @@ class CategoryManager(Manager):
             cat_item = CategoryItem._default_manager.get_or_create(**cat_item_filters)[0]
             cat_item.parent = category
             cat_item.save()
-
 
     def remove(self, object, type):
         ct = ContentType.objects.get_for_model(object)
@@ -100,7 +100,6 @@ class CategoryManager(Manager):
 
         return (categories, sub_categories)
 
-
     def get_for_object(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk
@@ -131,9 +130,11 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     class Meta:
         app_label = 'categories'
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
 
 class CategoryItem(models.Model):
     content_type = models.ForeignKey(ContentType, db_index=True)

@@ -1,5 +1,5 @@
 from django import template
-from pagination.templatetags.pagination_tags import paginate, do_autopaginate
+from dj_pagination.templatetags.pagination_tags import paginate, do_autopaginate
 
 register = template.Library()
 

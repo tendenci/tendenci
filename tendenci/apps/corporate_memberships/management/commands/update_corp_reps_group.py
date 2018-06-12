@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
@@ -82,5 +83,3 @@ class Command(BaseCommand):
                 if verbosity >= 2:
                     print('Adding user "%s" to group' % user.username)
                 group.add_user(user)
-
-

@@ -4,6 +4,34 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.events.models import Event
+from tendenci.apps.emails.models import Email
+from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.base.forms import FormControlWidgetMixin
+
+
+class EmailInvoiceForm(FormControlWidgetMixin, forms.ModelForm):
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
+    recipient = forms.EmailField(label=_('Recipient'))
+    cc = forms.EmailField(label=_('CC'), required=False)
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Email._meta.app_label,
+        'storme_model':Email._meta.model_name.lower()}),
+        label=_('Email Content'))
+    attachment = forms.BooleanField(label=_('Attach PDF?'), required=False, initial=True)
+
+    class Meta:
+        model = Email
+        fields = ('subject', 'recipient', 'cc', 'body', )
+
+    def __init__(self, *args, **kwargs):
+        super(EmailInvoiceForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+            
+        self.fields['recipient'].widget.attrs['placeholder'] = _('Email Address')
+        self.fields['cc'].widget.attrs['placeholder'] = _('Email Address')
 
 
 class AdminNotesForm(forms.ModelForm):

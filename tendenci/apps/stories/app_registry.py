@@ -10,7 +10,7 @@ class StoryRegistry(CoreRegistry):
     version = '1.0'
     author = _('Schipul - The Web Marketing Company')
     author_email = 'programmers@schipul.com'
-    description = _('Stories can be created and rotated on ' \
+    description = _('Stories can be created and rotated on '
                   'a specified area on the site')
     icon = '%simages/icons/stories-color-64x64.png' % settings.STATIC_URL
 

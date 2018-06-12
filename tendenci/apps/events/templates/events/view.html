@@ -33,7 +33,7 @@
 
 <div class="t">
     <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
-        <div class="info">
+        <div class="info col-md-8 col-sm-8">
             <h1>
             {% if event.priority %}
                 <div class="event-priority"></div>
@@ -43,6 +43,7 @@
             {% endif %}
             <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span></h1>
 
+            {% if event_files or speaker_files or organizer_files or place_files %}
             <div class="event-tabs">
                 <ul class="nav nav-tabs">
                     <li role="presentation" class="dropdown active">
@@ -53,6 +54,9 @@
                     </li>
                 </ul>
             </div>
+            {% else %}
+            <hr/>
+            {% endif %}
 
             <!-- Event Details -->
             <div class="details-wrap clearfix">
@@ -64,6 +68,15 @@
                     </div>
                     {% endif %}
                     <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
+
+                {% if event.groups.count > 0 %}
+                <div><strong>{% trans "Group(s):" %}</strong>
+                {% for group in event.groups.all %}
+                <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </div>
+                {% endif %}
+
                 </div>
 
                 {% for speaker in speakers %}
@@ -173,7 +186,7 @@
             {% include 'events/meta.html' %}
         </div> <!-- end info -->
 
-        <div class="vitals">
+        <div class="vitals col-md-4 col-sm-4">
         {% if event.external_url %}
         <div class="external-link">
         <h4><a href="{{ event.external_url }}" target="_blank">{% trans "View this event's webpage" %} &raquo;</a></h4>
@@ -227,14 +240,14 @@
                 <div class="line" itemprop="addressCountry">{{ event.place.country }}</div>
                 {% if event.place.description|striptags|wordcount > 50 %}
                     <div class="line event-place-desc-short">
-                        {% blocktrans with desc=event.place.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+                        {{ event.place.description|striptags|truncatewords:"50"|safe }}
                     </div>
                     <div class="line event-place-desc-long">
-                        {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                        {{ event.place.description|safe|linebreaks }}
                     </div>
                 {% else %}
                         <div class="line event-place-desc-short">
-                            {% blocktrans with desc=event.place.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+                            {{ event.place.description|safe|linebreaks }}
                         </div>
                 {% endif %}
                 {% if event.place.description|striptags|wordcount > 50 %}
@@ -326,23 +339,6 @@
                 return false;
             });
 
-            // // Dialog
-            // $('#event_export_dialog').dialog({
-                // autoOpen: false,
-                // width: 600,
-                // buttons: {
-                    // "Close": function() {
-                        // $(this).dialog("close");
-                    // }
-                // }
-            // });
-            // // Dialog Link
-            // $('#event_export_link').click(function(){
-                // $('#event_export_dialog').show();
-                // $('#event_export_dialog').dialog('open');
-// 
-                // return false;
-            // });
         });
     </script>
 {% endblock %}

@@ -12,7 +12,7 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
     # authority fields
-    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=True)
+    allow_anonymous_view = models.NullBooleanField(_("Public can view"), default=False)
     allow_user_view = models.NullBooleanField(_("Signed in user can view"))
     allow_member_view = models.NullBooleanField()
     allow_user_edit = models.NullBooleanField(_("Signed in user can change"))
@@ -105,7 +105,7 @@ class Person(TendenciBaseModel):
     state = models.CharField(_('state'), max_length=50, blank=True)
     zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
     county = models.CharField(_('county'), max_length=50, blank=True)
-    country = models.CharField(_('country'), max_length=50, blank=True)
+    country = models.CharField(_('country'), max_length=255, blank=True)
 
     # fields to be used for the alternate address
     address_2 = models.CharField(_('address'), max_length=150, blank=True)
@@ -115,7 +115,7 @@ class Person(TendenciBaseModel):
     state_2 = models.CharField(_('state'), max_length=50, blank=True)
     zipcode_2 = models.CharField(_('zipcode'), max_length=50, blank=True)
     county_2 = models.CharField(_('county'), max_length=50, blank=True)
-    country_2 = models.CharField(_('country'), max_length=50, blank=True)
+    country_2 = models.CharField(_('country'), max_length=255, blank=True)
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 

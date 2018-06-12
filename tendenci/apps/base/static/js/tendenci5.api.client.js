@@ -3,7 +3,7 @@
 var PhotoClient = function(){
 /* communicates with Photo API
    basic methods: read; NOT SUPPORTED YET: create, update, delete
-   every method takes 2 arguments 
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 
@@ -45,7 +45,7 @@ var PhotoClient = function(){
 var PhotoNeighborClient = function(){
 /* communicates with Photo API
    basic methods: read; NOT SUPPORTED YET: create, update, delete
-   every method takes 2 arguments 
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 
@@ -88,8 +88,8 @@ var PhotoNeighborClient = function(){
 
 var StreamClient = function(){
 /* communicates with Stream API
-   basic methods: create,read,update,delete (CRUD) 
-   every method takes 2 arguments 
+   basic methods: create,read,update,delete (CRUD)
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 
@@ -223,8 +223,8 @@ var StreamClient = function(){
 
 var ServiceProfileClient = function(){
 /* communicates with Service Profile API
-   basic methods: create,read,update,delete (CRUD) 
-   every method takes 2 arguments 
+   basic methods: create,read,update,delete (CRUD)
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 
@@ -359,8 +359,8 @@ var ServiceProfileClient = function(){
 
 var ServiceEntryClient = function(){
 /* communicates with Service Entry API
-   basic methods: create,read,update,delete (CRUD) 
-   every method takes 2 arguments 
+   basic methods: create,read,update,delete (CRUD)
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 
@@ -496,8 +496,8 @@ var ServiceEntryClient = function(){
 
 var DashboardClient = function(){
 /* communicates with Service Entry API
-   basic methods: create,read,update,delete (CRUD) 
-   every method takes 2 arguments 
+   basic methods: create,read,update,delete (CRUD)
+   every method takes 2 arguments
    1st argument: object or query string
    2nd argument: callback or object w/ specific callback(s) */
 

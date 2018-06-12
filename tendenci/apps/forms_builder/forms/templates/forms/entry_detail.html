@@ -13,7 +13,7 @@
 {% block content %}
 <div class="t">
     <div class="form-builder-wrap">
-        <h2>{% blocktrans with t=entry.form.title %}Entry - {{ t }}{% endblocktrans %}</h2>
+        <h2>{{ entry.form.title }}</h2>
          <div class="quick-options">
             {% forms_entry_options request.user entry %}
          </div>
@@ -30,6 +30,33 @@
             </p>
             {% endif %}
         {% endfor %}
+
+        {% if form.custom_payment %}
+        	{% if entry.pricing %}
+        		<p>
+	                <strong>{{ entry.form.pricing_name }}{% if entry.pricing.label %} - {{ entry.pricing.label }}{% endif %}</strong><br />
+	                {% if entry.pricing.price %}
+	                <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.pricing.price }}</em>
+	                {% else %}
+	                <em>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ entry.custom_price }}</em>
+	                {% endif %}
+	            </p>
+        	
+        	{% endif %}
+        {% endif %}
+
+        <p>
+           <strong>{% trans 'Entry Time' %}</strong><br />
+           <em>{{ entry.entry_time }}</em>
+       </p>
+
+        {% if entry.creator %}
+            <p>
+                <strong>{% trans 'Created by' %}</strong><br />
+                <em><a href="{% url 'profile' entry.creator.username %}">{{ entry.creator.username }}</a></em>
+            </p>
+        {% endif %}
+
         {% if entry.entry_path %}
             <p>
                 <strong>{% trans 'Entry Path' %}</strong><br />

@@ -1,0 +1,12 @@
+{% extends "memberships/base.html" %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block content %}
+<div class="t">
+<h1>{% trans "Membership Delete" %}</h1>
+{% if msg_deleted %}
+<div>{{ msg_deleted }}</div>
+{% endif %}
+</div>
+{% endblock %}

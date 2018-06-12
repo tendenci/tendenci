@@ -4,11 +4,10 @@
 {% load base_filters %}
 {% load i18n %}
 {% load perm_tags %}
-{% url "article.export_download" identifier as dl_url %}
 
 
 {% block content %}
-
+{% url "article.export_download" identifier as dl_url %}
 <div class="t">
     <div class="article-wrap">
 

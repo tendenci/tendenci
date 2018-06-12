@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load url from future %}
 {% load base_tags %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
@@ -23,7 +22,7 @@
     <li>
         <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All Corp. Members" %}</span>
@@ -71,6 +70,12 @@
                             </span>
                         </li>
 
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.cap_status' %}">{% trans "Cap Status" %}</a>
+                            </span>
+                        </li>
+
                         <li class="divider"></li>
 
                         <li class="content-item">
@@ -99,7 +104,7 @@
 
                         <li class="content-item">
                             <span class="app-name">
-                                <a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a>
+                                <a href="{% url 'corp_membership.overview' %}">{% trans "Overview" %}</a>
                             </span>
                         </li>
 
@@ -127,7 +132,7 @@
 
                 {% if app_object %}
                     {% if can_view_corpmemb or can_edit_corpmemb %}
-                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Corp. Member" %}</span>
                             </li>
@@ -146,6 +151,14 @@
                                         <a href="{% url 'corpmembership.edit' app_object.pk %}">{% trans "Edit Corp. Member" %}</a>
                                     </span>
                                 </li>
+                                
+                                {% if request.user.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'admin:corporate_memberships_corpprofile_change' app_object.corp_profile.pk %}">{% trans "Edit Corp. Profile" %}</a>
+                                    </span>
+                                </li>
+                                {% endif %}
 
                                 <li class="content-item">
                                     <span class="app-name">

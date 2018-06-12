@@ -47,7 +47,7 @@
 						labels: {
 							align: 'left',
 							x: 3,
-							y: -3 
+							y: -3
 						}
 					},
 					
@@ -103,11 +103,11 @@
 									click: function() {
 										hs.htmlExpand(null, {
 											pageOrigin: {
-												x: this.pageX, 
+												x: this.pageX,
 												y: this.pageY
 											},
 											headingText: this.series.name,
-											maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) +':<br/> '+ 
+											maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) +':<br/> '+
 												this.y +' visits',
 											width: 200
 										});
@@ -167,11 +167,11 @@
 							date = Date.parse(line[0] +' UTC');
 							
 							allVisits.push([
-								date, 
+								date,
 								parseInt(line[1].replace(',', ''), 10)
 							]);
 							newVisitors.push([
-								date, 
+								date,
 								parseInt(line[2].replace(',', ''), 10)
 							]);
 						}

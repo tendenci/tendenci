@@ -1,3 +1,4 @@
+from __future__ import print_function
 import traceback
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
@@ -31,7 +32,6 @@ class Command(BaseCommand):
                 'accountings',
                 'announcements',
                 'articles',
-                'avatar',
                 'base',
                 'boxes',
                 'campaign_monitor',
@@ -102,9 +102,11 @@ class Command(BaseCommand):
                 'videos',
                 'wp_exporter',
                 'wp_importer',
+                'djcelery',
+                'tastypie'
                 )
         for a in apps:
             try:
                 call_command('migrate', a, '0001', '--fake')
             except:
-                print traceback.format_exc()
+                print(traceback.format_exc())

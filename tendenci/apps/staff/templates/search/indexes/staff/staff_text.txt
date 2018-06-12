@@ -14,5 +14,5 @@ position:{{ object.position }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
-tag:{{ tag }} 
+tag:{{ tag }}
 {% endfor %}

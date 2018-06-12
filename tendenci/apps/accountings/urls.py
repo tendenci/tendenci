@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from . import views
 
-urlpatterns = patterns('tendenci.apps.accountings.views',
-    url(r'^account_numbers/$', 'account_numbers',
+urlpatterns = [
+    url(r'^account_numbers/$', views.account_numbers,
         name="accounting.account_numbers"),
-)
+]

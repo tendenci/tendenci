@@ -18,7 +18,7 @@ def detail(request, slug=None, template_name="case_studies/view.html"):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (case_study.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
+    if (case_study.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if has_view_perm(request.user, 'case_studies.view_casestudy', case_study):
@@ -64,9 +64,9 @@ def service(request, id, template_name="case_studies/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'service':service, 'services':services, 'case_studies': case_studies}, 
+    return render_to_response(template_name, {'service':service, 'services':services, 'case_studies': case_studies},
         context_instance=RequestContext(request))
-        
+
 def technology(request, id, template_name="case_studies/search.html"):
     "List of case studies by technology"
     technology = get_object_or_404(Technology, pk=id)
@@ -76,26 +76,26 @@ def technology(request, id, template_name="case_studies/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies}, 
+    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies},
         context_instance=RequestContext(request))
 
     EventLog.objects.log()
- 
-    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies}, 
+
+    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies},
         context_instance=RequestContext(request))
- 
+
 def print_view(request, id, template_name="case_studies/print-view.html"):
     case_study = get_object_or_404(CaseStudy, id=id)
     services = Service.objects.all()
     technologies = Technology.objects.all()
- 
-    if (case_study.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
+
+    if (case_study.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
- 
+
     if not has_perm(request.user, 'case_studies.view_casestudy', case_study):
         raise Http403
- 
+
     EventLog.objects.log(instance=case_study)
- 
+
     return render_to_response(template_name, {'case_study': case_study, 'services': services, 'technologies': technologies},
         context_instance=RequestContext(request))

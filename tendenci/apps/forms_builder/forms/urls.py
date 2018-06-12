@@ -1,5 +1,9 @@
 from django.conf.urls import patterns, url
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.forms_builder.forms.signals import init_signals
+
+
+init_signals()
 
 urlpath = get_setting('module', 'forms', 'url')
 if not urlpath:
@@ -28,5 +32,3 @@ urlpatterns = patterns("tendenci.apps.forms_builder.forms.views",
     url(r"^%s/(?P<slug>.*)/sent/$" % urlpath, "form_sent", name="form_sent"),
     url(r"^%s/(?P<slug>.*)/$" % urlpath, "form_detail", name="form_detail"),
 )
-
-

@@ -1,0 +1,65 @@
+[
+{
+    "fields": {
+        "description": null,
+        "title": "All Interactive Users",
+        "created_at": "2015-08-24T15:45:30.751",
+        "last_run_date": "2016-01-13T17:30:40.431",
+        "snapshot": false,
+        "sql": "SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,  \n        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2, \n        p.member_number, p.city, p.state, p.zipcode, p.country, p.url, p.sex,\n        p.address_type, p.phone2, p.fax, p.work_phone, p.home_phone, p.mobile_phone,\n        p.notes, p.admin_notes\nFROM auth_user u INNER JOIN profiles_profile p\nON u.id=p.user_id\nWHERE u.is_active=True\nAND p.status=True\nAND p.status_detail='active'",
+        "created_by_user": null
+    },
+    "model": "explorer.query",
+    "pk": 1
+},
+{
+    "fields": {
+        "description": null,
+        "title": "All Members",
+        "created_at": "2015-08-24T15:45:30.754",
+        "last_run_date": "2016-01-13T17:30:33.251",
+        "snapshot": false,
+        "sql": "SELECT u.first_name, u.last_name, u.email, u.username, u.is_staff, u.is_superuser,\n        p.salutation, p.company, p.position_title, p.phone, p.address, p.address2,\n        p.member_number, p.city, p.state, p.zipcode, p.country, p.url, p.sex,\n        p.address_type, p.phone2, p.fax, p.work_phone, p.home_phone, p.mobile_phone,\n        m.membership_type_id, m.renewal, m.certifications, m.work_experience,\n        m.referer_url, m.referral_source, m.join_dt, m.expire_dt, m.renew_dt,\n        m.primary_practice, m.how_long_in_practice, m.application_approved,\n        m.application_approved_dt, m.areas_of_expertise, m.home_state,\n        m.year_left_native_country, m.network_sectors, m.networking,\n        m.government_worker, m.government_agency, m.license_number,\n        m.license_state, m.status_detail\nFROM auth_user u\nINNER JOIN profiles_profile p\nON u.id=p.user_id\nINNER JOIN memberships_membershipdefault m\nON m.user_id=u.id\nWHERE u.is_active=True\nAND p.status=True\nAND m.status_detail <> 'archive'",
+        "created_by_user": null
+    },
+    "model": "explorer.query",
+    "pk": 2
+},
+{
+    "fields": {
+        "description": null,
+        "title": "All Corporate Members",
+        "created_at": "2015-08-24T15:45:30.755",
+        "last_run_date": "2016-06-08T15:55:13.740",
+        "snapshot": false,
+        "sql": "SELECT cp.name, cp.address, cp.address2, cp.city, cp.state, cp.zip, cp.country,\n     cp.phone, cp.email, cp.url, cp.number_employees, cp.chapter, cp.tax_exempt,\n     cp.annual_revenue, cp.annual_ad_expenditure, cp.description, cp.expectations,\n     cp.notes, cp.referral_source, cp.ud1, cp.ud2, cp.ud3, cp.ud4, cp.ud5, cp.ud6,\n     cp.ud7, cp.ud8, cm.corporate_membership_type_id, cm.renewal, cm.renew_dt,\n     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail \nFROM corporate_memberships_corpprofile cp\nINNER JOIN corporate_memberships_corpmembership cm\nON cp.id=cm.corp_profile_id\nWHERE cm.status_detail <> 'archive'",
+        "created_by_user": null
+    },
+    "model": "explorer.query",
+    "pk": 3
+},
+{
+    "fields": {
+        "description": null,
+        "title": "All Users in a Specific Group (replace <YOUR GROUP ID> with your group id)",
+        "created_at": "2015-08-24T15:45:30.757",
+        "last_run_date": "2016-01-13T17:30:28.175",
+        "snapshot": false,
+        "sql": "SELECT ug.name, u.first_name, u.last_name, u.email, u.username, u.is_staff,\n     u.is_superuser, p.salutation, p.company, p.position_title, p.phone,\n     p.address, p.address2, p.member_number, p.city, p.state, p.zipcode,\n     p.country, p.url, p.sex, p.address_type, p.phone2, p.fax, p.work_phone,\n     p.home_phone, p.mobile_phone\nFROM auth_user u INNER JOIN profiles_profile p\nON u.id=p.user_id INNER JOIN user_groups_groupmembership ugm \non u.id=ugm.member_id INNER JOIN user_groups_group ug on ug.id=ugm.group_id \nWHERE ug.id=<YOUR GROUP ID> \nAND ugm.status=True \nAND ugm.status_detail='active'",
+        "created_by_user": null
+    },
+    "model": "explorer.query",
+    "pk": 4
+},
+{
+    "fields": {
+        "duration": 2.06494331359863,
+        "query": 3,
+        "run_by_user": 1,
+        "run_at": "2016-06-08T15:55:13.743",
+        "sql": "SELECT cp.name, cp.address, cp.address2, cp.city, cp.state, cp.zip, cp.country,\n     cp.phone, cp.email, cp.url, cp.number_employees, cp.chapter, cp.tax_exempt,\n     cp.annual_revenue, cp.annual_ad_expenditure, cp.description, cp.expectations,\n     cp.notes, cp.referral_source, cp.ud1, cp.ud2, cp.ud3, cp.ud4, cp.ud5, cp.ud6,\n     cp.ud7, cp.ud8, cm.corporate_membership_type_id, cm.renewal, cm.renew_dt,\n     cm.join_dt, cm.expiration_dt, cm.approved, cm.admin_notes, cm.status_detail \nFROM corporate_memberships_corpprofile cp\nINNER JOIN corporate_memberships_corpmembership cm\nON cp.id=cm.corp_profile_id\nWHERE cm.status_detail <> 'archive'"
+    },
+    "model": "explorer.querylog",
+    "pk": 1
+}
+]

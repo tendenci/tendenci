@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.core.management.base import BaseCommand
 
 
@@ -12,6 +13,6 @@ class Command(BaseCommand):
             migrations = MigrationHistory.objects.filter(app_name=app_name)
             if migrations:
                 migrations.delete()
-                print "Migrations for %s were removed" % app_name
+                print("Migrations for %s were removed" % app_name)
             else:
-                print "No migrations for %s" % app_name
+                print("No migrations for %s" % app_name)

@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.site_settings.crypt import encrypt, decrypt
@@ -67,7 +66,7 @@ class Setting(models.Model):
                 delete_setting_cache,
                 delete_all_settings_cache)
             # delete the cache for this setting
-            # print "clearing cache for setting: %s" % self.name
+            # print("clearing cache for setting: %s" % self.name)
             delete_all_settings_cache()
             delete_setting_cache(self.scope, self.scope_category, self.name)
 

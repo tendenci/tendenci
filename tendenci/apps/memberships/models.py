@@ -34,7 +34,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.memberships.managers import MembershipTypeManager, \
     MembershipDefaultManager, MembershipAppManager
 from tendenci.apps.base.utils import fieldify
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.event_logs.models import EventLog
@@ -129,7 +129,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     renewal = models.BooleanField(_('Renewal Only'), default=False)
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=True)
 
-    admin_only = models.BooleanField(_('Admin Only'), default=True)  # from allowuseroption
+    admin_only = models.BooleanField(_('Admin Only'), default=False)  # from allowuseroption
 
     never_expires = models.BooleanField(_("Never Expires"), default=False,
                                         help_text=_('If selected, skip the Renewal Options.'))
@@ -179,7 +179,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipType, self).save(*args, **kwargs)
 
-    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
 
@@ -191,7 +191,8 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
             For renew:
             expiration_dt = membership_type.get_expiration_dt(renewal=True,
                                                               join_dt=membership.join_dt,
-                                                              renew_dt=membership.renew_dt)
+                                                              renew_dt=membership.renew_dt,
+                                                              previous_expire_dt=None)
         """
         now = datetime.now()
 
@@ -229,6 +230,13 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
                 else:  # renewal = True
                     if self.rolling_renew_option == '0':
                         # expires on the end of full period
+
+                        # if they are renewing before expiration, the new expiration date
+                        # should start from the previous expiration date instead of the renew date
+                        if isinstance(previous_expire_dt, datetime):
+                            if previous_expire_dt > now:
+                                return previous_expire_dt + relativedelta(years=self.period)
+
                         return renew_dt + relativedelta(years=self.period)
                     elif self.rolling_renew_option == '1':
                         # expires on the ? days at signup (join) month
@@ -284,43 +292,63 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
                 expiration_dt = datetime(now.year, self.fixed_option2_month,
                                         self.fixed_option2_day)
+                if expiration_dt <= now:
+                    expiration_dt = expiration_dt + relativedelta(years=1)
                 if self.fixed_option2_can_rollover:
                     if not self.fixed_option2_rollover_days:
                         self.fixed_option2_rollover_days = 0
-                    if (expiration_dt - now).days <= self.fixed_option2_rollover_days:
+                    if (expiration_dt - now).days < self.fixed_option2_rollover_days:
                         expiration_dt = expiration_dt + relativedelta(years=1)
 
                 return expiration_dt
 
-    def get_price_display(self, customer):
+    def get_price_display(self, customer, corp_membership=None):
         renew_mode = False
         if isinstance(customer, User):
             m_list = MembershipDefault.objects.filter(user=customer, membership_type=self)
             renew_mode = any([m.can_renew() for m in m_list])
 
         self.renewal_price = self.renewal_price or 0
+        renewal_price = self.renewal_price
+        price = self.price
+        above_cap_format = ''
+
+        if corp_membership:
+            apply_above_cap, above_cap_price = \
+                    corp_membership.get_above_cap_price()
+            if apply_above_cap:
+                if renew_mode:
+                    renewal_price = above_cap_price
+                else:
+                    price = above_cap_price
+                above_cap_format = " (above cap price)"
+
         if renew_mode:
             price_display = (self.PRICE_FORMAT + self.RENEW_FORMAT) % (
                 self.name,
-                tcurrency(self.renewal_price)
+                tcurrency(renewal_price)
             )
         else:
             if self.admin_fee:
                 price_display = (self.PRICE_FORMAT + self.ADMIN_FEE_FORMAT) % (
                     self.name,
-                    tcurrency(self.price),
+                    tcurrency(price),
                     tcurrency(self.admin_fee)
                 )
             else:
                 price_display = (self.PRICE_FORMAT) % (
                     self.name,
-                    tcurrency(self.price)
+                    tcurrency(price)
                 )
+
+        if above_cap_format:
+            price_display = price_display + above_cap_format
 
         return mark_safe(price_display)
 
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
+    donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
 
     class Meta:
         verbose_name = _("Membership")
@@ -364,7 +392,7 @@ class MembershipSet(models.Model):
             tax = app.tax_rate * price
             invoice.tax = tax
 
-        invoice.subtotal = price + tax
+        invoice.subtotal = price
         invoice.total = price + tax
         invoice.balance = price + tax
 
@@ -405,6 +433,12 @@ class MembershipSet(models.Model):
         """
         id_list = []
         description = ''
+        donation_amount = inv.get_donation_amount()
+        if donation_amount:
+            donation_msg = '(Donation: %s%s)' % (get_setting('site', 'global', 'currencysymbol'),
+                                               donation_amount)
+        else:
+            donation_msg = ''
 
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
         for i, membership in enumerate(self.membershipdefault_set.order_by('-pk')):
@@ -412,14 +446,16 @@ class MembershipSet(models.Model):
 
             if i == 0:
                 if membership.renewal:
-                    description = '%s Invoice %d for Online Membership Renewal Application - Submission ' % (
+                    description = '%s Invoice %d for Online Membership Renewal Application%s - Submission ' % (
                         site_display_name,
                         inv.id,
+                        donation_msg,
                     )
                 else:
-                    description = '%s Invoice %d for Online Membership Application - Submission ' % (
+                    description = '%s Invoice %d for Online Membership Application%s - Submission ' % (
                         site_display_name,
                         inv.id,
+                        donation_msg,
                     )
 
         description += ', '.join(id_list)
@@ -439,6 +475,7 @@ class MembershipDefault(TendenciBaseModel):
     membership_type = models.ForeignKey(MembershipType)
     user = models.ForeignKey(User, editable=False)
     renewal = models.BooleanField(blank=True, default=False)
+    auto_renew = models.BooleanField(blank=True, default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
@@ -462,34 +499,40 @@ class MembershipDefault(TendenciBaseModel):
     application_abandoned = models.BooleanField(default=False)
     application_abandoned_dt = models.DateTimeField(null=True, default=None)
     application_abandoned_user = models.ForeignKey(
-        User, related_name='application_abandond_set', null=True)
+        User, related_name='application_abandond_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_complete = models.BooleanField(default=True)
     application_complete_dt = models.DateTimeField(null=True, default=None)
     application_complete_user = models.ForeignKey(
-        User, related_name='application_complete_set', null=True)
+        User, related_name='application_complete_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_approved = models.BooleanField(default=False)
     application_approved_dt = models.DateTimeField(null=True, default=None)
     application_approved_user = models.ForeignKey(
-        User, related_name='application_approved_set', null=True)
+        User, related_name='application_approved_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_approved_denied_dt = models.DateTimeField(null=True, default=None)
     application_approved_denied_user = models.ForeignKey(
-        User, related_name='application_approved_denied_set', null=True)
+        User, related_name='application_approved_denied_set', null=True,
+        on_delete=models.SET_NULL)
 
     application_denied = models.BooleanField(default=False)
 
     action_taken = models.CharField(max_length=500, blank=True)
     action_taken_dt = models.DateTimeField(null=True, default=None)
     action_taken_user = models.ForeignKey(
-        User, related_name='action_taken_set', null=True)
+        User, related_name='action_taken_set', null=True,
+        on_delete=models.SET_NULL)
     # workflow fields -----------------------------------------
 
     bod_dt = models.DateTimeField(null=True)
     personnel_notified_dt = models.DateTimeField(null=True)
     payment_received_dt = models.DateTimeField(null=True)
-    payment_method = models.ForeignKey(PaymentMethod, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, null=True,
+                                       on_delete=models.SET_NULL)
     override = models.BooleanField(default=False)
     override_price = models.FloatField(null=True)
     exported = models.BooleanField(default=False)
@@ -506,11 +549,11 @@ class MembershipDefault(TendenciBaseModel):
     government_agency = models.CharField(max_length=250, blank=True, default=u'')
     license_number = models.CharField(max_length=50, blank=True, default=u'')
     license_state = models.CharField(max_length=50, blank=True, default=u'')
-    industry = models.ForeignKey(Industry, blank=True, null=True)
-    region = models.ForeignKey(Region, blank=True, null=True)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     company_size = models.CharField(max_length=50, blank=True, default=u'')
     promotion_code = models.CharField(max_length=50, blank=True, default=u'')
-    directory = models.ForeignKey(Directory, blank=True, null=True)
+    directory = models.ForeignKey(Directory, blank=True, null=True, on_delete=models.SET_NULL)
     groups = models.ManyToManyField(Group)
 
     membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
@@ -523,6 +566,12 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name_plural = _(u'Memberships')
         permissions = (("approve_membershipdefault", _("Can approve memberships")),)
         app_label = 'memberships'
+
+
+    def __init__(self, *args, **kwargs):
+        super(MembershipDefault, self).__init__(*args, **kwargs)
+        if not self.auto_renew:
+            self.auto_renew = False
 
     def __unicode__(self):
         """
@@ -576,6 +625,20 @@ class MembershipDefault(TendenciBaseModel):
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
 
+    @property
+    def obj_status(self):
+        t = '<span class="t-profile-status t-status-%s">%s</span>'
+
+        if self.status:
+            if self.status_detail == 'paid - pending approval':
+                value = t % ('pending', self.status_detail.capitalize())
+            else:
+                value = t % (self.status_detail, self.status_detail.capitalize())
+        else:
+            value = t % ('inactive','Inactive')
+
+        return mark_safe(value)
+
     def demographic_sort_key(self, field_name):
         """
         Returns the key to sort on when
@@ -622,6 +685,21 @@ class MembershipDefault(TendenciBaseModel):
             return []  # empty list
 
         return field_list
+
+    def get_app(self):
+        if not self.app:
+            apps = MembershipApp.objects.filter(
+                           status=True,
+                           status_detail__in=['active', 'published'],
+                           membership_types__in=[self.membership_type]
+                           ).order_by('id')
+            if self.corporate_membership_id:
+                apps = apps.filter(use_for_corp=True)
+            else:
+                apps = apps.filter(use_for_corp=False)
+            if apps:
+                self.app = apps[0]
+                self.save()
 
     def get_archived_memberships(self):
         """
@@ -830,7 +908,7 @@ class MembershipDefault(TendenciBaseModel):
         self.archive_old_memberships()
 
         # show member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         # Activate user
         if not self.user.is_active:
@@ -838,6 +916,15 @@ class MembershipDefault(TendenciBaseModel):
             self.user.is_active = True
             self.user.save()
             send_welcome_email(self.user)
+        
+        if not self.renewal: 
+            # add new member to the default group
+            default_group_name = get_setting('module', 'users', 'defaultusergroup')
+            [group] = Group.objects.filter(Q(name__iexact=default_group_name)
+                                           | Q(label__iexact=default_group_name))[:1] or [None]
+            # no need to check if group.is_member because group.add_user will check it
+            if group:
+                group.add_user(self.user)
 
         return self
 
@@ -854,16 +941,17 @@ class MembershipDefault(TendenciBaseModel):
         if self.is_pending():
             dupe = self
         elif any((self.is_active(), self.is_expired())):
-            dupe = deepcopy(self)
+            dupe = self.copy()
             dupe.pk = None  # disconnect from db record
         else:
             return False
 
         dupe.status = True,
         dupe.status_detail = 'active'
-        
+
         dupe.renewal = True
-        dupe.renew_from_id = self.id
+        if dupe is not self:
+            dupe.renew_from_id = self.id
 
         # application approved ---------------
         dupe.application_approved = True
@@ -897,7 +985,7 @@ class MembershipDefault(TendenciBaseModel):
         dupe.archive_old_memberships()
 
         # show member number on profile
-        dupe.user.profile.refresh_member_number()
+        self.profile_refresh_member_number(user=dupe.user)
 
         return dupe
 
@@ -947,7 +1035,7 @@ class MembershipDefault(TendenciBaseModel):
         self.archive_old_memberships()
 
         # show member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         return True
 
@@ -961,29 +1049,41 @@ class MembershipDefault(TendenciBaseModel):
         Will only expire approved memberships.
         """
 
-        if not self.is_approved():
-            return False
+        if self.is_approved() or (self.is_expired() and self.status_detail == 'active'):
+            NOW = datetime.now()
 
-        NOW = datetime.now()
+            self.status = True
+            self.status_detail = 'expired'
 
-        self.status = True
-        self.status_detail = 'expired'
+            # action_taken ------------------------------
+            self.action_taken = True
+            self.action_taken_dt = self.action_taken_dt or NOW
+            if request_user:  # else: don't set
+                self.action_taken_user = request_user
 
-        # action_taken ------------------------------
-        self.action_taken = True
-        self.action_taken_dt = self.action_taken_dt or NOW
-        if request_user:  # else: don't set
-            self.action_taken_user = request_user
+            self.save()
 
-        self.save()
+            # remove from group
+            self.group_refresh()
 
-        # remove from group
-        self.group_refresh()
+            # show member number on profile
+            self.profile_refresh_member_number()
 
-        # show member number on profile
-        self.user.profile.refresh_member_number()
+            return True
 
-        return True
+        return False
+
+    def profile_refresh_member_number(self, user=None):
+        """
+        Create the profile if not exists and refresh member number for the profile
+        """
+        if not user:
+            user = self.user
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create_profile(user=user)
+        profile.refresh_member_number()
 
     def pend(self):
         """
@@ -1022,7 +1122,7 @@ class MembershipDefault(TendenciBaseModel):
         self.save_invoice(status_detail='estimate')
 
         # remove member number on profile
-        self.user.profile.refresh_member_number()
+        self.profile_refresh_member_number()
 
         return True
 
@@ -1112,6 +1212,9 @@ class MembershipDefault(TendenciBaseModel):
             'id',
             'renewal',
             'renew_dt',
+            'renew_from_id',
+            'membership_set',
+            'payment_method',
             'status',
             'status_detail',
             'application_approved',
@@ -1146,8 +1249,9 @@ class MembershipDefault(TendenciBaseModel):
                 membership.status_detail = 'archive'
                 membership.save()
 
-        # sometimes they renewed from a different membership type
-        if self.renew_from_id:
+        # if they renewed from a different membership type
+        # renew_from_id should not be id, but just in case
+        if self.renew_from_id and self.renew_from_id != self.id:
             [membership_from] = MembershipDefault.objects.filter(
                                 id=self.renew_from_id).exclude(
                                 status_detail='archive'
@@ -1155,7 +1259,6 @@ class MembershipDefault(TendenciBaseModel):
             if membership_from:
                 membership_from.status_detail = 'archive'
                 membership_from.save()
-                
 
     def approval_required(self):
         """
@@ -1182,7 +1285,7 @@ class MembershipDefault(TendenciBaseModel):
         the group.
         """
 
-        active = (self.status == True, self.status_detail.lower() == 'active')
+        active = (self.status, self.status_detail.lower() == 'active')
 
         if all(active):  # should be in group; make sure they're in
             self.membership_type.group.add_user(self.user)
@@ -1297,12 +1400,13 @@ class MembershipDefault(TendenciBaseModel):
             return True
 
         m_exists = self.user.membershipdefault_set.filter(
-                    Q(status_detail='active') | Q(status_detail='expired')).exists()
-        
-        if MembershipApp.objects.filter(allow_multiple_membership=True).exists(): 
+                    Q(status_detail='active') | Q(status_detail='expired'))
+
+        if MembershipApp.objects.filter(allow_multiple_membership=True).exists():
             m_exists = m_exists.filter(
                 membership_type=self.membership_type)
-        
+        m_exists = m_exists.exists()
+
         return m_exists
 
     def can_renew(self):
@@ -1322,7 +1426,7 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         # can only renew from active or expired
-        if not self.get_status() in ['active', 'expired']:
+        if self.get_status() not in ['active', 'expired']:
             return False
 
         # assert that we're within the renewal period
@@ -1341,7 +1445,7 @@ class MembershipDefault(TendenciBaseModel):
             return False
 
         # can only renew from approved state
-        if not self.get_status() in ['active', 'expired']:
+        if self.get_status() not in ['active', 'expired']:
             return False
 
         # assert that we're within the renewal period
@@ -1400,8 +1504,8 @@ class MembershipDefault(TendenciBaseModel):
         elif status == 'disapproved':
             pass
             # actions.update({
-                # '?action=pend': u'Make Pending',
-                # expire_link: u'Expire Membership'})
+            #     '?action=pend': u'Make Pending',
+            #     expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
                 approve_link: u'Approve',
@@ -1410,7 +1514,7 @@ class MembershipDefault(TendenciBaseModel):
         elif status == 'expired':
             actions.update({
                 approve_link: u'Approve Membership'})
-
+        
         return actions
 
     def get_invoice(self):
@@ -1451,6 +1555,7 @@ class MembershipDefault(TendenciBaseModel):
 
         if not invoice:
             invoice = Invoice()
+            invoice.title = "Membership Invoice"
 
         if status_detail == 'estimate':
             invoice.estimate = True
@@ -1465,9 +1570,15 @@ class MembershipDefault(TendenciBaseModel):
         # Only set for new invoices
         if not invoice.pk:
             price = self.get_price()
+            tax = 0
+            if self.app and self.app.include_tax:
+                invoice.tax_rate = self.app.tax_rate
+                tax = self.app.tax_rate * price
+                invoice.tax = tax
+            
             invoice.subtotal = price
-            invoice.total = price
-            invoice.balance = price
+            invoice.total = price + tax
+            invoice.balance = price + tax
 
             invoice.object_type = content_type
             invoice.object_id = self.pk
@@ -1497,43 +1608,23 @@ class MembershipDefault(TendenciBaseModel):
         Corporate price, trumps all membership prices.
         """
         if self.corporate_membership_id:
-            use_threshold, threshold_price = \
-                        self.get_corp_memb_threshold_price(
-                                self.corporate_membership_id)
-            if use_threshold:
-                return threshold_price
+            from tendenci.apps.corporate_memberships.models import CorpMembership
+            [corp_membership] = CorpMembership.objects.filter(
+                                id=self.corporate_membership_id)[:1] or [None]
+            if corp_membership:
+                # num_exclude - exclude this membership
+                apply_above_cap, above_cap_price = \
+                    corp_membership.get_above_cap_price(num_exclude=1)
+                if apply_above_cap:
+                    if self.renewal:
+                        return above_cap_price
+                    else:
+                        return above_cap_price + (self.membership_type.admin_fee or 0)
 
         if self.renewal:
             return self.membership_type.renewal_price or 0
         else:
             return self.membership_type.price + (self.membership_type.admin_fee or 0)
-
-    def get_corp_memb_threshold_price(self, corporate_membership_id):
-        """
-        get the threshold price for individual memberships.
-        return tuple (use_threshold, threshold_price)
-        """
-        from tendenci.apps.corporate_memberships.models import CorpMembership
-
-        [corporate] = CorpMembership.objects.filter(
-            id=corporate_membership_id)[:1] or [None]
-
-        if corporate:
-            corporate_type = corporate.corporate_membership_type
-            threshold = corporate_type.apply_threshold
-            threshold_limit = corporate_type.individual_threshold
-            threshold_price = corporate_type.individual_threshold_price
-
-            if threshold and threshold_limit > 0:
-                membership_count = MembershipDefault.objects.filter(
-                    corporate_membership_id=corporate.pk,
-                    status=True,
-                    status_detail__in=['active',
-                                       'pending']
-                ).count()
-                if membership_count <= threshold_limit:
-                    return True, threshold_price
-        return False, None
 
     def qs_memberships(self, **kwargs):
         """
@@ -1657,19 +1748,32 @@ class MembershipDefault(TendenciBaseModel):
             self.expire_dt = None
             return None
 
+        corp_membership = None
         if self.corporate_membership_id:
             # corp individuals expire with their corporate membership
             from tendenci.apps.corporate_memberships.models import CorpMembership
-            [corp_expiration_dt] = CorpMembership.objects.filter(
-                                        id=self.corporate_membership_id
-                                        ).values_list('expiration_dt',
-                                                      flat=True)[:1] or [None]
-            self.expire_dt = corp_expiration_dt
+            [corp_membership] = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
+
+        if corp_membership:
+            # check if the associated corp. membership has been renewed
+            latest_renewed = corp_membership.get_latest_renewed()
+            if latest_renewed:
+                self.expire_dt = latest_renewed.expiration_dt
+                self.corporate_membership_id = latest_renewed.id
+            else:
+                self.expire_dt = corp_membership.expiration_dt
+
         else:
 
             if self.renew_dt:
+                if self.renew_from_id:
+                    [previous_expire_dt] = MembershipDefault.objects.filter(
+                                                id=self.renew_from_id).values_list(
+                                                'expire_dt', flat=True)[:1] or [None]
+                else:
+                    previous_expire_dt = None
                 self.expire_dt = self.membership_type.get_expiration_dt(
-                    renewal=self.is_renewal(), renew_dt=self.renew_dt
+                    renewal=self.is_renewal(), renew_dt=self.renew_dt, previous_expire_dt=previous_expire_dt
                 )
             elif self.join_dt:
                 self.expire_dt = self.membership_type.get_expiration_dt(
@@ -1723,15 +1827,15 @@ class MembershipDefault(TendenciBaseModel):
                                                       flat=True)
         if field_names:
             user = self.user
-            profile = user.profile
+            profile = hasattr(user, 'profile') and user.profile
             if hasattr(user, 'demographics'):
                 demographics = getattr(user, 'demographics')
             else:
                 demographics = None
             for field_name in field_names:
-                if hasattr(user, field_name):
+                if hasattr(user, field_name) and field_name != 'groups':
                     items[field_name] = getattr(user, field_name)
-                elif hasattr(profile, field_name):
+                elif hasattr(profile, field_name) and field_name != 'referral_source':
                     items[field_name] = getattr(profile, field_name)
                 elif demographics and hasattr(demographics, field_name):
                     items[field_name] = getattr(demographics, field_name)
@@ -1740,7 +1844,7 @@ class MembershipDefault(TendenciBaseModel):
 
             for name, value in items.iteritems():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__() \
+                    items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
 
         return items
@@ -1761,13 +1865,13 @@ class MembershipDefault(TendenciBaseModel):
                         self.membership_type.name)
         if self.corporate_membership_id:
             from tendenci.apps.corporate_memberships.models import CorpMembership
-            corp_member = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
+            [corp_member] = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
             if corp_member:
                 link = '%s (<a href="%s">corp</a> %s)' % (
                     link,
                     reverse('corpmembership.view',
                             args=[self.corporate_membership_id]),
-                    corp_member[0].status_detail)
+                    corp_member.status_detail)
         return link
     membership_type_link.allow_tags = True
     membership_type_link.short_description = u'Membership Type'
@@ -1779,12 +1883,14 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
+        is_renewal = self.is_renewal()
+
         open_renewal = (
-            self.is_renewal(),
+            is_renewal,
             not self.membership_type.renewal_require_approval)
 
         open_join = (
-            not self.is_renewal(),
+            not is_renewal,
             not self.membership_type.require_approval)
 
         can_approve = all(open_renewal) or all(open_join)
@@ -1796,38 +1902,27 @@ class MembershipDefault(TendenciBaseModel):
             if created:
                 send_welcome_email(self.user)
 
-            if self.is_renewal():
-                # renewal returns new MembershipDefault instance
-                # old MembershipDefault instance is marked status_detail = "archive"
-                self = self.renew(request.user)
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='renewal',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_renewed'
-                )
-            else:
-                self.approve()
-                Notice.send_notice(
-                    request=request,
-                    emails=self.user.email,
-                    notice_type='approve',
-                    membership=self,
-                    membership_type=self.membership_type,
-                )
-                EventLog.objects.log(
-                    instance=self,
-                    action='membership_approved'
-                )
+            self.approve(request.user)
+            Notice.send_notice(
+                request=request,
+                emails=self.user.email,
+                notice_type=('approve_renewal' if is_renewal else 'approve'),
+                membership=self,
+                membership_type=self.membership_type,
+            )
+            EventLog.objects.log(
+                instance=self,
+                action='membership_approved'
+            )
 
             if self.corporate_membership_id:
                 # notify corp reps
                 self.email_corp_reps(request)
+                
+        if self.auto_renew:
+            # add recurring payment entry here
+            params = {'trans_id': payment.trans_id}
+            self.get_or_create_rp(request.user, **params)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
@@ -1851,6 +1946,79 @@ class MembershipDefault(TendenciBaseModel):
     def get_acct_number(self, discount=False):
         # reference: /accountings/account_numbers/
         return 464700 if discount else 404700
+    
+    def has_rp(self, platform=''):
+        """
+        Check if this membership has a recurring payment account for membership renew
+        """
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            rps = self.user.recurring_payments.filter(status=True, 
+                                                     status_detail='active',
+                                                     object_content_type__model='membershipdefault')
+            if platform:
+                rps = rps.filter(platform=platform)
+            
+            return rps.exists()
+        
+        return False
+    
+    def get_or_create_rp(self, request_user, **kwargs):
+        """
+        Get or create recurring payment entry
+        """ 
+        from tendenci.apps.recurring_payments.models import RecurringPayment
+        if get_setting('module', 'recurring_payments', 'enabled'):
+            ct = ContentType.objects.get_for_model(MembershipDefault)
+            [rp] = self.user.recurring_payments.filter(object_content_type=ct,
+                                       status=True,
+                                       status_detail__in=['active', 'disabled'])[:1] or [None]
+            if not rp:
+                if not request_user or request_user.is_anonymous():
+                    request_user = self.user
+                rp = RecurringPayment(user=self.user,
+                                     object_content_type=ct,
+                                     platform= kwargs.get('platform', 'authorizenet'),
+                                     description='Membership Auto Renew',
+                                     billing_start_dt=datetime.now(),
+                                     payment_amount=0,
+                                     creator=request_user,
+                                     creator_username=request_user.username,
+                                     owner=self.user,
+                                     owner_username=self.user.username,
+                                     status=True,
+                                     status_detail='active')
+                # bypass the signal on save so that we can create customer profile from trans_id
+                rp.customer_profile_id = kwargs.get('customer_profile_id', '')
+                rp.save()
+            if rp.platform == 'authorizenet':
+                if not rp.customer_profile_id or rp.customer_profile_id == 'TBD':
+                    trans_id = kwargs.get('trans_id', None)
+                    if trans_id:
+                        rp.create_customer_profile_from_trans_id(trans_id)
+            return rp
+        return None
+    
+
+    def next_auto_renew_date(self):
+        if self.status_detail != 'archive' and self.expire_dt and self.auto_renew:
+            if self.expire_dt > datetime.now():
+                return self.expire_dt
+            else:
+                return datetime.now() + timedelta(days=1)
+        return None
+ 
+    
+    def can_auto_renew(self):
+        """
+        Check if membership auto renew can be set up for this membership.
+        """
+        if self.status_detail in ['active', 'expired']:
+            if not self.corporate_membership_id:
+                if get_setting('module', 'recurring_payments', 'enabled') \
+                    and get_setting('module', 'memberships', 'autorenew'):
+                    return True
+        return False
+
 
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')
@@ -1967,19 +2135,43 @@ NOTICE_TYPES = (
     ('join', _('Join Date')),
     ('renewal', _('Renewal Date')),
     ('expiration', _('Expiration Date')),
-    ('approve', _('Approval Date')),
-    ('disapprove', _('Disapproval Date')),
+    ('approve', _('Join Approval Date')),
+    ('disapprove', _('Join Disapproval Date')),
+    ('approve_renewal', _('Renewal Approval Date')),
+    ('disapprove_renewal', _('Renewal Disapproval Date')),
 )
 
 
 class Notice(models.Model):
+
+    NOTICE_BEFORE = 'before'
+    NOTICE_AFTER = 'after'
+    NOTICE_ATTIMEOF = 'attimeof'
+
+    NOTICE_CHOICES = (
+        (NOTICE_BEFORE, _('Before')),
+        (NOTICE_AFTER,  _('After')),
+        (NOTICE_ATTIMEOF, _('At Time Of'))
+    )
+
+    CONTENT_TYPE_HTML = 'html'
+
+    CONTENT_TYPE_CHOICES = (
+        (CONTENT_TYPE_HTML, _('HTML')),
+    )
+
+    STATUS_DETAIL_ACTIVE = 'active'
+    STATUS_DETAIL_HOLD = 'admin_hold'
+
+    STATUS_DETAIL_CHOICES = (
+        (STATUS_DETAIL_ACTIVE, 'Active'),
+        (STATUS_DETAIL_HOLD, 'Admin Hold')
+    )
+
     guid = models.CharField(max_length=50, editable=False)
     notice_name = models.CharField(_("Name"), max_length=250)
     num_days = models.IntegerField(default=0)
-    notice_time = models.CharField(_("Notice Time"), max_length=20,
-                                   choices=(('before', _('Before')),
-                                            ('after', _('After')),
-                                            ('attimeof', _('At Time Of'))))
+    notice_time = models.CharField(_("Notice Time"), max_length=20, choices=NOTICE_CHOICES)
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=False)
     membership_type = models.ForeignKey(
@@ -1993,9 +2185,9 @@ class Notice(models.Model):
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
-                                    choices=(('html', _('HTML')),),
+                                    choices=CONTENT_TYPE_CHOICES,
                                     max_length=10,
-                                    default='html')
+                                    default=CONTENT_TYPE_HTML)
     sender = models.EmailField(max_length=255, blank=True, null=True)
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
@@ -2006,8 +2198,8 @@ class Notice(models.Model):
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
-                                     default='active', max_length=50)
+    status_detail = models.CharField(choices=STATUS_DETAIL_CHOICES,
+                                     default=STATUS_DETAIL_ACTIVE, max_length=50)
     status = models.BooleanField(default=True)
 
     class Meta:
@@ -2015,14 +2207,6 @@ class Notice(models.Model):
 
     def __unicode__(self):
         return self.notice_name
-
-    @property
-    def footer(self):
-        return """
-        This e-mail was generated by Tendenci&reg; Software - a
-        web based membership management software solution
-        www.tendenci.com developed by Schipul - The Web Marketing Company
-        """
 
     def get_default_context(self, membership=None):
         """
@@ -2066,6 +2250,15 @@ class Notice(models.Model):
             payment_method_name = membership.payment_method.human_name
         else:
             payment_method_name = ''
+        inv = membership.get_invoice()
+        if inv:
+            invoice_link = inv.get_absolute_url()
+            donation_amount = inv.get_donation_amount()
+            total_amount = inv.total
+        else:
+            invoice_link = ''
+            donation_amount = ''
+            total_amount = ''
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2073,10 +2266,16 @@ class Notice(models.Model):
             'username': membership.user.username,
             'member_number': membership.member_number,
             'membership_type': membership.membership_type.name,
+            'membership_price': membership.get_price(),
+            'donation_amount': donation_amount,
+            'total_amount': total_amount,
             'payment_method': payment_method_name,
             'referer_url': '%s%s?next=%s' % (global_setting('siteurl'), reverse('auth_login'), membership.referer_url),
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'view_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
+            'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,
         })
 
@@ -2092,10 +2291,10 @@ class Notice(models.Model):
 
     def get_content(self, membership=None):
         """
-        Return self.email_content with self.footer appended
-        and replace shortcode (context) variables
+        Return self.email_content with footer appended and replace shortcode
+        (context) variables
         """
-        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+        content = self.email_content
         context = self.get_default_context(membership)
 
         return self.build_notice(content, context=context)
@@ -2142,7 +2341,6 @@ class Notice(models.Model):
                 notice_log_record.save()
         return True
 
-
     @classmethod
     def send_notice(cls, **kwargs):
         """
@@ -2171,9 +2369,9 @@ class Notice(models.Model):
             template_type = 'joined'
         elif notice_type == 'renewal':
             template_type = 'renewed'
-        elif notice_type == 'approve':
+        elif notice_type == 'approve' or notice_type == 'approve_renewal':
             template_type = 'approved'
-        elif notice_type == 'disapprove':
+        elif notice_type == 'disapprove' or notice_type == 'disapprove_renewal':
             template_type = 'disapproved'
         else:
             return False
@@ -2202,7 +2400,6 @@ class Notice(models.Model):
                     'membership_%s_to_member' % template_type, {
                     'subject': notice.get_subject(membership=membership),
                     'content': notice.get_content(membership=membership),
-                    'membership_total': MembershipDefault.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
                     'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                     'sender_display': notice.sender_display,
@@ -2263,7 +2460,7 @@ class MembershipApp(TendenciBaseModel):
     name = models.CharField(_("Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True,
-        help_text=_("Description of this application. " + \
+        help_text=_("Description of this application. " +
         "Displays at top of application."))
     confirmation_text = tinymce_models.HTMLField()
     notes = models.TextField(blank=True, default='')
@@ -2272,6 +2469,9 @@ class MembershipApp(TendenciBaseModel):
                             default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
+    donation_enabled = models.BooleanField(_("Enable Donation"), default=False)
+    donation_label = models.CharField(_("Label"), max_length=255, blank=True, null=True)
+    donation_default_amount = models.DecimalField(_("Default Amount"), max_digits=15, decimal_places=2, blank=True, default=0)
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
@@ -2279,7 +2479,7 @@ class MembershipApp(TendenciBaseModel):
                                              verbose_name=_("Payment Methods"))
     discount_eligible = models.BooleanField(default=False)
     use_for_corp = models.BooleanField(_("Use for Corporate Individuals"),
-                                       default=True)
+                                       default=False)
     objects = MembershipAppManager()
 
     class Meta:
@@ -2303,7 +2503,7 @@ class MembershipApp(TendenciBaseModel):
         """
         Clone this app.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
         params['name'] = 'Clone of %s' % params['name']
@@ -2390,7 +2590,7 @@ class MembershipAppField(OrderingBaseModel):
         """
         Clone this field.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
 
@@ -2424,7 +2624,7 @@ class MembershipAppField(OrderingBaseModel):
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 if self.field_name not in ['membership_type', 'payment_method']:
-                    choices = self.choices.split(",")
+                    choices = [s.strip() for s in self.choices.split(",")]
                     field_args["choices"] = zip(choices, choices)
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
@@ -2444,8 +2644,8 @@ class MembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                  MembershipAppField.FIELD_TYPE_CHOICES]
-        user_fields = dict([(field.name, field) \
-                        for field in User._meta.fields \
+        user_fields = dict([(field.name, field)
+                        for field in User._meta.fields
                         if field.get_internal_type() != 'AutoField'])
         fld = None
         field_type = 'CharField'
@@ -2453,19 +2653,19 @@ class MembershipAppField(OrderingBaseModel):
         if field_name in user_fields:
             fld = user_fields[field_name]
         if not fld:
-            profile_fields = dict([(field.name, field) \
+            profile_fields = dict([(field.name, field)
                             for field in Profile._meta.fields])
             if field_name in profile_fields:
                 fld = profile_fields[field_name]
         if not fld:
-            membership_fields = dict([(field.name, field) \
+            membership_fields = dict([(field.name, field)
                             for field in MembershipDefault._meta.fields])
             if field_name in membership_fields:
                 fld = membership_fields[field_name]
 
         if fld:
             field_type = fld.get_internal_type()
-            if not field_type in available_field_types:
+            if field_type not in available_field_types:
                 if field_type in ['ForeignKey', 'OneToOneField']:
                     field_type = 'ChoiceField'
                 elif field_type in ['ManyToManyField']:
@@ -2473,8 +2673,6 @@ class MembershipAppField(OrderingBaseModel):
                 else:
                     field_type = 'CharField'
         return field_type
-
-
 
 
 class MembershipDemographic(models.Model):

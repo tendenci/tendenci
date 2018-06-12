@@ -25,6 +25,13 @@ class ListTestimonialNode(ListNode):
     model = Testimonial
     perms = 'testimonials.view_testimonial'
 
+@register.inclusion_tag("testimonials/top_nav_items.html", takes_context=True)
+def testimonial_current_app(context, user, testimonial=None):
+    context.update({
+        "app_object": testimonial,
+        "user": user
+    })
+    return context
 
 @register.tag
 def list_testimonials(parser, token):
@@ -35,10 +42,10 @@ def list_testimonials(parser, token):
 
         {% list_testimonials as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``testimonials_sidebar`` or 
+    Be sure the [varname] has a specific name like ``testimonials_sidebar`` or
     ``testimonials_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``

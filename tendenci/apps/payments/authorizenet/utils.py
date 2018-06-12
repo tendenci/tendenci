@@ -3,13 +3,12 @@ import hmac
 import hashlib
 from django.conf import settings
 from django.http import Http404
+from django.db import transaction
 from forms import SIMPaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.notifications.utils import send_notifications
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,
@@ -20,12 +19,11 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
 
     return hmac.new(settings.MERCHANT_TXN_KEY, msg).hexdigest()
 
-
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
-    x_logo_URL = get_setting("site", "global", "MerchantLogo")
+    x_logo_URL = get_setting('site', 'global', 'merchantlogo')
 
     params = {
               'x_fp_sequence':payment.id,
@@ -75,36 +73,42 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     except:
         x_invoice_num = 0
 
-    payment = get_object_or_404(Payment, pk=x_invoice_num)
+    with transaction.atomic():
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
 
-    # authenticate with md5 hash to make sure the response is securely received from authorize.net.
-    # client needs to set up the MD5 Hash Value in their account
-    # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
-    md5_hash = response_d.get('x_MD5_Hash', '')
-    # calculate our md5_hash
-    md5_hash_value = settings.AUTHNET_MD5_HASH_VALUE
-    api_login_id = settings.MERCHANT_LOGIN
-    t_id = response_d.get('x_trans_id', '')
-    amount = response_d.get('x_amount', 0)
+        # authenticate with md5 hash to make sure the response is securely
+        # received from authorize.net.
+        # client needs to set up the MD5 Hash Value in their account
+        # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
+        md5_hash = response_d.get('x_MD5_Hash', '')
+        # calculate our md5_hash
+        md5_hash_value = settings.AUTHNET_MD5_HASH_VALUE
+        api_login_id = settings.MERCHANT_LOGIN
+        t_id = response_d.get('x_trans_id', '')
+        amount = response_d.get('x_amount', 0)
 
-    s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
-    my_md5_hash = hashlib.md5(s).hexdigest()
+        s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
+        my_md5_hash = hashlib.md5(s).hexdigest()
 
-    # commenting it out for now because it's causing some problem on some sites (nadr).
-    #if my_md5_hash.lower() <> md5_hash.lower():
-    #    raise Http404
+        # don't break the payment process if md5 hash is not set up
+        if md5_hash_value:
+            if my_md5_hash.lower() != md5_hash.lower():
+                raise Http404
+        else:
+            # TODO: email admin to set up MD5 hash
+            pass
 
-    if payment.invoice.balance > 0:     # if balance==0, it means already processed
-        payment_update_authorizenet(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
+        if not payment.is_approved:  # if not already processed
+            payment_update_authorizenet(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
 
-        # log an event
-        log_payment(request, payment)
+            # log an event
+            log_payment(request, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
-    return payment
+        return payment
 
 def payment_update_authorizenet(request, response_d, payment, **kwargs):
     from decimal import Decimal
@@ -140,7 +144,6 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     payment.ship_to_zip = response_d.get('x_ship_to_zip', '')
     payment.ship_to_country = response_d.get('x_ship_to_country', '')
 
-
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
@@ -149,7 +152,3 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
         payment.save()
-
-
-
-

@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.videos.models import Video, Category, VideoType
 from tendenci.apps.videos.forms import VideoForm
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class VideoInline(admin.TabularInline):
@@ -15,18 +17,42 @@ class VideoInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'position')
+    list_editable = ['position', 'name']
     prepopulated_fields = {'slug': ['name']}
     inlines = [VideoInline]
+    ordering = ('position',)
+
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+        )
+
+
+class VideoTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+    prepopulated_fields = {'slug': ['name']}
 
 
 class VideoAdmin(TendenciBaseModelAdmin):
+    def get_release_dt(self, instance):
+        dt = instance.release_dt
 
-    list_display = ['title', 'tags', 'category', 'video_type', 'ordering']
-    list_editable = ['ordering']
+        if dt:
+            return dt.strftime('%x')
+        return u''
+    get_release_dt.short_description = _('Release Date')
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt']
+    list_editable = ['category', 'video_type']
+    if not get_setting('module', 'videos', 'order_by_release_dt'):
+        list_display.append('position')
+        list_editable.append('position')
     prepopulated_fields = {'slug': ['title']}
-    search_fields = ['question', 'answer']
+    search_fields = ['title', 'description']
     fieldsets = (
-        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description')}),
+        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description', 'release_dt')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -38,16 +64,19 @@ class VideoAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = VideoForm
-    ordering = ['-ordering']
+    if not get_setting('module', 'videos', 'order_by_release_dt'):
+        ordering = ['-position']
+    else:
+        ordering = ['-release_dt']
 
     class Media:
         js = (
-            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
-            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/admin-list-reorder-ordering.js' % settings.STATIC_URL,
+            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js',
+            'js/admin/admin-list-reorder.js',
+            'js/global/tinymce.event_handlers.js',
         )
-    
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(VideoAdmin, self).get_fieldsets(request, obj)
         if not obj or (obj and not obj.image):
@@ -59,4 +88,4 @@ class VideoAdmin(TendenciBaseModelAdmin):
 
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(VideoType, CategoryAdmin)
+admin.site.register(VideoType, VideoTypeAdmin)

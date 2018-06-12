@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
@@ -18,7 +19,7 @@ def member_choices(group, member_label):
     member label. This is used for generating choices for a form.
     choices for member label are: email, full name and username.
     """
-    members = User.objects.filter(is_active=1)
+    members = User.objects.all().order_by('username')
     if member_label == 'email':
         label = lambda x: x.email
     elif member_label == 'full_name':
@@ -33,10 +34,9 @@ def member_choices(group, member_label):
 
 def get_default_group():
     """
-    get lowest id group to use as default in other apps that FK to Group
+    Get the ID of the default group specified in the global setting
     """
-    return (Group.objects.filter(
-        status=True, status_detail="active").order_by('id')[:1] or [None])[0]
+    return Group.objects.get_initial_group_id()
 
 
 def process_export(
@@ -100,11 +100,14 @@ def process_export(
                 group_member__status=True,
                 group_member__status_detail='active'
                 ).select_related('profile'
-                )[num_rows_processed:(num_rows_processed + rows_per_batch)]
+                ).order_by('group_member__member_id')[num_rows_processed:(num_rows_processed + rows_per_batch)]
             num_rows_processed += rows_per_batch
             row_dict = field_dict.copy()
             for user in users:
-                profile = user.profile
+                if hasattr(user, 'profile'):
+                    profile = user.profile
+                else:
+                    profile = Profile.objects.create_profile(user)
                 for field_name in user_fields:
                     if hasattr(user, field_name):
                         row_dict[field_name] = getattr(user, field_name)

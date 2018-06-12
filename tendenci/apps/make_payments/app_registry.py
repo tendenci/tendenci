@@ -15,5 +15,3 @@ class MakePaymentRegistry(LogRegistry):
     }
 
 site.register(MakePayment, MakePaymentRegistry)
-
-

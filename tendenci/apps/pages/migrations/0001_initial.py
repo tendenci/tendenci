@@ -7,7 +7,7 @@ import tagging.fields
 import tendenci.apps.user_groups.utils
 import tendenci.apps.base.fields
 import django.db.models.deletion
-import tinymce.models
+import tendenci.libs.tinymce.models
 
 
 class Migration(migrations.Migration):
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('guid', models.CharField(max_length=40)),
                 ('title', models.CharField(max_length=500, blank=True)),
                 ('slug', tendenci.apps.base.fields.SlugField(max_length=100, verbose_name='URL Path', db_index=True)),
-                ('content', tinymce.models.HTMLField()),
+                ('content', tendenci.libs.tinymce.models.HTMLField()),
                 ('view_contact_form', models.BooleanField(default=False)),
                 ('design_notes', models.TextField(verbose_name='Design Notes', blank=True)),
                 ('syndicate', models.BooleanField(default=False, verbose_name='Include in RSS feed')),

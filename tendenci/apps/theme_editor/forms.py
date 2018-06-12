@@ -32,6 +32,7 @@ FILE_EXTENTIONS = (
     '.eot',
     '.ttf',
     '.woff',
+    '.woff2',
     '.svg',
 )
 
@@ -105,16 +106,12 @@ class ThemeSelectForm(forms.Form):
 
 
 class UploadForm(forms.Form):
-    upload = forms.FileField()
+    qqfilename = forms.CharField()
     file_dir = forms.CharField(widget=forms.HiddenInput, required=False)
     overwrite = forms.BooleanField(widget=forms.HiddenInput, required=False)
 
-    def clean_file_dir(self):
-        data = self.cleaned_data['file_dir']
-        return data
-
-    def clean_upload(self):
-        data = self.cleaned_data['upload']
-        if not data.name.lower().endswith(FILE_EXTENTIONS):
+    def clean_qqfilename(self):
+        data = self.cleaned_data['qqfilename']
+        if not data.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError(_("This is not a valid file type to upload."))
         return data

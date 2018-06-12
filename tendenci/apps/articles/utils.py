@@ -1,4 +1,3 @@
-import subprocess
 import time as ttime
 from datetime import datetime, date, time
 

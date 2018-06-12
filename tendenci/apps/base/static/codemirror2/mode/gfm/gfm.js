@@ -29,7 +29,7 @@ CodeMirror.defineMode("gfm", function(config, parserConfig) {
       if (aliases[a] in modes || aliases[a] in mimes)
         modes[a] = aliases[a];
     }
-    
+
     return function (lang) {
       return modes[lang] ? CodeMirror.getMode(config, modes[lang]) : null;
     }

@@ -23,7 +23,7 @@ from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
-from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.models import GroupMembership
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.files.models import File
@@ -146,9 +146,19 @@ class RegistrationConfiguration(models.Model):
     Event registration
     Extends the event model
     """
+
     # TODO: use shorter name
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
+
+    BIND_TRUE = True
+    BIND_FALSE = False
+
+    BIND_CHOICES = (
+        (True, _('Use one form for all pricings')),
+        (False, _('Use separate form for each pricing'),
+    ))
+
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(
         help_text=_('A payment required before registration is accepted.'), default=True)
@@ -156,7 +166,7 @@ class RegistrationConfiguration(models.Model):
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
-    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " + \
+    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text=_("If checked, " +
                         "the required fields in registration form are also required for guests.  "),
                         default=False)
 
@@ -173,14 +183,13 @@ class RegistrationConfiguration(models.Model):
                                  help_text=_("You'll have the chance to edit the selected form"))
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=((True, _('Use one form for all pricings')),
-                                          (False, _('Use separate form for each pricing'))),
-                                 default=True)
+                                 choices=BIND_CHOICES,
+                                 default=BIND_TRUE)
 
     # base email for reminder email
-    email = models.ForeignKey(Email, null=True)
+    email = models.ForeignKey(Email, null=True, on_delete=models.SET_NULL)
     send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
-    reminder_days = models.CharField(_('Specify when (? days before the event ' + \
+    reminder_days = models.CharField(_('Specify when (? days before the event ' +
                                        'starts) the reminder should be sent '),
                                      max_length=20,
                                      null=True, blank=True,
@@ -232,7 +241,7 @@ class RegistrationConfiguration(models.Model):
                     status=True
                     )
         if q_obj:
-            pricings = pricings.filter(q_obj)
+            pricings = pricings.filter(q_obj).distinct()
 
         return pricings
 
@@ -286,7 +295,7 @@ class RegConfPricing(OrderingBaseModel):
         Note that the delete() method for an object is not necessarily
         called when deleting objects in bulk using a QuerySet.
         """
-        #print "%s, %s" % (self, "status set to false" )
+        #print("%s, %s" % (self, "status set to false" ))
         self.status = False
         self.save(*args, **kwargs)
 
@@ -363,20 +372,22 @@ class RegConfPricing(OrderingBaseModel):
                 filter_or = {'allow_anonymous': True,
                              'allow_user': True,
                              'allow_member': True}
-                # get a list of groups for this user
-                groups_id_list = user.group_member.values_list('group__id', flat=True)
-                if groups_id_list:
-                    filter_or.update({'groups__in': groups_id_list})
+
         else:
             filter_or = {'allow_anonymous': True,
                         'allow_user': True,
                         'allow_member': True}
+        if not user.is_anonymous() and user.profile.is_member:
+            # get a list of groups for this user
+            groups_id_list = user.group_member.values_list('group__id', flat=True)
+            if groups_id_list:
+                filter_or.update({'groups__in': groups_id_list})
 
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
                       }
 
-        if spots_available <> -1:
+        if spots_available != -1:
             if not user.profile.is_superuser:
                 filter_and['quantity__lte'] = spots_available
 
@@ -400,17 +411,17 @@ class Registration(models.Model):
     guid = models.TextField(max_length=40, editable=False)
     note = models.TextField(blank=True)
     event = models.ForeignKey('Event')
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
 
     # This field will not be used if dynamic pricings are enabled for registration
     # The pricings should then be found in the Registrant instances
-    reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
+    reg_conf_price = models.ForeignKey(RegConfPricing, null=True, on_delete=models.SET_NULL)
 
     reminder = models.BooleanField(default=False)
 
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
-    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
+    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True, on_delete=models.SET_NULL)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
     is_table = models.BooleanField(_('Is table registration'), default=False)
@@ -706,7 +717,7 @@ class Registrant(models.Model):
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
-    pricing = models.ForeignKey('RegConfPricing', null=True)  # used for dynamic pricing
+    pricing = models.ForeignKey('RegConfPricing', null=True, on_delete=models.SET_NULL)  # used for dynamic pricing
 
     custom_reg_form_entry = models.ForeignKey(
         "CustomRegFormEntry", related_name="registrants", null=True)
@@ -816,20 +827,6 @@ class Registrant(models.Model):
     def hash(self):
         return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
 
-    @property
-    def old_hash1(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
-
-    @property
-    def old_hash2(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
-
     @models.permalink
     def hash_url(self):
         return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
@@ -898,6 +895,34 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
+    def populate_custom_form_entry(self):
+        """
+        When, for some reason, registrants don't have the associated custom reg form entry
+        registered for an event with a custom form, they cannot be edited.
+        We're going to check and populate the entry if not existing so that they can edit.
+        """
+        if not self.custom_reg_form_entry:
+            reg_conf = self.registration.event.registration_configuration
+            if reg_conf.use_custom_reg_form:
+                custom_reg_form = reg_conf.reg_form
+                # add an entry for this registrant
+                entry = CustomRegFormEntry.objects.create(entry_time=datetime.now(),
+                                                  form=custom_reg_form)
+                self.custom_reg_form_entry = entry
+                self.save()
+                # populate fields
+                fields = [item[0] for item in USER_FIELD_CHOICES]
+                for field_name in fields:
+                    if hasattr(self, field_name):
+                        value = getattr(self, field_name)
+                        [field] = CustomRegField.objects.filter(
+                                        form=custom_reg_form,
+                                        map_to_field=field_name)[:1] or [None]
+                        if field:
+                            CustomRegFieldEntry.objects.create(
+                                             value=value,
+                                             entry=entry,
+                                             field=field)
 
 class Payment(models.Model):
     """
@@ -1069,7 +1094,7 @@ class Event(TendenciBaseModel):
     start_dt = models.DateTimeField()
     end_dt = models.DateTimeField()
     timezone = TimeZoneField(_('Time Zone'))
-    place = models.ForeignKey('Place', null=True)
+    place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
     mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     enable_private_slug = models.BooleanField(_('Enable Private URL'), blank=True, default=False) # hide from lists
@@ -1078,8 +1103,8 @@ class Event(TendenciBaseModel):
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
-        help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
+        help_text=_('Photo that represents this event.'), null=True, blank=True, on_delete=models.SET_NULL)
+    groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
 
@@ -1096,7 +1121,7 @@ class Event(TendenciBaseModel):
     display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="admin")
 
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, null=True, on_delete=models.SET_NULL)
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -1289,7 +1314,7 @@ class Event(TendenciBaseModel):
             if date.weekday() == 0:  # monday
                 start_dt = date
             elif date.weekday() == 4:  # friday
-                end_dt = date
+                end_dt = date.replace(hour=self.end_dt.hour, minute=self.end_dt.minute, second=self.end_dt.second)
 
             if start_dt and end_dt:
                 same_date = start_dt.date() == end_dt.date()
@@ -1373,9 +1398,9 @@ class Event(TendenciBaseModel):
         """
         Check if event is private (i.e. if private enabled)
         """
-        # print 'enable_private_slug', self.enable_private_slug
-        # print 'private_slug', self.private_slug
-        # print 'slug', slug
+        # print('enable_private_slug', self.enable_private_slug)
+        # print('private_slug', self.private_slug)
+        # print('slug', slug)
 
         return all((self.enable_private_slug, self.private_slug, self.private_slug == slug))
 
@@ -1444,7 +1469,7 @@ class CustomRegForm(models.Model):
         """
         Clone this custom registration form and associate it with the event if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_obj = self.__class__.objects.create(**params)
         # clone fiellds
@@ -1496,7 +1521,7 @@ class CustomRegField(OrderingBaseModel):
         """
         Clone this custom registration field, and associate it with the form if provided.
         """
-        params = dict([(field.name, getattr(self, field.name)) \
+        params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
         cloned_field = self.__class__.objects.create(**params)
 
@@ -1628,10 +1653,9 @@ class Addon(models.Model):
     class Meta:
         app_label = 'events'
 
-    
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
-    group = models.ForeignKey(Group, blank=True, null=True)
+    group = models.ForeignKey(Group, blank=True, null=True, on_delete=models.SET_NULL)
     allow_anonymous = models.BooleanField(_("Public can use"), default=False)
     allow_user = models.BooleanField(_("Signed in user can use"), default=False)
     allow_member = models.BooleanField(_("All members can use"), default=False)
@@ -1663,7 +1687,7 @@ class Addon(models.Model):
         return True
 
     def field_name(self):
-        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
+        return "%s_%s" % (self.pk, self.title.encode('ascii', 'ignore').lower().replace(' ', '').replace('-', ''))
 
 
 class AddonOption(models.Model):
@@ -1714,5 +1738,5 @@ class RegAddonOption(models.Model):
         app_label = 'events'
 
     def __unicode__(self):
-        return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
-
+        #return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+        return "%s: %s" % (self.regaddon.pk, self.option.title)

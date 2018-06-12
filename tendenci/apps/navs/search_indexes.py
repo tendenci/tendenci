@@ -15,5 +15,3 @@ class NavIndex(TendenciBaseSearchIndex, indexes.Indexable):
     @classmethod
     def get_model(self):
         return Nav
-
-

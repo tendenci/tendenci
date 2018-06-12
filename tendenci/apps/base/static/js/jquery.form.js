@@ -148,7 +148,7 @@ $.fn.ajaxSubmit = function(options) {
 	}
 
 	options.success = function(data, status, xhr) { // jQuery 1.4+ passes xhr as 3rd arg
-		var context = options.context || options;   // jQuery 1.4+ supports scope context 
+		var context = options.context || options;   // jQuery 1.4+ supports scope context
 		for (var i=0, max=callbacks.length; i < max; i++) {
 			callbacks[i].apply(context, [data, status, xhr || $form, $form]);
 		}
@@ -173,7 +173,7 @@ $.fn.ajaxSubmit = function(options) {
    }
    else {
 		// IE7 massage (see issue 57)
-		if ($.browser.msie && method == 'get') { 
+		if ($.browser.msie && method == 'get') {
 			var ieMeth = $form[0].getAttribute('method');
 			if (typeof ieMeth === 'string')
 				options.type = ieMeth;

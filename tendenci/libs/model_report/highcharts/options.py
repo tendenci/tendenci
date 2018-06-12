@@ -3,6 +3,9 @@ from tendenci.libs.model_report.highcharts.base import true, false, null, Solid,
 
 
 def get_highchart_data():
+    """
+    Function helper that returns a basic all default values of highcharts javascript options.
+    """
 
     ChartData = {
         'alignTicks': true,
@@ -121,6 +124,12 @@ def get_highchart_data():
         'type': "linear"
     }
 
+    yAxisPlotData = {
+        'value': null,
+        'width': null,
+        'color': null
+    }
+
     yAxisData = {
         'endOnTick': true,
         'gridLineWidth': 1,
@@ -157,11 +166,7 @@ def get_highchart_data():
         'offset': 0,
         'opposite': false,
         'plotBands': [{}],
-        'plotLines': [{
-            'value': 0,
-            'width': 1,
-            'color': '#808080'
-        }],
+        'plotLines': CollectionObject(),
         'reversed': false,
         'showFirstLabel': true,
         'startOfWeek': 1,
@@ -310,12 +315,68 @@ def get_highchart_data():
         'zIndex': null
     }
 
+    plotOptionsDataLINEdataLabels = {
+        'align': "center",
+        'backgroundColor': undefined,
+        'borderColor': undefined,
+        'borderRadius': 0,
+        'borderWidth': 0,
+        'color': null,
+        'crop': true,
+        'enabled': false,
+        #'formatter':,
+        'overflow': undefined,
+        'padding': 2,
+        'rotation': 0,
+        'shadow': false,
+        #'staggerLines':,
+        #'step':,
+        #'style':,
+        'useHTML': false,
+        # 'verticalAlign':,
+        'x': 0,
+        'y': -6
+    }
+
+    plotOptionsDataLINE = {
+        'allowPointSelect': false,
+        'animation': true,
+        # 'color': ,
+        'connectEnds': true,
+        'connectNulls': false,
+        'cropThreshold': 300,
+        'cursor': '',
+        'dashStyle': null,
+        'dataLabels': DictObject(**plotOptionsDataLINEdataLabels),
+        'enableMouseTracking': true,
+        'events': {},
+        'id': null,
+        'lineWidth': 2,
+        'marker': {},
+        'point': {},
+        'pointInterval': 1,
+        # 'pointPlacement':,
+        'pointStart': 0,
+        'selected': false,
+        'shadow': true,
+        'showCheckbox': false,
+        'showInLegend': true,
+        'stacking': null,
+        'states': {},
+        'step': false,
+        'stickyTracking': true,
+        'tooltip': {},
+        'turboThreshold': 1000,
+        'visible': true,
+        'zIndex': null,
+    }
+
     plotOptionsData = {
         'area': {},
         'areaspline': {},
         'bar': {},
         'column': DictObject(**plotOptionsDataCOLUMN),
-        'line': {},
+        'line': DictObject(**plotOptionsDataLINE),
         'pie': DictObject(**plotOptionsDataPIE),
         'series': [{}],
         'scatter': {},
@@ -384,6 +445,7 @@ def get_highchart_data():
         legend=DictObject(**legendData),
         lang=DictObject(**langData),
         serie_obj=DictObject(**SeriesData),
+        yAxisplot_obj=DictObject(**yAxisPlotData),
     )
 
     return HighchartData

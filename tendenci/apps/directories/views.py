@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import subprocess, time
 import string
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -16,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.decorators import password_required
 from tendenci.apps.base.http import Http403
@@ -29,6 +31,7 @@ from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
@@ -56,55 +59,46 @@ def search(request, template_name="directories/search.html"):
     filters = get_query_filters(request.user, 'directories.view_directory')
     directories = Directory.objects.filter(filters).distinct()
     cat = None
-    category = None
-    sub_category = None
 
     if not request.user.is_anonymous():
         directories = directories.select_related()
 
     query = request.GET.get('q', None)
-    # Handle legacy tag links
-    if query and "tag:" in query:
-        return HttpResponseRedirect("%s?q=%s&search_category=tags__icontains" %(reverse('directories'), query.replace('tag:', '')))
 
     form = DirectorySearchForm(request.GET, is_superuser=request.user.is_superuser)
 
     if form.is_valid():
-        cat = form.cleaned_data['search_category']
-        category = form.cleaned_data['category']
-        sub_category = form.cleaned_data['sub_category']
+        search_category = form.cleaned_data['search_category']
+        query = form.cleaned_data.get('q')
         search_method = form.cleaned_data['search_method']
+        cat = form.cleaned_data.get('cat')
+        sub_cat = form.cleaned_data.get('sub_cat')
 
-        if query and cat:
+        if cat:
+            directories = directories.filter(cat=cat)
+        if sub_cat:
+            directories = directories.filter(sub_cat=sub_cat)
+
+        if query and 'tag:' in query:
+            tag = query.strip('tag:')
+            directories = directories.filter(tags__icontains=tag)
+        elif query and search_category:
             search_type = '__iexact'
             if search_method == 'starts_with':
                 search_type = '__istartswith'
             elif search_method == 'contains':
                 search_type = '__icontains'
 
-            search_filter = {'%s%s' % (cat, search_type): query}
+            search_filter = {'%s%s' % (search_category, search_type): query}
             directories = directories.filter( **search_filter)
-
-    if category:
-        directories = directories.filter(categories__category__id=category)
-    if sub_category:
-        directories = directories.filter(categories__parent__id=sub_category)
 
     directories = directories.order_by('headline')
 
     EventLog.objects.log()
 
-    try:
-        category = int(category)
-    except:
-        category = 0
-    categories, sub_categories = Directory.objects.get_categories(category=category)
-
     return render_to_response(template_name,
         {'directories': directories,
-        'categories': categories,
         'form' : form,
-        'sub_categories': sub_categories,
         'a_to_z': string.lowercase[:26]},
         context_instance=RequestContext(request))
 
@@ -236,6 +230,11 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     if not has_perm(request.user,'directories.change_directory', directory):
         raise Http403
 
+    if request.user.is_superuser:
+        if not directory.activation_dt:
+            # auto-populate activation_dt
+            directory.activation_dt = datetime.now()
+
     form = form_class(request.POST or None, request.FILES or None,
                       instance=directory,
                       user=request.user)
@@ -260,12 +259,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
-        else:
-            form = form_class(instance=directory, user=request.user)
-
-        return render_to_response(template_name, {'directory': directory, 'form':form},
-            context_instance=RequestContext(request))
-
 
     return render_to_response(template_name, {'directory': directory, 'form':form},
         context_instance=RequestContext(request))
@@ -301,6 +294,25 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
     return render_to_response(template_name, {'directory': directory, 'form':form},
         context_instance=RequestContext(request))
+
+
+@is_enabled('directories')
+@login_required
+def get_subcategories(request):
+    if request.is_ajax() and request.method == "POST":
+        category = request.POST.get('category', None)
+        if category:
+            sub_categories = DirectoryCategory.objects.filter(parent=category)
+            count = sub_categories.count()
+            sub_categories = list(sub_categories.values_list('pk','name'))
+            data = json.dumps({"error": False,
+                               "sub_categories": sub_categories,
+                               "count": count})
+        else:
+            data = json.dumps({"error": True})
+
+        return HttpResponse(data, content_type="text/plain")
+    raise Http404
 
 
 @is_enabled('directories')
@@ -356,14 +368,14 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
 
-                if "_popup" in request.REQUEST:
+                if "_popup" in request.POST:
                     return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
             form = form_class(user=request.user)
 
-        if "_popup" in request.REQUEST:
+        if "_popup" in request.GET:
             template_name="directories/pricing-add-popup.html"
 
         return render_to_response(template_name, {'form':form},
@@ -428,7 +440,11 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
 
 
 @is_enabled('directories')
+@login_required
 def pricing_search(request, template_name="directories/pricing-search.html"):
+    if not has_perm(request.user,'directories.view_directorypricing'):
+        raise Http403
+
     directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
     EventLog.objects.log()
 
@@ -571,7 +587,6 @@ def renew(request, id, form_class=DirectoryRenewForm, template_name="directories
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))
 
-
     return render_to_response(template_name, {'directory':directory, 'form':form},
         context_instance=RequestContext(request))
 
@@ -594,7 +609,7 @@ def directory_export(request, template_name="directories/export.html"):
         default_storage.save(temp_file_path, ContentFile(''))
 
         # start the process
-        subprocess.Popen(["python", "manage.py",
+        subprocess.Popen([python_executable(), "manage.py",
                           "directory_export_process",
                           '--export_fields=%s' % export_fields,
                           '--export_status_detail=%s' % export_status_detail,
@@ -645,7 +660,6 @@ def directory_export_download(request, identifier):
         raise Http404
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=directory_export_%s' % file_name
+    response['Content-Disposition'] = 'attachment; filename="directory_export_%s"' % file_name
     response.content = default_storage.open(file_path).read()
     return response
-

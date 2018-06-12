@@ -27,6 +27,20 @@
                         </li>
                     {% endif %}
 
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'articles' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'articles' %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</a>
+                        </span>
+                    </li>
+
                     {% if can_add_article %}
                         <li class="content-item">
                             <span class="app-name">
@@ -39,20 +53,6 @@
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'article.export' %}">{% trans "Export" %} {% firstof MODULE_ARTICLES_LABEL trans "Article" %}</a>
-                            </span>
-                        </li>
-                    {% endif %}
-
-                    <li class="content-item">
-                        <span class="app-name">
-                            <a href="{% url 'articles' %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %}</a>
-                        </span>
-                    </li>
-
-                    {% if can_edit_setting %}
-                        <li class="content-item">
-                            <span class="app-name">
-                                <a href="{% url 'settings.index' 'module' 'articles' %}">{% trans "Settings" %}</a>
                             </span>
                         </li>
                     {% endif %}

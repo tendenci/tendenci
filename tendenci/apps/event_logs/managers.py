@@ -10,6 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.conf import settings
+from django.utils.encoding import smart_bytes
 
 from tendenci.apps.robots.models import Robot
 
@@ -81,16 +82,16 @@ class EventLogManager(Manager):
         Simple Example:
             from tendenci.apps.event_logs.models import EventLog
             EventLog.objects.log()
-        
+
         If you have a Tendenci Base Object, then use the following
-        
+
             EventLog.objects.log(instance=obj_local_var)
 
         """
         request, user, instance = None, None, None
-        
+
         stack = inspect.stack()
-        
+
         # If the request is not present in the kwargs, we try to find it
         # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14
         if 'request' in kwargs:
@@ -103,7 +104,6 @@ class EventLogManager(Manager):
             elif 'request' in inspect.getargvalues(stack[3][0]).locals:
                 request = inspect.getargvalues(stack[3][0]).locals['request']
 
-
         # If this eventlog is being triggered by something without a request, we
         # do not want to log it. This is usually some other form of logging
         # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
@@ -113,7 +113,7 @@ class EventLogManager(Manager):
         # skip if pingdom
         if 'pingdom.com' in request.META.get('HTTP_USER_AGENT', ''):
             return None
-        
+
         event_log = self.model()
 
         # Set the following fields to blank
@@ -239,8 +239,8 @@ class EventLogManager(Manager):
                     event_log.user_ip_address = event_log.user_ip_address.split(",")[-1].replace(" ", "")
 
                 event_log.user_ip_address = event_log.user_ip_address[-15:]
-                event_log.http_referrer = request.META.get('HTTP_REFERER', '')[:255]
-                event_log.http_user_agent = request.META.get('HTTP_USER_AGENT', '')
+                event_log.http_referrer = smart_bytes(request.META.get('HTTP_REFERER', '')[:255], errors='replace')
+                event_log.http_user_agent = smart_bytes(request.META.get('HTTP_USER_AGENT', ''), errors='replace')
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
                 event_log.query_string = request.META.get('QUERY_STRING', '')
 
@@ -250,10 +250,10 @@ class EventLogManager(Manager):
                     event_log.robot = robot
 
             try:
-                event_log.server_ip_address = settings.INTERNAL_IPS[0]
+                event_log.server_ip_address = gethostbyname(gethostname())
             except:
                 try:
-                    event_log.server_ip_address = gethostbyname(gethostname())
+                    event_log.server_ip_address = settings.INTERNAL_IPS[0]
                 except:
                     event_log.server_ip_address = '0.0.0.0'
             if hasattr(request, 'path'):

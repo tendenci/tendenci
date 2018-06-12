@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_syncdb
@@ -10,4 +11,4 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
-    print "Contacts: Skipping creation of NoticeTypes as notification app not found"
+    print("Contacts: Skipping creation of NoticeTypes as notification app not found")

@@ -151,4 +151,3 @@ class NavAdminInlineTest(TestCase):
         navItem = NavItem.objects.get(label__exact='Test Item 1')
         self.assertEqual(len(navItem.children), 1)
         logger.info('Complete.')
-

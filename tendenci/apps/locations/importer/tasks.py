@@ -50,4 +50,3 @@ class ImportLocationsTask(Task):
                 imported.append(new_location)
 
         return imported, stats
-

@@ -34,7 +34,7 @@
 
     {% autopaginate directories 10 %}
     {% directory_search %}
-    
+
     <p id="a-to-z">
     	{% trans "Directory Starts With:" %}
     	{% for letter in a_to_z %}
@@ -85,7 +85,7 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function () {
-            var $catAndSubcatSelect = $('#id_category, #id_sub_category'),
+            var $catAndSubcatSelect = $('#id_cat, #id_sub_cat'),
                 $directoriesSearchForm = $('#t-directories-search-form');
 
             $catAndSubcatSelect.on('change', function (e) {

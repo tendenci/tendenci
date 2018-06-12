@@ -11,14 +11,13 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app
 
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.perms.utils import get_notice_recipients
 
 try:
-    notification = get_app('notifications')
+    from tendenci.apps.notifications import models as notification
 except ImproperlyConfigured:
     notification = None
 
@@ -79,7 +78,7 @@ def activate(request, activation_key,
         }
         user = authenticate(**credentials)
         login(request, user)
-        
+
         # send notification to administrators
         recipients = get_notice_recipients('module', 'users', 'userrecipients')
         if recipients:
@@ -89,12 +88,17 @@ def activate(request, activation_key,
                     'request': request,
                 }
                 notification.send_emails(recipients,'user_added', extra_context)
-        
+
     if extra_context is None:
         extra_context = {}
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
+
+    next_url = request.GET.get('next', '')
+    if account and next_url:
+        return HttpResponseRedirect(next_url)
+
     return render_to_response(template_name,
                               { 'account': account,
                                 'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS },

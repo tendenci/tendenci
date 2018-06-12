@@ -1,3 +1,4 @@
+from __future__ import print_function
 import random, time, md5, sys, datetime
 
 from django.core.management.base import BaseCommand
@@ -44,28 +45,27 @@ class Command(BaseCommand):
             'end_dt': datetime.datetime.now(),
             'timezone': 1,
             'place': 1,
-            
-        }
 
+        }
 
         event_id = options['event']
         limit = options['limit']
 
-        if event_id: event = Event.objects.get(pk=event_id) 
+        if event_id: event = Event.objects.get(pk=event_id)
         else: event = Event.objects.latest('pk')
 
         price = event.registration_configuration.price
 
         # print title & URL
-        print 'Event: %s' % event.title, event.get_absolute_url()
+        print('Event: %s' % event.title, event.get_absolute_url())
 
         for n in range(limit):
             request = self.random_request
-            save_registration(user=request.user, event=event, 
+            save_registration(user=request.user, event=event,
                 payment_method=PaymentMethod.objects.get(pk=3), price=price)
 
             # print registrant
-            print n+1, '%s (registrant)' % request.user
+            print(n+1, '%s (registrant)' % request.user)
 
     @property
     def random_session_key(self):
@@ -87,5 +87,3 @@ class Command(BaseCommand):
         login(request, request.user)
 
         return request
-    
-    

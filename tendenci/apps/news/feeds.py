@@ -39,4 +39,4 @@ class NewsSitemap(TendenciSitemap):
         return items
 
     def lastmod(self, obj):
-        return obj.create_dt
+        return obj.release_dt

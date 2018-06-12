@@ -31,19 +31,8 @@ from tendenci.apps.imports.utils import render_excel
 
 
 @is_enabled('locations')
-def detail(request, id=None, template_name="locations/view.html"):
-    if not id: return HttpResponseRedirect(reverse('locations'))
-
-    try:
-        int_id = int(id)
-    except:
-        int_id = 0
-
-    try:
-        location = get_object_or_404(Location, slug=id)
-    except Http404:
-        location = get_object_or_404(Location, pk=int_id)
-        return HttpResponseRedirect(location.get_absolute_url())
+def detail(request, slug, template_name="locations/view.html"):
+    location = get_object_or_404(Location, slug=slug)
 
     if has_view_perm(request.user,'locations.view_location',location):
         EventLog.objects.log(instance=location)
@@ -98,7 +87,7 @@ def nearest(request, template_name="locations/nearest.html"):
     if all((lat,lng)):
         for location in all_locations:
             location.distance = location.get_distance2(lat, lng)
-            if location.distance != None:
+            if location.distance is not None:
                 locations.append(location)
             locations.sort(key=lambda x: x.distance)
 

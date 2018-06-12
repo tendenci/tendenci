@@ -1,3 +1,4 @@
+from __future__ import print_function
 import commands
 from datetime import date, timedelta
 from decimal import Decimal
@@ -21,7 +22,6 @@ class Command(BaseCommand):
         if 'verbosity' in options:
             verbosity = int(options['verbosity'])
 
-
         metrics = Metric.objects.filter(invoices__isnull=True)
         for metric in metrics:
             metric.invoices = self.get_invoices(metric.create_dt).count()
@@ -29,10 +29,10 @@ class Command(BaseCommand):
             metric.invoice_totals = Decimal(self.get_invoice_totals(metric.create_dt))
 
             if verbosity >= 2:
-                print 'metric.create_dt', metric.create_dt
-                print 'metric.invoices', metric.invoices
-                print 'metric.positive_invoices', metric.positive_invoices
-                print 'metric.invoice_totals', metric.invoice_totals
+                print('metric.create_dt', metric.create_dt)
+                print('metric.invoices', metric.invoices)
+                print('metric.positive_invoices', metric.positive_invoices)
+                print('metric.invoice_totals', metric.invoice_totals)
 
             metric.save()
 

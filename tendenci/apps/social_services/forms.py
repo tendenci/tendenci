@@ -4,7 +4,7 @@ from django import forms
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from form_utils.forms import BetterModelForm
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.fields import EmailVerificationField
@@ -241,7 +241,6 @@ class ReliefAssessmentForm(BetterModelForm):
                 raise forms.ValidationError("Please specify your ethnicity on the text box provided.")
 
         return cleaned_data
-
 
     def save(self, *args, **kwargs):
         relief = super(ReliefAssessmentForm, self).save(commit=False)

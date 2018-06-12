@@ -7,24 +7,36 @@
 {% is_admin request.user as admin %}
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
-    <head profile="http://gmpg.org/xfn/11">
-        {{ NEW_RELIC_HEADER|safe }}
+<html lang="en-US">
+    <head>
 
-        {% block full_title %}<title>{% block title %}{% endblock %} - {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>{% endblock %}
+	{% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+	    <!-- Global site tag (gtag.js) - Google Analytics -->
+	    <script async src="https://www.googletagmanager.com/gtag/js?id={{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}"></script>
+	    <script>
+	      window.dataLayer = window.dataLayer || [];
+	      function gtag(){dataLayer.push(arguments);}
+	      gtag('js', new Date());
+
+	      gtag('config', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}');
+	    </script>
+	 <!-- End Google Analytics -->
+	 {% endif %}
+	    
+        {% block full_title %}<title>{% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}</title>{% endblock %}
 
         <meta charset="UTF-8">
         {% block full_meta_description %}<meta name="description" content="{% block meta_description %}{% endblock %}" />{% endblock %}
         {% block full_meta_keywords %}<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />{% endblock %}
-        <meta name="generator" content="Tendenci 6" />
+        <meta name="generator" content="Tendenci" />
         {% block meta_canonical_url %}{% endblock %}
 
         <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/">
-        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
-
+        <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
+	
         {% block includebootstrap3css %}
             {# Let's try using Bootstrap 3 in all sites #}
-            <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+            <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="all">
         {% endblock %}
 
         {% if not SITE_GLOBAL_SHOWANCIENTMENU %}
@@ -49,58 +61,32 @@
         <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
 
         <link href="{% static 'css/tendenci.css' %}" rel="stylesheet" type="text/css" media="screen">
-        {# <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css"> #}
+        <link href="{% static 'css/labels.css' %}" rel="stylesheet" type="text/css">
         {# <link href="{% static 'css/t_nav_layout.css' %}" rel="stylesheet" type="text/css"> #}
         {# <link href="{% static 'css/announcements.css' %}" rel="stylesheet" type="text/css"> #}
 
         {% block extra_head %}{% endblock %}
 
-        {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
-            <script type="text/javascript">
-              var _gaq = _gaq || [];
-              _gaq.push(['_setAccount', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}']);
-              _gaq.push(['_trackPageview']);
-              (function() {
-                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-              })();
-            </script>
-        {% endif %}
     </head>
 
     <body id="{% block body_ids %}{% endblock %}" class="{% if request.user.is_superuser %}t-auth-admin-loggedin {% endif %}{% block body_classes %}{% endblock %}">
         {% block top_bar %}
+        {% if request.user.is_authenticated %}
             {% if request.user.is_superuser %}
                 {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-                    {% if request.user.is_authenticated %}
-                        {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                            {% include "top_menu/user_top.html" %}
-                        {% else %}
-                            {% include "top_menu/user_top-new.html" %}
-                        {% endif %}
-                    {% endif %}
+                    {% include "top_menu/user_top-new.html" %}
                 {% else %}
-                    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                        {% include "top_menu/admin_top.html" %}
-                    {% else %}
-                        {% include "top_menu/admin_top-new.html" %}
-                    {% endif %}
+                    {% include "top_menu/admin_top-new.html" %}
 
                     {% if request.session.theme %}
                         {% include "themes/theme_top.html" %}
                     {% endif %}
                 {% endif %}
             {% else %}
-                {% if request.user.is_authenticated %}
-                    {% if SITE_GLOBAL_SHOWANCIENTMENU %}
-                        {% include "top_menu/user_top.html" %}
-                    {% else %}
-                        {% include "top_menu/user_top-new.html" %}
-                    {% endif %}
-                {% endif %}
+                {% include "top_menu/user_top-new.html" %}
             {% endif %}
-
+		{% endif %}
+		
             {% emergency_announcement request.user %}
         {% endblock %}
 

@@ -205,12 +205,11 @@ def correct_media_file_path(body, file):
     if match:
         match.group()
 
-        if match.group(4) == None and file.basename() == match.group(6) + match.group(7):
+        if match.group(4) is None and file.basename() == match.group(6) + match.group(7):
             # if the file is unsized
             body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
-        elif match.group(6) == None and file.basename() == match.group(4) + match.group(7):
+        elif match.group(6) is None and file.basename() == match.group(4) + match.group(7):
             # if the file is sized
             body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
 
     return body
-

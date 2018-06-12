@@ -15,6 +15,7 @@ from tendenci.apps.corporate_memberships.models import (
 from tendenci.apps.corporate_memberships.utils import update_authorized_domains
 from tendenci.apps.memberships.models import MembershipDefault
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.entities.models import Entity
 
 
 class CorpMembershipImportProcessor(object):
@@ -32,12 +33,13 @@ class CorpMembershipImportProcessor(object):
         self.mimport = mimport
         self.dry_run = dry_run
         self.summary_d = self.init_summary()
-        self.corp_profile_fields = dict([(field.name, field) \
-                            for field in CorpProfile._meta.fields \
-                            if field.get_internal_type() != 'AutoField' and \
+        self.corp_profile_fields = dict([(field.name, field)
+                            for field in CorpProfile._meta.fields
+                            if field.get_internal_type() != 'AutoField' and
                             field.name not in ['guid']])
-        self.corp_membership_fields = dict([(field.name, field) \
+        self.corp_membership_fields = dict([(field.name, field)
                             for field in CorpMembership._meta.fields \
+                            # comment it out if you want to make id import possible
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
                                                'corp_profile']])
@@ -104,6 +106,9 @@ class CorpMembershipImportProcessor(object):
         of a corp_membership
         """
         self.cmemb_data = cmemb_data
+        if 'id' not in self.cmemb_data:
+            if 'id' in self.corp_membership_fields:
+                del self.corp_membership_fields['id']
         self.cmemb_data['name'] = self.cmemb_data['company_name']
         del self.cmemb_data['company_name']
         self.field_names = cmemb_data.keys()  # csv field names
@@ -113,7 +118,7 @@ class CorpMembershipImportProcessor(object):
         status_detail = self.cmemb_data.get('status_detail', 'active')
         if status_detail == 'archived':
             status_detail = 'archive'
-        if not status_detail in CorpMembership.VALID_STATUS_DETAIL:
+        if status_detail not in CorpMembership.VALID_STATUS_DETAIL:
             status_detail = 'active'
         self.cmemb_data['status_detail'] = status_detail
         expiration_dt = self.cmemb_data.get('expiration_dt', None)
@@ -230,7 +235,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_profile, action_info['corp_profile_action'])
 
-        if corp_profile.status == None or corp_profile.status == '' or \
+        if corp_profile.status is None or corp_profile.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_profile.status = True
         if not corp_profile.status_detail:
@@ -259,7 +264,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_memb, action_info['corp_memb_action'])
 
-        if corp_memb.status == None or corp_memb.status == '' or \
+        if corp_memb.status is None or corp_memb.status == '' or \
             self.cmemb_data.get('status', '') == '':
             corp_memb.status = True
         if not corp_memb.status_detail:
@@ -297,6 +302,7 @@ class CorpMembershipImportProcessor(object):
         if not corp_memb.owner:
             corp_memb.owner = self.request_user
             corp_memb.owner_username = self.request_user.username
+
         corp_memb.save()
 
         # bind members to their corporations by company names
@@ -306,7 +312,7 @@ class CorpMembershipImportProcessor(object):
     def bind_members_to_corp_membership(self, corp_memb):
         corp_profile = corp_memb.corp_profile
         company_name = corp_profile.name
-        user_ids = Profile.objects.filter(company=company_name
+        user_ids = Profile.objects.filter(company__iexact=company_name
                                     ).values_list('user__id', flat=True)
         if user_ids:
             memberships = MembershipDefault.objects.filter(
@@ -314,9 +320,10 @@ class CorpMembershipImportProcessor(object):
                                     ).filter(status=True
                                     ).exclude(status_detail='archive')
             for membership in memberships:
-                if not membership.corp_profile:
+                if not membership.corp_profile_id:
                     membership.corp_profile_id = corp_profile.id
                     membership.corporate_membership_id = corp_memb.id
+                    membership.expire_dt = corp_memb.expiration_dt
                     membership.save()
 
     def is_active(self, corp_memb):
@@ -344,9 +351,9 @@ class CorpMembershipImportProcessor(object):
                 if any([
                         action == 'insert',
                         self.mimport.override,
-                        not hasattr(instance, field_name) or \
-                        getattr(instance, field_name) == '' or \
-                        getattr(instance, field_name) == None
+                        not hasattr(instance, field_name) or
+                        getattr(instance, field_name) == '' or
+                        getattr(instance, field_name) is None
                         ]):
                     value = self.cmemb_data[field_name]
                     value = self.clean_data(value,
@@ -363,13 +370,24 @@ class CorpMembershipImportProcessor(object):
                                           'owner_username']:
                         value = self.get_default_value(
                                         assign_to_fields[field_name])
-                        if value != None:
+                        if value is None:
                             setattr(instance, field_name, value)
+        
+        # for fields not in spreadsheet, assign default value 
+        if action == 'insert':                  
+            for field_name in assign_to_fields:
+                if field_name not in self.field_names:
+                    value = self.get_default_value(assign_to_fields[field_name])
+                    if value is not None:
+                        setattr(instance, field_name, value)
 
     def get_default_value(self, field):
         # if allows null or has default, return None
-        if field.null or field.has_default():
+        if field.null:
             return None
+        
+        if field.has_default():
+            return field.default
 
         field_type = field.get_internal_type()
 
@@ -385,16 +403,19 @@ class CorpMembershipImportProcessor(object):
         if field_type == 'DecimalField':
             return Decimal(0)
 
-        if field_type == 'IntegerField':
+        if field_type in ['IntegerField', 'PositiveIntegerField']:
             return 0
 
         if field_type == 'FloatField':
             return 0
 
         if field_type == 'ForeignKey':
-            if not field.name in ['creator', 'owner']:
-                [value] = field.related.parent_model.objects.all(
-                                            )[:1] or [None]
+            if field.name not in ['creator', 'owner']:
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.all()[:1] or [None]
                 return value
             return None
 
@@ -461,14 +482,21 @@ class CorpMembershipImportProcessor(object):
                 value = field.to_python(value)
             except exceptions.ValidationError:
                 value = Decimal(0)
-        elif field_type == 'IntegerField':
+        elif field_type in ['IntegerField', 'PositiveIntegerField']:
             try:
                 value = int(value)
+                if field_type == 'PositiveIntegerField' and value < 0:
+                    value = 0
             except:
                 value = 0
         elif field_type == 'FloatField':
             try:
                 value = float(value)
+            except:
+                value = 0
+        elif field_type == 'AutoField':
+            try:
+                value = int(value)
             except:
                 value = 0
         elif field_type == 'ForeignKey':
@@ -480,8 +508,11 @@ class CorpMembershipImportProcessor(object):
                 value = None
 
             if value:
-                [value] = field.related.parent_model.objects.filter(
-                                            pk=value)[:1] or [None]
+                try:
+                    model = field.related.parent_model()
+                except AttributeError:
+                    model = field.related.model
+                [value] = model.objects.filter(pk=value)[:1] or [None]
 
             # membership_type - look up by name in case
             # they entered name instead of id
@@ -489,10 +520,18 @@ class CorpMembershipImportProcessor(object):
                 [value] = CorporateMembershipType.objects.filter(
                                             name=orignal_value)[:1] or [None]
 
+            # allow entity_name in parent_entity field
+            if not value and field.name == 'parent_entity':
+                [value] = Entity.objects.filter(
+                            entity_name=orignal_value)[:1] or [None]
+
             if not value and not field.null:
-                if not field.name in ['creator', 'owner']:
+                if field.name not in ['creator', 'owner']:
                     # if the field doesn't allow null, grab the first one.
-                    [value] = field.related.parent_model.objects.all(
-                                            ).order_by('id')[:1] or [None]
+                    try:
+                        model = field.related.parent_model()
+                    except AttributeError:
+                        model = field.related.model
+                    [value] = model.objects.all().order_by('id')[:1] or [None]
 
         return value

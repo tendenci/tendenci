@@ -1,0 +1,73 @@
+News
+======
+
+
+The News app can be displayed in multiple ways on Tendenci through: News Feed, News Search, and News Article Views.
+
+To learn more about adding a News Feed to different pages, go to: http://tendenci.readthedocs.io/en/latest/templating/theme_code_snippets.html#news-feed-with-thumbnail-image
+
+To change the look of the News Search Results page, pull down these two templates: ``search-result.html`` and ``search.html``
+
+The overall page layout is dictated by ``search.html``.  The look of the news results can be changed through the ``search-result.html`` template.
+
+Social Sharing Links
+--------------------
+You can add social sharing links to the New's module meta.html or view.html to allow users to share the specific news articles they are viewing on your site.
+
+Facebook
+
+  .. code-block:: html
+
+    <a class="fa fa-facebook fa-2x" href="https://www.facebook.com/sharer/sharer.php?u={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}">&nbsp;</a>
+
+Twitter
+
+  .. code-block:: html
+
+     <a class="fa fa-twitter fa-2x" href="https://twitter.com/home?status={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}">&nbsp;</a>
+
+Linkedin
+
+  .. code-block:: html
+
+    <a class="fa fa-linkedin fa-2x" href="https://www.linkedin.com/shareArticle?mini=true&url={{ SITE_GLOBAL_SITEURL }}{{ news.get_canonical_url }}&title={{ news.headline }}&summary=&source=">&nbsp;</a>
+
+
+Adding a Thumbnail
+------------------
+
+.. image:: img/newsthumbnail.png
+
+.. Tip::
+
+  To add the thumbnail image to ``search-result.html``, use this code:
+
+   .. hidden-code-block:: html
+         :label: + Show Added HTML / Django Template Tags
+
+              <!-- NOTE: This is a different tagging convention than the thumbnail display in a News Feed -->
+
+              {% if news.thumbnail %}
+              <div class="col-xs-4">
+                <!-- news-image -->
+                <img class="img-responsive" src="{% image_url news.thumbnail %}"
+                alt="{{ news_item.headline|striptags|safe }}"
+                    style="width:100%;height:auto;"/>
+              </div>
+              {% endif %}
+
+
+Blog Styling: Show Image in the News Article
+--------------------------------------------
+
+.. image:: img/blogstyle.png
+
+.. Tip::
+
+  By default, the Tendenci code in ``search-result.html`` might look something like this:
+
+  ``{% blocktrans with s=news.body|striptags|truncatewords:20|safe %}{{ s }}{% endblocktrans %}``
+
+  To achieve the look of a blog, you can remove "striptags" to reveal images, links, and headings within your news article content.:
+
+  ``{% blocktrans with s=news.body|truncatewords:100|safe %}{{ s }}{% endblocktrans %}``

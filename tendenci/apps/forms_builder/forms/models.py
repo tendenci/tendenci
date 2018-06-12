@@ -1,3 +1,4 @@
+from django.core.exceptions import AppRegistryNotReady
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -20,6 +21,7 @@ from tendenci.apps.base.fields import EmailVerificationField
 from tendenci.apps.base.utils import checklist_update
 from tendenci.apps.redirects.models import Redirect
 from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.user_groups.utils import get_default_group
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -49,7 +51,7 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
-    ("GroupSubscriptionAuto", _("Subscribe to Group")),
+    ("GroupSubscriptionAuto", _("Subscribe to Group (Auto)")),
     ("EmailFirstName", _("First Name")),
     ("EmailLastName", _("Last Name")),
     ("EmailFullName", _("Full Name")),
@@ -112,6 +114,7 @@ class Form(TendenciBaseModel):
     completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
         help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
 
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
@@ -259,7 +262,8 @@ class Field(OrderingBaseModel):
                                ('','-----------'))
             choices = initial_choices + tuple(countries)
         elif self.field_type == 'StateProvinceField':
-            choices = (('','-----------'),) + STATE_CHOICES + PROVINCE_CHOICES
+            choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
             choices = sorted(choices)
         elif self.field_function == 'Recipients':
             choices = [(label+':'+val, label) for label, val in (i.split(":") for i in self.choices.split(","))]
@@ -293,8 +297,9 @@ class FormEntry(models.Model):
     form = models.ForeignKey("Form", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
     entry_path = models.CharField(max_length=200, blank=True, default="")
-    payment_method = models.ForeignKey('payments.PaymentMethod', null=True)
-    pricing = models.ForeignKey('Pricing', null=True)
+    payment_method = models.ForeignKey('payments.PaymentMethod', null=True, on_delete=models.SET_NULL)
+    pricing = models.ForeignKey('Pricing', null=True, on_delete=models.SET_NULL)
+    custom_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     creator = models.ForeignKey(User, related_name="formentry_creator",  null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -305,11 +310,15 @@ class FormEntry(models.Model):
         app_label = 'forms'
 
     def __unicode__(self):
-        return unicode(self.id)
+        return ('%s submission' % (self.form.title,))
 
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
+
+    @property
+    def owner(self):
+        return self.creator
 
     def entry_fields(self):
         return self.fields.all().order_by('field__position')
@@ -404,7 +413,7 @@ class FormEntry(models.Model):
     def get_email_address(self):
         return self.get_type_of("emailverificationfield")
 
-     # Called by payments_pop_by_invoice_user in Payment model.
+    # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
         The description will be sent to payment gateway and displayed on invoice.

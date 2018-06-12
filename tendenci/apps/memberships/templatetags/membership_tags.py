@@ -44,7 +44,7 @@ def render_membership_field(request, field_obj,
         field = None
     else:
         field_name = field_obj.field_name
-        if field_name in membership_form.field_names:
+        if field_name in membership_form.fields:
             field = membership_form[field_name]
         elif field_name in profile_form.field_names:
             field = profile_form[field_name]

@@ -11,7 +11,7 @@
                 <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.get_display_name }} avatar" width="{{ PYBB_AVATAR_WIDTH }}" height="{{ PYBB_AVATAR_HEIGHT }}"/>
             {% endif %}
         {% else %}
-        	{% if user_profile %} 
+        	{% if user_profile %}
         		<img src="{{ user_profile.get_gravatar_url }}" alt="{{ user_profile.get_display_name }} avatar" width="{{ PYBB_AVATAR_WIDTH }}" height="{{ PYBB_AVATAR_HEIGHT }}"/>
             {% else %}
             	<img src="{{ PYBB_DEFAULT_AVATAR_URL }}" alt="default avatar" width="{{ PYBB_AVATAR_WIDTH }}" height="{{ PYBB_AVATAR_HEIGHT }}"/>

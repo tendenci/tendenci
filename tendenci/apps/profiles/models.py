@@ -1,5 +1,7 @@
 import os
 import uuid
+import hashlib
+import urllib
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.db import connection, ProgrammingError
 
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
@@ -14,6 +17,7 @@ from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.models import BaseImport, BaseImportData
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person
+from tendenci.apps.site_settings.utils import get_setting
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -22,23 +26,37 @@ from tendenci.libs.abstracts.models import Person
 
 
 class Profile(Person):
+
+    SALUTATION_CHOICES = (
+        ('Mr.', _('Mr.')),
+        ('Mrs.', _('Mrs.')),
+        ('Ms.', _('Ms.')),
+        ('Miss', _('Miss')),
+        ('Dr.', _('Dr.')),
+        ('Prof.', _('Prof.')),
+        ('Hon.', _('Hon.')),
+    )
+
+    SEX_CHOICES = (
+        ('male', _(u'Male')),
+        ('female', _(u'Female'))
+    )
+
     # relations
     guid = models.CharField(max_length=40)
-    entity = models.ForeignKey(Entity, blank=True, null=True)
+    entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
     # profile meta data
-    salutation = models.CharField(_('salutation'), max_length=15,
-        blank=True, choices=(('Mr.', _('Mr.')),('Mrs.', _('Mrs.')),
-            ('Ms.', _('Ms.')),('Miss', _('Miss')),('Dr.', _('Dr.')),('Prof.', _('Prof.')),('Hon.', _('Hon.')),))
+    salutation = models.CharField(_('salutation'), max_length=15, blank=True, choices=SALUTATION_CHOICES)
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=250, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=(('male', _(u'Male')),('female', _(u'Female'))))
+    sex = models.CharField(_('gender'), max_length=50, blank=True, choices=SEX_CHOICES)
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)
@@ -56,7 +74,7 @@ class Profile(Person):
     student = models.IntegerField(_('student'), null=True, blank=True)
     remember_login = models.BooleanField(_('remember login'), default=False)
     exported = models.BooleanField(_('exported'), default=False)
-    direct_mail = models.BooleanField(_('direct mail'), default=False)
+    direct_mail = models.BooleanField(_('direct mail'), default=True)
     notes = models.TextField(_('notes'), blank=True)
     admin_notes = models.TextField(_('admin notes'), blank=True)
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
@@ -127,7 +145,7 @@ class Profile(Person):
 
     @property
     def lang(self):
-        if not self.language in [l[0] for l in settings.LANGUAGES]:
+        if self.language not in [l[0] for l in settings.LANGUAGES]:
             self.language = 'en'
             self.save()
         return self.language
@@ -166,7 +184,13 @@ class Profile(Person):
         if self.hide_in_search:
             self.allow_anonymous_view = False
         else:
-            self.allow_anonymous_view = True
+            self.allow_anonymous_view = get_setting('module', 'users', 'allowanonymoususersearchuser')
+
+        self.allow_user_view =  get_setting('module', 'users', 'allowusersearch')
+        if get_setting('module', 'memberships', 'memberprotection') == 'private':
+            self.allow_member_view = False
+        else:
+            self.allow_member_view = True
 
         super(Profile, self).save(*args, **kwargs)
 
@@ -178,39 +202,73 @@ class Profile(Person):
         except ImportError:
             pass
 
-    # if this profile allows view by user2_compare
+    def allow_search_users(self):
+        """
+        Check if this user can search users.
+        """
+        if self.is_superuser:
+            return True
+
+        # allow anonymous search users
+        if get_setting('module', 'users', 'allowanonymoususersearchuser'):
+            return True
+
+        # allow user search users
+        if get_setting('module', 'users', 'allowusersearch') \
+            and self.user.is_authenticated():
+            return True
+
+        # allow members search users/members
+        if get_setting('module', 'memberships', 'memberprotection') != 'private':
+            if self.user.is_authenticated() and self.user.profile.is_member:
+                return True
+
+        return False
+
     def allow_view_by(self, user2_compare):
-        boo = False
-
-        if user2_compare.is_superuser:
-            boo = True
-        else:
-            if user2_compare == self.user:
-                boo = True
-            else:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        boo = True
-                else:
-                    if user2_compare.has_perm('profiles.view_profile', self):
-                        boo = True
-
-        return boo
-
-    # if this profile allows edit by user2_compare
-    def allow_edit_by(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to view this user.
+        """
+        # user2_compare is superuser
         if user2_compare.is_superuser:
             return True
-        else:
-            if user2_compare == self.user:
+
+        # this user is user2_compare self
+        if user2_compare == self.user:
+            return True
+
+        # user2_compare is creator or owner of this user
+        if (self.creator and self.creator == user2_compare) or \
+            (self.owner and self.owner == user2_compare):
+            if self.status:
                 return True
-            else:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        return True
-                else:
-                    if user2_compare.has_perm('profiles.change_profile', self):
-                        return True
+
+        # user2_compare can search users and has view perm
+        if user2_compare.profile.allow_search_users():
+            if user2_compare.has_perm('profiles.view_profile', self):
+                return True
+
+        # False for everythin else
+        return False
+
+    def allow_edit_by(self, user2_compare):
+        """
+        Check if `user2_compare` is allowed to edit this user.
+        """
+        if user2_compare.is_superuser:
+            return True
+
+        if user2_compare == self.user:
+            return True
+
+        if (self.creator and self.creator == user2_compare) or \
+            (self.owner and self.owner == user2_compare):
+            if self.status:
+                return True
+
+        if user2_compare.has_perm('profiles.change_profile', self):
+            return True
+
         return False
 
     def can_renew(self):
@@ -275,6 +333,9 @@ class Profile(Person):
 
         self.member_number = u''
         if membership:
+            if not membership.member_number:
+                membership.set_member_number()
+                membership.save()
             self.member_number = membership.member_number
 
         self.save()
@@ -294,8 +355,9 @@ class Profile(Person):
 
         max_length = 8
         # the first argument is the class, exclude it
-        un = ' '.join(args[1:])             # concat args into one string
-        un = re.sub('\s+', '_', un)       # replace spaces w/ underscores
+        un = ''.join(args[1:])             # concat args into one string
+        un =  un.lower()
+        un = re.sub('\s+', '', un)       # remove spaces
         un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
@@ -311,7 +373,7 @@ class Profile(Person):
             # to kill the database username max field length
             un = '%s%s' % (un, str(max(others) + 1))
 
-        return un.lower()
+        return un
 
     @classmethod
     def get_or_create_user(cls, **kwargs):
@@ -394,6 +456,37 @@ class Profile(Person):
             if role in self.roles():
                 return role
 
+    def getMD5(self):
+        m = hashlib.md5()
+        m.update(self.user.email)
+        return m.hexdigest()
+
+    def get_gravatar_url(self, size):
+        # Use old avatar, if exists, as the default
+        default = ''
+        if get_setting('module', 'users', 'useoldavatarasdefault'):
+            c = connection.cursor()
+            try:
+                c.execute("select avatar from avatar_avatar where \"primary\"='t' and user_id=%d" % self.user.id)
+                row = c.fetchone()
+                if row and os.path.exists(os.path.join(settings.MEDIA_ROOT, row[0])):
+                    default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
+                                       settings.MEDIA_URL,
+                                       row[0])
+            except ProgrammingError:
+                pass
+
+            c.close()
+
+        if not default:
+            default = '%s%s%s' %  (get_setting('site', 'global', 'siteurl'),
+                                   getattr(settings, 'STATIC_URL', ''),
+                                   settings.GAVATAR_DEFAULT_URL)
+
+        gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
+        gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+        return gravatar_url
+
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(
@@ -456,4 +549,3 @@ class UserImportData(BaseImportData):
 
     class Meta:
         app_label = 'profiles'
-

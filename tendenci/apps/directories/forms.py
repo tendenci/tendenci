@@ -9,14 +9,16 @@ from django.forms.utils import ErrorList
 from django.template.defaultfilters import filesizeformat
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
-from tinymce.widgets import TinyMCE
+from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.base.fields import SplitDateTimeField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
@@ -39,9 +41,8 @@ request_duration_defaults = {
 
 SEARCH_CATEGORIES = (
     ('', _('-- SELECT ONE --') ),
-    ('id', _('Directory ID')),
-    ('body', _('Body')),
-    ('headline', _('Headline')),
+    ('headline', _('Name')),
+    ('body', _('Description')),
     ('city', _('City')),
     ('state', _('State')),
     ('tags', _('Tags')),
@@ -65,8 +66,14 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
                              )
     search_category = forms.ChoiceField(label=_('Search By'),
                                         choices=SEARCH_CATEGORIES_ADMIN, required=False)
-    category = CategoryField(label=_('All Categories'), choices=[], required=False)
-    sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
+    cat = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=DirectoryCategory.objects.filter(parent=None),
+                                      empty_label="-----------",
+                                      required=False)
+    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
+                                          queryset=DirectoryCategory.objects.none(),
+                                          empty_label=_("Subcategories"),
+                                          required=False)
     q = forms.CharField(required=False)
     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
                                         required=False, initial='exact')
@@ -78,15 +85,19 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
 
-        categories, sub_categories = Directory.objects.get_categories()
-
-        categories = [(cat.pk, cat) for cat in categories]
-        categories.insert(0, ('', _('All Categories (%d)' % len(categories))))
-        sub_categories = [(cat.pk, cat) for cat in sub_categories]
-        sub_categories.insert(0, ('', _('All Subcategories (%d)' % len(sub_categories))))
-
-        self.fields['category'].choices = categories
-        self.fields['sub_category'].choices = sub_categories
+        # setup categories
+        categories = DirectoryCategory.objects.filter(parent__isnull=True)
+        categories_count = categories.count()
+        self.fields['cat'].queryset = categories
+        self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
+        data = args[0]
+        if data:
+            cat = data.get('cat', None)
+            if cat:
+                sub_categories = DirectoryCategory.objects.filter(parent=cat)
+                sub_categories_count = sub_categories.count()
+                self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_categories_count})
+                self.fields['sub_cat'].queryset = sub_categories
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -94,7 +105,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         cat = self.cleaned_data.get('search_category', None)
 
         if cat is None or cat == "" :
-            if not (q is None or q == ""):
+            if not (q is None or q == "" or 'tag:' in q):
                 self._errors['search_category'] =  ErrorList(['Select a category'])
 
         if cat in ('id', 'owner__id', 'creator__id') :
@@ -107,7 +118,7 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
 
 
 class DirectoryForm(TendenciBaseForm):
-    body = forms.CharField(required=False,
+    body = forms.CharField(label=_("Description"), required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.model_name.lower()}))
@@ -134,6 +145,15 @@ class DirectoryForm(TendenciBaseForm):
 
     pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
                     **request_duration_defaults)
+
+    cat = forms.ModelChoiceField(label=_("Category"),
+                                      queryset=DirectoryCategory.objects.filter(parent=None),
+                                      empty_label="-----------",
+                                      required=False)
+    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
+                                          queryset=DirectoryCategory.objects.none(),
+                                          empty_label=_("Please choose a category first"),
+                                          required=False)
 
     class Meta:
         model = Directory
@@ -172,6 +192,8 @@ class DirectoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
+            'cat',
+            'sub_cat',
             'status_detail',
         )
 
@@ -222,11 +244,80 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
+                      (_('Category'), {
+                        'fields': ['cat',
+                                   'sub_cat'
+                                   ],
+                        'classes': ['boxy-grey job-category'],
+                      }),
                      (_('Administrator Only'), {
                       'fields': ['syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+    def __init__(self, *args, **kwargs):
+        super(DirectoryForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if self.user.profile.is_superuser:
+                self.fields['status_detail'].choices = (('active',_('Active')),
+                                                        ('inactive',_('Inactive')),
+                                                        ('pending',_('Pending')),
+                                                        ('paid - pending approval', _('Paid - Pending Approval')),)
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+
+        if self.instance.logo:
+            self.initial['logo'] = self.instance.logo
+
+        if not self.user.profile.is_superuser:
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+        if 'payment_method' in self.fields:
+            self.fields['payment_method'] = forms.ChoiceField(widget=forms.RadioSelect, choices=get_payment_method_choices(self.user))
+        if 'pricing' in self.fields:
+            self.fields['pricing'].choices = get_duration_choices(self.user)
+
+        self.fields['timezone'].initial = settings.TIME_ZONE
+
+        # cat and sub_cat
+        if self.user.profile.is_superuser:
+            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+                                        reverse('admin:directories_category_changelist'),
+                                        _('Manage Categories'),))
+        if self.instance and self.instance.pk:
+            self.fields['sub_cat'].queryset = DirectoryCategory.objects.filter(
+                                                        parent=self.instance.cat)
+        if args:
+            post_data = args[0]
+        else:
+            post_data = None
+        if post_data:
+            cat = post_data.get('cat', '0')
+            if cat and cat != '0' and cat != u'':
+                cat = DirectoryCategory.objects.get(pk=int(cat))
+                self.fields['sub_cat'].queryset = DirectoryCategory.objects.filter(parent=cat)
+
+        # expiration_dt = activation_dt + requested_duration
+        fields_to_pop = ['expiration_dt']
+        if not self.user.profile.is_superuser:
+            fields_to_pop += [
+                'slug',
+                'entity',
+                'allow_anonymous_view',
+                'user_perms',
+                'member_perms',
+                'group_perms',
+                'post_dt',
+                'activation_dt',
+                'syndicate',
+                'status_detail'
+            ]
+
+        for f in list(set(fields_to_pop)):
+            if f in self.fields:
+                self.fields.pop(f)
 
     def clean_syndicate(self):
         """
@@ -266,63 +357,12 @@ class DirectoryForm(TendenciBaseForm):
                 logo = None
 
         return logo
-    
-    def clean_headline(self):
-        """
-        remove extra leading and trailing white spaces
-        """
-        return self.cleaned_data.get('headline', '').strip()
 
     def clean_headline(self):
         """
         remove extra leading and trailing white spaces
         """
         return self.cleaned_data.get('headline', '').strip()
-
-    def __init__(self, *args, **kwargs):
-        super(DirectoryForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            if self.user.profile.is_superuser:
-                self.fields['status_detail'].choices = (('active',_('Active')),
-                                                        ('inactive',_('Inactive')),
-                                                        ('pending',_('Pending')),
-                                                        ('paid - pending approval', _('Paid - Pending Approval')),)
-        else:
-            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
-
-        if self.instance.logo:
-            self.initial['logo'] = self.instance.logo
-
-        if not self.user.profile.is_superuser:
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
-
-        if self.fields.has_key('payment_method'):
-            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        if self.fields.has_key('pricing'):
-            self.fields['pricing'].choices = get_duration_choices(self.user)
-
-        self.fields['timezone'].initial = settings.TIME_ZONE
-
-        # expiration_dt = activation_dt + requested_duration
-        fields_to_pop = ['expiration_dt']
-        if not self.user.profile.is_superuser:
-            fields_to_pop += [
-                'slug',
-                'entity',
-                'allow_anonymous_view',
-                'user_perms',
-                'member_perms',
-                'group_perms',
-                'post_dt',
-                'activation_dt',
-                'syndicate',
-                'status_detail'
-            ]
-
-        for f in list(set(fields_to_pop)):
-            if f in self.fields:
-                self.fields.pop(f)
 
     def save(self, *args, **kwargs):
         from tendenci.apps.files.models import File
@@ -332,7 +372,7 @@ class DirectoryForm(TendenciBaseForm):
                 app_label=Directory._meta.app_label,
                 model=Directory._meta.model_name)
 
-        if self.cleaned_data.has_key('pricing'):
+        if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
 
         if self.cleaned_data['logo']:
@@ -344,6 +384,8 @@ class DirectoryForm(TendenciBaseForm):
                     'object_id': directory.pk,
                     'is_public': directory.allow_anonymous_view,
                     'tags': directory.tags,
+                    'creator': self.user,
+                    'owner': self.user,
                 })
 
             directory.logo_file = file_object
@@ -413,14 +455,14 @@ class DirectoryRenewForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(DirectoryRenewForm, self).__init__(*args, **kwargs)
 
-        if self.fields.has_key('payment_method'):
+        if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        if self.fields.has_key('pricing'):
+        if 'pricing' in self.fields:
             self.fields['pricing'].choices = get_duration_choices(self.user)
 
     def save(self, *args, **kwargs):
         directory = super(DirectoryRenewForm, self).save(*args, **kwargs)
-        if self.cleaned_data.has_key('pricing'):
+        if 'pricing' in self.cleaned_data:
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory
 
@@ -442,4 +484,3 @@ class DirectoryExportForm(forms.Form):
     export_format = forms.CharField(widget=forms.HiddenInput(), initial='csv')
     export_status_detail = forms.ChoiceField(choices=STATUS_DETAIL_CHOICES, required=False)
     export_fields = forms.ChoiceField(choices=EXPORT_FIELD_CHOICES)
-

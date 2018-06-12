@@ -18,11 +18,12 @@ from django.core.urlresolvers import reverse
 from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
-from tinymce import models as tinymce_models
+from tendenci.libs.tinymce import models as tinymce_models
 
 #from completion import AutocompleteProvider, site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipApp,
@@ -31,7 +32,9 @@ from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
                                                         LABEL_MAX_LENGTH)
 from tendenci.apps.corporate_memberships.managers import (
                                                 CorpMembershipManager,
-                                                CorpMembershipAppManager)
+                                                CorpMembershipAppManager,
+                                                CorpProfileManager,
+                                                CorpMembershipTypeManager)
 #from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.payments.models import PaymentMethod, Payment
@@ -40,7 +43,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.base.fields import DictField, CountrySelectField
 
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access
+from tendenci.apps.base.utils import send_email_notification, fieldify, get_salesforce_access, correct_filename
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.corporate_memberships.utils import (
                                             corp_membership_update_perms,
@@ -51,6 +54,10 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
 from tendenci.apps.events.models import Event, Registrant
+from tendenci.apps.base.utils import truncate_words
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.files.models import File
+from tendenci.apps.user_groups.models import Group
 
 
 FIELD_CHOICES = (
@@ -89,8 +96,8 @@ SIZE_CHOICES = (
                 ('l', _('Large')),
                 )
 NOTICE_TYPES = (
-    ('approve_join', _('Approval Date')),
-    ('disapprove_join', _('Disapproval Date')),
+    ('approve_join', _('Join Approval Date')),
+    ('disapprove_join', _('Join Disapproval Date')),
     ('approve_renewal', _('Renewal Approval Date')),
     ('disapprove_renewal', _('Renewal Disapproval Date')),
     ('expiration', _('Expiration Date')),
@@ -112,30 +119,33 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         help_text=_("Bind individual memberships to this membership type."))
     admin_only = models.BooleanField(_('Admin Only'), default=False)
 
-    apply_threshold = models.BooleanField(_('Allow Threshold'), default=False)
-    individual_threshold = models.IntegerField(_('Threshold Limit'),
+    apply_cap = models.BooleanField(_('Apply cap'),
+                                    help_text=_('If checked, specify the membership cap below.'),
+                                    default=False)
+    membership_cap = models.IntegerField(_('Membership cap'),
                                                default=0,
                                                blank=True,
-                                               null=True)
-    individual_threshold_price = models.DecimalField(
-                                 _('Threshold Price'),
-                                 max_digits=15,
-                                 decimal_places=2,
-                                 blank=True,
-                                 null=True,
-                                 default=0,
-                                 help_text=_(
-"""All individual members applying under or equal to the threshold limit
-receive the threshold prices. Additional employees can join but will be
-charged the full individual corporate membership rate.
-"""))
-                                
+                                               null=True,
+                                               help_text=_('The maximum number of employees allowed.'))
+    allow_above_cap = models.BooleanField(_('Allow above cap'),
+                                    help_text=_('If Apply cap is checked, check this box to allow additional members to join above cap.'),
+                                    default=False)
+    above_cap_price = models.DecimalField(_('Price if join above cap'), max_digits=15,
+                                          decimal_places=2,
+                                          default=0,
+                                          blank=True,
+                                          null=True,
+                                          help_text=_('Price for members who join above cap.'))
+
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
 
+    objects = CorpMembershipTypeManager()
 
     class Meta:
+        verbose_name = _("Corporate Membership Type")
+        verbose_name_plural = _("Corporate Membership Types")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
@@ -144,9 +154,17 @@ charged the full individual corporate membership rate.
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+
+            # assign position
+            [last] = CorporateMembershipType.objects.all().order_by('-position')[:1] or [None]
+            if last and last.position:
+                self.position = int(last.position) + 1
+            else:
+                self.position = 1
+                
         super(CorporateMembershipType, self).save(*args, **kwargs)
 
-    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
         Examples:
@@ -159,11 +177,12 @@ charged the full individual corporate membership rate.
                                         join_dt=membership.join_dt,
                                         renew_dt=membership.renew_dt)
         """
-        return self.membership_type.get_expiration_dt(renewal=renewal, join_dt=join_dt, renew_dt=renew_dt)
+        return self.membership_type.get_expiration_dt(renewal=renewal, join_dt=join_dt, renew_dt=renew_dt, previous_expire_dt=previous_expire_dt)
 
 
 class CorpProfile(TendenciBaseModel):
     guid = models.CharField(max_length=50)
+    logo = models.ForeignKey(File, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('Address'), max_length=150,
                                blank=True, default='')
@@ -185,8 +204,9 @@ class CorpProfile(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True,
                                    default='')
 
-    industry = models.ForeignKey(Industry, blank=True, null=True)
-    region = models.ForeignKey(Region, blank=True, null=True)
+    parent_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     number_employees = models.IntegerField(default=0)
     chapter = models.CharField(_('Chapter'), max_length=150,
                                blank=True, default='')
@@ -222,19 +242,53 @@ class CorpProfile(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")
+    objects = CorpProfileManager()
 
     class Meta:
+        verbose_name = _("Corporate Member Profile")
+        verbose_name_plural = _("Corporate Member Profiles")
         app_label = 'corporate_memberships'
 
     def save(self, *args, **kwargs):
         if not self.guid:
             self.guid = str(uuid.uuid1())
         if not self.entity:
-                self.entity_id = 1
+            # create an entity
+            entity = Entity.objects.create(
+                    entity_name=self.name,
+                    entity_parent = self.parent_entity,
+                    email=self.email,
+                    allow_anonymous_view=False)
+            self.entity = entity
+        else:
+            if self.name != self.entity.entity_name and self.entity.id != 1:
+                self.entity.entity_name = self.name
+                self.entity.save()
+                
+        if not self.parent_entity:
+            if self.entity.entity_parent:
+                self.parent_entity = self.entity.entity_parent
+            else:
+                self.parent_entity = Entity.objects.first()
+
         super(CorpProfile, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s" % (self.name)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.view_profile', [self.pk])
+
+    def delete(self, *args, **kwargs):
+        if len(self.name) + len(str(self.pk)) >= 250:
+            self.name = '%s-%s' % (self.name[:250-len(str(self.pk))], self.pk)
+        else:
+            self.name = '%s-%s' % (self.name, self.pk)
+        super(CorpProfile, self).delete(*args, **kwargs)
 
     def assign_secret_code(self):
         if not self.secret_code:
@@ -293,16 +347,33 @@ class CorpProfile(TendenciBaseModel):
                 return True
         return False
 
+    def get_logo_url(self):
+        if not self.logo:
+            return u''
+
+        return reverse('file', args=[self.logo.pk])
+    
+    def get_member_rep(self):
+        [rep] = self.reps.filter(is_member_rep=True)[:1] or [None]
+        return rep
+
+    def get_dues_rep(self):
+        [rep] = self.reps.filter(is_dues_rep=True)[:1] or [None]
+        return rep
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     corp_profile = models.ForeignKey("CorpProfile",
                                      related_name='corp_memberships')
     corporate_membership_type = models.ForeignKey("CorporateMembershipType",
-                                    verbose_name=_("MembershipType"))
+                                    verbose_name=_("MembershipType"),
+                                    null=True,
+                                    on_delete=models.SET_NULL)
     renewal = models.BooleanField(default=False)
+    renew_from_id = models.IntegerField(blank=True, null=True)
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     join_dt = models.DateTimeField(_("Join Date Time"))
     expiration_dt = models.DateTimeField(_("Expiration Date Time"),
                                          blank=True, null=True)
@@ -312,14 +383,16 @@ class CorpMembership(TendenciBaseModel):
                                               null=True)
     approved_denied_user = models.ForeignKey(User,
                                      verbose_name=_("Approved or Denied User"),
-                                     null=True)
+                                     null=True,
+                                     on_delete=models.SET_NULL)
     payment_method = models.ForeignKey(PaymentMethod,
                                        verbose_name=_("Payment Method"),
-                                       null=True, default=None)
+                                       null=True, default=None,
+                                       on_delete=models.SET_NULL)
 
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
 
-    anonymous_creator = models.ForeignKey('Creator', null=True)
+    anonymous_creator = models.ForeignKey('Creator', null=True, on_delete=models.SET_NULL)
     admin_notes = models.TextField(_('Admin notes'),
                                blank=True, null=True)
     total_passes_allowed = models.PositiveIntegerField(_('Total Passes Allowed'),
@@ -348,8 +421,8 @@ class CorpMembership(TendenciBaseModel):
                                               'corporate_memberships',
                                               'label_plural')
         else:
-            verbose_name = _("Corporate Member")
-            verbose_name_plural = _("Corporate Members")
+            verbose_name = _("Corporate Membership")
+            verbose_name_plural = _("Corporate Memberships")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
@@ -381,7 +454,7 @@ class CorpMembership(TendenciBaseModel):
         if not self.guid:
             self.guid = str(uuid.uuid1())
         if not self.entity:
-                self.entity_id = 1
+            self.entity = self.corp_profile.entity
         self.allow_anonymous_view = False
         super(CorpMembership, self).save(*args, **kwargs)
 
@@ -440,7 +513,7 @@ class CorpMembership(TendenciBaseModel):
                 filter_and = {'status': True,
                           'status_detail': 'active'}
         else:
-            if user.profile.is_superuser:
+            if user.profile.is_superuser or  has_perm(user, 'corporate_memberships.view_corpmembership'):
                 return None, None
 
             allow_anonymous_search = get_setting('module',
@@ -525,10 +598,9 @@ class CorpMembership(TendenciBaseModel):
                                 ).order_by('corp_profile__name')
         choices = [(0, _('Select One'))]
         choices.extend([
-                        (value[0], value[1]) for value in corp_members
+                        (value[0], truncate_words(value[1], 10)) for value in corp_members
                                               ])
         return choices
-
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -591,7 +663,7 @@ class CorpMembership(TendenciBaseModel):
 
             for name, value in items.iteritems():
                 if hasattr(value, 'all'):
-                    items[name] = ', '.join([item.__unicode__() \
+                    items[name] = ', '.join([item.__unicode__()
                                              for item in value.all()])
         return items
 
@@ -684,7 +756,8 @@ class CorpMembership(TendenciBaseModel):
             payment.payments_pop_by_invoice_user(user,
                         self.invoice, self.invoice.guid)
             payment.mark_as_paid()
-            payment.method = self.get_payment_method()
+            payment_method = self.get_payment_method()
+            payment.method = payment_method and payment_method.machine_name or ''
             payment.save(user)
 
             # this will make accounting entry
@@ -798,11 +871,18 @@ class CorpMembership(TendenciBaseModel):
             self.status = True
             self.status_detail = 'active'
             # calculate the expiration date
+            if self.renew_from_id:
+                [previous_expire_dt] = CorpMembership.objects.filter(
+                                            id=self.renew_from_id).values_list(
+                                            'expiration_dt', flat=True)[:1] or [None]
+            else:
+                previous_expire_dt = None
             corp_memb_type = self.corporate_membership_type
             self.expiration_dt = corp_memb_type.get_expiration_dt(
                                             renewal=True,
                                             join_dt=self.join_dt,
-                                            renew_dt=self.renew_dt)
+                                            renew_dt=self.renew_dt,
+                                            previous_expire_dt=previous_expire_dt)
             if not request_user.is_anonymous():
                 self.owner = request_user
                 self.owner_username = request_user.username
@@ -837,6 +917,9 @@ class CorpMembership(TendenciBaseModel):
                 new_membership.save()
                 # archive old memberships
                 new_membership.archive_old_memberships()
+
+                # show member_number on profile
+                new_membership.profile_refresh_member_number()
 
                 # check and add member to the group if not exist
                 [gm] = GroupMembership.objects.filter(group=group,
@@ -1011,6 +1094,8 @@ class CorpMembership(TendenciBaseModel):
         if self.is_active or self.is_expired:
             if this_user.profile.is_superuser:
                 return True
+            if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
+                return True
 
             if not this_user.is_anonymous():
                 if self.is_active:
@@ -1059,7 +1144,7 @@ class CorpMembership(TendenciBaseModel):
             typical corporate membership emails.
         Returns outcome via boolean.
         """
-        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True) | (Q(is_member_rep=True)))
 
         return Notice.send_notice(
             request=request,
@@ -1100,6 +1185,20 @@ class CorpMembership(TendenciBaseModel):
     @property
     def is_archive(self):
         return self.status_detail.lower() in ('archive',)
+
+    def get_latest_renewed(self):
+        """
+        Get the latest renewed corpMembership.
+        """
+        if self.is_archive:
+            [latest_renewed] = CorpMembership.objects.filter(
+                                    corp_profile=self.corp_profile,
+                                    expiration_dt__gt=self.expiration_dt,
+                                    status_detail='active'
+                                    ).order_by('-expiration_dt')[:1] or [None]
+            return latest_renewed
+
+        return None
 
     @property
     def is_in_grace_period(self):
@@ -1144,7 +1243,79 @@ class CorpMembership(TendenciBaseModel):
                         corp_profile_id=self.corp_profile.id,
                         status=True
                             ).exclude(
-                        status_detail='archive').count()
+                        status_detail__in=['archive', 'expired']).count()
+
+    def get_cap_info(self):
+        """
+        Return a tuple of (apply_cap, membership_cap)
+        """
+        corp_type = self.corporate_membership_type
+        return (corp_type.apply_cap, corp_type.membership_cap, corp_type.allow_above_cap, corp_type.above_cap_price)
+
+    def is_cap_reached(self, num_exclude=0):
+        apply_cap, cap,  = self.get_cap_info()[:2]
+
+        return apply_cap and self.members_count - num_exclude >= cap
+
+    def get_above_cap_price(self, num_exclude=0):
+        """
+        get the above cap price for individual memberships.
+        return tuple (apply_above_cap, above_cap_price)
+        """
+        corporate_type = self.corporate_membership_type
+        if corporate_type.apply_cap and self.is_cap_reached(num_exclude=num_exclude):
+            if corporate_type.allow_above_cap:
+                return True, corporate_type.above_cap_price
+
+        return False, None
+
+    def email_reps_cap_reached(self):
+        """
+        Email corporate reps and admin about the cap has been reached.
+        """
+        from tendenci.apps.emails.models import Email
+        # email to reps
+        email_sent_to_reps = False
+        reps = self.corp_profile.reps.all()
+        email_context = {'corp_membership': self,
+                         'corp_profile': self.corp_profile,
+                         'corp_membership_type': self.corporate_membership_type,
+                         'currency_symbol': get_setting('site', 'global', 'currencysymbol'),
+                         'site_url': get_setting('site', 'global', 'siteurl'),
+                         'site_display_name': get_setting('site', 'global', 'sitedisplayname'),
+                         'view_link': self.get_absolute_url(),
+                         'roster_link': "%s?cm_id=%s" % (reverse('corpmembership.roster_search'), self.id),
+                         'upgrade_link': reverse('corpmembership.upgrade', args=[self.id])}
+        membership_recipients = get_setting('module', 'memberships', 'membershiprecipients')
+
+        if reps:
+            email_context['to_reps'] =  True
+            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = subject.strip('\n').strip('\r')
+            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            email = Email()
+            email.subject = subject
+            email.body = body
+            email.recipient = [rep.user.email for rep in reps]
+            email.reply_to = membership_recipients
+            email.content_type = 'html'
+            email.send()
+            email_sent_to_reps = True
+
+        # email to site admins
+        if membership_recipients:
+            email_context['to_reps'] =  False
+            subject = render_to_string('notification/corp_memb_cap_reached/short.txt', email_context)
+            subject = "Admin: " + subject.strip('\n').strip('\r')
+            body = render_to_string('notification/corp_memb_cap_reached/full.html', email_context)
+            email = Email()
+            email.subject = subject
+            email.body = body
+            email.recipient = membership_recipients
+            email.content_type = 'html'
+            email.send()
+
+        return email_sent_to_reps
 
 
 class FreePassesStat(TendenciBaseModel):
@@ -1156,7 +1327,7 @@ class FreePassesStat(TendenciBaseModel):
 
     class Meta:
         app_label = 'corporate_memberships'
- 
+
     def set_creator_owner(self, request_user):
         if request_user and not request_user.is_anonymous():
             self.creator = request_user
@@ -1171,18 +1342,22 @@ class CorpMembershipApp(TendenciBaseModel):
     slug = models.SlugField(_("URL Path"), max_length=155, unique=True)
     corp_memb_type = models.ManyToManyField("CorporateMembershipType",
                                             verbose_name=_("Corp. Memb. Type"))
+    parent_entities = models.ManyToManyField(Entity,
+            verbose_name=_("Parent Entities"),
+            blank=True,
+            help_text=_('Specify a list of parent entities to select.'),)
     authentication_method = models.CharField(_("Authentication Method"),
                                              choices=AUTH_METHOD_CHOICES,
                                     default='admin', max_length=50,
-                                    help_text=_('Define a method for ' + \
-                                    'individuals to be bound to their' + \
+                                    help_text=_('Define a method for ' +
+                                    'individuals to be bound to their' +
                                     ' corporate memberships when signing up.'))
     description = tinymce_models.HTMLField(_("Description"),
                                     blank=True, null=True,
-                                   help_text=_('Will display at the top of ' + \
+                                   help_text=_('Will display at the top of ' +
                                    'the application form.'))
     notes = models.TextField(_("Notes"), blank=True, null=True,
-                                   help_text=_('Notes for editor. ' + \
+                                   help_text=_('Notes for editor. ' +
                                    'Will not display on the application form.'))
     confirmation_text = models.TextField(_("Confirmation Text"),
                                          blank=True, null=True)
@@ -1197,12 +1372,21 @@ class CorpMembershipApp(TendenciBaseModel):
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
+    
+    dues_reps_group = models.ForeignKey(Group, null=True,
+        related_name='dues_reps_group',
+        on_delete=models.SET_NULL,
+        help_text=_("Dues reps will be added to this group"))
+    member_reps_group = models.ForeignKey(Group, null=True,
+        related_name='member_reps_group',
+        on_delete=models.SET_NULL,
+        help_text=_("Member reps will be added to this group"))
 
     objects = CorpMembershipAppManager()
 
     class Meta:
         verbose_name = _("Corporate Membership Application")
-        verbose_name_plural = _("Corporate Membership Applications")
+        verbose_name_plural = _("Corporate Membership Application")
         ordering = ('name',)
         app_label = 'corporate_memberships'
 
@@ -1231,6 +1415,12 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.use_for_corp = True
             self.memb_app.save()
 
+        if self.is_current():
+            if not self.dues_reps_group:
+                self.add_dues_reps_group()
+            if not self.member_reps_group:
+                self.add_member_reps_group()
+
     def application_form_link(self):
         if self.is_current():
             return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
@@ -1238,6 +1428,58 @@ class CorpMembershipApp(TendenciBaseModel):
         return '--'
 
     application_form_link.allow_tags = True
+    
+    def _add_reps_group(self, **kwargs):
+        return Group.objects.create(
+                    name=kwargs.get('name'),
+                    label=kwargs.get('name'),
+                    slug=kwargs.get('slug'),
+                    type='system_generated',
+                    show_as_option=False,
+                    allow_self_add=False,
+                    allow_self_remove=False,
+                    allow_anonymous_view=False,
+                    allow_user_view=False,
+                    allow_member_view=False,
+                    sync_newsletters=True,
+                    description=kwargs.get('description'),
+                    notes=kwargs.get('description'),
+                    creator=self.creator,
+                    creator_username=self.creator_username,
+                    owner=self.owner,
+                    owner_username=self.owner_username)
+    
+    def add_dues_reps_group(self):
+        if self.is_current():
+            if not self.dues_reps_group:
+                [corp_app] = CorpMembershipApp.objects.filter(dues_reps_group__isnull=False)[:1] or [None]
+                if corp_app:
+                    # only support on corp app currently, so just take over the dues_reps_group
+                    self.dues_reps_group = corp_app.dues_reps_group
+                else:
+                    group = self._add_reps_group(**{
+                         'name': _('Corporate Memberships: Dues Reps'),
+                         'slug': self.slug[:90] + '-dues-reps',
+                         'description': _('Auto-generated with the corp app. Used for dues reps only'),
+                         })
+                    self.dues_reps_group = group
+                self.save()
+
+    def add_member_reps_group(self):
+        if self.is_current():
+            if not self.member_reps_group:
+                [corp_app] = CorpMembershipApp.objects.filter(member_reps_group__isnull=False)[:1]  or [None]
+                if corp_app:
+                    # only support on corp app currently, so just take over the member_reps_group
+                    self.member_reps_group = corp_app.member_reps_group
+                else:
+                    group = self._add_reps_group(**{
+                         'name': _('Corporate Memberships: Member Reps'),
+                         'slug': self.slug[:88] + '-member-reps',
+                         'description': _('Auto-generated with the corp app. Used for member reps only'),
+                         })
+                    self.member_reps_group = group
+                self.save()        
 
 
 class CorpMembershipAppField(OrderingBaseModel):
@@ -1299,8 +1541,8 @@ class CorpMembershipAppField(OrderingBaseModel):
                                    default='')
 
     class Meta:
-        verbose_name = _("Field")
-        verbose_name_plural = _("Fields")
+        verbose_name = _("Membership Application Field")
+        verbose_name_plural = _("Membership Application Fields")
         ordering = ('position',)
         app_label = 'corporate_memberships'
 
@@ -1331,7 +1573,10 @@ class CorpMembershipAppField(OrderingBaseModel):
             if field_class == 'CountrySelectField':
                 field_class = CountrySelectField
             else:
-                field_class = getattr(forms, field_class)
+                if self.field_name in ['tax_exempt'] and not self.choices:
+                    field_class = forms.BooleanField
+                else:
+                    field_class = getattr(forms, field_class)
             field_args = {"label": self.label,
                           "required": self.required,
                           'help_text': self.help_text}
@@ -1347,8 +1592,11 @@ class CorpMembershipAppField(OrderingBaseModel):
                 if self.field_name not in [
                             'corporate_membership_type',
                             'payment_method']:
-                    choices = self.choices.split(",")
-                    field_args["choices"] = zip(choices, choices)
+                    if self.choices == 'yesno':
+                        field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
+                    else:
+                        choices = self.choices.split(",")
+                        field_args["choices"] = zip(choices, choices)
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
@@ -1367,8 +1615,8 @@ class CorpMembershipAppField(OrderingBaseModel):
         """
         available_field_types = [choice[0] for choice in
                                 FIELD_CHOICES]
-        corp_profile_fields = dict([(field.name, field) \
-                        for field in CorpProfile._meta.fields \
+        corp_profile_fields = dict([(field.name, field)
+                        for field in CorpProfile._meta.fields
                         if field.get_internal_type() != 'AutoField'])
         fld = None
         field_type = 'CharField'
@@ -1376,7 +1624,7 @@ class CorpMembershipAppField(OrderingBaseModel):
         if field_name in corp_profile_fields:
             fld = corp_profile_fields[field_name]
         if not fld:
-            corp_memb_fields = dict([(field.name, field) \
+            corp_memb_fields = dict([(field.name, field)
                             for field in CorpMembership._meta.fields])
 
             if field_name in corp_memb_fields:
@@ -1384,7 +1632,7 @@ class CorpMembershipAppField(OrderingBaseModel):
 
         if fld:
             field_type = fld.get_internal_type()
-            if not field_type in available_field_types:
+            if field_type not in available_field_types:
                 if field_type in ['ForeignKey', 'OneToOneField']:
                     field_type = 'ChoiceField'
                 elif field_type in ['ManyToManyField']:
@@ -1412,11 +1660,47 @@ class CorpMembershipRep(models.Model):
                                     default=True, blank=True)
 
     class Meta:
+        verbose_name = _("Corporate Membership Representative")
+        verbose_name_plural = _("Corporate Membership Representatives")
         unique_together = (("corp_profile", "user"),)
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
+    
+    def save(self, *args, **kwargs):
+        super(CorpMembershipRep, self).save(*args, **kwargs)
+        self.sync_reps_groups()
+        
+    def delete(self, *args, **kwargs):
+        super(CorpMembershipRep, self).delete(*args, **kwargs)
+        self.remove_from_reps_groups()
+
+    def sync_reps_groups(self):
+        corp_app = CorpMembershipApp.objects.current_app()
+        if corp_app.dues_reps_group:
+            if self.is_dues_rep and not corp_app.dues_reps_group.is_member(self.user):
+                corp_app.dues_reps_group.add_user(self.user, **{
+                    'creator_id': corp_app.creator and corp_app.creator.id,
+                    'creator_username': corp_app.creator and corp_app.creator.username,
+                    'owner_id': corp_app.creator and corp_app.owner.id,
+                    'owner_username': corp_app.creator and corp_app.owner.username})
+        if corp_app.member_reps_group:
+            if self.is_member_rep and not corp_app.member_reps_group.is_member(self.user):
+                corp_app.member_reps_group.add_user(self.user, **{
+                    'creator_id': corp_app.creator and corp_app.creator.id,
+                    'creator_username': corp_app.creator and corp_app.creator.username,
+                    'owner_id': corp_app.creator and corp_app.owner.id,
+                    'owner_username': corp_app.creator and corp_app.owner.username})
+
+    def remove_from_reps_groups(self):
+        corp_app = CorpMembershipApp.objects.current_app()
+        if corp_app.dues_reps_group:
+            if corp_app.dues_reps_group.is_member(self.user):
+                corp_app.dues_reps_group.remove_user(self.user)
+        if corp_app.member_reps_group:
+            if corp_app.member_reps_group.is_member(self.user):
+                corp_app.member_reps_group.remove_user(self.user)
 
 
 class IndivEmailVerification(models.Model):
@@ -1465,6 +1749,7 @@ class IndivMembershipRenewEntry(models.Model):
 
 
 def get_import_file_path(instance, filename):
+    filename = correct_filename(filename)
     return "imports/corpmemberships/{uuid}/{filename}".format(
                             uuid=uuid.uuid1().get_hex()[:8],
                             filename=filename)
@@ -1550,19 +1835,41 @@ class Creator(models.Model):
 
 
 class Notice(models.Model):
+
+    NOTICE_BEFORE = 'before'
+    NOTICE_AFTER = 'after'
+    NOTICE_ATTIMEOF = 'attimeof'
+
+    NOTICE_CHOICES = (
+        (NOTICE_BEFORE, _('Before')),
+        (NOTICE_AFTER,  _('After')),
+        (NOTICE_ATTIMEOF, _('At Time Of'))
+    )
+
+    CONTENT_TYPE_HTML = 'html'
+
+    CONTENT_TYPE_CHOICES = (
+        (CONTENT_TYPE_HTML, _('HTML')),
+    )
+
+    STATUS_DETAIL_ACTIVE = 'active'
+    STATUS_DETAIL_HOLD = 'admin_hold'
+
+    STATUS_DETAIL_CHOICES = (
+        (STATUS_DETAIL_ACTIVE, 'Active'),
+        (STATUS_DETAIL_HOLD, 'Admin Hold')
+    )
     guid = models.CharField(max_length=50, editable=False)
     notice_name = models.CharField(_("Name"), max_length=250)
     num_days = models.IntegerField(default=0)
-    notice_time = models.CharField(_("Notice Time"), max_length=20,
-                                   choices=(('before', _('Before')),
-                                            ('after', _('After')),
-                                            ('attimeof', _('At Time Of'))))
+    notice_time = models.CharField(_("Notice Time"), max_length=20, choices=NOTICE_CHOICES)
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=False)
     corporate_membership_type = models.ForeignKey(
         "CorporateMembershipType",
         blank=True,
         null=True,
+        on_delete=models.SET_NULL,
         help_text=_("Note that if you \
             don't select a corporate membership type, \
             the notice will go out to all members."
@@ -1570,9 +1877,9 @@ class Notice(models.Model):
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
-                                    choices=(('html', 'HTML'),),
+                                    choices=CONTENT_TYPE_CHOICES,
                                     max_length=10,
-                                    default='html')
+                                    default=CONTENT_TYPE_HTML)
     sender = models.EmailField(max_length=255, blank=True, null=True)
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
@@ -1587,24 +1894,17 @@ class Notice(models.Model):
         User, related_name="corporate_membership_notice_owner",
         null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(
-        choices=(('active', _('Active')), ('admin_hold', _('Admin Hold'))),
-        default='active', max_length=50)
+    status_detail = models.CharField(choices=STATUS_DETAIL_CHOICES,
+                                     default=STATUS_DETAIL_ACTIVE, max_length=50)
     status = models.BooleanField(default=True)
 
     class Meta:
+        verbose_name = _("Member Notice")
+        verbose_name_plural = _("Member Notices")
         app_label = 'corporate_memberships'
 
     def __unicode__(self):
         return self.notice_name
-
-    @property
-    def footer(self):
-        return """
-        This e-mail was generated by Tendenci&reg; Software - a
-        web based membership management software solution
-        www.tendenci.com developed by Schipul - The Web Marketing Company
-        """
 
     def get_default_context(self, corporate_membership=None,
                             recipient=None, **kwargs):
@@ -1703,10 +2003,10 @@ class Notice(models.Model):
 
     def get_content(self, corporate_membership=None, recipient=None, **kwargs):
         """
-        Return self.email_content with self.footer appended
-        and replace shortcode (context) variables
+        Return self.email_content with footer appended and replace shortcode
+        (context) variables
         """
-        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+        content = self.email_content + '\n<br /><br />\n{% include "email_footer.html" %}'
         context = self.get_default_context(corporate_membership, recipient, **kwargs)
 
         return self.build_notice(content, context=context, **kwargs)
@@ -1758,7 +2058,7 @@ class Notice(models.Model):
             'disapprove_renewal',
             'expiration']
 
-        if not notice_type in allowed_notice_types:
+        if notice_type not in allowed_notice_types:
             return False
 
         # recipients list required
@@ -1777,7 +2077,7 @@ class Notice(models.Model):
 
             notice_requirments = (
                 notice.corporate_membership_type == corp_membership_type,
-                notice.corporate_membership_type == None
+                notice.corporate_membership_type is None
             )
 
             if any(notice_requirments):

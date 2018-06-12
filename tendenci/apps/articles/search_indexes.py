@@ -63,5 +63,3 @@ class ArticleIndex(TendenciBaseSearchIndex, indexes.Indexable):
         if not obj.release_dt:
             return obj.create_dt
         return obj.release_dt
-
-
