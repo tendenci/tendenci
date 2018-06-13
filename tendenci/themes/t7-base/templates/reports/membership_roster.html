@@ -11,39 +11,56 @@
 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Current Members Roster" %}</h1>
 
 <div id="member-roster-wrap">
+<table>
 {% for member in members %}
-<div class="member-roster-membership">
-<a href="{{ member.user.profile.get_absolute_url }}">{{ member.user.first_name }} {{ member.user.last_name }}</a><br />
-<strong>{% trans "Member Number" %}:</strong> {{ member.member_number }}<br />
-<strong>{% trans "Membership Type" %}:</strong> {{ member.membership_type }}<br />
-{{ member.user.email }}<br />
-{% if member.user.profile.position_title %}
-    {{ member.user.profile.position_title }}<br />
-{% endif %}
-{% if member.user.profile.company %}
-    {{ member.user.profile.company }}<br />
-{% endif %}
-{% if member.user.profile.phone %}
-    <strong>{% trans "Phone" %}:</strong> {{ member.user.profile.phone }}<br />
-{% endif %}
-{% if member.user.profile.fax %}
-    <strong>{% trans "Fax" %}:</strong> {{ member.user.profile.fax }}<br />
-{% endif %}
-{% if member.user.profile.address %}
-    {{ member.user.profile.address }}<br />
-{% endif %}
-{% if member.user.profile.city %}
-    {{ member.user.profile.city }}<br />
-{% endif %}
-{% if member.user.profile.state %}
-    {{ member.user.profile.state }}<br />
-{% endif %}
-</div>
+	{% if forloop.counter0|divisibleby:2 %}
+		{% if forloop.counter0 > 0 %}
+			</tr>
+		{% endif %}
+		<tr>
+	{% endif %}
+	<td>
+	<div class="member-roster-membership">
+		<a href="{{ member.user.profile.get_absolute_url }}">{% if member.user.first_name or member.user.last_name %}{{ member.user.first_name }} {{ member.user.last_name }}{% else %}{{ member.user.username }}{% endif %}</a><br />
+		<strong>{% trans "Member Number" %}:</strong> {{ member.member_number }}<br />
+		{% with member.user.corpmembershiprep_set.all.0 as rep %}
+		{% if rep %}
+		<strong>{% if rep.is_dues_rep %}{% trans "Dues Rep for: " %}{% else %}{% trans "Contact Rep for: " %}{% endif %}</strong> <a href="{% url 'corpmembership.view_profile' rep.corp_profile.id %}">{{ rep.corp_profile.name }}</a><br />
+		{% else %}
+		<strong>{% trans "Membership Type" %}:</strong> {{ member.membership_type }}<br />
+		{% endif %}
+		{% endwith %}
+		{{ member.user.email }}<br />
+		{% if member.user.profile.position_title %}
+		    {{ member.user.profile.position_title }}<br />
+		{% endif %}
+		{% if member.user.profile.company %}
+		    {{ member.user.profile.company }}<br />
+		{% endif %}
+		{% if member.user.profile.phone %}
+		    <strong>{% trans "Phone" %}:</strong> {{ member.user.profile.phone }}<br />
+		{% endif %}
+		{% if member.user.profile.fax %}
+		    <strong>{% trans "Fax" %}:</strong> {{ member.user.profile.fax }}<br />
+		{% endif %}
+		{% if member.user.profile.address %}
+		    {{ member.user.profile.address }}<br />
+		{% endif %}
+		{% if member.user.profile.city %}
+		    {{ member.user.profile.city }}<br />
+		{% endif %}
+		{% if member.user.profile.state %}
+		    {{ member.user.profile.state }}<br />
+		{% endif %}
+	</div>
+	</td>
 {% empty %}
-<div>
-{% trans "No active members." %}
-</div>
+	<div>
+		{% trans "No active members." %}
+	</div>
 {% endfor %}
+</tr>
+</table>
 </div>
 
 {% endblock content %}
