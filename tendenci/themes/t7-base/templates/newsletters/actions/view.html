@@ -62,8 +62,8 @@
             {% trans 'Newsletter Recipients:' %}
             {% endif %}
           </label>&nbsp;&nbsp;
-          {% if not object.member_only %}
-          <a href="{% url 'groups' %}">{{ object.group }}</a>
+          {% if not object.member_only and object.group  %}
+          <a href="{% url 'group.detail' object.group.slug %}">{{ object.group }}</a>
           {% endif %}
         </p>
       </div>
