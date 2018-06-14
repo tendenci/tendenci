@@ -91,9 +91,10 @@ class WebhooksView(View):
         return super(WebhooksView, self).dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        payload = request.body
+        payload = request.body.decode()
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
         event = None
+        stripe.api_key = settings.STRIPE_SECRET_KEY
 
         try:
             event = stripe.Webhook.construct_event(
