@@ -367,6 +367,8 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         "notice": ugettext(notice_type.display),
         "notices_url": notices_url,
         "current_site": current_site,
+        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
     })
 
     # test for request in the extra_context
