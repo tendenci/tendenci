@@ -801,6 +801,9 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
             exif = img._getexif()
         except (AttributeError, IOError):
             return False
+        
+        if self.exif_data is None:
+            self.exif_data = {}
 
         if exif:
             for tag, value in exif.items():
