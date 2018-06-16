@@ -7,7 +7,7 @@ Setting up discount codes is a quick and painless process which can be applied t
 Enable discounts
 ----------------
 
-Discounts come enabled by default, but check at /full-settings TODO to ensure they are current set to 'enabled'
+Discounts come enabled by default, but check at https://example.com/settings/module/discounts/#id_enabled to ensure they are current set to 'enabled'.
 
 
 Configure discountable apps
@@ -26,9 +26,11 @@ Jobs
 Events
 ^^^^^^
 
+To find the discount option tick 'Enable Registration' and make sure the "Discount eligible" is ticked when creating an Event (ex: https://demo.tendenci.com/events/add/ ).
+
 
 Adding discount codes
 --------------------
 
-Once the applications are configured to allow discounts they will appear in the 'Applications' list when issuing a discount code via https://www.example.com/discounts/add/ .
+Once the applications are configured to allow discounts they will appear in the 'Applications' list when issuing a discount code via https://www.example.com/discounts/add/ . Choose the applications you'd like to apply discounts to when creating the discount code.
 
