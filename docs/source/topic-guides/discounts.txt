@@ -1,0 +1,33 @@
+Discounts
+=========
+
+Setting up discount codes is a quick and painless process which can be applied to several apps within Tendenci.
+
+
+Enable discounts
+----------------
+
+Discounts come enabled by default, but check at https://example.com/settings/module/discounts/#id_enabled to ensure they are current set to 'enabled'.
+
+
+Configure discountable apps
+---------------------------
+
+Next configure the apps you would like to have discounts apply to - some examples below.
+
+Memberships
+^^^^^^^^^^^
+
+Make sure the "Discount eligible" is ticked on the relevant memberships applications (ex: https://www.example.com/admin/memberships/membershipapp/1/).
+
+Events
+^^^^^^
+
+To find the discount option tick 'Enable Registration' and make sure the "Discount eligible" is ticked when creating an Event (ex: https://demo.tendenci.com/events/add/ ).
+
+
+Adding discount codes
+---------------------
+
+Once the applications are configured to allow discounts they will appear in the 'Applications' list when issuing a discount code via https://www.example.com/discounts/add/ . Choose the applications you'd like to apply discounts to when creating the discount code.
+
