@@ -1,6 +1,5 @@
 import os
 import sys
-import subprocess
 
 from fnmatch import fnmatchcase
 from distutils.util import convert_path
@@ -8,10 +7,6 @@ from setuptools import setup, find_packages
 
 from tendenci import __version__ as version
 
-
-def read(*path):
-    return open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                *path)).read()
 
 # Provided as an attribute, so you can append to these instead
 # of replicating them:
@@ -108,22 +103,20 @@ def _read_requirements():
     """Parses the file requirements.txt for pip installation requirements.
     Returns the list of package requirements.
     """
-    with open("requirements.txt") as requirements_file:
-        contents = requirements_file.read()
-        requirements = [line.strip() for line in contents.splitlines()
-                        if _is_requirement(line)]
-    return [req for req in requirements]
+    requirements = []
+    with open("requirements.txt", 'r') as fh:
+        for line in fh:
+            if _is_requirement(line):
+                requirements.append(line.strip().strip('\n'))
+    return requirements
 
 excluded_directories = standard_exclude_directories + ["example", "tests"]
 package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
-DESCRIPTION = "Tendenci - The Open Source Membership Management Software"
+DESCRIPTION = "Tendenci - The Open Source Association Management Software"
 
-LONG_DESCRIPTION = None
-try:
-    LONG_DESCRIPTION = subprocess.check_output(['pandoc', '-f', 'markdown', '-t', 'rst', 'README.md'])
-except:
-    LONG_DESCRIPTION = open('README.md').read()
+with open("README.md", "r") as fh:
+    LONG_DESCRIPTION = fh.read()
 
 setup(
     name='tendenci',
@@ -133,11 +126,12 @@ setup(
     include_package_data=True,
     author='Tendenci',
     author_email='programmers@tendenci.com',
-    url='http://github.com/tendenci/tendenci/',
+    url='https://github.com/tendenci/tendenci/',
     license='GPL3',
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
-    platforms=['any'],
+    long_description_content_type="text/markdown",
+    install_requires=_read_requirements(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
@@ -149,11 +143,10 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
-    install_requires=_read_requirements(),
 )
