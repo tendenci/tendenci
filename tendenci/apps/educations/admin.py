@@ -12,7 +12,7 @@ class EducationAdmin(TendenciBaseModelAdmin):
                     'owner_link', 'admin_perms',
                     'admin_status']
     list_filter = ['status_detail', 'owner_username']
-    search_fields = ['school', 'user']
+    search_fields = ['school', 'user__username', 'user__first_name', 'user__last_name', 'user__email']
     fieldsets = (
         ('', {
             'fields': ('user',
