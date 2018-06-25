@@ -7,3 +7,4 @@ For code style, please follow python [PEP 8](https://www.python.org/dev/peps/pep
 For front-end CSS, please adhere to the [Bootstrap CSS guidelines](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md#css).
 
 To help with the translations, please join us on transifex [https://www.transifex.com/tendenci/tendenci/](https://www.transifex.com/tendenci/tendenci/).
+

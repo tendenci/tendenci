@@ -1,0 +1,40 @@
+Testing changes to Tendenci
+===========================
+
+.. note:: Please consider adding tests if **adding or fixing** code in Tendenci!
+
+Testing during development is done via `Django style
+<https://docs.djangoproject.com/en/2.0/topics/testing/>`_ (Python) `unittest`
+tests.
+
+Testing can be done with the following steps and will test Tendenci as well as
+the basic project.
+
+- Install tendenci per the instructions
+- Change in to the newly created site and run tests with
+
+::
+
+  ./manage.py test --keepdb
+
+If coverage.py (a tool to measure the exposure of your codebase to tests) is
+installed it can also be used to provide reports
+
+::
+
+  coverage run --source='.' manage.py test
+  coverage report
+
+Running with --keepdb is optional but speeds up Tendenci testing a lot due to
+its migration heavy nature but you will need to remove it if you see problems
+while running tests.
+
+--verbosity 2 can be used to increase output during testing.
+
+Writing tests
+-------------
+
+`Django's documentation
+<https://docs.djangoproject.com/en/2.0/intro/tutorial05/>`_ covers writing
+tests and we recommend you look there for guidance.
+
