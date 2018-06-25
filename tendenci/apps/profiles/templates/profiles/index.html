@@ -145,6 +145,7 @@
         <h2>{% trans 'Education History' %}</h2>
         <table>
             {% for education in user_this.educations.all %}
+            {% if education.school or education.major or education.degree or education.graduation_year %}
             <tr>
                 <td width="1%">{% trans 'School' %}:</td>
                 <td width="1%">{{ education.school }}</td>
@@ -157,6 +158,7 @@
                 <td width="1%">{% trans 'Graduation Date' %}:</td>
                 <td width="1%">{{ education.graduation_year }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </table>
     </div>

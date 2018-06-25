@@ -842,14 +842,26 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, app_field_objs, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(EducationForm, self).__init__(*args, **kwargs)
+        self.blank_form = False
         if user:
             self.user = user
         else:
             self.user = None
+
         if app_field_objs:
             assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
         self.keys = self.fields.keys()
+        
+        # If none Education fields are presented on the form, clear fields from the
+        # EducationForm to prevent the existing education data from being wipped out.
+        if app_field_objs.filter(field_name__in=['school1', 'major1', 'degree1', 'graduation_dt1',
+            'school2', 'major2', 'degree2', 'graduation_dt2',
+            'school3', 'major3', 'degree3', 'graduation_dt3',
+            'school4', 'major4', 'degree4', 'graduation_dt4']).count() == 0:
+            self.fields.clear()
+            self.blank_form = True
+            return
 
         if self.user:
             education_list = self.user.educations.all().order_by('pk')[0:4]
@@ -873,6 +885,10 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
         self.add_form_control_class()
 
     def save(self, user):
+        if self.blank_form:
+            # do nothing
+            return
+        
         data = self.cleaned_data
 
         if not self.user: # meaning add
