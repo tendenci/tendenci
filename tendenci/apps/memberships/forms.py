@@ -1442,6 +1442,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     display_name = forms.CharField(initial=u'', required=False)
     company = forms.CharField(initial=u'', required=False)
     position_title = forms.CharField(initial=u'', required=False)
+    education = forms.CharField(label=_('Highest Level of Education'), initial=u'', required=False)
     department = forms.CharField(initial=u'', required=False)
     address = forms.CharField(initial=u'', required=False)
     address2 = forms.CharField(initial=u'', required=False)
@@ -1682,6 +1683,7 @@ class MembershipDefaultForm(TendenciBaseForm):
                 'company',
                 'department',
                 'position_title',
+                'education',
                 'address',
                 'address2',
                 'address_type',
@@ -2030,6 +2032,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             'display_name',
             'company',
             'position_title',
+            'education',
             # 'functional_title',
             'department',
             'address',
