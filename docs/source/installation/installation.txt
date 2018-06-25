@@ -139,6 +139,13 @@ One in Postgres, add a project, user, and password
     ALTER ROLE myprojectuser SET timezone TO 'UTC';
     GRANT ALL PRIVILEGES ON DATABASE myproject TO myprojectuser;
 
+On servers which will run tests, also make the Tendenci user a database
+superuser (this is required to facilitate loading DB extensions in to test
+databases and should not be done unless absolutely required)
+::
+
+    ALTER USER myprojectuser SUPERUSER;
+
 To exit:
 ::
 \q
