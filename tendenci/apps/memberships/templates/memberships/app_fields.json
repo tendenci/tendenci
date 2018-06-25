@@ -154,7 +154,7 @@
     "admin_only": "false"
     },
     {
-    "label": "company",
+    "label": "Company",
     "field_name": "company",
     "display": "true",
     "required": "false",
@@ -164,6 +164,13 @@
     "label": "Position Title",
     "field_name": "position_title",
     "display": "true",
+    "required": "false",
+    "admin_only": "false"
+    },
+    {
+    "label": "Highest Level of Education",
+    "field_name": "education",
+    "display": "false",
     "required": "false",
     "admin_only": "false"
     },

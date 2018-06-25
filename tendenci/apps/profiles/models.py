@@ -70,7 +70,7 @@ class Profile(Person):
     ssn = models.CharField(_('social security number'), max_length=50, blank=True)
     spouse = models.CharField(_('spouse'), max_length=50, blank=True)
     department = models.CharField(_('department'), max_length=50, blank=True)
-    education = models.CharField(_('education'), max_length=100, blank=True)
+    education = models.CharField(_('highest level of education'), max_length=100, blank=True)
     student = models.IntegerField(_('student'), null=True, blank=True)
     remember_login = models.BooleanField(_('remember login'), default=False)
     exported = models.BooleanField(_('exported'), default=False)

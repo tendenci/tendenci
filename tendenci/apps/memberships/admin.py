@@ -174,7 +174,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         {'fields': (
             ('first_name', 'last_name'),
             ('email', 'email2'),
-            ('company', 'department'), ('position_title',),
+            ('company', 'department'), ('position_title', 'education'),
             ('address', 'address2'), ('address_type',),
             ('city', 'state'), ('zipcode', 'country'),
             ('phone', 'phone2'),
