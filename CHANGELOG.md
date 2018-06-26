@@ -1,3 +1,11 @@
+### 7.5.1 [2018-06-26]
+
+* Fixed an error on education search.
+* Updated CM top menu.
+* Updated EducationForm to populate the data on membership renewal and prevent existing education records from being wipped out on renewal if no education fields are presented,
+* Documented discount setup and testing. (Thanks to Karl Goetz @goetzk).
+
+
 ### 7.5.0 [2018-06-18]
 
 * Updated the list_corporate_memberships template tag to have the option to filter by corporate membership type.
