@@ -1,12 +1,12 @@
 from unittest import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from django.test.simple import DjangoTestSuiteRunner
+from django.test.runner import DiscoverRunner
 from django.contrib.auth.models import User
 from django.conf import settings
 
 
-class NoDbTestRunner(DjangoTestSuiteRunner):
+class NoDbTestRunner(DiscoverRunner):
     """
     A test runner to test withouth database creation
     """
