@@ -37,6 +37,16 @@ databases and should not be done in production environments).
   ALTER USER <DB_USER> SUPERUSER;
 
 
+Enable helpdesk
+---------------
+
+The commands below run all tendenci related tests including those of helpdesk
+which is disabled by default.
+
+To enable helpdesk app (and ensure its migrations are run) edit
+`conf/local_settings` and update INSTALLED_APPS.
+
+
 Running tests
 -------------
 
