@@ -10,19 +10,48 @@ tests.
 Testing can be done with the following steps and will test Tendenci as well as
 the basic project.
 
-- Install tendenci per the instructions
-- Change in to the newly created site and run tests with
+Install Tendenci server
+-----------------------
+
+This is done following the install instructions, noting the following provisos:
+
+* After installing the requirements for Tendenci, upgrade the packaged Tendenci
+  to an editable checkout from git
+::
+
+  `pip install -e git+https://github.com/tendenci/tendenci.git@v7.5.0#egg=Tendenci`
+
+for a specific Tendenci version or for git head using the following
+::
+
+  `pip install -e git+https://github.com/tendenci/tendenci.git#egg=Tendenci`
+
+* While performing the database setup make sure your test name does not clash
+with your primary database. A also make the Tendenci user a database
+superuser (this is required to facilitate loading DB extensions in to test
+databases and should not be done in production environments).
 
 ::
 
-  ./manage.py test --keepdb
+  CREATE DATABASE <DB_NAME>_testsuite;
+  ALTER USER <DB_USER> SUPERUSER;
+
+
+Running tests
+-------------
+
+Change in to the newly created site and run tests with
+
+::
+
+  python ./manage.py test tendenci --keepdb
 
 If coverage.py (a tool to measure the exposure of your codebase to tests) is
 installed it can also be used to provide reports
 
 ::
 
-  coverage run --source='.' manage.py test
+  coverage run --source='.' manage.py test tendenci --keepdb
   coverage report
 
 Running with --keepdb is optional but speeds up Tendenci testing a lot due to
@@ -30,6 +59,10 @@ its migration heavy nature but you will need to remove it if you see problems
 while running tests.
 
 --verbosity 2 can be used to increase output during testing.
+
+Note that when running `manage.py test` for the first time all migrations will
+need to be applied to the test database. If run with --keepdb that step will be
+skipped in future.
 
 Writing tests
 -------------
