@@ -1,6 +1,7 @@
 The setup process is broken into three sections.  The first section covers required setup needed in
 all cases.  The second section covers optional additional setup for development purposes.  The third
 section covers recommended but optional setup to prepare for running a live site.
+Steps required for testing are documented separately.
 
 
 Basic Setup
@@ -9,8 +10,7 @@ Basic Setup
 If you are new to Tendenci, we recommend you setup a copy on your local system before attempting to
 install on public hosting.  This will allow you to experiment with the setup process, with Tendenci
 itself, with your site design/layout, and with themes before building a real site.  We strongly
-recommend installing Tendenci within a virtual machine (using VMWare Fusion, VirtualBox, or any
-other virtual machine manager), which will enable you to install/run Ubuntu within your existing OS,
+recommend installing Tendenci within a virtual environment, which will enable you to install/run Ubuntu within your existing OS,
 and will also make it easy to setup/test/discard multiple copies/configurations of Tendenci.
 
 
@@ -20,17 +20,17 @@ System Requirements
 These instructions cover the installation of Tendenci on a system running Ubuntu 18.04.
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
-and some partial instructions for installing on OSX are included below.  However, we generally
+and some partial instructions for installing on macOS are included below.  However, we generally
 recommend installing Tendenci on Ubuntu, and this process has only been thoroughly tested and
 documented on Ubuntu.
 
 For testing purposes, we recommend using a virtual machine with at least:
 
 * 2 CPU cores
-* 2GB of RAM
+* 3GB of RAM
 * 6GB of storage
 
-If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU core, 1GB of RAM, and
+If necessary, you may be able to run Tendenci on a VM with as little as 1 CPU core, 2GB of RAM, and
 3GB of storage, but you will likely find that to be too slow/constrained even for testing purposes.
 
 
@@ -55,10 +55,10 @@ Install the required system dependencies:
     sudo apt-get install python3-virtualenv \
       build-essential python3-dev libevent-dev libpq-dev \
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
-    sudo apt-get install curl wget
 
-System Preparation on OS X
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+System Preparation on macOS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order for images to correctly render, you will need to install the jpeg libraries:
 ::
@@ -77,11 +77,10 @@ To remove the files
     rm -r jpeg-9
     rm jpegsrc.v9.tar.gz
 
-On Mac OS X 10.7 or higher you will also need Xcode 4.4.1 or higher (in the app store) and will need
+You will also need Xcode 4.4.1 or higher (in the app store) and will need
 to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode"
 menu item in the top left of the screen near the Apple logo, then click "Preferences", then click
 "Downloads". Then click install on the line next to Command Line Tools.
-
 
 Database Preparation
 --------------------
@@ -115,14 +114,14 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
     psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
     psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
 
-Database Preparation on OS X
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Database Preparation on macOS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To install PostgreSQL on OSX, we recommend using `Postgres.app <http://postgresapp.com/>`_
+To install PostgreSQL on macOS, we recommend using `Postgres.app <http://postgresapp.com/>`_
 
 If you would like a database GUI, we recommend `PGAdmin <http://www.pgadmin.org/>`_
 
-The commands shown above for creating the database and user on Ubuntu should also work on OS X.
+The commands shown above for creating the database and user on Ubuntu should also work on macOS.
 
 
 Virtualenv Preparation
@@ -165,7 +164,7 @@ your command prompt does not begin with ``(tendenci)``, then you have not activa
 virtualenv, and any ``python`` or ``pip`` commands you run will use the system versions of those
 commands instead of the virtualenv versions, which may have unexpected results.
 
-Virtualenv on OS X
+Virtualenv on macOS
 ~~~~~~~~~~~~~~~~~~
 
 To prepare a virtualenv for Tendenci:
@@ -180,7 +179,7 @@ that you would like to use:
     virtualenv -p /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 venv
 
 The commands shown above for activating/deactivating the virtualenv on Ubuntu should also work on
-OS X.
+macOS.
 
 
 Tendenci Installation
@@ -300,6 +299,8 @@ Install and configure git (replace the name and email with appropriate values):
     git config --global user.name "John Doe"
     git config --global user.email "john.doe@example.com"
 
+.. note:: See `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions.
+
 Clone the Tendenci repository:
 ::
 
@@ -351,6 +352,24 @@ Review the comments and examples in ``/var/www/tendenci/conf/settings.py`` to de
 additional settings should be configured for your live site.
 
 
+How far will it scale?
+----------------------
+
+But first, how far will Tendenci scale?
+
+Scalability is one of Tendenci's strengths, with memory as your limit. t2
+instances at AWS scale, Linode (or similar) offer the best economics for
+clients with fewer than 10k active users.
+
+There are Tendenci installations with significantly over 100k active users.
+Those usually self host (for example regulatory reasons) but you should have no
+problem whatsoever with fewer than 100k users on a large VM with a lot of RAM.
+
+Once you cross 100k people, deployments will almost certainly need a
+combination of multiple front end servers, central authentication, and a
+cluster database.
+
+
 Additional Installation
 -----------------------
 
@@ -370,7 +389,7 @@ Install additional Python dependencies:
 Permissions
 -----------
 
-When using the SystemD configuration below, Tendenci will run as the ``www-data`` user.  To ensure
+When using the Systemd configuration below, Tendenci will run as the ``www-data`` user.  To ensure
 that Tendenci has appropriate permissions when running as ``www-data``:
 ::
 
@@ -408,10 +427,10 @@ Note that these permissions should allow your normal user account to manage/upgr
 using sudo, which is safer than performing management/upgrades using sudo.
 
 
-SystemD Setup
+Systemd Setup
 -------------
 
-SystemD Unit files should be created in ``/etc/systemd/system/`` with a name of
+Systemd Unit files should be created in ``/etc/systemd/system/`` with a name of
 your choice (eg ``tendenci.service``). The contents of your unit file should
 look like this:
 ::
@@ -597,8 +616,9 @@ To install multiple sites on a single server:
   Change the last parameter of the ``django-admin.py startproject ...`` command to create a
   different ``/var/www/<project>/`` directory for each site, then change ``/var/www/tendenci/`` in
   all of the commands in the instructions to work with the appropriate site.
-* Configure an additional SystemD Unit file and NGINX configuration file for each site, and
+* Configure an additional Systemd Unit file and NGINX configuration file for each site, and
   configure additional cron jobs for each site.  Each site will need to run on a different port
-  internally, so change ``8000`` in the example SystemD and NGINX configurations to a unique port
+  internally, so change ``8000`` in the example Systemd and NGINX configurations to a unique port
   number for each site.  Also change the names of any log files in the configuration.
 * A separate memcached instance for each Tendenci site may optionally be used, but is not required.
+
