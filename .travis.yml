@@ -1,16 +1,63 @@
 language: python
 python:
   - "2.7"
-
+ 
+addons:
+  postgresql: "9.3"  
+  # https://github.com/travis-ci/travis-ci/issues/6972
+  apt:
+    packages:
+    - postgresql-9.3-postgis-2.3
+ 
 env:
   global:
+    # Work around boto issue https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882 , https://github.com/tendenci/tendenci/issues/539#issuecomment-345092987
+    - BOTO_CONFIG=/doesnotexist
     # for $TENDENCI_TRANSIFEX_PASSWORD
-    secure: "H3pfvt1czYywa1Fp+quLeWqHOTqZVXDeyoCAFCthi4FO7YYvj8FpaRefUJ8iBIpN/NKImJkGGAh10KWkWXwhwWf2IZQmjTpYRZ0EltkhLyHDIQugoKCnt6VSfPUcrBwZBbA5mBI1JWtSWuN6MnrwMbM9XPpYf4o85OpZZnBdCN8="
+    - secure: "H3pfvt1czYywa1Fp+quLeWqHOTqZVXDeyoCAFCthi4FO7YYvj8FpaRefUJ8iBIpN/NKImJkGGAh10KWkWXwhwWf2IZQmjTpYRZ0EltkhLyHDIQugoKCnt6VSfPUcrBwZBbA5mBI1JWtSWuN6MnrwMbM9XPpYf4o85OpZZnBdCN8="
+
+before_install:
+ - sudo apt-get -qq update
+ - sudo apt-get -qq install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+ - sudo apt-get -qq install git
+ - sudo apt-get -qq install python-pip
 
 # command to install dependencies
 install:
-  - pip install "Django>=1.8,<1.9"
+ - cd ../..
+ - pwd
+ - pip install -q "Django>=1.8,<1.9"
+ - pip install -e goetzk/tendenci
+ - django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip testsuite_tendenci
+ - cd testsuite_tendenci
+ - pip install -r requirements/dev.txt
 
-# TODO: command to run tests
-# for now, run command to push source and translation files to Transifex
-script: ./transifex.sh
+before_script:
+ - psql -c "CREATE USER myprojectuser WITH PASSWORD 'passwordIsNotSecure';"
+ - psql -c "ALTER USER myprojectuser SUPERUSER;"
+ - psql -c "CREATE DATABASE tendenci_testsuite WITH OWNER myprojectuser;"
+ - psql -c "GRANT ALL PRIVILEGES ON DATABASE tendenci_testsuite TO myprojectuser;"
+ - psql -d tendenci_testsuite -c "CREATE EXTENSION postgis;"
+ - psql -d tendenci_testsuite -c "CREATE EXTENSION postgis_topology;"
+ - psql -d tendenci_testsuite -c "CREATE EXTENSION fuzzystrmatch;"
+ - psql -d tendenci_testsuite -c "CREATE EXTENSION postgis_tiger_geocoder;"
+ - sed -i -e 's/<DB_NAME>/tendenci_testsuite/g' conf/local_settings.py
+ - sed -i -e 's/<DB_USER>/myprojectuser/g' conf/local_settings.py
+ - sed -i -e 's/<DB_PASS>/passwordIsNotSecure/g' conf/local_settings.py
+ - echo -e "\nINSTALLED_APPS += ('markdown_deux', 'bootstrapform', 'tendenci.apps.helpdesk',)" >> conf/local_settings.py
+ 
+script:
+# TODO: do I need these three if running tests? logicall no because the tests build their own tables.
+ # Deploy Tendenci
+ - python manage.py migrate
+ - python deploy.py
+ - python manage.py load_creative_defaults
+ # Run tests
+ - python ./manage.py test --keepdb --verbosity 2
+# Enable once all tests pass
+# - python ./manage.py test tendenci --keepdb --verbosity 2
+
+# This could be done using after_script if successful tests aren't required
+after_success:
+ # Run command to push source and translation files to Transifex
+ - ./transifex.sh
