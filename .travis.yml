@@ -1,14 +1,14 @@
 language: python
 python:
   - "2.7"
- 
+
 addons:
-  postgresql: "9.3"  
+  postgresql: "9.3"
   # https://github.com/travis-ci/travis-ci/issues/6972
   apt:
     packages:
     - postgresql-9.3-postgis-2.3
- 
+
 env:
   global:
     # Work around boto issue https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882 , https://github.com/tendenci/tendenci/issues/539#issuecomment-345092987
@@ -45,7 +45,7 @@ before_script:
  - sed -i -e 's/<DB_USER>/myprojectuser/g' conf/local_settings.py
  - sed -i -e 's/<DB_PASS>/passwordIsNotSecure/g' conf/local_settings.py
  - echo -e "\nINSTALLED_APPS += ('markdown_deux', 'bootstrapform', 'tendenci.apps.helpdesk',)" >> conf/local_settings.py
- 
+
 script:
 # TODO: do I need these three if running tests? logicall no because the tests build their own tables.
  # Deploy Tendenci
