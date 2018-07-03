@@ -19,8 +19,7 @@ env:
 before_install:
  - sudo apt-get -qq update
  - sudo apt-get -qq install build-essential python-dev libevent-dev libpq-dev libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
- - sudo apt-get -qq install git
- - sudo apt-get -qq install python-pip
+ - sudo apt-get -qq install git python-flake8 python-pip
 
 # command to install dependencies
 install:
@@ -53,6 +52,7 @@ script:
  - python deploy.py
  - python manage.py load_creative_defaults
  # Run tests
+ # - flake8
  - python ./manage.py test --keepdb --verbosity 2
 # Enable once all tests pass
 # - python ./manage.py test tendenci --keepdb --verbosity 2
