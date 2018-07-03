@@ -1063,7 +1063,7 @@ def membership_default_add(request, slug='', membership_id=None,
     if join_under_corporate:
         params['authentication_method'] = authentication_method
 
-    education_form = EducationForm(app_fields, request.POST or None)
+    education_form = EducationForm(app_fields, request.POST or None, user=user)
 
     if user and (not is_renewal):
         [membership] = user.membershipdefault_set.filter(
