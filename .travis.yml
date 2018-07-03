@@ -25,7 +25,7 @@ before_install:
 install:
  - cd ../..
  - pip install -q "Django>=1.8,<1.9"
- - pip install -e goetzk/tendenci
+ - pip install -e $TRAVIS_BUILD_DIR
  - django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip testsuite_tendenci
  - cd testsuite_tendenci
  - pip install -r requirements/dev.txt
