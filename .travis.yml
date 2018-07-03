@@ -24,7 +24,6 @@ before_install:
 # command to install dependencies
 install:
  - cd ../..
- - pwd
  - pip install -q "Django>=1.8,<1.9"
  - pip install -e goetzk/tendenci
  - django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip testsuite_tendenci
@@ -46,7 +45,6 @@ before_script:
  - echo -e "\nINSTALLED_APPS += ('markdown_deux', 'bootstrapform', 'tendenci.apps.helpdesk',)" >> conf/local_settings.py
 
 script:
-# TODO: do I need these three if running tests? logicall no because the tests build their own tables.
  # Deploy Tendenci
  - python manage.py migrate
  - python deploy.py
@@ -54,10 +52,9 @@ script:
  # Run tests
  # - flake8
  - python ./manage.py test --keepdb --verbosity 2
-# Enable once all tests pass
 # - python ./manage.py test tendenci --keepdb --verbosity 2
 
-# This could be done using after_script if successful tests aren't required
 after_success:
  # Run command to push source and translation files to Transifex
  - ./transifex.sh
+
