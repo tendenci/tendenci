@@ -1,3 +1,45 @@
+### 11.0 [2018-07-04]
+
+#### Compatibility
+* Support Python 3.6 or newer. Python 2.7 is no longer supported. 
+* Requires Django 1.11. Django 1.8 is no longer supported.
+* T7 sites can be smoothly migrated from the previous version (7.5.x) if you follow the guide in docs/source/upgrade/upgrade-to-tendenci11.txt.
+ 
+
+#### Special Thanks
+* A quick shout-out to Paul Donohue @PaulSD, who has made tremendous contributions on converting Tendenci to Python 3 and making it compatible with Django 1.11. Thanks Paul!
+* And to those who have been working diligently to constantly improve Tendenci, we appreciate you!  
+
+
+### 7.5.1 [2018-06-26]
+
+* Fixed an error on education search.
+* Updated CM top menu.
+* Updated EducationForm to populate the data on membership renewal and prevent existing education records from being wipped out on renewal if no education fields are presented,
+* Documented discount setup and testing. (Thanks to Karl Goetz @goetzk).
+
+
+### 7.5.0 [2018-06-18]
+
+* Updated the list_corporate_memberships template tag to have the option to filter by corporate membership type.
+* Fixed the issue about new templates not showing in droplist on page add/edit.
+* Made embed_form to fail silently to not break entire site.
+* Added the active only checkbox to the corporate memberships search.
+* Added the setting "Users Can Add Resumes" so that admin can turn off/on users ability to add resumes.
+* Updated Members Roster Report for printer.
+* Added stripe connect (readonly currently).
+* Fixed payment method options not showing all on event registration.
+* Excluded admin_only payment method for non-admin.
+* Fixed the js error for directories and jobs add/edit caused by RelatedObjectLookups.js.
+* Fixed KeyError no id in JobPricingForm.
+* Added the option on_delete=models.SET_NULL to avoid data loss for lots of OneToOneField and ForeignKey fields.
+* Allow reps to renew their corporate memberships.
+* Applied orientation to retain intended position for photos.
+* Fixed queryset filter for "disapprove" admin action. 
+* Fixed spacing in "From:" header causing spamminess for notifications.
+* Checked if email domain is valid before sending email.
+* Lots of other minor fixes.
+
 ### 7.4.4 [2018-02-28]
 
 * Integrated Google reCaptcha. To turn on Google reCaptcha, visit the help file: [How to Use Google reCaptcha on Tendenci Site](https://www.tendenci.com/help-files/how-use-google-recaptcha-tendenci-site/)
