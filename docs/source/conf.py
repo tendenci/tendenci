@@ -17,9 +17,6 @@ import os
 # from sphinx.util import compat
 # compat.make_admonition = BaseAdmonition
 
-from tendenci import __version__ as tendenci_version
-
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -28,6 +25,8 @@ sys.path.append(os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tendenci.settings")
+
+from tendenci import __version__ as tendenci_version
 
 
 # -- General configuration -----------------------------------------------------
@@ -63,14 +62,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Tendenci'
-copyright = u'2017, Tendenci'
+copyright = u'2018, Tendenci'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '7.3'
+version = '11.0'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
