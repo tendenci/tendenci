@@ -200,7 +200,7 @@ Create a new Django project based on the Tendenci template:
 
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/tendenci11.zip tendenci
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
     sudo chown root /var/www/
 
 Set up some directories appropriately:
@@ -599,7 +599,7 @@ Run ``sudo -u www-data crontab -e`` and add the following lines:
 ::
 
     30   2 * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py run_nightly_commands
-    */60 * * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py process_unindexed
+    10 */6 * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py process_unindexed
 
 
 Multiple Sites

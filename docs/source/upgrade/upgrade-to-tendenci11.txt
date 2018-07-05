@@ -88,13 +88,13 @@ Upgrade files in /var/www/tendenci/:
     rm manage.py deploy.py README.md requirements.txt
     rm conf/wsgi.py requirements/tendenci.txt requirements/prod.txt
     rm -rf index.whoosh
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/manage.py
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/README.md
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/manage.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/README.md
     cd conf/
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/wsgi.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/wsgi.py
     cd ../requirements/
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/requirements/tendenci.txt
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/requirements/prod.txt
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/tendenci.txt
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/prod.txt
     cd ..
     mkdir whoosh_index
     chgrp www-data whoosh_index
@@ -142,10 +142,10 @@ Remove the old configuration and replace it with new configuration files:
 
     cd /var/www/tendenci/conf/
     rm *
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/__init__.py
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/wsgi.py
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/settings.py
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/urls.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/__init__.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/wsgi.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/settings.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/urls.py
 
 Copy any site specific settings from ``/var/www/tendenci.t7/conf/local_settings.py`` to
 ``/var/www/tendenci/conf/settings.py``.  The new settings.py includes comments which explain
@@ -274,7 +274,7 @@ Then remove the following from INSTALLED_APPS:
 The above apps are now included in INSTALLED_APPS by default.  If you wish to remove them from the
 default INSTALLED_APPS, you can add ``INSTALLED_APPS.remove('tendenci.apps.name')`` lines as
 shown in the "Custom Application Settings" section of the latest
-`settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci11/conf/settings.py>`_
+`settings.py <https://github.com/tendenci/tendenci-project-template/blob/master/conf/settings.py>`_
 file.
 
 Replace ``django.core.cache.backends.memcached.MemcachedCache`` with
@@ -284,7 +284,7 @@ If present, replace ``tendenci.apps.theme.template_loaders.Loader`` with
 ``tendenci.apps.theme.template_loaders.ThemeLoader``
 
 Tendenci now enables logging by default.  Review the "Logging Settings" section of the latest
-`settings.py <https://github.com/tendenci/tendenci-project-template/blob/tendenci11/conf/settings.py>`_
+`settings.py <https://github.com/tendenci/tendenci-project-template/blob/master/conf/settings.py>`_
 file to determine whether you need to make any site specific changes to the default logging
 configuration.
 
@@ -306,7 +306,7 @@ Replace the old urls.py file:
 
     cd /var/www/tendenci/conf/
     rm urls.py
-    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/tendenci11/conf/urls.py
+    wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/urls.py
 
 Copy any site specific URL patterns from ``local_urls.py`` to ``urls.py``, ignoring the following:
 
