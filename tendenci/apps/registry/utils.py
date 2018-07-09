@@ -36,7 +36,7 @@ def custom_choices(addon_folder_path):
     Returns a list of available addons in the tendenci-site wrapper app
     """
     for addon in os.listdir(addon_folder_path):
-        if os.path.isdir(os.path.join(addon_folder_path, addon)):
+        if os.path.isdir(os.path.join(addon_folder_path, addon)) and addon not in ['__pycache__']:
             yield addon
 
 
