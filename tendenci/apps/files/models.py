@@ -45,6 +45,7 @@ def file_directory(instance, filename):
         else:
             content_type = instance.content_type
         content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(content_type))
+        content_type = content_type.lower()
         return 'files/%s/%s/%s' % (content_type, hex_digest, filename)
 
     return 'files/files/%s/%s' % (hex_digest, filename)
