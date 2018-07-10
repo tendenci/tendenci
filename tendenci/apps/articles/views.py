@@ -184,7 +184,7 @@ def edit(request, id, form_class=ArticleForm,
 
     if has_perm(request.user, 'articles.change_article', article):
         if request.method == "POST":
-            form = form_class(request.POST, instance=article, user=request.user)
+            form = form_class(request.POST, request.FILES or None, instance=article, user=request.user)
             categoryform = category_form_class(content_type,
                                            request.POST,)
 
@@ -266,7 +266,7 @@ def add(request, form_class=ArticleForm,
                                      model='article')
     if has_perm(request.user, 'articles.add_article'):
         if request.method == "POST":
-            form = form_class(request.POST, user=request.user)
+            form = form_class(request.POST, request.FILES or None, user=request.user)
             categoryform = category_form_class(content_type,
                                            request.POST,)
             if form.is_valid() and categoryform.is_valid():
