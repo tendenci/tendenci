@@ -6,11 +6,17 @@
     </div>
 
     <div class="panel-body t-search-result-body">
+        {% if article.thumbnail %}
+            <p class="t-articles-image-container">
+                <img class="t-articles-image" src="{{ article.get_thumbnail_url }}" alt="{{ article.headline }}">
+            </p>
+        {% endif %}
+        
         <p class="item-content">
             {% if article.summary %}
-                {% blocktrans with summary=article.summary|striptags|truncatewords:140|safe %}{{ summary }}{% endblocktrans %}
+                {{ article.summary|striptags|truncatewords:140|safe }}
             {% else %}
-                {% blocktrans with body=article.body|striptags|truncatewords:140|safe %}{{ body }}{% endblocktrans %}
+                {{ article.body|striptags|truncatewords:140|safe }}
             {% endif %}
         </p>
     </div>

@@ -16,7 +16,7 @@
 {% block content %}
     <h1>{% firstof MODULE_ARTICLES_LABEL trans "Article" %} {% trans "Add" %}</h1>
 
-    <form id="t-articles-article-form" class="form-horizontal" action="{% url 'article.add' %}" method="post">{% csrf_token %}
+    <form id="t-articles-article-form" class="form-horizontal" action="{% url 'article.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
         {{ form|styled_form }}
 
         <fieldset id="t-articles-category">

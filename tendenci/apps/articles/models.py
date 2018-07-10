@@ -7,6 +7,7 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -20,6 +21,7 @@ from tendenci.apps.articles.managers import ArticleManager
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.articles.module_meta import ArticleMeta
+from tendenci.apps.files.models import File
 
 
 class Article(TendenciBaseModel):
@@ -44,6 +46,11 @@ class Article(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
+    thumbnail = models.ForeignKey(File, null=True,
+                                  on_delete=models.SET_NULL,
+                                  help_text=_('The thumbnail image can be used on your homepage ' +
+                                 'or sidebar if it is setup in your theme. The thumbnail image ' +
+                                 'will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     # used for better performance when retrieving a list of released articles
     release_dt_local = models.DateTimeField(null=True, blank=True)
@@ -94,6 +101,12 @@ class Article(TendenciBaseModel):
 
     def __str__(self):
         return self.headline
+
+    def get_thumbnail_url(self):
+        if not self.thumbnail:
+            return u''
+
+        return reverse('file', args=[self.thumbnail.pk])
 
     def save(self, *args, **kwargs):
         if not self.id:

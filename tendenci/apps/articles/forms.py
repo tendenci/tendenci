@@ -5,6 +5,7 @@ from django.conf import settings
 from django.forms.utils import ErrorList
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.libs.tinymce.widgets import TinyMCE
 
@@ -15,6 +16,8 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.categories.forms import CategoryField
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.files.models import File
 
 
 SEARCH_CATEGORIES_ADMIN = (
@@ -122,6 +125,11 @@ class ArticleForm(TendenciBaseForm):
     contributor_type = forms.ChoiceField(choices=CONTRIBUTOR_CHOICES,
                                          initial=Article.CONTRIBUTOR_AUTHOR,
                                          widget=forms.RadioSelect())
+    thumbnail_file = forms.FileField(
+            label=_('Thumbnail'),
+            validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],
+            required=False,
+            help_text=_('Only jpg, gif, or png images.'))        
     syndicate = forms.BooleanField(label=_('Include in RSS feed'), required=False, initial=True)
     status_detail = forms.ChoiceField(
         choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending')),))
@@ -135,6 +143,7 @@ class ArticleForm(TendenciBaseForm):
             'slug',
             'summary',
             'body',
+            'thumbnail_file',
             'source',
             'website',
             'release_dt',
@@ -161,6 +170,7 @@ class ArticleForm(TendenciBaseForm):
                                  'slug',
                                  'summary',
                                  'body',
+                                 'thumbnail_file',
                                  'group',
                                  'tags',
                                  'source',
@@ -206,6 +216,9 @@ class ArticleForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['group'].initial = Group.objects.get_initial_group_id()
         default_groups = Group.objects.filter(status=True, status_detail="active")
+        
+        if self.instance.thumbnail:
+            self.initial['thumbnail_file'] = self.instance.thumbnail.file
 
         if self.user and not self.user.profile.is_superuser:
             if 'status_detail' in self.fields:
@@ -227,6 +240,38 @@ class ArticleForm(TendenciBaseForm):
         self.fields['timezone'].initial = settings.TIME_ZONE
 
         self.fields['release_dt'].initial = datetime.now()
+
+    def save(self, *args, **kwargs):
+        article = super(ArticleForm, self).save(*args, **kwargs)
+
+        content_type = ContentType.objects.get_for_model(Article)
+        thumbnail_file = self.cleaned_data['thumbnail_file']
+
+        if thumbnail_file:
+            file_object, created = File.objects.get_or_create(
+                file=thumbnail_file,
+                defaults={
+                    'name': thumbnail_file.name,
+                    'content_type': content_type,
+                    'object_id': article.pk,
+                    'is_public': article.allow_anonymous_view,
+                    'tags': article.tags,
+                    'creator': self.user,
+                    'owner': self.user,
+                })
+
+            article.thumbnail = file_object
+            article.save(log=False)
+        else:
+            # clear thumbnail if box checked
+            if article.thumbnail:
+                article.thumbnail = None
+                article.save(log=False)
+                File.objects.filter(
+                    content_type=content_type,
+                    object_id=article.pk).delete()
+
+        return article
 
     def clean_group(self):
         group_id = self.cleaned_data['group']
