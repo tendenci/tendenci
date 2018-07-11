@@ -1157,7 +1157,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     def clean(self):
         data = self.cleaned_data
         if 'end_dt' in data and data['start_dt'] > data['end_dt']:
-            raise forms.ValidationError(_('Start Date/Time should come after End Date/Time'))
+            raise forms.ValidationError(_('Pricing: Start Date/Time should come before End Date/Time'))
         return data
 
     class Meta:
