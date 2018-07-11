@@ -5,6 +5,12 @@ $("#id_end_dt_0").change(function() {
 
     // set new date value for every pricing form
     $(".regconfpricing_formset").each(function() {
+    	var start_dt_node = $(this).find(".datepicker").first();
+    	var start_dt = new Date($(start_dt_node).val());
+    	var date_obj = new Date(date);
+    	if (start_dt > date_obj){
+    		$(start_dt_node).val(date);
+    	}
         $(this).find(".datepicker").last().val(date);
     });
 });
