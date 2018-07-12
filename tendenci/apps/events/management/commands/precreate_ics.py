@@ -31,7 +31,7 @@ class Command(BaseCommand):
         users = User.objects.all()
         for user in users:
             ics_str = "BEGIN:VCALENDAR\n"
-            ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+            ics_str += "PRODID:-//Tendenci//Tendenci Codebase 11.0 MIMEDIR//EN\n"
             ics_str += "VERSION:2.0\n"
             ics_str += "METHOD:PUBLISH\n"
 

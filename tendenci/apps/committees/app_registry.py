@@ -5,8 +5,8 @@ from tendenci.apps.committees.models import Committee
 
 class CommitteeRegistry(AppRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
-    author_email = 'programmers@schipul.com'
+    author = 'Tendenci - The Open Source AMS for Associations'
+    author_email = 'programmers@tendenci.com'
     description = 'Create committees type of content'
 
     url = {

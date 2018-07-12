@@ -8,8 +8,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class FormRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Create custom forms to take information throughout the site')
     icon = static('images/icons/cms-forms-color-64x64.png')
 

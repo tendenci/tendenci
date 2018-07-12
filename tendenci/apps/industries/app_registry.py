@@ -5,8 +5,8 @@ from tendenci.apps.industries.models import Industry
 
 class IndustryRegistry(CoreRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
-    author_email = 'programmers@schipul.com'
+    author = 'Tendenci - The Open Source AMS for Associations'
+    author_email = 'programmers@tendenci.com'
     description = 'A list of industries'
     #icon = static('images/icons/industries-color-64x64.png')
 

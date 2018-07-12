@@ -8,8 +8,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class LocationRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('A list of locations associated with your organization'
         'Includes a search that sort by nearest location.')
     icon = static('images/icons/locations-color-64x64.png')

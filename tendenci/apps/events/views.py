@@ -443,7 +443,7 @@ def icalendar(request):
             ics.close()
     if not ics_str:
         ics_str = "BEGIN:VCALENDAR\n"
-        ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+        ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci 11.0 MIMEDIR//EN\n"
         ics_str += "VERSION:2.0\n"
         ics_str += "METHOD:PUBLISH\n"
 
@@ -475,7 +475,7 @@ def icalendar_single(request, id):
         d['domain_name'] = ""
 
     ics_str = "BEGIN:VCALENDAR\n"
-    ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 11.0 MIMEDIR//EN\n"
     ics_str += "VERSION:2.0\n"
     ics_str += "METHOD:PUBLISH\n"
 

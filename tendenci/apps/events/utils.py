@@ -384,7 +384,7 @@ def build_ical_text(event, d):
 
     ical_text += "--- This iCal file does *NOT* confirm registration."
     ical_text += "Event details subject to change. ---\n\n"
-    ical_text += "--- Tendenci(tm) Software by Schipul.com - The Web Marketing Company ---\n"
+    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\n"
 
     ical_text  = ical_text.replace(';', '\\;')
     ical_text  = ical_text.replace('\n', '\\n')
@@ -455,8 +455,8 @@ def build_ical_html(event, d):
 
     ical_html += "<div>--- This iCal file does *NOT* confirm registration."
     ical_html += "Event details subject to change. ---</div>"
-    ical_html += "<div>--- Tendenci&reg; Software by <a href=\"http://www.schipul.com\">schipul.com</a>"
-    ical_html += " - The Web Marketing Company ---</div>"
+    ical_html += "<div>--- Tendenci&reg; Software by <a href=\"https://www.tendenci.com\">tendenci.com</a>"
+    ical_html += " - The Open Source AMS for Associations ---</div>"
 
     ical_html  = ical_html.replace(';', '\\;')
     #ical_html  = degrade_tags(ical_html.replace(';', '\\;'))

@@ -6,8 +6,8 @@ from tendenci.apps.staff.models import Staff
 
 class StaffRegistry(AppRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
-    author_email = 'programmers@schipul.com'
+    author = 'Tendenci - The Open Source AMS for Associations'
+    author_email = 'programmers@tendenci.com'
     description = 'Create staff biographies easily with photo,' \
                   ' position, tagline and more ..'
 

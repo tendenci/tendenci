@@ -5,8 +5,8 @@ from tendenci.apps.case_studies.models import CaseStudy
 
 class CaseStudyRegistry(AppRegistry):
     version = '1.0'
-    author = 'Schipul - The Web Marketing Company'
-    author_email = 'programmers@schipul.com'
+    author = 'Tendenci - The Open Source AMS for Associations'
+    author_email = 'programmers@tendenci.com'
     description = 'Create case studies of clients'
 
     event_logs = {

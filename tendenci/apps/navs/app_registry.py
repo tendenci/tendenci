@@ -6,8 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class NavRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Create navs for navigation')
 
     url = {

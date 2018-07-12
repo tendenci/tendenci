@@ -29,7 +29,7 @@ def payment_processing_object_updates(request, payment, **kwargs):
         admins = settings.ADMINS
         recipients = [item[1] for item in admins]
         if not recipients:
-            recipients = ['jqian@schipul.com']
+            recipients = ['programmers@tendenci.com']
         send_mail(subject, body, sender, recipients, fail_silently=True)
 
         # still want the end user know an error occurred

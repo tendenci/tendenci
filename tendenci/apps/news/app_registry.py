@@ -8,8 +8,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class NewsRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Create news to let your vistors keep current')
     icon = static('images/icons/news-color-64x64.png')
 

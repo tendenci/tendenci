@@ -9,8 +9,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class JobRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Create and Manage a %(label)s Bank to offer free and paid postings' % {
         'label': get_setting('module', 'jobs', 'label')})
     icon = static('images/icons/jobs-color-64x64.png')

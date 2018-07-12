@@ -8,8 +8,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class ArticleRegistry(CoreRegistry):
     version = _('1.0')
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Create articles to display basic content throughout the site')
     icon = static('images/icons/articles-color-64x64.png')
 

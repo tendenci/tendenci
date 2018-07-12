@@ -7,8 +7,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class ResumeRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Users can upload resumes to help with their careers')
     icon = static('images/icons/resumes-color-64x64.png')
 

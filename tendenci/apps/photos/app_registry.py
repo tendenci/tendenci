@@ -7,8 +7,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 class PhotoRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Upload photos for the world to see!')
     icon = static('images/icons/photo-albums-color-64x64.png')
 
@@ -30,8 +30,8 @@ class PhotoRegistry(CoreRegistry):
 
 class PhotoSetRegistry(CoreRegistry):
     version = '1.0'
-    author = _('Schipul - The Web Marketing Company')
-    author_email = 'programmers@schipul.com'
+    author = _('Tendenci - The Open Source AMS for Associations')
+    author_email = 'programmers@tendenci.com'
     description = _('Upload photos for the world to see!')
     icon = static('images/icons/photo-albums-color-64x64.png')
 
