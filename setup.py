@@ -113,7 +113,7 @@ def _read_requirements():
 excluded_directories = standard_exclude_directories + ["example", "tests"]
 package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
-DESCRIPTION = "Tendenci - The Open Source Association Management Software"
+DESCRIPTION = "Tendenci - The Open Source Association Management System (AMS)"
 
 with open("README.md", "r") as fh:
     LONG_DESCRIPTION = fh.read()
@@ -136,6 +136,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Information Technology',
@@ -143,7 +144,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
