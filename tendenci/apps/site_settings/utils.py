@@ -1,3 +1,4 @@
+import django
 from django.core.cache import cache
 from django.conf import settings as d_settings
 
@@ -79,7 +80,10 @@ def get_setting(scope, scope_category, name):
     """
     key = get_setting_key([scope, scope_category, name])
 
-    setting = cache.get(key)
+    if django.apps.apps.models_ready:
+        setting = cache.get(key)
+    else:
+        setting = None
 
     if setting is None:
         #setting is not in the cache
