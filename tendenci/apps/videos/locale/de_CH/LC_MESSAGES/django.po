@@ -26,14 +26,14 @@ msgstr "Kategorie:"
 msgid ""
 "Created on %(create_date)s\n"
 "            by:"
-msgstr "Erstellt am% (create_date) s             von:"
+msgstr "Erstellt am%(create_date)s            von:"
 
 #: templates/videos/meta.html:28
 #, python-format
 msgid ""
 "Last updated %(update_date)s\n"
 "            by:"
-msgstr "Zuletzt aktualisiert% (update_date) s             von:"
+msgstr "Zuletzt aktualisiert%(update_date)s             von:"
 
 #: templates/videos/meta.html:39
 msgid "Share"

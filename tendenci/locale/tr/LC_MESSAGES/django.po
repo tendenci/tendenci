@@ -120,7 +120,7 @@ msgstr "E-posta adresi bir ilişkili kullanıcı hesabı yok."
 #: apps/accounts/forms.py:246
 #, python-format
 msgid "Password reset on %s"
-msgstr "%S üzerinde sıfırlama parola"
+msgstr "%s üzerinde sıfırlama parola"
 
 #: apps/accounts/views.py:196
 #, python-format
@@ -4599,7 +4599,7 @@ msgstr "Addon sicil memuru geçerli kümesi için geçersiz"
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "%S için gereken seçeneği"
+msgstr "%s için gereken seçeneği"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"
@@ -5032,7 +5032,7 @@ msgstr "Lütfen e-posta hatırlatıcıları göndermek zamanı belirtin"
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "\\'%S\\' değeri geçersiz. Sadece integer(s). "
+msgstr "\\'%s\\' değeri geçersiz. Sadece integer(s). "
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171

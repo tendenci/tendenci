@@ -26,14 +26,14 @@ msgstr "श्रेणी:"
 msgid ""
 "Created on %(create_date)s\n"
 "            by:"
-msgstr "% (Create_date) एस बनाया गया             से:"
+msgstr "%(create_date)s एस बनाया गया             से:"
 
 #: templates/videos/meta.html:28
 #, python-format
 msgid ""
 "Last updated %(update_date)s\n"
 "            by:"
-msgstr "अंतिम अद्यतन% (UPDATE_DATE) एस             से:"
+msgstr "अंतिम अद्यतन%(update_date)s एस             से:"
 
 #: templates/videos/meta.html:39
 msgid "Share"

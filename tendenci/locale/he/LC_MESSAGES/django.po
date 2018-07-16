@@ -5032,7 +5032,7 @@ msgstr "אנא ציין מתי לשלוח תזכורות בדואר אלקטרו
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "&#39;% S&#39; ערך לא חוקי. מספר שלם (ים) בלבד."
+msgstr "&#39;%s&#39; ערך לא חוקי. מספר שלם (ים) בלבד."
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171
@@ -5558,7 +5558,7 @@ msgstr "זה לא קוד הנחה תקף!"
 #: apps/events/registration/forms.py:219
 #, python-format
 msgid "%s is already registered for this event"
-msgstr "% S כבר רשום לאירוע זה"
+msgstr "%s כבר רשום לאירוע זה"
 
 #: apps/events/registration/formsets.py:114
 msgid "You must register at least 1 registrant per registration"
@@ -5577,7 +5577,7 @@ msgstr ""
 #: apps/events/registration/formsets.py:160
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% S יכול להיות רשום רק פעם אחת לכל רישום"
+msgstr "%s יכול להיות רשום רק פעם אחת לכל רישום"
 
 #: apps/events/registration/utils.py:225
 msgid "Price has been overriden for this registration."
@@ -10182,7 +10182,7 @@ msgstr "קובץ"
 #: apps/sitemaps/views.py:56
 #, python-format
 msgid "No sitemap available for section: %r"
-msgstr "אין מפת אתר זמינה לסעיף: r%"
+msgstr "אין מפת אתר זמינה לסעיף: %r"
 
 #: apps/social_auth/views.py:37 apps/social_auth/views.py:75
 #: apps/social_auth/views.py:100

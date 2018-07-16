@@ -15147,16 +15147,10 @@ msgstr "Lista de artigos"
 #: themes/t7-tendenci2018/templates/articles/search.html:36
 #: themes/t8-base/templates/articles/search.html:40
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s %(MODULE_ARTICLES_LABEL)s Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s %(MODULE_ARTICLES_LABEL_PLURAL)s Found\n"
-"                "
-msgstr[0] "\n                    Atopouse %(obj_count)s %(MODULE_ARTICLES_LABEL)s artigo                "
-msgstr[1] "\n                    Atopáronse %(obj_count)s %(MODULE_ARTICLES_LABEL_PLURAL)s                "
+msgid "\n                        %(obj_count)s %(MODULE_ARTICLES_LABEL)s Found\n"
+msgid_plural "\n                      %(obj_count)s %(MODULE_ARTICLES_LABEL_PLURAL)s Found\n"
+msgstr[0] ""
+msgstr[1] ""
 
 #: themes/t7-base/templates/articles/search.html:46
 #: themes/t7-tendenci2018/templates/articles/search.html:42
@@ -16629,8 +16623,8 @@ msgid_plural ""
 "\n"
 "                    %(obj_count)s %(MODULE_CONTACTS_LABEL_PLURAL)s Found\n"
 "                "
-msgstr[0] "\n                    Atopouse %(obj_count)s %(MODULE_CONTACTS_LABEL)s\n                "
-msgstr[1] "\n                    Atopáronse %(obj_count)s %(MODULE_CONTACTS_LABEL_PLURAL)s\n                "
+msgstr[0] ""
+msgstr[1] ""
 
 #: themes/t7-base/templates/contacts/search.html:41
 #: themes/t8-base/templates/contacts/search.html:41
@@ -16643,8 +16637,8 @@ msgid_plural ""
 "\n"
 "                    %(obj_count)s Contacts Found\n"
 "                "
-msgstr[0] "\n                    Atopouse %(obj_count)s contacto\n                "
-msgstr[1] "\n                    Atopáronse %(obj_count)s contactos\n                "
+msgstr[0] ""
+msgstr[1] ""
 
 #: themes/t7-base/templates/contacts/search.html:66
 #: themes/t7-base/templates/entities/edit.html:34
@@ -16754,16 +16748,10 @@ msgstr "Busca de colaboracións"
 #: themes/t7-base/templates/contributions/search.html:35
 #: themes/t8-base/templates/contributions/search.html:35
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL)s Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL_PLURAL)s Found\n"
-"                "
-msgstr[0] "\n                    Atopouse %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL)s\n                "
-msgstr[1] "\n                    Atopáronse %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL_PLURAL)s\n                "
+msgid "\n  %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL)s Found\n"
+msgid_plural "\n    %(obj_count)s %(MODULE_CONTRIBUTIONS_LABEL_PLURAL)s Found\n"
+msgstr[0] ""
+msgstr[1] ""
 
 #: themes/t7-base/templates/contributions/search.html:41
 #: themes/t8-base/templates/contributions/search.html:41

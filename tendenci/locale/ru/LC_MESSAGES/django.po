@@ -122,7 +122,7 @@ msgstr "Это адрес электронной почты не имеет св
 #: apps/accounts/forms.py:246
 #, python-format
 msgid "Password reset on %s"
-msgstr "Восстановление пароля на% с"
+msgstr "Восстановление пароля на%s"
 
 #: apps/accounts/views.py:196
 #, python-format
@@ -1231,13 +1231,13 @@ msgstr "&#39; %(b)s&#39; требуется по крайней мере два 
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "тег% S требуется именно три аргумента"
+msgstr "тег%s требуется именно три аргумента"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "Второй аргумент тега% S должен быть &#39;как&#39;"
+msgstr "Второй аргумент тега%s должен быть &#39;как&#39;"
 
 #: apps/base/templatetags/reports_tags.py:46
 msgid "Usage {% month_url next|previous %}"
@@ -4601,7 +4601,7 @@ msgstr "Аддон является недопустимым для текуще
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "Опция требуется для% с"
+msgstr "Опция требуется для%s"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"
@@ -4759,7 +4759,7 @@ msgstr "Не корпоративным членом для бесплатног
 #: apps/events/forms.py:483 apps/events/forms.py:1832
 #, python-format
 msgid "Free pass not available for \"%s\"."
-msgstr "Бесплатный проход не доступны для &quot;% S&quot;."
+msgstr "Бесплатный проход не доступны для &quot;%s&quot;."
 
 #: apps/events/forms.py:554
 msgid "All Day"
@@ -4926,7 +4926,7 @@ msgstr "Спонсор"
 #: apps/events/forms.py:972
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "Выступающие в мероприятии должны иметь различные имена. &#39;% S&#39; уже используется."
+msgstr "Выступающие в мероприятии должны иметь различные имена. &#39;%s&#39; уже используется."
 
 #: apps/events/forms.py:1004 apps/events/forms.py:1017
 #: themes/t7-base/templates/events/registrants/search.html:49
@@ -5034,7 +5034,7 @@ msgstr "Пожалуйста, укажите, когда следует отпр
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "Неверное значение &#39;% S&#39;. Целое (ы) только."
+msgstr "Неверное значение &#39;%s&#39;. Целое (ы) только."
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171
@@ -5146,7 +5146,7 @@ msgstr "разделенные запятой, если несколько"
 #: apps/events/forms.py:2181
 #, python-format
 msgid "Member #%s does not exists!"
-msgstr "Пользователь #% с не существует!"
+msgstr "Пользователь #%s не существует!"
 
 #: apps/events/forms.py:2188
 msgid "Export by Date Range"
@@ -5551,7 +5551,7 @@ msgstr "Все участники могут использовать"
 #: apps/events/registration/forms.py:75
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "Код скидки не может быть использован для% S людей."
+msgstr "Код скидки не может быть использован для%s людей."
 
 #: apps/events/registration/forms.py:77
 msgid "This is not a valid Discount Code!"
@@ -5560,7 +5560,7 @@ msgstr "Это не является допустимым Код скидки!"
 #: apps/events/registration/forms.py:219
 #, python-format
 msgid "%s is already registered for this event"
-msgstr "% С уже зарегистрирован для этого события"
+msgstr "%s уже зарегистрирован для этого события"
 
 #: apps/events/registration/formsets.py:114
 msgid "You must register at least 1 registrant per registration"
@@ -5579,7 +5579,7 @@ msgstr "%(user)sы не разрешается использовать %(pricin
 #: apps/events/registration/formsets.py:160
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% С может быть зарегистрирован только один раз в регистрации"
+msgstr "%s может быть зарегистрирован только один раз в регистрации"
 
 #: apps/events/registration/utils.py:225
 msgid "Price has been overriden for this registration."
@@ -6731,7 +6731,7 @@ msgstr "Не Интерактивная (НЕТ Войти)"
 msgid ""
 "The uploaded file lacks the required field(s) as the identity for "
 "duplicates: %s."
-msgstr "Загруженный файл не хватает необходимого поля (ы) в качестве единицы для дубликатов:% S."
+msgstr "Загруженный файл не хватает необходимого поля (ы) в качестве единицы для дубликатов:%s."
 
 #: apps/industries/admin.py:18 apps/industries/forms.py:26
 msgid "Industry Information"
@@ -8689,7 +8689,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "Цепные несколько фильтров по следующей схеме &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot;. Фильтры Image будет применяться в порядке. Следующие фильтры доступны:% с."
+msgstr "Цепные несколько фильтров по следующей схеме &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot;. Фильтры Image будет применяться в порядке. Следующие фильтры доступны:%s."
 
 #: apps/photos/models.py:111 apps/photos/models.py:466
 msgid "image"
@@ -9588,7 +9588,7 @@ msgstr "Успешно редактировалось членство для %(
 #: apps/profiles/views.py:963
 #, python-format
 msgid "Successfully updated memberships for %s"
-msgstr "Успешно обновленные членство для% S"
+msgstr "Успешно обновленные членство для%s"
 
 #: apps/profiles/views.py:990
 #, python-format
@@ -10184,7 +10184,7 @@ msgstr "файл"
 #: apps/sitemaps/views.py:56
 #, python-format
 msgid "No sitemap available for section: %r"
-msgstr "Нет карта сайта доступны для раздела:% относительной"
+msgstr "Нет карта сайта доступны для раздела:%r относительной"
 
 #: apps/social_auth/views.py:37 apps/social_auth/views.py:75
 #: apps/social_auth/views.py:100
@@ -10980,7 +10980,7 @@ msgstr "Резюме"
 msgid ""
 "Your site export is being processed. You will receive an email at %s when "
 "the export is complete."
-msgstr "Ваше экспорт сайт обрабатывается. Вы получите письмо по адресу% х годов, когда завершения экспорта."
+msgstr "Ваше экспорт сайт обрабатывается. Вы получите письмо по адресу%s годов, когда завершения экспорта."
 
 #: apps/wp_importer/views.py:22
 msgid ""
@@ -11009,7 +11009,7 @@ msgstr "Ваш блог был импортирован!"
 msgid ""
 "Your site import is being processed. You will receive an email at %s when "
 "the import is complete."
-msgstr "Ваш импорт сайт обрабатывается. Вы получите письмо по адресу% х годов, когда завершения импорта."
+msgstr "Ваш импорт сайт обрабатывается. Вы получите письмо по адресу%s годов, когда завершения импорта."
 
 #: libs/abstracts/models.py:102
 #: themes/t7-base/templates/social_services/skills.html:32

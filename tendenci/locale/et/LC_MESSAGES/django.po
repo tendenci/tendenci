@@ -4599,7 +4599,7 @@ msgstr "AddOn ei sobi praeguse kogumi registreerijate jaoks"
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "%S jaoks nõutavad valik"
+msgstr "%s jaoks nõutavad valik"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"

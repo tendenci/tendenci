@@ -1229,7 +1229,7 @@ msgstr ""
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "% S yn gofyn tag yn union tri dadleuon"
+msgstr "%s yn gofyn tag yn union tri dadleuon"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
@@ -4924,7 +4924,7 @@ msgstr ""
 #: apps/events/forms.py:972
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "Mae&#39;n rhaid i siaradwyr mewn digwyddiad yn cael enwau gwahanol. &#39;% S&#39; yn cael ei ddefnyddio eisoes."
+msgstr "Mae&#39;n rhaid i siaradwyr mewn digwyddiad yn cael enwau gwahanol. &#39;%s&#39; yn cael ei ddefnyddio eisoes."
 
 #: apps/events/forms.py:1004 apps/events/forms.py:1017
 #: themes/t7-base/templates/events/registrants/search.html:49
@@ -5032,7 +5032,7 @@ msgstr "Nodwch pryd i anfon negeseuon atgoffa e-bost"
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "&#39;% S&#39; gwerth annilys. Cyfanrif (au) yn unig."
+msgstr "&#39;%s&#39; gwerth annilys. Cyfanrif (au) yn unig."
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171

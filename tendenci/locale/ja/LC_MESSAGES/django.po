@@ -120,7 +120,7 @@ msgstr "その電子メールアドレスが関連付けられているユーザ
 #: apps/accounts/forms.py:246
 #, python-format
 msgid "Password reset on %s"
-msgstr "％sのパスワードのリセット"
+msgstr "%sのパスワードのリセット"
 
 #: apps/accounts/views.py:196
 #, python-format
@@ -1229,13 +1229,13 @@ msgstr "&#39; %(b)sは、s&#39;は、少なくとも2つの引数が必要です
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "％sのタグが正確に3つの引数が必要です"
+msgstr "%sのタグが正確に3つの引数が必要です"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "％sのタグへの二番目の引数は、 &#39;として&#39;でなければなりません"
+msgstr "%sのタグへの二番目の引数は、 &#39;として&#39;でなければなりません"
 
 #: apps/base/templatetags/reports_tags.py:46
 msgid "Usage {% month_url next|previous %}"
@@ -4599,7 +4599,7 @@ msgstr "アドオンは、登録者の現在のセットは無効です"
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "％sのために必要なオプション"
+msgstr "%sのために必要なオプション"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"
@@ -4757,7 +4757,7 @@ msgstr "フリーパスのための未法人会員"
 #: apps/events/forms.py:483 apps/events/forms.py:1832
 #, python-format
 msgid "Free pass not available for \"%s\"."
-msgstr "&quot;％s&quot;のための無料パスが利用できません。"
+msgstr "&quot;%s&quot;のための無料パスが利用できません。"
 
 #: apps/events/forms.py:554
 msgid "All Day"
@@ -4924,7 +4924,7 @@ msgstr "スポンサー"
 #: apps/events/forms.py:972
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "イベントでスピーカーは、異なる名前を付ける必要があります。 &#39;％s&#39;は既に使用されています。"
+msgstr "イベントでスピーカーは、異なる名前を付ける必要があります。 &#39;%s&#39;は既に使用されています。"
 
 #: apps/events/forms.py:1004 apps/events/forms.py:1017
 #: themes/t7-base/templates/events/registrants/search.html:49
@@ -5032,7 +5032,7 @@ msgstr "電子メール通知を送信するタイミングを指定してくだ
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "無効な値 &#39;％s&#39;が。整数（秒）のみ。"
+msgstr "無効な値 &#39;%s&#39;が。整数（秒）のみ。"
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171
@@ -5144,7 +5144,7 @@ msgstr "コンマは、複数の場合には分離"
 #: apps/events/forms.py:2181
 #, python-format
 msgid "Member #%s does not exists!"
-msgstr "メンバー＃％sは存在しません！"
+msgstr "メンバー＃%sは存在しません！"
 
 #: apps/events/forms.py:2188
 msgid "Export by Date Range"
@@ -5549,7 +5549,7 @@ msgstr "すべてのメンバーが使用することができます"
 #: apps/events/registration/forms.py:75
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "割引コードは、％sの人のために使用することはできません。"
+msgstr "割引コードは、%sの人のために使用することはできません。"
 
 #: apps/events/registration/forms.py:77
 msgid "This is not a valid Discount Code!"
@@ -5558,7 +5558,7 @@ msgstr "これは有効な割引コードではありません！"
 #: apps/events/registration/forms.py:219
 #, python-format
 msgid "%s is already registered for this event"
-msgstr "％sは既にこのイベントに登録されている"
+msgstr "%sは既にこのイベントに登録されている"
 
 #: apps/events/registration/formsets.py:114
 msgid "You must register at least 1 registrant per registration"
@@ -5577,7 +5577,7 @@ msgstr "%(user)sの %(pricing)sを使用することが許可されていませ�
 #: apps/events/registration/formsets.py:160
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "％sは登録のみごとに一度登録することができます"
+msgstr "%sは登録のみごとに一度登録することができます"
 
 #: apps/events/registration/utils.py:225
 msgid "Price has been overriden for this registration."
@@ -6729,7 +6729,7 @@ msgstr "（なしログイン）対話はありません"
 msgid ""
 "The uploaded file lacks the required field(s) as the identity for "
 "duplicates: %s."
-msgstr "％sに：アップロードされたファイルは、重複のためのIDとして必要なフィールド（複数可）を欠いている。"
+msgstr "%sに：アップロードされたファイルは、重複のためのIDとして必要なフィールド（複数可）を欠いている。"
 
 #: apps/industries/admin.py:18 apps/industries/forms.py:26
 msgid "Industry Information"
@@ -8687,7 +8687,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "以下のパターン &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE」を使用してチェーン複数のフィルタ。画像フィルタが順に適用される。以下のフィルタを使用できます。％sの。"
+msgstr "以下のパターン &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE」を使用してチェーン複数のフィルタ。画像フィルタが順に適用される。以下のフィルタを使用できます。%sの。"
 
 #: apps/photos/models.py:111 apps/photos/models.py:466
 msgid "image"
@@ -9586,7 +9586,7 @@ msgstr ""
 #: apps/profiles/views.py:963
 #, python-format
 msgid "Successfully updated memberships for %s"
-msgstr "％sの更新に成功しメンバーシップ"
+msgstr "%sの更新に成功しメンバーシップ"
 
 #: apps/profiles/views.py:990
 #, python-format
@@ -10182,7 +10182,7 @@ msgstr "ファイル"
 #: apps/sitemaps/views.py:56
 #, python-format
 msgid "No sitemap available for section: %r"
-msgstr "セクションに利用可能なサイトマップん：％rは"
+msgstr "セクションに利用可能なサイトマップん：%rは"
 
 #: apps/social_auth/views.py:37 apps/social_auth/views.py:75
 #: apps/social_auth/views.py:100
@@ -10978,7 +10978,7 @@ msgstr "レジュメ"
 msgid ""
 "Your site export is being processed. You will receive an email at %s when "
 "the export is complete."
-msgstr "あなたのサイトのエクスポートが処理されている。エクスポートが完了すると、[％sのメールが届きます。"
+msgstr "あなたのサイトのエクスポートが処理されている。エクスポートが完了すると、[%sのメールが届きます。"
 
 #: apps/wp_importer/views.py:22
 msgid ""
@@ -11007,7 +11007,7 @@ msgstr "あなたのブログがインポートされている！"
 msgid ""
 "Your site import is being processed. You will receive an email at %s when "
 "the import is complete."
-msgstr "あなたのサイトのインポートが処理されている。インポートが完了すると、[％sのメールが届きます。"
+msgstr "あなたのサイトのインポートが処理されている。インポートが完了すると、[%sのメールが届きます。"
 
 #: libs/abstracts/models.py:102
 #: themes/t7-base/templates/social_services/skills.html:32

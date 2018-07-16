@@ -1229,13 +1229,13 @@ msgstr ""
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "%[NULL] s\\'etiqueta requereix exactament tres arguments"
+msgstr "%s etiqueta requereix exactament tres arguments"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "segon argument a %[NULL] s\\'etiqueta ha de ser \"com a\""
+msgstr "segon argument a %s etiqueta ha de ser \"com a\""
 
 #: apps/base/templatetags/reports_tags.py:46
 msgid "Usage {% month_url next|previous %}"

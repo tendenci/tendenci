@@ -1229,13 +1229,13 @@ msgstr "&#39; %(b)s s&#39;은 (는) 적어도 두 인수가 필요합니다"
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "%의 태그는 정확히 3 인수가 필요합니다"
+msgstr "%s의 태그는 정확히 3 인수가 필요합니다"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "%의 태그에 두 번째 인수는 &#39;로&#39;해야"
+msgstr "%s 태그에 두 번째 인수는 &#39;로&#39;해야"
 
 #: apps/base/templatetags/reports_tags.py:46
 msgid "Usage {% month_url next|previous %}"
@@ -4599,7 +4599,7 @@ msgstr "애드온은 등록자의 현재 설정이 잘못되었습니다"
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "옵션 %의 필요"
+msgstr "옵션 %s의 필요"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"
@@ -5032,7 +5032,7 @@ msgstr "이메일 알림을 보낼 때 지정하십시오"
 #: apps/events/forms.py:1382
 #, python-format
 msgid "Invalid value '%s'. Integer(s) only. "
-msgstr "잘못된 값 &#39;% S&#39;이 (가) 있습니다. 정수 (들) 만."
+msgstr "잘못된 값 &#39;%s&#39;이 (가) 있습니다. 정수 (들) 만."
 
 #: apps/events/forms.py:1468 apps/events/forms.py:1701
 #: apps/events/registration/forms.py:152 apps/events/registration/forms.py:171
@@ -5549,7 +5549,7 @@ msgstr "모든 구성원이 사용할 수 있습니다"
 #: apps/events/registration/forms.py:75
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "할인 코드 %의 사람들을 위해 사용할 수 없습니다."
+msgstr "할인 코드 %s의 사람들을 위해 사용할 수 없습니다."
 
 #: apps/events/registration/forms.py:77
 msgid "This is not a valid Discount Code!"

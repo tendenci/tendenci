@@ -120,7 +120,7 @@ msgstr "उस ई मेल से जुड़े एक उपयोगकर
 #: apps/accounts/forms.py:246
 #, python-format
 msgid "Password reset on %s"
-msgstr "% S पर पासवर्ड रीसेट"
+msgstr "%s पर पासवर्ड रीसेट"
 
 #: apps/accounts/views.py:196
 #, python-format
@@ -1229,7 +1229,7 @@ msgstr "&#39; %(b)sएस&#39; कम से कम 2 तर्क की आव
 #: apps/base/templatetags/base_tags.py:827
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "% S टैग ठीक तीन तर्क की आवश्यकता है"
+msgstr "%s टैग ठीक तीन तर्क की आवश्यकता है"
 
 #: apps/base/templatetags/base_tags.py:809
 #: apps/base/templatetags/base_tags.py:829
@@ -4599,7 +4599,7 @@ msgstr "Addon कुलसचिव के मौजूदा सेट के �
 #: apps/events/addons/forms.py:53
 #, python-format
 msgid "Option required for %s"
-msgstr "देखिये% S के लिए आवश्यक"
+msgstr "देखिये%s के लिए आवश्यक"
 
 #: apps/events/admin.py:63
 msgid "Reassign Link"
@@ -4757,7 +4757,7 @@ msgstr "मुफ्त पास के लिए नहीं एक कंप
 #: apps/events/forms.py:483 apps/events/forms.py:1832
 #, python-format
 msgid "Free pass not available for \"%s\"."
-msgstr "&quot;% S&quot; के लिए उपलब्ध नहीं मुफ्त पास."
+msgstr "&quot;%s&quot; के लिए उपलब्ध नहीं मुफ्त पास."
 
 #: apps/events/forms.py:554
 msgid "All Day"
@@ -4924,7 +4924,7 @@ msgstr "प्रायोजक"
 #: apps/events/forms.py:972
 #, python-format
 msgid "Speakers in an event must have distinct names. '%s' is already used."
-msgstr "एक घटना में वक्ताओं अलग नाम होना चाहिए. &#39;% S&#39; पहले से ही प्रयोग किया जाता है."
+msgstr "एक घटना में वक्ताओं अलग नाम होना चाहिए. &#39;%s&#39; पहले से ही प्रयोग किया जाता है."
 
 #: apps/events/forms.py:1004 apps/events/forms.py:1017
 #: themes/t7-base/templates/events/registrants/search.html:49
@@ -5549,7 +5549,7 @@ msgstr "सभी सदस्यों का उपयोग कर सकत�
 #: apps/events/registration/forms.py:75
 #, python-format
 msgid "Discount Code cannot be used for %s people."
-msgstr "डिस्काउंट कोड% लोगों के लिए इस्तेमाल नहीं किया जा सकता."
+msgstr ""
 
 #: apps/events/registration/forms.py:77
 msgid "This is not a valid Discount Code!"
@@ -5558,7 +5558,7 @@ msgstr "यह एक मान्य डिस्काउंट कोड न�
 #: apps/events/registration/forms.py:219
 #, python-format
 msgid "%s is already registered for this event"
-msgstr "% पहले से ही इस घटना के लिए पंजीकृत है"
+msgstr "%s पहले से ही इस घटना के लिए पंजीकृत है"
 
 #: apps/events/registration/formsets.py:114
 msgid "You must register at least 1 registrant per registration"
@@ -5577,7 +5577,7 @@ msgstr "%(user)sएस %(pricing)sका उपयोग करने के ल
 #: apps/events/registration/formsets.py:160
 #, python-format
 msgid "%s can only be registered once per registration"
-msgstr "% ही पंजीकरण प्रति एक बार पंजीकृत किया जा सकता है"
+msgstr "%s ही पंजीकरण प्रति एक बार पंजीकृत किया जा सकता है"
 
 #: apps/events/registration/utils.py:225
 msgid "Price has been overriden for this registration."
@@ -8687,7 +8687,7 @@ msgid ""
 "Chain multiple filters using the following pattern "
 "\"FILTER_ONE->FILTER_TWO->FILTER_THREE\". Image filters will be applied in "
 "order. The following filters are available: %s."
-msgstr "निम्नलिखित प्रारूप &quot;FILTER_ONE-&gt; FILTER_TWO-&gt; FILTER_THREE&quot; की मदद चैन कई फिल्टर. छवि फिल्टर क्रम में लागू किया जाएगा. निम्नलिखित फिल्टर उपलब्ध हैं:% है."
+msgstr ""
 
 #: apps/photos/models.py:111 apps/photos/models.py:466
 msgid "image"
@@ -9586,7 +9586,7 @@ msgstr "सफलतापूर्वक %(g)sके लिए सदस्य�
 #: apps/profiles/views.py:963
 #, python-format
 msgid "Successfully updated memberships for %s"
-msgstr "% S के लिए सफलतापूर्वक अद्यतन सदस्यता"
+msgstr "%s के लिए सफलतापूर्वक अद्यतन सदस्यता"
 
 #: apps/profiles/views.py:990
 #, python-format
@@ -10182,7 +10182,7 @@ msgstr "फ़ाइल"
 #: apps/sitemaps/views.py:56
 #, python-format
 msgid "No sitemap available for section: %r"
-msgstr "खंड के लिए उपलब्ध नहीं साइटमैप:% R"
+msgstr ""
 
 #: apps/social_auth/views.py:37 apps/social_auth/views.py:75
 #: apps/social_auth/views.py:100

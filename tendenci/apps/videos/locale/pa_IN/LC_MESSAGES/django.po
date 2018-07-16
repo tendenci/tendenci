@@ -26,14 +26,14 @@ msgstr "ਸ਼੍ਰੇਣੀ:"
 msgid ""
 "Created on %(create_date)s\n"
 "            by:"
-msgstr "% (Create_date) s &#39;ਤੇ ਬਣਾਇਆ             ਕੇ:"
+msgstr "%(create_date)s &#39;ਤੇ ਬਣਾਇਆ             ਕੇ:"
 
 #: templates/videos/meta.html:28
 #, python-format
 msgid ""
 "Last updated %(update_date)s\n"
 "            by:"
-msgstr "ਪਿਛਲੇ ਅੱਪਡੇਟ ਕੀਤਾ% (update_date) s             ਕੇ:"
+msgstr "ਪਿਛਲੇ ਅੱਪਡੇਟ ਕੀਤ%(update_date)s             ਕੇ:"
 
 #: templates/videos/meta.html:39
 msgid "Share"
