@@ -41,20 +41,18 @@
     </p>
 
     <h4 class="capitalize">
-        <em>
-            {% if MODULE_DIRECTORIES_LABEL_PLURAL and MODULE_DIRECTORIES_LABEL %}
-                {% blocktrans count obj_count=paginator.count %}
-                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL }} Found
-                {% plural %}
-                    {{ obj_count }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} Found
-                {% endblocktrans %}
-            {% else %}
-                {% blocktrans count obj_count=paginator.count %}
-                    {{ obj_count }} Directory Found
-                {% plural %}
-                    {{ obj_count }} Directories Found
-                {% endblocktrans %}
-            {% endif %}
+    	<em>
+        	{% with obj_count=paginator.count  %}
+        		{% if MODULE_DIRECTORIES_LABEL and MODULE_DIRECTORIES_LABEL_PLURAL %}
+        			{%  if obj_count == 1 %}
+        				{% blocktrans %}{{ obj_count }} {{ MODULE_DIRECTORIES_LABEL }} Found{% endblocktrans %}
+        			{% else %}
+        				{% blocktrans %}{{ obj_count }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} Found{% endblocktrans %}
+        			{% endif %}
+        		{% else %}
+	                {% blocktrans %}{{ obj_count }} Director{{ pluralize:"y,ies" }} Found{% endblocktrans %}
+            	{% endif %}
+        	{% endwith %}
         </em>
     </h4>
 
