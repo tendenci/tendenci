@@ -51,14 +51,14 @@
         "updated_by": ""
     },
     {
-        "default_value": "Directories",
+        "default_value": "Directory",
         "description": "The singular name of the app.",
         "data_type": "string",
         "update_dt": "2012-02-29 09:53:34",
         "input_type": "text",
         "client_editable": true,
         "name": "label",
-        "value": "Directories",
+        "value": "Directory",
         "label": "Label",
         "input_value": " ",
         "parent_id": 0,
