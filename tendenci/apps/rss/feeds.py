@@ -27,7 +27,6 @@ class GlobalFeed(Feed):
         self.__qualname__ = self.__class__.__name__  # https://code.djangoproject.com/ticket/29296
         self.all_items = []     # all items for this rss feed
         self.feed_for_item = {}   # item -> feed cache
-        self.load_feeds_items() # load items
 
     def load_feeds_items(self):
         """ Load all feeds items """
@@ -46,6 +45,12 @@ class GlobalFeed(Feed):
                     break
 
     def items(self):
+        if not self.all_items:
+            # This method is moved from '__init__' to here to avoid querying db thus
+            # avoid the error "column doesn't exist" on system checks when making new
+            # migrations with the 'makemigrations' command and also applying the migrations
+            # with  the 'migrate' commands.
+            self.load_feeds_items() # load items
         return self.all_items[:max_items]
 
     def item_title(self, item):
