@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-12 13:14-0500\n"
+"POT-Creation-Date: 2018-07-18 22:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,7 +105,7 @@ msgid "An account already exists for the email %(email)s."
 msgstr ""
 
 #: apps/announcements/admin.py:16 apps/articles/admin.py:46
-#: apps/articles/forms.py:187 apps/boxes/admin.py:19 apps/careers/admin.py:33
+#: apps/articles/forms.py:197 apps/boxes/admin.py:19 apps/careers/admin.py:33
 #: apps/careers/forms.py:46 apps/corporate_memberships/admin.py:110
 #: apps/directories/forms.py:237 apps/discounts/admin.py:24
 #: apps/discounts/forms.py:49 apps/educations/admin.py:25
@@ -231,17 +231,17 @@ msgstr ""
 msgid "File entry does not exist."
 msgstr ""
 
-#: apps/articles/admin.py:17 apps/articles/forms.py:159
+#: apps/articles/admin.py:17 apps/articles/forms.py:168
 msgid "Article Information"
 msgstr ""
 
-#: apps/articles/admin.py:30 apps/articles/forms.py:178
-#: apps/articles/models.py:28 apps/news/admin.py:28 apps/news/forms.py:104
+#: apps/articles/admin.py:30 apps/articles/forms.py:188
+#: apps/articles/models.py:30 apps/news/admin.py:28 apps/news/forms.py:104
 #: apps/news/models.py:36 apps/pages/models.py:98
 msgid "Author"
 msgstr ""
 
-#: apps/articles/admin.py:40 apps/articles/forms.py:173 apps/news/admin.py:27
+#: apps/articles/admin.py:40 apps/articles/forms.py:183 apps/news/admin.py:27
 #: apps/news/forms.py:99 apps/pages/forms.py:168
 msgid "Contributor"
 msgstr ""
@@ -291,32 +291,32 @@ msgstr ""
 msgid "Latest Articles by %(sitedisplayname)s"
 msgstr ""
 
-#: apps/articles/forms.py:21 apps/articles/forms.py:43
+#: apps/articles/forms.py:24 apps/articles/forms.py:46
 #: themes/t7-base/templates/theme_includes/stories_headlines.html:16
 msgid "Headline"
 msgstr ""
 
-#: apps/articles/forms.py:22 apps/articles/forms.py:45
+#: apps/articles/forms.py:25 apps/articles/forms.py:48
 msgid "Author First Name"
 msgstr ""
 
-#: apps/articles/forms.py:23 apps/articles/forms.py:44
+#: apps/articles/forms.py:26 apps/articles/forms.py:47
 msgid "Author Last Name"
 msgstr ""
 
-#: apps/articles/forms.py:24 apps/articles/forms.py:46
+#: apps/articles/forms.py:27 apps/articles/forms.py:49
 msgid "Article ID"
 msgstr ""
 
-#: apps/articles/forms.py:25
+#: apps/articles/forms.py:28
 msgid "Article Parent ID(#)"
 msgstr ""
 
-#: apps/articles/forms.py:27 apps/articles/forms.py:48
+#: apps/articles/forms.py:30 apps/articles/forms.py:51
 msgid "Body"
 msgstr ""
 
-#: apps/articles/forms.py:28 apps/articles/forms.py:49
+#: apps/articles/forms.py:31 apps/articles/forms.py:52
 #: apps/directories/forms.py:46 apps/events/forms.py:76 apps/events/forms.py:94
 #: apps/perms/admin.py:212 themes/t7-base/templates/case_studies/view.html:84
 #: themes/t7-base/templates/help_files/meta.html:7
@@ -326,33 +326,33 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
-#: apps/articles/forms.py:30 apps/directories/forms.py:50
+#: apps/articles/forms.py:33 apps/directories/forms.py:50
 #: apps/events/forms.py:80
 msgid "Creator Userid(#)"
 msgstr ""
 
-#: apps/articles/forms.py:31 apps/directories/forms.py:51
+#: apps/articles/forms.py:34 apps/directories/forms.py:51
 #: apps/events/forms.py:81 apps/newsletters/forms.py:26
 #: apps/user_groups/forms.py:19
 msgid "Creator Username"
 msgstr ""
 
-#: apps/articles/forms.py:33
+#: apps/articles/forms.py:36
 msgid "Featured Article"
 msgstr ""
 
-#: apps/articles/forms.py:35 apps/directories/forms.py:52
+#: apps/articles/forms.py:38 apps/directories/forms.py:52
 #: apps/events/forms.py:82
 msgid "Owner Userid(#)"
 msgstr ""
 
-#: apps/articles/forms.py:36 apps/directories/forms.py:53
+#: apps/articles/forms.py:39 apps/directories/forms.py:53
 #: apps/events/forms.py:83 apps/newsletters/forms.py:24
 #: apps/payments/forms.py:68 apps/user_groups/forms.py:27
 msgid "Owner Username"
 msgstr ""
 
-#: apps/articles/forms.py:38 apps/corporate_memberships/forms.py:1116
+#: apps/articles/forms.py:41 apps/corporate_memberships/forms.py:1116
 #: apps/directories/forms.py:55 themes/t7-base/templates/emails/edit.html:97
 #: themes/t7-base/templates/memberships/applications/detail_default.html:579
 #: themes/t7-base/templates/profiles/add.html:400
@@ -361,74 +361,83 @@ msgstr ""
 msgid "Status Detail"
 msgstr ""
 
-#: apps/articles/forms.py:39
+#: apps/articles/forms.py:42
 msgid "Syndicate"
 msgstr ""
 
-#: apps/articles/forms.py:53
+#: apps/articles/forms.py:56
 msgid "Author <i class=\"gauthor-info fa fa-lg fa-question-circle\"></i>"
 msgstr ""
 
-#: apps/articles/forms.py:54
+#: apps/articles/forms.py:57
 msgid "Publisher <i class=\"gpub-info fa fa-lg fa-question-circle\"></i>"
 msgstr ""
 
-#: apps/articles/forms.py:56
+#: apps/articles/forms.py:59
 msgid ""
 "Additional Options for Authorship <i class=\"gauthor-help fa fa-lg fa-"
 "question-circle\"></i><br>Additional Options for Publisher <i class=\"gpub-"
 "help fa fa-lg fa-question-circle\"></i>"
 msgstr ""
 
-#: apps/articles/forms.py:63
+#: apps/articles/forms.py:66
 #: themes/t7-base/templates/newsletters/actions/step2.html:36
 msgid "Search by"
 msgstr ""
 
-#: apps/articles/forms.py:66 themes/t7-base/templates/videos/list.html:19
+#: apps/articles/forms.py:69 themes/t7-base/templates/videos/list.html:19
 msgid "All Categories"
 msgstr ""
 
-#: apps/articles/forms.py:67
+#: apps/articles/forms.py:70
 msgid "All Subcategories"
 msgstr ""
 
-#: apps/articles/forms.py:81
+#: apps/articles/forms.py:84
 #, python-format
 msgid "All Categories (%d)"
 msgstr ""
 
-#: apps/articles/forms.py:83
+#: apps/articles/forms.py:86
 #, python-format
 msgid "All Subcategories (%d)"
 msgstr ""
 
-#: apps/articles/forms.py:97 apps/events/forms.py:135 apps/events/forms.py:164
+#: apps/articles/forms.py:100 apps/events/forms.py:135 apps/events/forms.py:164
 #: apps/user_groups/forms.py:44
 msgid "Select a category"
 msgstr ""
 
-#: apps/articles/forms.py:103 apps/user_groups/forms.py:50
+#: apps/articles/forms.py:106 apps/user_groups/forms.py:50
 msgid "Must be an integer"
 msgstr ""
 
-#: apps/articles/forms.py:107
+#: apps/articles/forms.py:110
 msgid "Please select a date"
 msgstr ""
 
-#: apps/articles/forms.py:118 apps/articles/models.py:47 apps/news/forms.py:39
+#: apps/articles/forms.py:121 apps/articles/models.py:54 apps/news/forms.py:39
 #: apps/news/models.py:58
 msgid "Release Date/Time"
 msgstr ""
 
-#: apps/articles/forms.py:125 apps/articles/models.py:50
+#: apps/articles/forms.py:129 apps/photos/models.py:149
+#: themes/t7-base/templates/photos/sizes.html:43
+msgid "Thumbnail"
+msgstr ""
+
+#: apps/articles/forms.py:132 apps/locations/models.py:41
+msgid "Only jpg, gif, or png images."
+msgstr ""
+
+#: apps/articles/forms.py:133 apps/articles/models.py:57
 #: apps/directories/models.py:86 apps/help_files/models.py:42
 #: apps/jobs/models.py:79 apps/news/models.py:61 apps/pages/models.py:38
 #: apps/resumes/models.py:58 apps/stories/models.py:47
 msgid "Include in RSS feed"
 msgstr ""
 
-#: apps/articles/forms.py:127 apps/boxes/forms.py:14 apps/careers/forms.py:10
+#: apps/articles/forms.py:135 apps/boxes/forms.py:14 apps/careers/forms.py:10
 #: apps/corporate_memberships/forms.py:65
 #: apps/corporate_memberships/forms.py:113
 #: apps/corporate_memberships/forms.py:566
@@ -467,7 +476,7 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: apps/articles/forms.py:127 apps/boxes/forms.py:14 apps/careers/forms.py:11
+#: apps/articles/forms.py:135 apps/boxes/forms.py:14 apps/careers/forms.py:11
 #: apps/corporate_memberships/forms.py:66
 #: apps/corporate_memberships/forms.py:114
 #: apps/corporate_memberships/forms.py:573 apps/directories/choices.py:22
@@ -494,7 +503,7 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
-#: apps/articles/forms.py:127 apps/careers/forms.py:12
+#: apps/articles/forms.py:135 apps/careers/forms.py:12
 #: apps/corporate_memberships/forms.py:567
 #: apps/corporate_memberships/forms.py:846
 #: apps/corporate_memberships/models.py:1738 apps/directories/forms.py:131
@@ -532,7 +541,7 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#: apps/articles/forms.py:128 apps/base/widgets.py:72 apps/base/widgets.py:73
+#: apps/articles/forms.py:136 apps/base/widgets.py:72 apps/base/widgets.py:73
 #: apps/contacts/forms.py:40 apps/corporate_memberships/forms.py:729
 #: apps/corporate_memberships/models.py:74
 #: apps/corporate_memberships/models.py:202
@@ -589,7 +598,7 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: apps/articles/forms.py:195 apps/careers/forms.py:54
+#: apps/articles/forms.py:205 apps/careers/forms.py:54
 #: apps/directories/forms.py:251 apps/discounts/forms.py:57
 #: apps/educations/forms.py:46 apps/entities/forms.py:46
 #: apps/events/forms.py:663 apps/files/forms.py:71
@@ -604,7 +613,7 @@ msgstr ""
 msgid "Administrator Only"
 msgstr ""
 
-#: apps/articles/forms.py:238 apps/events/forms.py:761
+#: apps/articles/forms.py:283 apps/events/forms.py:761
 #: apps/events/forms.py:1140 apps/files/forms.py:118 apps/files/forms.py:309
 #: apps/files/forms.py:472 apps/forms_builder/forms/forms.py:336
 #: apps/news/forms.py:157 apps/photos/forms.py:172 apps/photos/forms.py:249
@@ -612,11 +621,11 @@ msgstr ""
 msgid "Invalid group selected."
 msgstr ""
 
-#: apps/articles/models.py:29 apps/news/models.py:37 apps/pages/models.py:99
+#: apps/articles/models.py:31 apps/news/models.py:37 apps/pages/models.py:99
 msgid "Publisher"
 msgstr ""
 
-#: apps/articles/models.py:32 apps/corporate_memberships/models.py:1343
+#: apps/articles/models.py:34 apps/corporate_memberships/models.py:1343
 #: apps/directories/models.py:50 apps/help_files/models.py:34
 #: apps/jobs/models.py:51 apps/locations/models.py:22 apps/news/models.py:40
 #: apps/pages/models.py:33 apps/projects/models.py:97 apps/resumes/models.py:27
@@ -624,7 +633,7 @@ msgstr ""
 msgid "URL Path"
 msgstr ""
 
-#: apps/articles/models.py:33 apps/contacts/models.py:82
+#: apps/articles/models.py:35 apps/contacts/models.py:82
 #: apps/directories/models.py:51 apps/events/models.py:1105
 #: apps/news/models.py:41
 #: themes/t7-base/templates/notification/user_edited/full.html:598
@@ -634,7 +643,7 @@ msgstr ""
 msgid "Time Zone"
 msgstr ""
 
-#: apps/articles/models.py:38 apps/corporate_memberships/forms.py:724
+#: apps/articles/models.py:40 apps/corporate_memberships/forms.py:724
 #: apps/directories/models.py:62 apps/events/forms.py:2122
 #: apps/events/forms.py:2147 apps/events/models.py:1439
 #: apps/events/settings.py:23 apps/forms_builder/forms/models.py:51
@@ -671,7 +680,7 @@ msgstr ""
 msgid "First Name"
 msgstr ""
 
-#: apps/articles/models.py:39 apps/corporate_memberships/forms.py:727
+#: apps/articles/models.py:41 apps/corporate_memberships/forms.py:727
 #: apps/directories/models.py:63 apps/events/forms.py:2123
 #: apps/events/forms.py:2148 apps/events/models.py:1440
 #: apps/events/settings.py:24 apps/forms_builder/forms/models.py:52
@@ -708,44 +717,50 @@ msgstr ""
 msgid "Last Name"
 msgstr ""
 
-#: apps/articles/models.py:42 apps/news/models.py:50 apps/pages/models.py:104
+#: apps/articles/models.py:44 apps/news/models.py:50 apps/pages/models.py:104
 msgid "Google+ URL"
 msgstr ""
 
-#: apps/articles/models.py:52 apps/directories/models.py:87
+#: apps/articles/models.py:51 apps/news/models.py:57
+msgid ""
+"The thumbnail image can be used on your homepage or sidebar if it is setup "
+"in your theme. The thumbnail image will not display on the news page."
+msgstr ""
+
+#: apps/articles/models.py:59 apps/directories/models.py:87
 #: apps/news/models.py:62 apps/pages/models.py:37
 msgid "Design Notes"
 msgstr ""
 
-#: apps/articles/models.py:57 apps/directories/models.py:92
+#: apps/articles/models.py:64 apps/directories/models.py:92
 #: apps/news/models.py:67
 msgid "Enclosure URL"
 msgstr ""
 
-#: apps/articles/models.py:58 apps/directories/models.py:93
+#: apps/articles/models.py:65 apps/directories/models.py:93
 #: apps/news/models.py:68
 msgid "Enclosure Type"
 msgstr ""
 
-#: apps/articles/models.py:59 apps/directories/models.py:94
+#: apps/articles/models.py:66 apps/directories/models.py:94
 #: apps/news/models.py:69
 msgid "Enclosure Length"
 msgstr ""
 
-#: apps/articles/models.py:61
+#: apps/articles/models.py:68
 msgid "Official Content"
 msgstr ""
 
-#: apps/articles/models.py:76
+#: apps/articles/models.py:83
 msgid "Can view article"
 msgstr ""
 
-#: apps/articles/models.py:77
+#: apps/articles/models.py:84
 #: themes/t7-base/templates/helpdesk/kb_category.html:13
 msgid "Article"
 msgstr ""
 
-#: apps/articles/models.py:78 apps/wp_exporter/forms.py:27
+#: apps/articles/models.py:85 apps/wp_exporter/forms.py:27
 #: themes/t7-base/templates/campaign_monitor/campaigns/add.html:66
 #: themes/t7-base/templates/dashboard/index.html:87
 #: themes/t7-base/templates/dashboard/new.html:85
@@ -3887,7 +3902,7 @@ msgid "The date time this price ceases to be available"
 msgstr ""
 
 #: apps/events/forms.py:1160
-msgid "Start Date/Time should come after End Date/Time"
+msgid "Pricing: Start Date/Time should come before End Date/Time"
 msgstr ""
 
 #: apps/events/forms.py:1183
@@ -4797,19 +4812,19 @@ msgstr ""
 msgid "Public can View"
 msgstr ""
 
-#: apps/files/models.py:70
+#: apps/files/models.py:72
 msgid "Files Category"
 msgstr ""
 
-#: apps/files/models.py:72
+#: apps/files/models.py:74
 msgid "Files Sub Category"
 msgstr ""
 
-#: apps/files/models.py:83
+#: apps/files/models.py:85
 msgid "Can view file"
 msgstr ""
 
-#: apps/files/models.py:419
+#: apps/files/models.py:421
 msgid "File Categories"
 msgstr ""
 
@@ -5675,10 +5690,6 @@ msgstr ""
 
 #: apps/locations/forms.py:26
 msgid "Remove the current logo"
-msgstr ""
-
-#: apps/locations/models.py:41
-msgid "Only jpg, gif, or png images."
 msgstr ""
 
 #: apps/locations/models.py:43
@@ -6596,12 +6607,6 @@ msgid ""
 "in your theme. It will not display on the news page."
 msgstr ""
 
-#: apps/news/models.py:57
-msgid ""
-"The thumbnail image can be used on your homepage or sidebar if it is setup "
-"in your theme. The thumbnail image will not display on the news page."
-msgstr ""
-
 #: apps/news/models.py:71
 msgid "Auto Timestamp"
 msgstr ""
@@ -7231,10 +7236,6 @@ msgstr ""
 
 #: apps/photos/models.py:141
 msgid "An \"admin_thumbnail\" photo size has not been defined."
-msgstr ""
-
-#: apps/photos/models.py:149 themes/t7-base/templates/photos/sizes.html:43
-msgid "Thumbnail"
 msgstr ""
 
 #: apps/photos/models.py:356 apps/photos/models.py:486
@@ -10624,7 +10625,6 @@ msgstr ""
 
 #: themes/t7-base/templates/articles/delete.html:16
 #: themes/t7-base/templates/articles/print-view.html:28
-#: themes/t7-base/templates/articles/search-result.html:13
 #: themes/t7-base/templates/articles/view.html:33
 #: themes/t7-base/templates/directories/print-view.html:32
 #: themes/t7-base/templates/directories/search-result.html:19
@@ -10979,7 +10979,7 @@ msgid "Website:"
 msgstr ""
 
 #: themes/t7-base/templates/articles/meta.html:42
-#: themes/t7-base/templates/articles/search-result.html:23
+#: themes/t7-base/templates/articles/search-result.html:29
 #: themes/t7-base/templates/committees/meta.html:16
 #: themes/t7-base/templates/directories/meta.html:74
 #: themes/t7-base/templates/files/details.html:45
@@ -10994,7 +10994,7 @@ msgid "Category:"
 msgstr ""
 
 #: themes/t7-base/templates/articles/meta.html:45
-#: themes/t7-base/templates/articles/search-result.html:26
+#: themes/t7-base/templates/articles/search-result.html:32
 #: themes/t7-base/templates/committees/meta.html:19
 #: themes/t7-base/templates/directories/meta.html:77
 #: themes/t7-base/templates/jobs/meta.html:19
@@ -11531,12 +11531,6 @@ msgstr ""
 msgid "Submitted on %(date)s by %(creator)s"
 msgstr ""
 
-#: themes/t7-base/templates/articles/search-result.html:11
-#: themes/t7-base/templates/directories/search-result.html:17
-#, python-format
-msgid "%(summary)s"
-msgstr ""
-
 #: themes/t7-base/templates/articles/search.html:10
 #: themes/t7-base/templates/articles/search.html:28
 #, python-format
@@ -11548,33 +11542,22 @@ msgstr ""
 msgid "Articles List"
 msgstr ""
 
-#: themes/t7-base/templates/articles/search.html:40
+#: themes/t7-base/templates/articles/search.html:42
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s %(MODULE_ARTICLES_LABEL)s Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s %(MODULE_ARTICLES_LABEL_PLURAL)s Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_ARTICLES_LABEL)s Found"
+msgstr ""
 
-#: themes/t7-base/templates/articles/search.html:46
+#: themes/t7-base/templates/articles/search.html:44
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s Article Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s Articles Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_ARTICLES_LABEL_PLURAL)s Found"
+msgstr ""
 
-#: themes/t7-base/templates/articles/search.html:62
+#: themes/t7-base/templates/articles/search.html:47
+#, python-format
+msgid "%(obj_count)s Article%(pluralize)s Found"
+msgstr ""
+
+#: themes/t7-base/templates/articles/search.html:60
 #, python-format
 msgid ""
 "\n"
@@ -11582,7 +11565,7 @@ msgid ""
 "                        "
 msgstr ""
 
-#: themes/t7-base/templates/articles/search.html:66
+#: themes/t7-base/templates/articles/search.html:64
 msgid "Add a New Article"
 msgstr ""
 
@@ -13040,33 +13023,20 @@ msgstr ""
 msgid "Pending Corporate Memberships Search"
 msgstr ""
 
-#: themes/t7-base/templates/corporate_memberships/applications/search.html:60
+#: themes/t7-base/templates/corporate_memberships/applications/search.html:62
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s %(MODULE_CORPORATEMEMBERSHIPS_LABEL)s "
-"Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s "
-"%(MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL)s Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_CORPORATEMEMBERSHIPS_LABEL)s Found"
+msgstr ""
 
-#: themes/t7-base/templates/corporate_memberships/applications/search.html:66
+#: themes/t7-base/templates/corporate_memberships/applications/search.html:64
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s Corporate Membership Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s Corporate Memberships Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL)s Found"
+msgstr ""
+
+#: themes/t7-base/templates/corporate_memberships/applications/search.html:67
+#, python-format
+msgid "%(obj_count)s Corporate Membership%(pluralize)s Found"
+msgstr ""
 
 #: themes/t7-base/templates/corporate_memberships/applications/upgrade.html:27
 #: themes/t7-base/templates/corporate_memberships/options.html:61
@@ -15200,6 +15170,11 @@ msgid ""
 "        "
 msgstr ""
 
+#: themes/t7-base/templates/directories/search-result.html:17
+#, python-format
+msgid "%(summary)s"
+msgstr ""
+
 #: themes/t7-base/templates/directories/search.html:10
 #: themes/t7-base/templates/directories/search.html:27
 #, python-format
@@ -15215,33 +15190,22 @@ msgstr ""
 msgid "Directory Starts With:"
 msgstr ""
 
-#: themes/t7-base/templates/directories/search.html:46
+#: themes/t7-base/templates/directories/search.html:48
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s %(MODULE_DIRECTORIES_LABEL)s Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s %(MODULE_DIRECTORIES_LABEL_PLURAL)s Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_DIRECTORIES_LABEL)s Found"
+msgstr ""
 
-#: themes/t7-base/templates/directories/search.html:52
+#: themes/t7-base/templates/directories/search.html:50
 #, python-format
-msgid ""
-"\n"
-"                    %(obj_count)s Directory Found\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(obj_count)s Directories Found\n"
-"                "
-msgstr[0] ""
-msgstr[1] ""
+msgid "%(obj_count)s %(MODULE_DIRECTORIES_LABEL_PLURAL)s Found"
+msgstr ""
 
-#: themes/t7-base/templates/directories/search.html:68
+#: themes/t7-base/templates/directories/search.html:53
+#, python-format
+msgid "%(obj_count)s Director%(pluralize:\"y,ies\")s Found"
+msgstr ""
+
+#: themes/t7-base/templates/directories/search.html:66
 #, python-format
 msgid ""
 "\n"
@@ -15249,7 +15213,7 @@ msgid ""
 "                        "
 msgstr ""
 
-#: themes/t7-base/templates/directories/search.html:72
+#: themes/t7-base/templates/directories/search.html:70
 msgid "Add a New Directory"
 msgstr ""
 
