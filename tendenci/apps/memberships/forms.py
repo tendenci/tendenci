@@ -521,6 +521,7 @@ def assign_fields(form, app_field_objs):
             del form.fields[name]
     # update the field attrs - label, required...
     for obj in app_field_objs:
+        obj.display_only = False
         if obj.field_name in field_names:
             if obj.field_type and obj.field_name not in [
                                     'payment_method',
@@ -565,6 +566,8 @@ def assign_fields(form, app_field_objs):
                     if obj.field_stype == 'textarea':
                         label_type.append('float-left')
                         obj.field_div_class = 'float-left'
+            else:
+                obj.field_div_class = ''
             obj.label_type = ' '.join(label_type)
 
 
@@ -1116,7 +1119,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             if apply_above_cap:
                 require_payment =  above_cap_price > 0
             else:
-                require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
+                require_payment = (memb_type.price > 0 or (memb_type.admin_fee and memb_type.admin_fee > 0))
         else:
             # if all membership types are free, no need to display payment method
             require_payment = self.membership_app.membership_types.filter(

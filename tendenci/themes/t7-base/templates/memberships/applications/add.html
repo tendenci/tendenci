@@ -184,7 +184,7 @@
             {% render_membership_field request field_obj user_form profile_form demographics_form membership_form education_form %}
             {% if field_obj.field_name == 'membership_type' %}
 
-                {% if membership_form.donation_option_value %}
+                {% if 'donation_option_value' in membership_form.fields %}
                     <div class="form-group clearfix donation-option-value" style="margin-top: 1.5em;">
                         <label for="{{ membership_form.donation_option_value.id_for_label }}" class="col-sm-3 control-label">{{ membership_form.donation_option_value.label }}</label>
 
@@ -214,9 +214,9 @@
             {% endif %}
         {% endfor %}
 
-        {% if membership_form.discount_code %}
+        {% if 'discount_code' in membership_form.fields %}
             <div class="form-group">
-                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount Code" %}</label>
+                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount CodeAAAAAAAAA" %}</label>
 
                 <div class="col-sm-9">
                     {{ membership_form.discount_code }}
@@ -266,6 +266,7 @@
       (function($){
         $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
         $('.timepicker').timepicker({'step':15});
+        {% if 'discount_code' in membership_form.fields %}
         $('#discount_check').click(function(){
             var code = $('#id_discount_code').val();
             var model = 'membershipset';
@@ -285,6 +286,7 @@
                 }
             );
         });
+        {% endif %}
       })(jQuery);
         $(document).ready(function(){
 
