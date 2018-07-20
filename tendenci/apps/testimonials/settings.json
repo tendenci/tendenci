@@ -15,5 +15,39 @@
         "scope_category": "testimonials",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": "Testimonial",
+        "description": "The singular name of the module.",
+        "data_type": "string",
+        "update_dt": "2018-07-20 12:02:12",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "label",
+        "value": "Testimonial",
+        "label": "Label",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "testimonials",
+        "store": false,
+        "updated_by": ""
+    },
+    {
+        "default_value": "Testimonials",
+        "description": "The plural name of the module.",
+        "data_type": "string",
+        "update_dt": "2018-07-20 12:02:12",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "label_plural",
+        "value": "Testimonials",
+        "label": "Label (Plural)",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "testimonials",
+        "store": false,
+        "updated_by": ""
     }
 ]

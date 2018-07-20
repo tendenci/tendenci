@@ -141,12 +141,6 @@
                         <li><a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url "admin:index" %}">{% trans "Admin Backend" %}</a></li>
                         <li><a href="{% url "theme_editor.editor" %}">{% trans "Theme Editor" %}</a></li>
-                        {% if THEME_INFO.SSU.walkthrough %}
-                        <li><a id="walkthrough-quicklink" href="/">{% trans "Homepage Walkthrough" %}</a></li>
-                        {% endif %}
-                        {% if THEME_INFO.SSU.checklist %}
-                        <li><a href="{% url 'completion_checklist' %}">{% trans "Completion Status" %}</a></li>
-                        {% endif %}
                         <li><a href="{% url "addon.upload" %}">{% trans "Module Upload" %}</a></li>
                         <li><a href="/newsletter_generator/">{% trans "Newsletter Generator" %}</a></li>
                         <li><a href="{% url "event_log.search" %}">{% trans "Event Logs" %}</a></li>
@@ -199,17 +193,6 @@
         <li class="right visible-mobile">
             <form action="/search/" method="get" name="search" id="admin-search-box">
            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
-        </li>
-        {% endif %}
-
-        {% if THEME_INFO.SSU.color %}
-        <li class="right" id="themecolor">
-            <a href="#"><img class="themecolorLogo" src="{% static 'images/icons/color-palette-16x16.png' %}">&nbsp;&nbsp;{% trans "Colors" %}</a>
-            <div class="sub themecolor">
-                <div class="column app-list">
-                    {% include 'theme_editor/theme_color_admin.html' %}
-                </div>
-            </div>
         </li>
         {% endif %}
     </ul>

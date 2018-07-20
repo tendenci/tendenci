@@ -50,8 +50,6 @@ Fork us at github.com/tendenci  -->
     
     {% endif %}
     
-    {% if request.user.is_superuser and THEME_INFO.SSU.color %}
-    {% endif %}
     
     <link href="{% static 'yamm/yamm.css' %}" rel="stylesheet" type="text/css">
     
@@ -145,21 +143,6 @@ Fork us at github.com/tendenci  -->
     {% endif %}
     
     {% block extra_body %}{% endblock %}
-    
-    {% if request.user.is_superuser and THEME_INFO.SSU.color %}
-    <script type="text/javascript" src="{% static 'js/jquery_plugins/spectrum.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/theme_color_admin.js' %}"></script>
-    {% endif %}
-    
-    {% if THEME_INFO.SSU.walkthrough %}
-    <script type="text/javascript">
-      $('#walkthrough-quicklink').click(function () {
-      var d = new Date();
-      d.setDate(d.getDate() - 2);
-      document.cookie = "_walkthrough-walkthrough=; path=/; expires=" + d.toUTCString() + ";";
-      });
-    </script>
-    {% endif %}
     
     <script type="text/javascript">
       jQuery(document).on('click', '.yamm .dropdown-menu', function (e) {

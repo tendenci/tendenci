@@ -34,6 +34,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "Stories",
+        "description": "The plural name of the module.",
+        "data_type": "string",
+        "update_dt": "2018-07-20 11:50:12",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "label_plural",
+        "value": "Stories",
+        "label": "Label (Plural)",
+        "input_value": " ",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "stories",
+        "store": false,
+        "updated_by": ""
+    },
+    {
         "default_value": "stories",
         "description": "The root url for the stories app. Use letters and dashes only.",
         "data_type": "string",

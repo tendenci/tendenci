@@ -7,11 +7,7 @@
 
 
 {% block title %}
-    {% if MODULE_PAGES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
-    {% else %}
-        {% trans "Pages Search" %}
-    {% endif %} - {{ block.super }}
+    {% trans "Pages Search" %} - {{ block.super }}
 {% endblock %}
 
 {% block extra_head %}
@@ -24,26 +20,16 @@
 {% block content %}
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
-        {% if MODULE_PAGES_LABEL_PLURAL %}
-            {% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
-        {% else %}
-            {% trans "Pages Search" %}
-        {% endif %}
+        {% trans "Pages Search" %}
     </h1>
 
     {% page_search %}
     {% autopaginate pages 10 %}
 
     <h4 class="capitalize">
-        {% if MODULE_PAGES_LABEL_PLURAL %}
-            <em>{% blocktrans with label_plural=MODULE_PAGES_LABEL_PLURAL count=paginator.count %}
-                {{ count }} {{ label_plural }} Found
-            {% endblocktrans %}</em>
-        {% else %}
-            <em>{% blocktrans with count=paginator.count %}
-                {{ count }} Pages Found
-            {% endblocktrans %}</em>
-        {% endif %}
+         <em>{% blocktrans with count=paginator.count %}
+             {{ count }} Pages Found
+         {% endblocktrans %}</em>
     </h4>
 
     <section>

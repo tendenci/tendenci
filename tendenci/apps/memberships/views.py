@@ -1320,7 +1320,8 @@ def membership_default_add(request, slug='', membership_id=None,
         'education_form': education_form,
         'demographics_form': demographics_form,
         'membership_form': membership_form,
-        'captcha_form': captcha_form
+        'captcha_form': captcha_form,
+        'is_edit': False,
     }
     return render_to_resp(request=request, template_name=template, context=context)
 
