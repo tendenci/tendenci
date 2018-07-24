@@ -52,10 +52,10 @@
         {% if page_cat.category %}
             <li>
                 <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category }}">{{ page_cat.category }}</a></li>
+                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'page.search' %}?q=category:{{ page_cat.category|urlencode }}">{{ page_cat.category }}</a></li>
                     {% if page_cat.sub_category %}
                         <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'page.search' %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a></li>
+                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'page.search' %}?q=sub_category:{{ page_cat.sub_category|urlencode }}">{{ page_cat.sub_category }}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -66,12 +66,12 @@
         <li>
             {% if nonhash_tags or can_edit_page %}<strong>{% trans "Tag(s):" %}</strong>{% endif %}
             {% for tag in nonhash_tags %}
-                <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
             {% endfor %}
 
             {% if hash_tags and can_edit_page %}
                 {% for tag in nonhash_tags %}
-                    <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                    <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
                 {% endfor %}
             {% endif %}
         <li>
