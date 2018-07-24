@@ -20,7 +20,7 @@ try:
     from django.utils import timezone
 except ImportError:
     from datetime import datetime as timezone
-
+from tendenci.apps.site_settings.utils import get_setting
 
 @python_2_unicode_compatible
 class Queue(models.Model):
@@ -463,12 +463,8 @@ class Ticket(models.Model):
         Returns a publicly-viewable URL for this ticket, used when giving
         a URL to the submitter of a ticket.
         """
-        try:
-            site = Site.objects.get_current()
-        except:
-            site = Site(domain='configure-django-sites.com')
-        return u"http://%s%s?ticket=%s&email=%s" % (
-            site.domain,
+        return u"%s%s?ticket=%s&email=%s" % (
+            get_setting('site', 'global', 'siteurl'),
             reverse('helpdesk_public_view'),
             self.ticket_for_url,
             self.submitter_email
@@ -480,12 +476,8 @@ class Ticket(models.Model):
         Returns a staff-only URL for this ticket, used when giving a URL to
         a staff member (in emails etc)
         """
-        try:
-            site = Site.objects.get_current()
-        except:
-            site = Site(domain='configure-django-sites.com')
-        return u"http://%s%s" % (
-            site.domain,
+        return u"%s%s" % (
+            get_setting('site', 'global', 'siteurl'),
             reverse('helpdesk_view',
             args=[self.id])
             )
