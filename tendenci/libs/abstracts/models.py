@@ -121,7 +121,7 @@ class Person(TendenciBaseModel):
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 
-    time_zone = TimeZoneField(verbose_name=_('timezone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
+    time_zone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
     perms = GenericRelation(ObjectPermission,
