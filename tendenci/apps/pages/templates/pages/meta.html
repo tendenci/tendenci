@@ -67,12 +67,12 @@
         <li>
             {% if nonhash_tags or can_edit_page %}<strong>{% trans "Tag(s):" %}</strong>{% endif %}
             {% for tag in nonhash_tags %}
-                <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
             {% endfor %}
 
             {% if hash_tags and can_edit_page %}
                 {% for tag in nonhash_tags %}
-                    <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                    <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
                 {% endfor %}
             {% endif %}
         <li>
