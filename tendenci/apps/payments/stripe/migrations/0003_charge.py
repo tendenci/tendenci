@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations, models
 
 
@@ -15,10 +13,10 @@ class Migration(migrations.Migration):
             name='Charge',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('charge_id', models.CharField(default=b'', max_length=100)),
+                ('charge_id', models.CharField(default='', max_length=100)),
                 ('amount', models.DecimalField(max_digits=15, decimal_places=2)),
                 ('amount_refunded', models.DecimalField(max_digits=15, decimal_places=2)),
-                ('currency', models.CharField(default=b'usd', max_length=5)),
+                ('currency', models.CharField(default='usd', max_length=5)),
                 ('captured', models.BooleanField(default=False)),
                 ('livemode', models.BooleanField(default=False)),
                 ('charge_dt', models.DateTimeField(verbose_name='Charged On')),

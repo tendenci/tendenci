@@ -16,6 +16,8 @@ class Migration(migrations.Migration):
         ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('entities', '0001_initial'),
+        ('site_settings', '0001_initial'),
+        ('search', '0001_initial'),
     ]
 
     operations = [

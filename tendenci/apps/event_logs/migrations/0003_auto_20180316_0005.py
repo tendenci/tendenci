@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='eventlogcolor',
             name='rgb_color',
-            field=models.CharField(max_length=11, validators=[django.core.validators.RegexValidator(re.compile(r'^\d+(?:,\d+)*\Z', 32), code='invalid', message='Enter only digits separated by commas.')]),
+            field=models.CharField(max_length=11, validators=[django.core.validators.RegexValidator(re.compile('^\\d+(?:\\,\\d+)*\\Z', 32), code='invalid', message='Enter only digits separated by commas.')]),
         ),
     ]

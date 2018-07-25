@@ -61,6 +61,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='notice',
             name='corporate_membership_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='corporate_memberships.CorporateMembershipType', help_text="Note that if you             don't select a corporate membership type,             the notice will go out to all members.", null=True),
+            field=models.ForeignKey(blank=True, help_text="Note that if you don't select a corporate membership type, the notice will go out to all members.", null=True, on_delete=django.db.models.deletion.SET_NULL, to='corporate_memberships.CorporateMembershipType'),
         ),
     ]
