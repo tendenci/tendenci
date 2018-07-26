@@ -301,7 +301,7 @@ def base_file(request, file_name):
         raise Http404
 
     try:
-        t = get_template(file_name.encode('ascii', 'ignore'))
+        t = get_template(file_name)
     except (TemplateDoesNotExist, IOError):
         raise Http404
 
