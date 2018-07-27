@@ -2,33 +2,93 @@
 {% load base_filters %}
 {% load invoice_tags %}
 
-{% if search_line_display %}
-{% blocktrans with d=search_line_display|safe %}{{ d }}{% endblocktrans %}
-{% else %}
-<table class="table table-tendenci-reports">
-  {% invoices_search_line_header request invoice '#000000' %}#}
+{% invoices_search_line_header request invoice '#000000' %}
 
-  {# display object info #}
-
+{% if obj %}
   <tr>
-    <td>{% trans "ID" %}</td>
-    <td>{% trans "First Name" %}</td>
-    <td>{% trans "Last Name" %}</td>
-    <td>{% trans "Date" %}</td>
-    <td>{% trans "Amount" %}</td>
-    <td>{% trans "Balance" %}</td>
-  </tr>
-  {% if obj %}
-  <tr>
-    <td><a href="{{ obj.get_absolute_url }}">{{obj.id}}</a></td>
-    <td>{{obj.creator.first_name}}</td>
-    <td>{{obj.creator.last_name}}</td>
-    <td>{{obj.create_dt|date:'long'}}</td>
-    <td><div {% if invoice.total > 100 %}class="body-big-unpaid"{% endif %}>{{invoice.total|format_currency}}</div></td>
-    <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+  <!-- Date -->
+  <td>
+    {% if invoice.create_dt %}
+    {{ invoice.create_dt|date:"F j, Y"}}
+    {% else  %}
+    &nbsp;
+    {% endif %}
+  </td>
+  <!-- No. -->
+  <td>
+    <a href="{% url "invoice.view" invoice.pk %}" class="links">{{ invoice.pk }}</a>
+  </td>
+  <!-- User -->
+  <td>
+   {% if invoice.bill_to_first_name and invoice.bill_to_last_name %}
+   		 {{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}
+   {% elif invoice.bill_to %}
+   		{{ invoice.bill_to }}
+   {% endif %}
+  </td>
 
-  </tr>
-  {% endif %}
+  <!-- Item -->
+  <td>
+    {% if obj.get_absolute_url %}
+    <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+    {% else %}
+    {{ obj }}
+    {% endif %}
+  </td>
 
-</table>
+  <!-- <td>{{ invoice.bill_to_email }}</td> -->
+  <!-- Amount Total-->
+  <td>
+    {% if invoice.is_tendered and invoice.total > 0  %}
+    {{ invoice.total|format_currency }}
+    {% else %}
+    {% endif %}
+  </td>
+  <!-- Status -->
+  <td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>
+    {% if invoice.balance == 0 %}
+    Paid
+    {% else %}
+    <span class="text-danger">Balance:
+      {{ invoice.balance|format_currency }}</span>
+    {% endif %}
+  </td>
+  <!-- Action -->
+  <td>
+    {% if request.user.is_superuser %}
+      {% if invoice.balance == 0 %}
+      <a href="{% url "invoice.view" invoice.pk %}">View Invoice</a>
+      {% else %}
+      <a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+      {% endif %}
+    {% else %}
+    <a href="{% url "invoice.view" invoice.pk %}">View Invoice</a>
+    {% endif %}
+
+    {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
+    <span class="dropdown pull-right" style="border-left: 1px solid #cccccc;">
+      &nbsp;&nbsp;&nbsp;
+      <a type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        <span class="fa fa-caret-down"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+        <li><a href="{% url "invoice.view" invoice.pk %}">View Invoice</a></li>
+        {% if invoice.balance > 0 and can_pay %}
+        {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
+        <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></li>
+        {% endif %}
+        {% endif %}
+        {% if invoice.is_tendered %}
+        <li><a class="admin-option" href="{% url 'invoice.adjust' invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
+        {% endif %}
+        {% if invoice.payments_credits > 0 %}
+        <li><a class="admin-option" href="{% url 'invoice.void_payment' invoice.id %}"> {% trans "Void Payment" %}</a></li>
+        {% endif %}
+        <li role="separator" class="divider"></li>
+        <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
+      </ul>
+    </span>
+  </td>
+
+</tr>
 {% endif %}
