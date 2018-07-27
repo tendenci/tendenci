@@ -1,5 +1,7 @@
+{% load base_tags %}
+{% load perm_tags %}
 
-
+{% has_perm user articles.add_article as can_add_article %}
 {% if SITE_GLOBAL_SEARCHINDEX %}
     <form id="t-articles-search-form" class="form-inline t-search-form" action="{% url 'articles' %}" method="get">
         <div class="form-group{% if form.search_category.errors %} has-error{% endif %}">
@@ -54,5 +56,11 @@
                 {% endif %}
             </div>
        </div>
+       
+       {% if can_add_article %}
+	  <div class="form-group pull-right">
+	    <a class="btn btn-primary" href="{% url "article.add" %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %}</a>
+	  </div>
+	  {% endif %}
     </form>
 {% endif %}
