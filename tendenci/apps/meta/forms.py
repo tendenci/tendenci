@@ -1,7 +1,8 @@
 from django import forms
 from tendenci.apps.meta.models import Meta as MetaTag
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
-class MetaForm(forms.ModelForm):
+class MetaForm(FormControlWidgetMixin, forms.ModelForm):
     class Meta:
         model = MetaTag
         fields = (

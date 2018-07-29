@@ -20,7 +20,7 @@
     <div class="delete-form">
         <form name="news-delete" method="POST" action="{% url "news.delete" news.pk %}">{% csrf_token %}
             <input type="hidden" name="action" value="delete">
-            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+            <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
         </form>
     </div>
 </div>

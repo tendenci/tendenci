@@ -10,16 +10,10 @@
     {{ news_head }}{% endblocktrans %}</h1>
 
     <div class="news-wrap">
-        <div class="options">
-             <div class="quick-options">
-                {% news_options request.user news %}
-             </div>
-        </div>
-
         <form action="{% url "news.edit.meta" news.pk %}" method="post">{% csrf_token %}
-        <div class="forms">
+        <div class="form-group">
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Save Changes' %}" />
+            <input class="btn btn-default" type="submit" value="{% trans 'Save Changes' %}" />
              or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
         </div>
         </form>
