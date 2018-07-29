@@ -28,9 +28,9 @@
                 {{ categoryform.as_p }}
             </div>
             {% if edit_button %}
-                <input type="submit" value="{% trans 'Save Page Changes' %}" />
+                <input class="btn btn-default" type="submit" value="{% trans 'Save Page Changes' %}" />
             {% else %}
-                <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_PAGES_LABEL trans 'Page' %}" />
+                <input class="btn btn-default" type="submit" value="{% trans 'Add' %} {% firstof MODULE_PAGES_LABEL trans 'Page' %}" />
             {% endif %}
         </form>
         <div id="preview-close"><a href="JavaScript:window.close()">{% trans "Close and Return to Edit" %}</a></div>
