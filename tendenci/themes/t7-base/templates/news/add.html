@@ -21,7 +21,7 @@
         <form action="{% url "news.add" %}" class="form-horizontal" method="post" enctype="multipart/form-data">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_NEWS_LABEL trans 'News' %}" />
+            <input class="btn btn-default" type="submit" value="{% trans 'Add' %} {% firstof MODULE_NEWS_LABEL trans 'News' %}" />
         </div>
         </form>
     </div>
