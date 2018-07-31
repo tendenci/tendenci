@@ -972,29 +972,6 @@ class SpeakerBaseFormSet(BaseModelFormSet):
                     raise forms.ValidationError(_("Speakers in an event must have distinct names. '%s' is already used." % name))
                 names.append(name)
 
-    def save(self, *args, **kwargs):
-        commit = kwargs.pop('commit', True)
-        self.deleted_objects = []
-        if not commit:
-            self.saved_forms = []
-        saved_instances = []
-
-        for form in self.initial_forms:
-            pk_name = self._pk_field.name
-            raw_pk_value = form._raw_value(pk_name)
-            pk_value = form.fields[pk_name].clean(raw_pk_value)
-            pk_value = getattr(pk_value, 'pk', pk_value)
-
-            speaker = self._existing_object(pk_value)
-            if self.can_delete and self._should_delete_form(form):
-                self.deleted_objects.append(speaker)
-                continue
-            saved_instances.append(self.save_existing(form, speaker, commit=commit))
-
-        new_instances = self.save_new_objects(commit)
-
-        return saved_instances + new_instances
-
 
 class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
     description = forms.CharField(required=False,
