@@ -135,7 +135,7 @@ class PriceField(fields.DecimalField):
 
     def clean(self, value):
         comma_setting = get_setting('site', 'global', 'allowdecimalcommas')
-        if comma_setting and ',' in value:
+        if comma_setting and value is not None and ',' in value:
             comma_validator = re.compile(r'^[0-9]{1,3}(,[0-9]{3})*(\.[0-9]+)?$')
             if comma_validator.match(value):
                 value = re.sub(r',', '', value)

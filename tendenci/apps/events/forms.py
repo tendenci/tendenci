@@ -1088,7 +1088,7 @@ class PaymentForm(forms.ModelForm):
         exclude = ()
 
 
-class Reg8nConfPricingForm(BetterModelForm):
+class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     label = "Pricing"
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now(), help_text=_('The date time this price starts to be available'))
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
@@ -1150,7 +1150,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     def clean_quantity(self):
         # make sure that quantity is always a positive number
         quantity = self.cleaned_data['quantity']
-        if quantity <= 0:
+        if quantity is None or quantity <= 0:
             quantity = 1
         return quantity
 
