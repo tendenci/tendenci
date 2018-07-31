@@ -1,4 +1,4 @@
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 {% load bootstrap_pagination_tags %}
 {% load event_tags %}
 {% load base_tags %}
@@ -12,29 +12,45 @@
 <link rel="stylesheet" href="{% static 'css/events-my_events.css' %}">
 {% endblock %}
 
+
 {% block content %}
 
 <div class='t search-view'>
-    <div class="header" style="margin-bottom: 20px;">
-        <h1>{% trans "My Upcoming Events" %}</h1>
-        {% if show %}
-            <a class="show-all-link" href="{% url "event.myevents" %}?all=true">{% trans "Show all my registered and attended events." %}</a>
-        {% else %}
-            <a class="show-all-link" href="{% url "event.myevents" %}">{% trans "Show upcoming events only." %}</a>
-        {% endif %}
-    </div>
+  <br /> <br />
+  <div class="my-banner-events text-center">
+    {% if DISPLAY_NAME %}
+    <h2>{{ DISPLAY_NAME }}</h2>
+    {% else %}
+    <h2>{{ user }}</h2>
+    {% endif %}
+    
+    <a href="/profiles/">Edit Profile</a>
+    
+    
+    <ul class="list-inline">
+      <li><a class="show-all-link" href="{% url "event.myevents" %}?all=true">{% trans "ALL EVENTS" %}</a></li>
+      <li><a class="show-all-link" href="{% url "event.myevents" %}">{% trans "UPCOMING EVENTS" %}</a></li>
+    </ul>
+  </div>
 
+   
+  
+  <div class="col-sm-8 col-sm-offset-2">
+    
     {% autopaginate events 10 %}
-
+    
     <div class="events-wrap">
-        {% for event in events %}
-            {% search_result event %}
-        {% empty %}
-            {% trans "You're not registered for any upcoming events." %}<a href="{% url 'events' %}">{% trans "View our upcoming events!" %}</a>
-        {% endfor %}
+      {% for event in events %}
+      {% search_result event %}
+      {% empty %}
+      {% trans "You're not registered for any upcoming events." %}<a href="{% url 'events' %}">{% trans "View our upcoming events!" %}</a>
+      {% endfor %}
     </div>
-
+    
     {% paginate %}
+    
+  </div>
+  
 </div>
 
 {% endblock %}

@@ -14,11 +14,20 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
+<div class="page-header">
+  <button type="button" id="simple-form-button" class="btn btn-primary pull-right" onclick="simple()" value="Simple Form">Simple Form</button>
+  
+  <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
+</div>
+
+<p id="simple-form-alert" class="alert alert-success" role="alert"> 
+  This is the simple form, click again for the Extended form.
+</p>
 
     <form id="t-events-form" class="form-horizontal" action="{% url 'event.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        {{ multi_event_forms|styled_multi_forms }}
-
+        
+      {{ multi_event_forms|styled_multi_forms }}
+      
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
                 <button type="submit" class="btn btn-primary text-capitalize">
@@ -45,6 +54,36 @@
     <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/events_formset.js' %}"></script>
+
+
+<script>
+  $('#simple-form-alert').hide()
+  
+  function simple() {  
+  
+  var change = document.getElementById("simple-form-button");    
+  if (change.innerHTML == "Simple Form"){
+  change.innerHTML = "Extended Form";
+  }
+  else {
+  change.innerHTML = "Simple Form";
+  }
+  
+  $('.permissions').toggle();
+  $('.admin-only').toggle();
+  $('#t-formsbuilder-form-organizer').toggle();
+  $('#t-formsbuilder-form-speakers').toggle();
+  $('#t-formsbuilder-form-registration').toggle();
+  $('#mceu_60').toggle();
+  $('#simple-form-alert').toggle()
+  }
+</script>
+
+<script>
+
+</script>
+
+
     <script type="text/javascript">
 
         //script for hiding and showing the 'On weekend' field

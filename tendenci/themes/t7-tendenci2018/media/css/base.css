@@ -336,7 +336,6 @@ select#id_event_type {
 }
 #page-top iframe#id_organizer-description_ifr,
 #page-top iframe#id_place-description_ifr,
-#page-top iframe#id_description_ifr,
 iframe#speaker-0-description_ifr {
     height: 100px !important;
 }
