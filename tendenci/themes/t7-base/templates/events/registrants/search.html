@@ -91,6 +91,11 @@
                     <div class="options">
                         <div class="quick-options">
                             {% registrant_options request.user registrant %}
+                            {% if registrant.registration.payment_abandoned %}
+                            <div>
+                            <span class="text-danger">{% trans "Payment Abandoned" %}</span>&nbsp;<a href="{% url 'invoice.view' registrant.registration.invoice.id %}">{% trans "View Invoice" %}</a>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
 

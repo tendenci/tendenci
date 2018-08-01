@@ -467,6 +467,15 @@ class Registration(models.Model):
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)]).encode()).hexdigest()
 
+    def payment_abandoned(self):
+        if self.invoice and self.invoice.balance > 0 and \
+            self.invoice.payment_set.filter(status_detail='').exists():
+            # the payment was attempted a day ago but not finished - we can say
+            # it is abandoned
+            if self.invoice.create_dt + timedelta(days=1) < datetime.now():
+                return True
+        return False
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
