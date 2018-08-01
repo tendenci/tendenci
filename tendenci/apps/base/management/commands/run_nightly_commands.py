@@ -23,6 +23,7 @@ class Command(BaseCommand):
                     'refresh_membership_groups',
                     'send_corp_membership_notices',
                     'clean_old_exports',
+                    'clean_old_imports',
                     #'delete_soft_deleted_items',
                     'update_dashboard_stats',
                     'collect_metrics',
