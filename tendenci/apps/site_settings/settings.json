@@ -381,7 +381,7 @@
         "input_type": "select",
         "client_editable": true,
         "name": "captcha",
-        "value": "false",
+        "value": "true",
         "label": "Use Captcha",
         "input_value": "true,false",
         "parent_id": 0,
