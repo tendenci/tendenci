@@ -215,7 +215,7 @@ def ticket_from_message(message, queue, quiet):
             if part.get_content_subtype() == 'plain':
                 body_plain = EmailReplyParser.parse_reply(decodeUnknown(part.get_content_charset(), part.get_payload(decode=True)))
             else:
-                body_html = part.get_payload(decode=True).decode('utf-8')
+                body_html = decodeUnknown(part.get_content_charset(), part.get_payload(decode=True))
                 # make plain text more legible when viewing the ticket
                 body_html, n = re.subn(r'[\r\n]+', r'', body_html)
                 body_html, n = re.subn(r'\>\s+\<', r'><', body_html)
