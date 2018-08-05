@@ -251,6 +251,13 @@ Initialize the database and static files:
     chmod -R -x+X /var/www/tendenci/media/
     python manage.py load_tendenci2018_defaults
 
+Copy "tendenci2018" theme to the themes directory:
+::
+
+    mkdir /var/www/tendenci/themes/tendenci2018
+    cp -r /srv/tendenci/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/tendenci/themes/tendenci2018/
+ 
+
 Set the "Site URL" setting appropriately:
 ::
 
