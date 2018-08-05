@@ -6,7 +6,7 @@ jQuery(function ($) {
     var pos_field = table.find('td.field-' + position_field);
 
     pos_field.find('input[name$="position"]').hide();
-    var label = $('<span class="position-icon"><img src="/static/images/icons/drag_icon_16x16.png" alt="drag icon" title="drag icon" /></span>');
+    var label = $('<span class="position-icon"><img src="/static/themes/t7-base/images/icons/drag_icon_16x16.png" alt="drag icon" title="drag icon" /></span>');
     pos_field.append(label);
 
     table.find('td.field-' + description_field).each(function () {
