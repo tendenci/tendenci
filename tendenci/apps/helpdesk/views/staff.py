@@ -27,6 +27,7 @@ from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
 from django import forms
+from django.utils.encoding import smart_text
 
 try:
     from django.utils import timezone
@@ -435,11 +436,11 @@ def update_ticket(request, ticket_id, public=False):
     if request.FILES:
         import mimetypes
         for file in request.FILES.getlist('attachment'):
-            filename = file.name.encode('ascii', 'ignore')
+            filename = smart_text(file.name)
             a = Attachment(
                 followup=f,
                 filename=filename,
-                mime_type=mimetypes.guess_type(filename)[0] or 'application/octet-stream',
+                mime_type=mimetypes.guess_type(filename, strict=False)[0] or 'application/octet-stream',
                 size=file.size,
                 )
             a.file.save(filename, file, save=False)
