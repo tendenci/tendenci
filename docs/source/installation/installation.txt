@@ -444,10 +444,10 @@ look like this:
 
     [Unit]
     Description=Start Tendenci instance
-    Requires=nginx.service postgresql.service
-    Wants=memcached.service
-    Before=nginx.service
-    After=postgresql.service
+    #Requires=nginx.service postgresql.service
+    #Wants=memcached.service
+    #Before=nginx.service
+    #After=postgresql.service
 
     [Service]
     WorkingDirectory=/var/www/mysite
