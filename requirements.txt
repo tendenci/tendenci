@@ -41,7 +41,7 @@ django-tastypie==0.14.0
 docutils==0.12
 chardet==3.0.3
 psycopg2>=2.7,<2.8
-gunicorn==19.5.0
+gunicorn==19.9.0
 django-storages==1.4.1
 Whoosh==2.7.4
 simple-salesforce==0.68.1
