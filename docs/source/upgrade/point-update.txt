@@ -6,17 +6,17 @@ These instructions will upgrade Tendenci to a new minor version.
 Shut down the Tendenci server if necessary:
 ::
 
-    sudo service tendenci stop
+    sudo service mysite stop
 
 Activate your virtualenv:
 ::
 
-    source /srv/tendenci/bin/activate
+    source /srv/mysite/bin/activate
 
 Upgrade Tendenci and its dependencies:
 ::
 
-    cd /var/www/tendenci/
+    cd /var/www/mysite/
     # For testing installations:
     pip install -r requirements/dev.txt --upgrade
     # For live installations:
@@ -33,16 +33,16 @@ Verify that permissions are still set appropriately:
 ::
 
     # For a testing/development installation, this may be sufficient:
-    chmod -Rh -x+X /var/www/tendenci/media/
+    chmod -Rh -x+X /var/www/mysite/media/
     # For a live site, you should run:
-    chmod -R o+rX-w /srv/tendenci/
-    sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
-    sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
-    sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
+    chmod -R o+rX-w /srv/mysite/
+    sudo chgrp -Rh www-data /var/www/mysite/
+    chmod -R -x+X,g-w,o-rwx /var/www/mysite/
+    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/whoosh_index/
+    sudo chown -Rh www-data:"$(id -u -n)" /var/log/mysite/
+    sudo chmod -R -x+X,g+rw,o-rwx /var/log/mysite/
 
 Restart the Tendenci server:
 ::
 
-    sudo service tendenci restart
+    sudo service mysite restart

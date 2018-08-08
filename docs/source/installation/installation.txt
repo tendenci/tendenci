@@ -101,9 +101,9 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
 ::
 
     sudo -u postgres -s
-    DB_USER=tendenci
-    DB_PASS=tendenci
-    DB_NAME=tendenci
+    DB_USER=mysite
+    DB_PASS=mysite
+    DB_NAME=mysite
     psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
     psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
     psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
@@ -138,13 +138,13 @@ Prepare a virtualenv for Tendenci:
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3 -m virtualenv -p python3 tendenci
+    python3 -m virtualenv -p python3 mysite
     sudo chown root /srv/
 
 To use the virtualenv, you must "activate" it:
 ::
 
-    source /srv/tendenci/bin/activate
+    source /srv/mysite/bin/activate
 
 You can "deactivate" the virtualenv using:
 ::
@@ -188,7 +188,7 @@ Tendenci Installation
 If you have not already activated your virtualenv, make sure you do so before continuing:
 ::
 
-    source /srv/tendenci/bin/activate
+    source /srv/mysite/bin/activate
 
 Install Django:
 ::
@@ -200,28 +200,28 @@ Create a new Django project based on the Tendenci template:
 
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip tendenci
+    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip mysite
     sudo chown root /var/www/
 
 Set up some directories appropriately:
 ::
 
-    chmod -R -x+X /var/www/tendenci/media/
-    mkdir /var/www/tendenci/whoosh_index
-    sudo mkdir /var/log/tendenci
-    sudo chown "$(id -u -n)": /var/log/tendenci/
+    chmod -R -x+X /var/www/mysite/media/
+    mkdir /var/www/mysite/whoosh_index
+    sudo mkdir /var/log/mysite
+    sudo chown "$(id -u -n)": /var/log/mysite/
 
 Install Tendenci and its dependencies:
 ::
 
-    cd /var/www/tendenci/
+    cd /var/www/mysite/
     pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
 
 
 Tendenci Configuration
 ----------------------
 
-Edit ``/var/www/tendenci/conf/settings.py``
+Edit ``/var/www/mysite/conf/settings.py``
 
 For testing, uncomment ``DEBUG = True``
 
@@ -245,17 +245,17 @@ Tendenci Preparation
 Initialize the database and static files:
 ::
 
-    cd /var/www/tendenci/
+    cd /var/www/mysite/
     python manage.py initial_migrate
     python manage.py deploy
-    chmod -R -x+X /var/www/tendenci/media/
+    chmod -R -x+X /var/www/mysite/media/
     python manage.py load_tendenci2018_defaults
 
 Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.6):
 ::
 
-    mkdir /var/www/tendenci/themes/tendenci2018
-    cp -r /srv/tendenci/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/tendenci/themes/tendenci2018/
+    mkdir /var/www/mysite/themes/tendenci2018
+    cp -r /srv/mysite/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/mysite/themes/tendenci2018/
  
 
 Set the "Site URL" setting appropriately:
@@ -280,8 +280,8 @@ Testing
 Start Tendenci:
 ::
 
-    source /srv/tendenci/bin/activate
-    cd /var/www/tendenci/
+    source /srv/mysite/bin/activate
+    cd /var/www/mysite/
     python manage.py runserver
 
 Then open ``http://localhost:8000/`` in your browser to see your Tendenci site!
@@ -314,9 +314,9 @@ Clone the Tendenci repository:
     cd /srv/
     git clone https://github.com/tendenci/tendenci.git tendenci-git
 
-Edit ``/var/www/tendenci/requirements/tendenci.txt`` and comment out ``tendenci>=8,<9``
+Edit ``/var/www/mysite/requirements/tendenci.txt`` and comment out ``tendenci>=8,<9``
 
-Edit ``/var/www/tendenci/requirements/common.txt`` and add:
+Edit ``/var/www/mysite/requirements/common.txt`` and add:
 ::
 
     -e /srv/tendenci-git/
@@ -324,8 +324,8 @@ Edit ``/var/www/tendenci/requirements/common.txt`` and add:
 Run ``pip install`` again:
 ::
 
-    source /srv/tendenci/bin/activate
-    cd /var/www/tendenci/
+    source /srv/mysite/bin/activate
+    cd /var/www/mysite/
     pip install -r requirements/dev.txt --upgrade
 
 Apply any database and static media updates that are in the development version of Tendenci but are
@@ -355,7 +355,7 @@ for database configuration/tuning suggestions.
 Additional Configuration
 ------------------------
 
-Review the comments and examples in ``/var/www/tendenci/conf/settings.py`` to determine if any
+Review the comments and examples in ``/var/www/mysite/conf/settings.py`` to determine if any
 additional settings should be configured for your live site.
 
 
@@ -388,8 +388,8 @@ Install additional system dependencies:
 Install additional Python dependencies:
 ::
 
-    source /srv/tendenci/bin/activate
-    cd /var/www/tendenci/
+    source /srv/mysite/bin/activate
+    cd /var/www/mysite/
     pip install -r requirements/prod.txt --upgrade
 
 
@@ -400,35 +400,35 @@ When using the Systemd configuration below, Tendenci will run as the ``www-data`
 that Tendenci has appropriate permissions when running as ``www-data``:
 ::
 
-    chmod -R o+rX /srv/tendenci/
-    sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R g+rwX /var/www/tendenci/media/ /var/www/tendenci/themes/
-    chmod -R g+rwX /var/www/tendenci/whoosh_index/
-    sudo chown -Rh www-data /var/log/tendenci/
-    chmod -R g+rwX /var/log/tendenci/
+    chmod -R o+rX /srv/mysite/
+    sudo chgrp -Rh www-data /var/www/mysite/
+    chmod -R g+rwX /var/www/mysite/media/ /var/www/mysite/themes/
+    chmod -R g+rwX /var/www/mysite/whoosh_index/
+    sudo chown -Rh www-data /var/log/mysite/
+    chmod -R g+rwX /var/log/mysite/
 
 For security, you should also ensure that there are no unnecessary permissions:
 ::
 
-    # Owner/group on /srv/tendenci/ should already be your normal user account
+    # Owner/group on /srv/mysite/ should already be your normal user account
     # Tendenci needs read/search/execute but not write
-    chmod -R o+rX-w /srv/tendenci/
-    # Owner on /var/www/tendenci/ should already be your normal user account,
+    chmod -R o+rX-w /srv/mysite/
+    # Owner on /var/www/mysite/ should already be your normal user account,
     # group should be www-data
     # Tendenci needs read/search but not execute, write is only needed on media, themes, and
     # whoosh_index, other users do not need any access
-    sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/themes/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/whoosh_index/
-    # Owner on /var/log/tendenci/ should be www-data,
+    sudo chgrp -Rh www-data /var/www/mysite/
+    chmod -R -x+X,g-w,o-rwx /var/www/mysite/
+    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/themes/
+    chmod -R ug-x+rwX,o-rwx /var/www/mysite/whoosh_index/
+    # Owner on /var/log/mysite/ should be www-data,
     # group should be some group that includes your normal user account but not other inappropriate
     # users (Ubuntu creates a dedicated group for each user by default, so this command uses that)
     # Tendenci and the assigned group need read/write/search but not execute, other users do not
     # need any access (The assigned group needs write access so your normal user account can run
     # `python manage.py ...`)
-    sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
-    sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
+    sudo chown -Rh www-data:"$(id -u -n)" /var/log/mysite/
+    sudo chmod -R -x+X,g+rw,o-rwx /var/log/mysite/
 
 Note that these permissions should allow your normal user account to manage/upgrade Tendenci without
 using sudo, which is safer than performing management/upgrades using sudo.
@@ -438,7 +438,7 @@ Systemd Setup
 -------------
 
 Systemd Unit files should be created in ``/etc/systemd/system/`` with a name of
-your choice (eg ``tendenci.service``). The contents of your unit file should
+your choice (eg ``mysite.service``). The contents of your unit file should
 look like this:
 ::
 
@@ -450,20 +450,20 @@ look like this:
     After=postgresql.service
 
     [Service]
-    WorkingDirectory=/var/www/tendenci
-    PIDFile=/run/tendenci.pid
+    WorkingDirectory=/var/www/mysite
+    PIDFile=/run/mysite.pid
     Type=forking
     KillMode=process
     Restart=on-failure
-    ExecStart=/srv/tendenci/bin/gunicorn                    \
+    ExecStart=/srv/mysite/bin/gunicorn                    \
               --user www-data                               \
               --group www-data                              \
               --workers 4                                   \
               --bind=127.0.0.1:8000                         \
-              --pid=/run/tendenci.pid                       \
-              --pythonpath=/var/www/tendenci                \
-              --access-logfile=/var/log/tendenci/access.log \
-              --error-logfile=/var/log/tendenci/server.log  \
+              --pid=/run/mysite.pid                       \
+              --pythonpath=/var/www/mysite                \
+              --access-logfile=/var/log/mysite/access.log \
+              --error-logfile=/var/log/mysite/server.log  \
               --capture-output                              \
               --daemon                                      \
              conf.wsgi
@@ -474,21 +474,21 @@ look like this:
 To start the service manually:
 ::
 
-    sudo systemctl start tendenci
+    sudo systemctl start mysite
 
 To start the service automatically on boot:
 ::
 
-    sudo systemctl enable tendenci
+    sudo systemctl enable mysite
 
 
 logrotate Setup
 ---------------
 
-Create ``/etc/logrotate.d/tendenci`` containing:
+Create ``/etc/logrotate.d/mysite`` containing:
 ::
 
-    /var/log/tendenci/*.log {
+    /var/log/mysite/*.log {
       daily
       minsize 100k
       missingok
@@ -497,7 +497,7 @@ Create ``/etc/logrotate.d/tendenci`` containing:
       create 0660 www-data www-data
       sharedscripts
       postrotate
-        service tendenci restart
+        service mysite restart
       endscript
     }
 
@@ -511,7 +511,7 @@ NGINX Setup
 -----------
 
 First, make an NGINX configuration file for the site. This will be created at
-``/etc/nginx/sites-available/tendenci`` and should look like this:
+``/etc/nginx/sites-available/mysite`` and should look like this:
 ::
 
     server {
@@ -524,7 +524,7 @@ First, make an NGINX configuration file for the site. This will be created at
         gzip_types text/css application/javascript text/javascript text/plain text/xml application/xml;
         gzip_vary on;
 
-        root /var/www/tendenci/;
+        root /var/www/mysite/;
 
         location /static/ {
             access_log off;
@@ -557,7 +557,7 @@ Be sure to update the ``server_name`` domain name and ``root`` path appropriatel
 Next, create a symlink to the new file and remove the default symlink:
 ::
 
-    ln -s /etc/nginx/sites-available/tendenci /etc/nginx/sites-enabled/tendenci
+    ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled/mysite
     rm /etc/nginx/sites-enabled/default
 
 Finally, restart the NGINX service:
@@ -605,8 +605,8 @@ periodic cleanup.
 Run ``sudo -u www-data crontab -e`` and add the following lines:
 ::
 
-    30   2 * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py run_nightly_commands
-    10 */6 * * * /srv/tendenci/bin/python /var/www/tendenci/manage.py process_unindexed
+    30   2 * * * /srv/mysite/bin/python /var/www/mysite/manage.py run_nightly_commands
+    10 */6 * * * /srv/mysite/bin/python /var/www/mysite/manage.py process_unindexed
 
 
 Multiple Sites
@@ -621,7 +621,7 @@ To install multiple sites on a single server:
 * You can skip the ``pip install "Django"`` command, but otherwise follow the
   "Tendenci Installation", "Tendenci Configuration", and "Tendenci Preparation" steps above.
   Change the last parameter of the ``django-admin.py startproject ...`` command to create a
-  different ``/var/www/<project>/`` directory for each site, then change ``/var/www/tendenci/`` in
+  different ``/var/www/<project>/`` directory for each site, then change ``/var/www/mysite/`` in
   all of the commands in the instructions to work with the appropriate site.
 * Configure an additional Systemd Unit file and NGINX configuration file for each site, and
   configure additional cron jobs for each site.  Each site will need to run on a different port

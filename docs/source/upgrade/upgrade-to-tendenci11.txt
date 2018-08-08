@@ -24,22 +24,21 @@ If this is a live site using memcached, also make sure libmemcached-dev is insta
 
     sudo apt-get install libmemcached-dev
 
-Shut down Tendenci:
+Shut down mysite:
 ::
 
-    sudo service tendenci stop
+    sudo service mysite stop
 
 
 Step 2: Upgrade to Python 3
 ---------------------------
 
-Upgrading to Python 3 is recommended but optional.  This involves rebuilding your virtualenv.  To
-run Tendenci 11.0 on Python 2, skip to Step 3.
+Upgrading to Python 3.6 or newer is required.  This involves rebuilding your virtualenv.
 
 Move your old virtualenv out of the way:
 ::
 
-    sudo mv /srv/tendenci /srv/tendenci.t7
+    sudo mv /srv/mysite /srv/mysite.t7
 
 Prepare a new Python 3 virtualenv:
 ::
@@ -47,23 +46,23 @@ Prepare a new Python 3 virtualenv:
     sudo apt-get install python3-virtualenv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3 -m virtualenv -p python3 tendenci
+    python3 -m virtualenv -p python3 mysite
     sudo chown root /srv/
-    source /srv/tendenci/bin/activate
+    source /srv/mysite/bin/activate
     pip install "Django>=1.11,<2.0"
 
-In this new virtualenv, ``/srv/tendenci/venv/bin/`` has been moved to ``/srv/tendenci/bin/``.
+In this new virtualenv, ``/srv/mysite/venv/bin/`` has been moved to ``/srv/mysite/bin/``.
 
 Update your SystemD Units, Upstart jobs, cron jobs, and any other scripts which reference
-``/srv/tendenci/venv/bin/`` to use ``/srv/tendenci/bin/`` instead.
+``/srv/mysite/venv/bin/`` to use ``/srv/mysite/bin/`` instead.
 
 If you have already upgraded to Tendenci 11.0 on Python 2 and are upgrading to Python 3 as a separate
 process, run the following, then skip to Step 7 (Steps 7 and 8 should be followed after both the
 Tendenci and Python upgrades):
 ::
 
-    cd /var/www/tendenci/
-    source /srv/tendenci/bin/activate
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
     # For development installations:
     pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
     # For live sites:
@@ -73,18 +72,18 @@ Tendenci and Python upgrades):
 Step 3: Upgrade Tendenci
 ------------------------
 
-Make a backup of /var/www/tendenci/:
+Make a backup of /var/www/mysite/:
 ::
 
     cd /var/www/
-    cp -a tendenci tendenci.t7
+    cp -a mysite mysite.t7
 
 
-Upgrade files in /var/www/tendenci/:
+Upgrade files in /var/www/mysite/:
 ::
 
-    sudo chown -Rh "$(id -u -n)":www-data /var/www/tendenci/
-    cd /var/www/tendenci/
+    sudo chown -Rh "$(id -u -n)":www-data /var/www/mysite/
+    cd /var/www/mysite/
     rm manage.py deploy.py README.md requirements.txt
     rm conf/wsgi.py requirements/tendenci.txt requirements/prod.txt
     rm -rf index.whoosh
@@ -103,10 +102,10 @@ Upgrade files in /var/www/tendenci/:
 Upgrade Tendenci and its dependencies:
 ::
 
-    cd /var/www/tendenci/
-    sudo chown -Rh "$(id -u -n)": /srv/tendenci/
-    source /srv/tendenci/venv/bin/activate  # For Python 2
-    source /srv/tendenci/bin/activate  # For Python 3
+    cd /var/www/mysite/
+    sudo chown -Rh "$(id -u -n)": /srv/mysite/
+    source /srv/mysite/venv/bin/activate  # For Python 2
+    source /srv/mysite/bin/activate  # For Python 3
     # For development installations:
     pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
     # For live sites:
@@ -140,7 +139,7 @@ a copy in ``/var/www/tendenci.t7/conf/``
 Remove the old configuration and replace it with new configuration files:
 ::
 
-    cd /var/www/tendenci/conf/
+    cd /var/www/mysite/conf/
     rm *
     wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/__init__.py
     wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/wsgi.py
@@ -200,7 +199,7 @@ configured them.  Also note that Tendenci now enables logging by default.  Revie
 specific changes to the default logging configuration.
 
 Copy any site specific URL patterns from ``/var/www/tendenci.t7/conf/local_urls.py`` to
-``/var/www/tendenci/conf/urls.py``.  Note that URL pattern in the new file must be wrapped with a
+``/var/www/mysite/conf/urls.py``.  Note that URL pattern in the new file must be wrapped with a
 ``url()`` function call.
 
 As with INSTALLED_APPS above, Tendenci now includes URL patterns for the following apps by default,
@@ -288,7 +287,7 @@ Tendenci now enables logging by default.  Review the "Logging Settings" section 
 file to determine whether you need to make any site specific changes to the default logging
 configuration.
 
-Edit ``/var/www/tendenci/conf/settings.py``
+Edit ``/var/www/mysite/conf/settings.py``
 
 Change ``from local_settings import *`` to ``from .local_settings import *``
 
@@ -304,7 +303,7 @@ Delete the ``if DEBUG_TOOLBAR_INSTALLED:`` block near the bottom of the file.
 Replace the old urls.py file:
 ::
 
-    cd /var/www/tendenci/conf/
+    cd /var/www/mysite/conf/
     rm urls.py
     wget https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/conf/urls.py
 
@@ -333,25 +332,25 @@ When finished, you can delete your old ``local_urls.py`` file.
 Step 5: Configure logging
 -------------------------
 
-If you are using the new default logging configuration, you should set up ``/var/log/tendenci`` and
+If you are using the new default logging configuration, you should set up ``/var/log/mysite`` and
 configure logrotate appropriately.
 
-Set up /var/log/tendenci:
+Set up /var/log/mysite:
 ::
 
-    sudo mkdir /var/log/tendenci
-    sudo chown www-data:"$(id -u -n)" /var/log/tendenci/
-    chmod -R g+rwX /var/log/tendenci/
+    sudo mkdir /var/log/mysite
+    sudo chown www-data:"$(id -u -n)" /var/log/mysite/
+    chmod -R g+rwX /var/log/mysite/
 
 The group configured above will enable your user account to run ``python manage.py ...`` without
 sudo, which is safer than performing management/upgrades using sudo.  The configured group should
 include your normal user account but not other inappropriate users.  Ubuntu creates a dedicated
 group for each user by default, so that is what is used here.
 
-Create ``/etc/logrotate.d/tendenci`` containing:
+Create ``/etc/logrotate.d/mysite`` containing:
 ::
 
-    /var/log/tendenci/*.log {
+    /var/log/mysite/*.log {
       daily
       minsize 100k
       missingok
@@ -389,21 +388,20 @@ Work around some migration issues in djkombu:
 Run:
 ::
 
-    cd /var/www/tendenci/
-    source /srv/tendenci/venv/bin/activate  # For Python 2
-    source /srv/tendenci/bin/activate  # For Python 3
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
 
-Tendenci 11 makes significant changes to the layout of ``/var/www/tendenci/static/`` and may leave
+Tendenci 11 makes significant changes to the layout of ``/var/www/mysite/static/`` and may leave
 lots of abandoned files in that directory after the upgrade.  You can optionally clean these up
 using ``python manage.py collectstatic --clear --link --no-input``, however note that this will
 delete ALL of the files in that directory and then re-populate them from the installed Django apps.
 If you have manually added or modified any files in that directory (this is unsupported and
 discouraged, although there is nothing technically preventing you from doing it), then your
 files/changes will be lost.  Make sure you have a backup copy of that directory before attempting
-to clean it up.  If you followed Step 3, there should be a copy in ``/var/www/tendenci.t7/static/``
+to clean it up.  If you followed Step 3, there should be a copy in ``/var/www/mysite.t7/static/``
 
 
 Step 7: Update/Fix Permissions
@@ -412,12 +410,12 @@ Step 7: Update/Fix Permissions
 Ensure that filesystem permissions are set appropriately:
 ::
 
-    chmod -R o+rX-w /srv/tendenci/
-    sudo chgrp -Rh www-data /var/www/tendenci/
-    chmod -R -x+X,g-w,o-rwx /var/www/tendenci/
-    chmod -R ug-x+rwX,o-rwx /var/www/tendenci/media/ /var/www/tendenci/whoosh_index/
-    sudo chown -Rh www-data:"$(id -u -n)" /var/log/tendenci/
-    sudo chmod -R -x+X,g+rw,o-rwx /var/log/tendenci/
+    chmod -R o+rX-w /srv/mysite/
+    sudo chgrp -Rh www-data /var/www/mysite/
+    chmod -R -x+X,g-w,o-rwx /var/www/mysite/
+    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/whoosh_index/
+    sudo chown -Rh www-data:"$(id -u -n)" /var/log/mysite/
+    sudo chmod -R -x+X,g+rw,o-rwx /var/log/mysite/
 
 For an explanation of these permissions, see the "Permissions" section in the latest version of the
 Installation instructions.
@@ -430,9 +428,9 @@ Run:
 ::
 
     sudo -u www-data -H -s
-    cd /var/www/tendenci/
-    source /srv/tendenci/venv/bin/activate  # For Python 2
-    source /srv/tendenci/bin/activate  # For Python 3
+    cd /var/www/mysite/
+    source /srv/mysite/venv/bin/activate  # For Python 2
+    source /srv/mysite/bin/activate  # For Python 3
     python manage.py rebuild_index
 
 
@@ -442,4 +440,4 @@ Step 9: Restart Tendenci
 Run:
 ::
 
-    sudo service tendenci restart
+    sudo service mysite restart
