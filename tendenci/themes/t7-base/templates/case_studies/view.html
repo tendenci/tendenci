@@ -31,47 +31,50 @@
 <link rel="stylesheet" href="{% static 'css/casestudy.css' %}">
 {% endblock %}
 
-
-
 {% block content %}
 {% tags_for_object case_study as tags %}
-<div class="t">
+<div id="view-case-study">
     <div class="cs-view">
-        <div class="quick-options">{% case_study_options request.user case_study %}</div>
-
+      <div class="quick-options">{% case_study_options request.user case_study %}</div>
+      
+      <div class="page-header">
         <h1>{{ case_study.client }} Case Study</h1>
+      </div>
 
-        <section id="case-study-text" class="clearfix">
+<!-- start: case-study-text -->
+          <section id="case-study-text" class="clearfix">
 
             <div id="service-tech">
-
-            {% spaceless %}
-              {% for img in case_study.featured_screenshots %}
-                {% if forloop.first %}
-                <div id="featured-screenshot">
-                    <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg"><img alt="{{ img.description }}" height="156" width="200" src="{% url "file" img.pk %}{{ forloop.counter|add:"200" }}x{{ forloop.counter|add:"156" }}/" /></a>
-                </div>
-                {% endif %}
-                {% endfor %}
-            {% endspaceless %}
-
-                <a id="case-study-view-site" href="{{ case_study.url }}">View this Website &rarr;</a>
+              {% spaceless %}
+                {% for img in case_study.featured_screenshots %}
+                  {% if forloop.first %}
+                  <div id="featured-screenshot">
+                    <a rel="cs-photos" title="{{ img.description }}" href="{% url "file" img.pk %}?.jpg">
+                      <img class="img-responsive" alt="{{ img.description }}" src="{% url "file" img.pk %}" />
+                    </a>
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+              {% endspaceless %}
             </div>
 
             {% if case_study.overview %}
                 <h2>{% trans 'Overview' %}</h2>
                 <p>{{ case_study.overview|safe }}</p>
             {% endif %}
+            
             {% if case_study.execution %}
                 <h2>{% trans 'Execution' %}</h2>
                 <p>{{ case_study.execution|safe }}</p>
             {% endif %}
+            
             {% if case_study.results %}
                 <h2>{% trans 'Results' %}</h2>
                 <p>{{ case_study.results|safe }}</p>
             {% endif %}
 
-        </section><!-- /case-study-text -->
+        </section>
+<!-- end: case-study-text -->
 
         <h2>{% trans 'Screenshots' %}</h2>
         <div id="cs-photos" class="clearfix">
@@ -88,13 +91,16 @@
       </div>
       {% endif %}
 
-        <div class="case-meta">
-            <a href="{% url "case_study" %}">&laquo;&nbsp;{% trans 'Search other case studies' %}</a>
-        </div>
-
+<!-- START: GO BACK BUTTON -->      
+      <nav aria-label="View More Case Studies">
+        <ul class="pager">
+          <li class="previous"><a href="{% url "case_study" %}"><span aria-hidden="true">&larr;</span> {% trans 'Search other case studies' %}</a></li>
+        </ul>
+      </nav>  
+<!-- END: GO BACK BUTTON -->
+      
     </div>
 </div>
-
 
 {% endblock %}
 
@@ -105,7 +111,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
   $("a[rel='cs-photos']").colorbox({width: '80%',height: '66%'});
-
 });
 </script>
+
 {% endblock %}
