@@ -17,7 +17,8 @@ and will also make it easy to setup/test/discard multiple copies/configurations 
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 18.04.
+These instructions cover the installation of Tendenci on a system running Ubuntu 16.04. (For Ubuntu 18.04,
+as of August 9, 2018, the only roadblock we encountered is that Postgis cannot be installed successfully.) 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -40,21 +41,30 @@ System Preparation
 Make sure Ubuntu is up to date before beginning:
 ::
 
-    sudo apt-get update
-    sudo apt-get dist-upgrade
+    sudo apt update
+    sudo apt dist-upgrade
 
 Also ensure that Ubuntu is configured to automatically install security updates:
 ::
 
-    sudo apt-get install unattended-upgrades update-notifier-common
+    sudo apt install unattended-upgrades update-notifier-common
     sudo dpkg-reconfigure -plow unattended-upgrades
 
 Install the required system dependencies:
 ::
 
-    sudo apt-get install python3-virtualenv \
-      build-essential python3-dev libevent-dev libpq-dev \
+    sudo apt install build-essential \
+      libevent-dev libpq-dev \
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
+
+
+Ubuntu 16.04 comes with Python 3.5. But Tendenci 11 requires Python 3.6 or newer. Install Python 3.6:
+::
+
+    sudo add-apt-repository ppa:jonathonf/python-3.6
+    sudo apt update
+    sudo apt install python3.6
+    sudo apt install python3.6-dev --upgrade
 
 
 System Preparation on macOS
@@ -94,7 +104,7 @@ development effort.
 Install PostgreSQL and some required modules:
 ::
 
-    sudo apt-get install postgresql postgresql-contrib postgis
+    sudo apt install postgresql postgresql-contrib postgis
 
 Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB_PASS`` and
 ``DB_NAME`` with an appropriate user name, password, and database name):
@@ -138,7 +148,7 @@ Prepare a virtualenv for Tendenci:
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3 -m virtualenv -p python3 mysite
+    python3.6 -m virtualenv -p python3.6 mysite
     sudo chown root /srv/
 
 To use the virtualenv, you must "activate" it:
@@ -198,6 +208,7 @@ Install Django:
 Create a new Django project based on the Tendenci template:
 ::
 
+    sudo mkdir /var/www/
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
     django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip mysite
@@ -250,6 +261,7 @@ Initialize the database and static files:
     python manage.py deploy
     chmod -R -x+X /var/www/mysite/media/
     python manage.py load_tendenci2018_defaults
+    python manage.py update_dashboard_stats
 
 Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.6):
 ::
@@ -383,7 +395,7 @@ Additional Installation
 Install additional system dependencies:
 ::
 
-    sudo apt-get install nginx memcached libmemcached-dev
+    sudo apt install nginx memcached libmemcached-dev
 
 Install additional Python dependencies:
 ::
