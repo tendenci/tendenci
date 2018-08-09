@@ -7,7 +7,7 @@
         "input_type": "select",
         "client_editable": false,
         "name": "themeredirect",
-        "value": true,
+        "value": false,
         "label": "Theme Picker Redirect",
         "input_value": "true,false",
         "parent_id": 0,
