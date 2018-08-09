@@ -124,11 +124,11 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "<project> v<release> - The Open Source AMS Software for NGOs and Governments"
+html_title = "Tendenci 11 - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
-html_short_title= "<project> v<release>"
+html_short_title= "Tendenci 11"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
