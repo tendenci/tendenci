@@ -2,7 +2,7 @@
 {% load base_tags %}
 
 
-<ul class="list-unstyled t-meta-data">
+<ul class="list-unstyled t-meta-data" style="padding: 10px;">
     <li class="pull-right"><a href="{% url 'job.print_view' job.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
 
     {% if show_fb_connect|default:False %}
@@ -52,10 +52,10 @@
 {% if user.profile.is_superuser %}
     <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
-            <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav t-meta-perm-status">
-                    <li>{{ job.obj_perms }}</li>
-                    <li>{{ job.obj_status }}</li>
+                   <li><a><u>Status:</u></a></li>
+				   <li><a>{{ job.obj_perms }}</a></li>
+				   <li><a>{{ job.obj_status }}</a></li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right t-meta-options-links">
@@ -77,7 +77,6 @@
                         </ul>
                     </li>
                 </ul>
-            </div>
         </div>
     </nav>
 {% endif %}
