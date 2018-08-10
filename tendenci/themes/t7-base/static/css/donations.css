@@ -86,20 +86,22 @@ input[id="id_captcha_1"] {
 	text-align: right;
 	width: 10em;
 	padding-right: 1em;
+	color: #2C3E50;
+	font-size: 1em;
 }
 
 /* search */
-.t .donations-wrap {
+.donations-wrap {
 	margin-bottom: 20px;
 }
 
-.t .donation-wrap {
+.donation-wrap {
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
 
-.t .donations-wrap .donation-wrap-search {
+.donations-wrap .donation-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -107,29 +109,29 @@ input[id="id_captcha_1"] {
 	background-color: white;
 }
 
-.t .donations-wrap .donation-wrap h2 {
+.donations-wrap .donation-wrap h2 {
 	width: 85%;
 }
-.t .donations-wrap .donation-wrap .content {
+.donations-wrap .donation-wrap .content {
 	margin-bottom: 10px;
 }
 
-.t .donation-wrap .meta, .t .donation-wrap-search .meta {
+.donation-wrap .meta, .t .donation-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
 	background-color: #F7F7F7;
 	margin-top: 10px;
 }
-.t .donation-wrap .meta .tags {
+.donation-wrap .meta .tags {
 	margin-bottom: 5px;
 }
-.t form.search-form input[type="text"] {
+form.search-form input[type="text"] {
 	width: 60%;
 	margin-bottom: 10px;
 	padding: 5px;
 }
 
-.t form.search-form input[type="submit"] {
+form.search-form input[type="submit"] {
 	padding: 5px;
 	cursor: pointer;
 }
