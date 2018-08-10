@@ -6,8 +6,8 @@
 {% block nav_label %}{% firstof MODULE_FORMS_LABEL trans "Forms" %}{% endblock %}
 
 {% block current_app %}
-    {% if form_instance %}
-        {% form_current_app request.user form_instance %}
+    {% if form %}
+        {% form_current_app request.user form %}
     {% else %}
         {% form_current_app request.user %}
     {% endif %}

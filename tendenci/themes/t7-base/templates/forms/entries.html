@@ -11,56 +11,76 @@
 {% endblock %}
 
 {% block content %}
-<div class="t">
+<div id="form-entries">
+  <div class="page-header">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Entries' %}</h1>
-    <h2>{{ form.title }}</h2>
-    <p><a href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a></p>
+  </div>
+  
+  <ul class="nav nav-pills">
+    <li role="presentation"><h2>{{ form.title }}</h2></li>
+    <li class="pull-right" role="presentation">
+      <a class="btn btn-primary" href="{% url "admin:forms_form_export" form.pk %}">{% trans "Export All Entries" %}</a>
+    </li>
     {% if form.has_files %}
-    <p><a href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a></p>
+    <li class="pull-right" role="presentation">
+      <a class="btn btn-primary" href="{% url 'form_entries_export_full' form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a>
+    </li>
     {% endif %}
     {% autopaginate entries 10 %}
-
-    <div class="forms-builder-wrap">
-    {% for entry in entries %}
-        <div class="form-builder-wrap">
-            <div class="quick-options">
-            {% forms_entry_options request.user entry %}
-            </div>
-            <h3><a href="{{ entry.get_absolute_url }}">
-                {{ entry.entry_time }}
-                {% for field in entry.fields.all|slice:":3" %}
-                    {% if field.field.field_type == 'FileField' %}
-                        &nbsp;&ndash;&nbsp;{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}
-                    {% else %}
-                        &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
-                    {% endif %}
-                {% endfor %}
-                </a>
-            </h3>
-            <!-- delete form -->
-            <form name="entry-delete" method="POST" action="{% url 'form_entry_delete' entry.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-        </div>
-    {% empty %}
-        <div>{% trans "0 Entries Found" %}</div>
-    {% endfor %}
+  </ul>
+  
+  {% for entry in entries %}
+  <div class="panel panel-default">  
+    <div class="panel-body">
+      <ul class="list-inline">
+        
+        <li class="pull-left">
+          <a href="{{ entry.get_absolute_url }}">
+            {{ entry.entry_time }}
+            {% for field in entry.fields.all|slice:":3" %}
+            {% if field.field.field_type == 'FileField' %}
+            &nbsp;&ndash;&nbsp;{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}
+            {% else %}
+            &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
+            {% endif %}
+            {% endfor %}
+          </a>
+        </li>
+        
+        <!-- delete form -->
+        <li class="pull-right">
+          <div class="form-group">
+            <a class="btn btn-danger" method="POST" title="{% trans 'Link to delete confirmation page' %}" href="{% url 'form_entry_delete' entry.pk %}">
+              {% trans "Delete" %}
+            </a>
+          </div>
+        </li>
+        
+      </ul>
     </div>
-
-    {% paginate %}
+  </div>
+  
+  {% empty %}
+  
+  <div>{% trans "0 Entries Found" %}</div>
+  
+  {% endfor %}
 </div>
+
+{% paginate %}
 {% endblock %}
 
 {% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            // delete confirmation
-            $('.delete').click(function(){
-                var delete_form = confirm('{% trans "Permanently delete entry?" %}');    // confirm
-                if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
-                return false;    // cancel
-            });
-        });
-    </script>
+{{ block.super }}
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  // delete confirmation
+  $('.delete').click(function(){
+  var delete_form = confirm('{% trans "Permanently delete entry?" %}');    // confirm
+  if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
+  return false;    // cancel
+  });
+  });
+</script>
 {% endblock %}

@@ -12,7 +12,7 @@
         <form method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ embed_form.get_absolute_url }}">{% csrf_token %}
         <div class="forms">
             {{ embed_form_for_form|styled_form }}
-            <input type="submit" value="{% trans 'Submit' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Submit' %}" />
         </div>
         </form>
     </div>
