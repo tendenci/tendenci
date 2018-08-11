@@ -35,16 +35,16 @@ def get_theme_root(theme=None):
 
 def theme_choices():
     """
-    Returns a list of available themes in BUILTIN_THEMES_DIR and
+    Returns a list of available themes in
     ORIGINAL_THEMES_DIR
     """
-    themes_dir = settings.BUILTIN_THEMES_DIR
-    for theme in os.listdir(themes_dir):
-        # Ignore '.' '..' and hidden directories
-        if theme.startswith('.'):
-            continue
-        if os.path.isdir(os.path.join(themes_dir, theme)):
-            yield 'builtin/'+theme
+#     themes_dir = settings.BUILTIN_THEMES_DIR
+#     for theme in os.listdir(themes_dir):
+#         # Ignore '.' '..' and hidden directories
+#         if theme.startswith('.'):
+#             continue
+#         if os.path.isdir(os.path.join(themes_dir, theme)):
+#             yield 'builtin/'+theme
     themes_dir = settings.ORIGINAL_THEMES_DIR
     for theme in os.listdir(themes_dir):
         # Ignore '.' '..' and hidden directories
