@@ -789,7 +789,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         try:
             photo_set = self.photoset.all()[0]
         except IndexError:
-            return ("photo", [self.pk])
+            return reverse("photo", args=[self.pk])
         return reverse('photo', args=[self.pk, photo_set.pk])
 
     def get_exif_data(self):
