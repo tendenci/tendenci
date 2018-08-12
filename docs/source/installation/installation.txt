@@ -17,8 +17,7 @@ and will also make it easy to setup/test/discard multiple copies/configurations 
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 16.04. (For Ubuntu 18.04,
-as of August 9, 2018, the only roadblock we encountered is that Postgis cannot be installed successfully.) 
+These instructions cover the installation of Tendenci on a system running Ubuntu 18.04 and 16.04. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -61,13 +60,25 @@ Install the required system dependencies:
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
 
 
-Ubuntu 16.04 comes with Python 3.5. But Tendenci 11 requires Python 3.6 or newer. Install Python 3.6:
+For Ubuntu 16.04,  install Python 3.6 (Ubuntu 16.04 comes with Python 3.5. Ubuntu 18.04 has Python 3.6 installed by default.):
 ::
 
     sudo add-apt-repository ppa:jonathonf/python-3.6
     sudo apt update
     sudo apt install python3.6
+
+
+Ubuntu 18.04, add the universe repository:
+::
+
+    sudo add-apt-repository universe
+
+
+Install ``python3.6-dev`` and ``pip``:
+::
+
     sudo apt install python3.6-dev --upgrade
+    curl "https://bootstrap.pypa.io/get-pip.py" | python3.6
 
 
 System Preparation on macOS
