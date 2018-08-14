@@ -132,7 +132,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=current_file_path).order_by("-create_dt")
 
-    content = get_file_content(theme_root, selected_theme, current_file_path)
+    # New templates created by clicking the New Template" button are blank.
+    # Add a space for the blank template to make it editable.
+    content = get_file_content(theme_root, selected_theme, current_file_path) or ' '
     file_form = form_class({'content': content})
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 
