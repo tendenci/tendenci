@@ -359,7 +359,11 @@ def original_templates(request, template_name="theme_editor/original_templates.h
     elif is_valid_theme(app):
         root = os.path.join(get_theme_root(app), 'templates')
     else:
-        raise Http404(_('Specified theme or app does not exist'))
+        if '/' in app and app.split('/')[0] == 'builtin':
+            builtin_base_name = app.split('/')[1]
+            root = os.path.join(settings.TENDENCI_ROOT, "themes/{}/templates".format(builtin_base_name))
+        else:
+            raise Http404(_('Specified theme or app does not exist'))
 
     if not is_valid_path(root, current_dir):
         raise Http403
@@ -410,7 +414,11 @@ def copy_to_theme(request):
     elif is_valid_theme(app):
         root = os.path.join(get_theme_root(app), 'templates')
     else:
-        raise Http404(_('Specified theme or app does not exist'))
+        if '/' in app and app.split('/')[0] == 'builtin':
+            builtin_base_name = app.split('/')[1]
+            root = os.path.join(settings.TENDENCI_ROOT, "themes/{}/templates".format(builtin_base_name))
+        else:
+            raise Http404(_('Specified theme or app does not exist'))
 
     if (not is_valid_path(root, current_dir) or
         not is_valid_path(root, os.path.join(current_dir, chosen_file))):
