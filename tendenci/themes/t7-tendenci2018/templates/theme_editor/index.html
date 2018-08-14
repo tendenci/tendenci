@@ -244,8 +244,8 @@
     template: 'qq-simple-thumbnails-template',
     thumbnails: {
     placeholders: {
-    waitingPath: '{% static "fine-uploader/waiting-generic.png" %}',
-    notAvailablePath: '{% static "fine-uploader/not_available-generic.png" %}'
+    waitingPath: '{% static "uploader/waiting-generic.png" %}',
+    notAvailablePath: '{% static "uploader/not_available-generic.png" %}'
     }
     },
     
@@ -357,7 +357,7 @@
     clearForm: false,
     resetForm: false,
     };
-    $('#upload_form').ajaxForm(options);
+    //$('#upload_form').ajaxForm(options);
     });
     
     function showResponse(response, status, xhr, $form)  {
@@ -425,8 +425,9 @@
   <script type="text/javascript">
     $(document).ready(function() {
     
-    $('#delete-btn').click(function() {
-    return window.confirm(this.title || '{% trans "Are you sure you want to delete the following file?" %} {{ pwd }}/{{ current_file }}');
+	    $('#delete-btn').click(function() {
+	    return window.confirm(this.title || '{% trans "Are you sure you want to delete the following file?" %} {{ pwd }}/{{ current_file }}');
+	    });
     });
   </script>
   {% endblock %}
