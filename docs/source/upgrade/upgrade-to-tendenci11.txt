@@ -413,7 +413,7 @@ Ensure that filesystem permissions are set appropriately:
     chmod -R o+rX-w /srv/mysite/
     sudo chgrp -Rh www-data /var/www/mysite/
     chmod -R -x+X,g-w,o-rwx /var/www/mysite/
-    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/whoosh_index/
+    chmod -R ug-x+rwX,o-rwx /var/www/mysite/media/ /var/www/mysite/whoosh_index/ /var/www/mysite/themes/
     sudo chown -Rh www-data:"$(id -u -n)" /var/log/mysite/
     sudo chmod -R -x+X,g+rw,o-rwx /var/log/mysite/
 
