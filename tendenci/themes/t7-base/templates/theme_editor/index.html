@@ -24,20 +24,79 @@
 {% if current_file %}
 <div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span> in theme <span class="highlight">{{ current_theme }}</span></big></div>
 {% endif %}
-<table id="file-editor" width="100%">
+<table class="table" id="file-editor" width="100%">
     <tr>
+        <td width="20%" valign="top">
+            <div class="theme-selection well well-small">
+                <h4>{% if theme_read_only %}{% trans 'Currently viewing' %}{% else %}{% trans 'Currently editing' %}{% endif %}:</h4>
+                <form method="GET" action="">
+                    {{ theme_form.theme_edit }}
+                </form>
+             
+             	{% ifnotequal ACTIVE_THEME current_theme %}
+		          <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% blocktrans %}Preview <strong>{{ current_theme }}</strong> on your site{% endblocktrans %} &raquo;</a></p>
+		        {% endifnotequal %}
+                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}.
+                {% if theme_count > 1 %}
+                <a href="{% url "theme_editor.picker" %}">{% trans "Change" %} &raquo;</a>
+                {% endif %}
+                </p>
+            </div>
+            <div id="right_files_list">
+	            <div class="well well-small">
+	                <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>
+	                <ul id="file-tree">
+	                {% for key,value in all_files_folders.items %}
+	                    {% if value.items %}
+	                        {% for key,value in value.items|sortcontents %}
+	                            {% if key == "contents" %}
+	                                {% for item in value %}
+	                                    <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+	                                    {% if item.editable %}
+	                                        <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+	                                    {% else %}
+	                                        <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}&theme_edit={{ current_theme }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
+	                                    {% endif %}
+	                                    </li>
+	                                {% endfor %}
+	                            {% else %}
+	                                {% folder_structure value %}
+	                            {% endif %}
+	                        {% endfor %}
+	                    {% endif %}
+	                {% endfor %}
+	                </ul>
+	             </div>
+                     {% if not theme_read_only %}
+                     <div class="well well-small">
+                     <h4>{% trans 'Customize more templates' %}:</h4>
+                     {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
+                     <a href="{% url "theme_editor.app_list" %}?theme_edit={{ current_theme }}" class="btn btn-default btn-sm">{% trans "Customize more templates" %}</a>
+
+                     </div>
+
+                     <div class="well well-small">
+                       <h4>{% trans 'Create a new template' %}:</h4>
+                         {% trans 'Click the button below to add a new template.' %}
+                         <div><button class="btn btn-default btn-sm new-template-btn">{% trans 'New Template' %}</button></div>
+                     </div>
+                     {% endif %}
+
+           </div>
+        </td>
+         
         <td width="80%" id="editor-td" >
             {% if is_file %}
 
             <form id="editorForm" class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
               {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
               <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
-              {{ current_file_path }}
+
               <div id="fileupdatemessage"></div>
               <div class="form_block">
                 {% if not theme_read_only %}
                 <input type="hidden" name="action" value="edit" />
-                <input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
+                <input class="btn btn-primary" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
                 <span id="save_message" class="alert-message alert alert-success fade in"></span>
                 {% endif %}
               </div>
@@ -45,7 +104,7 @@
 
             {% if not theme_read_only %}
             {% if current_file not in non_deletable_files  %}
-            <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ current_file_path }}&theme_edit={{ current_theme }}" class="btn" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
+            <a id="delete-btn" href="{% url "theme_editor.delete" %}?file={{ current_file_path }}&theme_edit={{ current_theme }}" class="btn btn-danger pull-left" style="float:right;" class="delete">{% trans 'Delete this File' %}</a>
             {% endif %}
             <div style="clear:both"></div>
             <div id="file_version_box">
@@ -68,121 +127,7 @@
                 <p>{% trans "No file selected. Select a file or directory from the list on the right." %}</p>
             {% endif %}
         </td>
-        <td width="20%" valign="top">
-            <div class="theme-selection well well-small">
-                <h4>{% if theme_read_only %}{% trans 'Currently viewing' %}{% else %}{% trans 'Currently editing' %}{% endif %}:</h4>
-                <form method="GET" action="">
-                    {{ theme_form.theme_edit }}
-                </form>
-                {% if ACTIVE_THEME != current_theme %}
-                <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "Preview" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
-                {% else %}
-                <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% trans "View" %} <strong>{{ current_theme }}</strong> {% trans "on your site" %} &raquo;</a></p>
-                {% endif %}
-                {% if can_copy_theme %}
-                <button class="btn btn-mini copy-theme-btn">{% trans 'Copy' %}</button>
-                {% endif %}
-                {% if not theme_read_only %}
-                <button class="btn btn-mini rename-theme-btn">{% trans 'Rename' %}</button>
-                <a id="delete-theme-btn" href="{% url "theme_editor.theme_delete" %}?theme_edit={{ current_theme }}" class="btn btn-mini">{% trans 'Delete' %}</a>
-                {% endif %}
-                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}.
-                {% if theme_count > 1 %}
-                <a href="{% url "theme_editor.picker" %}">{% trans "Change" %} &raquo;</a>
-                {% endif %}
-                </p>
-            </div>
-            <div id="right_files_list">
-            <div class="well well-small">
-                <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>
-                <ul id="file-tree">
-                {% for key,value in all_files_folders.items %}
-                    {% if value.items %}
-                        {% for key,value in value.items|sortcontents %}
-                            {% if key == "contents" %}
-                                {% for item in value %}
-                                    <li {% if current_file_path == item.path %}class="highlight"{% endif %}>
-                                    {% if item.editable %}
-                                        <a href="{% url "theme_editor.editor" %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
-                                    {% else %}
-                                        <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ item.url }}" target="_blank" title="{% trans 'View this file in a new window.' %}"><span class="glyph">K</span></a> <a href="{% url "theme_editor.delete" %}?file={{ item.path }}&theme_edit={{ current_theme }}" class="delete" title="{% trans 'Delete this file.' %}"><span class="glyph">×</span></a></span></span>
-                                    {% endif %}
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                {% folder_structure value %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-                </ul>
-
-                {% comment %}
-
-
-                               {%  if pwd %}
-                               <div class="pwd" title="{{ pwd }}">
-                               {% if pwd|length > 20  %}
-                                   <p>{% blocktrans with pwd|slice:"-20:" as pslice %}in ...{{ pslice }}{% endblocktrans %}</p>
-                               {% else %}
-                                   <p>{% blocktrans %}in {{ pwd }}{% endblocktrans %}</p>
-                               {% endif %}
-                               </div>
-                               {% endif %}
-                               {% if prev_dir %}
-                                   <p class="prev_dir">
-                                       <a href="{% url "theme_editor.editor" %}?file={{ prev_dir }}&theme_edit={{ current_theme }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
-                                   </p>
-                               {% endif %}
-                               {% if dirs %}
-                               <ul class="dir_list">
-                                    {% for dir in dirs %}
-                                        <li class="dir_item"><a href="{% url "theme_editor.editor" %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
-                                    {% endfor %}
-                               </ul>
-                               {%  endif %}
-                               {%  if files or non_editable_files %}
-                               <ul class="files_list">
-                                    {% if files %}
-                                    {% for file in files %}
-                                        <li {% if current_file == file %}class="highlight"{% endif %}>
-                                            <a href="{% url "theme_editor.editor" %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
-                                        </li>
-                                    {% endfor %}
-                                    {% endif %}
-                                    {% if non_editable_files %}
-                                        <li style="border-top: solid 1px #111;">{% trans "Non-Editable Files" %}</li>
-                                    {% for file in non_editable_files %}
-                                        <li {% if current_file == file %}class="current_file"{% endif %}>
-                                            <a href="{{ file.url }}" target="_blank">{{ file|safe }}</a>
-                                        </li>
-                                    {% endfor %}
-                                    {% endif %}
-                               </ul>
-                               {% endif %}
-                               {% if not files and not dirs and not non_editable_files %}
-                               <p>{% trans "This folder is empty" %}</p>
-                               {% endif %}
-
-                {% endcomment %}
-                </div>
-                               {% if not theme_read_only %}
-                               <div class="well well-small">
-                               <h4>{% trans 'Customize more templates' %}:</h4>
-                               {% trans "Copy down one of Tendenci's built-in app templates and customize it." %}
-                               <a href="{% url "theme_editor.app_list" %}?theme_edit={{ current_theme }}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
-
-                               </div>
-
-                               <div class="well well-small">
-                                 <h4>{% trans 'Create a new template' %}:</h4>
-                                   {% trans 'Click the button below to add a new template.' %}
-                                   <button class="btn btn-mini new-template-btn">{% trans 'New Template' %}</button>
-                               </div>
-                               {% endif %}
-
-           </div>
-                   </td>
+        
     </tr>
 </table>
 
