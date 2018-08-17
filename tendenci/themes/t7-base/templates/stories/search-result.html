@@ -1,10 +1,11 @@
 {% load base_tags %}
 {% load perm_tags %}
 
+<!-- you are here: /stories/search-result.html -->
 
 {% has_perm request.user stories.change_story story as can_edit %}
 
-<article class="panel panel-info t-stories-search-result t-search-result">
+<article class="panel panel-default t-stories-search-result t-search-result">
     <div class="panel-heading t-search-result-heading">
         <h1 class="panel-title"><a href="{% if can_edit %}{% url 'story' story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title "Untitled" %}</a></h1>
     </div>
