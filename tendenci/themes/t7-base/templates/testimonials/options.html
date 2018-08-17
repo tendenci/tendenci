@@ -6,9 +6,9 @@
 
 <div class="t-iconrow">
     {% if can_edit %}
-        <a class="option-link edit" href="{% url 'admin:testimonials_testimonial_change' opt_object.pk %}?next={{ request.path }}">Edit</a>
+        <a class="btn btn-info" href="{% url 'admin:testimonials_testimonial_change' opt_object.pk %}?next={{ request.path }}">Edit</a>
     {% endif %}
     {% if can_delete %}
-        <a class="option-link delete" href="{% url 'admin:testimonials_testimonial_delete' opt_object.pk %}">Delete</a>
+        <a class="btn btn-danger" href="{% url 'admin:testimonials_testimonial_delete' opt_object.pk %}">Delete</a>
     {% endif %}
 </div>

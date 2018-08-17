@@ -16,13 +16,13 @@
 {% autopaginate testimonials 5 %}
 {% has_perm user testimonials.add_testimonial as can_add_testimonial %}
 
-<div class="t">
+<div id="testimonials-search">
+  <div class="page-header">
     <h1>{% firstof MODULE_STORIES_LABEL_PLURAL "Testimonials"%}</h1>
+  </div>
 
     {% testimonial_search %}
-    {% if can_add_testimonial %}
-    <div><a href="{% url 'admin:testimonials_testimonial_add' %}">Add Testimonial</a></div>
-    {% endif %}
+    
     <div class="tsm-search-wrap">
         {% for testimonial in testimonials %}
             {% search_result testimonial %}
@@ -32,16 +32,4 @@
     </div>
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
-    <script type="text/javascript">
-        var iconrow = new dropdown({
-            container:    'more-options-wrap',
-            trigger:    'more-options-trigger',
-            target:        'more-options-target'
-        });
-    </script>
 {% endblock %}
