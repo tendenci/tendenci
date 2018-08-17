@@ -10,9 +10,10 @@
     <form method="POST" class="form-horizontal" action="">{% csrf_token %}
         {{ photoset_form|styled_form }}
         <input type="hidden" name="action" value="add" />
-        <input type="submit" value="{% trans 'Add' %}"/>
+        <input class="btn btn-primary" type="submit" value="{% trans 'Add' %}"/>
     </form>
     </div>
+    <br />
 {% endblock %}
 
 {% block extra_body %}

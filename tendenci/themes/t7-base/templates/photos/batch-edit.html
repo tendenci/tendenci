@@ -17,7 +17,7 @@
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
             <div class="minimize-wrap-link">
-                <h3><a href="#" class="minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
+                <h3><a href="#" class="btn btn-default  minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
             </div>
             <div class="clearfix"></div>
             <div class="side-panel">
@@ -63,7 +63,7 @@
                         </select></div>
                     </div>
                     <div class="save-wrap">
-                        <input type="submit" value="{% trans 'Save all changes to these photos' %}" onclick="event.preventDefault(); save_changes('{% url "photoset_details" photo_set.id %}');"/>
+                        <input class="btn btn-primary" type="submit" value="{% trans 'Save all changes' %}" onclick="event.preventDefault(); save_changes('{% url "photoset_details" photo_set.id %}');"/>
                     </div>
                 </div>
             </div>

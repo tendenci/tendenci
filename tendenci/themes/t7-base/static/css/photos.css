@@ -436,6 +436,10 @@ div.side-panel {
     *padding: 0 10px; /* ie7 and below: custom padding */
 }
 
+form .label{
+	color: initial;
+}
+
 
 /*= photo edit
 -------------------------------- */

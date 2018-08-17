@@ -136,3 +136,12 @@ td.image a {
 .visibility .t-perm, .visibility .t-status{
 	display: inline;
 }
+.grid-item-content .navbar{
+    margin-bottom: 0 !important;
+}
+.grid-item-content li.dropdown > a{
+	color: initial;
+}
+.grid-item-content .navbar .t-status{
+	padding: 15px 0px;
+}
