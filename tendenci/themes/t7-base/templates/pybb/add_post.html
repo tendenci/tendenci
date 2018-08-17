@@ -29,7 +29,9 @@
 
 {% block content %}
 
-<h1>{% if forum %}{% trans "New topic" %}{% else %}{% trans "New reply" %}{% endif %}</h1>
+<div class="page-header">
+  <h1>{% if forum %}{% trans "New topic" %}{% else %}{% trans "New reply" %}{% endif %}</h1>
+</div>
 
 {% include "pybb/post_form.html" %}
 {% endblock content %}

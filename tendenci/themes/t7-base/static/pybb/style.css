@@ -102,3 +102,7 @@
 .post-related {
   margin-top: 20px;
 }
+#emoticons img{
+	display: inline !important;
+}
+}
