@@ -5,28 +5,36 @@
 {% has_perm user forms.delete_form opt_object as can_delete %}
 {% has_perm user forms.add_form as can_add %}
 
-<nav class="navbar navbar-default">   
-  <div class="container-fluid">
-    <ul class="nav navbar-nav">
-      {% if can_edit %}
-      {% if opt_object.status_detail == 'draft' %}
-      <span class="copyright body-copy-alerts">{% trans "Draft" %}</span>
-      {% endif %}
-      {% endif %}
-      
-      {% if can_edit %}
-      <li><a href="{% url 'form_entries' opt_object.pk %}">{% trans "Entries" %}</a></li>
-      <li><a href="{% url "admin:forms_form_export" opt_object.pk %}">{% trans "Export Entries" %}</a></li>
-      <li><a href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit" %}</a></li>
-      <li><a href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit Fields" %}</a></li>
-      {% if can_add %}
-      <li><a href="{% url 'form_copy' opt_object.pk %}">{% trans "Copy" %}</a></li>
-      {% endif %}
-      {% if can_delete %}
-      <li><a href="{% url 'form_delete' opt_object.pk %}">{% trans "Delete" %}</a></li>
-      {% endif %}
-      {% endif %}
-      
-    </ul>
-  </div>
-</nav>
+{% if can_edit %}
+    <nav class="navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-options-links">
+                    <li>{{ opt_object.obj_perms }}</li>
+                    <li>{{ opt_object.obj_status }}</li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right t-meta-options-links">
+                    <li class="dropup">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+                            {% trans "Options" %} <span class="caret"></span>
+                        {% endspaceless %}</a>
+
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a class="edit-link" href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit" %}</a></li>
+					      <li><a href="{% url "admin:forms_form_change" opt_object.pk %}">{% trans "Edit Fields" %}</a></li>
+					      <li><a href="{% url 'form_entries' opt_object.pk %}">{% trans "Entries" %}</a></li>
+					      <li><a href="{% url "admin:forms_form_export" opt_object.pk %}">{% trans "Export Entries" %}</a></li>
+					      {% if can_add %}
+					      <li><a href="{% url 'form_copy' opt_object.pk %}">{% trans "Copy" %}</a></li>
+					      {% endif %}
+					      {% if can_delete %}
+					      <li><a href="{% url 'form_delete' opt_object.pk %}">{% trans "Delete" %}</a></li>
+					      {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endif %}

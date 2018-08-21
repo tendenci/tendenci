@@ -22,12 +22,12 @@
     
     {% if user.profile.is_superuser %}
     <nav class="navbar navbar-default t-meta-editor-bar">
-    <div class="container-fluid">
-    <ul class="nav navbar-nav t-meta-perm-status">
-      <li><a><u>Status: </u></a></li>
-      <li><a>{{ staff.obj_perms }}</a></li>
-      <li><a>{{ staff.obj_status }}</a></li>
-    </ul>
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-options-links">
+			      <li>{{ staff.obj_perms }}</li>
+			      <li>{{ staff.obj_status }}</li>
+			    </ul>
     
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
       <li class="dropdown">
@@ -44,7 +44,7 @@
         
       </li>
     </ul>
-    
+    </div>
     </div>
     </nav>
 {% endif %}

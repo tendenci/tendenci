@@ -564,3 +564,20 @@ label.required:after {
     content: '*';
     color: #ED6270;
 }
+
+/* Meta 
+=============== */
+.t-perm,
+.t-status,
+.t-role,
+.t-expires {
+    display: block;
+    font-weight: bold;
+    padding: 15px;
+}
+.t-perm-public {
+    color: #ffffff;
+}
+.t-status-active, .t-status-published {
+    color: #ffffff;
+}

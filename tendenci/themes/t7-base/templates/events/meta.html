@@ -48,27 +48,24 @@
     </ul>
     
   {% if can_edit %}
-  <nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <ul class="nav navbar-nav t-meta-perm-status">
-      <li><a>{{ event.obj_perms }}</a></li>
-      <li><a>{{ event.obj_status }}</a></li>
-    </ul>
+  <nav class="navbar navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-options-links">
+			      <li>{{ event.obj_perms }}</li>
+			      <li>{{ event.obj_status }}</li>
+			    </ul>
     
     <ul class="nav navbar-nav navbar-right t-meta-options-links">
-      <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?object_id={{ event.pk }}&source={{ event.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-      <li><a class="t-meta-edit-link" href="{% url "event.edit" event.pk %}">{% trans "Edit" %}</a></li>
       <li class="dropup">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
           {% trans "Options" %} <span class="caret"></span>
           {% endspaceless %}</a>
         
         <ul class="dropdown-menu" role="menu">
-          {% if can_delete %}
-          <li>
-            <a class="t-meta-delete-link" href="{% url "event.delete" event.pk %}">{% trans "Delete" %}</a>
-          </li>
-          {% endif %}
+          <li><a class="t-meta-edit-link" href="{% url "event.edit" event.pk %}">{% trans "Edit" %}</a></li>
+          <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?object_id={{ event.pk }}&source={{ event.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+          
           {% if can_delete and event.is_recurring_event %}
           <li>
             <a class="t-meta-delete-link" href="{% url "event.delete_recurring" event.pk %}">{% trans "Delete Recurring Events" %}</a>
@@ -86,9 +83,15 @@
           <li><a href="{% url "event.edit.meta" event.pk %}">{% trans "Edit Meta" %}</a></li>
           <li><a href="{% url "event.registrant.search" event.pk %}">{% trans "Registrants" %}</a></li>
           <li><a href="{% url "event.registrant.roster" event.pk %}">{% trans "Registrant Roster" %}</a></li>
+          {% if can_delete %}
+          <li>
+            <a class="t-meta-delete-link" href="{% url "event.delete" event.pk %}">{% trans "Delete" %}</a>
+          </li>
+          {% endif %}
         </ul>
       </li>
     </ul>
+    </div>
     </div>
    </nav>
    {% endif %}

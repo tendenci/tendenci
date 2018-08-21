@@ -30,7 +30,7 @@
    <nav class="navbar navbar-default t-meta-editor-bar">
         <div class="container-fluid">
             <div class="collapse navbar-collapse">
-                <ul class="nav navbar-nav t-meta-perm-status">
+                <ul class="nav navbar-nav t-meta-options-links">
                     <li>{{ newsletter.obj_perms }}</li>
                     <li>{{ newsletter.obj_status }}</li>
                 </ul>
@@ -45,12 +45,12 @@
 
                         <ul class="dropdown-menu" role="menu">
                             <li><a class="t-meta-clone-link" href="{% url 'newsletter.clone' newsletter.pk %}" title="Clone">{% trans "Clone" %}</a></li>
-                            <li><a class="t-meta-delete-link" href="{% url 'newsletter.delete' newsletter.pk %}">{% trans "Delete" %}</a></li>
                             {% if not newsletter.date_email_sent %}
                             <li><a href="{% url 'newsletter.action.step5' newsletter.pk %}">{% trans "Send" %}</a></li>
                           {% else %}
                           <li><a class="resend-link" href="{% url 'newsletter.resend.view' newsletter.pk %}" data-title="{{ newsletter.actionname }}" data-href="{% url 'newsletter.resend.view' newsletter.pk %}">{% trans "Resend" %}</a></li>
                           {% endif %}
+                           <li><a class="t-meta-delete-link" href="{% url 'newsletter.delete' newsletter.pk %}">{% trans "Delete" %}</a></li>
 
                         </ul>
                     </li>

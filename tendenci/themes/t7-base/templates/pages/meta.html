@@ -114,44 +114,39 @@
  {% if request.user.is_authenticated and can_edit_page %}
     
   <nav class="navbar navbar-default t-meta-editor-bar">
-  <div class="container-fluid">
-    <ul class="nav navbar-nav">
-      <li><a><u>Status: </u></a></li>
-      <li><a>{{ page.obj_perms }}</a></li>
-      <li><a>{{ page.obj_status }}</a></li>
-    </ul>
+     <div class="container-fluid">
+         <div class="collapse navbar-collapse">
+             <ul class="nav navbar-nav t-meta-options-links">
+		      <li>{{ page.obj_perms }}</li>
+		      <li>{{ page.obj_status }}</li>
+		    </ul>
     
-    <ul class="nav navbar-nav navbar-right t-meta-options-links">
-      
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
-          {% trans "Options" %} <span class="caret"></span>
-          {% endspaceless %}</a>
-        
-        <ul class="dropdown-menu" role="menu">
-          <li><a href="{% url 'event_log.search' %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
-          <li><a href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
-          <li><a href="{% url 'page.edit' page.pk %}">{% trans "Edit" %}</a></li>
-          
-          {% if page.statsu and can_delete_page %}
-          
-          <li><a class="t-meta-delete-link" href="{% url 'page.delete' page.pk %}">{% trans "Delete" %}</a>
-          </li>
-          {% endif %}
-          
-          <li><a href="{% url 'page.edit.meta' page.pk %}">{% trans "Edit Meta" %}</a>
-          </li>
-          
-          <li>
-            <a href="{% url 'category.update' page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a>
-          </li>
-        </ul> <!-- end: dropdown -->
-        
-      </li>
-    </ul> <!-- end: navbar -->
-    {% endif %}
-    
+		    <ul class="nav navbar-nav navbar-right t-meta-options-links">
+		      
+		      <li class="dropdown">
+		        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+		          {% trans "Options" %} <span class="caret"></span>
+		          {% endspaceless %}</a>
+		        
+		        <ul class="dropdown-menu" role="menu">
+		          <li><a href="{% url 'page.edit' page.pk %}">{% trans "Edit" %}</a></li>
+		          <li><a href="{% url 'event_log.search' %}?application=pages&object_id={{ page.pk }}">{% trans "Eventlogs" %}</a></li>
+		          <li><a href="{% url 'versions' page.content_type_id page.pk %}">{% trans "Versions" %}</a></li>
+		          <li><a href="{% url 'page.edit.meta' page.pk %}">{% trans "Edit Meta" %}</a>
+		          </li>
+		          <li>
+		            <a href="{% url 'category.update' page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a>
+		          </li>
+		          {% if page.status and can_delete_page %}
+		          <li><a class="t-meta-delete-link" href="{% url 'page.delete' page.pk %}">{% trans "Delete" %}</a>
+		          </li>
+		          {% endif %}
+		        </ul> <!-- end: dropdown -->
+		        
+		      </li>
+		    </ul> <!-- end: navbar -->
+    </div>
   </div>
 </nav>
-
+{% endif %}
 
