@@ -1,8 +1,8 @@
 {% extends page.template %}
 
-{% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ page.get_title }}{% endblock %}
+{% block meta_description %}{{ page.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
 {% block extra_head %}
 {{ block.super }}
@@ -16,10 +16,10 @@
         </div>{% endif %}
 
         {% if page.title %}
-        <h1>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
+        <h1>{{ page.title }}</h1>
         {% endif %}
 
-        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+        <div class="content">{{ page.content|safe }}</div>
 
         <form action="{% if edit_button %}{% url "page.edit" page.pk %}{% else %}{% url "page.add" %}{% endif %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             <div style="display:none;">

@@ -16,7 +16,7 @@
 
     <div class="panel-body t-search-result-body">
         <p class="item-content">
-            {% blocktrans with c=page.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}
+            {{ page.content|striptags|truncatewords:20|safe }}
         </p>
     </div>
 

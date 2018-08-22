@@ -1,9 +1,9 @@
 {% extends page.template %}
 {% load meta_tags %}
 
-{% block title %}{% blocktrans with t=page.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with d=page.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with k=page.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ page.get_title }}{% endblock %}
+{% block meta_description %}{{ page.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -28,7 +28,7 @@
     -->
     
     <h1>
-      {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}
+      {{ page.title }}
       {% if request.user.is_authenticated %}
       {% if request.user.is_superuser %}
       {% if page.is_public %}<i class="fa fa-unlock-alt pull-right text-success"></i>{% endif %}
@@ -48,7 +48,7 @@
   {% endif %}
   
   <div class="t-pages-page-body">
-    {% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}
+    {{ page.content|safe }}
   </div>
 
   {% include "pages/meta.html" %}
