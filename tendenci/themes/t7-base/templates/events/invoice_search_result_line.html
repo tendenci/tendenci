@@ -53,7 +53,7 @@
     <small>
       Event:
       <a href="{% url 'event' obj.event.pk %}">
-        {% blocktrans with title=obj.event.title|truncatewords:5 %}{{ title }}{% endblocktrans %}
+        {{ obj.event.title|truncatewords:5 }}
       </a>
     </small>
   </td>

@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }} {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} {% trans "Addons" %}{% endblock %}
+{% block title %}{{ block.super }} {{ event.title }} {% trans "Addons" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,12 +14,12 @@
 
 {% block content %}
 <div class="t">
-    <h1>{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %} {% trans "Addons" %}</h1>
+    <h1>{{ event.title }} {% trans "Addons" %}</h1>
 
     <div class="addons-wrap">
         {% for addon in addons %}
             <div class="addon-title">
-            <strong>{% blocktrans with title=addon.title %}{{ title }}{% endblocktrans %}</strong>
+            <strong>{{ addon.title }}</strong>
             <a href="{% url "event.delete_addon" event.id addon.id %}">{% trans "Delete" %}</a>
             {% if addon.status %}
                 <a href="{% url "event.disable_addon" event.id addon.id %}">{% trans "Disable" %}</a>
@@ -29,14 +29,14 @@
             <a href="{% url "event.edit_addon" event.id addon.id %}">{% trans "Edit" %}</a>
             </div>
             <table class="addon-detail">
-            <tr><td><strong>{% trans "Price" %}</strong></td><td>{% blocktrans with keys=SITE_GLOBAL_CURRENCYSYMBOL %}{{ keys }}{% endblocktrans %}{{ addon.price }}</td></tr>
-            <tr><td><strong>{% trans "Enabled" %}</strong></td><td>{% blocktrans with status=addon.status %}{{ status }}{% endblocktrans %}</td></tr>
+            <tr><td><strong>{% trans "Price" %}</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
+            <tr><td><strong>{% trans "Enabled" %}</strong></td><td>{{ addon.status }}</td></tr>
             {% if addon.options.all %}
                 <tr>
                     <td><strong>{% trans "Options" %}</strong></td>
                     <td>
                     {% for op in addon.options.all %}
-                    {% blocktrans with title=op.title %}{{ title }}{% endblocktrans %}{% if not forloop.last%}, {% endif %}
+                    {{ op.title }}{% if not forloop.last%}, {% endif %}
                     {% endfor %}
                     </td>
                 </tr>

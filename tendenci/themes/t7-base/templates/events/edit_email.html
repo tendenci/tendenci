@@ -41,7 +41,7 @@
         {% endblocktrans %}
     </div>
 
-    <h3>{% trans "Event: " %}<a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+    <h3>{% trans "Event: " %}<a href="{% url "event" event.id %}">{{ event.title }}</a></h3>
 
     <div class="forms">
 
@@ -73,7 +73,7 @@
                 <div class="error">{{ field.errors }}</div>
                 <div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
                 <div class="field"> {{ field }}</div>
-                <div class="help-text">{% blocktrans with help_text=field.help_text|safe %}{{ help_text }}{% endblocktrans %}</div>
+                <div class="help-text">{{ field.help_text|safe }}</div>
             </div>
             {% endfor %}
 

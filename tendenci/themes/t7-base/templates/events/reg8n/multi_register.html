@@ -16,7 +16,7 @@
 <div class="t">
     <h1>{% trans "Registration" %}</h1>
     <div class="event-info">
-        <div class="event-title"><a href="{% url "event" event.id %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></div>
+        <div class="event-title"><a href="{% url "event" event.id %}">{{ event.title }}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
             {% for span in event.date_spans %}

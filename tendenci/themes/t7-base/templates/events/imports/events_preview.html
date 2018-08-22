@@ -37,7 +37,7 @@
     {% for event in event_list %}
         <div class="result">
             <div class="header">
-                <strong>{% trans "Row" %} {{ event.ROW_NUM }} - {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</strong>
+                <strong>{% trans "Row" %} {{ event.ROW_NUM }} - {{ event.title }}</strong>
             </div>
             <div class="verdict">
             {% if not event.IS_VALID %}

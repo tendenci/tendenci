@@ -8,9 +8,9 @@
 {% load humanize %}
 {% load meta_tags %}
 
-{% block title %}{{ block.super }}{% blocktrans with title=event.get_title %}{{ title }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with keys=event.get_keywords %}{{ keys }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
+{% block meta_description %}{{ event.get_description }}{% endblock %}
+{% block meta_keywords %}{{ event.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -90,7 +90,7 @@ a.event-place-desc-toggle {
             {% if event.is_recurring_event %}
             <div class="event-recurring"></div>
             {% endif %}
-            <span itemprop="name">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</span>
+            <span itemprop="name">{{ event.title }}</span>
           </h2>
         </div>
         <div class="col-xs-7">
@@ -117,7 +117,7 @@ a.event-place-desc-toggle {
         <!-- event description -->
         <div class="content">
           <h4 class="time-period">Description</h4>
-          <div class="event-desc">{% blocktrans with desc=event.description|safe %}{{ desc }}{% endblocktrans %}</div>
+          <div class="event-desc">{{ event.description|safe }}</div>
         </div>
         
         <br />
@@ -136,14 +136,14 @@ a.event-place-desc-toggle {
             </div>
             {% if speaker.description|striptags|wordcount > 50 %}
             <div class="speaker-desc-short">
-              {% blocktrans with desc=speaker.description|striptags|safe|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+              {{ speaker.description|striptags|safe|truncatewords:"50" }}
             </div>
             <div class="speaker-desc-long">
-              {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+              {{ speaker.description|safe|urlize|linebreaks }}
             </div>
             {% else %}
             <div class="speaker-desc-short">
-              {% blocktrans with desc=speaker.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+              {{ speaker.description|safe|urlize|linebreaks }}
             </div>
             {% endif %}
             {% if speaker.description|striptags|wordcount > 50 %}
@@ -168,10 +168,10 @@ a.event-place-desc-toggle {
           </div>
           {% if organizer.description|striptags|wordcount > 50 %}
           <div class="organizer-desc-short">
-            {% blocktrans with desc=organizer.description|striptags|truncatewords:"50" %}{{ desc }}{% endblocktrans %}
+            {{ organizer.description|striptags|truncatewords:"50" }}
           </div>
           <div class="organizer-desc-long">
-            {% blocktrans with desc=organizer.description|safe|urlize|linebreaks %}{{ desc }}{% endblocktrans %}
+            {{ organizer.description|safe|urlize|linebreaks }}
           </div>
           {% else %}
           <div class="organizer-desc-short">

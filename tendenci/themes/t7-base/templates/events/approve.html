@@ -11,7 +11,7 @@
     </div>
     <div class="event-info" style="margin-top:10px;">
 
-        <h3><a href="{% url "event" event.pk %}">{% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</a></h3>
+        <h3><a href="{% url "event" event.pk %}">{{ event.title }}</a></h3>
         {% if event.place %}
             <div class="place">{{ event.place }}</div>
         {% endif %}
@@ -26,9 +26,9 @@
 
         <div class="description">
         {% if event.meta.description %}
-            {% blocktrans with desc=event.meta.description %}{{ desc }}{% endblocktrans %}
+            {{ event.meta.description }}
         {% else %}
-            {% blocktrans with desc=event.get_description %}{{ desc }}{% endblocktrans %}
+            {{ event.get_description }}
         {% endif %}
         </div>
 

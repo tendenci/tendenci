@@ -36,7 +36,7 @@
     <a href="{% url "directory" obj.slug %}">Dir. #{{obj.id}}</a> <br />
     <small>
       Directory:
-      <a href="{% url "directory" obj.slug %}">{% blocktrans with headline=obj.headline|truncatewords:5 %}{{ headline }}{% endblocktrans %}</a>
+      <a href="{% url "directory" obj.slug %}">{{ obj.headline|truncatewords:5 }}</a>
     </small>
   </td>
 

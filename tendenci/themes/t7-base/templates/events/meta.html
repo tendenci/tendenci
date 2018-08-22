@@ -21,7 +21,7 @@
       {% if tags %}
       <li><strong>{% trans "Tags:" %} </strong>
         {% for tag in tags %}
-        <a class="label label-default" href="{% url "event.search" %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>{% if not forloop.last %}, {% endif %}
+        <a class="label label-default" href="{% url "event.search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
         {% endfor %}
       </li>
       {% endif %}

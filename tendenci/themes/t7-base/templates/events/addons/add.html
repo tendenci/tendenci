@@ -14,7 +14,7 @@
 
 {% block content %}
 <div class="t">
-    <h1>{% trans "Add Addon for" %} {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}</h1>
+    <h1>{% trans "Add Addon for" %} {{ event.title }}</h1>
 
     <div class="event-wrap">
         <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
