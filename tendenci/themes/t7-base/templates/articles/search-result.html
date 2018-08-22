@@ -18,9 +18,9 @@
   {% endif %}
         
     {% if article.summary %}
-    {% blocktrans with summary=article.summary|striptags|truncatewords:140|safe %}{{ summary }}{% endblocktrans %}
+    {{ article.summary|striptags|truncatewords:140|safe }}
     {% else %}
-    {% blocktrans with body=article.body|striptags|truncatewords:140|safe %}{{ body }}{% endblocktrans %}
+    {{ article.body|striptags|truncatewords:140|safe }}
     {% endif %}
   </p>
   <!-- </div> -->

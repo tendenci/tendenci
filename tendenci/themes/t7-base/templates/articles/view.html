@@ -5,9 +5,9 @@
 {% load meta_tags %}
 
 
-{% block title %}{% blocktrans with title=article.title %}{{ title }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with description=article.description %}{{ description }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with keywords=article.get_keywords %}{{ keywords }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block meta_description %}{{ article.description }}{% endblock %}
+{% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
@@ -18,7 +18,7 @@
 {% block content %}
     <article id="t-articles-article-{{ article.pk }}" class="t-articles-article">
         <div class="page-header">
-            <h1>{% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</h1>
+            <h1>{{ article.headline }}</h1>
         </div>
 
         {% if article.google_profile %}
@@ -30,7 +30,7 @@
         {% endif %}
 
         <div class="t-articles-article-body">
-            {% blocktrans with body=article.body|safe %}{{ body }}{% endblocktrans %}
+            {{ article.body|safe }}
         </div>
 
         {% include "articles/meta.html" with show_source=True show_fb_connect=True %}

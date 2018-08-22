@@ -2,36 +2,26 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans %}
-            {{ MODULE_ARTICLES_LABEL_PLURAL }} for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-        {% endblocktrans %}
+        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblocktrans %}
     {% else %}
-        {% blocktrans %}
-            Articles for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-        {% endblocktrans %}
+        {% blocktrans %}Articles for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblocktrans %}
     {% endif %}
 {% endblock %}
 
 {% block meta_description %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
-        {% blocktrans %}
-            {{ MODULE_ARTICLES_LABEL_PLURAL }} and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-        {% endblocktrans %}
+        {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblocktrans %}
     {% else %}
-        {% blocktrans %}
-            Articles and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-        {% endblocktrans %}
+        {% blocktrans %}Articles and White Papers for {{ SITE_GLOBAL_SITEDISPLAYNAME }} in {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblocktrans %}
     {% endif %}
 {% endblock %}
 
 {% block meta_keywords %}
     {% firstof MODULE_ARTICLES_LABEL_PLURAL trans "Articles" %},
-    {% blocktrans %}
-        {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}
-    {% endblocktrans %}
+    {% blocktrans %}{{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{ SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblocktrans %}
 {% endblock %}
 
 {% block extra_head %}
