@@ -22,12 +22,12 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in nonhash_tags %}
-                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{{ tag }}</a>
             {% endfor %}
 
             {# TODO: Distinguish between hash_tags and nonhash_tags #}
             {% for tag in hash_tags %}
-                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{{ tag }}</a>
             {% endfor %}
         <li>
     {% endif %}

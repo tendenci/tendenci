@@ -29,7 +29,7 @@
   <td>
     <a href="{% url "job" obj.slug %}">Job #{{obj.id}}</a><br />
     <small>
-      Job Title: <a href="{% url "job" obj.slug %}">{% blocktrans with t=obj.title|truncatewords:5 %}{{ t }}{% endblocktrans %}</a>
+      Job Title: <a href="{% url "job" obj.slug %}">{{ obj.title|truncatewords:5 }}</a>
     </small>
   </td>
 

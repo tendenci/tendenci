@@ -6,15 +6,15 @@
 {% load tagging_tags %}
 
 
-{% block title %}{% blocktrans with t=resume.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with d=resume.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with k=resume.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ resume.get_title }}{% endblock %}
+{% block meta_description %}{{ resume.get_description }}{% endblock %}
+{% block meta_keywords %}{{ resume.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}">{% endblock %}
 
 {% block content %}
     <article id="t-resumes-resume-{{ job.pk }}" class="t-resumes-resume">
         <div class="page-header">
-            <h1>{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</h1>
+            <h1>{{ resume.title }}</h1>
 
             {% if resume.resume_url or resume.resume_file %}
                 <ul class="list-inline t-resumes-resume-links">
@@ -55,7 +55,7 @@
             {% if resume.description %}
                 <section class="t-resumes-resume-description">
                     <h2>{% trans "Description" %}</h2>
-                    {% blocktrans with d=resume.description|safe %}{{ d }}{% endblocktrans %}
+                    {{ resume.description|safe }}
                 </section>
             {% endif %}
 
@@ -69,28 +69,28 @@
             {% if resume.experience %}
                 <section class="t-resumes-resume-experience">
                     <h2>{% trans "Experience" %}</h2>
-                    {% blocktrans with e=resume.experience|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                    {{ resume.experience|safe|linebreaks }}
                 </section>
             {% endif %}
 
             {% if resume.awards %}
                 <section class="t-resumes-resume-awards">
                     <h2>{% trans "Awards and Certifications" %}</h2>
-                    {% blocktrans with e=resume.awards|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                    {{ resume.awards|safe|linebreaks }}
                 </section>
             {% endif %}
 
             {% if resume.skills %}
                 <section class="t-resumes-resume-skills">
                     <h2>{% trans "Skills" %}</h2>
-                    {% blocktrans with s=resume.skills|safe|linebreaks %}{{ s }}{% endblocktrans %}
+                    {{ resume.skills|safe|linebreaks }}
                 </section>
             {% endif %}
 
             {% if resume.education %}
                 <section class="t-resumes-resume-education">
                     <h2>{% trans "Education" %}</h2>
-                    {% blocktrans with e=resume.education|safe|linebreaks %}{{ e }}{% endblocktrans %}
+                    {{ resume.education|safe|linebreaks }}
                 </section>
             {% endif %}
 

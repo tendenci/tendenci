@@ -8,7 +8,7 @@
 
     <div class="panel-body t-search-result-body">
         <p class="item-content">
-            {% blocktrans with d=resume.description|striptags|truncatewords:20|safe %}{{ d }}{% endblocktrans %}
+            {{ resume.description|striptags|truncatewords:20|safe }}
         </p>
     </div>
 

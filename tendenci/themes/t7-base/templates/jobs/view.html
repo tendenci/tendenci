@@ -4,15 +4,15 @@
 {% load job_tags %}
 
 
-{% block title %}{% blocktrans with t=job.get_title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with d=job.get_description %}{{ d }}{% endblocktrans %}{% endblock %}
-{% block meta_keywords %}{% blocktrans with k=job.get_keywords %}{{ k }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ job.get_title }}{% endblock %}
+{% block meta_description %}{{ job.get_description }}{% endblock %}
+{% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}">{% endblock %}
 
 {% block content %}
     <article id="t-jobs-job-{{ job.pk }}" class="t-jobs-job">
         <div class="page-header">
-            <h1>{% blocktrans with title=job.title %}{{ title }}{% endblocktrans %}</h1>
+            <h1>{{ job.title }}</h1>
         </div>
 
         <div class="t-jobs-job-body">
@@ -29,7 +29,7 @@
 
                 <ul class="list-unstyled t-jobs-job-information-list">
                     {% if job.description %}
-                        <li><strong>{% trans "Description:" %}</strong> <div>{% blocktrans with d=job.description|safe %}{{ d }}{% endblocktrans %}</div></li>
+                        <li><strong>{% trans "Description:" %}</strong> <div>{{ job.description|safe }}</div></li>
                     {% endif %}
 
                     {% if job.job_url %}
@@ -70,7 +70,7 @@
                 <section class="t-jobs-job-requirements">
                     <h2>
                         {% if MODULE_JOBS_LABEL %}
-                            {% blocktrans with label=MODULE_JOBS_LABEL %}
+                           {% blocktrans with label=MODULE_JOBS_LABEL %}
                                 {{ label }} Requirements
                             {% endblocktrans %}
                         {% else %}
@@ -80,19 +80,19 @@
 
                     <ul class="list-unstyled t-jobs-job-requirements-list">
                         {% if job.experience %}
-                            <li><strong>{% trans "Experience:" %}</strong> <span>{% blocktrans with e=job.experience|striptags|linebreaks %}{{ e }}{% endblocktrans %}</span></li>
+                            <li><strong>{% trans "Experience:" %}</strong> <span>{{ job.experience|striptags|linebreaks }}</span></li>
                         {% endif %}
 
                         {% if job.skills %}
-                            <li><strong>{% trans "Skills:" %}</strong> <span>{% blocktrans with s=job.skills|striptags|linebreaks %}{{ s }}{% endblocktrans %}</span></li>
+                            <li><strong>{% trans "Skills:" %}</strong> <span>{{ job.skills|striptags|linebreaks }}</span></li>
                         {% endif %}
 
                         {% if job.computer_skills %}
-                            <li><strong>{% trans "Computer Skills:" %}</strong> <span>{% blocktrans with cs=job.computer_skills|striptags|linebreaks %}{{ cs }}{% endblocktrans %}</span></li>
+                            <li><strong>{% trans "Computer Skills:" %}</strong> <span>{{ job.computer_skills|striptags|linebreaks }}</span></li>
                         {% endif %}
 
                         {% if job.education %}
-                            <li><strong>{% trans "Education Required:" %}</strong> <span>{% blocktrans with e=job.education|striptags|linebreaks %}{{ e }}{% endblocktrans %}</span></li>
+                            <li><strong>{% trans "Education Required:" %}</strong> <span>{{ job.education|striptags|linebreaks }}</span></li>
                         {% endif %}
                     </ul>
                 </section>

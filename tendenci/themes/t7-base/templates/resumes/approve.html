@@ -6,7 +6,7 @@
     <h1>{% trans "Approve Resume" %}</h1>
 
     <div class="resume-wrap">
-    <p><a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</a></p>
+    <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
     <p>{% trans "Are you sure you want to approve this resume?" %}</p>
     <form action="{% url "resume.approve" resume.pk %}" method="post">{% csrf_token %}
     <div class="forms">

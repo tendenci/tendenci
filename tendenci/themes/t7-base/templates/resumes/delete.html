@@ -5,7 +5,7 @@
 <div class="t">
     <div class="resume-wrap">
         <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Delete" %}</h1>
-        <p><a href="{{ resume.get_absolute_url }}" title="{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}">{% blocktrans with t=resume.title %}{{ t }}{% endblocktrans %}</a></p>
+        <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
         <p>{% trans "Are you sure you want to delete this resume?" %}</p>
         <form action="{% url "resume.delete" resume.pk %}" method="post">{% csrf_token %}
         <div class="forms">

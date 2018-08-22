@@ -27,7 +27,7 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in job.tags|tag_split %}
-                <a class="label label-default" href="{% url 'jobs' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'jobs' %}?q=tag:{{ tag }}">{{ tag }}</a>
            {% endfor %}
         <li>
     {% endif %}

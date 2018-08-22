@@ -2,7 +2,7 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
     {% if MODULE_JOBS_LABEL %}
         {% blocktrans with label=MODULE_JOBS_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
             {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
