@@ -7,15 +7,15 @@
 
 <article class="panel panel-info t-news-search-result t-search-result">
     <div class="panel-heading t-search-result-heading">
-        <h1 class="panel-title"><a href="{{ news.get_absolute_url }}">{% blocktrans with h=news.headline %}{{ h }}{% endblocktrans %}</a></h1>
+        <h1 class="panel-title"><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h1>
     </div>
 
     <div class="panel-body t-search-result-body">
         <p class="item-content">
             {% if news.summary %}
-                {% blocktrans with s=news.summary|striptags|truncatewords:20|safe %}{{ s }}{% endblocktrans %}
+                {{ news.summary|striptags|truncatewords:20|safe }}
             {% else %}
-                {% blocktrans with s=news.body|striptags|truncatewords:20|safe %}{{ s }}{% endblocktrans %}
+                {{ news.body|striptags|truncatewords:20|safe }}
             {% endif %}
         </p>
     </div>

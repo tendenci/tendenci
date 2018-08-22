@@ -11,9 +11,9 @@
         <h2><a href="{{ news.get_absolute_url }}">{% firstof news.headline "Untitled" %}</a></h2>
         <div style="margin: 10px 0px 10px 0px;">
             {% if news.summary %}
-                {% blocktrans with s=news.summary|striptags|safe %}{{ s }}{% endblocktrans %}
+                {{ news.summary|striptags|safe }}
             {% else %}
-                {% blocktrans with s=news.body|striptags|safe %}{{ s }}{% endblocktrans %}
+                {{ news.body|striptags|safe }}
             {% endif %}
         </div>
     </div>
