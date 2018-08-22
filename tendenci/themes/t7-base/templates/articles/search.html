@@ -5,13 +5,13 @@
 {% load search_tags %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {% if MODULE_ARTICLES_LABEL_PLURAL %}
         {% blocktrans %}{{ MODULE_ARTICLES_LABEL_PLURAL }} List{% endblocktrans %}
     {% else %}
         {% trans "Articles List" %}
     {% endif %} - {{ block.super }}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
