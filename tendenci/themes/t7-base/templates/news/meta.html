@@ -69,7 +69,7 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in news.tags|tag_split %}
-                <a class="label label-default" href="{% url 'news' %}?q=tag:{{ tag|lower }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'news' %}?q=tag:{{ tag|lower }}">{{ tag }}</a>
            {% endfor %}
         </li>
     {% endif %}

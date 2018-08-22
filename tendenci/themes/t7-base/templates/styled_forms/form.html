@@ -8,7 +8,7 @@
         <p>{% trans "There were some problems in the form. Please review. Thanks!" %}</p>
 
         {% for error in form.non_field_errors %}
-            <p><a href="#" class="alert-link">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+            <p><a href="#" class="alert-link">{{ error }}</a></p>
         {% endfor %}
 
         {% if form.fieldsets.fieldsets %}

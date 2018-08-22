@@ -7,7 +7,7 @@
 
 {% for field in fields %}
     {% if field.include_in_email %}
-        <p><strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong>: {% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</p>
+        <p><strong>{{ field.field.label }}</strong>: {{ field.value }}</p>
     {% endif %}
 {% endfor %}
 

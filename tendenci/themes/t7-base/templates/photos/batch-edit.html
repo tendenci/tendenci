@@ -81,8 +81,8 @@
                     {% endfor %}
 
                     <div class="photo-wrap">
-                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" alt="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/>
-                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" alt="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=photo_form.instance.title|truncatechars:123 %}{{ t }}{% endblocktrans %}"/>
+                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" alt="{{ photo_form.instance.title|truncatechars:123 }}" title="{{ photo_form.instance.title|truncatechars:123 }}"/>
+                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" alt="{{ photo_form.instance.title|truncatechars:123 }}" title="{{ photo_form.instance.title|truncatechars:123 }}"/>
                     </div>
                     <div class="set-wrap">
                         {{ photo_form.photoset }}

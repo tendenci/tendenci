@@ -2,7 +2,7 @@
 
 
 {% block title %}
-    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{% blocktrans with keys=SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ keys }}{% endblocktrans %}: {% endif %}
+    {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
     {% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}
 {% endblock %}
 

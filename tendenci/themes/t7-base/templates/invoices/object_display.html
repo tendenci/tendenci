@@ -1,11 +1,11 @@
 {% load base_filters %}
 
 {% if object_display %}
-    {% blocktrans with d=object_display|safe %}{{ d }}{% endblocktrans %}
+    {{ object_display|safe }}
 {% else %}
 <tr>
     <td>
-        {% blocktrans with t=invoice.title %}{{ t }}{% endblocktrans %}
+        {{ invoice.title }}
         {% if obj %}
             {% if obj.get_absolute_url %}
             &nbsp;<a href="{{ obj.get_absolute_url }}" title="{% trans 'View' %} {{ obj }}">#{{ obj.pk }}</a>

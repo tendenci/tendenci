@@ -16,9 +16,9 @@
         <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline 'Untitled'%}</a></h2>
         <div class="item-content">
         {% if article.summary %}
-            {% blocktrans with s=article.summary|striptags|truncatewords:40|safe %}{{ s }}{% endblocktrans %}
+            {{ article.summary|striptags|truncatewords:40|safe }}
         {% else %}
-            {% blocktrans with b=article.body|striptags|truncatewords:40|safe %}{{ b }}{% endblocktrans %}
+            {{ article.body|striptags|truncatewords:40|safe }}
         {% endif %}</div>
         </div>
         {% include "articles/meta.html" %}

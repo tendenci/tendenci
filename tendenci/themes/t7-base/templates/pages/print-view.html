@@ -24,8 +24,8 @@
 
     <div class="page-wrap">
         <p>{{SITE_GLOBAL_SITEURL}}{{ page.get_absolute_url }}</p>
-        <h2>{% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h2>
-        <div class="content">{% blocktrans with c=page.content|safe %}{{ c }}{% endblocktrans %}</div>
+        <h2>{{ page.title }}</h2>
+        <div class="content">{{ page.content|safe }}</div>
     </div>
 
 </div>

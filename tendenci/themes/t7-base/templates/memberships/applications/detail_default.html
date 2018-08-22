@@ -17,7 +17,7 @@
 {% block content %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{% blocktrans with d=app.description|safe|urlize %}{{ d }}{% endblocktrans %}</p>
+    <p>{{ app.description|safe|urlize }}</p>
 
     <div>{{ form.non_field_errors }}</div>
 

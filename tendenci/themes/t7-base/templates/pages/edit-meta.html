@@ -11,7 +11,7 @@
 {% block content %}
 <div class="t">
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Meta Information for" %}<br />
-    {% blocktrans with t=page.title %}{{ t }}{% endblocktrans %}</h1>
+    {{ page.title }}</h1>
 
     <div class="page-wrap">
         <div class="options">

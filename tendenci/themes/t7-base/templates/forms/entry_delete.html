@@ -20,7 +20,7 @@
         <h3>
             {{ entry.entry_time }}
             {% for field in entry.fields.all|slice:":3" %}
-                &nbsp;&ndash;&nbsp;{% blocktrans with v=field.value|truncatewords:"2" %}{{ v }}{% endblocktrans %}
+                &nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
             {% endfor %}
         </h3>
 

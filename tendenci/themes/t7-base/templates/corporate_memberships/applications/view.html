@@ -223,7 +223,7 @@
                                                 {% endif %}
                                             </td>
 
-                                            <td>{% if fp.event %}<a href="{% url 'event' fp.event.id %}">{% blocktrans with title=fp.event.title|truncatechars:30 %}{{ title }}{% endblocktrans %}</a>{% endif %}</td>
+                                            <td>{% if fp.event %}<a href="{% url 'event' fp.event.id %}">{{ fp.event.title|truncatechars:30 }}</a>{% endif %}</td>
 
                                             <td>{{ fp.create_dt|date:"n/j/Y P" }}</td>
                                             <td>{% if fp.creator %}<a href="{% url 'profile' fp.creator.username %}">{{ fp.creator_username }}</a>{% endif %}</td>

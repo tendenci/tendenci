@@ -199,7 +199,7 @@
             {% for event in events_list %}
             <li>
               <a href="{{ event.get_absolute_url }}"><h3>
-                {% blocktrans with title=event.title %}{{ title }}{% endblocktrans %}
+                {{ event.title }}
               </h3></a>
               <p>{{ event.start_dt|date:"F j, Y - P" }}</p>
               <h5>{{ event.place.name }}</h5>

@@ -28,7 +28,7 @@
 
                          {% if corp_memb.status_detail != "archive" %}
                              {% trans "Status:" %} <span class="t-status-{{ corp_memb.status_detail }}">
-                             {% blocktrans with stat=corp_memb.real_time_status_detail %}{{ stat }}{% endblocktrans %}</span>
+                             {{ corp_memb.real_time_status_detail }}</span>
                          {% else %}
                              {% blocktrans with stat=corp_memb.real_time_status_detail %}
                                  Status: <strong>{{ stat }}</strong>

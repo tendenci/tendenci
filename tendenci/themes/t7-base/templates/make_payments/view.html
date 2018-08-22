@@ -58,7 +58,7 @@
             <div class="clear-left"></div>
 
             <div class="label">{% trans "Comments:" %}</div>
-            <div>{% blocktrans with c=mp.comments|safe %}{{ c }}{% endblocktrans %}</div>
+            <div>{{ mp.comments|safe }}</div>
             <div class="clear-left"></div>
 
             <br />

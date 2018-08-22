@@ -11,7 +11,7 @@
     {% if form.non_field_errors %}
         <div class ="errors">
             {% for error in form.non_field_errors %}
-                <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                <p>{{ error }}</p>
             {% endfor %}
         </div>
     {% endif %}
@@ -26,7 +26,7 @@
                         {% if field.errors %}
                         <div class="error">
                             {% for error in field.errors %}
-                            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                            <p>{{ error }}</p>
                             {% endfor %}
                         </div>
                         {% endif %}
@@ -34,21 +34,21 @@
                             {{ field }}
                         </div>
                         <div class="label{% if field.field.required %} required{% endif %}">
-                            {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                            {{ field.label_tag }}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                        <div class="help-text">{{ field.help_text|safe }}</div>
                         {% endif %}
                     </div>
                     <div style="clear: both"><!-- IE7 --></div>
                 {% else %}
                     <div class="label{% if field.field.required %} required{% endif %}">
-                        {% blocktrans with l=field.label_tag %}{{ l }}{% endblocktrans %}
+                        {{ field.label_tag }}
                     </div>
                     {% if field.errors %}
                     <div class="error">
                         {% for error in field.errors %}
-                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+                        <p>{{ error }}</p>
                         {% endfor %}
                     </div>
                     {% endif %}
@@ -56,7 +56,7 @@
                         {{ field }}
                     </div>
                     {% if field.help_text %}
-                    <div class="help-text">{% blocktrans with h=field.help_text|safe %}{{ h }}{% endblocktrans %}</div>
+                    <div class="help-text">{{ field.help_text|safe }}</div>
                     {% endif %}
                 {% endif %}
              </div>

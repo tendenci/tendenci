@@ -3,9 +3,9 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>{% blocktrans with s=notice.subject %}{{ s }}{% endblocktrans %}</title>
+<title>{{ notice.subject }}</title>
 </head>
 <body>
-{% blocktrans with c=notice.email_content|safe %}{{ c }}{% endblocktrans %}
+{{ notice.email_content|safe }}
 </body>
 </html>

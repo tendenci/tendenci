@@ -2,8 +2,8 @@
 {% load styled_forms %}
 {% load forms_tags %}
 
-{% block title %}{% blocktrans with t=form.title %}{{ t }}{% endblocktrans %}{% endblock %}
-{% block meta_description %}{% blocktrans with i=form.intro %}{{ i }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ form.title }}{% endblock %}
+{% block meta_description %}{{ form.intro }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

@@ -133,7 +133,7 @@
         <div class="errors">
           {% trans 'There were some problems in the form. Please review. Thanks!' %}
           {% for error in form.non_field_errors %}
-          <p><a href="#">{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</a></p>
+          <p><a href="#">{{ error }}</a></p>
           {% endfor %}
 
           {% for field in form %}
@@ -141,7 +141,7 @@
           {% for error in field.errors %}
           <label>
             <a href="{{ request.get_full_path }}#{{ field.auto_id }}">
-              {{ field.label }} - {% blocktrans with e=error %}{{ e }}{% endblocktrans %}
+              {{ field.label }} - {{ error }}
             </a>
           </label>
           {% endfor %}
@@ -170,7 +170,7 @@
           {% if form.key.errors %}
           <div class="error">
             {% for error in form.key.errors %}
-            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+            <p>{{ error }}</p>
             {% endfor %}
           </div>
           {% endif %}
@@ -183,7 +183,7 @@
           {% if form.upload_file.errors %}
           <div class="error">
             {% for error in form.upload_file.errors %}
-            <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+            <p>{{ error }}</p>
             {% endfor %}
           </div>
           {% endif %}

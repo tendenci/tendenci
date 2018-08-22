@@ -9,7 +9,7 @@
     {% if sponsor_stories %}
     {% for story in sponsor_stories %}
         {% if story.image %}
-        <a href="{{ story.full_story_link }}"><img alt="{% blocktrans with t=story.title %}{{ t }}{% endblocktrans %}" src="{% image_url story.image size=140x80 crop=true quality=92 %}" /></a>
+        <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=140x80 crop=true quality=92 %}" /></a>
         {% endif %}
     {% endfor %}
     {% else %}

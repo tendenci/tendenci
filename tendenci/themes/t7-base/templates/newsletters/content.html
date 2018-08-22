@@ -16,7 +16,7 @@
     <button id="d_clip_button" data-clipboard-target="clipboard_textarea" title="{% trans 'Click to copy.' %}">{% trans "Copy HTML to Clipboard" %}</button>
 
     <textarea id="clipboard_textarea" rows=30 style="width:90%; margin:20px 0;">
-    {% blocktrans with c=content %}{{ c }}{% endblocktrans %}
+    {{ content }}
     </textarea>
 
 </div>

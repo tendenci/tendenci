@@ -12,12 +12,12 @@
     <div class="panel-body t-search-result-body">
         {% if story.image %}
             <p class="t-stories-story-image-container">
-                <img src="{% image_url story.image size=80x80 crop=True quality=88 %}" alt="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}" title="{% blocktrans with t=story.title|truncatechars:123 %}{{ t }}{% endblocktrans %}">
+                <img src="{% image_url story.image size=80x80 crop=True quality=88 %}" alt="{{ story.title|truncatechars:123 }}" title="{{ story.title|truncatechars:123 }}">
             </p>
         {% endif %}
 
         <p class="item-content">
-            {% blocktrans with c=story.content|striptags|truncatewords:20|safe %}{{ c }}{% endblocktrans %}
+            {{ story.content|striptags|truncatewords:20|safe }}
 
             {% if can_edit %}
                 <ul class="list-unstyled">

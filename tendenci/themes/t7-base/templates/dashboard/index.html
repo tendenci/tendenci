@@ -179,7 +179,7 @@
                 {% for entry in tendencihelprss.entries|slice:":3" %}
                     <li>
                         <div class="rss-title"><a href="{{ entry.link }}">
-                        {% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}
+                        {{ entry.title }}
                         </a></div>
                         <div class="rss-pubdate">{{ entry.updated_parsed|rss_date }}</div>
                     </li>

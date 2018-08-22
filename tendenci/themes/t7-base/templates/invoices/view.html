@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}{% endblock %}
+{% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}{% endblock %}
 
 
 {% block extra_head %}
@@ -15,7 +15,7 @@
 <div class="t">
   {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
   <div class="page-header">
-    <h1>{% if obj_name %}{% blocktrans with n=obj_name|capfirst %}{{ n }}{% endblocktrans %}{% endif %} {% trans 'Invoice' %}</h1>
+    <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} {% trans 'Invoice' %}</h1>
   </div>
 
   {% if SITE_GLOBAL_SITEMAILINGADDRESS %}

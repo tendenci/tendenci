@@ -68,7 +68,7 @@
             {% with rp|get_object as rp %}
                 <tr>
                     <td><a href="{% url "recurring_payment.view_account" rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
-                    <td>{% blocktrans with d=rp.description %}{{ d }}{% endblocktrans %}</td>
+                    <td>{{ rp.description }}</td>
                     <td>{{ rp.payment_amount }}</td>
                     <td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
                     <td class="total-paid">{{ rp.total_paid }}</td>

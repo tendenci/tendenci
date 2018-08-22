@@ -1,7 +1,7 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
 
-{% block title %}{{ block.super }}{% blocktrans with h=story.headline %}{{ h }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ block.super }}{{ story.headline }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

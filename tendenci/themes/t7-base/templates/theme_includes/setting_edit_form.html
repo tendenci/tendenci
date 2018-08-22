@@ -35,7 +35,7 @@
     <div class="modal-body">
         <form id="config_form_{{ setting_name }}" class="settings-form" action="/settings/template/{{ setting_value }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
         {% for field in setting_value_form %}
-            <p><strong>{% blocktrans with l=field.label %}{{ l }}{% endblocktrans %}</strong>: {{ field }}</p>
+            <p><strong>{{ field.label }}</strong>: {{ field }}</p>
         {% endfor %}
         </form>
         <a href="{{ request.path }}" class="btn secondary">{% trans 'Cancel' %}</a>

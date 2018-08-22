@@ -8,7 +8,7 @@
     <article class="panel panel-info t-entities-search-result t-search-result">
         <div class="panel-heading t-search-result-heading">
             <h1 class="panel-title">
-                <a href="{{ entity.get_absolute_url }}">{% blocktrans with n=entity.entity_name|striptags|truncatewords:20|safe %}{{ n }}{% endblocktrans %}</a>
+                <a href="{{ entity.get_absolute_url }}">{{ entity.entity_name|striptags|truncatewords:20|safe }}</a>
             </h1>
         </div>
 

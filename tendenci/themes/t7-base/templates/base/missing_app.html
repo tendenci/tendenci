@@ -5,7 +5,7 @@
 {% block content %}
 
 {% if exception_value %}
-    {% blocktrans with e=exception_value %}{{ e }}{% endblocktrans %}
+    {{ exception_value }}
 {% else %}
     {% trans "Oops, it looks like you're missing a required app." %}
 {% endif %}

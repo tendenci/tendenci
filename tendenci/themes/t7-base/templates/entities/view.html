@@ -5,7 +5,7 @@
 {% load base_filters %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ block.super }}{{ entity.entity_name }}{% endblock %}
 
 {% block content %}
 {% tags_for_object entity as tags %}
@@ -18,11 +18,11 @@
              </div>
         </div>
 
-        <h2>{% blocktrans with n=entity.entity_name %}{{ n }}{% endblocktrans %}</h2>
+        <h2>{{ entity.entity_name }}</h2>
         <div class="content">
 
-         <div class="notes">{% blocktrans with n=entity.notes|safe %}{{ n }}{% endblocktrans %}</div>
-         <div class="summary">{% blocktrans with s=entity.summary|safe %}{{ s }}{% endblocktrans %}</div>
+         <div class="notes">{{ entity.notes|safe }}</div>
+         <div class="summary">{{ entity.summary|safe }}</div>
 
              <p>
              <div class="contact"><h3>{% trans "Contact:" %}</h3>
@@ -33,7 +33,7 @@
              </div>
                </p>
                <p>
-               <div class="admin_notes">{% blocktrans with n=entity.admin_notes|safe %}{{ n }}{% endblocktrans %}</div>
+               <div class="admin_notes">{{ entity.admin_notes|safe }}</div>
                 </p>
 
         </div>

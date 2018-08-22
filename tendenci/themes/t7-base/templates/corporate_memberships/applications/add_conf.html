@@ -8,7 +8,7 @@
 <div class="t">
     <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if app.confirmation_text %}
-        {% blocktrans with conf_text=app.confirmation_text|safe %}{{ conf_text }}{% endblocktrans %}
+        {{ app.confirmation_text|safe }}
     {% else %}
         {% trans "Thank you for your submitting! " %}<br /><br />
         {% if not request.user.is_superuser %}

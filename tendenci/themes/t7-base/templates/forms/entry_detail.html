@@ -19,13 +19,13 @@
         {% for field in entry.entry_fields %}
             {% if field.field.field_type == 'FileField' %}
             <p>
-                <strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong><br />
-                <a href="{{ field|media_url }}">{% blocktrans with n=field.value|basename %}{{ n }}{% endblocktrans %}</a>
+                <strong>{{ field.field.label }}</strong><br />
+                <a href="{{ field|media_url }}">{{ field.value|basename }}</a>
             </p>
             {% else %}
             <p>
-                <strong>{% blocktrans with l=field.field.label %}{{ l }}{% endblocktrans %}</strong><br />
-                <em>{% blocktrans with v=field.value %}{{ v }}{% endblocktrans %}</em>
+                <strong>{{ field.field.label }}</strong><br />
+                <em>{{ field.value }}</em>
             </p>
             {% endif %}
         {% endfor %}

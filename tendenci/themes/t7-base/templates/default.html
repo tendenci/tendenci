@@ -73,7 +73,7 @@
                             {% get_rss "https://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
                                 <ul class="list-unstyled">
                                     {% for entry in rss.entries|slice:":3" %}
-                                        <li>{% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}</li>
+                                        <li>{{ entry.title }}</li>
                                     {% endfor %}
                                 </ul>
                             {% endcache %}

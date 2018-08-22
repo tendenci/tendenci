@@ -7,7 +7,7 @@
 
     {% if featured_articles %}
     {% for article in featured_articles|slice:":1" %}
-        <h4><a href="{{ article.get_absolute_url }}">{% blocktrans with h=article.headline %}{{ h }}{% endblocktrans %}</a></h4>
+        <h4><a href="{{ article.get_absolute_url }}">{{ article.headline }}</a></h4>
         <p>{% blcktrans with b=article.body|striptags|truncatewords:30|safe %}{{ b }}{% endblocktrans %}</p> <a class="readmore" href="{{ article.get_absolute_url }}">{% trans 'Read more' %}</a>
     {% endfor %}
     {% else %}
@@ -20,7 +20,7 @@
         {% for article in featured_articles %}
             {% if forloop.first %}
             {% else %}
-            <li><a href="{{ article.get_absolute_url }}">{% blocktrans with h=articles_item.headline|truncatewords:4|safe %}{{ h }}{% endblocktrans %}</a></li>
+            <li><a href="{{ article.get_absolute_url }}">{{ articles_item.headline|truncatewords:4|safe }}</a></li>
             {% endif %}
         {% endfor %}
         {% else %}

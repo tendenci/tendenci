@@ -19,7 +19,7 @@
       <li> <a href="{% url "help_files" %}">
         {% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}
         </a></li> 
-      <li class="active">{% blocktrans with question=help_file.question|striptags|safe %}{{ question }}{% endblocktrans %}</li>
+      <li class="active">{{ help_file.question|striptags|safe }}</li>
     </ol>
   </nav>
   

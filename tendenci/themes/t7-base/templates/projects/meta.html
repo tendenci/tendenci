@@ -14,7 +14,7 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in tags %}
-                <a class="label label-default" href="{% url 'projects' %}?q={{ tag }}&search_category=tags__icontains">{% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+                <a class="label label-default" href="{% url 'projects' %}?q={{ tag }}&search_category=tags__icontains">{{ tag }}</a>
            {% endfor %}
         <li>
     {% endif %}

@@ -3,7 +3,7 @@
 {% if type_name == "events_upcoming"  %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         {% if value %}
@@ -41,7 +41,7 @@
 {% if type_name == "memberships_30_count" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -64,7 +64,7 @@
 {% if type_name == "memberships_30_new" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ value.0 }} {{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -88,7 +88,7 @@
 {% if type_name == "memberships_30_renew" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ value.0 }} {{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -112,7 +112,7 @@
 {% if type_name == "memberships_30_expired" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ value.0 }} {{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -136,7 +136,7 @@
 {% if type_name == "memberships_30_expiring" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{{ value.0 }} {% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ value.0 }} {{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -156,7 +156,7 @@
 {% if type_name == "corp_memberships_30_new" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -172,7 +172,7 @@
 {% if type_name == "corp_memberships_30_renew" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -188,7 +188,7 @@
 {% if type_name == "corp_memberships_30_expired" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -204,7 +204,7 @@
 {% if type_name == "corp_memberships_30_expiring" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         <div class="panel-body">
@@ -220,7 +220,7 @@
 {% if type_name == "forms_30_submissions" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         {% if value %}
@@ -252,7 +252,7 @@
 {% if type_name == "pages_30_traffic" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         {% if value %}
@@ -267,7 +267,7 @@
                 <tbody>
                     {% for title, url, count in value %}
                         <tr>
-                            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                            <td><a href="{{ url }}">{{ title }}</a></td>
                             <td>{{ count }}</td>
                         </tr>
                     {% endfor %}
@@ -284,7 +284,7 @@
 {% if type_name == "events_30_traffic" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         {% if value %}
@@ -299,7 +299,7 @@
                 <tbody>
                     {% for title, url, count in value %}
                         <tr>
-                            <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                            <td><a href="{{ url }}">{{ title }}</a></td>
                             <td>{{ count }}</td>
                         </tr>
                     {% endfor %}
@@ -316,7 +316,7 @@
 {% if type_name == "corp_members_top" %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h1 class="panel-title">{% blocktrans with l=label|striptags|safe %}{{ l }}{% endblocktrans %}</h1>
+            <h1 class="panel-title">{{ label|striptags|safe }}</h1>
         </div>
 
         {% if value %}
@@ -333,7 +333,7 @@
                         <tbodY>
                     {% else %}
                             <tr>
-                                <td><a href="{{ url }}">{% blocktrans with t=title %}{{ t }}{% endblocktrans %}</a></td>
+                                <td><a href="{{ url }}">{{ title }}</a></td>
                                 <td>{{ count }}</td>
                             </tr>
                     {% endif %}

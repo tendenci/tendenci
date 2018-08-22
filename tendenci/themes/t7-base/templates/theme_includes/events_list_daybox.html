@@ -9,8 +9,8 @@
         <li>
             <div class="numeral"><a href="{{ event.get_absolute_url }}">{{ event.start_dt|date:"d" }}</a></div>
             <div class="month"><a href="{{ event.get_absolute_url }}">{{ event.start_dt|date:"b"|title }}</a></div>
-            <div class="title"><a href="{{ event.get_absolute_url }}">{% blocktrans with t=event.title %}{{ t }}{% endblocktrans %}</a></div>
-            <div class="blurb"><p>{% blocktrans with d=event.description|striptags|truncatewords:10|safe %}{{ d }}{% endblocktrans %} <a href="{{ event.get_absolute_url }}" class="readmore">{% trans 'Read More' %}</a></p></div>
+            <div class="title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></div>
+            <div class="blurb"><p>{{ event.description|striptags|truncatewords:10|safe }} <a href="{{ event.get_absolute_url }}" class="readmore">{% trans 'Read More' %}</a></p></div>
         </li>
     {% endfor %}
     {% else %}

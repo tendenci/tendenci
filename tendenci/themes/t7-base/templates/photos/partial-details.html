@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="photo-caption-wrap">
-        {% blocktrans with c=photo.caption|safe %}{{ c }}{% endblocktrans %}
+        {{ photo.caption|safe }}
     </div>
     <div class="hr"></div>
     <div class="photo-options">

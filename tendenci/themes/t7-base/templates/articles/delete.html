@@ -23,7 +23,7 @@
                 <input class="btn btn-primary" type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>
         </div>
-        <div class="back-item"><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% blocktrans with headline=article.headline %}{{ headline }}{% endblocktrans %}</a></div>
+        <div class="back-item"><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to" %} {% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {{ article.headline }}</a></div>
         <div class="back-search"><a href="{% url "article.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} </a></div>
     </div>
 </div>

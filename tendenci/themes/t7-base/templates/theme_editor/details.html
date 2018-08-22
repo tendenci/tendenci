@@ -16,7 +16,7 @@
         <h2>{{ theme.name }}</h2>
         <div class="description">
             {% if theme.description %}
-                {% blocktrans with d=theme.description %}{{ d }}{% endblocktrans %}
+                {{ theme.description }}
             {% else %}
                 {% trans "No information available." %}
             {% endif %}

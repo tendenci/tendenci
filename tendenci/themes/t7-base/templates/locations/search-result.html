@@ -31,7 +31,7 @@
             {% if location.email %}<p>{{ location.email|obfuscate_email }}</p>{% endif %}
             {% if location.website %}<p>{{ location.website|urlize }}</p>{% endif %}
             {% if location.distance %}<p>{{ location.distance|floatformat }} {% trans "miles away" %}</p>{% endif %}
-            <p>{% blocktrans with d=location.description|striptags|urlize|linebreaks|truncatewords:20|safe %}{{ d }}{% endblocktrans %}</p>
+            <p>{{ location.description|striptags|urlize|linebreaks|truncatewords:20|safe }}</p>
         </div>
         <div style="clear:both;"><!--ie-bug--></div>
     </div>

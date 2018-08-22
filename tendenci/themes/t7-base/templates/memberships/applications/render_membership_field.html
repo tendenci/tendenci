@@ -42,7 +42,7 @@
 	                            {% if field.errors %}
 	                                <div class="error">
 	                                    {% for error in field.errors %}
-	                                        <p>{% blocktrans with e=error %}{{ e }}{% endblocktrans %}</p>
+	                                        <p>{{ error }}</p>
 	                                    {% endfor %}
 	                                </div>
 	                            {% endif %}

@@ -24,7 +24,7 @@
             </div>
 
             <div class="set-description">
-            {% blocktrans with d=photo_set.description|safe|urlize|linebreaks %}{{ d }}{% endblocktrans %}
+            {{ photo_set.description|safe|urlize|linebreaks }}
             </div>
         </div>
     </div>

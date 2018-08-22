@@ -139,7 +139,7 @@
         <div class="alert alert-danger">
         {% trans 'There were some problems in the form. Please review. Thanks!' %}
         {% for error in form.non_field_errors %}
-            <p><a href="#">{% blocktrans with err=error %}{{ err }}{% endblocktrans %}</a></p>
+            <p><a href="#">{{ error }}</a></p>
         {% endfor %}
 
         {% for field in form %}

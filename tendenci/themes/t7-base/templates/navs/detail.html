@@ -3,7 +3,7 @@
 {% load base_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }} {% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}{% endblock %}
+{% block title %}{{ block.super }} {{ current_nav.title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,9 +13,9 @@
 {% block content %}
 <div class="t">
     <div class="nav-wrap">
-        <h1>{% blocktrans with t=current_nav.title %}{{ t }}{% endblocktrans %}</h1>
+        <h1>{{ current_nav.title }}</h1>
         <div class="content">
-            {% blocktrans with d=current_nav.description %}{{ d }}{% endblocktrans %}
+            {{ current_nav.description }}
         </div>
         {% nav current_nav.id %}
     </div>

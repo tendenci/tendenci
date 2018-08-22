@@ -227,7 +227,7 @@
                 {% for entry in rss.entries|slice:":3" %}
                     <li class="list-group-item clearfix">
                         <a href="{{ entry.link }}">
-                            {% blocktrans with t=entry.title %}{{ t }}{% endblocktrans %}
+                            {{ entry.title }}
                         </a>
 
                         <small class="pull-right">{{ entry.updated_parsed|rss_date }}</small>

@@ -53,7 +53,7 @@
      <strong>{% trans "Tag(s):" %}</strong>
      {% for tag in article.tags|tag_split %}
      <a class="label label-default" href="{% url 'articles' %}?q={{ tag }}&search_category=tags__icontains">
-       {% blocktrans with tag_instance=tag %}{{ tag_instance }}{% endblocktrans %}</a>
+       {{ tag }}</a>
      {% endfor %}
    </li>
    {% endif %}

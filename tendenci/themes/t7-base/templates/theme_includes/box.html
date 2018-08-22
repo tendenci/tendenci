@@ -1,8 +1,8 @@
 {% load theme_tags %}
 
 <section id="box-{{ box.pk }}" class="boxes">
-<h3>{% blocktrans with t=box.title %}{{ t }}{% endblocktrans %}</h3>
-{% blocktrans with c=box.content|safe %}{{ c }}{% endblocktrans %}
+<h3>{{ box.title }}</h3>
+{{ box.content|safe }}
 {% if user.profile.is_superuser %}
 <a href="{% url "admin:boxes_box_change" box.pk %}?next={{ request.path }}" title="{% trans 'Edit Box' %}" class="edit-box">{% blocktrans with t=box.title|title %}Admin: Edit {{ t }} Box{% endblocktrans %}</a>
 {% endif %}
