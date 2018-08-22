@@ -11,7 +11,7 @@
 
     <p>{% trans 'Update process failed. Error details are added below' %}</p>
     {% for error_message in errors_list %}
-    <div>{% blocktrans with e=error_message %}{{ e }}{% endblocktrans %}</div>
+    <div>{{ error_message }}</div>
     {% endfor %}
 
     {% else %}

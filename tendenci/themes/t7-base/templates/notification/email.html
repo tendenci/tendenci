@@ -1,9 +1,9 @@
 {% if only_content %}
-    {% blocktrans with c=email.content|safe %}{{ c }}{% endblocktrans %}
+    {{ email.content|safe }}
 {% else %}
 <html>
 <head>
-    <title>{% blocktrans with t=email.title %}{{ t }}{% endblocktrans %}</title>
+    <title>{{ email.title }}</title>
 
 <style type="text/css">
     body {
@@ -49,7 +49,7 @@
     </tr>
     <tr>
         <td>{% trans 'subject' %}:</td>
-        <td>{% blocktrans with t=email.title %}{{ t }}{% endblocktrans %}</td>
+        <td>{{ email.title }}</td>
     </tr>
 </table>
 
