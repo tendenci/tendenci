@@ -6,3 +6,45 @@ file_filter = tendenci/locale/<lang>/LC_MESSAGES/django.po
 source_file = tendenci/locale/en/LC_MESSAGES/django.po
 source_lang = en
 type = PO
+
+[tendenci.tendenci-case-studies]
+file_filter = tendenci/apps/case_studies/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/case_studies/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-committees]
+file_filter = tendenci/apps/committees/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/committees/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-donations]
+file_filter = tendenci/apps/donations/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/donations/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-speakers]
+file_filter = tendenci/apps/speakers/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/speakers/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-staff]
+file_filter = tendenci/apps/staff/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/staff/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-studygroups]
+file_filter = tendenci/apps/studygroups/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/studygroups/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
+
+[tendenci.tendenci-videos]
+file_filter = tendenci/apps/videos/locale/<lang>/LC_MESSAGES/django.po
+source_file = tendenci/apps/videos/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO
