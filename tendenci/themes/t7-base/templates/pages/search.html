@@ -6,9 +6,9 @@
 {% load search_tags %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {% trans "Pages Search" %} - {{ block.super }}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

@@ -8,13 +8,9 @@
 {% load search_tags %}
 
 
-{% block title %}
-    {% if MODULE_NEWS_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
-    {% else %}
-        {% trans "News List" %}
-    {% endif %} - {{ block.super }}
-{% endblock %}
+{% block title %}{% spaceless %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}{% else %}{% trans "News List" %}{% endif %} - {{ block.super }}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

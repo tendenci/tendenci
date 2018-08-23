@@ -1,20 +1,13 @@
 {% extends "site_base.html" %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
-    {% if MODULE_NEWS_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            {{ label_plural }} for {{ display_name }} in {{ location }}
-        {% endblocktrans %}
-    {% else %}
-        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
-            News for {{ display_name }} in {{ location }}
-        {% endblocktrans %}
-    {% endif %}
-{% endblock %}
+    {% if MODULE_NEWS_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ label_plural }} for {{ display_name }} in {{ location }}{% endblocktrans %}
+    {% else %}{% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}News for {{ display_name }} in {{ location }}{% endblocktrans %}{% endif %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_description %}
+{% block meta_description %}{% spaceless %}
     {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
     {% if MODULE_NEWS_LABEL_PLURAL %}
         {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
@@ -25,14 +18,12 @@
             News and White Papers for {{ display_name }} in {{ location }}
         {% endblocktrans %}
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_keywords %}
+{% block meta_keywords %}{% spaceless %}
     {% firstof MODULE_NEWS_LABEL_PLURAL "News" %},
-    {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}
-        {{ location }}, {{ display_name }}, white papers, {{ keys }}
-    {% endblocktrans %}
-{% endblock %}
+    {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION display_name=SITE_GLOBAL_SITEDISPLAYNAME keys=SITE_GLOBAL_SITESECONDARYKEYWORDS %}{{ location }}, {{ display_name }}, white papers, {{ keys }}{% endblocktrans %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

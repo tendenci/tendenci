@@ -1,17 +1,17 @@
 {% extends "site_base.html" %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_description %}
+{% block meta_description %}{% spaceless %}
     {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_keywords %}
+{% block meta_keywords %}{% spaceless %}
     {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}, {{ SITE_GLOBAL_SITESECONDARYKEYWORDS }}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

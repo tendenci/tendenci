@@ -1,20 +1,15 @@
 {% extends "site_base.html" %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
-    {% if MODULE_JOBS_LABEL %}
-        {% blocktrans with label=MODULE_JOBS_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
-            {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
-        {% endblocktrans %}
+    {% if MODULE_JOBS_LABEL %}{% blocktrans with label=MODULE_JOBS_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}{{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings{% endblocktrans %}
     {% else %}
-        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
-            Job Listings for {{ display_name }} - Employment Opportunities and Job Openings
-        {% endblocktrans %}
+        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}Job Listings for {{ display_name }} - Employment Opportunities and Job Openings{% endblocktrans %}
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_description %}
+{% block meta_description %}{% spaceless %}
     {% if MODULE_JOBS_LABEL %}
         {% blocktrans with label=MODULE_JOBS_LABEL label_lower=MODULE_JOBS_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
             {{ label }} search page for {{ display_name }} in {{ location }} listing - {{ label_lower }} openings and employment opportunities
@@ -24,24 +19,16 @@
             Job search page for {{ display_name }} in {{ location }} listing - job openings and employment opportunities
         {% endblocktrans %}
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_keywords %}
-    {% trans "Employment Search" %},
-    {% if MODULE_JOBS_LABEL %}
-        {% blocktrans with label=MODULE_JOBS_LABEL %}
-            {{ label }} Search
-        {% endblocktrans %}
-    {% else %}
-        {% trans "Job Search" %}
-    {% endif %},
-    {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
-    {% if MODULE_JOBS_LABEL_PLURAL %}
-        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_JOBS_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
-    {% else %}
-        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} jobs{% endblocktrans %}
-    {% endif %}, {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
-{% endblock %}
+{% block meta_keywords %}{% spaceless %}
+    {% trans "Employment Search" %}, {% if MODULE_JOBS_LABEL %}{% blocktrans with label=MODULE_JOBS_LABEL %}{{ label }} Search,{% endblocktrans %}
+    {% else %}{% trans "Job Search" %},
+    {% endif %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% if MODULE_JOBS_LABEL_PLURAL %} {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_JOBS_LABEL_PLURAL %}{{ location }} {{ label_plural }},{% endblocktrans %}
+    {% else %}{% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} jobs,{% endblocktrans %}
+    {% endif %} {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

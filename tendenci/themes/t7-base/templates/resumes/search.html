@@ -7,13 +7,10 @@
 {% load search_tags %}
 
 
-{% block title %}
-    {% if MODULE_RESUMES_LABEL_PLURAL %}
-        {% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
-    {% else %}
-        {% trans "Resumes Search" %}
-    {% endif %} - {{ block.super }}
-{% endblock %}
+{% block title %}{% spaceless %}
+    {% if MODULE_RESUMES_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ label_plural }} Search{% endblocktrans %}
+    {% else %}{% trans "Resumes Search" %}{% endif %} - {{ block.super }}
+{% endspaceless %}{% endblock %}
 
 
 {% block extra_head %}

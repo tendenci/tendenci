@@ -1,20 +1,14 @@
 {% extends "site_base.html" %}
 
 
-{% block title %}
+{% block title %}{% spaceless %}
     {% if SITE_GLOBAL_SITEPRIMARYKEYWORDS %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% endif %}
-    {% if MODULE_RESUMES_LABEL %}
-        {% blocktrans with label=MODULE_RESUMES_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
-            {{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings
-        {% endblocktrans %}
-    {% else %}
-        {% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}
-            Resume Listings for {{ display_name }} - Employment Opportunities and Resume Openings
-        {% endblocktrans %}
+    {% if MODULE_RESUMES_LABEL %}{% blocktrans with label=MODULE_RESUMES_LABEL display_name=SITE_GLOBAL_SITEDISPLAYNAME %}{{ label }} Listings for {{ display_name }} - Employment Opportunities and {{ label }} Openings{% endblocktrans %}
+    {% else %}{% blocktrans with display_name=SITE_GLOBAL_SITEDISPLAYNAME %}Resume Listings for {{ display_name }} - Employment Opportunities and Resume Openings{% endblocktrans %}
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_description %}
+{% block meta_description %}{% spaceless %}
     {% if MODULE_RESUMES_LABEL %}
         {% blocktrans with label=MODULE_RESUMES_LABEL label_lower=MODULE_RESUMES_LABEL|lower display_name=SITE_GLOBAL_SITEDISPLAYNAME location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}
             {{ label }} search page for {{ display_name }} in {{ location }} listing - {{ label_lower }} openings and employment opportunities
@@ -24,24 +18,16 @@
             Resume search page for {{ display_name }} in {{ location }} listing - resume openings and employment opportunities
         {% endblocktrans %}
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
-{% block meta_keywords %}
+{% block meta_keywords %}{% spaceless %}
     {% trans "Employment Search" %},
-    {% if MODULE_RESUMES_LABEL %}
-        {% blocktrans with label=MODULE_RESUMES_LABEL %}
-            {{ label }} Search
-        {% endblocktrans %}
-    {% else %}
-        {% trans "Resume Search" %}
-    {% endif %},
-    {{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
-    {% if MODULE_RESUMES_LABEL_PLURAL %}
-        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ location }} {{ label_plural }}{% endblocktrans %}
-    {% else %}
-        {% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} resumes{% endblocktrans %}
-    {% endif %}, {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
-{% endblock %}
+    {% if MODULE_RESUMES_LABEL %}{% blocktrans with label=MODULE_RESUMES_LABEL %} {{ label }} Search, {% endblocktrans %}
+    {% else %}{% trans "Resume Search" %},{% endif %}{{ SITE_GLOBAL_SITEDISPLAYNAME }}, {% trans "Employment" %},
+    {% if MODULE_RESUMES_LABEL_PLURAL %}{% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION label_plural=MODULE_RESUMES_LABEL_PLURAL %}{{ location }} {{ label_plural }},{% endblocktrans %}
+    {% else %}{% blocktrans with location=SITE_GLOBAL_SITEGEOGRAPHICLOCATION %}{{ location }} resumes,{% endblocktrans %}
+    {% endif %} {% trans "employment opportunities, employment, hiring, staffing, agencies" %}
+{% endspaceless %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
