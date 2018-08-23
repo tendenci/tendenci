@@ -1686,7 +1686,7 @@ class ImportMembDefault(object):
 
         field_type = field.get_internal_type()
 
-        if field_type == 'BooleanField':
+        if field_type in ['BooleanField', 'NullBooleanField']:
             return False
 
         if field_type == 'DateField':
@@ -1738,7 +1738,7 @@ class ImportMembDefault(object):
                 else:
                     value = ''
 
-        elif field_type == 'BooleanField':
+        elif field_type in ['BooleanField', 'NullBooleanField']:
             try:
                 if value in [True, 1, 'TRUE']:
                     value = True
