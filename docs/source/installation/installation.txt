@@ -60,19 +60,19 @@ Install the required system dependencies:
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
 
 
-For Ubuntu 16.04,  install Python 3.6 (Ubuntu 16.04 comes with Python 3.5. Ubuntu 18.04 has Python 3.6 installed by default.):
-::
-
-    sudo add-apt-repository ppa:jonathonf/python-3.6
-    sudo apt update
-    sudo apt install python3.6
-
-
 For Ubuntu 18.04, add the universe repository:
 ::
 
     sudo add-apt-repository universe
 
+
+If on for Ubuntu 16.04 (skip if on 18.04), install Python 3.6 (Ubuntu 16.04 comes with Python 3.5. Ubuntu 18.04 has Python 3.6 installed by default.):
+::
+
+    sudo add-apt-repository ppa:jonathonf/python-3.6
+    sudo apt update
+    sudo apt install python3.6
+    
 
 Install ``python3.6-dev`` and ``pip``:
 ::
@@ -124,10 +124,17 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
 ``DB_NAME`` with an appropriate user name, password, and database name):
 ::
 
+    # switch to the "postgres" user assuming installation above went correctly
     sudo -u postgres -s
     DB_USER=mysite
+    echo "DB_USER="$DB_USER
     DB_PASS=mysite
+    echo "DB_PASS="$DB_PASS
     DB_NAME=mysite
+    echo "DB_NAME="$DB_NAME
+    
+Verify what you typed is what you intended. Next create your database still as the postgres user:
+
     psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
     psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
     psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
@@ -137,6 +144,18 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
     psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
     psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
     psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+    
+    # confirm your database was created correctly
+    psql -l
+    
+    # deactivate the postgres user reverting back to "root"
+    exit
+    # verify path statement reads as your admin Ubuntu user which is by default "root"
+    whoami
+    # this should return something like:
+    root@tendenci:/home/ed# whoami
+    root
+    
 
 Database Preparation on macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,6 +166,7 @@ If you would like a database GUI, we recommend `PGAdmin <http://www.pgadmin.org/
 
 The commands shown above for creating the database and user on Ubuntu should also work on macOS.
 
+If you are still in "sudo postgres" mode, meaning your command prompt reads "postgres@localhost", you need to exit from the "sudo postgres" by typing "exit" which should return you to "root" or the admin account.
 
 Virtualenv Preparation
 ----------------------
@@ -156,9 +176,13 @@ keep the system clean, and makes it easy to run multiple versions of Python, Pyt
 Tendenci within a single VM or server.  While not strictly required, we recommend using virtualenv
 with Tendenci.
 
+Please make sure, that you only use root permissions where advised! (Please do NOT sudo or install as root as that defeats the purpose of a virtualenv). Otherwise, the installation will fail!
+
 Prepare a virtualenv for Tendenci:
 ::
 
+    # whoami - make sure you are NOT "root". If so, type exit to back up one level.
+    sudo apt-get install virtualenv
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
@@ -169,6 +193,9 @@ To use the virtualenv, you must "activate" it:
 ::
 
     source /srv/mysite/bin/activate
+    # verify you are in the venv environment you created
+    which python
+    /srv/mysite/bin/python
 
 You can "deactivate" the virtualenv using:
 ::
