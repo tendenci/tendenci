@@ -8,74 +8,71 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-19 19:30-0500\n"
+"POT-Creation-Date: 2018-08-25 15:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:38
-msgid "username"
+#: apps/registration/forms.py:39
+msgid "Username"
 msgstr ""
 
-#: forms.py:41
-msgid "email address"
+#: apps/registration/forms.py:40
+msgid "Email Address"
 msgstr ""
 
-#: forms.py:43
-msgid "password"
+#: apps/registration/forms.py:42
+msgid "Password"
 msgstr ""
 
-#: forms.py:45
-msgid "password (again)"
+#: apps/registration/forms.py:43
+msgid "Use at least 8 characters and 1 number or special character"
 msgstr ""
 
-#: forms.py:54
-msgid "Usernames can only contain letters, numbers and underscores"
+#: apps/registration/forms.py:45
+msgid "Password (confirm)"
 msgstr ""
 
-#: forms.py:59
+#: apps/registration/forms.py:55
 msgid "This username is already taken. Please choose another."
 msgstr ""
 
-#: forms.py:68
+#: apps/registration/forms.py:68
 msgid "You must type the same password each time"
 msgstr ""
 
-#: forms.py:96
+#: apps/registration/forms.py:97
 msgid "I have read and agree to the Terms of Service"
 msgstr ""
 
-#: forms.py:105
-msgid "You must agree to the terms to register"
-msgstr ""
-
-#: forms.py:124
+#: apps/registration/forms.py:114
 msgid ""
 "This email address is already in use. Please supply a different email "
 "address."
 msgstr ""
 
-#: forms.py:149
+#: apps/registration/forms.py:140
 msgid ""
 "Registration using free email addresses is prohibited. Please supply a "
 "different email address."
 msgstr ""
 
-#: models.py:188
+#: apps/registration/models.py:213
 msgid "user"
 msgstr ""
 
-#: models.py:189
+#: apps/registration/models.py:214
 msgid "activation key"
 msgstr ""
 
-#: models.py:194
+#: apps/registration/models.py:219
 msgid "registration profile"
 msgstr ""
 
-#: models.py:195
+#: apps/registration/models.py:220
 msgid "registration profiles"
 msgstr ""

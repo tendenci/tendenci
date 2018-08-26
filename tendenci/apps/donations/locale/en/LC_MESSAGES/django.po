@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-22 10:26-0500\n"
+"POT-Creation-Date: 2018-08-25 15:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,122 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:61 forms.py:144
+#: apps/donations/forms.py:9 apps/donations/forms.py:66
+msgid "Please enter the donation amount."
+msgstr ""
+
+#: apps/donations/forms.py:10 apps/donations/forms.py:67
+msgid "Please select a payment method."
+msgstr ""
+
+#: apps/donations/forms.py:11 apps/donations/forms.py:68
+msgid "Paid by Check"
+msgstr ""
+
+#: apps/donations/forms.py:12 apps/donations/forms.py:69
+msgid "Make Online Payment"
+msgstr ""
+
+#: apps/donations/forms.py:18 apps/donations/forms.py:75
+msgid "A valid e-mail address, please."
+msgstr ""
+
+#: apps/donations/forms.py:59 apps/donations/forms.py:141
 msgid "Please enter a positive number"
 msgstr ""
 
-#: forms.py:63 forms.py:146
+#: apps/donations/forms.py:61 apps/donations/forms.py:143
 msgid "Please enter a numeric positive number"
 msgstr ""
 
-#: management.py:9
-msgid "Donation Added"
-msgstr ""
-
-#: management.py:9
-msgid "A donation has been added."
-msgstr ""
-
-#: models.py:15
+#: apps/donations/models.py:15
 msgid "address line 2"
 msgstr ""
 
-#: models.py:22
+#: apps/donations/models.py:22
 msgid "referred by"
 msgstr ""
 
-#: templates/donations/add.html:40
-msgid "Donation Amount"
+#: apps/donations/signals.py:9
+msgid "Donation Added"
 msgstr ""
 
-#: templates/donations/add.html:51
-msgid "Donate to"
-msgstr ""
-
-#: templates/donations/add.html:63
-msgid "Payment Method"
-msgstr ""
-
-#: templates/donations/add.html:77
-msgid "First Name"
-msgstr ""
-
-#: templates/donations/add.html:87
-msgid "Last Name"
-msgstr ""
-
-#: templates/donations/add.html:96
-msgid "Company"
-msgstr ""
-
-#: templates/donations/add.html:105
-msgid "Address"
-msgstr ""
-
-#: templates/donations/add.html:114
-msgid "Address Line 2"
-msgstr ""
-
-#: templates/donations/add.html:130
-msgid "City"
-msgstr ""
-
-#: templates/donations/add.html:131
-msgid "State"
-msgstr ""
-
-#: templates/donations/add.html:132
-msgid "Zip Code"
-msgstr ""
-
-#: templates/donations/add.html:142
-msgid "Country"
-msgstr ""
-
-#: templates/donations/add.html:152
-msgid "Phone"
-msgstr ""
-
-#: templates/donations/add.html:162
-msgid "Email"
-msgstr ""
-
-#: templates/donations/add.html:171
-msgid "Email Receipt?"
-msgstr ""
-
-#: templates/donations/add.html:184
-msgid "Referred by"
-msgstr ""
-
-#: templates/donations/add.html:193
-msgid "Comments"
-msgstr ""
-
-#: templates/donations/nav.html:18
-msgid "Tendenci"
-msgstr ""
-
-#: templates/donations/nav.html:20
-msgid "Dashboard"
-msgstr ""
-
-#: templates/donations/nav.html:21
-msgid "My Profile"
-msgstr ""
-
-#: templates/donations/nav.html:22
-msgid "Log Off"
-msgstr ""
-
-#: templates/donations/nav.html:32
-msgid "All Donations"
-msgstr ""
-
-#: templates/donations/nav.html:39
-msgid "Settings"
-msgstr ""
-
-#: templates/donations/nav.html:47
-msgid "This Donation"
+#: apps/donations/signals.py:10
+msgid "A donation has been added."
 msgstr ""

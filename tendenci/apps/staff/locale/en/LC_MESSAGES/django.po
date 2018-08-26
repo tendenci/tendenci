@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-22 12:12-0500\n"
+"POT-Creation-Date: 2018-08-25 15:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:37
+#: apps/staff/models.py:38
 msgid "Personal Sites"
 msgstr ""
 
-#: models.py:42
+#: apps/staff/models.py:42
 msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
-msgstr ""
-
-#: templates/staff/meta.html:12
-msgid "Owned by you"
-msgstr ""
-
-#: templates/staff/meta.html:12
-msgid "status"
-msgstr ""
-
-#: templates/staff/meta.html:24
-msgid "Share"
-msgstr ""
-
-#: templates/staff/meta.html:39
-msgid "Eventlogs"
-msgstr ""
-
-#: templates/staff/meta.html:40
-msgid "Edit"
-msgstr ""
-
-#: templates/staff/meta.html:41
-msgid "Options"
-msgstr ""
-
-#: templates/staff/meta.html:45
-msgid "Delete"
-msgstr ""
-
-#: templates/staff/search.html:25
-msgid "Add"
-msgstr ""
-
-#: templates/staff/search.html:31
-msgid "Found"
 msgstr ""
