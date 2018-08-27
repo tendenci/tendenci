@@ -133,7 +133,8 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
     DB_NAME=mysite
     echo "DB_NAME="$DB_NAME
     
-Verify what you typed is what you intended. Next create your database still as the postgres user:
+Verify what you typed is what you intended. Next create your database *still* as the 'postgres' user:
+::
 
     psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
     psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
@@ -155,7 +156,6 @@ Verify what you typed is what you intended. Next create your database still as t
     # this should return something like:
     root@tendenci:/home/ed# whoami
     root
-    
 
 Database Preparation on macOS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,7 +181,7 @@ Please make sure, that you only use root permissions where advised! (Please do N
 Prepare a virtualenv for Tendenci:
 ::
 
-    # whoami - make sure you are NOT "root". If so, type exit to back up one level.
+    # whoami - make sure you are NOT "root". If so, type "exit" to back up one level.
     sudo apt-get install virtualenv
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
@@ -214,6 +214,8 @@ Note that you must "activate" the virtualenv every time you open a new terminal 
 your command prompt does not begin with ``(mysite)``, then you have not activated the
 virtualenv, and any ``python`` or ``pip`` commands you run will use the system versions of those
 commands instead of the virtualenv versions, which may have unexpected results.
+
+Maybe also consider virtualenvwrapper in your VM for convenience.
 
 Virtualenv on macOS
 ~~~~~~~~~~~~~~~~~~
@@ -619,10 +621,10 @@ Finally, restart the NGINX service:
     sudo service nginx restart
 
 
-EMail Setup
------------
+EMail Setup (if needed)
+-----------------------
 
-For a mail server, install postfix:
+You can run Tendenci through AWS SES or any other SMTP relay using python directly via settings.py. As a best practice we recommend ElasticStack with alerts at scale. If you absolutely need a mail server (rkhunter for example), you can install postfix. 
 ::
 
     sudo apt-get install postfix
@@ -630,6 +632,8 @@ For a mail server, install postfix:
 During installation, you will see 3 prompts which you must respond to in order to complete the
 installation. If the server is already configured with a domain name, enter that domain in the
 prompts. Otherwise, leave the defaults in place.
+
+Configuration of mail servers is difficult. Be careful. Check the docs on Postfix for proper configuration.
 
 
 memcached Setup
