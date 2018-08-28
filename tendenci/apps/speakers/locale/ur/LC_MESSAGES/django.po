@@ -1,34 +1,31 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-22 20:15+0000\n"
-"PO-Revision-Date: 2014-10-20 15:18+0000\n"
-"Last-Translator: bleven <bleven@tendenci.com>\n"
-"Language-Team: Urdu (http://www.transifex.com/projects/p/tendenci/language/ur/)\n"
+"POT-Creation-Date: 2018-08-28 12:54-0500\n"
+"PO-Revision-Date: 2018-08-22 15:59+0000\n"
+"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
+"Language-Team: Urdu (http://www.transifex.com/tendenci/tendenci/language/"
+"ur/)\n"
+"Language: ur\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ur\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: models.py:31
+#: apps/speakers/models.py:39
 msgid "order"
 msgstr ""
 
-#: models.py:42
+#: apps/speakers/models.py:49
 msgid "Personal Sites"
 msgstr ""
 
-#: models.py:47
+#: apps/speakers/models.py:53
 msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
-msgstr ""
-
-#: templates/speakers/search.html:36
-msgid "Speakers Found"
 msgstr ""
