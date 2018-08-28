@@ -10033,10 +10033,7 @@ msgstr "Hidlo"
 #: themes/t7-base/templates/registration/custom_password_change_form.html:30
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] "Cywirwch y wallau isod."
+msgstr[0] "Cywirwch y wallau isod."
 
 #: themes/t7-base/templates/admin/files/file/change_list.html:148
 #: themes/t7-base/templates/corporate_memberships/edit_reps.html:66
