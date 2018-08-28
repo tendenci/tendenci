@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
+    url(r'^payonline/(?P<merchant_account>\w+)/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online, name="payment.pay_online"),
     url(r'^payonline/(?P<invoice_id>\d+)/(?P<guid>[\d\w-]+)?$', views.pay_online, name="payment.pay_online"),
     url(r'^authorizenet/', include('tendenci.apps.payments.authorizenet.urls')),
     url(r'^firstdata/', include('tendenci.apps.payments.firstdata.urls')),
