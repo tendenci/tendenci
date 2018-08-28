@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-28 12:14-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/donations/forms.py:9 apps/donations/forms.py:66
+msgid "Please enter the donation amount."
+msgstr ""
+
+#: apps/donations/forms.py:10 apps/donations/forms.py:67
+msgid "Please select a payment method."
+msgstr ""
+
+#: apps/donations/forms.py:11 apps/donations/forms.py:68
+msgid "Paid by Check"
+msgstr ""
+
+#: apps/donations/forms.py:12 apps/donations/forms.py:69
+msgid "Make Online Payment"
+msgstr ""
+
+#: apps/donations/forms.py:18 apps/donations/forms.py:75
+msgid "A valid e-mail address, please."
+msgstr ""
+
+#: apps/donations/forms.py:59 apps/donations/forms.py:141
+msgid "Please enter a positive number"
+msgstr ""
+
+#: apps/donations/forms.py:61 apps/donations/forms.py:143
+msgid "Please enter a numeric positive number"
+msgstr ""
+
+#: apps/donations/models.py:15
+msgid "address line 2"
+msgstr ""
+
+#: apps/donations/models.py:22
+msgid "referred by"
+msgstr ""
+
+#: apps/donations/signals.py:9
+msgid "Donation Added"
+msgstr ""
+
+#: apps/donations/signals.py:10
+msgid "A donation has been added."
+msgstr ""
