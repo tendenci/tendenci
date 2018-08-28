@@ -30,20 +30,18 @@
     {% autopaginate contributions 10 %}
 
     <h4 class="capitalize">
-        <em>
-            {% if MODULE_CONTRIBUTIONS_LABEL_PLURAL and MODULE_CONTRIBUTIONS_LABEL %}
-                {% blocktrans count obj_count=paginator.count %}
-                    {{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL }} Found
-                {% plural %}
-                    {{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL_PLURAL }} Found
-                {% endblocktrans %}
-            {% else %}
-                {% blocktrans count obj_count=paginator.count %}
-                    {{ obj_count }} Contribution Found
-                {% plural %}
-                    {{ obj_count }} Contributions Found
-                {% endblocktrans %}
-            {% endif %}
+    	<em>
+        	{% with obj_count=paginator.count  %}
+        		{% if MODULE_CONTRIBUTIONS_LABEL and MODULE_CONTRIBUTIONS_LABEL_PLURAL %}
+        			{%  if obj_count == 1 %}
+        				{% blocktrans %}{{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL }} Found{% endblocktrans %}
+        			{% else %}
+        				{% blocktrans %}{{ obj_count }} {{ MODULE_CONTRIBUTIONS_LABEL_PLURAL }} Found{% endblocktrans %}
+        			{% endif %}
+        		{% else %}
+	                {% blocktrans %}{{ obj_count }} Contribution{{ pluralize }} Found{% endblocktrans %}
+            	{% endif %}
+        	{% endwith %}
         </em>
     </h4>
 
