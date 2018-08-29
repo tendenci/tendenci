@@ -581,3 +581,6 @@ label.required:after {
 .t-status-active, .t-status-published {
     color: #ffffff;
 }
+.t-perm-private {
+    color: gold;
+}
