@@ -20,12 +20,12 @@ msgstr ""
 
 #: apps/accounts/forms.py:55
 msgid "Type the letters you see in the box"
-msgstr ""
+msgstr "输入验证码"
 
 #: apps/accounts/forms.py:71
 #, python-format
 msgid "The password does not meet the requirements: %(p)s"
-msgstr ""
+msgstr "密码不合要求：%(p)s"
 
 #: apps/accounts/forms.py:81
 msgid "Similar emails found"
@@ -78,7 +78,7 @@ msgstr "您指定的用户名和/或密码不正确。"
 #: apps/accounts/forms.py:180
 #, python-format
 msgid "Hello %(first_name)s %(last_name)s, you've successfully logged in."
-msgstr ""
+msgstr "%(first_name)s %(last_name)s, 您已成功登录"
 
 #: apps/accounts/forms.py:193
 #: themes/t7-base/templates/memberships/applications/detail_default.html:86
@@ -403,7 +403,7 @@ msgstr ""
 #: apps/articles/forms.py:86
 #, python-format
 msgid "All Subcategories (%d)"
-msgstr ""
+msgstr "所有小类 (%d)"
 
 #: apps/articles/forms.py:100 apps/events/forms.py:135
 #: apps/events/forms.py:164 apps/user_groups/forms.py:44
@@ -477,7 +477,7 @@ msgstr "包括RSS订阅"
 #: themes/t7-base/templates/reports/overview.html:125
 #: themes/t7-base/templates/reports/overview.html:149
 msgid "Active"
-msgstr "活动"
+msgstr "有效的"
 
 #: apps/articles/forms.py:135 apps/boxes/forms.py:14 apps/careers/forms.py:11
 #: apps/corporate_memberships/forms.py:66
@@ -505,7 +505,7 @@ msgstr "活动"
 #: themes/t7-base/templates/pages/inactive-pages.html:7
 #: themes/t7-base/templates/profiles/options.html:15
 msgid "Inactive"
-msgstr "不活跃"
+msgstr "无效的"
 
 #: apps/articles/forms.py:135 apps/careers/forms.py:12
 #: apps/corporate_memberships/forms.py:567
@@ -615,7 +615,7 @@ msgstr "电子邮件"
 #: apps/resumes/forms.py:149 apps/stories/admin.py:40 apps/stories/forms.py:91
 #: apps/stories/forms.py:236 apps/user_groups/forms.py:154
 msgid "Administrator Only"
-msgstr "只有管​​理员"
+msgstr "只有管理员"
 
 #: apps/articles/forms.py:283 apps/events/forms.py:761
 #: apps/events/forms.py:1117 apps/files/forms.py:118 apps/files/forms.py:309
@@ -796,7 +796,7 @@ msgstr "字符串（最多 %(max_length)sS）"
 
 #: apps/base/fields.py:90
 msgid "Verfiy Email Address"
-msgstr "Verfiy电子邮件地址"
+msgstr "验证电子邮件地址"
 
 #: apps/base/fields.py:104
 msgid "Please enter the email twice to verify."
@@ -1306,16 +1306,16 @@ msgstr "分类"
 
 #: apps/categories/forms.py:26
 msgid "Add Category"
-msgstr ""
+msgstr "添加类别"
 
 #: apps/categories/forms.py:35 apps/directories/forms.py:71
 #: apps/directories/forms.py:151 apps/jobs/forms.py:100 apps/jobs/forms.py:399
 msgid "Subcategory"
-msgstr ""
+msgstr "子类别"
 
 #: apps/categories/forms.py:42
 msgid "Add Subcategory"
-msgstr ""
+msgstr "添加子类别"
 
 #: apps/categories/forms.py:116 apps/directories/models.py:101
 #: apps/jobs/models.py:109 themes/t7-base/templates/files/search-form.html:11
@@ -1325,7 +1325,7 @@ msgstr "子类别"
 #: apps/categories/models.py:137 apps/directories/models.py:40
 #: apps/jobs/models.py:32 themes/t7-base/templates/videos/base.html:40
 msgid "Categories"
-msgstr ""
+msgstr "类别"
 
 #: apps/categories/views.py:64
 #, python-format
@@ -1391,15 +1391,15 @@ msgstr "分节符"
 #: apps/corporate_memberships/admin.py:109
 #: apps/corporate_memberships/models.py:1347
 msgid "Parent Entities"
-msgstr ""
+msgstr "上一级实体"
 
 #: apps/corporate_memberships/admin.py:147
 msgid "Dues Reps Group"
-msgstr ""
+msgstr "会费代表团体"
 
 #: apps/corporate_memberships/admin.py:157
 msgid "Member Reps Group"
-msgstr ""
+msgstr "会员代表团体"
 
 #: apps/corporate_memberships/admin.py:161
 msgid "status detail"
@@ -1408,14 +1408,14 @@ msgstr "详细情况"
 #: apps/corporate_memberships/admin.py:234
 #: apps/corporate_memberships/admin.py:631
 msgid "Corp Profile"
-msgstr ""
+msgstr "公司简介"
 
 #: apps/corporate_memberships/admin.py:244
 #: apps/corporate_memberships/admin.py:595
 #: themes/t7-base/templates/corporate_memberships/profiles/view.html:46
 #: themes/t7-base/templates/corporate_memberships/reports/report_by_type.html:52
 msgid "Parent Entity"
-msgstr ""
+msgstr "上级实体"
 
 #: apps/corporate_memberships/admin.py:253 apps/memberships/forms.py:1056
 #: apps/memberships/models.py:67 apps/memberships/models.py:166
@@ -1622,7 +1622,7 @@ msgstr ""
 
 #: apps/corporate_memberships/admin.py:315
 msgid "Member Reps"
-msgstr ""
+msgstr "会员代表"
 
 #: apps/corporate_memberships/admin.py:367 apps/memberships/admin.py:749
 msgid "Email Fields"
@@ -1645,16 +1645,16 @@ msgstr "代表"
 #: apps/corporate_memberships/admin.py:551
 #: themes/t7-base/templates/corporate_memberships/profiles/view.html:150
 msgid "Representatives"
-msgstr ""
+msgstr "代表"
 
 #: apps/corporate_memberships/admin.py:580
 #: themes/t7-base/templates/corporate_memberships/profiles/view.html:43
 msgid "Company Details"
-msgstr ""
+msgstr "公司详情"
 
 #: apps/corporate_memberships/admin.py:599
 msgid "Other Info"
-msgstr ""
+msgstr "其他信息"
 
 #: apps/corporate_memberships/app_registry.py:13
 msgid "Corporate membership management application."
@@ -1704,7 +1704,7 @@ msgstr "免费会员设为0。"
 #: apps/corporate_memberships/forms.py:63
 #: apps/corporate_memberships/models.py:140
 msgid "Price for members who join above cap."
-msgstr ""
+msgstr "加入上限的会员的价格"
 
 #: apps/corporate_memberships/forms.py:67
 #: apps/corporate_memberships/forms.py:115 apps/memberships/forms.py:1036
@@ -1769,7 +1769,7 @@ msgstr "请选择从列表（单选按钮）"
 
 #: apps/corporate_memberships/forms.py:200
 msgid "Yes/No"
-msgstr ""
+msgstr "是/否"
 
 #: apps/corporate_memberships/forms.py:318 apps/directories/forms.py:126
 msgid "Company logo. Only jpg, gif, or png images."
@@ -1825,7 +1825,7 @@ msgstr "过期"
 
 #: apps/corporate_memberships/forms.py:677
 msgid "Select the individual members you want to renew"
-msgstr ""
+msgstr "选择要续订的个人成员"
 
 #: apps/corporate_memberships/forms.py:701
 #, python-brace-format
@@ -2276,11 +2276,11 @@ msgstr "大"
 
 #: apps/corporate_memberships/models.py:100 apps/memberships/models.py:2128
 msgid "Join Approval Date"
-msgstr ""
+msgstr "加入批准日期"
 
 #: apps/corporate_memberships/models.py:101 apps/memberships/models.py:2129
 msgid "Join Disapproval Date"
-msgstr ""
+msgstr "加入拒绝日期"
 
 #: apps/corporate_memberships/models.py:102 apps/memberships/models.py:2130
 msgid "Renewal Approval Date"
@@ -2288,7 +2288,7 @@ msgstr "续期批准日期"
 
 #: apps/corporate_memberships/models.py:103 apps/memberships/models.py:2131
 msgid "Renewal Disapproval Date"
-msgstr "更新日期Disapproval在"
+msgstr "续订拒绝日期"
 
 #: apps/corporate_memberships/models.py:110
 #: apps/corporate_memberships/models.py:1342
@@ -2352,27 +2352,27 @@ msgstr "绑定个人会员该会员的类型。"
 #: apps/events/models.py:1138 apps/memberships/models.py:131
 #: apps/memberships/models.py:2541
 msgid "Admin Only"
-msgstr "只有管​​理员"
+msgstr "只有管理员"
 
 #: apps/corporate_memberships/models.py:124
 msgid "Apply cap"
-msgstr ""
+msgstr "应用上限"
 
 #: apps/corporate_memberships/models.py:125
 msgid "If checked, specify the membership cap below."
-msgstr ""
+msgstr "如果选中，请在下面指定会员人数上限"
 
 #: apps/corporate_memberships/models.py:127
 msgid "Membership cap"
-msgstr ""
+msgstr "会员上限"
 
 #: apps/corporate_memberships/models.py:131
 msgid "The maximum number of employees allowed."
-msgstr ""
+msgstr "允许的最大员工数"
 
 #: apps/corporate_memberships/models.py:132
 msgid "Allow above cap"
-msgstr ""
+msgstr "允许上限"
 
 #: apps/corporate_memberships/models.py:133
 msgid ""
@@ -2382,21 +2382,21 @@ msgstr ""
 
 #: apps/corporate_memberships/models.py:135
 msgid "Price if join above cap"
-msgstr ""
+msgstr "超过上限的价格"
 
 #: apps/corporate_memberships/models.py:142
 msgid "Number Passes"
-msgstr "数传"
+msgstr "通行证数目"
 
 #: apps/corporate_memberships/models.py:149
 #: themes/t7-base/templates/corporate_memberships/reports/overview.html:92
 #: themes/t7-base/templates/reports/overview.html:137
 msgid "Corporate Membership Type"
-msgstr ""
+msgstr "企业会员类型"
 
 #: apps/corporate_memberships/models.py:150
 msgid "Corporate Membership Types"
-msgstr ""
+msgstr "企业会员类型"
 
 #: apps/corporate_memberships/models.py:189 apps/directories/models.py:64
 #: apps/events/models.py:1451 apps/events/settings.py:26
@@ -2462,11 +2462,11 @@ msgstr "年营业额"
 
 #: apps/corporate_memberships/models.py:250
 msgid "Corporate Member Profile"
-msgstr ""
+msgstr "公司会员资料"
 
 #: apps/corporate_memberships/models.py:251
 msgid "Corporate Member Profiles"
-msgstr ""
+msgstr "公司会员资料"
 
 #: apps/corporate_memberships/models.py:372
 msgid "MembershipType"
@@ -2534,7 +2534,7 @@ msgstr "公司MEMB。类型"
 
 #: apps/corporate_memberships/models.py:1349
 msgid "Specify a list of parent entities to select."
-msgstr ""
+msgstr "指定要选择的上级实体"
 
 #: apps/corporate_memberships/models.py:1350
 msgid "Authentication Method"
@@ -2577,11 +2577,11 @@ msgstr "例如：0.0825为8.25％。"
 
 #: apps/corporate_memberships/models.py:1381
 msgid "Dues reps will be added to this group"
-msgstr ""
+msgstr "会费代表将被添加到该组"
 
 #: apps/corporate_memberships/models.py:1385
 msgid "Member reps will be added to this group"
-msgstr ""
+msgstr "会员代表将被添加到该组"
 
 #: apps/corporate_memberships/models.py:1390
 #: apps/corporate_memberships/models.py:1391
@@ -2590,7 +2590,7 @@ msgstr "公司会籍申请"
 
 #: apps/corporate_memberships/models.py:1461
 msgid "Corporate Memberships: Dues Reps"
-msgstr ""
+msgstr "公司会员资格：会费代表"
 
 #: apps/corporate_memberships/models.py:1463
 msgid "Auto-generated with the corp app. Used for dues reps only"
@@ -2598,7 +2598,7 @@ msgstr ""
 
 #: apps/corporate_memberships/models.py:1477
 msgid "Corporate Memberships: Member Reps"
-msgstr ""
+msgstr "企业会员：会员代表"
 
 #: apps/corporate_memberships/models.py:1479
 msgid "Auto-generated with the corp app. Used for member reps only"
@@ -2738,7 +2738,7 @@ msgstr "是会员代表？"
 
 #: apps/corporate_memberships/models.py:1664
 msgid "Corporate Membership Representative"
-msgstr ""
+msgstr "公司会员代表"
 
 #: apps/corporate_memberships/models.py:1665
 #: themes/t7-base/templates/corporate_memberships/edit_reps.html:8
@@ -2828,11 +2828,11 @@ msgstr "邮件内容"
 
 #: apps/corporate_memberships/models.py:1901
 msgid "Member Notice"
-msgstr ""
+msgstr "会员通知"
 
 #: apps/corporate_memberships/models.py:1902
 msgid "Member Notices"
-msgstr ""
+msgstr "会员通知"
 
 #: apps/corporate_memberships/notices/forms.py:9
 #: apps/memberships/notices/forms.py:9
@@ -2885,7 +2885,7 @@ msgstr "企业会员更新用户注意事项"
 
 #: apps/corporate_memberships/signals.py:34
 msgid "A corporate membership has been renewed - notice to user."
-msgstr ""
+msgstr "已更新企业会员资格 - 通知用户"
 
 #: apps/corporate_memberships/signals.py:39
 msgid "Corporate Membership Approved"
@@ -2926,15 +2926,15 @@ msgstr "免费"
 
 #: apps/corporate_memberships/utils.py:72
 msgid "Limit"
-msgstr ""
+msgstr "限量"
 
 #: apps/directories/admin.py:32
 msgid "Directory Sub-Category"
-msgstr ""
+msgstr "目录子类别"
 
 #: apps/directories/admin.py:33
 msgid "Directory Sub-Categories"
-msgstr ""
+msgstr "目录子类别"
 
 #: apps/directories/app_registry.py:13
 msgid "Create directories to list businesses"
@@ -3012,19 +3012,19 @@ msgstr ""
 #: apps/directories/forms.py:90 apps/jobs/forms.py:411
 #, python-format
 msgid "Categories (%(c)s)"
-msgstr ""
+msgstr "(%(c)s)类别"
 
 #: apps/directories/forms.py:97 apps/jobs/forms.py:418
 #, python-format
 msgid "Subcategories (%(c)s)"
-msgstr ""
+msgstr "(%(c)s)子类别"
 
 #: apps/directories/forms.py:128 apps/help_files/forms.py:23
 #: apps/help_files/forms.py:81 apps/jobs/forms.py:80 apps/jobs/forms.py:342
 #: apps/news/forms.py:45 apps/pages/forms.py:34 apps/pages/forms.py:129
 #: apps/resumes/forms.py:60 apps/stories/forms.py:36 apps/stories/forms.py:184
 msgid "Include in RSS Feed"
-msgstr ""
+msgstr "包含在RSS Feed中"
 
 #: apps/directories/forms.py:133 apps/directories/forms.py:430
 #: apps/jobs/forms.py:85
@@ -3409,19 +3409,19 @@ msgstr "原因"
 
 #: apps/email_blocks/forms.py:11
 msgid "Email you wish to block"
-msgstr ""
+msgstr "您希望阻止的电子邮件"
 
 #: apps/email_blocks/forms.py:16
 msgid "Domain you wish to block"
-msgstr ""
+msgstr "您希望阻止的域名"
 
 #: apps/email_blocks/forms.py:20
 msgid "The reason why you want to block the email or domain specified above"
-msgstr ""
+msgstr "您要阻止上面指定的电子邮件或域的原因"
 
 #: apps/email_blocks/forms.py:35
 msgid "You'll need to specify either email or email domain."
-msgstr ""
+msgstr "您需要指定电子邮件或电子邮件域"
 
 #: apps/email_blocks/models.py:15
 msgid "Can view email block"
