@@ -251,6 +251,13 @@
           {% endif %}
           
           {% if memberships %}
+          
+          {% if can_auto_renew %}
+	        <div class="text-left">
+	        <a href="{% url "memberships.auto_renew_setup" profile.user.id %}"><span class="glyphicon glyphicon-edit"></span> {% if auto_renew_is_set %}{% trans 'Update Auto Renew' %}{% else %}{% trans 'Set Up Auto Renew' %}{% endif %}</a>
+	        </div>
+	      {% endif %}
+          
           <div class="table-responsive">
             <table class="table">
               {% for membership in memberships %}
