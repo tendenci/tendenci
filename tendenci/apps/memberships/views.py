@@ -910,8 +910,9 @@ def membership_default_add(request, slug='', membership_id=None,
                     pass
 
             elif authentication_method == 'secret_code':
-                tmp_secret_hash = md5(('%s%s' % (corp_membership.corp_profile.secret_code,
-                            request.session.get('corp_hash_random_string', '')).encode())
+                tmp_secret_hash = md5('{secret_code}{random_string}'.format(
+                                    secret_code=corp_membership.corp_profile.secret_code,
+                                    random_string=request.session.get('corp_hash_random_string', '')).encode()
                                       ).hexdigest()
                 if secret_hash == tmp_secret_hash:
                     is_verified = True
