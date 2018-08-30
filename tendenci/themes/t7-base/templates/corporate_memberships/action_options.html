@@ -1,0 +1,30 @@
+
+<div>
+<span class="corp-{{ corp_membership.real_time_status_detail|slugify }}">{% if corp_membership.is_pending %}<mark>{{ corp_membership.real_time_status_detail }}</mark>{% else %}{{ corp_membership.real_time_status_detail }}{% endif %}</span>
+{% if corp_membership.status_detail == "archive" %}
+    {% with corp_membership.corp_profile.corp_membership as current_corp_membership %}
+        {% if current_corp_membership %}
+            <a href="{% url 'corpmembership.view' current_corp_membership.id %}">{% trans "View Current" %}</a>
+        {% endif %}
+    {% endwith %}
+{% endif %}
+      
+{% if corp_membership.is_renewal_pending %}
+    {% blocktrans with corp_membership.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
+    {% if request.user.is_superuser %}
+        <a href="{% url "corpmembership.approve" corp_membership.id %}" title="Approve/Disapprove">{% trans "Admin: Approve / Disapprove" %}</a>
+    {% endif %}
+{% else %}
+    {% if request.user.is_superuser and corp_membership.is_join_pending %}
+         <a class="btn btn--info btn-sm" href="{% url "corpmembership.approve" corp_membership.pk %}" title="Approve/Disapprove">{% trans "Admin: Approve / Disapprove" %}</a>
+    {% endif %}
+
+    {% if corp_membership.can_renew %}
+        <a class="btn btn-warning btn-sm" href="{% url "corpmembership.renew" corp_membership.id %}" title="Renew">{% trans "Renew" %}</a>
+    {% else %}
+        {% if corp_membership.is_expired and request.user.is_superuser %}
+         <a class="btn btn-warning btn-sm" href="{% url "corpmembership.renew" corp_membership.id %}" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
+        {% endif %}
+    {% endif %}
+{% endif %}
+</div>

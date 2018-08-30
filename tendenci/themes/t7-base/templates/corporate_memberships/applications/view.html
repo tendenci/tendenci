@@ -13,69 +13,27 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="{% static 'css/timepicker.css' %}">
 
-    {% comment %}
     <style>
-    .inline-block{
-        display: inline-block;
-    }
-    div.short-label{
-        width: 135px;
-    }
-    div.float-left{
-        float: left;
-        margin-right: 3px;
-    }
-    div.clear{
-        clear: both;
-    }
-    div.field-row{
-        margin: 5px 0;
-    }
-    div.admin-only-header{
-        color: #CC0000;
-    }
-    div.section-break{
-        margin: 2em 0 1em 0;
-    }
-    div.field-row{
-        margin-left: 2em;
-    }
-    div.float-right{
-        float: right;
-        margin-right: 1em;
-    }
-    div.corp-timeline{
-        background-color: #F7F7F9;
-        border: 1px solid #E1E1E8;
-        padding: 8px;
-        margin: 2em 0px;
-    }
-    .fp-usage-tbl th{
-    background-color: #73B530;
-    letter-spacing: 1px;
-    text-align: left;
-    text-transform: uppercase;
-    color: #fff;
-    font-weight: normal;
-    }
-    .fp-usage-tbl td, .fp-usage-tbl th{
-    padding: 3px 3px 3px 6px;
-    }
-    .fp-usage-tbl{
-    border: 1px solid #CCCCCC;
-    }
-
+    .corp-active{
+	color: green;
+	}
+	.corp-expired{
+		color: red;
+	}
     </style>
-    {% endcomment %}
 {% endblock %}
 
 {% block content %}
-    {% corpmemb_options request.user corporate_membership %}
 
     <article id="t-corpmemberships-corpmembership-{{ corporate_membership.pk }}" class="t-corpmemberships-corpmembership">
         <div class="page-header">
             <h1>{% trans "Corporate Membership" %}<br />&nbsp;<small>{{ corp_profile.name }}</small></h1>
         </div>
+        {% with corporate_membership as corp_membership %}
+        <div class="pull-right">
+        {% include "corporate_memberships/action_options.html" %}
+        </div>
+        {% endwith %}
 
         {% if corp_profile.logo %}
          <div class="t-corp-membership-logo">
@@ -238,5 +196,7 @@
 
             {% include "corporate_memberships/timeline.html" %}
         </div>
+        {% include "corporate_memberships/applications/meta.html" %}
     </article>
+    <br />
 {% endblock %}

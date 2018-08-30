@@ -23,7 +23,12 @@
     font-size: 32px;
     text-decoration: none;
 }
-
+.corp-active{
+	color: green;
+}
+.corp-expired{
+	color: red;
+}
 </style>
 
 {% endblock %}
@@ -93,6 +98,11 @@
         <h3>{% trans 'Membership Level' %}</h3>
         <div>
             {% trans 'Membership Type:' %} {{ corp_membership.corporate_membership_type }}
+            <br />
+            <small><em>{{ corp_membership.join_dt|date:"M j, Y" }}
+            {% if not corp_membership.is_pending %} - {% firstof corp_membership.expiration_dt|date:"M j, Y" "Forever" %} {% endif %}</em></small>
+           
+            {% include "corporate_memberships/action_options.html" %}
         </div>
 
         <h3>{% trans 'Payment Method' %}</h3>

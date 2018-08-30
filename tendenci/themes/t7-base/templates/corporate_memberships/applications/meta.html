@@ -1,22 +1,26 @@
 {% load base_filters %}
 {% load base_tags %}
+{% load perm_tags %}
 {% load corporate_memberships_tags %}
 
-
+{% has_perm user corporate_memberships.change_corpmembership as can_edit %}
 {% allow_edit_corp corporate_membership request.user as allow_edit %}
-<ul class="list-unstyled t-meta-data">
-    {% if user.is_authenticated %}
-        {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
-            {% if corporate_membership.is_pending and corporate_membership.anonymous_creator and corporate_membership.anonymous_creathor.first_name %}
-                {% blocktrans with create_date=corporate_membership.create_dt|date:"long" first_name=corporate_membership.anonymous_creator.first_name last_name=corporate_membership.anonymous_creator.last_name email=corporate_membership.anonymous_creator.email %}
-                    <li><strong>Created on {{ create_date }} by:</strong> <span>{{ first_name }} {{ last_name }} ({{ email }})</span></li>
-                {% endblocktrans %}
-            {% else %}
-                {% meta_creator_owner corporate_membership %}
-            {% endif %}
+{% has_perm user corporate_memberships.delete_corpmembership as can_delete %}
+
+{% if user.is_authenticated %}
+    {% if user.profile.is_superuser or user == corporate_membership.creator or user == corporate_membership.owner %}
+    	<ul class="list-unstyled t-meta-data">
+        {% if corporate_membership.is_pending and corporate_membership.anonymous_creator and corporate_membership.anonymous_creathor.first_name %}
+            {% blocktrans with create_date=corporate_membership.create_dt|date:"long" first_name=corporate_membership.anonymous_creator.first_name last_name=corporate_membership.anonymous_creator.last_name email=corporate_membership.anonymous_creator.email %}
+                <li><strong>Created on {{ create_date }} by:</strong> <span>{{ first_name }} {{ last_name }} ({{ email }})</span></li>
+            {% endblocktrans %}
+        {% else %}
+            {% meta_creator_owner corporate_membership %}
         {% endif %}
+        </ul>
     {% endif %}
-</ul>
+{% endif %}
+
 
 {% if allow_edit %}
     <nav class="navbar navbar-default t-meta-editor-bar">
@@ -45,8 +49,44 @@
                                 <li>
                                     <a href="{% url 'corpmembership.roster_search' %}?cm_id={{ corporate_membership.id }}&active_only=1">{% trans "Roster" %}{{corporate_memberhsip.status_detail }}</a>
                                 </li>
+                                
+                                {% if corporate_membership.is_renewal_pending %}
+								    {% if request.user.is_superuser %}
+								    <li>
+								        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
+								     </li>
+								    {% endif %}
+								{% else %}
+								    {% if request.user.is_superuser and corporate_membership.is_join_pending %}
+								        <li>
+								        <a href="{% url "corpmembership.approve" corporate_membership.pk %}">{% trans "Admin: Approve / Disapprove" %}</a>
+								        </li>
+								    {% endif %}
+								
+								    {% if corporate_membership.can_renew %}
+								        <li>
+								        <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Renew" %}</a>
+								        </li>
+								    {% else %}
+								        {% if corporate_membership.is_expired and request.user.is_superuser %}
+								        <li>
+								         <a href="{% url "corpmembership.renew" corporate_membership.id %}">{% trans "Admin: Renew" %}</a>
+										</li>
+								        {% endif %}
+								    {% endif %}
+								{% endif %}
 
-                                {% if user.profile.is_superuser %}
+								{% if corporate_membership.is_active and not corporate_membership.is_expired %}
+                                <li>
+                                    <a href="{% url 'membership_default.add_under_corp' corporate_membership.id %}">{% trans "Join Corporation" %}</a>
+                                </li> 
+	                                {% if user.profile.is_superuser %}
+	                                <li>
+	                                    <a href="{% url 'corpmembership.upgrade' corporate_membership.id %}">{% trans "Upgrade" %}</a>
+	                                </li>
+			                        {% endif %}
+		                        {% endif %}
+		                        {% if can_delete %}
                                 <li>
                                     <a class="t-meta-delete-link" href="{% url 'corpmembership.delete' corporate_membership.pk %}">{% trans "Delete" %}</a>
                                 </li>

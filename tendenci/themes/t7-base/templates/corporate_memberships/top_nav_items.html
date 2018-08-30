@@ -129,6 +129,11 @@
                                         <a href="{% url 'corpmembership.view' app_object.pk %}">{% trans "View Corporate Member" %}</a>
                                     </span>
                                 </li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'corpmembership.view_profile' app_object.corp_profile.pk %}">{% trans "View Corporate Profile" %}</a>
+                                    </span>
+                                </li>
                             {% endif %}
 
                             {% if can_edit_corpmemb and not app_object.is_archive %}
