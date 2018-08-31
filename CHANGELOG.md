@@ -1,4 +1,4 @@
-### 11.0 [2018-07-04]
+### 11.0 [2018-08-31]
 
 #### Compatibility
 * Support Python 3.6 or newer. Python 2.7 is no longer supported. 
