@@ -296,6 +296,13 @@ Set ``TIME_ZONE`` to the local time zone configured on the system running Tenden
 Tendenci Preparation
 --------------------
 
+Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.6):
+::
+
+    mkdir /var/www/mysite/themes/tendenci2018
+    cp -r /srv/mysite/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/mysite/themes/tendenci2018/
+
+
 Initialize the database and static files:
 ::
 
@@ -306,12 +313,7 @@ Initialize the database and static files:
     python manage.py load_tendenci2018_defaults
     python manage.py update_dashboard_stats
 
-Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.6):
-::
 
-    mkdir /var/www/mysite/themes/tendenci2018
-    cp -r /srv/mysite/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/mysite/themes/tendenci2018/
- 
 
 Set the "Site URL" setting appropriately:
 ::
