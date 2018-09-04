@@ -67,18 +67,20 @@ def new(request, template_name="dashboard/new.html"):
         redirect_setting.save()
         return redirect('tendenci.apps.theme_editor.views.theme_picker')
 
-    profile_redirect = get_setting('site', 'global', 'profile_redirect')
-    if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:
-        if "<username>" in profile_redirect:
-            profile_redirect = profile_redirect.replace("<username>", request.user.username)
-        return redirect(profile_redirect)
-
+    # Redirect to Group dashboard url if any
     if get_setting('site', 'global', 'groupdashboard'):
         group_dashboard_urls = filter(None, request.user.group_member
                                                     .values_list('group__dashboard_url', flat=True))
         if group_dashboard_urls:
             url = group_dashboard_urls[0]
             return redirect(url)
+
+    # Redirect to the url speficied in the Profile Redirect setting if any
+    profile_redirect = get_setting('site', 'global', 'profile_redirect')
+    if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:
+        if "<username>" in profile_redirect:
+            profile_redirect = profile_redirect.replace("<username>", request.user.username)
+        return redirect(profile_redirect)
 
     # self signup  free trial version
     has_paid = True
