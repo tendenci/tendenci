@@ -24,7 +24,7 @@ class StripeAccount(TendenciBaseModel):
 #     livemode_stripe_publishable_key = models.CharField(max_length=200)
 #     testmode_stripe_publishable_key = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.account_name
 
 
