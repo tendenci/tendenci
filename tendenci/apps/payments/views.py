@@ -39,7 +39,7 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
         merchant_account = (get_setting("site", "global", "merchantaccount")).lower()
 
         if merchant_account == 'stripe':
-            return HttpResponseRedirect(reverse('stripe.payonline', args=[payment.id]))
+            return HttpResponseRedirect(reverse('stripe.payonline', args=[payment.id, payment.guid]))
         else:
 
             if merchant_account == "authorizenet":

@@ -212,7 +212,7 @@ class Payment(models.Model):
                 self.response_page = reverse('paypal.thank_you')
             elif merchant_account == "stripe":
                 self.response_page = reverse('stripe.thank_you',
-                                             args=[self.id])
+                                             args=[self.id, self.guid])
             else:
                 self.response_page = "/payments/thankyou/%d" % (self.id)
 
