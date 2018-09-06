@@ -180,9 +180,9 @@ class FetchAccessToken(View):
         return render(request, self.template_name, {'sa': sa, 'msg_string': msg_string})
 
 
-def pay_online(request, payment_id, template_name='payments/stripe/payonline.html'):
+def pay_online(request, payment_id, guid='', template_name='payments/stripe/payonline.html'):
     with transaction.atomic():
-        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id)
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
         form = StripeCardForm(request.POST or None)
         billing_info_form = BillingInfoForm(request.POST or None, instance=payment)
         currency = get_setting('site', 'global', 'currency')
@@ -266,7 +266,7 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 send_payment_notice(request, payment)
 
             # redirect to thankyou
-            return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id]))
+            return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id, payment.guid]))
 
     return render_to_resp(request=request, template_name=template_name,
                               context={'form': form,
@@ -321,9 +321,9 @@ def update_card(request, rp_id):
         return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
 
 
-def thank_you(request, payment_id, template_name='payments/receipt.html'):
+def thank_you(request, payment_id, guid='', template_name='payments/receipt.html'):
     #payment, processed = stripe_thankyou_processing(request, dict(request.POST.items()))
-    payment = get_object_or_404(Payment, pk=payment_id)
+    payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
 
     return render_to_resp(request=request, template_name=template_name,
                               context={'payment':payment})
