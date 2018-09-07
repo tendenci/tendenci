@@ -655,6 +655,11 @@ PAYPAL_SANDBOX_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 STRIPE_SECRET_KEY = ''
 STRIPE_PUBLISHABLE_KEY = ''
 
+# List of merchant accounts you can set up.
+# If you want to set up multiple payment methods (gateways) for memberships,
+# the machine name of the payment methods specified should be in this list. 
+MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
+
 
 # ---------------------------------------------------------------------------- #
 # Captcha

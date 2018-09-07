@@ -1276,10 +1276,16 @@ def membership_default_add(request, slug='', membership_id=None,
             # redirect: payment gateway
             if membership_set.is_paid_online():
                 merchant_account = membership_form2.cleaned_data['payment_method'].machine_name
-                return HttpResponseRedirect(reverse(
-                    'payment.pay_online',
-                    args=[merchant_account, invoice.pk, invoice.guid]
-                ))
+                if merchant_account in settings.MERCHANT_ACCOUNT_NAMES:
+                    return HttpResponseRedirect(reverse(
+                        'payment.pay_online',
+                        args=[merchant_account, invoice.pk, invoice.guid]
+                    ))
+                else:
+                    return HttpResponseRedirect(reverse(
+                        'payment.pay_online',
+                        args=[invoice.pk, invoice.guid]
+                    ))
 
             # redirect: membership edit page
             if request.user.profile.is_superuser:
