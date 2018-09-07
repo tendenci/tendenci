@@ -1,3 +1,9 @@
+### 11.0.2 [2018-09-07]
+
+* Fixes for memberships multiple online payment methods
+* Fixed a url in notification/user_welcome/full.html
+* bugfix: '>' not supported between instances of 'NoneType' and 'int'
+
 ### 11.0.1 [2018-09-06]
 
 * SECURITY: Patched a secutiry hole in payments that could potentially expose user data.
