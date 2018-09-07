@@ -124,20 +124,18 @@ class Payment(models.Model):
         return reverse('payment.view', args=[self.id, self.guid])
 
     def allow_view_by(self, user2_compare, guid=''):
-        boo = False
         if user2_compare.profile.is_superuser:
-            boo = True
+            return True
+
+        if not user2_compare.is_anonymous():
+            if self.creator == user2_compare or \
+                self.owner == user2_compare:
+                return self.status
         else:
-            if user2_compare and user2_compare.id > 0:
-                if self.creator == user2_compare or \
-                    self.owner == user2_compare:
-                    if self.status == 1:
-                        boo = True
-            else:
-                # anonymous user
-                if self.guid and self.guid == guid:
-                    boo = True
-        return boo
+            # anonymous user
+            return self.guid and self.guid == guid
+
+        return False
 
     def payments_pop_by_invoice_user(self, user, inv, session_id='', **kwargs):
         boo = False
