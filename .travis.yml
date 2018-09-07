@@ -14,3 +14,7 @@ install:
 # TODO: command to run tests
 # for now, run command to push source and translation files to Transifex
 script: ./transifex.sh
+
+branches:
+  only:
+    - master
