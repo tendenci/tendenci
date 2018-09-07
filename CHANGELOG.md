@@ -1,3 +1,9 @@
+### 7.5.2 [2018-09-06]
+
+* SECURITY: Patched a secutiry hole in payments that could potentially expose user data.
+* Added a thumbnail field to articles
+* Other minor fixes
+
 ### 7.5.1 [2018-06-26]
 
 * Fixed an error on education search.
