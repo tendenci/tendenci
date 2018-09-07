@@ -1,3 +1,10 @@
+### 11.0.1 [2018-09-06]
+
+* SECURITY: Patched a secutiry hole in payments that could potentially expose user data.
+* Fixed dashboard redirect so that the "Profile Redirect" setting doesn't have to be set to blank for "Group dashboard Redirect" to work.
+* Other minore fixes
+
+
 ### 11.0 [2018-08-31]
 
 #### Compatibility
