@@ -58,3 +58,6 @@ after_success:
  # Run command to push source and translation files to Transifex
  - ./transifex.sh
 
+branches:
+  only:
+    - master
