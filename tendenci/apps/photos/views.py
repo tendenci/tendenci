@@ -2,6 +2,8 @@ from builtins import str
 
 import os
 import re
+import io
+from PIL import Image as PILImage
 
 from subprocess import Popen
 
@@ -40,6 +42,7 @@ from tendenci.apps.photos.models import Image, PhotoSet, AlbumCover, License
 from tendenci.apps.photos.forms import PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
 from tendenci.apps.photos.utils import get_privacy_settings
 from tendenci.apps.photos.tasks import ZipPhotoSetTask
+from tendenci.apps.base.utils import apply_orientation
 
 
 @is_enabled('photos')
@@ -266,17 +269,27 @@ def photo_original(request, id):
     # check permissions
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
-
-    image_data = default_storage.open(str(photo.image.file), 'rb').read()
+    
+    # get image extension
     try:
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
         ext = "png"
 
-    if ext == "jpg":
+    if ext in ["jpg", 'JPG']:
         ext = "jpeg"
+    
+    with default_storage.open(str(photo.image.file), 'rb') as f:
+        if photo.exif_data and photo.exif_data.get('Orientation', 1) in (3, 6, 8):
+            img = PILImage.open(f)
+            # rotate image if needed
+            img = apply_orientation(img)
+            output = io.BytesIO()
+            img.save(output, format=ext.upper())
+            return HttpResponse(output.getvalue(), content_type="image/{}".format(ext))
 
-    return HttpResponse(image_data, content_type="image/%s" % ext)
+        return HttpResponse(f, content_type="image/{}".format(ext))
+
 
 @login_required
 def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):
