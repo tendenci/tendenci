@@ -699,6 +699,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                  'YResolution',
                  'ResolutionUnit',
                  'SubjectLocation',
+                 'Orientation'
                  )
 
     guid = models.CharField(max_length=40, editable=False)
