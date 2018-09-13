@@ -463,7 +463,7 @@ def detail(request, id, template_name="invoices/detail.html"):
 @is_enabled('invoices')
 def download_pdf(request, id):
     invoice = get_object_or_404(Invoice, pk=id)
-    if not has_perm(request.user, 'invoices.change_invoice'):
+    if not has_perm(request.user, 'invoices.change_invoice', invoice):
         raise Http403
 
     result = invoice_pdf(request, invoice)
