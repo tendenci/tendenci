@@ -51,6 +51,7 @@ def prepare_paypal_form(request, payment):
     return form
 
 def parse_pdt_validation(data):
+    data = data.decode('utf-8')
     result_params = {}
     success = False
     items_list = data.split('\n')
@@ -101,7 +102,7 @@ def validate_with_paypal(request, validate_type):
                'encoding': 'utf-8',
                "Accept": "text/plain"}
     request = Request(settings.PAYPAL_POST_URL,
-                              data,
+                              data.encode('utf-8'),
                               headers)
     response = urlopen(request)
     data = response.read()
@@ -195,7 +196,7 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     # make sure data is encoded in utf-8 before processing
     if charset and charset not in ('ascii', 'utf8', 'utf-8'):
         for k in response_d:
-            response_d[k] = response_d[k].decode(charset).encode('utf-8')
+            response_d[k] = response_d[k].encode(charset).decode('utf-8')
 
     paymentid = response_d.get('invoice', 0)
 
