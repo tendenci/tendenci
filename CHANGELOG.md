@@ -1,3 +1,9 @@
+### 11.0.3 [2018-09-21]
+
+* Rotated images if needed when displaying original images.
+* Updated invoice pdf to allow invoice owners to download.
+* Fixed unicode issues for paypal 
+
 ### 11.0.2 [2018-09-07]
 
 * Fixes for memberships multiple online payment methods
