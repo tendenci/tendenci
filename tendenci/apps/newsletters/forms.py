@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.newsletters.utils import get_type_choices, is_newsletter_relay_set, get_default_template_choices
 from tendenci.apps.newsletters.models import NewsletterTemplate, Newsletter
@@ -120,7 +121,7 @@ class OldGenerateForm(forms.ModelForm):
             email = Email()
             email.subject = subject
             email.body = email_content
-            email.sender = self.request.user.email
+            email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email.sender_display = self.request.user.profile.get_name()
             email.reply_to = self.request.user.email
             email.creator = self.request.user
