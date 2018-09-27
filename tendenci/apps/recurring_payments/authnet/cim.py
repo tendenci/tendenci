@@ -77,7 +77,7 @@ class CIMBase(object):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
         #print request_xml_str
         request = Request(self.cim_url,
-                                request_xml_str,
+                                bytes(request_xml_str, encoding='UTF-8'),
                                 {'Content-Type': 'text/xml',
                                 'encoding': 'utf-8'})
         response = urlopen(request)
