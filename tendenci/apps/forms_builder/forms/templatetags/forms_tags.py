@@ -33,8 +33,12 @@ def forms_search(context):
 
 @register.inclusion_tag("forms/top_nav_items.html", takes_context=True)
 def form_current_app(context, user, form=None):
+    app_object = form
+    # ensure this form is a form object
+    if not form or not hasattr(form, 'pk'):
+        app_object = None
     context.update({
-        "app_object": form,
+        "app_object": app_object,
         "user": user
     })
     return context
