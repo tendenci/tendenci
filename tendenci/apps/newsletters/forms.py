@@ -8,6 +8,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.campaign_monitor.models import Template
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.base.http import Http403
@@ -123,7 +124,7 @@ class OldGenerateForm(forms.ModelForm):
             email = Email()
             email.subject = subject
             email.body = email_content
-            email.sender = self.request.user.email
+            email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email.sender_display = self.request.user.profile.get_name()
             email.reply_to = self.request.user.email
             email.creator = self.request.user
