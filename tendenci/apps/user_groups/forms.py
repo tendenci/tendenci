@@ -11,6 +11,7 @@ from tendenci.apps.user_groups.utils import member_choices
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.fields import SlugField
 
 
 SEARCH_CATEGORIES = (
@@ -104,6 +105,8 @@ class GroupForm(TendenciBaseForm):
         help_text=_('Display this group as an option to logged-in users.'),
         required=False)
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
+    slug = forms.SlugField(label=_("URL Path")) 
 
     class Meta:
         model = Group
