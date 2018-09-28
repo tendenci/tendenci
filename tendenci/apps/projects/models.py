@@ -13,10 +13,10 @@ from tendenci.apps.files.managers import FileManager
 
 
 class DocumentType(models.Model):
-    type = models.CharField(_(u'type'), max_length=300)
+    type_name = models.CharField(_(u'type'), max_length=300)
 
     def __str__(self):
-        return self.type
+        return self.type_name
 
 class ClientList(models.Model):
     name = models.CharField(_(u'name'), max_length=300)
@@ -173,17 +173,23 @@ class TeamMembers(File):
     team_description = models.TextField(_(u'Description'), null=True, blank=True)
 
     objects = FileManager()
+    
+    class Meta:
+        verbose_name = _("Team Member")
+        verbose_name_plural = _("Team Members")
 
     def __str__(self):
         return self.title
 
 class Documents(File):
     project = models.ForeignKey(Project, related_name="%(app_label)s_%(class)s_related", on_delete=models.CASCADE)
-    type = models.ForeignKey(DocumentType, blank=True, on_delete=models.CASCADE)
+    # renamed from type to doc_type because type clashes with the type in Files on upload
+    doc_type = models.ForeignKey(DocumentType, blank=True, null=True, on_delete=models.CASCADE)
     other = models.CharField(_(u'other'), max_length=200, blank=True)
     document_dt = models.DateField(_(u'Document Date'), null=True, blank=True)
 
     objects = FileManager()
 
-    def __str__(self):
-        return self.type
+    class Meta:
+        verbose_name = _("Document")
+        verbose_name_plural = _("Documents")

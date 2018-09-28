@@ -93,7 +93,7 @@ class PhotoForm(forms.ModelForm):
 class DocumentsForm(forms.ModelForm):
     class Meta:
         model = Documents
-        fields = ['type', 'document_dt', 'other', 'file']
+        fields = ['doc_type', 'document_dt', 'other', 'file']
 
     def __init__(self, *args, **kwargs):
         super(DocumentsForm, self).__init__(*args, **kwargs)
