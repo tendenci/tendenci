@@ -1248,7 +1248,7 @@ class Event(TendenciBaseModel):
         if self.has_addons:
             registrations = Registration.objects.filter(event=self, canceled=False)
             for reg in registrations:
-                total_addons += reg.regaddon_set.all().aggregate(Sum('amount'))['amount__sum']
+                total_addons += reg.regaddon_set.all().aggregate(Sum('amount'))['amount__sum'] or 0
         return total_addons
 
     def registrants(self, **kwargs):
@@ -1695,7 +1695,7 @@ class Addon(models.Model):
         return True
 
     def field_name(self):
-        return "%s_%s" % (self.pk, self.title.encode('ascii', 'ignore').lower().replace(' ', '').replace('-', ''))
+        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
 
 
 class AddonOption(models.Model):
