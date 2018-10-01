@@ -11,7 +11,6 @@ from tendenci.apps.user_groups.utils import member_choices
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.fields import SlugField
 
 
 SEARCH_CATEGORIES = (
