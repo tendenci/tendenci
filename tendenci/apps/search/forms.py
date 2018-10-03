@@ -14,7 +14,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.registry.sites import site as registry_site
 from tendenci.apps.event_logs.models import EventLog
 try:
-    from tendenci.apps.corporate_memberships.models import CorporateMembership as CorpMemb
+    from tendenci.apps.corporate_memberships.models import CorpMembership as CorpMemb
 except:
     CorpMemb = None
 
