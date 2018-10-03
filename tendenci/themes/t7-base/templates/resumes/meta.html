@@ -22,12 +22,12 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in nonhash_tags %}
-                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{{ tag }}</a>
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>
             {% endfor %}
 
             {# TODO: Distinguish between hash_tags and nonhash_tags #}
             {% for tag in hash_tags %}
-                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag }}">{{ tag }}</a>
+                <a class="label label-default" href="{% url 'resumes' %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>
             {% endfor %}
         <li>
     {% endif %}

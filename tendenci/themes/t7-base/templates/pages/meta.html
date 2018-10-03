@@ -80,7 +80,7 @@
      
      {% if nonhash_tags or can_edit_page %}
      {% for tag in nonhash_tags %}
-     <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">
+     <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">
        {{ tag }}
      </a>
      {% endfor %}
@@ -88,7 +88,7 @@
      
      {% if hash_tags and can_edit_page %}
      {% for tag in hash_tags %}
-     <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower }}">
+     <a class="label label-default" href="{% url 'page.search' %}?q=tag:{{ tag|lower|urlencode }}">
        {{ tag }}
      </a>
      {% endfor %}

@@ -39,7 +39,7 @@
         <li>
           <strong>{% trans "Tags:" %}</strong>
           {% for tag in directory.tags|tag_split %}
-          <a href="{% url 'directories' %}?q=tag:{{ tag }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }},{% endblocktrans %}</a>
+          <a href="{% url 'directories' %}?q=tag:{{ tag|lower|urlencode }}">{% blocktrans with tag_instance=tag %}{{ tag_instance }},{% endblocktrans %}</a>
           {% endfor %}
         </li>
         {% endif %}

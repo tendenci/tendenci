@@ -83,7 +83,7 @@
         <div class="tags">
             Tags:
             {% for tag in tags %}
-              <a href="{% url "case_study" %}?q=tag:{{ tag }}">{{ tag }}</a>
+              <a href="{% url "case_study" %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>
             {% endfor %}
         </div>
         {% endif %}

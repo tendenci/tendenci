@@ -85,7 +85,7 @@
         <li>
             <strong>{% trans "Tag(s):" %}</strong>
             {% for tag in directory.tags|tag_split %}
-                <a class="label label-default" href="{% url 'directories' %}?q=tag:{{ tag }}">{{ tag }}</a>
+                <a class="label label-default" href="{% url 'directories' %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>
            {% endfor %}
         <li>
     {% endif %}

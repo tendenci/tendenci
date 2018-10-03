@@ -26,7 +26,7 @@
       <li class="tags">
         <strong>Tags: </strong>
         {% for tag in tags %}
-        <a href="{% url "committees.search" %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        <a href="{% url "committees.search" %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
         {% endfor %}
       </li>
       {% endif %}
