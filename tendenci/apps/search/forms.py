@@ -90,7 +90,7 @@ class SearchForm(forms.Form):
         if not order_by:
             order_by = 'newest'
 
-        sqs = SearchQuerySet()
+        sqs = SearchQuerySet().filter(status=True)
         user = self.user
         query = self.cleaned_data['q']
 
@@ -133,7 +133,6 @@ class SearchForm(forms.Form):
                             anon_query = Q(**{'allow_anonymous_view':True,})
                             user_query = Q(**{'allow_user_view':True,})
                             sec1_query = Q(**{
-                                'status':1,
                                 'status_detail':'active',
                             })
                             sec2_query = Q(**{
@@ -146,11 +145,11 @@ class SearchForm(forms.Form):
                             sqs = sqs.filter(query)
                         else:
                         # if anonymous
-                            sqs = sqs.filter(status=True).filter(status_detail='active')
+                            sqs = sqs.filter(status_detail='active')
                             sqs = sqs.filter(allow_anonymous_view=True)
                 else:
                     # if anonymous
-                    sqs = sqs.filter(status=True).filter(status_detail='active')
+                    sqs = sqs.filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 if user:
@@ -160,7 +159,6 @@ class SearchForm(forms.Form):
                         if not user.is_anonymous:
                             # (status+status_detail+anon OR who_can_view__exact)
                             sec1_query = Q(**{
-                                'status':1,
                                 'status_detail':'active',
                                 'allow_anonymous_view':True,
                             })
@@ -171,11 +169,11 @@ class SearchForm(forms.Form):
                             sqs = sqs.filter(query)
                         else:
                             # if anonymous
-                            sqs = sqs.filter(status=True).filter(status_detail='active')
+                            sqs = sqs.filter(status_detail='active')
                             sqs = sqs.filter(allow_anonymous_view=True)
                 else:
                     # if anonymous
-                    sqs = sqs.filter(status=True).filter(status_detail='active')
+                    sqs = sqs.filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
 
             # for solr,
