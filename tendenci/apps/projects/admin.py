@@ -98,7 +98,7 @@ class DocumentsAdmin(admin.StackedInline):
     fieldsets = (
         (None, {
             'fields': (
-            'type',
+            'doc_type',
             'other',
             'document_dt',
             'file',
