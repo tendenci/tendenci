@@ -31,6 +31,8 @@ class Category(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
         ordering = ('position',)
 
     def save(self, *args, **kwargs):
