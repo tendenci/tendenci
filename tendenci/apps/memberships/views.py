@@ -1211,6 +1211,17 @@ def membership_default_add(request, slug='', membership_id=None,
                         invoice.balance += donation_amount
                         invoice.save()
 
+            if memberships[0].auto_renew:
+                # handle auto renew discount
+                auto_renew_discount = get_setting('module', 'memberships', 'autorenewdiscount')
+                if auto_renew_discount and invoice.balance > auto_renew_discount:
+                    invoice.discount_amount = auto_renew_discount
+                    invoice.subtotal -= auto_renew_discount
+                    invoice.total -= auto_renew_discount
+                    invoice.balance -= auto_renew_discount
+                    invoice.save()
+                    
+
             memberships_join_notified = []
             memberships_renewal_notified = []
             notice_sent = False

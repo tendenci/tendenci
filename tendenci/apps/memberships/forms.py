@@ -41,6 +41,7 @@ from tendenci.apps.payments.fields import PaymentMethodModelChoiceField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import tcurrency
 
 
 THIS_YEAR = datetime.today().year
@@ -1167,6 +1168,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
             if 'corporate_membership_id' not in self.fields:
                 self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
+                auto_renew_discount = get_setting('module', 'memberships', 'autorenewdiscount')
+                if auto_renew_discount:
+                    self.fields['auto_renew'].help_text = _('A {} discount will be applied immediately if you opt in Auto Renew').format(
+                                                                tcurrency(auto_renew_discount))
 
         self.add_form_control_class()
 
@@ -1203,8 +1208,8 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
     def clean_auto_renew(self):
         value = self.cleaned_data['auto_renew']
         if value:
-            payment_method = self.cleaned_data['payment_method']
-            if payment_method and not payment_method.is_online:
+            payment_method = self.cleaned_data.get('payment_method')
+            if not payment_method or not payment_method.is_online:
                 raise forms.ValidationError(_("Please either de-select it or change to an online payment method."))
         return value
 

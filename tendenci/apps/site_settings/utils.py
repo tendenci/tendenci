@@ -1,3 +1,4 @@
+from decimal import Decimal
 import django
 from django.core.cache import cache
 from django.conf import settings as d_settings
@@ -109,6 +110,11 @@ def get_setting(scope, scope_category, name):
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
+        if setting.data_type == 'decimal':
+            if value:
+                value = Decimal(value)
+            else:
+                value = 0
         if setting.data_type == 'int':
             if value.strip():
                 value = int(value.strip())

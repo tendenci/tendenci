@@ -208,6 +208,9 @@
                             </div>
                         {% endif %}
                             {{ membership_form.auto_renew }} <label for="{{ membership_form.auto_renew.id_for_label }}" class="control-label">{{ membership_form.auto_renew.label }}</label>
+                            {% if membership_form.auto_renew.help_text %}
+                            <span class="help-block">{{ membership_form.auto_renew.help_text|safe }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
@@ -216,7 +219,7 @@
 
         {% if 'discount_code' in membership_form.fields %}
             <div class="form-group">
-                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount CodeAAAAAAAAA" %}</label>
+                <label for="{{ membership_form.discount_code.id_for_label }}" class="col-sm-3 control-label">{% trans "Discount Code" %}</label>
 
                 <div class="col-sm-9">
                     {{ membership_form.discount_code }}

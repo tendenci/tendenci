@@ -18,6 +18,7 @@ DATA_TYPE_CHOICES = (
     ('boolean',_('boolean')),
     ('integer',_('int')),
     ('file', _('file')),
+    ('decimal', _('decimal')),
 )
 
 class Setting(models.Model):

@@ -21,7 +21,7 @@
   </tr>
   {% if invoice.discount_amount > 0 %}
   <tr>
-    <td>{% trans "Discount Applied (discount code" %}: <a href="{{ invoice.get_discount_url }}">{{ invoice.discount_code }}</a>):</td>
+    <td>{% trans "Discount Applied" %}{% if invoice.discount_code %}({% trans "discount code"  %}: <a href="{{ invoice.get_discount_url }}">{{ invoice.discount_code }}</a>){% endif %}:</td>
     <td class="td-right">-{{ invoice.discount_amount|format_currency }}</td>
   </tr>
   {% endif %}

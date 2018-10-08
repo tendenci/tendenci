@@ -186,5 +186,22 @@
         "scope_category": "memberships",
         "store": true,
         "updated_by": ""
+    },
+    {
+        "default_value": 0,
+        "description": "The discount amount that will be applied immediately if Auto Renew is selected on memberships Join/Renew.",
+        "data_type": "decimal",
+        "update_dt": "2018-10-08 15:50:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "autorenewdiscount",
+        "value": 0,
+        "label": "Discount Amount for Auto Renewal ",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": true,
+        "updated_by": ""
     }
 ]
