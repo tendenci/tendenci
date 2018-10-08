@@ -1,3 +1,16 @@
+### 11.0.4 [2018-10-07]
+
+* Default no-reply address for newsletter sender
+* Changed PYBB_DEFAULT_TIME_ZONE to match with the default TIME_ZONE setting
+* Fixed get_url_patterns for addons
+* Fixed an error in recurring payments for authnet
+* Fixed some issues in projects
+* Applied urlencode filter for tags
+* Fixed some issues in global search
+* Updated requirements.txt to require django >=1.11.16 because there are vulnerabilities in Django 1.11.x before 1.11.15
+* Other fixes
+
+
 ### 11.0.3 [2018-09-21]
 
 * Rotated images if needed when displaying original images.
