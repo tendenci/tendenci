@@ -1,4 +1,4 @@
-### 11.0.4 [2018-10-07]
+### 11.0.4 [2018-10-08]
 
 * Default no-reply address for newsletter sender
 * Changed PYBB_DEFAULT_TIME_ZONE to match with the default TIME_ZONE setting
@@ -27,7 +27,7 @@
 
 * SECURITY: Patched a secutiry hole in payments that could potentially expose user data.
 * Fixed dashboard redirect so that the "Profile Redirect" setting doesn't have to be set to blank for "Group dashboard Redirect" to work.
-* Other minore fixes
+* Other minor fixes
 
 
 ### 11.0 [2018-08-31]
