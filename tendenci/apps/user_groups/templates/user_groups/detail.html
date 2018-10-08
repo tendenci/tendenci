@@ -58,7 +58,7 @@
                         {% blocktrans %}Users cannot add themselves to this group{% endblocktrans %}</a></li>
                 {% endif %}
 
-                {% if group.allow_self.remove %}
+                {% if group.allow_self_remove %}
                     <li><a href="{% url "group.edit" group.slug %}">
                         {% blocktrans %}Users can remove themselves from this group{% endblocktrans %}</a></li>
                 {% else %}
