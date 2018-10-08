@@ -44,7 +44,7 @@ class Invoice(models.Model):
     total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     discount_code = models.CharField(_('Discount Code'), max_length=100, blank=True, null=True)
     discount_amount = models.DecimalField(_('Discount Amount'), max_digits=10, decimal_places=2, default=0)
-    variance = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    variance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     variance_notes = models.TextField(max_length=1000, blank=True, null=True)
     receipt = models.BooleanField(default=False)
     gift = models.BooleanField(default=False)
