@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block branding %}
-    <a class="navbar-brand" href="{% url 'dashboard' %}"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="26" /></a>
+    <a class="navbar-brand" href="{% url 'dashboard' %}" title="Tendenci Dashboard"><img src="{% static 'images/tendenci_white_small_100x51.gif' %}" height="26" alt="Tendenci The Open Source AMS Logo" /></a>
 
     {% if user.is_authenticated %}
         <a class="navbar-brand" href="/">{{ SITE_GLOBAL_SITEURL }}</a>
