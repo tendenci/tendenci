@@ -39,6 +39,12 @@
       <label class="field-label">{% trans 'Current Invoice Totals:'%}</label>
     </div>
     <div class="clear-left"></div>
+    
+    <div class="field-wrapper">
+      <label class="field-label">{% trans 'Sub Total:'%}</label>
+      <div>{{invoice.subtotal|format_currency }}</div>
+    </div>
+    <div class="clear-left"></div>
 
     <div class="field-wrapper">
       <label class="field-label">{% trans 'Total:'%}</label>
