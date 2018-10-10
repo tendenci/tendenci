@@ -7,6 +7,12 @@
     <td class="td-right">{{ payment_method }}</td>
   </tr>
   {% endif%}
+  
+   <tr>
+    <td>{% trans "Sub Total:" %}</td>
+    <td class="td-right">{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
+  </tr>
+  
   {% if invoice.variance and invoice.variance != 0 %}
   {% if invoice.total != tmp_total %}
   <tr>
@@ -15,10 +21,7 @@
   </tr>
   {% endif%}
   {% endif%}
-  <tr>
-    <td>{% trans "Sub Total:" %}</td>
-    <td class="td-right">{{ invoice.subtotal|add_decimal:invoice.discount_amount|format_currency }}</td>
-  </tr>
+  
   {% if invoice.discount_amount > 0 %}
   <tr>
     <td>{% trans "Discount Applied" %}{% if invoice.discount_code %}({% trans "discount code"  %}: <a href="{{ invoice.get_discount_url }}">{{ invoice.discount_code }}</a>){% endif %}:</td>

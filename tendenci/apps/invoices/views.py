@@ -359,6 +359,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     invoice = get_object_or_404(Invoice, pk=id)
     original_total = invoice.total
     original_balance = invoice.balance
+    original_variance = invoice.variance
 
     if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
 
@@ -366,7 +367,9 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
         form = form_class(request.POST, instance=invoice)
         if form.is_valid():
             invoice = form.save()
-            invoice.total += invoice.variance
+            
+            variance_changed = invoice.variance - original_variance
+            invoice.total += variance_changed
             invoice.balance = invoice.total - invoice.payments_credits
             invoice.save()
 
@@ -382,7 +385,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
             # make accounting entries
             from tendenci.apps.accountings.models import AcctEntry
             ae = AcctEntry.objects.create_acct_entry(request.user, 'invoice', invoice.id)
-            if invoice.variance < 0:
+            if variance_changed < 0:
                 from tendenci.apps.accountings.utils import make_acct_entries_discount
                 #this is a discount
                 opt_d = {}
@@ -397,14 +400,14 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 
                 make_acct_entries_discount(request.user, invoice, ae, opt_d)
 
-            else:
+            elif variance_changed > 0:
                 from tendenci.apps.accountings.utils import make_acct_entries_initial
-                make_acct_entries_initial(request.user, ae, invoice.variance)
+                make_acct_entries_initial(request.user, ae, variance_changed)
 
             return HttpResponseRedirect(invoice.get_absolute_url())
 
     else:
-        form = form_class(initial={'variance':0.00, 'variance_notes':invoice.variance_notes})
+        form = form_class(initial={'variance': invoice.variance, 'variance_notes':invoice.variance_notes})
 
     return render_to_resp(request=request, template_name=template_name,
         context={'invoice': invoice,
