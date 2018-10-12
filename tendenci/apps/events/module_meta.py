@@ -29,8 +29,7 @@ class EventMeta():
         return generate_meta_keywords(self.object.description)
 
     def get_canonical_url(self):
-        object = self.object
-        return object.get_absolute_url()
+        return '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), self.object.get_absolute_url())
 
     def get_meta(self, object, name):
 
