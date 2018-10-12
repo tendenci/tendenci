@@ -72,6 +72,7 @@ class GroupAdminForm(TendenciBaseForm):
           'sync_newsletters',
           'allow_self_add',
           'allow_self_remove',
+          'show_for_memberships',
           'description',
           'auto_respond',
           'auto_respond_priority',
@@ -118,6 +119,7 @@ class GroupForm(TendenciBaseForm):
                   'sync_newsletters',
                   'allow_self_add',
                   'allow_self_remove',
+                  'show_for_memberships',
                   'description',
                   'auto_respond',
                   'auto_respond_priority',
@@ -139,6 +141,7 @@ class GroupForm(TendenciBaseForm):
                                  'sync_newsletters',
                                  'allow_self_add',
                                  'allow_self_remove',
+                                 'show_for_memberships',
                                  'description'
                                  'auto_respond',
                                  'auto_respond_priority'

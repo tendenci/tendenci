@@ -37,6 +37,8 @@ class Group(TendenciBaseModel):
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=True, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=True)
+    show_for_memberships = models.BooleanField(default=True,
+            help_text=_('If checked and allows self add, this group will show as an option for the group field on membership applications'),)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=True)
     sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=True)
     description = models.TextField(blank=True)

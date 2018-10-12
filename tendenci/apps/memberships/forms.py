@@ -1136,6 +1136,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
             self.fields['groups'].queryset = Group.objects.filter(
                                                 allow_self_add=True,
+                                                show_for_memberships=True,
                                                 status=True,
                                                 status_detail='active')
             self.fields['groups'].help_text = ''
