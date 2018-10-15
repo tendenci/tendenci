@@ -19,7 +19,7 @@ except:
 
 class PageAdmin(admin.ModelAdmin):
     list_display = ('id', 'view_on_site', 'edit_link', 'title', 'link', 'syndicate',
-                    'allow_anonymous_view','status_detail', 'group', 'tags')
+                    'allow_anonymous_view','status_detail', 'group', 'tags', 'template')
     search_fields = ('title','content',)
     list_editable = ['title', 'tags', 'group']
     list_filter = ('group', )
