@@ -56,13 +56,19 @@ def create_notice_types(sender, **kwargs):
                 verbosity=verbosity)
 
 
-group_id = get_setting('module', 'corporate_memberships', 'corpmembershiprepsgroupid')
-reps_group = None
-if group_id:
-    [reps_group] = Group.objects.filter(id=int(group_id))[:1] or [None]
+def get_reps_group():
+    group_id = get_setting('module', 'corporate_memberships', 'corpmembershiprepsgroupid')
+    reps_group = None
+    if group_id:
+        try:
+            [reps_group] = Group.objects.filter(id=int(group_id))[:1] or [None]
+        except:
+            reps_group = None
+    return reps_group
 
 def add_rep_to_group(sender, instance=None, created=False, **kwargs):
     if instance and created:
+        reps_group = get_reps_group()
         if reps_group:
             user = instance.user
             if not reps_group.is_member(user):
@@ -70,6 +76,7 @@ def add_rep_to_group(sender, instance=None, created=False, **kwargs):
 
 def remove_rep_from_group(sender, instance=None, **kwargs):
     if instance:
+        reps_group = get_reps_group()
         if reps_group:
             user = instance.user
             if reps_group.is_member(user):
@@ -83,6 +90,7 @@ def init_signals():
     from tendenci.apps.contributions.signals import save_contribution
 
     post_save.connect(save_contribution, sender=CorpMembership, weak=False)
+    reps_group = get_reps_group()
     if reps_group:
         post_save.connect(add_rep_to_group, sender=CorpMembershipRep, weak=False)
         pre_delete.connect(remove_rep_from_group, sender=CorpMembershipRep, weak=False)

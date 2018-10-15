@@ -11,7 +11,7 @@ class Command(BaseCommand):
         2) Loop through corp reps and add reps to the group.
         3) Remove the non-rep users from the group.
 
-    Usage: python manage.py clean_corporate_memberships
+    Usage: python manage.py update_corp_reps_group
     """
     def handle(self, *args, **kwargs):
         from tendenci.apps.site_settings.models import Setting
