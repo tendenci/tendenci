@@ -52,16 +52,13 @@ class MakePayment(models.Model):
         super(MakePayment, self).save()
 
     def allow_view_by(self, user2_compare):
-        boo = False
-        if user2_compare.profile.is_superuser:
-            boo = True
-        else:
-            if user2_compare and user2_compare.id > 0:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        boo = True
+        if user2_compare.is_authenticated():
+            # superuser, creator and owner can view
+            return user2_compare.profile.is_superuser or \
+                (self.status and (self.creator == user2_compare or \
+                                  self.owner == user2_compare))
 
-        return boo
+        return False
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
