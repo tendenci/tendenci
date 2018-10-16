@@ -1,5 +1,6 @@
 from tendenci.apps.base.utils import strip_html, truncate_words
 from tendenci.apps.meta.utils import generate_meta_keywords
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class EventMeta():
