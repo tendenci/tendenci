@@ -268,6 +268,12 @@ INSTALLED_APPS = [
     # Celery Task System, must stay at the bottom of installed apps
     'kombu.transport.django',
     'djcelery',
+    
+    # For google auth install allauth packages first 
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
 ]
 
 LOGIN_REDIRECT_URL = '/dashboard'
