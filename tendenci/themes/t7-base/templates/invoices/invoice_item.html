@@ -47,7 +47,12 @@
   <!-- Status -->
   <td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>
     {% if invoice.balance == 0 %}
-    Paid
+    	{% if invoice.is_void %}
+    	{% comment %}Translators: Void adjective {% endcomment %}
+    	<span class="text-warning">{% trans 'Void' %}</span>
+    	{% else %}
+    	{% trans 'Paid' %}
+    	{% endif %}
     {% else %}
     <span class="text-danger">Balance:
       {{ invoice.balance|format_currency }}</span>
@@ -56,7 +61,7 @@
   <!-- Action -->
   <td>
     {% if request.user.is_superuser %}
-      {% if invoice.balance == 0 %}
+      {% if invoice.balance == 0 or invoice.is_void %}
       <a href="{% url "invoice.view" invoice.pk %}">View Invoice</a>
       {% else %}
       <a class="admin-options" href="{% url 'invoice.mark_as_paid' invoice.pk %}">{% trans "Mark as Paid" %}</a>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -73,6 +78,7 @@
       </a>
       <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
         <li><a href="{% url "invoice.view" invoice.pk %}">View Invoice</a></li>
+        {% if not invoice.is_void %}
         {% if invoice.balance > 0 and can_pay %}
         {% if SITE_GLOBAL_MERCHANTACCOUNT and SITE_GLOBAL_MERCHANTACCOUNT != 'asdf asdf asdf' %}
         <li><a class="admin-options" href="{% url 'payment.pay_online' invoice.pk guid %}">{% trans "Pay Online" %}</a></li>
@@ -83,6 +89,7 @@
         {% endif %}
         {% if invoice.payments_credits > 0 %}
         <li><a class="admin-option" href="{% url 'invoice.void_payment' invoice.id %}"> {% trans "Void Payment" %}</a></li>
+        {% endif %}
         {% endif %}
         <li role="separator" class="divider"></li>
         <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>

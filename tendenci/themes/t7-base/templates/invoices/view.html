@@ -43,7 +43,7 @@
 
   <div class="invoice-options">
     <ul>
-      {% if invoice.is_tendered %}
+      {% if invoice.is_tendered and not invoice.is_void %}
       <li><a class="admin-option" href="{% url 'invoice.adjust' invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
       {% endif%}
       <li><a class="admin-option" href="{% url 'invoice.detail' invoice.id%}">{% trans "Accounting Entries" %}</a></li>
@@ -61,9 +61,7 @@
 
   <div class="invoice-options">
     <ul>
-      {% if invoice.is_void %}
-      <li><a href="{% url 'invoice.unvoid_invoice' invoice.pk %}">{% trans 'Un-Void Invoice' %}</a></li>
-      {% else %}
+      {% if not invoice.is_void %}
       <li><a href="{% url 'invoice.void_invoice' invoice.pk %}">{% trans 'Void Invoice' %}</a></li>
       {% endif %}
     </ul>
@@ -75,11 +73,14 @@
       <li><a href="{% url "invoice.print_view" invoice.id guid %}">{% trans 'Print Invoice' %}</a></li>
     </ul>
   </div>
+  {% if not invoice.is_void %}
+  
   <div class="invoice-options">
     <ul>
       <li><a href="{% url "invoice.download" invoice.id %}">{% trans 'Download PDF' %}</a></li>
     </ul>
   </div>
+
  {% if request.user.is_superuser %}
   <div class="invoice-options">
     <ul>
@@ -87,6 +88,8 @@
     </ul>
   </div>
   {% endif %}
+  
+   {% endif %}
 
   {% if request.user.is_superuser or can_edit_invoice %}
   <div class="invoice-admin-notes">
@@ -140,6 +143,20 @@
           <td class="invoice-status-red td-right">{{ invoice.get_status|title }}</td>
           {% endif %}
         </tr>
+        {% if invoice.is_void and invoice.void_date %}
+        {% if invoice.void_date %}
+        <tr>
+          <td>{% trans "Void Date" %}</td>
+          <td class="td-right">{{ invoice.void_date|date:'N j, Y h:i a' }}</td>
+        </tr>
+        {% endif %}
+        {% if invoice.void_reason %}
+        <tr>
+          <td>{% trans "Void Reason" %}</td>
+          <td class="td-right">{{ invoice.void_reason }}</td>
+        </tr>
+        {% endif %}
+        {% endif %}
         <tr class="invoice-meta-amount">
           <td>{% trans "Invoice Amount" %}</td>
           <td class="td-right">{{ invoice.total|format_currency }}</td>
@@ -170,6 +187,10 @@
     <div class="invoice-total">
       {% invoice_total_display request invoice %}
     </div>
+    
+    {% if invoice.is_void %}
+    <div class="void-stamp"><span>VOIDED</span></div>
+    {% endif %}
   </div>
   <div style="clear: both"></div>
   <div class="payment-table">

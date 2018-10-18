@@ -30,7 +30,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf
 from tendenci.apps.emails.models import Email
 
@@ -168,13 +168,56 @@ def void_payment(request, id):
     return redirect(invoice)
 
 @superuser_required
-def void_invoice(request, id):
+def void_invoice(request, id, form_class=AdminVoidForm, template_name="invoices/void.html"):
     """
     Voids invoice
     """
     invoice = get_object_or_404(Invoice, pk=id)
-    invoice.void()
-    return redirect(invoice)
+    form = form_class(request.POST or None, instance=invoice)
+    obj = invoice.get_object()
+    has_memberships = obj and hasattr(obj, 'memberships')
+    has_registration= obj and hasattr(obj, 'event')
+
+    if has_memberships:
+        del form.fields['cancle_registration']
+    elif has_registration:
+        del form.fields['delete_membership']
+    else:
+        del form.fields['cancle_registration']
+        del form.fields['delete_membership']
+    
+    if request.method == "POST":
+        if form.is_valid():
+            invoice = form.save()
+
+            if invoice.payments_credits:
+                invoice.void_payment(request.user, invoice.payments_credits)
+
+            invoice.void(user=request.user)
+            
+            # cancel corresponding event registration
+            if has_registration and form.cleaned_data.get('cancle_registration', False):
+                if obj.__class__.__name__ == 'Registration':
+                    registrants = obj.registrant_set.filter(cancel_dt__isnull=True)
+                    for registrant in registrants:
+                        registrant.cancel_dt = datetime.now()
+                        registrant.save()
+                    obj.canceled = True
+                    obj.save()
+            
+            # delete corresponding memberships
+            if has_memberships and form.cleaned_data.get('delete_membership', False):
+                if obj.__class__.__name__ == 'MembershipSet':
+                    for membership in obj.memberships():
+                        if membership.status_detail != 'archive':
+                            membership.delete()
+            
+            EventLog.objects.log(instance=invoice)
+            
+            return redirect(invoice.get_absolute_url())
+    
+    return render_to_resp(request=request, template_name=template_name,
+        context={'invoice': invoice, 'form':form})
 
 def unvoid_invoice(self, id):
     """
@@ -416,7 +459,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 
 @is_enabled('invoices')
 def detail(request, id, template_name="invoices/detail.html"):
-    invoice = get_object_or_404(Invoice, pk=id)
+    invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
 
     allowed_list = (
         request.user.profile.is_superuser,

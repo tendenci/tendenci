@@ -383,4 +383,22 @@ div.payment-details {
 #offline-payment-form-wrap .field-submit {
     margin-top: 10px;
 }
+/* on invoice view and print-view */
+div.void-stamp {
+    width: 270px;
+    height: 110px;
+    /*border: 7px solid #eee;*/
+    color: #eee;
+    opacity: 0.5;
+    -ms-transform: rotate(-30deg); /* IE 9 */
+    -webkit-transform: rotate(-30deg); /* Safari 3-8 */
+    transform: rotate(-30deg);
+    float: right;
+    position: relative;
+}
+div.void-stamp span{
+	position: absolute; top: 0px; left: 5px;
+	padding: 40px;
+	font-size: 60px;
+}
 

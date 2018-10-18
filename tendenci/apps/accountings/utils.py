@@ -140,6 +140,29 @@ def make_acct_entries_discount(user, invoice, acct_entry, d, **kwargs):
                                           myamount * (-1))
 
 
+def make_acct_entries_initial_reversing(user, invoice, amount, **kwargs):
+    """Reverse the first set of accounting entries when an tendered invoice is voided
+
+        DEBIT unearned revenue (acct 220000)
+        CREDIT accouonts receivable (acct 120000)
+
+       NOTE - For the purpose of storing the amounts in tendenci,
+       all credits will be a negative number.
+    """
+    ae = AcctEntry.objects.create_acct_entry(user, 'invoice', invoice.id)
+    
+    # debit to unearned revenue 
+    acct = Acct.objects.get(account_number=220000)
+    AcctTran.objects.create_acct_tran(user, ae, acct, amount)
+    
+    # credit to accounts receivable
+    acct = Acct.objects.get(account_number=120000)
+    AcctTran.objects.create_acct_tran(user,
+                                    ae,
+                                    acct,
+                                    amount * (-1))
+
+
 def make_acct_entries_reversing(user, invoice, amount, **kwargs):
     """
         Make accounting transactions for the void payment.

@@ -12,7 +12,8 @@ from django.db.models.signals import post_save
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.apps.invoices.listeners import update_profiles_total_spend
-from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing)
+from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing,
+                                             make_acct_entries_initial_reversing)
 from tendenci.apps.entities.models import Entity
 
 STATUS_DETAIL_CHOICES = (
@@ -35,6 +36,9 @@ class Invoice(models.Model):
     due_date = models.DateTimeField()
     update_dt = models.DateTimeField(auto_now=True)
     tender_date = models.DateTimeField(null=True)
+    void_date = models.DateTimeField(null=True)
+    voided_by = models.ForeignKey(User, related_name="invoice_voided_by", null=True, on_delete=models.SET_NULL)
+    void_reason = models.TextField(_('Reason to void'), max_length=200, blank=True, default='')
     arrival_date_time = models.DateTimeField(blank=True, null=True)
     is_void = models.BooleanField(default=False)
     status_detail = models.CharField(max_length=50, choices=STATUS_DETAIL_CHOICES, default='estimate')
@@ -355,21 +359,30 @@ class Invoice(models.Model):
         # reverse accounting entries
         make_acct_entries_reversing(user, self, amount)
 
-    def void(self):
+    def void(self, user=None):
         """
         Voids invoice. This means the debt is no longer owed.
         """
         if not self.is_void:
             self.is_void = True
+            self.void_date = datetime.now()
+            self.voided_by = user
+            # set balance to 0
+            self.balance = 0
             self.save()
 
-    def unvoid(self):
-        """
-        Remove 'void' from invoice. This means the invoice is active again.
-        """
-        if self.is_void:
-            self.is_void = False
-            self.save()
+            # reverse accounting entries
+            if self.subtotal > 0:
+                make_acct_entries_initial_reversing(user, self, self.subtotal)
+        
+
+#     def unvoid(self):
+#         """
+#         Remove 'void' from invoice. This means the invoice is active again.
+#         """
+#         if self.is_void:
+#             self.is_void = False
+#             self.save()
 
     def get_first_approved_payment(self):
         """

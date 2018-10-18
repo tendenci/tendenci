@@ -49,6 +49,23 @@ class AdminAdjustForm(forms.ModelForm):
                   )
 
 
+class AdminVoidForm(FormControlWidgetMixin, forms.ModelForm):
+    cancle_registration = forms.BooleanField(label=_('Cancel the corresponding event registration'),
+                                             required=False, initial=False)
+    delete_membership = forms.BooleanField(label=_('Delete the corresponding memberships'),
+                                             required=False, initial=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AdminVoidForm, self).__init__(*args, **kwargs)
+        self.fields['void_reason'].widget.attrs.update({'cols': 30, 'rows': 4})
+
+    class Meta:
+        model = Invoice
+        fields = ('void_reason',
+                  )
+        
+
+
 class InvoiceSearchForm(forms.Form):
     INVOICE_TYPE_CHOICES = (
         ('', '-----------------'),
