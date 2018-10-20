@@ -21,7 +21,6 @@
   .app-links{
   margin: 3px 5em 1em 5em;
   }
-  
 </style>
 {% endblock %}
 
@@ -77,6 +76,8 @@
               {% endif %}
               {% endif %}
               
+              {% include "profiles/include/social_media_links.html" %}
+              
               {% if profile.company %}
               <h5><strong>{{ profile.company }}</strong> — 
               {% endif %}
@@ -93,7 +94,6 @@
               <p class="capitalize">{% trans "first responder" %} - <a href="{% url 'user.skills' user_this.username %}">{% trans "see skills" %}</a></p>
               {% endif %}
             </div>
-            
           </div>
         </div>
       </div>

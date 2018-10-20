@@ -1,0 +1,22 @@
+
+{% if profile.linkedin or profile.facebook or profile.twitter or profile.instagram or profile.youtube %}
+              <div class="social-media-wrap">
+              {% with name=profile.first_name %}
+             {% if profile.linkedin %}
+            	<a href="{{ profile.linkedin }}" title="{% blocktrans %}Follow {{ name }} on Linkedin{% endblocktrans %}"><span class="fa fa-linkedin"></span></a>
+             {% endif %}
+             {% if profile.facebook %}
+            	<a href="{{ profile.facebook }}" title="{% blocktrans %}Follow {{ name }} on Facebook{% endblocktrans %}"><span class="fa fa-facebook"></span></a>
+             {% endif %}
+             {% if profile.twitter %}
+            	<a href="{{ profile.twitter }}" title="{% blocktrans %}Follow {{ name }} on Twitter{% endblocktrans %}"><span class="fa fa-twitter"></span></a>
+             {% endif %}
+             {% if profile.instagram %}
+            	<a href="{{ profile.instagram }}" title="{% blocktrans %}Follow {{ name }} on Instagram{% endblocktrans %}"><span class="fa fa-instagram"></span></a>
+             {% endif %}
+             {% if profile.youtube %}
+            	<a href="{{ profile.youtube }}" title="{% blocktrans %}Follow {{ name }} on YouTube {% endblocktrans %}"><span class="fa fa-youtube"></span></a>
+             {% endif %}
+             {% endwith %}
+             </div>
+             {% endif %}

@@ -37,6 +37,8 @@
                     </div>
 
                     <div class="col-md-4 col-xs-12">
+                    	{% include "profiles/include/social_media_links.html" %}
+                    
                         {% if profile.company %}
                             <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
                         {% endif %}

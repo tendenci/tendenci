@@ -355,8 +355,55 @@
                         </table></td>
                         </tr>
 
+                      
                       <tr bgcolor="#f2f2f2">
-                        <td colspan="6" ><h2>F) {% trans 'Login Information'%} </h2></td>
+                        <td colspan="6" ><h2>F) {% trans 'Social Media'%} </h2></td>
+                      </tr>
+                      
+                      <tr>
+	                      <td colspan="6" class="social-media-wrap">
+	                      <div class="form-group">
+						    <label for="id_linkedin" class="col-sm-3 control-label">{{ form.linkedin.label }} <span class="fa fa-linkedin"></span></label>
+						    <div class="col-sm-9">
+						      {{ form.linkedin }}
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <label for="id_facebook" class="col-sm-3 control-label">{{ form.facebook.label }} <span class="fa fa-facebook"></span></label>
+						    <div class="col-sm-9">
+						      {{ form.facebook }}
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <label for="id_twitter" class="col-sm-3 control-label">{{ form.twitter.label }} <span class="fa fa-twitter"></span></label>
+						    <div class="col-sm-9">
+						      {{ form.twitter }}
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <label for="id_instagram" class="col-sm-3 control-label">{{ form.instagram.label }} <span class="fa fa-instagram"></span></label>
+						    <div class="col-sm-9">
+						      {{ form.instagram }}
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <label for="id_youtube" class="col-sm-3 control-label">{{ form.youtube.label }} <span class="fa fa-youtube"></span></label>
+						    <div class="col-sm-9">
+						      {{ form.youtube }}
+						    </div>
+						  </div>
+	                      
+	                      </td>
+                      </tr>
+
+                      
+
+                      <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>G) {% trans 'Login Information'%} </h2></td>
                       </tr>
                        <tr>
                         <td colspan="6" ><table width="550" border="0">

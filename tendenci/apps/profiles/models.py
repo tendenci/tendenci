@@ -86,6 +86,13 @@ class Profile(Person):
     first_responder = models.BooleanField(_('first responder'), default=False)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
+    
+    # social media links
+    linkedin = models.URLField(_('LinkedIn'), blank=True, default='')
+    facebook = models.URLField(_('Facebook'), blank=True, default='')
+    twitter = models.URLField(_('Twitter'), blank=True, default='')
+    instagram = models.URLField(_('Instagram'), blank=True, default='')
+    youtube = models.URLField(_('YouTube'), blank=True, default='')
 
     sf_contact_id = models.CharField(max_length=100, blank=True, null=True)
 
