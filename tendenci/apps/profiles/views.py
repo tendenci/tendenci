@@ -356,7 +356,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
 
 @login_required
-def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
+def add(request, form_class=ProfileForm, template_name="profiles/add_edit.html"):
     if not has_perm(request.user,'profiles.add_profile'):raise Http403
 
     required_fields = get_setting('module', 'users', 'usersrequiredfields')
@@ -435,7 +435,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
 
 
 @login_required
-def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"):
+def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.html"):
     user_edit = get_object_or_404(User, pk=id)
 
     try:

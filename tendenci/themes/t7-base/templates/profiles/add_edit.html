@@ -1,0 +1,895 @@
+{% extends "profiles/base-wide.html" %}
+{% load profile_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% if not profile %}{% trans 'Add User'%}{% else %}{% trans 'Edit User'%}{% endif %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="t-profile">
+{% if not profile %}
+ <h1>{% trans 'Site Registration'%}</h1>
+    <p>{% trans 'Complete the fields below and press Submit to add a user. Required fields are designated with an'%} <span class="body-copy-alerts">*</span>.</p>
+{% else %}
+    <h1>{% trans 'Edit '%} {{user_this.first_name }} {{user_this.last_name }}</h1>
+    <p>{% trans 'Change the information below as needed and press Submit changes.'%}</p>
+{% endif %}
+
+{% if form.errors or  form.non_field_errors %}
+  <div class="body-copy-alerts">{% trans "There are some issues on the form, please review." %}</div>
+  {{form.non_field_errors}}
+  {% for error in form.errors.values %}
+    {{ error }}
+  {% endfor %}
+{% endif %}
+    <div class="profile-wrap">
+      <form action="." class="form-horizontal" method="post">{% csrf_token %}
+      
+    <fieldset>
+    	<legend>A) {% trans 'Name Information'%}</legend>
+    
+	    <div class="form-group">
+		    <label for="id_salutation" class="col-sm-3 control-label">{{ form.salutation.label }}{%if from.salutation.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.salutation.errors %}
+		         <div class="text-danger">{{ form.salutation.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.salutation }}
+		      
+		      {% if form.salutation.help_text %}
+		      <div class="help-block">{{ form.salutation.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_first_name" class="col-sm-3 control-label">{{ form.first_name.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-7">
+		      {% if form.first_name.errors %}
+		         <div class="text-danger">{{ form.first_name.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.first_name }}
+		      
+		      {% if form.first_name.help_text %}
+		      <div class="help-block">{{ form.first_name.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_initials" class="col-sm-3 control-label">{{ form.initials.label }}{% if from.initials.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.initials.errors %}
+		         <div class="text-danger">{{ form.initials.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.initials }}
+		      
+		      {% if form.initials.help_text %}
+		      <div class="help-block">{{ form.initials.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    
+        <div class="form-group">
+		    <label for="id_last_name" class="col-sm-3 control-label">{{ form.last_name.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-7">
+		      {% if form.last_name.errors %}
+		         <div class="text-danger">{{ form.last_name.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.last_name }}
+		      
+		      {% if form.last_name.help_text %}
+		      <div class="help-block">{{ form.last_name.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_position_title" class="col-sm-3 control-label">{{ form.position_title.label }}{% if from.position_title.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.position_title.errors %}
+		         <div class="text-danger">{{ form.position_title.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.position_title }}
+		      
+		      {% if form.position_title.help_text %}
+		      <div class="help-block">{{ form.position_title.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_display_name" class="col-sm-3 control-label">{{ form.display_name.label }}{% if from.display_name.label in required_fields_list %}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.display_name.errors %}
+		         <div class="text-danger">{{ form.display_name.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.display_name }}
+		      
+		      {% if form.display_name.help_text %}
+		      <div class="help-block">{{ form.display_name.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+	    <div class="col-sm-offset-3 col-sm-9">
+	      <div class="checkbox">
+	        <label>
+	          {{ form.hide_in_search }} {% trans 'Prevent my record from displaying in search?'%}
+	        </label>
+	      </div>
+	    </div>
+	  </div>
+    
+     </fieldset>
+     
+     <fieldset>
+    	<legend>B) {% trans 'Phone Information'%}</legend>
+    
+	    <div class="form-group">
+		    <label for="id_phone" class="col-sm-3 control-label">{{ form.phone.label }}{%if from.phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.phone.errors %}
+		         <div class="text-danger">{{ form.phone.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.phone }}
+		      
+		      {% if form.phone.help_text %}
+		      <div class="help-block">{{ form.phone.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   <div class="form-group">
+		    <label for="id_phone2" class="col-sm-3 control-label">{{ form.phone2.label }}{%if from.phone2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.phone2.errors %}
+		         <div class="text-danger">{{ form.phone2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.phone2 }}
+		      
+		      {% if form.phone2.help_text %}
+		      <div class="help-block">{{ form.phone2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   <div class="form-group">
+		    <label for="id_home_phone" class="col-sm-3 control-label">{{ form.home_phone.label }}{%if from.home_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.home_phone.errors %}
+		         <div class="text-danger">{{ form.home_phone.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.home_phone }}
+		      
+		      {% if form.home_phone.help_text %}
+		      <div class="help-block">{{ form.home_phone.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   <div class="form-group">
+		    <label for="id_work_phone" class="col-sm-3 control-label">{{ form.work_phone.label }}{%if from.work_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.work_phone.errors %}
+		         <div class="text-danger">{{ form.work_phone.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.work_phone }}
+		      
+		      {% if form.work_phone.help_text %}
+		      <div class="help-block">{{ form.work_phone.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   <div class="form-group">
+		    <label for="id_fax" class="col-sm-3 control-label">{{ form.fax.label }}{%if from.fax.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.fax.errors %}
+		         <div class="text-danger">{{ form.fax.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.fax }}
+		      
+		      {% if form.fax.help_text %}
+		      <div class="help-block">{{ form.fax.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   <div class="form-group">
+		    <label for="id_mobile_phone" class="col-sm-3 control-label">{{ form.mobile_phone.label }}{%if from.mobile_phone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.mobile_phone.errors %}
+		         <div class="text-danger">{{ form.mobile_phone.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.mobile_phone }}
+		      
+		      {% if form.mobile_phone.help_text %}
+		      <div class="help-block">{{ form.mobile_phone.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	    <div class="form-group">
+		    <div class="col-sm-offset-3 col-sm-9">
+		      <div class="checkbox">
+		        <label>
+		          {{ form.hide_phone }} {% trans 'Hide phone numbers?'%}
+		        </label>
+		      </div>
+		    </div>
+	    </div>
+    </fieldset>
+    
+    <fieldset>
+    	<legend>C) {% trans 'Email and Internet Information '%}</legend>
+	   <div class="form-group">
+		    <label for="id_email" class="col-sm-3 control-label">{{ form.email.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-6">
+		      {% if form.email.errors %}
+		         <div class="text-danger">{{ form.email.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.email }}
+		      
+		      {% if form.email.help_text %}
+		      <div class="help-block">{{ form.email.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_direct_mail" class="col-sm-3 control-label">{% trans 'Receive Email?'%}{%if from.direct_mail.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-3">
+		      {% if form.direct_mail.errors %}
+		         <div class="text-danger">{{ form.direct_mail.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.direct_mail }}
+		      
+		      {% if form.direct_mail.help_text %}
+		      <div class="help-block">{{ form.direct_mail.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_email2" class="col-sm-3 control-label">{{ form.email2.label }}{%if from.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-6">
+		      {% if form.email2.errors %}
+		         <div class="text-danger">{{ form.email2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.email2 }}
+		      
+		      {% if form.email2.help_text %}
+		      <div class="help-block">{{ form.email2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_url" class="col-sm-3 control-label">{{ form.url.label }}{%if from.url.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.url.errors %}
+		         <div class="text-danger">{{ form.url.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.url }}
+		      
+		      {% if form.url.help_text %}
+		      <div class="help-block">{{ form.url.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <div class="col-sm-offset-3 col-sm-9">
+		      <div class="checkbox">
+		        <label>
+		          {{ form.hide_email }} {% trans 'Hide email addresses?'%}
+		        </label>
+		      </div>
+		    </div>
+	    </div>
+	   
+    </fieldset>
+    
+     <fieldset>
+    	<legend>D) {% trans 'Company Information'%}</legend>
+	   <div class="form-group">
+		    <label for="id_company" class="col-sm-3 control-label">{{ form.company.label }}{%if from.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.company.errors %}
+		         <div class="text-danger">{{ form.company.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.company }}
+		      
+		      {% if form.company.help_text %}
+		      <div class="help-block">{{ form.company.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_department" class="col-sm-3 control-label">{{ form.department.label }}{%if from.department.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.department.errors %}
+		         <div class="text-danger">{{ form.department.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.department }}
+		      
+		      {% if form.department.help_text %}
+		      <div class="help-block">{{ form.department.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    </fieldset> 
+    
+    <fieldset>
+    	<legend>E) {% trans 'Address Information'%}</legend>
+	   <div class="form-group">
+		    <label for="id_mailing_name" class="col-sm-3 control-label">{{ form.mailing_name.label }}{%if from.mailing_name.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.mailing_name.errors %}
+		         <div class="text-danger">{{ form.mailing_name.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.mailing_name }}
+		      
+		      {% if form.mailing_name.help_text %}
+		      <div class="help-block">{{ form.mailing_name.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_address" class="col-sm-3 control-label">{{ form.address.label }}{%if from.address.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.address.errors %}
+		         <div class="text-danger">{{ form.address.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.address }}
+		      
+		      {% if form.address.help_text %}
+		      <div class="help-block">{{ form.address.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_address2" class="col-sm-3 control-label">{{ form.address2.label }}{%if from.address2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-6">
+		      {% if form.address2.errors %}
+		         <div class="text-danger">{{ form.address2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.address2 }}
+		      
+		      {% if form.address2.help_text %}
+		      <div class="help-block">{{ form.address2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_city" class="col-sm-3 control-label">{{ form.city.label }}{%if from.city.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.city.errors %}
+		         <div class="text-danger">{{ form.city.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.city }}
+		      
+		      {% if form.city.help_text %}
+		      <div class="help-block">{{ form.city.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_state" class="col-sm-3 control-label">{{ form.state.label }}{%if from.state.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.state.errors %}
+		         <div class="text-danger">{{ form.state.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.state }}
+		      
+		      {% if form.state.help_text %}
+		      <div class="help-block">{{ form.state.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_zipcode" class="col-sm-3 control-label">{{ form.zipcode.label }}{%if from.zipcode.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.zipcode.errors %}
+		         <div class="text-danger">{{ form.zipcode.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.zipcode }}
+		      
+		      {% if form.zipcode.help_text %}
+		      <div class="help-block">{{ form.zipcode.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_country" class="col-sm-3 control-label">{{ form.country.label }}{%if from.country.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.country.errors %}
+		         <div class="text-danger">{{ form.country.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.country }}
+		      
+		      {% if form.country.help_text %}
+		      <div class="help-block">{{ form.country.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <div class="col-sm-offset-3 col-sm-9">
+		      <div class="checkbox">
+		        <label>
+		          {{ form.hide_address }} {% trans 'Hide address?'%}
+		        </label>
+		      </div>
+		    </div>
+	    </div>
+	   
+    </fieldset>
+    
+    <fieldset>
+    	<legend>{% trans 'Alternate Address Information'%}</legend>
+	   
+	   
+	   <div class="form-group">
+		    <label for="id_address_2" class="col-sm-3 control-label">{{ form.address_2.label }}{%if from.address_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.address_2.errors %}
+		         <div class="text-danger">{{ form.address_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.address_2 }}
+		      
+		      {% if form.address_2.help_text %}
+		      <div class="help-block">{{ form.address_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_address2_2" class="col-sm-3 control-label">{{ form.address2_2.label }}{%if from.address2_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-6">
+		      {% if form.address2_2.errors %}
+		         <div class="text-danger">{{ form.address2_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.address2_2 }}
+		      
+		      {% if form.address2_2.help_text %}
+		      <div class="help-block">{{ form.address2_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_city_2" class="col-sm-3 control-label">{{ form.city_2.label }}{%if from.city_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.city_2.errors %}
+		         <div class="text-danger">{{ form.city_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.city_2 }}
+		      
+		      {% if form.city_2.help_text %}
+		      <div class="help-block">{{ form.city_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_state_2" class="col-sm-3 control-label">{{ form.state_2.label }}{%if from.state_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.state_2.errors %}
+		         <div class="text-danger">{{ form.state_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.state_2 }}
+		      
+		      {% if form.state_2.help_text %}
+		      <div class="help-block">{{ form.state_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_zipcode_2" class="col-sm-3 control-label">{{ form.zipcode_2.label }}{%if from.zipcode_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.zipcode_2.errors %}
+		         <div class="text-danger">{{ form.zipcode_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.zipcode_2 }}
+		      
+		      {% if form.zipcode_2.help_text %}
+		      <div class="help-block">{{ form.zipcode_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_country_2" class="col-sm-3 control-label">{{ form.country_2.label }}{%if from.country_2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.country_2.errors %}
+		         <div class="text-danger">{{ form.country_2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.country_2 }}
+		      
+		      {% if form.country_2.help_text %}
+		      <div class="help-block">{{ form.country_2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+    </fieldset>
+    
+    <fieldset class="social-media-wrap">
+    	<legend>F) {% trans 'Social Media'%}</legend>
+    
+    	<div class="form-group">
+		    <label for="id_linkedin" class="col-sm-3 control-label">{{ form.linkedin.label }} <span class="fa fa-linkedin"></span></label>
+		    <div class="col-sm-9">
+		      {{ form.linkedin }}
+		    </div>
+	  </div>
+	  
+	  <div class="form-group">
+		    <label for="id_facebook" class="col-sm-3 control-label">{{ form.facebook.label }} <span class="fa fa-facebook"></span></label>
+		    <div class="col-sm-9">
+		      {{ form.facebook }}
+		    </div>
+	  </div>
+	  
+	  <div class="form-group">
+		    <label for="id_twitter" class="col-sm-3 control-label">{{ form.twitter.label }} <span class="fa fa-twitter"></span></label>
+		    <div class="col-sm-9">
+		      {{ form.twitter }}
+		    </div>
+	  </div>
+	  
+	  <div class="form-group">
+		    <label for="id_instagram" class="col-sm-3 control-label">{{ form.instagram.label }} <span class="fa fa-instagram"></span></label>
+		    <div class="col-sm-9">
+		      {{ form.instagram }}
+		    </div>
+	  </div>
+	  
+	  <div class="form-group">
+		    <label for="id_youtube" class="col-sm-3 control-label">{{ form.youtube.label }} <span class="fa fa-youtube"></span></label>
+		    <div class="col-sm-9">
+		      {{ form.youtube }}
+		    </div>
+	  </div>
+    
+	</fieldset>
+	
+	 <fieldset>
+    	<legend>G) {% trans 'Login Information'%}</legend>
+    	<div class="form-group">
+		    <label for="id_username" class="col-sm-3 control-label">{{ form.username.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-6">
+		      {% if form.username.errors %}
+		         <div class="text-danger">{{ form.username.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.username }}
+		      
+		      {% if form.username.help_text %}
+		      <div class="help-block">{{ form.username.help_text }}</div>
+		      {% endif %}
+		      
+		      {% if profile %}
+		      <div><a href="{% url 'auth_password_change' user_this.pk %}">{% trans "change password" %}</a></div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   {% if not profile %}
+	   
+	   <div class="form-group">
+		    <div class="col-sm-offset-3 col-sm-9">
+		      <div class="checkbox">
+		        <label>
+		           <input type="checkbox" value="1" name="auto_pwd" id="auto-generate-pwd" {% if auto_pwd %}checked{% endif %} /> {% trans 'Use auto generated password' %}
+		        </label>
+		      </div>
+		    </div>
+	    </div>
+	   
+	   <div class="form-group" id="password1-wrap">
+		    <label for="id_password1" class="col-sm-3 control-label">{{ form.password1.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-7">
+		      {% if form.password1.errors %}
+		         <div class="text-danger">{{ form.password1.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.password1 }}
+		      
+		      {% if form.password1.help_text %}
+		      <div class="help-block">{{ form.password1.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group" id="password2-wrap">
+		    <label for="id_password2" class="col-sm-3 control-label">{{ form.password2.label }}<span class="body-copy-alerts">*</span></label>
+		    <div class="col-sm-7">
+		      {% if form.password2.errors %}
+		         <div class="text-danger">{{ form.password2.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.password2 }}
+		      
+		      {% if form.password2.help_text %}
+		      <div class="help-block">{{ form.password2.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   {% endif %}
+
+	   
+	   <div class="form-group">
+		    <label for="id_interactive" class="col-sm-3 control-label">{{ form.interactive.label }}{%if from.interactive.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.interactive.errors %}
+		         <div class="text-danger">{{ form.interactive.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.interactive }}
+		      
+		      {% if form.interactive.help_text %}
+		      <div class="help-block">{{ form.interactive.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_status_detail" class="col-sm-3 control-label">{{ form.status_detail.label }}{%if from.status_detail.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-3">
+		      {% if form.status_detail.errors %}
+		         <div class="text-danger">{{ form.status_detail.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.status_detail }}
+		      
+		      {% if form.status_detail.help_text %}
+		      <div class="help-block">{{ form.status_detail.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    
+	</fieldset>
+	
+	<fieldset>
+    	<legend>H) {% trans 'Notes '%}</legend>
+    	<div class="form-group">
+		    <label for="id_notes" class="col-sm-3 control-label">{{ form.notes.label }}{%if from.notes.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.notes.errors %}
+		         <div class="text-danger">{{ form.notes.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.notes }}
+		      
+		      {% if form.notes.help_text %}
+		      <div class="help-block">{{ form.notes.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    	
+    </fieldset>
+    
+    <fieldset>
+    	<legend>I) {% trans 'Optional Information'%}</legend>
+    	
+    	<div class="form-group">
+		    <label for="id_time_zone" class="col-sm-3 control-label">{{ form.time_zone.label }}{%if from.time_zone.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-8">
+		      {% if form.time_zone.errors %}
+		         <div class="text-danger">{{ form.time_zone.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.time_zone }}
+		      
+		      {% if form.time_zone.help_text %}
+		      <div class="help-block">{{ form.time_zone.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_language" class="col-sm-3 control-label">{{ form.language.label }}{%if from.language.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.language.errors %}
+		         <div class="text-danger">{{ form.language.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.language }}
+		      
+		      {% if form.language.help_text %}
+		      <div class="help-block">{{ form.language.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_sex" class="col-sm-3 control-label">{{ form.sex.label }}{%if from.sex.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.sex.errors %}
+		         <div class="text-danger">{{ form.sex.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.sex }}
+		      
+		      {% if form.sex.help_text %}
+		      <div class="help-block">{{ form.sex.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_spouse" class="col-sm-3 control-label">{{ form.spouse.label }}{%if from.spouse.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-6">
+		      {% if form.spouse.errors %}
+		         <div class="text-danger">{{ form.spouse.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.spouse }}
+		      
+		      {% if form.spouse.help_text %}
+		      <div class="help-block">{{ form.spouse.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_dob" class="col-sm-3 control-label">{{ form.dob.label }}{%if from.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-5">
+		      {% if form.dob.errors %}
+		         <div class="text-danger">{{ form.dob.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.dob }}
+		      
+		      {% if form.dob.help_text %}
+		      <div class="help-block">{{ form.dob.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    	
+    </fieldset>
+	
+	
+	{% if request.user.is_superuser  %}
+	<div style="border: 2px solid #ccc; padding: 5px; margin: 5px;">
+	<fieldset>
+    	<legend>J) {% trans 'Administrator Information'%}</legend>
+    	
+    	 <div class="form-group">
+		    <label for="id_admin_notes" class="col-sm-3 control-label">{{ form.admin_notes.label }}{%if from.admin_notes.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-6">
+		      {% if form.admin_notes.errors %}
+		         <div class="text-danger">{{ form.admin_notes.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.admin_notes }}
+		      
+		      {% if form.admin_notes.help_text %}
+		      <div class="help-block">{{ form.admin_notes.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+	   
+	   <div class="form-group">
+		    <label for="id_security_level" class="col-sm-3 control-label">{{ form.security_level.label }}{%if from.security_level.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-4">
+		      {% if form.security_level.errors %}
+		         <div class="text-danger">{{ form.security_level.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.security_level }}
+		      
+		      {% if form.security_level.help_text %}
+		      <div class="help-block">{{ form.security_level.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
+    	
+   </fieldset>
+	</div>
+	{% endif %}
+	
+	
+	 <div class="form-group">
+	    <div class="col-sm-offset-3 col-sm-9">
+	      <input class="btn btn-primary" type="submit" name="Submit" value="{% if not profile %}{% trans 'Add User' %}{% else %}{% trans 'Submit Changes' %}{% endif %}" >
+	      </div>
+    </div>
+
+	
+ 
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+  <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
+  
+  {% if not profile %}
+  <script>
+$(document).ready(function(){
+  toggle_pwd($('#auto-generate-pwd'));
+
+  $('#auto-generate-pwd').click(function(){
+    toggle_pwd($(this));
+
+  });
+});
+
+function toggle_pwd(obj)
+{
+  if (obj.is(':checked')){
+    var pwd = random_pwd();
+    $('input#id_password1').val(pwd);
+    $('input#id_password2').val(pwd);
+    $('#password1-wrap').hide();
+    $('#password2-wrap').hide();
+  }else{
+    $('#password1-wrap').show();
+    $('#password2-wrap').show();
+  }
+
+}
+
+function random_pwd()
+{
+  var length = 12;
+    var chars = "$&*()#@?+=-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    var pwd = "";
+    for(x=0;x<length;x++)
+    {
+      i = Math.floor(Math.random() * 68);
+      pwd += chars.charAt(i);
+    }
+    return pwd;
+}
+</script>
+{% endif %}
+{% endblock %}
