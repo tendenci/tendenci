@@ -310,7 +310,7 @@ class FormForCustomRegForm(forms.ModelForm):
             # add reminder field if event opted to sending reminders to attendees
             if reg_conf.send_reminder:
                 self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
-                                                             required=False)
+                                                             required=False, initial=True)
 
         # --------------------------
         if self.pricings:
@@ -1624,7 +1624,7 @@ class RegistrantForm(forms.Form):
         # add reminder field if event opted to sending reminders to attendees
         if reg_conf.send_reminder:
             self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
-                                                         required=False)
+                                                         required=False, initial=True)
 
         # make the fields in the subsequent forms as not required
         if not reg_conf.require_guests_info:
