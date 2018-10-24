@@ -822,6 +822,14 @@ class Registrant(models.Model):
         if self.name:
             return self.name
 
+        if not self.is_primary:
+            [primary_registrant] = Registrant.objects.filter(
+                                       is_primary=True,
+                                       registration_id=self.registration.id
+                                       ).values_list(
+                                      'first_name', 'last_name')[:1] or [None]
+            if primary_registrant:
+                return _('Guest of {}').format(' '.join(primary_registrant))
         return None
 
     @classmethod
