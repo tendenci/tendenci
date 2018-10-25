@@ -71,3 +71,11 @@ def list_forum_categories(parser, token):
         kwargs['order'] = 'name'
 
     return ListForumCategoriesNode(context_var, *args, **kwargs)
+
+@register.inclusion_tag("pybb/top_nav_items.html", takes_context=True)
+def forums_current_app(context, user, forum=None):
+    context.update({
+        "app_object": forum,
+        "user": user
+    })
+    return context

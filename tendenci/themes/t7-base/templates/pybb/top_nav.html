@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load forum_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/comments.png' %}{% endblock %}
+
+{% block nav_label %}{% trans "Forums" %}{% endblock %}
+
+{% block current_app %}
+    {% if forum %}
+        {% forums_current_app request.user forum %}
+    {% else %}
+        {% forums_current_app request.user %}
+    {% endif %}
+{% endblock %}
