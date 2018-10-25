@@ -1,3 +1,25 @@
+### 11.0.5 [2018-10-25]
+
+* Reduced decimal places for Invoice adjustments to 2. The adjustment with four decimal places is unnecessary for currency.
+* Added a setting "Discount Amount for Auto Renewal" to memberships so that admin can specify the discount amount for members who opt in auto renewal on memberships join/renew.
+* Added the ability to exclude a self-add group from a membership application.
+* Updated invoice void process:
+  1. Voided invoices show balance of 0
+  2. Provided an option to cancel the corresponding event registration if any.
+  3. Provided an option to delete the corresponding membership(s) if any.
+  4. On invoice view, voided invoices are marked with a VOIDED stamp
+  5. Updated invoice view and search accordingly
+* Updated the canonical urls to be absolute urls.
+* Updated sql_explorer to version 1.1.2, removed the out-dated templates pulled under explorer_extensions, and fixed the issue about schema not showing.
+* Added the social media fields to user profile.
+* Updated profiles add/edit templates to be responsive.
+* Showed primary registrant in registrant search when no guest info entered.
+* Fixed for invoice.variance to store accumulated adjustments instead of the last adjustment.
+* Fixed event registration stats display
+* Fixed TypeError for multi-files upload
+* Other small fixes
+
+
 ### 11.0.4 [2018-10-08]
 
 * Default no-reply address for newsletter sender
