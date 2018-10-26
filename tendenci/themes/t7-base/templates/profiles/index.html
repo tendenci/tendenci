@@ -61,7 +61,12 @@
             </div>
             
             <div class="col-sm-10">
-              <a href="https://en.gravatar.com" class="btn btn-default pull-right">Edit Profile Picture</a>
+              {% if request.user.is_staff or request.user.id == user_this.id  %}
+              <div class="pull-right">
+              <a class="btn btn-default" href="{% url "profile.edit" user_this.id %}">{% trans "Edit Profile" %}</a>
+              <a href="https://en.gravatar.com" class="btn btn-default">Edit Profile Picture</a>
+              </div>
+              {% endif %}
               {% if profile.display_name %}
               <h1>{% firstof profile.display_name %}</h1>
               <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
