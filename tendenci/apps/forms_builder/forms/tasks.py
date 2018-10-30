@@ -186,9 +186,8 @@ class FormEntriesExportTask(Task):
             temp_zip.close()
 
             # set the response for the zip files
-            f = open(temp_zip.name, 'rt')
-            body = f.read()
-            f.close()
+            with open(temp_zip.name, 'rb') as f:
+                body = f.read()
             response = HttpResponse(body, content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="export_entries_%d.zip"' % time()
 
