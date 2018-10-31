@@ -140,7 +140,7 @@ def get_all_files_list(root_dir, theme):
         folders = path[start:].split(os.sep)
 
         # Hide hidden folders and folders within hidden folders
-        if any(folder.startswith('.') for folder in folders):
+        if any((folder.startswith('.') or folder in ('__pycache__', )) for folder in folders):
             continue
 
         subdir = {'contents': []}
