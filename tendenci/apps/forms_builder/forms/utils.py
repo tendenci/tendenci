@@ -3,8 +3,10 @@ from datetime import datetime
 from django.conf import settings
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
 
 def generate_admin_email_body(entry, form_for_form):
     """
@@ -143,3 +145,59 @@ def update_invoice_for_entry(invoice, form):
     inv.estimate = True
     inv.status_detail = 'estimate'
     inv.save()
+
+
+def form_entries_to_csv_writer(csv_writer, form):
+    """
+    Write form entries to csv_writer.
+    """
+    columns = []
+    field_indexes = {}
+    file_field_ids = []
+    site_url = get_setting('site', 'global', 'siteurl')
+    for field in form.fields.all().order_by('position', 'id'):
+        columns.append(field.label)
+        field_indexes[field.id] = len(field_indexes)
+        if field.field_type == "FileField":
+            file_field_ids.append(field.id)
+    entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
+    columns.append(str(entry_time_name))
+    if form.custom_payment:
+        columns.append(str("Pricing"))
+        columns.append(str("Price"))
+        columns.append(str("Payment Method"))
+    csv_writer.writerow(columns)
+    # Loop through each field value order by entry, building up each
+    # entry as a row.
+    entries = FormEntry.objects.filter(form=form).order_by('pk')
+    for entry in entries:
+        values = FieldEntry.objects.filter(entry=entry)
+        row = [""] * len(columns)
+        entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        if form.custom_payment:
+            if entry.pricing:
+                row[-4] = entry_time
+                row[-3] = entry.pricing.label
+                if not entry.pricing.price:
+                    row[-2] = entry.custom_price
+                else:
+                    row[-2] = entry.pricing.price
+            row[-1] = entry.payment_method
+        else:
+            row[-1] = entry_time
+
+        for field_entry in values:
+            value = field_entry.value
+            # Create download URL for file fields.
+            if field_entry.field_id in file_field_ids:
+                url = reverse("admin:forms_form_file", args=(field_entry.id,))
+                value = '{site_url}{url}'.format(site_url=site_url, url=url)
+            # Only use values for fields that currently exist for the form.
+            try:
+                row[field_indexes[field_entry.field_id]] = value
+            except KeyError:
+                pass
+        # Write out the row.
+        csv_writer.writerow(row)
+

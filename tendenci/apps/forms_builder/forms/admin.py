@@ -17,8 +17,9 @@ from django.utils.safestring import mark_safe
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
-from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
+from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
+from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
 
 import os
 import mimetypes
@@ -158,59 +159,13 @@ class FormAdmin(TendenciBaseModelAdmin):
         response = HttpResponse(content_type='text/csv')
         csvname = '%s-%s.csv' % (form.slug, slugify(datetime.now().ctime()))
         response['Content-Disposition'] = 'attachment; filename="%s"' % csvname
-        csv = writer(response)
+        csv_writer = writer(response)
         # Write out the column names and store the index of each field
         # against its ID for building each entry row. Also store the IDs of
         # fields with a type of FileField for converting their field values
-        # into download URLs.
-        columns = []
-        field_indexes = {}
-        file_field_ids = []
-        for field in form.fields.all().order_by('position', 'id'):
-            columns.append(field.label)
-            field_indexes[field.id] = len(field_indexes)
-            if field.field_type == "FileField":
-                file_field_ids.append(field.id)
-        entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
-        columns.append(str(entry_time_name))
-        if form.custom_payment:
-            columns.append(str("Pricing"))
-            columns.append(str("Price"))
-            columns.append(str("Payment Method"))
-        csv.writerow(columns)
-        # Loop through each field value order by entry, building up each
-        # entry as a row.
-        entries = FormEntry.objects.filter(form=form).order_by('pk')
-        for entry in entries:
-            values = FieldEntry.objects.filter(entry=entry)
-            row = [""] * len(columns)
-            entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
-
-            if form.custom_payment:
-                if entry.pricing:
-                    row[-4] = entry_time
-                    row[-3] = entry.pricing.label
-                    if not entry.pricing.price:
-                        row[-2] = entry.custom_price
-                    else:
-                        row[-2] = entry.pricing.price
-                row[-1] = entry.payment_method
-            else:
-                row[-1] = entry_time
-
-            for field_entry in values:
-                value = field_entry.value
-                # Create download URL for file fields.
-                if field_entry.field_id in file_field_ids:
-                    url = reverse("admin:forms_form_file", args=(field_entry.id,))
-                    value = request.build_absolute_uri(url)
-                # Only use values for fields that currently exist for the form.
-                try:
-                    row[field_indexes[field_entry.field_id]] = value
-                except KeyError:
-                    pass
-            # Write out the row.
-            csv.writerow(row)
+        
+        form_entries_to_csv_writer(csv_writer, form)
+        
         return response
 
     def file_view(self, request, field_entry_id):

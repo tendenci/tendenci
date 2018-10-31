@@ -18,6 +18,7 @@ from celery.task import Task
 
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
+from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
 
 
 class FormsExportTask(Task):
@@ -133,7 +134,6 @@ class FormEntriesExportTask(Task):
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="export_entries_%d.csv"' % time()
-        headers = []
         has_files = form_instance.has_files() and include_files
 
         # if the object hase file store the csv elsewhere
@@ -141,20 +141,15 @@ class FormEntriesExportTask(Task):
         if has_files:
             temp_csv = NamedTemporaryFile(mode='w', delete=False)
             temp_zip = NamedTemporaryFile(mode='wb', delete=False)
-            writer = csv.writer(temp_csv, delimiter=',')
+            csv_writer = csv.writer(temp_csv, delimiter=',')
             zip = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
         else:
-            writer = csv.writer(response, delimiter=',')
+            csv_writer = csv.writer(response, delimiter=',')
+            
+        form_entries_to_csv_writer(csv_writer, form_instance)
 
-        # get the header for headers for the csv
-        for field in entries[0].fields.all().order_by('field__position', 'id'):
-            headers.append(smart_str(field.field.label))
-        headers.append('submitted on')
-        writer.writerow(headers)
-
-        # write out the values
+        # handle files
         for entry in entries:
-            values = []
             for field in entry.fields.all().order_by('field__position', 'id'):
                 if has_files and field.field.field_type == 'FileField':
                     archive_name = join('files',field.value)
@@ -170,12 +165,6 @@ class FormEntriesExportTask(Task):
                         file_path = join(settings.MEDIA_ROOT,field.value)
                         zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
 
-                if field.field.field_type == 'BooleanField':
-                    values.append(yesno(smart_str(field.value)))
-                else:
-                    values.append(smart_str(field.value))
-            values.append(entry.entry_time)
-            writer.writerow(values)
 
         # add the csv file to the zip, close it, and set the response
         if has_files:
