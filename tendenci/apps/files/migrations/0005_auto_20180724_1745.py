@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('files', '0004_auto_20180315_0857'),
+        ('user_groups', '0002_group_show_for_memberships'),
     ]
 
     operations = [
