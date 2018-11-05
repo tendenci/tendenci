@@ -100,11 +100,11 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         """
         import re
 
-        url_pattern = r'http:\/\/www\.youtube\.com\/watch\?v=(\w+)'
-        share_pattern = r'http:\/\/youtu\.be\/(\w+)'
+        url_pattern = r'https:\/\/www\.youtube\.com\/watch\?v=(\w+)'
+        share_pattern = r'https:\/\/youtu\.be\/(\w+)'
 
         def repl(x):
-            return 'http://www.youtube.com/embed/%s' % x.group(1)
+            return 'https://www.youtube.com/embed/%s' % x.group(1)
 
         if re.match(url_pattern, self.video_url):
             return re.sub(url_pattern, repl, self.video_url)
@@ -164,52 +164,57 @@ class OembedlyCache(models.Model):
 
     @staticmethod
     def get_code(url, width, height):
-        try:
-            instance = OembedlyCache.objects.filter(url=url, width=width, height=height)[0]
-            code = instance.code
-            # find and replace https: with blank for embed to become protocol independent
-            if 'https:' in code:
-                code = code.replace('https:', '')
-
-            if 'http:' in code:
-                code = code.replace('http:', '')
-
-            instance.code = code
-            instance.save()
-
-        except IndexError:
+        if url.find('youtu') != -1:
+            return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
+                            width=width,
+                            height=height,
+                            url=get_embed_ready_url(url))
+        else:
+        
             try:
-                client = get_embedly_client()
-                result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
-                thumbnail = result['thumbnail_url']
-                code = result['html']
+                instance = OembedlyCache.objects.filter(url=url, width=width, height=height)[0]
+                code = instance.code
+                # find and replace https: with blank for embed to become protocol independent
                 if 'https:' in code:
                     code = code.replace('https:', '')
-
+    
                 if 'http:' in code:
                     code = code.replace('http:', '')
-
-            except KeyError:
-                # Embedly is not available - try the alternative way
-                width, height = int(width), int(height)
-                if width < height:
-                    # adjust the height
-                    height = int(round(width/1.78))
-                return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
-                        width=width,
-                        height=height,
-                        url=get_embed_ready_url(url))
-                #return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
-            except Exception as e:
-                return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
-            obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
-            obj.save()
-
-        # Strip the obsolete attributes from iframe to avoid html validation errors
-        code = code.replace('scrolling="no" ', '')
-        code = code.replace('frameborder="0" ', '')
-
-        return code
+    
+                instance.code = code
+                instance.save()
+            except IndexError:
+                try:
+                    client = get_embedly_client()
+                    result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
+                    thumbnail = result['thumbnail_url']
+                    code = result['html']
+                    if 'https:' in code:
+                        code = code.replace('https:', '')
+    
+                    if 'http:' in code:
+                        code = code.replace('http:', '')
+                except KeyError:
+                    # Embedly is not available - try the alternative way
+                    width, height = int(width), int(height)
+                    if width < height:
+                        # adjust the height
+                        height = int(round(width/1.78))
+                    return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
+                            width=width,
+                            height=height,
+                            url=get_embed_ready_url(url))
+                    #return 'Unable to embed code for <a href="%s">%s</a>' % (url, url)
+                except Exception as e:
+                    return 'Unable to embed code for <a href="%s">%s</a><br>Error: %s' % (url, url, e)
+                obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
+                obj.save()
+    
+            # Strip the obsolete attributes from iframe to avoid html validation errors
+            code = code.replace('scrolling="no" ', '')
+            code = code.replace('frameborder="0" ', '')
+    
+            return code
 
 def get_embed_ready_url(url):
     """
