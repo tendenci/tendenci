@@ -1,3 +1,12 @@
+### 11.0.6 [2018-11-06]
+
+* Fixed migration error due to missing a dependency
+* Resolved the js error about origin doesn't match for Youtube videos
+* Excluded __pycache__ directory from theme editor
+* Fixed a couple of issues in form entries exports
+* Users can now see profile options menu
+* Fixed an error in education edit
+
 ### 11.0.5 [2018-10-25]
 
 * Reduced decimal places for Invoice adjustments to 2. The adjustment with four decimal places is unnecessary for currency.
