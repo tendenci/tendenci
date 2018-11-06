@@ -25,6 +25,7 @@ except ImportError:
 from ..models import TopicReadTracker, ForumReadTracker, PollAnswerUser, Topic, Post
 from ..permissions import perms
 from .. import defaults, util, compat
+from tendenci.apps.site_settings.utils import get_setting
 
 
 register = template.Library()
@@ -53,6 +54,9 @@ class PybbTimeNode(template.Node):
         today = tznow().replace(hour=0, minute=0, second=0)
         yesterday = today - timedelta(days=1)
         tomorrow = today + timedelta(days=1)
+        date_format = get_setting('site', 'global', 'dateformat')
+        if not date_format:
+            date_format = 'd M, Y H:i'
 
         if delta.days == 0:
             if delta.seconds < 60:
@@ -83,7 +87,7 @@ class PybbTimeNode(template.Node):
         elif yesterday < context_time < today:
             return _('yesterday, %s') % context_time.strftime('%H:%M')
         else:
-            return dateformat.format(context_time, 'd M, Y H:i')
+            return dateformat.format(context_time, date_format)
 
 
 @register.simple_tag

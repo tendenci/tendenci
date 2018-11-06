@@ -1,3 +1,4 @@
+{% load pybb_tags %}
 {% if forum.updated %}
-    {{ forum.updated|date:"d.m.Y H:i" }}
+	{% pybb_time forum.updated %}
 {% endif %}
