@@ -28,3 +28,7 @@ License information (GNU GPLv3+) can be found in [LICENSE](https://github.com/te
 ## Credits
 
 See [docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)
+
+## Monitoring
+
+[![DepShield Badge](https://depshield.sonatype.org/badges/tendenci/tendenci/depshield.svg)](https://depshield.github.io)
