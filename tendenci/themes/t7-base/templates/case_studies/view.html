@@ -106,12 +106,5 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script src="{% static 'js/jquery.colorbox-min.js' %}" type="text/javascript"></script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-  $("a[rel='cs-photos']").colorbox({width: '80%',height: '66%'});
-});
-</script>
 
 {% endblock %}
