@@ -221,10 +221,10 @@ def get_embed_ready_url(url):
     Gets the embed ready url - only for youtube and vimeo for now.
     """
     # check if it is a youtube video
-    p = re.compile(r'youtube\.com/watch\?v\=([\w\d]+)')
+    p = re.compile(r'youtube\.com/watch\?v\=([^\&\?\/]+)')
     match = p.search(url)
     if not match:
-        p = re.compile(r'youtu\.be/([\w\d]+)')
+        p = re.compile(r'youtu\.be/([^\&\?\/]+)')
         match = p.search(url)
     if match:
         return 'https://www.youtube.com/embed/{}'.format(match.group(1))
