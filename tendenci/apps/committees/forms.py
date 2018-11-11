@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.forms import BaseInlineFormSet
 
 from tendenci.apps.committees.models import Committee, Officer
 from tendenci.apps.user_groups.models import Group
@@ -155,6 +156,17 @@ class UserModelChoiceField(forms.ModelChoiceField):
         return label
 
 
+class OfficerBaseFormSet(BaseInlineFormSet):
+    def __init__(self,  *args, **kwargs): 
+        self.committee = kwargs.pop("committee", None)
+        super(OfficerBaseFormSet, self).__init__(*args, **kwargs)
+
+    def _construct_form(self, i, **kwargs):
+        if hasattr(self, 'committee'):
+            kwargs['committee'] = self.committee
+        return super(OfficerBaseFormSet, self)._construct_form(i, **kwargs)
+
+
 class OfficerForm(forms.ModelForm):
     user = UserModelChoiceField(queryset=User.objects.none())
 
@@ -162,7 +174,7 @@ class OfficerForm(forms.ModelForm):
         model = Officer
         exclude = ('committee',)
 
-    def __init__(self, committee_group, *args, **kwargs):
+    def __init__(self, committee, *args, **kwargs):
         super(OfficerForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['position', 'user', 'phone']
         # Initialize user.  Label depends on nullability.
@@ -170,8 +182,8 @@ class OfficerForm(forms.ModelForm):
         # 1. fullname
         # 2. username
         # 3. email
-        if committee_group:
-            self.fields['user'].queryset = User.objects.filter(group_member__group=committee_group)
+        if committee:
+            self.fields['user'].queryset = User.objects.filter(group_member__group=committee.group)
         else:
             self.fields['user'].queryset = User.objects.none()
         self.fields['user'].widget.attrs['class'] = 'officer-user'

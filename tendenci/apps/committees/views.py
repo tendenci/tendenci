@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
-from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -17,7 +16,7 @@ from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.committees.models import Committee, Officer
-from tendenci.apps.committees.forms import CommitteeForm, OfficerForm
+from tendenci.apps.committees.forms import CommitteeForm, OfficerForm, OfficerBaseFormSet
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
@@ -162,6 +161,7 @@ def add(request, form_class=CommitteeForm, meta_form_class=MetaForm, category_fo
                 'categoryform':categoryform,
             })
 
+
 @is_enabled('committees')
 @login_required
 def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="committees/edit.html"):
@@ -185,15 +185,16 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         'sub_category': getattr(sub_category,'name','0')
     }
 
-    OfficerFormSet = inlineformset_factory(Committee, Officer, form=OfficerForm, extra=1)
-    OfficerFormSet.form = staticmethod(curry(OfficerForm, committee_group=committee.group))
+    OfficerFormSet = inlineformset_factory(Committee, Officer, form=OfficerForm,
+                                           formset=OfficerBaseFormSet, extra=1,)
+
+    formset = OfficerFormSet(request.POST or None, instance=committee,
+                             committee=committee, prefix="officers")
 
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, instance=committee, user=request.user)
         metaform = meta_form_class(request.POST, instance=committee.meta, prefix='meta')
-        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
-
-        formset = OfficerFormSet(request.POST, instance=committee, prefix="officers")
+        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category') 
 
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             committee = form.save(commit=False)
@@ -202,10 +203,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
 
             #save meta
             meta = metaform.save()
-            committee.meta = meta
-
-            #officers = formset.save()
-            formset.save()
+            committee.meta = meta         
 
             ## update the category of the committee
             category_removed = False
@@ -227,6 +225,7 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
 
             #save relationships
             committee.save()
+            formset.save()
 
             EventLog.objects.log(instance=committee)
 
@@ -248,7 +247,6 @@ def edit(request, id, form_class=CommitteeForm, meta_form_class=MetaForm, catego
         form = form_class(instance=committee, user=request.user)
         metaform = meta_form_class(instance=committee.meta, prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
-        formset = OfficerFormSet(instance=committee, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, committee_group=committee.group))
 
     return render_to_resp(request=request, template_name=template_name,
