@@ -50,6 +50,10 @@ class Command(BaseCommand):
 
         if not newsletter:
             raise CommandError('You are trying to send a newsletter that does not exist.')
+        
+        # validate sender
+        if not validate_email(newsletter.email.sender):
+            raise CommandError('"{}" is not a valid sender email address.'.format(newsletter.email.sender))
 
         if newsletter.send_status == 'queued':
             newsletter.send_status = 'sending'
