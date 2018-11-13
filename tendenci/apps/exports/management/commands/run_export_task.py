@@ -14,6 +14,7 @@ class Command(BaseCommand):
         from tendenci.apps.exports.models import Export
         from tendenci.apps.exports.tasks import TendenciExportTask
         export_id = options['export_id']
+        fields = options['fields']
         if export_id:
             try:
                 export = Export.objects.get(pk=export_id)
@@ -47,7 +48,7 @@ class Command(BaseCommand):
                 model = apps.get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()
                 file_name = export.model_name + '.csv'
-                response = result.run(model, args[1:], file_name)
+                response = result.run(model, fields, file_name)
 
             export.status = "completed"
             export.result = response
