@@ -57,6 +57,9 @@
       <label for="id_sender" class="col-sm-3 control-label">{% trans 'Sender'%} :</label>
       <div class="col-sm-7">
         {{ form.sender }}
+        {% if form.sender.help_text %}
+        <div class="help-block">{{ form.sender.help_text }}</div>
+        {% endif %}
       </div>
     </div>
 

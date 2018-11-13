@@ -13,6 +13,10 @@ class EmailForm(forms.ModelForm):
         widget=TinyMCE(attrs={'style': 'width:80%'},
         mce_attrs={'storme_app_label': Email._meta.app_label,
         'storme_model': Email._meta.model_name.lower()}))
+    sender = forms.EmailField(
+                    required=True,
+                    help_text=_('Sender e-mail address'),
+                    )
 
     class Meta:
         model = Email
