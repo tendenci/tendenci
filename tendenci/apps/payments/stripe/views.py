@@ -188,11 +188,10 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
         currency = get_setting('site', 'global', 'currency')
         if not currency:
             currency = 'usd'
-        if request.method == "POST":
-            if form.is_valid():
-                # get stripe token and make a payment immediately
-                stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
-                token = request.POST.get('stripe_token')
+        if request.method == "POST" and form.is_valid():
+            # get stripe token and make a payment immediately
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            token = request.POST.get('stripe_token')
 
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
