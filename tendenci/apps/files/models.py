@@ -65,7 +65,7 @@ class File(TendenciBaseModel):
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     group = models.ForeignKey(
-        Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+        Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
@@ -136,6 +136,9 @@ class File(TendenciBaseModel):
             self.guid = str(uuid.uuid4())
             created = True
         self.f_type = self.type()
+        
+        if not self.group:
+            self.group = get_default_group()
 
         super(File, self).save(*args, **kwargs)
 
