@@ -3,6 +3,25 @@ from __future__ import print_function
 from django.core.management.base import BaseCommand
 #from django.template.loader import render_to_string
 #from django.template import TemplateDoesNotExist
+from django.conf import settings
+from tendenci.apps.site_settings.utils import get_setting
+
+
+def _verify_settings(*args):
+    return all([getattr(settings, setting, '') for setting in args])
+
+def _check_stripe():
+    return _verify_settings('STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY')
+
+def _check_authorize_net():
+    return _verify_settings('MERCHANT_LOGIN', 'MERCHANT_TXN_KEY',
+                            'AUTHNET_MD5_HASH_VALUE')
+
+def has_supported_merchant_account(platform):
+    if platform == 'authorizenet':
+        return _check_authorize_net()
+    elif platform == 'stripe':
+        return _check_stripe()
 
 
 class Command(BaseCommand):
@@ -21,12 +40,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from tendenci.apps.recurring_payments.models import RecurringPayment
         from tendenci.apps.recurring_payments.utils import run_a_recurring_payment
-        from tendenci.apps.site_settings.utils import get_setting
 
         if get_setting('module', 'recurring_payments', 'enabled'):
             verbosity = int(options['verbosity'])
             recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=True)
             for rp in recurring_payments:
-                run_a_recurring_payment(rp, verbosity)
+                if has_supported_merchant_account(rp.platform):
+                    run_a_recurring_payment(rp, verbosity)
         else:
             print('Recurring payments not enabled')
