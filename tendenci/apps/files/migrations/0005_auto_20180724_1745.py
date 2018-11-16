@@ -11,13 +11,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('files', '0004_auto_20180315_0857'),
-        ('user_groups', '0002_group_show_for_memberships'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='file',
             name='group',
-            field=models.ForeignKey(default=tendenci.apps.user_groups.utils.get_default_group, null=True, on_delete=django.db.models.deletion.SET_NULL, to='user_groups.Group'),
+            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='user_groups.Group'),
         ),
     ]
