@@ -2,7 +2,6 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -11,8 +10,6 @@ class Command(BaseCommand):
     nightly (daily) basis.
     """
     def handle(self, *args, **options):
-        from tendenci.apps.site_settings.utils import get_setting
-
         commands = ('expire_jobs',
                     'expire_resumes',
                     'expire_stories',
@@ -30,15 +27,10 @@ class Command(BaseCommand):
                     'captcha_clean',
                     'cleanup_expired_dbdumps',
                     'clearsessions',
+                    'make_recurring_payment_transactions',
                     )
         for c in commands:
             try:
                 call_command(c)
             except:
                 pass
-
-        if all([get_setting('module', 'recurring_payments', 'enabled'),
-                getattr(settings, 'MERCHANT_LOGIN', ''),
-                getattr(settings, 'MERCHANT_TXN_KEY', '')
-                ]):
-            call_command('make_recurring_payment_transactions')
