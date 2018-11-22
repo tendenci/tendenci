@@ -8,7 +8,7 @@ from django.contrib.admin.utils import unquote
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.urls import reverse
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -17,7 +17,7 @@ from django.utils.safestring import mark_safe
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
-from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing
+from tendenci.apps.forms_builder.forms.models import Form, Field, FieldEntry, Pricing, FormEntry
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
 from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
 
@@ -191,4 +191,30 @@ class FormAdmin(TendenciBaseModelAdmin):
         return response
 
 
+class FormEntryAdmin(admin.ModelAdmin):
+    model = FormEntry
+    list_display = ['entry_time', 'form', 'first_name', 'last_name', 'email']
+    list_filter = ['form']
+    ordering = ("-entry_time",)
+
+    def first_name(self, instance):
+        return instance.get_first_name()
+    
+    def last_name(self, instance):
+        return instance.get_last_name()
+    
+    def email(self, instance):
+        return instance.get_email_address()
+
+    def has_add_permission(self, request):
+        return False
+    
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        return HttpResponseRedirect(
+                    reverse('form_entry_detail', args=[object_id])
+                )
+
+
 admin.site.register(Form, FormAdmin)
+admin.site.register(FormEntry, FormEntryAdmin)
