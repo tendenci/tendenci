@@ -174,12 +174,10 @@ class OembedlyCache(models.Model):
             try:
                 instance = OembedlyCache.objects.filter(url=url, width=width, height=height)[0]
                 code = instance.code
-                # find and replace https: with blank for embed to become protocol independent
-                if 'https:' in code:
-                    code = code.replace('https:', '')
-    
+                # replace http: with https:
                 if 'http:' in code:
-                    code = code.replace('http:', '')
+                    code = code.replace('http:', 'https:')
+                code = code.replace('src="//cdn.embedly.com', 'src="https://cdn.embedly.com')
     
                 instance.code = code
                 instance.save()
@@ -189,11 +187,10 @@ class OembedlyCache(models.Model):
                     result = client.oembed(url, format='json', maxwidth=width, maxheight=height)
                     thumbnail = result['thumbnail_url']
                     code = result['html']
-                    if 'https:' in code:
-                        code = code.replace('https:', '')
     
                     if 'http:' in code:
-                        code = code.replace('http:', '')
+                        code = code.replace('http:', 'https:')
+                    code = code.replace('src="//cdn.embedly.com', 'src="https://cdn.embedly.com')
                 except KeyError:
                     # Embedly is not available - try the alternative way
                     width, height = int(width), int(height)
