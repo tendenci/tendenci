@@ -14,8 +14,7 @@ def _check_stripe():
     return _verify_settings('STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY')
 
 def _check_authorize_net():
-    return _verify_settings('MERCHANT_LOGIN', 'MERCHANT_TXN_KEY',
-                            'AUTHNET_MD5_HASH_VALUE')
+    return _verify_settings('MERCHANT_LOGIN', 'MERCHANT_TXN_KEY')
 
 def has_supported_merchant_account(platform):
     if platform == 'authorizenet':
