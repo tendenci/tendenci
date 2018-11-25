@@ -855,7 +855,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
         
         # If none Education fields are presented on the form, clear fields from the
         # EducationForm to prevent the existing education data from being wipped out.
-        if app_field_objs.filter(field_name__in=['school1', 'major1', 'degree1', 'graduation_dt1',
+        if app_field_objs and app_field_objs.filter(field_name__in=['school1', 'major1', 'degree1', 'graduation_dt1',
             'school2', 'major2', 'degree2', 'graduation_dt2',
             'school3', 'major3', 'degree3', 'graduation_dt3',
             'school4', 'major4', 'degree4', 'graduation_dt4']).count() == 0:
