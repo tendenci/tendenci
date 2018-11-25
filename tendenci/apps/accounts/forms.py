@@ -136,6 +136,7 @@ class LoginForm(forms.Form):
     user = None
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super(LoginForm, self).__init__(*args, **kwargs)
         # check if we need to hide the remember me checkbox
         # and set the default value for remember me
@@ -151,7 +152,7 @@ class LoginForm(forms.Form):
         if self._errors:
             return
         #invalidate('auth_user')
-        user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
+        user = authenticate(request=self.request, username=self.cleaned_data["username"], password=self.cleaned_data["password"])
 
         if user:
             try:

@@ -32,7 +32,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         if not redirect_to or "://" in redirect_to or " " in redirect_to:
             redirect_to = default_redirect_to
 
-        form = form_class(request.POST)
+        form = form_class(request.POST, request=request)
         if form.login(request):
             EventLog.objects.log(instance=request.user, application="accounts")
 
@@ -46,7 +46,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
 #
 #             return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
-        form = form_class()
+        form = form_class(request=request)
 
         if request.user.is_authenticated and redirect_to:
                 return HttpResponseRedirect(redirect_to)
