@@ -16,7 +16,7 @@
        {% else %}
         <h1>{% trans 'Education History ' %}</h1>
         <p>
-        {% trans 'User:' %} <a href="{% url 'profile' user.username %}">{% if user_this.full_name %}{{ user_this.full_name }}{% else %}{{ user_this.username }}{% endif %}</a>
+        {% trans 'User:' %} <a href="{% url 'profile' user_this.username %}">{% if user_this.full_name %}{{ user_this.full_name }}{% else %}{{ user_this.username }}{% endif %}</a>
         </p>
         {% endif %}
         <div class="profile-wrap">
