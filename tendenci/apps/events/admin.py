@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.conf.urls import url
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.utils.encoding import iri_to_uri
 from django.template.defaultfilters import slugify
@@ -33,15 +33,14 @@ class EventAdmin(TendenciBaseModelAdmin):
     list_filter = ('enable_private_slug',)
     ordering = ['-start_dt']
 
-    def __init__(self, *args, **kwargs):
-        super(EventAdmin, self).__init__(*args, **kwargs)
-        if 'edit_link' in self.list_display:
-            self.list_display.remove('edit_link')
-        if 'edit_link' in self.list_display_links:
-            self.list_display_links = tuple(l for l in self.list_display_links if l != 'edit_link')
-
     def has_add_permission(self, request):
         return False
+    
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        return HttpResponseRedirect(
+                    reverse('event.edit', args=[object_id])
+                )
 
 
 class EventTypeAdmin(admin.ModelAdmin):
