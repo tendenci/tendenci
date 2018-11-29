@@ -109,7 +109,13 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-          weekend = $('#id_on_weekend').closest('.form-group');
+        	// Date and time picker for start_dt and end_dt
+            $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
+            $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+            
+            weekend = $('#id_on_weekend').closest('.form-group');
             start_dt = $('input#id_start_dt_0');
             start_dt_val = start_dt.val();
             end_dt =  $('input#id_end_dt_0');

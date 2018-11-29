@@ -548,9 +548,13 @@ class EventForm(TendenciBaseForm):
         'storme_model':Event._meta.model_name.lower()}))
 
     start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'),
-                                  initial=datetime.now()+timedelta(days=30))
+                                  initial=datetime.now()+timedelta(days=30),
+                                  input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                  input_time_formats=['%I:%M %p', '%H:%M:%S'])
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'),
-                                initial=datetime.now()+timedelta(days=30, hours=2))
+                                initial=datetime.now()+timedelta(days=30, hours=2),
+                                input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                input_time_formats=['%I:%M %p', '%H:%M:%S'])
     all_day = forms.BooleanField(label=_('All Day'), required=False, initial=False)
     start_event_date = forms.DateField(
         label=_('Start Date'),
