@@ -4487,8 +4487,13 @@ def reports_financial(request, template_name="events/financial_reports.html"):
 
     events = Event.objects.all().order_by('start_dt')
     form = EventReportFilterForm(request.GET or None)
+    sort_by = 'start_dt'
+    sort_direction = ''
     if form.is_valid():
         events = form.filter(queryset=events)
+        sort_by = form.cleaned_data.get('sort_by')
+        sort_direction = form.cleaned_data.get('sort_direction')
+    events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
 
     context = {'events' : events,
                 'form' : form}

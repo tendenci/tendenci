@@ -2271,8 +2271,18 @@ def add_months(sourcedate, months):
 
 
 class EventReportFilterForm(forms.Form):
-    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), required=False)
-    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), required=False)
+    start_dt = forms.SplitDateTimeField(label=_('Start Date/Time'), required=False,
+                                        input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                        input_time_formats=['%I:%M %p', '%H:%M:%S'])
+    end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), required=False,
+                                      input_date_formats=['%Y-%m-%d', '%m/%d/%Y'],
+                                      input_time_formats=['%I:%M %p', '%H:%M:%S'])
+    sort_by = forms.ChoiceField(required=False, choices=[('start_dt', _('Start Date')),
+                                                         ('groups__name', _('Group Name')),],
+                                initial='start_dt')
+    sort_direction = forms.ChoiceField(required=False, choices=[('', _('Ascending')),
+                                                                ('-', _('Descending')),],
+                                       initial='')
 
     def __init__(self, *args, **kwargs):
         super(EventReportFilterForm, self).__init__(*args, **kwargs)

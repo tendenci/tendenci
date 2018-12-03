@@ -3,7 +3,6 @@
 {% load event_tags %}
 {% load base_tags %}
 {% load perm_tags %}
-{% load styled_forms %}
 
 {% block title %}{{ block.super }}{% trans 'Events Financial Report' %}{% endblock %}
 
@@ -20,8 +19,28 @@
     <h1>{% trans 'Events Financial Report' %}</h1>
    <form action='' method="GET">
         <div class="form">
-        {{ form|styled_form }}
-        <input type="submit" value="{% trans 'Filter' %}" />
+        <div class="form-group">
+		    <label for="start_dt" class="col-sm-3 control-label">{{ form.start_dt.label }}</label>
+		    <div class="col-sm-9">
+		      {{ form.start_dt }}
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label for="end_dt" class="col-sm-3 control-label">{{ form.end_dt.label }}</label>
+		    <div class="col-sm-9">
+		      {{ form.end_dt }}
+		    </div>
+	  	</div>
+	  	<div class="form-group">
+		    <label for="sort_by" class="col-sm-3 control-label">{{ form.sort_by.label }}</label>
+		    <div class="col-sm-9">
+		      {{ form.sort_by }} {{ form.sort_direction }}
+		    </div>
+	  	</div>
+
+        <div class="text-right">
+        <input class="btn btn-default" type="submit" value="{% trans 'Filter by Date' %}" />
+        </div>
         </div>
    </form>
     <table class="table">
@@ -29,6 +48,7 @@
             <tr>
                 <th>#</th>
                 <th>{% trans 'Event Date' %}</th>
+                <th>{% trans 'Group Name' %}</th>
                 <th>{% trans 'Event ID' %}</th>
                 <th>{% trans 'Event Title' %}</th>
                 <th>{% trans '# of Registrants' %}</th>
@@ -44,6 +64,11 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ event.start_dt }}</td>
+                <td>
+                {% for group in event.groups.all %}
+                <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                </td>
                 <td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
                 <td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
                 <td>{{ event.registrants_count }}</td>
@@ -66,7 +91,9 @@
     <script type="text/javascript">
         $(document).ready(function () {
             //$('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
-            $('.timepicker').timepicker({'step': 1});
+            //$('.timepicker').timepicker({'step': 1});
+            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
+            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
 
             $( "#id_start_dt_0" ).datepicker({
               defaultDate: "+1m",
