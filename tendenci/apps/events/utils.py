@@ -1753,6 +1753,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
     """
     event_fields = [
         'entity',
+        'group',
         'type',
         'title',
         'description',
@@ -1846,6 +1847,10 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             elif field == 'type':
                 if event.type:
                     value = event.type.name
+            elif field == 'group':
+                groups = event.groups.values_list('name', flat=True)
+                if groups:
+                    value = ', '.join(groups)
             elif field in event_d:
                 value = event_d[field]
             value = str(value).replace(os.linesep, ' ').rstrip()
