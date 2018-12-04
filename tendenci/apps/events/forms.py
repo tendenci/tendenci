@@ -2163,48 +2163,38 @@ class MemberRegistrationForm(forms.Form):
 
         return self.cleaned_data['member_ids']
 
-
-class EventExportForm(forms.Form):
-    by_date_range = forms.BooleanField(
-                label=_('Export by Date Range'),
-                required=False)
-
+class EventExportForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(
                 label=_('From'),
-                required=False)
+                initial=datetime.now()-timedelta(days=365))
 
     end_dt = forms.DateField(
                 label=_('To'),
-                required=False)
+                initial=datetime.now())
 
     by_type = forms.ModelChoiceField(
-                label=_("Export by Type"),
+                label=_("Filter by Type"),
                 queryset=Type.objects.all().order_by('name'),
-                empty_label=_("Don't filter by type"),
+                empty_label=_("ALL event types"),
                 required=False)
 
     def clean_start_dt(self):
         data = self.cleaned_data
-        by_date_range = data.get('by_date_range')
         start_dt = data.get('start_dt')
-        if by_date_range:
-            if not start_dt:
-                raise forms.ValidationError(_('Start date is required if exporting by date range'))
+        if not start_dt:
+            raise forms.ValidationError(_('Start date is required'))
 
         return start_dt
 
     def clean_end_dt(self):
         data = self.cleaned_data
-
-        by_date_range = data.get('by_date_range')
         start_dt = data.get('start_dt')
         end_dt = data.get('end_dt')
 
-        if by_date_range:
-            if not end_dt:
-                raise forms.ValidationError(_('End date is required if exporting by date range'))
-            if end_dt <= start_dt:
-                raise forms.ValidationError(_('End date must be greater than start date'))
+        if not end_dt:
+            raise forms.ValidationError(_('End date is required'))
+        if end_dt <= start_dt:
+            raise forms.ValidationError(_('End date must be greater than start date'))
 
         return end_dt
 
