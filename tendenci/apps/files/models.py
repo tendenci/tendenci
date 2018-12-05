@@ -138,7 +138,7 @@ class File(TendenciBaseModel):
         self.f_type = self.type()
         
         if not self.group:
-            self.group = get_default_group()
+            self.group_id = get_default_group()
 
         super(File, self).save(*args, **kwargs)
 
