@@ -460,8 +460,8 @@ class Registration(models.Model):
         return 'Registration - %s' % self.event.title
 
     @property
-    def group(self):
-        return self.event.group
+    def group(self):   
+        return self.event.groups.first()
 
     @property
     def hash(self):

@@ -230,7 +230,7 @@ class Invoice(models.Model):
                 if group:
                     entity = group.entity
         if not entity:
-            entity = Entity.objects.first()
+            entity = getattr(obj, 'entity', None) or Entity.objects.first()
 
         return entity
 
