@@ -32,6 +32,12 @@
 
       <div style="clear:both;"></div>
       <div class="calendar-wrap">
+      
+      	<div class="text-center">
+		<form class="form-horizontal" action="" method="get">{% csrf_token %}
+		{{ form.group }} <input class="btn btn-default btn-xs" type="submit" value="{% trans 'Filter by Group' %}" />
+		</form>
+		</div>
 
         <div class="month-wrap">
 
@@ -52,7 +58,7 @@
             <div class="day{% if today == day %} today{% endif %}">
               <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
 
-              {% event_list day type 'single_day' as events %}
+              {% event_list day type 'single_day' group as events %}
               {% if events %}
 
               {% for event in events|slice:"2" %}

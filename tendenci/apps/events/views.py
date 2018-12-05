@@ -113,6 +113,7 @@ from tendenci.apps.events.forms import (
     MemberRegistrationForm,
     ApplyRecurringChangesForm,
     EventSearchForm,
+    EventMonthForm,
     EventExportForm,
      EventSimpleSearchForm,
      EventReportFilterForm)
@@ -2706,6 +2707,12 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
     if year <= 1900 or year >= 9999:
         raise Http404
+    
+    form = EventMonthForm(request.GET, user=request.user)
+    if form.is_valid():
+        group = form.cleaned_data['group']
+    else:
+        group = 0
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
@@ -2787,6 +2794,8 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         'today':date.today(),
         'types':types,
         'type':type,
+        'group': group,
+        'form': form
         })
 
 

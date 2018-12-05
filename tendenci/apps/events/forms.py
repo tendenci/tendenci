@@ -97,6 +97,20 @@ SEARCH_CATEGORIES = (
 )
 
 
+class EventMonthForm(forms.Form):
+    group = forms.ChoiceField(required=False, choices=[])
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(EventMonthForm, self).__init__(*args, **kwargs)
+        
+        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
+        group_choices = Group.objects.filter(group_filters,
+                                             id__in=Event.objects.values_list('groups', flat=True)
+                                             ).distinct(
+                                        ).order_by('name').values_list('id', 'name')
+        self.fields['group'].choices = [('','All Groups')] + list(group_choices)
+
 class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
