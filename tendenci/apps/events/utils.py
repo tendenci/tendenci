@@ -4,6 +4,7 @@ from builtins import str
 import ast
 import re
 import os.path
+import math
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
@@ -1457,7 +1458,7 @@ def get_custom_registrants_initials(entries, **kwargs):
 
 
 def get_recurrence_dates(repeat_type, start_dt, end_dt, frequency, recur_every):
-    weeknum = (start_dt.day - 1)/7 + 1
+    weeknum = math.floor((start_dt.day - 1)/7) + 1
     if weeknum > 4:
         weeknum = -1
     weekday = datetime.weekday(start_dt)
