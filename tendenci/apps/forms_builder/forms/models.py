@@ -110,7 +110,7 @@ class Form(TendenciBaseModel):
     completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
         help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))
     template = models.CharField(_('Template'), max_length=50, blank=True)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
 
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
@@ -150,6 +150,8 @@ class Form(TendenciBaseModel):
         # If this is the current contact form, update checklist
         if str(self.pk) == get_setting('site', 'global', 'contact_form'):
             checklist_update('update-contact')
+        if not self.group:
+            self.group_id = get_default_group()
         super(Form, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

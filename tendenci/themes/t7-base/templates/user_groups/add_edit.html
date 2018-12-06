@@ -14,15 +14,14 @@
 
 
 {% block content %}
-    <div class="t">
-        <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
-        <div>
-            <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}
-                <div class="forms">
-                    {{ form|styled_form }}
-                    <input type="submit" value="{% trans 'Save' %}" />
-                </div>
-            </form>
-        </div>
-    </div>
+ <h1>{% if group %}{% trans "Edit Group" %}{% else %}{% trans "Create Group" %}{% endif %} </h1>
+ <div>
+     <form id="t-user_group-form" class="form-horizontal"  action="." method="post">{% csrf_token %}
+         <div class="forms">
+             {{ form|styled_form }}
+
+             <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}" />
+         </div>
+     </form>
+ </div>
 {% endblock %}

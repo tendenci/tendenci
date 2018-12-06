@@ -558,7 +558,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text=_("Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3"))
     author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
@@ -579,6 +579,8 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
+        if not self.group:
+            self.group_id = get_default_group()
 
         super(PhotoSet, self).save()
 
@@ -707,7 +709,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text=_("Comma delimited (eg. mickey, donald, goofy)"))
     license = models.ForeignKey('License', null=True, blank=True, on_delete=models.SET_NULL)
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
     exif_data = DictField(_('exif'), null=True)
     photographer = models.CharField(_('Photographer'),
                                     blank=True, null=True,
@@ -736,6 +738,8 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         initial_save = not self.id
         if not self.id:
             self.guid = str(uuid.uuid4())
+        if not self.group:
+            self.group_id = get_default_group()
 
         super(Image, self).save(*args, **kwargs)
         # clear the cache

@@ -98,7 +98,7 @@ class Page(BasePage):
     CONTRIBUTOR_CHOICES = ((CONTRIBUTOR_AUTHOR, _('Author')),
                            (CONTRIBUTOR_PUBLISHER, _('Publisher')))
 
-    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
     google_profile = models.URLField(_('Google+ URL'), blank=True)
@@ -110,6 +110,12 @@ class Page(BasePage):
     class Meta:
         permissions = (("view_page", _("Can view page")),)
         app_label = 'pages'
+        
+    def save(self, *args, **kwargs): 
+        if not self.group:
+            self.group_id = get_default_group()
+
+        super(Page, self).save(*args, **kwargs)
 
     def get_meta(self, name):
         """

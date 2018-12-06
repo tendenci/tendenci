@@ -120,6 +120,7 @@ class GroupForm(TendenciBaseForm):
                   'allow_self_add',
                   'allow_self_remove',
                   'show_for_memberships',
+                  'show_for_events',
                   'description',
                   'auto_respond',
                   'auto_respond_priority',
@@ -142,6 +143,7 @@ class GroupForm(TendenciBaseForm):
                                  'allow_self_add',
                                  'allow_self_remove',
                                  'show_for_memberships',
+                                 'show_for_events',
                                  'description'
                                  'auto_respond',
                                  'auto_respond_priority'

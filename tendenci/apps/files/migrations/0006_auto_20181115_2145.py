@@ -7,9 +7,12 @@ from django.db import migrations
 
 def populate_default_group(apps, schema_editor):
     from tendenci.apps.user_groups.utils import get_default_group
-    group_id = get_default_group()
-    File = apps.get_model("files", "File")
-    File.objects.filter(group=None).update(group_id=group_id)    
+    try:
+        group_id = get_default_group()
+        File = apps.get_model("files", "File")
+        File.objects.filter(group=None).update(group_id=group_id)
+    except:
+        pass  
 
 
 class Migration(migrations.Migration):

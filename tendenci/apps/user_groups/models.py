@@ -39,6 +39,8 @@ class Group(TendenciBaseModel):
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=True)
     show_for_memberships = models.BooleanField(default=True,
             help_text=_('If checked and allows self add, this group will show as an option for the group field on membership applications'),)
+    show_for_events = models.BooleanField(default=True,
+            help_text=_('If checked, this group will show as an option for the group field on events'),)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=True)
     sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=True)
     description = models.TextField(blank=True)

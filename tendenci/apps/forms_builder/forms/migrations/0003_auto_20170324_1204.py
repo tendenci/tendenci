@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='form',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=None, to='user_groups.Group', null=True),
         ),
     ]

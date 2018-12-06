@@ -730,7 +730,8 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('end_event_date')
             self.fields.pop('photo_upload')
 
-        default_groups = Group.objects.filter(status=True, status_detail="active")
+        default_groups = Group.objects.filter(status=True, status_detail="active",
+                                              show_for_events=True)
         if not self.user.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             groups = default_groups.filter(filters).distinct()
