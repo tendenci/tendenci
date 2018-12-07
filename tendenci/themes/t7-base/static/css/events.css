@@ -372,12 +372,15 @@ div.id_regconf-reminder_days label{
     color: red;
     margin-left: 110px;
 }
-.item .label {
+.item .label{
     float: left;
     font-size: 1.4em;
     text-align: right;
     width: 100px;
     white-space: nowrap;
+}
+.item label{
+    float: left;
 }
 .item .label-wrap {
     white-space: normal;

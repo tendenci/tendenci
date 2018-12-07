@@ -2980,25 +2980,41 @@ def today_redirect(request):
 
 @login_required
 def types(request, template_name='events/types/index.html'):
-    from django.forms.models import modelformset_factory
     TypeFormSet = modelformset_factory(Type, form=TypeForm, extra=2, can_delete=True)
 
     if request.method == 'POST':
         formset = TypeFormSet(request.POST)
         if formset.is_valid():
             formset.save()
+            
+            types_added = []
+            types_edited = []
+            types_deleted = []
 
             # log "added" event_types
             for event_type in formset.new_objects:
+                types_added.append(event_type.name)
                 EventLog.objects.log(event_type="add", instance=event_type)
 
             # log "changed" event_types
             for event_type, changed_data in formset.changed_objects:
+                types_edited.append(event_type.name)
                 EventLog.objects.log(event_type="edit", instance=event_type)
 
             # log "deleted" event_types
             for event_type in formset.deleted_objects:
+                types_deleted.append(event_type.name)
                 EventLog.objects.log(event_type="delete", instance=event_type)
+            
+            msg_string = ''
+            if types_added:   
+                msg_string += _('Successfully added {}. ').format(','.join(types_added))
+            if types_edited:   
+                msg_string += _('Successfully changed {}. ').format(','.join(types_edited))
+            if types_deleted:   
+                msg_string += _('Successfully deleted {}. ').format(','.join(types_deleted))
+            if msg_string:
+                messages.add_message(request, messages.SUCCESS, msg_string)
 
     formset = TypeFormSet()
 
