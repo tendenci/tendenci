@@ -702,7 +702,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['enable_private_slug'].widget = forms.HiddenInput()
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
+            #self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -744,6 +744,7 @@ class EventForm(TendenciBaseForm):
         else:
             groups_list = default_groups.values_list('pk', 'name')
 
+        groups_list = [(0, '---------')] + list(groups_list)
         self.fields['groups'].choices = groups_list
         self.fields['timezone'].initial = settings.TIME_ZONE
 
