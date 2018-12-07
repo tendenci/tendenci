@@ -71,6 +71,7 @@ from tendenci.apps.events.models import (
     Registrant,
     Speaker,
     Organizer,
+    Sponsor,
     Type,
     RegConfPricing,
     Addon,
@@ -91,6 +92,7 @@ from tendenci.apps.events.forms import (
     SpeakerBaseFormSet,
     SpeakerForm,
     OrganizerForm,
+    SponsorForm,
     TypeForm,
     MessageAddForm,
     RegistrationForm,
@@ -234,6 +236,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
     organizer = None
     if organizers:
         organizer = organizers[0]
+        
+    [sponsor] = event.sponsor_set.all().order_by('pk')[:1] or [None]
 
     event_ct = event.content_type()
     speaker_ct = ContentType.objects.get_for_model(Speaker)
@@ -269,6 +273,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'speakers': speakers,
         'speakers_length': speakers_length,
         'organizer': organizer,
+        'sponsor': sponsor,
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
         'event_files': event_files,
@@ -743,7 +748,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
                 if "_save" in request.POST:
                     return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
-                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.sponsor_edit', args=[event.pk]))
     else:
         form_organizer = form_class(instance=organizer, prefix='organizer')
         form_apply_recurring = ApplyRecurringChangesForm()
@@ -755,6 +760,78 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
     # response
     return render_to_resp(request=request, template_name=template_name,
         context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "organizer"})
+
+
+@is_enabled('events')
+@login_required
+def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit.html"):
+    event = get_object_or_404(Event, pk=id)
+
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+
+    [sponsor] = event.sponsor_set.all()[:1] or [None]
+    if not sponsor:
+        sponsor = Sponsor.objects.create()
+        sponsor.event.add(event)
+        sponsor.save()
+
+    form_sponsor = form_class(request.POST or None, instance=sponsor, prefix='sponsor')
+
+    if request.method == "POST":
+        
+        post_data = request.POST
+        if 'apply_changes_to' not in post_data:
+            post_data = {'apply_changes_to':'self'}
+        form_apply_recurring = ApplyRecurringChangesForm(post_data)
+
+        forms = [form_sponsor, form_apply_recurring]
+        if all([form.is_valid() for form in forms]):
+            apply_changes_to = form_apply_recurring.cleaned_data.get('apply_changes_to')
+
+            sponsor = form_sponsor.save(commit=False)
+            EventLog.objects.log(instance=event)
+
+            if apply_changes_to == 'self':
+                if sponsor.event.count() > 1:
+                    # Remove event from sponsor
+                    sponsor.event.remove(event)
+                    # Create a new sponsor
+                    sponsor.pk = None
+                sponsor.save()
+                # Readd event to sponsor
+                sponsor.event.add(event)
+                msg_string = 'Successfully updated %s' % str(event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
+            else:
+                recurring_events = event.recurring_event.event_set.all()
+                if apply_changes_to == 'rest':
+                    recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
+                sponsor.save()
+                for cur_event in recurring_events:
+                    # Remove previous sponsor from event
+                    for my_sponsor in cur_event.sponsor_set.all():
+                        my_sponsor.event.remove(cur_event)
+                    # Add new sponsor
+                    sponsor.event.add(cur_event)
+                msg_string = 'Successfully updated the recurring events for %s' % str(event)
+                messages.add_message(request, messages.SUCCESS, _(msg_string))
+                if "_save" in request.POST:
+                    return HttpResponseRedirect(reverse('event.recurring', args=[event.pk]))
+                return HttpResponseRedirect(reverse('event.speaker_edit', args=[event.pk]))
+    else:
+        form_apply_recurring = ApplyRecurringChangesForm()
+
+    multi_event_forms = [form_sponsor]
+    if event.is_recurring_event:
+        multi_event_forms = multi_event_forms + [form_apply_recurring]
+
+    # response
+    return render_to_resp(request=request, template_name=template_name,
+        context={'event': event, 'multi_event_forms': multi_event_forms, 'label': "sponsor"})
 
 
 @is_enabled('events')
@@ -1168,6 +1245,7 @@ def add(request, year=None, month=None, day=None,
         form=Reg8nConfPricingForm,
         extra=1
     )
+    form_sponsor = SponsorForm(request.POST or None, prefix='sponsor')
 
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
@@ -1218,6 +1296,7 @@ def add(request, year=None, month=None, day=None,
                 form_place,
                 form_speaker,
                 form_organizer,
+                form_sponsor,
                 form_regconf,
                 form_attendees,
                 form_regconfpricing
@@ -1230,6 +1309,7 @@ def add(request, year=None, month=None, day=None,
                 regconf = form_regconf.save()
                 speakers = form_speaker.save()
                 organizer = form_organizer.save()
+                sponsor = form_sponsor.save()
                 regconf_pricing = form_regconfpricing.save()
 
                 event = form_event.save(commit=False)
@@ -1244,6 +1324,7 @@ def add(request, year=None, month=None, day=None,
 
                 assign_files_perms(place)
                 assign_files_perms(organizer)
+                assign_files_perms(sponsor)
 
                 # handle image
                 f = form_event.cleaned_data['photo_upload']
@@ -1303,6 +1384,9 @@ def add(request, year=None, month=None, day=None,
 
                 organizer.event = [event]
                 organizer.save() # save again
+                
+                sponsor.event = [event]
+                sponsor.save()
 
                 # update event
                 event.place = place
@@ -1436,6 +1520,7 @@ def add(request, year=None, month=None, day=None,
                 form_event,
                 form_place,
                 form_organizer,
+                form_sponsor,
                 form_speaker,
                 form_regconf,
                 form_attendees,

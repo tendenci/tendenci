@@ -978,6 +978,7 @@ class Sponsor(models.Model):
     Sponsor can contribute to multiple events
     """
     event = models.ManyToManyField('Event')
+    description = models.TextField(blank=True, default='')
 
     class Meta:
         app_label = 'events'

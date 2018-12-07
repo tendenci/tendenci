@@ -32,6 +32,9 @@
             <li role="presentation"  class="dropdown {% if label == 'organizer' %}active{% endif %}">
                 <a href="{% url "event.organizer_edit" event.pk %}">{% trans "Organizer" %}</a>
             </li>
+            <li role="presentation"  class="dropdown {% if label == 'sponsor' %}active{% endif %}">
+                <a href="{% url "event.sponsor_edit" event.pk %}">{% trans "Sponsor" %}</a>
+            </li>
             <li role="presentation"  class="dropdown {% if label == 'speakers' %}active{% endif %}">
                 <a href="{% url "event.speaker_edit" event.pk %}">{% trans "Speaker(s)" %}</a>
             </li>

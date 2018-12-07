@@ -184,6 +184,18 @@ a.event-place-desc-toggle {
         </div>
         {% endif %}
         
+        {% if sponsor and sponsor.description %}
+        <br /><br />
+        <div class="sponsor-wrap">
+          <div class="sponsor">
+            <h4 class="time-period">{% trans "Sponsor(s)" %}</h4> 
+          </div>
+          <div class="sponsor-desc-short">
+            {{ sponsor.description|safe|urlize }}
+          </div>
+        </div>
+        {% endif %}
+        
         {% if addons %}
         <hr/>
         <h4 class="time-period">{% trans "Addons" %}</h4> 

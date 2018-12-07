@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^%s/overview/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="event.edit"),
     url(r'^%s/location/edit/(?P<id>\d+)/$' % urlpath, views.location_edit, name="event.location_edit"),
     url(r'^%s/organizer/edit/(?P<id>\d+)/$' % urlpath, views.organizer_edit, name="event.organizer_edit"),
+    url(r'^%s/sponsor/edit/(?P<id>\d+)/$' % urlpath, views.sponsor_edit, name="event.sponsor_edit"),
     url(r'^%s/speakers/edit/(?P<id>\d+)/$' % urlpath, views.speaker_edit, name="event.speaker_edit"),
     url(r'^%s/regconf/edit/(?P<id>\d+)/$' % urlpath, views.regconf_edit, name="event.regconf_edit"),
     url(r'^%s/pricing/edit/(?P<id>\d+)/$' % urlpath, views.pricing_edit, name="event.pricing_edit"),

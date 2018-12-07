@@ -969,14 +969,6 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         return place
 
 
-class SponsorForm(forms.ModelForm):
-    label = _('Sponsor')
-    class Meta:
-        model = Sponsor
-        # django 1.8 requires fields or exclude
-        exclude = ()
-
-
 class SpeakerBaseFormSet(BaseModelFormSet):
     def clean(self):
         """Checks that no two speakers have the same name."""
@@ -1072,6 +1064,28 @@ class OrganizerForm(FormControlWidgetMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(OrganizerForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+
+class SponsorForm(FormControlWidgetMixin, forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Sponsor._meta.app_label,
+        'storme_model':Sponsor._meta.model_name.lower()}))
+    label = 'Sponsor'
+
+    class Meta:
+        model = Sponsor
+
+        fields = (
+            'description',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(SponsorForm, self).__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
