@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
+from django.forms.widgets import DateInput
 
 
 class RangeWidget(forms.MultiWidget):
@@ -21,8 +23,9 @@ class RangeWidget(forms.MultiWidget):
     def get_context(self, name, value, attrs):
         context = super(RangeWidget, self).get_context(name, value, attrs)
         widgets = context['widget']['subwidgets']
-        context['min'] = widgets[0]
-        context['max'] = widgets[1]
+        context['min'] = DateInput(widgets[0]['attrs']).render(widgets[0]['name'], widgets[0]['value'] or '')
+        context['max'] = DateInput(widgets[1]['attrs']).render(widgets[1]['name'], widgets[1]['value'] or '')
+        return context
 
 
 class RangeField(forms.MultiValueField):
@@ -46,6 +49,7 @@ class RangeField(forms.MultiValueField):
                 *args, **kwargs
                 )
         self.label = force_text(field_class().label)
+
 
     def compress(self, data_list):
         if data_list:

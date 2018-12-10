@@ -2,6 +2,7 @@
 from builtins import str
 import copy
 from itertools import groupby
+from itertools import chain
 
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
@@ -9,7 +10,7 @@ from django.db.models.fields import DateTimeField, DateField
 from django.utils.encoding import force_text
 from django.db.models import Q
 from django import forms
-from django.forms.models import fields_for_model
+#from django.forms.models import fields_for_model
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models import ForeignKey
 from django.conf import settings
@@ -24,11 +25,102 @@ from tendenci.libs.model_report.utils import base_label, ReportValue, ReportRow,
 from tendenci.libs.model_report.highcharts import HighchartRender
 from tendenci.libs.model_report.widgets import RangeField
 
+ALL_FIELDS = '__all__'
 
 try:
     from collections import OrderedDict
 except:
     OrderedDict = dict  # pyflakes:ignore
+
+def apply_limit_choices_to_to_formfield(formfield):
+    """Apply limit_choices_to to the formfield's queryset if needed."""
+    if hasattr(formfield, 'queryset') and hasattr(formfield, 'get_limit_choices_to'):
+        limit_choices_to = formfield.get_limit_choices_to()
+        if limit_choices_to is not None:
+            formfield.queryset = formfield.queryset.complex_filter(limit_choices_to)
+
+
+   
+def fields_for_model(model, fields=None, exclude=None, widgets=None,
+                     formfield_callback=None, localized_fields=None,
+                     labels=None, help_texts=None, error_messages=None,
+                     field_classes=None, apply_limit_choices_to=True):
+    """
+    Returns a ``OrderedDict`` containing form fields for the given model.
+
+    ``fields`` is an optional list of field names. If provided, only the named
+    fields will be included in the returned fields.
+
+    ``exclude`` is an optional list of field names. If provided, the named
+    fields will be excluded from the returned fields, even if they are listed
+    in the ``fields`` argument.
+
+    ``widgets`` is a dictionary of model field names mapped to a widget.
+
+    ``formfield_callback`` is a callable that takes a model field and returns
+    a form field.
+
+    ``localized_fields`` is a list of names of fields which should be localized.
+
+    ``labels`` is a dictionary of model field names mapped to a label.
+
+    ``help_texts`` is a dictionary of model field names mapped to a help text.
+
+    ``error_messages`` is a dictionary of model field names mapped to a
+    dictionary of error messages.
+
+    ``field_classes`` is a dictionary of model field names mapped to a form
+    field class.
+
+    ``apply_limit_choices_to`` is a boolean indicating if limit_choices_to
+    should be applied to a field's queryset.
+    """
+    field_list = []
+    ignored = []
+    opts = model._meta
+    # Avoid circular import
+    from django.db.models.fields import Field as ModelField
+    sortable_private_fields = [f for f in opts.private_fields if isinstance(f, ModelField)]
+    for f in sorted(chain(opts.concrete_fields, sortable_private_fields, opts.many_to_many)):
+        if fields is not None and f.name not in fields:
+            continue
+        if exclude and f.name in exclude:
+            continue
+
+        kwargs = {}
+        if widgets and f.name in widgets:
+            kwargs['widget'] = widgets[f.name]
+        if localized_fields == ALL_FIELDS or (localized_fields and f.name in localized_fields):
+            kwargs['localize'] = True
+        if labels and f.name in labels:
+            kwargs['label'] = labels[f.name]
+        if help_texts and f.name in help_texts:
+            kwargs['help_text'] = help_texts[f.name]
+        if error_messages and f.name in error_messages:
+            kwargs['error_messages'] = error_messages[f.name]
+        if field_classes and f.name in field_classes:
+            kwargs['form_class'] = field_classes[f.name]
+
+        if formfield_callback is None:
+            formfield = f.formfield(**kwargs)
+        elif not callable(formfield_callback):
+            raise TypeError('formfield_callback must be a function or callable')
+        else:
+            formfield = formfield_callback(f, **kwargs)
+
+        if formfield:
+            if apply_limit_choices_to:
+                apply_limit_choices_to_to_formfield(formfield)
+            field_list.append((f.name, formfield))
+        else:
+            ignored.append(f.name)
+    field_dict = OrderedDict(field_list)
+    if fields:
+        field_dict = OrderedDict(
+            [(f, field_dict.get(f)) for f in fields
+                if ((not exclude) or (exclude and f not in exclude)) and (f not in ignored)]
+        )
+    return field_dict
 
 
 def autodiscover(module_name='reports.py'):
@@ -575,6 +667,8 @@ class ReportAdmin(object):
                     return (True, widget, MultipleChoiceField().__class__)
 
     def get_form_filter(self, request):
+        # 'create_dt' cannot be specified for Invoice model form as it is a non-editable field
+        #self.list_filter = [item for item in self.list_filter if item != 'create_dt']
         form_fields = fields_for_model(self.model, [f for f in self.get_query_field_names() if f in self.list_filter])
         if not form_fields:
             form_fields = {
