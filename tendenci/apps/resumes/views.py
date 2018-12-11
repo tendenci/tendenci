@@ -24,7 +24,7 @@ from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.resumes.models import Resume
-from tendenci.apps.resumes.forms import ResumeForm
+from tendenci.apps.resumes.forms import ResumeForm, ResumeExportForm
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -317,7 +317,16 @@ def export(request, template_name="resumes/export.html"):
     if not request.user.is_superuser:
         raise Http403
 
-    if request.method == 'POST':
+    form = ResumeExportForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        start_dt = form.cleaned_data['start_dt']
+        end_dt = form.cleaned_data['end_dt']
+        if start_dt and end_dt:
+            start_dt = start_dt.strftime('%m/%d/%Y')
+            end_dt = end_dt.strftime('%m/%d/%Y')
+            kwargs = {'start_dt': start_dt, 'end_dt': end_dt}
+        else:
+            kwargs = {}
         # initilize initial values
         fields = [
             'guid',
@@ -363,8 +372,9 @@ def export(request, template_name="resumes/export.html"):
             'meta',
             'tags',
         ]
-        export_id = run_export_task('resumes', 'resume', fields)
+        
+        export_id = run_export_task('resumes', 'resume', fields, **kwargs)
         return redirect('export.status', export_id)
 
-    return render_to_resp(request=request, template_name=template_name, context={
-    })
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'form': form})

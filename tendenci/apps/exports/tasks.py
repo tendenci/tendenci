@@ -1,4 +1,5 @@
 from builtins import str
+from datetime import datetime, timedelta
 from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
@@ -31,6 +32,23 @@ class TendenciExportTask(Task):
             ]
 
         items = model.objects.filter(status=True)
+        start_dt = kwargs.get('start_dt', None)
+        end_dt = kwargs.get('end_dt', None)
+        if start_dt and end_dt:
+            if start_dt:
+                try:
+                    start_dt = datetime.strptime(start_dt, '%m/%d/%Y')
+                except:
+                    raise Exception('Please use the following date format MM/DD/YYYY.\n')
+    
+            if end_dt:
+                try:
+                    end_dt = datetime.strptime(end_dt, '%m/%d/%Y')
+                    end_dt = end_dt + timedelta(days=1)
+                except:
+                    raise Exception('Please use the following date format MM/DD/YYYY.\n')
+            if start_dt and end_dt:
+                items = items.filter(update_dt__gte=start_dt, update_dt__lte=end_dt)
         data_row_list = []
         for item in items:
             # get the available fields from the model's meta

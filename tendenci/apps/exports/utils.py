@@ -61,17 +61,21 @@ def render_csv(filename, title_list, data_list):
     return response
 
 
-def run_export_task(app_label, model_name, fields):
+def run_export_task(app_label, model_name, fields, **kwargs):
     export = Export.objects.create(
         app_label=app_label,
         model_name=model_name
     )
-
     if settings.USE_SUBPROCESS:
-        subprocess.Popen([python_executable(), 'manage.py', 'run_export_task', str(export.pk)] + fields)
+        args = [python_executable(), 'manage.py', 'run_export_task', str(export.pk)] + fields
+        start_dt = kwargs.get('start_dt', None)
+        end_dt = kwargs.get('end_dt', None)
+        if start_dt and end_dt:
+            args += ['--start_dt', start_dt, '--end_dt', end_dt]
+        subprocess.Popen(args)
     else:
         from django.core.management import call_command
         args = [str(export.pk)] + fields
-        call_command('run_export_task', *args)
+        call_command('run_export_task', *args, **kwargs)
 
     return export.pk

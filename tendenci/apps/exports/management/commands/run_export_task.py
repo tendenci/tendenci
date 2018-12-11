@@ -9,12 +9,32 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('export_id', type=int)
         parser.add_argument('fields', nargs='*')
+        parser.add_argument(
+            '--start_dt',
+            action='store',
+            dest='start_dt',
+            default='',
+            help='Export start date is greater than or equal to the value specified')
+        parser.add_argument(
+            '--end_dt',
+            action='store',
+            dest='end_dt',
+            default='',
+            help='Export end date is less than the value specified')
 
     def handle(self, *args, **options):
         from tendenci.apps.exports.models import Export
         from tendenci.apps.exports.tasks import TendenciExportTask
         export_id = options['export_id']
         fields = options['fields']
+        start_dt = options['start_dt']
+        end_dt = options['end_dt']
+
+        if start_dt and end_dt:
+            kwargs = {'start_dt': start_dt,
+                      'end_dt': end_dt}
+        else:
+            kwargs = {}
         if export_id:
             try:
                 export = Export.objects.get(pk=export_id)
@@ -48,7 +68,7 @@ class Command(BaseCommand):
                 model = apps.get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()
                 file_name = export.model_name + '.csv'
-                response = result.run(model, fields, file_name)
+                response = result.run(model, fields, file_name, **kwargs)
 
             export.status = "completed"
             export.result = response

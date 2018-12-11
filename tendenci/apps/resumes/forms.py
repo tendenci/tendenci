@@ -12,6 +12,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 ALLOWED_FILE_EXT = (
     '.doc',
@@ -223,3 +224,33 @@ class ResumeForm(TendenciBaseForm):
         print(self.errors)
 
         return cleaned_data
+
+
+class ResumeExportForm(FormControlWidgetMixin, forms.Form):
+    start_dt = forms.DateField(
+                label=_('From'),
+                initial=datetime.now()-timedelta(days=365))
+
+    end_dt = forms.DateField(
+                label=_('To'),
+                initial=datetime.now())
+
+    def clean_start_dt(self):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        if not start_dt:
+            raise forms.ValidationError(_('Start date is required'))
+
+        return start_dt
+
+    def clean_end_dt(self):
+        data = self.cleaned_data
+        start_dt = data.get('start_dt')
+        end_dt = data.get('end_dt')
+
+        if not end_dt:
+            raise forms.ValidationError(_('End date is required'))
+        if end_dt <= start_dt:
+            raise forms.ValidationError(_('End date must be greater than start date'))
+
+        return end_dt
