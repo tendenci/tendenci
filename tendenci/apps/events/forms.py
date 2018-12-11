@@ -2320,7 +2320,7 @@ class EventReportFilterForm(forms.Form):
         start_dt = data.get('start_dt')
         end_dt = data.get('end_dt')
 
-        if end_dt < start_dt:
+        if start_dt and end_dt and end_dt < start_dt:
             raise forms.ValidationError(_('End Date/Time should be greater than Start Date/Time.'))
 
         return data

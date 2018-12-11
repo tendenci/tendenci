@@ -2,6 +2,7 @@
 {% load bootstrap_pagination_tags %}
 {% load event_tags %}
 {% load base_tags %}
+{% load bootstrap_pagination_tags %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }}{% trans 'Events Financial Report' %}{% endblock %}
@@ -43,34 +44,33 @@
         </div>
         </div>
    </form>
-    <table class="table">
+   {% autopaginate events 20 %}
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>#</th>
+            	<th>{% trans 'Event ID' %}</th>
+            	<th>{% trans 'Event Title' %}</th>
                 <th>{% trans 'Event Date' %}</th>
                 <th>{% trans 'Group Name' %}</th>
-                <th>{% trans 'Event ID' %}</th>
-                <th>{% trans 'Event Title' %}</th>
                 <th>{% trans '# of Registrants' %}</th>
-                <th>{% trans 'Registration Total' %}</th>
-                <th>{% trans 'Add-On Total' %}</th>
-                <th>{% trans 'Complete Event Total' %}</th>
-                <th>{% trans 'Amount Collected' %}</th>
-                <th>{% trans 'Amount Due' %}</th>
+                <th>{% trans 'Registration Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+                <th>{% trans 'Add-On Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+                <th>{% trans 'Complete Event Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+                <th>{% trans 'Amount Collected' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+                <th>{% trans 'Amount Due' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
             </tr>
         </thead>
         <tbody>
         {% for event in events %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+            	<td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
+            	<td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
                 <td>{{ event.start_dt }}</td>
                 <td>
                 {% for group in event.groups.all %}
                 <a href="{% url 'group.detail' group.slug %}">{{ group.name }}</a>{% if not forloop.last %},{% endif %}
                 {% endfor %}
                 </td>
-                <td><a href="{% url 'event' event.id %}">{{ event.id }}</a></td>
-                <td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
                 <td>{{ event.registrants_count }}</td>
                 <td>{{ event.registration_total }}</td>
                 <td>{{ event.addons_total }}</td>
@@ -81,6 +81,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% paginate %}
 </div>
 {% endblock %}
 

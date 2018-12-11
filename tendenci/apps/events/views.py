@@ -4601,7 +4601,7 @@ def reports_financial(request, template_name="events/financial_reports.html"):
     sort_direction = ''
     if form.is_valid():
         events = form.filter(queryset=events)
-        sort_by = form.cleaned_data.get('sort_by')
+        sort_by = form.cleaned_data.get('sort_by') or 'start_dt'
         sort_direction = form.cleaned_data.get('sort_direction')
     events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
 
