@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from builtins import str
+from decimal import Decimal
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
@@ -73,6 +74,8 @@ class HighchartRender(object):
                     serie_values.append(value)
 
             value = serie_operation(serie_values)
+            if isinstance(value, Decimal):
+                value = float(value)
             grouper = unicodeToHTMLEntities(grouper)
             serie_data.append([grouper, round(value, 2)])
         data = self.model.serie_obj.create(**{
