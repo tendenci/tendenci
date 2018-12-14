@@ -1,3 +1,36 @@
+### 11.0.7 [2018-12-14]
+
+**Improvements**
+
+* Added date range to resumes export 
+* Added sponsor to events 
+* Added a new field "show_for_event" to the user groups, and used it to filter groups for the group dropdown on events add/edit 
+* Added an option to filter by group on calendar view 
+* Updated events export to show date range 
+* Included the group field to events export 
+* Updated events financial report 1) Added Group Name column 2) Added an option to sort by Group Name 3) Changed Filter button to say Filter by Date
+* Added the form entries list view at admin backend 
+* Added the date picker to events add/edit
+* Updated jQuery File Upload to the latest version 9.28.0
+* Updated Fine Uploader to the latest version 5.16.2
+
+**Fixes**
+
+* Fixed some issues, including the performance issue, in events financial
+* Fixed several issues in model_report 
+* Resolved some issues in /events/types/ 
+* Fixed an error on adding a recurring event
+* Updated the event admin list view to direct edit link to the proper edit view
+* Corrected the profile link on education edit
+* Fixed the requirements for making "make_recurring_payment_transactions" command to run
+* Fixed an issue in stripe to ensure token is received before creating charge
+* Fixed issue about exports (for jobs and resumes) missing main fields
+* Avoided sender being entered as a non-email address on email edit
+* Fixed an issue about search button not functioning 
+* Fixed an error for committee edit in inlineformset 
+* Changed regex pattern for youtube videos 
+* Used the dateformat setting for forums
+
 ### 11.0.6 [2018-11-06]
 
 * Fixed migration error due to missing a dependency
