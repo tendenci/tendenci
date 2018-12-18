@@ -732,6 +732,11 @@ HAYSTACK_SIGNAL_PROCESSOR = 'tendenci.apps.search.signals.QueuedSignalProcessor'
 # django-sql-explorer
 EXPLORER_CONNECTIONS = { 'default': 'default' }
 EXPLORER_DEFAULT_CONNECTION = 'default'
+EXPLORER_UNSAFE_RENDERING = True
+def EXPLORER_PERMISSION_VIEW(u):
+    return u.is_superuser
+def EXPLORER_PERMISSION_CHANGE(u):
+    return u.is_superuser
 
 # ---------------------------------------------------------------------------- #
 # Debugging Tools
@@ -748,8 +753,3 @@ try:
     }
 except ImportError:
     pass
-
-def EXPLORER_PERMISSION_VIEW(u):
-    return u.is_superuser
-def EXPLORER_PERMISSION_CHANGE(u):
-    return u.is_superuser
