@@ -403,7 +403,10 @@ class ListEventsNode(ListNode):
                 items = items.distinct()
 
         if event_type:
-            items = items.filter(type__name__iexact=event_type)
+            if ',' in event_type:
+                items = items.filter(type__name__in=event_type.split(','))
+            else:
+                items = items.filter(type__name__iexact=event_type)
 
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
@@ -486,7 +489,7 @@ def list_events(parser, token):
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
         ``type``
-           The type of the event.
+           The type of the event. Allows comma separated multiple types. e.g. type="General Meeting,Annual Events"
         ``tags``
            The tags required on items to be included.
         ``group``
