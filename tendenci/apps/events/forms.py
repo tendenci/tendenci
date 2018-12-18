@@ -733,6 +733,9 @@ class EventForm(TendenciBaseForm):
         default_groups = Group.objects.filter(status=True, status_detail="active",
                                               show_for_events=True)
         if not self.user.is_superuser:
+            # only superuser can change the priority bit
+            self.fields.pop('priority')
+            
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             groups = default_groups.filter(filters).distinct()
             groups_list = list(groups.values_list('pk', 'name'))
