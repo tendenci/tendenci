@@ -35,6 +35,14 @@
 			      {{ form.end_dt.errors}}
 			      {% endif %}
 			    </div>
+		  	</div>
+		  	
+		  	<div class="form-group">
+			    <div class="col-sm-offset-3 col-sm-9">
+			    <label>
+		          {{ form.include_files }} {{ form.include_files.label }}
+		        </label>
+			    </div>
 		  	</div> 
             
             <input class="btn btn-default" type="submit" value="{% trans 'Export' %}" />

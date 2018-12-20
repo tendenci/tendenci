@@ -1,6 +1,12 @@
 from builtins import str
 from datetime import datetime, timedelta
-from django.db.models.fields import DateTimeField
+from tempfile import NamedTemporaryFile
+import csv
+import zipfile
+from os import unlink
+from time import time
+from django.http import HttpResponse
+from django.db.models.fields import DateTimeField, DateField, TimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
@@ -34,6 +40,7 @@ class TendenciExportTask(Task):
         items = model.objects.filter(status=True)
         start_dt = kwargs.get('start_dt', None)
         end_dt = kwargs.get('end_dt', None)
+        include_files = kwargs.get('include_files', None)
         if start_dt and end_dt:
             if start_dt:
                 try:
@@ -58,16 +65,21 @@ class TendenciExportTask(Task):
                 if f.name in fields:  # include specified fields only
                     if isinstance(f, ManyToManyField):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
-                    if isinstance(f, ForeignKey):
+                    elif isinstance(f, ForeignKey):
                         value = getattr(item, f.name)
-                    if isinstance(f, GenericRelation):
+                    elif isinstance(f, GenericRelation):
                         generics = f.value_from_object(item).all()
                         value = ["%s" % obj for obj in generics]
-                    if isinstance(f, DateTimeField):
-                        if f.value_from_object(item):
-                            value = f.value_from_object(item).strftime("%Y-%m-%d %H:%M")
                     else:
                         value = f.value_from_object(item)
+                        if value:
+                            if isinstance(f, DateTimeField):
+                                value = value.strftime("%Y-%m-%d %H:%M")
+                            elif isinstance(f, DateField):
+                                value = value.strftime("%Y-%m-%d")
+                            elif isinstance(f, TimeField):
+                                value = value.strftime('%H:%M:%S')
+
                     d[f.name] = value
 
             # append the accumulated values as a data row
@@ -79,5 +91,37 @@ class TendenciExportTask(Task):
                 data_row.append(value)
 
             data_row_list.append(data_row)
-
+            
+        if include_files:
+            if model._meta.model_name == 'resume':
+                temp_csv = NamedTemporaryFile(mode='w', delete=False)
+                csv_writer = csv.writer(temp_csv, delimiter=',')
+                csv_writer.writerow(fields)
+                for data_row in data_row_list:
+                    csv_writer.writerow(data_row)
+                temp_csv.close()
+                
+                temp_zip = NamedTemporaryFile(mode='wb', delete=False)
+                zip_fp = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
+                # handle files
+                for item in items:
+                    if item.resume_file:
+                        zip_fp.write(item.resume_file.path, item.resume_file.name, zipfile.ZIP_DEFLATED)
+                zip_fp.write(temp_csv.name, 'resumes.csv', zipfile.ZIP_DEFLATED)
+                zip_fp.close()
+                temp_zip.close()
+                
+                # set the response for the zip files
+                with open(temp_zip.name, 'rb') as f:
+                    content = f.read()
+            
+                response = HttpResponse(content, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename="export_resumes_%d.zip"' % time()
+    
+                # remove the temporary files
+                unlink(temp_zip.name)
+                unlink(temp_csv.name)
+                
+                return response
+                
         return render_csv(file_name, fields, data_row_list)

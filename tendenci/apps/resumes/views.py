@@ -321,12 +321,15 @@ def export(request, template_name="resumes/export.html"):
     if request.method == 'POST' and form.is_valid():
         start_dt = form.cleaned_data['start_dt']
         end_dt = form.cleaned_data['end_dt']
+        include_files = form.cleaned_data['include_files']
         if start_dt and end_dt:
             start_dt = start_dt.strftime('%m/%d/%Y')
             end_dt = end_dt.strftime('%m/%d/%Y')
             kwargs = {'start_dt': start_dt, 'end_dt': end_dt}
         else:
             kwargs = {}
+        if include_files:
+            kwargs.update({'include_files': 'True'})
         # initilize initial values
         fields = [
             'guid',

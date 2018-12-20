@@ -70,8 +70,11 @@ def run_export_task(app_label, model_name, fields, **kwargs):
         args = [python_executable(), 'manage.py', 'run_export_task', str(export.pk)] + fields
         start_dt = kwargs.get('start_dt', None)
         end_dt = kwargs.get('end_dt', None)
+        include_files = kwargs.get('include_files', None)
         if start_dt and end_dt:
             args += ['--start_dt', start_dt, '--end_dt', end_dt]
+        if include_files:
+            args += ['--include_files', include_files]
         subprocess.Popen(args)
     else:
         from django.core.management import call_command

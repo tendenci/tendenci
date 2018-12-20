@@ -234,6 +234,7 @@ class ResumeExportForm(FormControlWidgetMixin, forms.Form):
     end_dt = forms.DateField(
                 label=_('To'),
                 initial=datetime.now())
+    include_files = forms.BooleanField(initial=False, required=False)
 
     def clean_start_dt(self):
         data = self.cleaned_data

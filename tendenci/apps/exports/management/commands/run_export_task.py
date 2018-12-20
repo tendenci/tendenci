@@ -21,6 +21,12 @@ class Command(BaseCommand):
             dest='end_dt',
             default='',
             help='Export end date is less than the value specified')
+        parser.add_argument(
+            '--include_files',
+            action='store',
+            dest='include_files',
+            default=False,
+            help='Specify whether or not to include the uploaded files (default to False)')
 
     def handle(self, *args, **options):
         from tendenci.apps.exports.models import Export
@@ -29,12 +35,15 @@ class Command(BaseCommand):
         fields = options['fields']
         start_dt = options['start_dt']
         end_dt = options['end_dt']
+        include_files = options['include_files']
 
         if start_dt and end_dt:
             kwargs = {'start_dt': start_dt,
                       'end_dt': end_dt}
         else:
             kwargs = {}
+        if include_files:
+            kwargs.update({'include_files': include_files})
         if export_id:
             try:
                 export = Export.objects.get(pk=export_id)
@@ -67,7 +76,7 @@ class Command(BaseCommand):
             else:
                 model = apps.get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()
-                file_name = export.model_name + '.csv'
+                file_name = export.app_label + '.csv'
                 response = result.run(model, fields, file_name, **kwargs)
 
             export.status = "completed"
