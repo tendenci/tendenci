@@ -26,7 +26,7 @@ from django.utils.html import strip_tags
 from pytz import timezone
 from pytz import UnknownTimeZoneError
 
-from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
+from tendenci.apps.events.models import (Event, Place, Speaker, Organizer, Sponsor,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
     TypeColorSet, RecurringEvent)
@@ -1352,6 +1352,16 @@ def copy_event(event, user, reuse_rel=False):
                 description = organizer.description,
             )
             new_organizer.event.add(new_event)
+
+    #copy sponsor
+    for sponsor in event.sponsor_set.all():
+        if reuse_rel:
+            sponsor.event.add(new_event)
+        else:
+            new_sponsor = Sponsor.objects.create(
+                description = sponsor.description,
+            )
+            new_sponsor.event.add(new_event)
 
     #copy registration configuration
     old_regconf = event.registration_configuration

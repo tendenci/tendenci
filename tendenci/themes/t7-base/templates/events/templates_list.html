@@ -1,0 +1,49 @@
+{% extends "events/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load base_tags %}
+]
+{% block title %}{{ block.super }}{% trans 'List Templates' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'css/events-search.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t search-view">
+    <h1>{% trans "Event Templates" %}</h1>
+
+    {% autopaginate events 10 %}
+
+    <div class="events-wrap">
+    {% for event in events %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+        	<a href="{% url "event" event.pk %}"><big>{{ event.title }}</big></a>
+        	<div class="description">
+            {{ event.description|striptags|safe|truncatewords:40 }}
+       		 </div>
+        </div>
+        <div class="panel-footer">
+			<a href="{% url "event.add_from_template" event.pk %}"><span class="glyphicon glyphicon-plus" title="{% trans 'Add an event using this template' %}"></span>{% trans 'Add an event using this template' %}</a>
+			<div class="pull-right">
+				<a href="{% url "event.edit" event.pk %}"><span class="glyphicon glyphicon-pencil"></span>{% trans 'Edit' %}</a>&nbsp;&nbsp;
+				<a href="{% url "event.delete" event.pk %}"><span class="glyphicon glyphicon-trash"></span>{% trans 'Delete' %}</a>
+			</div>
+		</div>
+    </div>
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+
+{% endblock %}

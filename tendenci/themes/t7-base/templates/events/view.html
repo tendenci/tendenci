@@ -65,6 +65,11 @@ div.pricing-list-wrap li{
     
     <!-- TOP -->
     <br />
+    {% if event.status_detail == 'template' %}
+    <div class="alert alert-info" role="alert">{% trans 'This is a event template.' %} 
+    <a href="{% url 'event.add_from_template' event.pk %}" class="alert-link">{% trans 'Add an event using this template.' %}</a>
+    </div>
+    {% endif %}
     <div class="col-xs-12 well">
       
        {% if event.image %}

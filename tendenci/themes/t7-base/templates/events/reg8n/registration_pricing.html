@@ -51,7 +51,7 @@
         {% endfor %}
       </ul>
       <meta itemprop="availability" content="Register now!">
-      <input class="btn btn-success" type="submit" name="submit" value="{% trans 'Register' %}" />
+      <input class="btn btn-success" {% if event.status_detail == "template" %}disabled="disabled"{% endif %} type="submit" name="submit" value="{% trans 'Register' %}" />
       {% endif %}
       
       {% if event.registration_configuration.has_member_price %}

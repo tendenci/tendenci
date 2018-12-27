@@ -18,13 +18,16 @@
   <button type="button" id="simple-form-button" class="btn btn-primary pull-right" onclick="simple()" value="Simple Form">Simple Form</button>
   
   <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
+  {% if is_template %}
+  <p class="alert alert-info">{% trans "You're adding an event template." %}</p>
+  {% endif %}
 </div>
 
 <p id="simple-form-alert" class="alert alert-success" role="alert"> 
   This is the simple form, click again for the Extended form.
 </p>
 
-    <form id="t-events-form" class="form-horizontal" action="{% url 'event.add' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <form id="t-events-form" class="form-horizontal" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
         
       {{ multi_event_forms|styled_multi_forms }}
       

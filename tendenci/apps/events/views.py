@@ -206,7 +206,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
     if not id and not private_slug:
         return HttpResponseRedirect(reverse('event.month'))
 
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     days = []
     if not event.on_weekend:
@@ -420,6 +420,17 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         })
 
 
+@is_enabled('events')
+@login_required
+def templates_list(request, template_name="events/templates_list.html"):
+    filters = get_query_filters(request.user, 'events.change_event')
+    events = Event.objects.get_queryset_templates().filter(filters).distinct()
+    
+    return render_to_resp(request=request, template_name=template_name, context={
+        'events': events,
+        })
+
+
 def icalendar(request):
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -515,7 +526,7 @@ def print_view(request, id, template_name="events/print-view.html"):
 @is_enabled('events')
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -614,7 +625,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 @is_enabled('events')
 @login_required
 def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -682,7 +693,7 @@ def location_edit(request, id, form_class=PlaceForm, template_name="events/edit.
 @is_enabled('events')
 @login_required
 def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -765,7 +776,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
 @is_enabled('events')
 @login_required
 def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -837,7 +848,7 @@ def sponsor_edit(request, id, form_class=SponsorForm, template_name="events/edit
 @is_enabled('events')
 @login_required
 def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -978,7 +989,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 @is_enabled('events')
 @login_required
 def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -1054,7 +1065,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
 @is_enabled('events')
 @login_required
 def pricing_edit(request, id, form_class=Reg8nConfPricingForm, template_name="events/edit.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
     reg_conf = event.registration_configuration
     if not has_perm(request.user,'events.change_event', event):
         raise Http403
@@ -1222,7 +1233,7 @@ def get_place(request):
 
 @is_enabled('events')
 @login_required
-def add(request, year=None, month=None, day=None,
+def add(request, year=None, month=None, day=None, is_template=False,
     form_class=EventForm, template_name="events/add.html"):
     """
     Add event page.  You can preset the start date of
@@ -1251,7 +1262,7 @@ def add(request, year=None, month=None, day=None,
         if request.method == "POST":
 
             # single forms
-            form_event = form_class(request.POST, request.FILES, user=request.user)
+            form_event = form_class(request.POST, request.FILES, user=request.user, is_template=is_template)
             form_place = PlaceForm(request.POST, prefix='place')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf',
@@ -1320,6 +1331,8 @@ def add(request, year=None, month=None, day=None,
                 event = update_perms_and_save(request, form_event, event)
                 groups = form_event.cleaned_data['groups']
                 event.groups = groups
+                if is_template:
+                    event.status_detail = 'template'
                 event.save(log=False)
 
                 assign_files_perms(place)
@@ -1488,7 +1501,7 @@ def add(request, year=None, month=None, day=None,
             }
 
             # single forms
-            form_event = form_class(user=request.user, initial=event_init)
+            form_event = form_class(user=request.user, initial=event_init, is_template=is_template)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf',
@@ -1512,10 +1525,11 @@ def add(request, year=None, month=None, day=None,
             # label the form sets
             form_speaker.label = _("Speaker(s)")
             form_regconfpricing.label = _("Pricing(s)")
-
+        
         # response
         return render_to_resp(request=request, template_name=template_name,
             context={
+            'is_template': is_template,
             'multi_event_forms':[
                 form_event,
                 form_place,
@@ -1534,7 +1548,8 @@ def add(request, year=None, month=None, day=None,
 @is_enabled('events')
 @login_required
 def delete(request, id, template_name="events/delete.html"):
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event.objects.get_all(), pk=id)
+    is_template = event.status_detail == 'template'
 
     if has_perm(request.user, 'events.delete_event'):
         if request.method == "POST":
@@ -1561,6 +1576,8 @@ def delete(request, id, template_name="events/delete.html"):
             msg_string = 'Successfully deleted %s' % str(event)
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
+            if is_template:
+                return HttpResponseRedirect(reverse('event.templates_list'))
             return HttpResponseRedirect(reverse('event.search'))
 
         return render_to_resp(request=request, template_name=template_name,
@@ -4076,6 +4093,24 @@ def copy(request, id):
 
     EventLog.objects.log(instance=new_event)
     msg_string = 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % str(new_event)
+    messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    return redirect('event.edit', id=new_event.id)
+
+
+@is_enabled('events')
+@login_required
+def add_from_template(request, id):
+    if not has_perm(request.user, 'events.add_event'):
+        raise Http403
+
+    event = get_object_or_404(Event.objects.get_queryset_templates(), id=id)
+    new_event = copy_event(event, request.user)
+    new_event.status_detail = 'active'
+    new_event.save()
+
+    EventLog.objects.log(instance=new_event)
+    msg_string = 'An new event has been sucessfully added from template: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % str(event)
     messages.add_message(request, messages.SUCCESS, _(msg_string))
 
     return redirect('event.edit', id=new_event.id)

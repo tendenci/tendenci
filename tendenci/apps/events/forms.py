@@ -605,7 +605,10 @@ class EventForm(TendenciBaseForm):
         choices=(('weekday', _('the same day of the week')),('date',_('the same date')),))
 
     status_detail = forms.ChoiceField(
-        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
+        choices=(('active',_('Active')),
+                 ('inactive',_('Inactive')),
+                 ('pending',_('Pending')),
+                 ('template',_('Template')),))
 
     class Meta:
         model = Event
@@ -687,6 +690,7 @@ class EventForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         edit_mode = kwargs.pop('edit_mode', False)
         recurring_mode = kwargs.pop('recurring_mode', False)
+        is_template = kwargs.pop('is_template', False)
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
@@ -722,6 +726,15 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
             self.fields.pop('recurs_on')
+        else:
+            if is_template:
+                # hide recurring event fields when adding a template
+                self.fields['is_recurring_event'].widget = forms.HiddenInput()
+                self.fields['is_recurring_event'].initial = False
+                self.fields['repeat_type'].widget = forms.HiddenInput()
+                self.fields['frequency'].widget = forms.HiddenInput()
+                self.fields['end_recurring'].widget = forms.HiddenInput()
+                self.fields['recurs_on'].widget = forms.HiddenInput()
 
         if edit_mode and recurring_mode:
             self.fields.pop('start_dt')

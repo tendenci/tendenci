@@ -45,9 +45,21 @@
                     </li>
 
                      {% if can_add_event %}
+	                     <li class="content-item">
+	                        <span class="app-name">
+	                            <a href="{% url 'event.templates_list' %}">{% trans "Event Templates" %}</a>
+	                        </span>
+	                    </li>
+                    
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'event.add' %}">{% trans "Add an Event" %}</a>
+                            </span>
+                        </li>
+                        
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'event.add_template' %}">{% trans "Add an Event Template" %}</a>
                             </span>
                         </li>
                     {% else %}
@@ -150,7 +162,8 @@
                                 <a href="{{ app_object.get_absolute_url }}">{% trans "View Event" %}</a>
                             </span>
                         </li>
-
+                        
+					{% if event.status_detail != 'template' %}
                         {% if app_object.is_recurring_event %}
                             <li class="content-item">
                                 <span class="app-name">
@@ -178,18 +191,13 @@
                                 <a href="{% url 'event.ics_single' app_object.pk %}">{% trans "Add Event to my Calendar" %}</a>
                             </span>
                         </li>
-
+					 {% endif %}
+					 
                         {% if can_view_event or can_edit_event %}
                             {% if can_edit_event %}
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'event.edit' app_object.pk %}">{% trans "Edit Event" %}</a>
-                                    </span>
-                                </li>
-
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'event.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
                                     </span>
                                 </li>
 
@@ -222,6 +230,8 @@
                                 {% endif %}
                             {% endif %}
 
+						{% if event.status_detail != 'template' %}
+						
                             {% if can_add_event %}
                                 <li class="content-item">
                                     <span class="app-name">
@@ -267,6 +277,14 @@
                                     </span>
                                 </li>
                             {% endif %}
+                            
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'event.edit.meta' app_object.pk %}">{% trans "Edit Meta" %}</a>
+                                </span>
+                            </li>
+                       {% endif %}     
+                            
 
                             {% if can_delete_event %}
                                 <li class="divider"></li>
