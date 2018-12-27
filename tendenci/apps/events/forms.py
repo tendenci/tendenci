@@ -581,7 +581,7 @@ class EventForm(TendenciBaseForm):
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    groups = forms.MultipleChoiceField(required=True, choices=[], help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
+    groups = forms.ModelMultipleChoiceField(required=True, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -706,7 +706,7 @@ class EventForm(TendenciBaseForm):
                 self.fields['enable_private_slug'].widget = forms.HiddenInput()
 
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            #self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
+            #self.fields['groups'].initial = Group.objects.get_or_create_default()
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
@@ -750,18 +750,11 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('priority')
             
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
+            default_groups = default_groups.filter(filters).distinct()
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
-
-        groups_list = [(0, '---------')] + list(groups_list)
-        self.fields['groups'].choices = groups_list
+        #groups_list = [(0, '---------')] + list(groups_list)
+        #self.fields['groups'].choices = groups_list
+        self.fields['groups'].queryset = default_groups
         self.fields['timezone'].initial = settings.TIME_ZONE
 
     def clean_photo_upload(self):
@@ -786,16 +779,6 @@ class EventForm(TendenciBaseForm):
 
         return photo_upload
 
-    def clean_groups(self):
-        group_ids = self.cleaned_data['groups']
-        groups = []
-        for group_id in group_ids:
-            try:
-                group = Group.objects.get(pk=group_id)
-                groups.append(group)
-            except Group.DoesNotExist:
-                raise forms.ValidationError(_('Invalid group selected.'))
-        return groups
 
     def clean_end_recurring(self):
         end_recurring = self.cleaned_data.get('end_recurring', None)
