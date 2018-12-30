@@ -315,6 +315,10 @@ class FormEntry(models.Model):
     @property
     def owner(self):
         return self.creator
+    
+    @property
+    def group(self):
+        return self.form.group
 
     def entry_fields(self):
         return self.fields.all().order_by('field__position')
