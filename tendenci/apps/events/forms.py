@@ -2081,6 +2081,7 @@ class AddonForm(BetterModelForm):
         fields = ('title',
             'price',
             'group',
+            'default_yes',
             'allow_anonymous',
             'allow_user',
             'allow_member',)
@@ -2090,6 +2091,7 @@ class AddonForm(BetterModelForm):
                     'title',
                     'price',
                     'group',
+                    'default_yes',
                 ],'legend': ''
             }),
             (_('Permissions'), {

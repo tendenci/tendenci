@@ -1409,6 +1409,7 @@ def copy_event(event, user, reuse_rel=False):
             title = addon.title,
             price = addon.price,
             group = addon.group,
+            default_yes = addon.default_yes,
             allow_anonymous = addon.allow_anonymous,
             allow_user = addon.allow_user,
             allow_member = addon.allow_member,

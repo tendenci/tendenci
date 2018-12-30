@@ -16,6 +16,9 @@
     input.registrant-pricing {
         float: left;
     }
+    .addon-forms .label{
+    	color: #000;
+    }
 </style>
 {% endblock %}
 
@@ -296,18 +299,17 @@
 
             {% if addons %}
             <div class="addon-wrap">
-             <div class="addon-forms">
-                    {% include 'events/addons/formset.html' %}
-             </div>
-             {% else %}
-                 {{ addon_formset.management_form }}
-             {% endif %}
-
-            {% if addons %}
                 <div class="add-addons-box">
                 {% include 'events/addons/addon-add-box.html' %}
                 </div>
+                
+                <div class="addon-forms">
+                    <div>{% trans "Addons Added:" %}</div>
+                    {% include 'events/addons/formset.html' %}
+               </div>
            </div>
+            {% else %}
+                 {{ addon_formset.management_form }}
             {% endif %}
 
             {% if event.is_table %}
@@ -415,6 +417,38 @@
            $(this).parent().parent().parent().parent().parent().hide();
        });
    {% endif %}
+</script>
+
+<script type="text/javascript">
+{# process default yes addons #}
+$(function () {
+	var i;
+	var myid;
+	var has_checked_addon = false;
+	
+ 	if ($('input[id="id_addon-TOTAL_FORMS"]').attr('value') == "0") {
+	   $('input[name="add-addons"]').each(function() {
+	      i = $(this).attr('value');
+	      myid = "add-addon-" + i + "-count";
+	      //$('input[id="' + myid + '"]').attr('value', 1);
+	      if (this.checked == true && $('input[id="' + myid + '"]').attr('value') != "0"){
+	    	  if (!has_checked_addon){
+	    		  has_checked_addon = true
+	    	  }
+	      }
+	   });
+	   if (has_checked_addon){
+		   $("#add-addons-button").trigger("click");
+			
+		   $('input[name="add-addons"]').each(function() {
+		      this.checked = false;
+		      i = $(this).attr('value');
+		      myid = "add-addon-" + i + "-count";
+		      $('input[id="' + myid + '"]').attr('value', 0);
+		   });  
+	   }
+	} 
+});
 </script>
 
 {% if not event.is_table and event.registration_configuration.allow_free_pass %}

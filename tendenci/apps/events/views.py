@@ -4248,7 +4248,7 @@ def approve(request, event_id, template_name="events/approve.html"):
 def list_addons(request, event_id, template_name="events/addons/list.html"):
     """List addons of an event"""
 
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_view_perm(request.user,'events.view_event', event):
         raise Http404
@@ -4262,7 +4262,7 @@ def list_addons(request, event_id, template_name="events/addons/list.html"):
 @login_required
 def add_addon(request, event_id, template_name="events/addons/add.html"):
     """Add an addon for an event"""
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
@@ -4306,7 +4306,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
 @login_required
 def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.html"):
     """Edit addon for an event"""
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http404

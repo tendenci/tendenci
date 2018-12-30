@@ -1673,6 +1673,8 @@ class Addon(models.Model):
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     # permission fields
     group = models.ForeignKey(Group, blank=True, null=True, on_delete=models.SET_NULL)
+    default_yes = models.BooleanField(_("Default to yes"), default=False,
+                    help_text=_('Default the Add-on to yes so the registrant has to purposefully opt-out'))
     allow_anonymous = models.BooleanField(_("Public can use"), default=False)
     allow_user = models.BooleanField(_("Signed in user can use"), default=False)
     allow_member = models.BooleanField(_("All members can use"), default=False)
