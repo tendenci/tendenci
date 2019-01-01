@@ -35,6 +35,8 @@
 			</div>
 		</div>
     </div>
+    {% empty %}
+    <div>No event templates. <a href="{% url 'event.add_template' %}">{% trans "Add an event template" %}</a></div>
     {% endfor %}
     </div>
 
