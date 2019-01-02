@@ -2809,12 +2809,6 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
     if year <= 1900 or year >= 9999:
         raise Http404
-    
-    form = EventMonthForm(request.GET, user=request.user)
-    if form.is_valid():
-        group = form.cleaned_data['group']
-    else:
-        group = 0
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
@@ -2850,6 +2844,12 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     month_names = calendar.month_name[month-1:month+2]
     weekdays = calendar.weekheader(10).split()
     cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
+    
+    form = EventMonthForm(request.GET, user=request.user, start_dt=cal[0][0], end_dt=cal[-1][-1]+timedelta(days=1))
+    if form.is_valid():
+        group = form.cleaned_data['group']
+    else:
+        group = 0
 
     # Check for empty pages for far-reaching years
     if abs(year - date.today().year) > 6:

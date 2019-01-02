@@ -102,13 +102,22 @@ class EventMonthForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        start_dt = kwargs.pop('start_dt', None)
+        end_dt = kwargs.pop('end_dt', None)
         super(EventMonthForm, self).__init__(*args, **kwargs)
         
+        if start_dt and end_dt:
+            event_groups_list = Event.objects.filter(start_dt__gte=start_dt,
+                                               start_dt__lt=end_dt
+                                               ).distinct().values_list('groups', flat=True)
+        else:
+            event_groups_list = Event.objects.distinct().values_list('groups', flat=True)
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters,
-                                             id__in=Event.objects.values_list('groups', flat=True)
+                                             id__in=event_groups_list
                                              ).distinct(
-                                        ).order_by('name').values_list('id', 'name')
+                                        ).order_by('name').values_list('id', 'label', 'name')
+        group_choices = [(id, label or name) for id, label, name in group_choices]
         self.fields['group'].choices = [('','All Groups')] + list(group_choices)
 
 class EventSearchForm(forms.Form):
