@@ -52,6 +52,10 @@
       </table>
     </div>
     
+    <div class="studygroup-sponsors">
+      <p>{{ study_group.sponsors|safe }}</p>
+    </div>
+    
     {% if admin %}
     <div class="studygroup-notes">
       {{ study_group.notes|safe }}

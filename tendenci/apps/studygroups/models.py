@@ -21,6 +21,7 @@ class StudyGroup(BasePage):
 
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
+    sponsors =tinymce_models.HTMLField(blank=True, default='')
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
