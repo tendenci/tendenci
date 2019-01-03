@@ -1,9 +1,22 @@
 from django import forms
+from django.forms import BaseInlineFormSet
 
 from tendenci.apps.studygroups.models import StudyGroup, Officer
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
+
+
+class OfficerBaseFormSet(BaseInlineFormSet):
+    def __init__(self,  *args, **kwargs): 
+        self.study_group = kwargs.pop("study_group", None)
+        super(OfficerBaseFormSet, self).__init__(*args, **kwargs)
+ 
+    def _construct_form(self, i, **kwargs):
+        if hasattr(self, 'study_group'):
+            kwargs['study_group'] = self.study_group
+        return super(OfficerBaseFormSet, self)._construct_form(i, **kwargs)
+
 
 class StudyGroupForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
@@ -147,7 +160,7 @@ class OfficerForm(forms.ModelForm):
         model = Officer
         exclude = ('study_group',)
 
-    def __init__(self, study_group_group, *args, **kwargs):
+    def __init__(self, study_group, *args, **kwargs):
         super(OfficerForm, self).__init__(*args, **kwargs)
         self.fields.keyOrder = ['position', 'user', 'phone']
         # Initialize user.  Label depends on nullability.
@@ -156,6 +169,7 @@ class OfficerForm(forms.ModelForm):
         # 2. username
         # 3. email
         group_members = []
+        study_group_group = study_group.group
         if study_group_group:
             group_members = GroupMembership.objects.filter(group=study_group_group).select_related()
         choices = [('', '---------')]

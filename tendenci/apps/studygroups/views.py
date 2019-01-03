@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
-from django.utils.functional import curry
+#from django.utils.functional import curry
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -16,7 +16,7 @@ from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.studygroups.models import StudyGroup, Officer
-from tendenci.apps.studygroups.forms import StudyGroupForm, OfficerForm
+from tendenci.apps.studygroups.forms import StudyGroupForm, OfficerForm, OfficerBaseFormSet
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
@@ -179,15 +179,15 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         'sub_category': getattr(sub_category,'name','0')
     }
 
-    OfficerFormSet = inlineformset_factory(StudyGroup, Officer, form=OfficerForm, extra=1)
-    OfficerFormSet.form = staticmethod(curry(OfficerForm, study_group_group=study_group.group))
+    OfficerFormSet = inlineformset_factory(StudyGroup, Officer, form=OfficerForm,
+                                           formset=OfficerBaseFormSet, extra=1,)
+    formset = OfficerFormSet(request.POST or None, instance=study_group,
+                             study_group=study_group, prefix="officers")
 
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, instance=study_group, user=request.user)
         metaform = meta_form_class(request.POST, instance=study_group.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
-
-        formset = OfficerFormSet(request.POST, instance=study_group, prefix="officers")
 
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
             study_group = form.save(commit=False)
@@ -197,8 +197,6 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
             #save meta
             meta = metaform.save()
             study_group.meta = meta
-
-            formset.save()
 
             ## update the category of the studygroup
             category_removed = False
@@ -220,6 +218,7 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
 
             #save relationships
             study_group.save()
+            formset.save()
 
             EventLog.objects.log(instance=study_group)
 
@@ -241,7 +240,6 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         form = form_class(instance=study_group, user=request.user)
         metaform = meta_form_class(instance=study_group.meta, prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
-        formset = OfficerFormSet(instance=study_group, prefix="officers")
         #formset.form = staticmethod(curry(OfficerForm, study_group_group=study_group.group))
 
     return render_to_resp(request=request, template_name=template_name,
