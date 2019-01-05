@@ -51,6 +51,10 @@
       </table>
     </div>
     
+    <div class="committee-sponsors">
+      <p>{{ committee.sponsors|safe }}</p>
+    </div>
+    
     {% if admin %}
     <div class="committee-notes">
       {{ committee.notes|safe }}
