@@ -1,3 +1,23 @@
+### 11.0.8 [2019-01-07]
+
+**Improvements**
+
+* Event template functionality
+* Added option to default the event Add-on to yes so the registrant has to purposefully opt-out
+* Added option to include uploaded files on resumes export
+* Add the sponsors field to committees and studygroups 
+* The list_events template tag can now take comma separated multiple types 
+* Updated the list_events tag to include 'priority' in order_by
+* Made the event priority checkbox available to superusers only
+* Updated the command to clean up old exports from db
+
+**Fixes**
+
+* Made the groups list to show the groups only in the selected date range on events monthly view
+* Fixed an error on study-group edit due to inline formset
+* Fixed group not preserving on Event edit 
+* Fixed a javascript error in model-report
+
 ### 11.0.7 [2018-12-14]
 
 **Improvements**
