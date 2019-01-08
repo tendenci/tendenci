@@ -142,7 +142,8 @@ class EventSearchForm(forms.Form):
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
 
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
-        group_choices = Group.objects.filter(group_filters).distinct(
+        group_choices = Group.objects.filter(group_filters).filter(
+                                        status_detail="active", show_for_events=True).distinct(
                                         ).order_by('name').values_list('id', 'name')
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
