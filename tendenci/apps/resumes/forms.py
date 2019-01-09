@@ -30,7 +30,7 @@ class ResumeForm(TendenciBaseForm):
 
     resume_url = forms.CharField(
         label=_('Resume URL'),
-        help_text=_("Link to an external resume (eg. Google Docs)"),
+        help_text=_("Link to an external resume (eg. LinkedIn)"),
         required=False
     )
 
