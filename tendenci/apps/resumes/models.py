@@ -1,4 +1,5 @@
 import uuid
+import os
 
 from django.db import models
 from django.urls import reverse
@@ -17,6 +18,11 @@ from tendenci.apps.resumes.module_meta import ResumeMeta
 
 
 def file_directory(instance, filename):
+    if instance.first_name and instance.last_name:
+        filename = '{0}-{1}{2}'.format(instance.last_name,
+                                    instance.first_name,
+                                    os.path.splitext(filename)[1])
+        
     filename = correct_filename(filename)
     return 'resumes/%d/%s' % (instance.id, filename)
 
