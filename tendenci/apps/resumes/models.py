@@ -59,6 +59,8 @@ class Resume(TendenciBaseModel):
 
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
     contact_address = models.CharField(max_length=50, blank=True)
     contact_address2 = models.CharField(max_length=50, blank=True)
     contact_city = models.CharField(max_length=50, blank=True)

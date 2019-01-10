@@ -63,3 +63,5 @@ django-markdown-deux
 xhtml2pdf==0.2.2
 python-magic
 XlsxWriter==0.9.6
+nameparser
+

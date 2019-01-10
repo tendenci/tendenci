@@ -79,7 +79,8 @@ class ResumeForm(TendenciBaseForm):
         'is_agency',
         'requested_duration',
         'tags',
-        'contact_name',
+        'first_name',
+        'last_name',
         'contact_address',
         'contact_address2',
         'contact_city',
@@ -119,7 +120,8 @@ class ResumeForm(TendenciBaseForm):
                       'legend': ''
                       }),
                       (_('Contact'), {
-                      'fields': ['contact_name',
+                      'fields': ['first_name',
+                                 'last_name',
                                  'contact_address',
                                  'contact_address2',
                                  'contact_city',
