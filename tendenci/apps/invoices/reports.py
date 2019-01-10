@@ -1,3 +1,4 @@
+import re
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -20,6 +21,10 @@ def id_format(value, instance):
 def currency_format(value, instance):
     return "%s%s" % (CURRENCY_SYMBOL, value)
 
+p = re.compile(r'^Registration \d+ for Event: ')
+def title_format(value, instance):
+    return p.sub('', value)
+
 class InvoiceReport(ReportAdmin):
     # choose a title for your report for h1, title tag and report list
     title = _('Invoice Report')
@@ -34,6 +39,7 @@ class InvoiceReport(ReportAdmin):
         'create_dt',
         'status_detail',
         'object_type',
+        'title',
         'entity',
         'payments_credits',
         'balance',
@@ -61,6 +67,7 @@ class InvoiceReport(ReportAdmin):
     override_field_formats = {
         'create_dt': us_date_format,
         'object_type': obj_type_format,
+        'title': title_format,
         'id': id_format,
         'balance': currency_format,
         'total': currency_format,
