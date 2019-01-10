@@ -107,7 +107,7 @@ def obj_type_format(value, instance=None):
 def entity_format(value):
     global ENTITY_DICT
     if not ENTITY_DICT:
-        ENTITY_DICT = dict((e.id, e.entity_name) for e in Entity.objects.all())
+        ENTITY_DICT = dict((e.id, e.entity_name.replace("'", "&apos;")) for e in Entity.objects.all())
     return '%s (Entity ID: %s)' % (ENTITY_DICT.get(value), value)
 
 
