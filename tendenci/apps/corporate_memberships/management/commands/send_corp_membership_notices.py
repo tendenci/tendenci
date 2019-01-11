@@ -111,6 +111,7 @@ class Command(BaseCommand):
                                        'corporatemembershiprecipients').strip()
             if admin_emails:
                 admin_emails = admin_emails.split(',')
+                admin_emails = [e.strip() for e in admin_emails]
             if not admin_emails:
                 admin_emails = (get_setting('site', 'global',
                                             'admincontactemail'
@@ -284,7 +285,7 @@ class Command(BaseCommand):
 
                 if notice.sender:
                     email_context.update({
-                        'sender':notice.sender,
+                        #'sender':notice.sender,
                         'reply_to':notice.sender})
                 if notice.sender_display:
                     email_context.update({'sender_display':notice.sender_display})
