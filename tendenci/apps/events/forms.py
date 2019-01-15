@@ -757,7 +757,8 @@ class EventForm(TendenciBaseForm):
                                               show_for_events=True)
         if not self.user.is_superuser:
             # only superuser can change the priority bit
-            self.fields.pop('priority')
+            if 'priority' in self.fields:
+                self.fields.pop('priority')
             
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             default_groups = default_groups.filter(filters).distinct()
@@ -808,10 +809,11 @@ class EventForm(TendenciBaseForm):
             errors.append(_(u"This cannot be \
                 earlier than the start date."))
 
-        if start_event_date > end_event_date:
-            errors = self._errors.setdefault("end_event_date", ErrorList())
-            errors.append(_(u"This cannot be \
-                earlier than the start date."))
+        if start_event_date and end_event_date:
+            if start_event_date > end_event_date:
+                errors = self._errors.setdefault("end_event_date", ErrorList())
+                errors.append(_(u"This cannot be \
+                    earlier than the start date."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data
