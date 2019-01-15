@@ -459,6 +459,7 @@ div.forms{
             $("#cap-error-msg").html("");
             if (cap_obj && cap_obj.apply_cap === "True"){
                 var membership_cap = parseInt(cap_obj.membership_cap);
+                $("#above-cap-ind-price").html(parseFloat(cap_obj.above_cap_price).toFixed(2));
                 if (total_individual_count > membership_cap && cap_obj.allow_above_cap === "True"){
                     ind_sub_total = membership_cap * parseFloat(new_ind_price);
                     if (cap_obj.allow_above_cap === "True"){
@@ -467,7 +468,6 @@ div.forms{
                         ind_qty = membership_cap;
                         above_cap_ind_sub_total = above_cap_ind_qty * parseFloat(cap_obj.above_cap_price);
                         $("#above-cap-ind-qty").html(above_cap_ind_qty);
-                        $("#above-cap-ind-price").html(parseFloat(cap_obj.above_cap_price).toFixed(2));
                         $("#above-cap-ind-sub-total").html(above_cap_ind_sub_total.toFixed(2));
                         total_amount = above_cap_ind_sub_total;
                     }
