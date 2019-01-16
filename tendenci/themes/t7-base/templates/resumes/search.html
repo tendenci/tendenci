@@ -1,4 +1,4 @@
-{% extends "resumes/base.html" %}
+{% extends "resumes/base-wide.html" %}
 {% load base_filters %}
 {% load base_tags %}
 {% load bootstrap_pagination_tags %}
@@ -16,6 +16,20 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="Latest resumes" href="{% url 'resume.feed' %}">
+    
+<style>
+#id_search_criteria, #id_search_text, #id_search_method{
+	height: 40px;
+	padding: 10px 15px;
+	font-size: 15px;
+	line-height: 1.4;
+	color: #2c3e50;
+	background-color: #ffffff;
+	background-image: none;
+	border: 1px solid #dce4ec;
+	border-radius: 4px;
+}
+</style>
 {% endblock %}
 
 {% block content_classes %}{{ block.super }} t-search-view{% endblock %}
@@ -30,8 +44,11 @@
         {% endif %}
     </h1>
 
-    {% autopaginate resumes 10 %}
     {% resume_search %}
+    
+
+	{% autopaginate resumes num_items %}
+
 
     <h4 class="capitalize">
         {% if MODULE_RESUMES_LABEL_PLURAL %}
@@ -45,13 +62,40 @@
         {% endif %}
     </h4>
 
-    <section>
-        {% for resume in resumes %}
-            {% search_result resume %}
-        {% empty %}
-
-        {% endfor %}
-    </section>
+	{% if is_grid_view %}		 
+			 <table class="table table-striped table-bordered">
+			 <tr>
+				 <th>{% trans "Title" %}</th>
+				 <th>{% trans "First Name" %}</th>
+				 <th>{% trans "Last Name" %}</th>
+				 <th>{% trans "Email" %}</th>
+				 <th>{% trans "Resume URL" %}</th>
+				 <th>{% trans "Resume File" %}</th>
+				 <th>{% trans "Location" %}</th>
+			 </tr>
+			 {% for resume in resumes %}
+				<tr>
+					<td><a href="{% url 'resume' resume.slug %}">{{ resume.title }}</a></td>
+					<td>{{ resume.first_name }}</td>
+					<td>{{ resume.last_name }}</td>
+					<td>{{ resume.email }}</td>
+					<td>{{ resume.resume_url }}</td>
+					<td>{% if resume.resume_file %}<a href="{% url 'resume.resume_file' resume.slug  %}">Download</a>{% endif %}</td>
+					<td>{{ resume.location }}</td>
+				</tr>
+		     {% endfor %}
+			 </table>
+	
+	{% else %}		 
+	    <section>
+	        {% for resume in resumes %}
+	            {% search_result resume %}
+	        {% empty %}
+	
+	        {% endfor %}
+	    </section>
+	
+	{% endif %}
 
     {% paginate %}
 {% endblock %}

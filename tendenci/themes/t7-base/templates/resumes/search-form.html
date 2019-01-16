@@ -1,4 +1,51 @@
-{% if SITE_GLOBAL_SEARCHINDEX %}
-    {% url "resumes" as form_action %}
-    {% include "base/simple_search_form.html" with module_name="resumes" form_action=form_action %}
-{% endif %}
+
+<form class="resume-search-form form-horizontal" action="." method="get">
+<div id="resume-search-fields" class="collapse in">
+
+<div class="row">
+    <div class="col-sm-6 form-group">
+    <label for="id_first_name" class="col-sm-4 control-label">{{ form.first_name.label }}</label>
+    	<div class="col-sm-8">
+         {{ form.first_name }}
+         </div>
+    </div>
+    <div class="col-sm-6 form-group">
+    <label for="id_last_name" class="col-sm-4 control-label">{{ form.last_name.label }}</label>
+    	<div class="col-sm-8">
+        {{ form.last_name }}
+        </div>
+    </div>
+</div>
+<div class="row">
+     <div class="col-sm-6 form-group">
+     <label for="id_email" class="col-sm-4 control-label">{{ form.email.label }}</label>
+     	<div class="col-sm-8">
+       {{ form.email }}
+       </div>
+    </div>
+    <div class="col-sm-6 form-group">
+    	<div class="col-sm-offset-4 col-sm-8">
+	         <div class="checkbox">
+	        <label>
+	          {{ form.grid_view }} {{ form.grid_view.label }}
+	        </label>
+	     </div>
+      </div>
+    </div>  
+</div>
+  
+<div class="row">
+	<div class="col-md-12 form-group">
+	<label for="id_last_name" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	<div class="col-sm-10">
+   	 		{{ form.search_criteria }} &nbsp;
+   	 		{{ form.search_text }} &nbsp;
+   	 		{{ form.search_method }}
+   	 		<input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+  	</div>
+</div>
+</div>
+
+</div>
+<a href="#resume-search-fields" data-toggle="collapse">Hide/Show Search Form</a>
+</form>

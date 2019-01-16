@@ -24,7 +24,7 @@ from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.resumes.models import Resume
-from tendenci.apps.resumes.forms import ResumeForm, ResumeExportForm
+from tendenci.apps.resumes.forms import ResumeForm, ResumeExportForm, ResumeSearchForm
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -72,19 +72,51 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
 def search(request, template_name="resumes/search.html"):
     """
     This page lists out all resumes from newest to oldest.
-    If a search index is available, this page will also
-    have the option to search through resumes.
     """
-    has_index = get_setting('site', 'global', 'searchindex')
-    query = request.GET.get('q', None)
-
-    if has_index and query:
-        resumes = Resume.objects.search(query, user=request.user)
+    filters = get_query_filters(request.user, 'resumes.view_resume')
+    resumes = Resume.objects.filter(filters).distinct()
+        
+    form = ResumeSearchForm(request.GET, user=request.user)
+    if form.is_valid():
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        email = form.cleaned_data['email']
+        search_criteria = form.cleaned_data['search_criteria']
+        search_text = form.cleaned_data['search_text']
+        search_method = form.cleaned_data['search_method']
+        grid_view = form.cleaned_data['grid_view']
     else:
-        filters = get_query_filters(request.user, 'resumes.view_resume')
-        resumes = Resume.objects.filter(filters).distinct()
-        if request.user.is_authenticated:
-            resumes = resumes.select_related()
+        first_name = None
+        last_name = None
+        email = None
+        search_criteria = None
+        search_text = None
+        search_method = None
+        grid_view = False
+    
+    if grid_view:
+        num_items = 50
+    else: 
+        num_items = 10
+                
+    if first_name:
+        resumes = resumes.filter(first_name__iexact=first_name)
+    if last_name:
+        resumes = resumes.filter(last_name__iexact=last_name)
+    if email:
+        resumes = resumes.filter(contact_email__iexact=email)
+
+    if search_criteria and search_text:
+        search_type = '__iexact'
+        if search_method == 'starts_with':
+            search_type = '__istartswith'
+        elif search_method == 'contains':
+            search_type = '__icontains'
+
+        search_filter = {'%s%s' % (search_criteria,
+                                   search_type): search_text}
+        resumes = resumes.filter(**search_filter)
+
     resumes = resumes.order_by('-create_dt')
 
     EventLog.objects.log(**{
@@ -95,9 +127,12 @@ def search(request, template_name="resumes/search.html"):
         'request': request,
         'source': 'resumes'
     })
+    
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'resumes':resumes})
+        context={'resumes':resumes, 'form': form,
+                 'is_grid_view': grid_view,
+                 'num_items': num_items})
 
 def search_redirect(request):
     """

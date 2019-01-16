@@ -21,6 +21,44 @@ ALLOWED_FILE_EXT = (
     '.rtf'
 )
 
+class ResumeSearchForm(forms.Form):
+    SEARCH_CRITERIA_CHOICES = (
+                        ('', _('SELECT ONE')),
+                        ('title', _('Title')),
+                        ('description', _('Description')),
+                        ('location', _('Location')),
+                        ('contact_city', _('City')),
+                        ('contact_state', _('State')),
+                        ('contact_zip_code', _('Zip Code')),
+                        ('contact_country', _('Country')),
+                        )
+    SEARCH_METHOD_CHOICES = (
+                             ('starts_with', _('Starts With')),
+                             ('contains', _('Contains')),
+                             ('exact', _('Exact')),
+                             )
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    email = forms.CharField(label=_("Email"), required=False)
+    search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
+                                        required=False)
+    search_text = forms.CharField(max_length=100, required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False)
+    grid_view = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(ResumeSearchForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['email'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        
+        for field in self.fields:
+            if field not in ['search_criteria', 'search_text', 'search_method', 'grid_view']:
+                self.fields[field].widget.attrs.update({'class': 'form-control'})
+
+
 class ResumeForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
