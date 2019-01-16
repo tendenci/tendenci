@@ -49,8 +49,17 @@ class ResumeForm(TendenciBaseForm):
 
     captcha = CustomCatpchaField(label=_('Type the code below'))
 
-    contact_email = EmailVerificationField(label=_("Contact email"), required=False)
-    contact_country = CountrySelectField(label=_("Contact country"), required=False)
+    contact_email = EmailVerificationField(label=_("Email"), required=False)
+    contact_country = CountrySelectField(label=_("Country"), required=False)
+    contact_address = forms.CharField(label=_("Address"), required=False)
+    contact_address2 = forms.CharField(label=_("Address2"), required=False)
+    contact_city = forms.CharField(label=_("City"), required=False)
+    contact_zip_code = forms.CharField(label=_("Zip code"), required=False)
+    contact_country = forms.CharField(label=_("Country"), required=False)
+    contact_phone = forms.CharField(label=_("Phone"), required=False)
+    contact_phone2 = forms.CharField(label=_("Phone2"), required=False)
+    contact_fax = forms.CharField(label=_("Fax"), required=False)
+    contact_website = forms.CharField(label=_("Website"), required=False)
 
     activation_dt = forms.SplitDateTimeField(label=_('Activation Date/Time'),
         initial=datetime.now())
