@@ -205,6 +205,22 @@ class ResumeForm(TendenciBaseForm):
                 'syndicate',
                 'status_detail'
             ]
+
+            # Populate contact info for non-superuser
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['contact_address'].initial = self.user.profile.address
+            self.fields['contact_address2'].initial = self.user.profile.address2
+            self.fields['contact_city'].initial = self.user.profile.city
+            self.fields['contact_state'].initial = self.user.profile.state
+            self.fields['contact_zip_code'].initial = self.user.profile.zipcode
+            self.fields['contact_country'].initial = self.user.profile.country
+            self.fields['contact_phone'].initial = self.user.profile.phone
+            self.fields['contact_phone2'].initial = self.user.profile.phone2
+            self.fields['contact_fax'].initial = self.user.profile.fax
+            self.fields['contact_email'].initial = self.user.email
+            self.fields['contact_website'].initial = self.user.profile.url
+            
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)
 
