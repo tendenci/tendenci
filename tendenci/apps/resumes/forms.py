@@ -160,6 +160,8 @@ class ResumeForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(ResumeForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
