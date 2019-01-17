@@ -1,5 +1,8 @@
 {% load tagging_tags %}
 {% firstof object.title "Untitled" %}
+{{ object.first_name }}
+{{ object.last_name }}
+{{ object.email }}
 {{ object.description }}
 {{ object.location }}
 {{ object.skills }}
