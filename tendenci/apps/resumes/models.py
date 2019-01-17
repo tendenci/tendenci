@@ -129,3 +129,8 @@ class Resume(TendenciBaseModel):
 
     def is_pending(self):
         return self.status == 0 and self.status_detail == 'pending'
+
+    @property
+    def is_linkedin_url(self):
+        return self.resume_url and 'linkedin.com' in self.resume_url
+                

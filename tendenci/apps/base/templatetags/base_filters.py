@@ -489,3 +489,11 @@ def field_to_string(value):
             return "%s and %s" % (value[0], value[1])
         return ", ".join(value)
     return str(value)
+
+
+@register.filter
+def url_complete(value):
+    """prepend https:// if missing"""
+    if 'https://' not in value and 'http://' not in value:
+        return 'https://' + value
+    return value

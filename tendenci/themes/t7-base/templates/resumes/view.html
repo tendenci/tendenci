@@ -15,22 +15,27 @@
     <article id="t-resumes-resume-{{ job.pk }}" class="t-resumes-resume">
         <div class="page-header">
             <h1>{{ resume.title }}</h1>
-
             {% if resume.resume_url or resume.resume_file %}
                 <ul class="list-inline t-resumes-resume-links">
                     {% if resume.resume_url %}
+                    {% with is_linkedin_url=resume.is_linkedin_url %}
                         <li>
-                            <a href="{{ resume.resume_url }}" target="_blank">
+                            <a href="{{ resume.resume_url|url_complete }}" target="_blank">
                                 <span class="glyphicon glyphicon-link"></span>
-                                {% if resume.first_name %}
-                                    {% blocktrans with name=resume.first_name %}
-                                        View {{ name }}'s resume
-                                    {% endblocktrans %}
-                                {% else %}
-                                    {% trans "View this resume's website" %}
-                                {% endif %}
+                                 {% if is_linkedin_url %}
+	                                {% if resume.first_name %}
+	                                    {% blocktrans with name=resume.first_name %}
+	                                        View {{ name }}'s LinkedIn
+	                                    {% endblocktrans %}
+	                                {% else %}
+	                                    {% trans "View this resume's LinkedIn" %}
+	                                {% endif %}
+	                              {% else %}
+	                        	    {% trans "View Website" %}
+	                              {% endif %}
                             </a>
                         </li>
+                        {% endwith %}
                     {% endif %}
 
                     {% if resume.resume_file %}
@@ -52,6 +57,39 @@
         </div>
 
         <div class="t-resumes-resume-body">
+        	{% if resume.first_name or resume.last_name or resume.contact_phone or resume.contact_phone2 or resume.contact_fax or resume.contact_email %}
+                <section class="t-resumes-resume-contact-information">
+                    <h2>{% trans "Contact Information" %}</h2>
+
+                    <ul class="list-unstyled t-resumes-resume-contact-information-list">
+                        <li>
+                            <address>
+                                {% if resume.first_name or resume.last_name %}
+                                    {{ resume.first_name }} {{ resume.last_name }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_phone %}
+                                    {{ resume.contact_phone|phonenumber }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_phone2 %}
+                                    <span>{{ resume.contact_phone2|phonenumber }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_fax %}
+                                    <span>{{ resume.contact_fax }}<br>
+                                {% endif %}
+
+                                {% if resume.contact_email %}
+                                    {{ resume.contact_email|obfuscate_email }}
+                                {% endif %}
+                            </address>
+                        </li>
+                    </ul>
+                </section>
+            {% endif %}
+        
+        
             {% if resume.description %}
                 <section class="t-resumes-resume-description">
                     <h2>{% trans "Description" %}</h2>
@@ -93,38 +131,7 @@
                     {{ resume.education|safe|linebreaks }}
                 </section>
             {% endif %}
-
-            {% if resume.contact_name or resume.contact_phone or resume.contact_phone2 or resume.contact_fax or resume.contact_email %}
-                <section class="t-resumes-resume-contact-information">
-                    <h2>{% trans "Contact Information" %}</h2>
-
-                    <ul class="list-unstyled t-resumes-resume-contact-information-list">
-                        <li>
-                            <address>
-                                {% if resume.contact_name %}
-                                    {{ resume.contact_name }}<br>
-                                {% endif %}
-
-                                {% if resume.contact_phone %}
-                                    {{ resume.contact_phone|phonenumber }}<br>
-                                {% endif %}
-
-                                {% if resume.contact_phone2 %}
-                                    <span>{{ resume.contact_phone2|phonenumber }}<br>
-                                {% endif %}
-
-                                {% if resume.contact_fax %}
-                                    <span>{{ resume.contact_fax }}<br>
-                                {% endif %}
-
-                                {% if resume.contact_email %}
-                                    {{ resume.contact_email|obfuscate_email }}
-                                {% endif %}
-                            </address>
-                        </li>
-                    </ul>
-                </section>
-            {% endif %}
+            
         </div>
 
         {% include "resumes/meta.html" with show_fb_connect=True %}

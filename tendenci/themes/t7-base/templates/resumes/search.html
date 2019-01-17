@@ -74,6 +74,7 @@
 				 <th>{% trans "Location" %}</th>
 			 </tr>
 			 {% for resume in resumes %}
+			 	{% with is_linkedin_url=resume.is_linkedin_url %}
 				<tr>
 					<td><a href="{% url 'resume' resume.slug %}">{{ resume.title }}</a></td>
 					<td>{{ resume.first_name }}</td>
@@ -81,15 +82,19 @@
 					<td>{{ resume.contact_email }}</td>
 					<td>
 					{% if resume.resume_url %}
-                        <a href="{{ resume.resume_url }}" target="_blank">
+                        <a href="{{ resume.resume_url|url_complete }}" target="_blank">
                             <span class="glyphicon glyphicon-link"></span>
-                            {% if resume.first_name %}
-                                {% blocktrans with first_name=resume.first_name %}
-                                    View {{ first_name }}'s resume
-                                {% endblocktrans %}
-                            {% else %}
-                                {% trans "View this resume's website" %}
-                            {% endif %}
+                            {% if is_linkedin_url %}
+	                            {% if resume.first_name %}
+	                                {% blocktrans with first_name=resume.first_name %}
+	                                    View {{ first_name }}'s LinkedIn
+	                                {% endblocktrans %}
+	                            {% else %}
+	                                {% trans "View LinkedIn" %}
+	                            {% endif %}
+	                        {% else %}
+	                        	{% trans "View Website" %}
+	                        {% endif %}
                         </a>
                     {% endif %}
 					
@@ -110,6 +115,7 @@
 					</td>
 					<td>{{ resume.location }}</td>
 				</tr>
+				{% endwith %}
 		     {% endfor %}
 			 </table>
 	
