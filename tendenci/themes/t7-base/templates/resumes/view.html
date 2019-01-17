@@ -22,9 +22,9 @@
                         <li>
                             <a href="{{ resume.resume_url }}" target="_blank">
                                 <span class="glyphicon glyphicon-link"></span>
-                                {% if resume.contact_name %}
-                                    {% blocktrans with name=contact_name %}
-                                        View {{ contact_name }}'s resume
+                                {% if resume.first_name %}
+                                    {% blocktrans with name=resume.first_name %}
+                                        View {{ name }}'s resume
                                     {% endblocktrans %}
                                 {% else %}
                                     {% trans "View this resume's website" %}
@@ -37,9 +37,9 @@
                         <li>
                             <a href="{% url 'resume.resume_file' resume.slug %}">
                                 <span class="glyphicon glyphicon-download-alt"></span>
-                                {% if resume.contact_name %}
-                                    {% blocktrans with name=contact_name %}
-                                        Download {{ contact_name }}'s resume
+                                {% if resume.first_name %}
+                                    {% blocktrans with name=resume.first_name %}
+                                        Download {{ name }}'s resume
                                     {% endblocktrans %}
                                 {% else %}
                                     {% trans "Download this resume" %}

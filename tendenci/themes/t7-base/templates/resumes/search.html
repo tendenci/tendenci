@@ -78,9 +78,36 @@
 					<td><a href="{% url 'resume' resume.slug %}">{{ resume.title }}</a></td>
 					<td>{{ resume.first_name }}</td>
 					<td>{{ resume.last_name }}</td>
-					<td>{{ resume.email }}</td>
-					<td>{{ resume.resume_url|urlize }}</td>
-					<td>{% if resume.resume_file %}<a href="{% url 'resume.resume_file' resume.slug  %}">Download</a>{% endif %}</td>
+					<td>{{ resume.contact_email }}</td>
+					<td>
+					{% if resume.resume_url %}
+                        <a href="{{ resume.resume_url }}" target="_blank">
+                            <span class="glyphicon glyphicon-link"></span>
+                            {% if resume.first_name %}
+                                {% blocktrans with first_name=resume.first_name %}
+                                    View {{ first_name }}'s resume
+                                {% endblocktrans %}
+                            {% else %}
+                                {% trans "View this resume's website" %}
+                            {% endif %}
+                        </a>
+                    {% endif %}
+					
+					</td>
+					<td>
+					{% if resume.resume_file %}
+                        <a href="{% url 'resume.resume_file' resume.slug %}">
+                            <span class="glyphicon glyphicon-download-alt"></span>
+                            {% if resume.first_name %}
+                                {% blocktrans with first_name=resume.first_name %}
+                                    Download {{ first_name }}'s resume
+                                {% endblocktrans %}
+                            {% else %}
+                                {% trans "Download this resume" %}
+                            {% endif %}
+                        </a>
+                     {% endif %}
+					</td>
 					<td>{{ resume.location }}</td>
 				</tr>
 		     {% endfor %}
