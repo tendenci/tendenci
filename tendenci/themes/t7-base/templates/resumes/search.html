@@ -79,7 +79,7 @@
 					<td>{{ resume.first_name }}</td>
 					<td>{{ resume.last_name }}</td>
 					<td>{{ resume.email }}</td>
-					<td>{{ resume.resume_url }}</td>
+					<td>{{ resume.resume_url|urlize }}</td>
 					<td>{% if resume.resume_file %}<a href="{% url 'resume.resume_file' resume.slug  %}">Download</a>{% endif %}</td>
 					<td>{{ resume.location }}</td>
 				</tr>
