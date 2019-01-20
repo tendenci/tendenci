@@ -1,0 +1,18 @@
+<p>
+{% url "event" event.id as event_url %}
+{% trans "The email notification has been distributed to registrants who abandoned payments for the event" %} 
+<a href="{{ site_url }}{{ event_url }}">{{ event.title }}</a>.
+</p>
+
+<ol>
+{% for reg8n in reg8n_list %}
+	<li><a href="{% url "event.registration_confirmation" event.pk reg8n.id %}">{{ reg8n.registrant }}</a></li>
+{% endfor %}
+</ol>
+
+<p>{% trans "Total email sent:" %} {{ reg8n_list|length }}</p>
+
+<br />
+<br />
+<div>{% trans "Thanks!" %}</div>
+<div>{{ site_name }}</div>

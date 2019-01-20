@@ -43,6 +43,18 @@ def create_notice_types(sender, **kwargs):
         _('Recap of end of event registration'),
         _('Notify administrators that registration for the event has ended.'),
         verbosity=verbosity)
+    
+    notification.create_notice_type(
+        'event_email_abandoned',
+        _('Notice to registrants who abandoned payments'),
+        _('Notify registrants who abandoned payment to pay or cancel.'),
+        verbosity=verbosity)
+
+    notification.create_notice_type(
+        'event_email_abandoned_recap',
+        _('Recap for abandoned payment notice sent'),
+        _('Recap to admin for notice to registrants who abandoned payment has been sent.'),
+        verbosity=verbosity)
 
 
 def init_signals():

@@ -1,0 +1,22 @@
+<div>{% blocktrans with name=registrant.first_name %}Hello {{ name }},{% endblocktrans %}</div>
+
+<p>
+{% blocktrans with title=event.title start_dt=event.start_dt %}Your registration for {{ title }} on {{ start_dt }} is incomplete and pending payment.{% endblocktrans %} 
+</p>
+
+<p>
+{% trans "To ensure your spot at the event, please view your invoice and make an online payment." %}
+</p>
+
+<div><a href="{{ site_url }}{% url 'invoice.view' invoice.id invoice.guid %}">{% trans "View Invoice" %}</a></div>
+
+<p>
+{% trans "If you are unable to attend this event, please cancel your registration." %}
+</p>
+
+<div><a href="{{ site_url }}{% url "event.registration_confirmation" event.pk reg8n.registrant.hash %}">{% trans "Cancel Registration" %}</a></div>
+ 
+<br />
+<br />
+<div>{% trans "Thanks!" %}</div>
+<div>{{ site_name }}</div>
