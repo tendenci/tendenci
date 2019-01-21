@@ -1207,14 +1207,14 @@
         "updated_by": ""
     },
     {
-        "default_value": false,
+        "default_value": "false",
         "description": "Enable notification to registrants who abandoned payments.",
         "data_type": "boolean",
         "update_dt": "2019-01-18 18:26:00",
         "input_type": "select",
         "client_editable": true,
         "name": "enable_notice_abandoned",
-        "value": false,
+        "value": "false",
         "label": "Notify Registrants Who Abandoned Payments",
         "input_value": "true,false",
         "parent_id": 0,
