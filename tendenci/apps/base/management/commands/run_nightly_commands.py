@@ -14,6 +14,7 @@ class Command(BaseCommand):
                     'expire_resumes',
                     'expire_stories',
                     'send_event_reminders',
+                    "check_abandoned_payments",
                     'clean_corporate_memberships',
                     'send_membership_notices',
                     'clean_memberships',
