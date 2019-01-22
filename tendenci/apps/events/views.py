@@ -408,6 +408,13 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         events = [event for event in events if event in myevents]
 
     EventLog.objects.log()
+    
+    if get_setting('module', 'events', 'gridview_for_listview'):
+        base_template = 'events/base-wide.html'
+        num_per_page = 25
+    else:
+        base_template = 'events/base.html'
+        num_per_page = 10
 
     return render_to_resp(request=request, template_name=template_name, context={
         'events': events,
@@ -417,6 +424,8 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         'event_type': event_type,
         'start_dt': start_dt,
         'with_registration': with_registration,
+        'base_template': base_template,
+        'num_per_page': num_per_page
         })
 
 

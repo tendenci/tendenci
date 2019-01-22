@@ -51,6 +51,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "If true, event list view will show grid view.",
+        "data_type": "boolean",
+        "update_dt": "2019-01-22 11:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "gridview_for_listview",
+        "value": "false",
+        "label": "Show Grid View for List View",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": true,
         "description": "If true, registrants should be able to select a different pricing for each additional registrant. Guests will be validated based on the email address that is entered.",
         "data_type": "boolean",

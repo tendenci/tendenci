@@ -1259,6 +1259,24 @@ class Event(TendenciBaseModel):
             for reg in registrations:
                 total_addons += reg.regaddon_set.all().aggregate(Sum('amount'))['amount__sum'] or 0
         return total_addons
+    
+    @property
+    def date(self):
+        if self.start_dt and self.end_dt:
+            if self.start_dt.year == self.end_dt.year:
+                if self.start_dt.month == self.end_dt.month:
+                    if self.start_dt.day == self.end_dt.day:
+                        return "{0.day} {0:%b %Y}".format(self.start_dt)
+                    else:
+                        return "{0.day} - {1.day} {1:%b %Y}".format(self.start_dt, self.end_dt)
+                else:
+                    return "{0.day}{0:%b} - {1.day} {1:%b %Y}".format(self.start_dt, self.end_dt)
+            else:
+                return "{0.day}{0:%b %Y} - {1.day} {1:%b %Y}".format(self.start_dt, self.end_dt)
+        else:
+            if self.start_dt:
+                return "{0.day} {0:%b %Y}".format(self.start_dt)
+        return ''
 
     def registrants(self, **kwargs):
         """
