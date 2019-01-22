@@ -94,7 +94,7 @@ class Command(BaseCommand):
                        datetime(now.year, now.month, now.day, 23, 59, 59))
 
         # get a list of upcoming events that are specified to send reminders.
-        events = Event.objects.filter(start_dt__gt=now,
+        events = Event.objects.filter(end_dt__gt=now,
                                 registration_configuration__enabled=True,
                                 registration_configuration__payment_required=True,
                                 status=True,
