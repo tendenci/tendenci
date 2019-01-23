@@ -16,6 +16,7 @@ from collections import OrderedDict
 from datetime import datetime, date, timedelta
 from decimal import Decimal
 from copy import deepcopy
+import dateutil.parser as dparser
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -64,6 +65,7 @@ from tendenci.apps.base.http import HttpCustomResponseRedirect
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.events.ics.utils import run_precreate_ics
+from tendenci.apps.user_groups.models import Group
 
 from tendenci.apps.events.models import (
     Event,
@@ -2809,12 +2811,28 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
             # use HttpCustomResponseRedirect to check if event
             # exists in redirects module
             return HttpCustomResponseRedirect(reverse('event.month'))
+    
+    form = EventMonthForm(request.POST or None, user=request.user)
+    if request.method == 'POST' and form.is_valid():
+        search_text = form.cleaned_data['search_text']
+        group = form.cleaned_data['group']
+        try:
+            events_in = dparser.parse(form.cleaned_data['events_in'])
+        except:
+            events_in = ''
+    else:
+        group = 0
+        search_text = ''
+        events_in = ''
 
     # default/convert month and year
     if month and year:
         month, year = int(month), int(year)
     else:
-        month, year = date.today().month, date.today().year
+        if events_in:
+            month, year = events_in.month, events_in.year
+        else:
+            month, year = date.today().month, date.today().year
 
     if year <= 1900 or year >= 9999:
         raise Http404
@@ -2854,11 +2872,19 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     weekdays = calendar.weekheader(10).split()
     cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
     
-    form = EventMonthForm(request.GET, user=request.user, start_dt=cal[0][0], end_dt=cal[-1][-1]+timedelta(days=1))
-    if form.is_valid():
-        group = form.cleaned_data['group']
-    else:
-        group = 0
+    # re-complie the group list after we have the start_dt and end_dt
+    event_groups_list = Event.objects.filter(start_dt__gte=cal[0][0],
+                                       start_dt__lt=cal[-1][-1]+timedelta(days=1)
+                                       ).distinct().values_list('groups', flat=True)
+    group_filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
+    group_choices = Group.objects.filter(group_filters,
+                                         id__in=event_groups_list
+                                         ).distinct(
+                                    ).order_by('name').values_list('id', 'label', 'name')
+    group_choices = [(id, label or name) for id, label, name in group_choices]
+    form.fields['group'].choices = [('','All Groups')] + list(group_choices)
+    
+    
 
     # Check for empty pages for far-reaching years
     if abs(year - date.today().year) > 6:
@@ -2906,6 +2932,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         'types':types,
         'type':type,
         'group': group,
+        'search_text': search_text,
         'form': form
         })
 

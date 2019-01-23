@@ -133,9 +133,13 @@ def file_detail(context, attachment):
 
 
 class EventListNode(Node):
-    def __init__(self, day, type_slug, ordering, group, context_var):
+    def __init__(self, day, type_slug, ordering, group, search_text, context_var):
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
+        if search_text:
+            self.search_text = Variable(search_text)
+        else:
+            self.search_text = ''
         if group:
             self.group = Variable(group)
         else:
@@ -160,6 +164,10 @@ class EventListNode(Node):
 
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
+        if self.search_text:
+            search_text = self.search_text.resolve(context)
+        else:
+            search_text = ''
         if self.group:
             group = self.group.resolve(context)
         else:
@@ -190,6 +198,9 @@ class EventListNode(Node):
         if group:
             events = events.filter(groups__in=[group])
 
+        if search_text:
+            events = events.filter(Q(title__icontains=search_text) | Q(description__icontains=search_text))
+
         if weekday == 'Sun' or weekday == 'Sat':
             events = events.filter(on_weekend=True)
 
@@ -216,14 +227,17 @@ def event_list(parser, token):
     Example: {% event_list day as events %}
              {% event_list day type as events %}
              {% event_list day type 'start_dt' as events %}
+             {% event_list day type 'start_dt' group as events %}
+             {% event_list day type 'start_dt' group search_text as events %}
     """
     bits = token.split_contents()
     type_slug = None
     ordering = None
     group = None
+    search_text = ''
 
-    if len(bits) != 4 and len(bits) != 5 and len(bits) != 6 and len(bits) != 7:
-        message = '%s tag requires 4 or 5 or 6 or 7 arguments' % bits[0]
+    if len(bits) != 4 and len(bits) != 5 and len(bits) != 6 and len(bits) != 7 and len(bits) != 8:
+        message = '%s tag requires 4 or 5 or 6 or 7 or 8 arguments' % bits[0]
         raise TemplateSyntaxError(_(message))
 
     if len(bits) == 4:
@@ -248,7 +262,15 @@ def event_list(parser, token):
         group = bits[4]
         context_var = bits[6]
 
-    return EventListNode(day, type_slug, ordering, group, context_var)
+    if len(bits) == 8:
+        day = bits[1]
+        type_slug = bits[2]
+        ordering = bits[3]
+        group = bits[4]
+        search_text = bits[5]
+        context_var = bits[7]
+
+    return EventListNode(day, type_slug, ordering, group, search_text, context_var)
 
 
 class IsRegisteredUserNode(Node):

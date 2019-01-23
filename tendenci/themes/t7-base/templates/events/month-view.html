@@ -14,13 +14,22 @@
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
 <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<style>
+.month-view .navbar-default {
+    background-color: #f8f8f8;
+}
+.month-view .navbar-toggle {
+    background-color: #1a242f;
+}
+
+</style>
 {% endblock %}
 
 {% block content %}
 
 <div class="month-view">
   <div class="row">
-    <div class="col-md-9 col-xs-12">
+    <div class="col-md-12 col-xs-12">
 
       <div class="page-header">
         <ul class="list-inline text-center">
@@ -34,10 +43,53 @@
       <div class="calendar-wrap">
       
       	<div class="text-center">
-		<form class="form-horizontal" action="" method="get">{% csrf_token %}
-		{{ form.group }} <input class="btn btn-default btn-xs" type="submit" value="{% trans 'Filter by Group' %}" />
-		</form>
+      	
+		<form action="{% url 'event.month' %}" method="post">{% csrf_token %}
+		
+		<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#events-search-navbar-collapse" aria-expanded="false">
+        <span class="sr-only">{% trans 'Show Events Search' %}</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="events-search-navbar-collapse">
+    
+	 <div class="row">
+	 	 <div class="form-group col-sm-3 text-left">
+		    <label for="id_events_in">{{ form.events_in.label }}</label>
+		    {{ form.events_in }}
+		 </div>
+		 <div class="form-group col-sm-3 text-left">
+		    <label for="id_search_text">{{ form.search_text.label }}</label>
+		    {{ form.search_text }}
+		 </div>
+		 <div class="form-group col-sm-3 text-left">
+		    <label for="id_group">{{ form.group.label }}</label>
+		    {{ form.group }}
+		  </div>
+		  <div class="col-sm-3 text-left">
+			<div>&nbsp;</div>
+			<input class="btn btn-default btn-sm form" type="submit" value="{% trans 'Find Events' %}" />
 		</div>
+	 </div>
+		
+	</div>
+</div>
+</nav>	
+		
+		
+		</form>
+		
+		</div>
+		
+		
+		<p></p>
 
         <div class="month-wrap">
 
@@ -58,7 +110,7 @@
             <div class="day{% if today == day %} today{% endif %}">
               <div class="date-numeral"><a href="{% url "event.day" day.year day.month day.day %}">{{ day.day }}</a></div>
 
-              {% event_list day type 'single_day' group as events %}
+              {% event_list day type 'single_day' group search_text as events %}
               {% if events %}
 
               {% for event in events|slice:"2" %}
@@ -101,17 +153,7 @@
 
     </div> <!-- END col -->
     {# TODO: If there are no types, don't show sidebar #}
-    <div class="col-md-3 col-xs-12">
-
-      <div class="event-buttons btn-group-vertical" role="group" aria-label="Events Views">
-        <a href="{% url "event.month" %}" class="btn btn-secondary">{% trans "Month View" %}</a>
-        <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
-        <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
-        <a href="{% url "event.search" %}" class="btn btn-primary">{% trans "List/Search" %}</a>
-        <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
-      </div>
-
-      <br/>
+    <div class="col-md-12 col-xs-12">
       <div class="well">
         <div class="month-side-bar">
           <div class="header">
@@ -160,10 +202,14 @@
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery_plugins/jquery.mtz.monthpicker.js' %}"></script>
 <script type="text/javascript">
   $('.event-item').tipsy({
     gravity: 's',
     live: true
   });
+</script>
+<script>
+$('#id_events_in').monthpicker();
 </script>
 {% endblock %}

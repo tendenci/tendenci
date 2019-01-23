@@ -98,20 +98,22 @@ SEARCH_CATEGORIES = (
 
 
 class EventMonthForm(forms.Form):
+    events_in = forms.CharField(label=_('Events In'), required=False,)
+    search_text = forms.CharField(label=_('Search'), required=False,)
     group = forms.ChoiceField(required=False, choices=[])
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        start_dt = kwargs.pop('start_dt', None)
-        end_dt = kwargs.pop('end_dt', None)
+#         start_dt = kwargs.pop('start_dt', None)
+#         end_dt = kwargs.pop('end_dt', None)
         super(EventMonthForm, self).__init__(*args, **kwargs)
         
-        if start_dt and end_dt:
-            event_groups_list = Event.objects.filter(start_dt__gte=start_dt,
-                                               start_dt__lt=end_dt
-                                               ).distinct().values_list('groups', flat=True)
-        else:
-            event_groups_list = Event.objects.distinct().values_list('groups', flat=True)
+#         if start_dt and end_dt:
+#             event_groups_list = Event.objects.filter(start_dt__gte=start_dt,
+#                                                start_dt__lt=end_dt
+#                                                ).distinct().values_list('groups', flat=True)
+#         else:
+        event_groups_list = Event.objects.distinct().values_list('groups', flat=True)
         group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
         group_choices = Group.objects.filter(group_filters,
                                              id__in=event_groups_list
@@ -119,6 +121,11 @@ class EventMonthForm(forms.Form):
                                         ).order_by('name').values_list('id', 'label', 'name')
         group_choices = [(id, label or name) for id, label, name in group_choices]
         self.fields['group'].choices = [('','All Groups')] + list(group_choices)
+        self.fields['events_in'].widget.attrs.update({'placeholder': 'Date',
+                                                      'class': 'form-control input-sm'})
+        self.fields['search_text'].widget.attrs.update({'placeholder': 'Keyword',
+                                                        'class': 'form-control input-sm'})
+        self.fields['group'].widget.attrs.update({'class': 'form-control input-sm'})
 
 class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
