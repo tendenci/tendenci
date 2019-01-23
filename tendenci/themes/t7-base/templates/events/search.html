@@ -20,13 +20,9 @@
 <div class="t search-view">
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL_PLURAL trans 'Events' %}</h1>
 
-    <div class="btn-group btn-group-sm mb-1" role="group" aria-label="Events Views">
-      <a href="{% url "event.month" %}" class="btn btn-primary">{% trans "Month View" %}</a>
-      <a href="{% url "event.week" %}" class="btn btn-primary">{% trans "Week View" %}</a>
-      <a href="{% url "event.today" %}" class="btn btn-primary">{% trans "Day View" %}</a>
-      <a href="{% url "event.search" %}" class="btn btn-secondary">{% trans "List/Search" %}</a>
-      <a href="{% url "event.ics" %}" class="btn btn-primary">{% trans "Download" %}</a>
-    </div>
+    <div class="pull-right">
+        <a href="{% url "event.month" %}" class="btn btn-primary btn-sm">{% trans "Month View" %}</a>
+   </div>
 
     <div class="event-tabs">
         <ul class="nav nav-tabs">
@@ -61,7 +57,12 @@
 				<tr>
 					<td nowrap>{{ event.date }}</td>
 					<td><a href="{% url 'event' event.id %}">{{ event.title }}</a></td>
-					<td>{{ event.type }}</td>
+					<td>
+					{% if event.type %}
+						<span style="height: 15px; width: 15px; vertical-align: text-bottom; display: inline-block; color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}; border-color:{{ event.type.border_color }};">&nbsp;</span>					
+						{{ event.type }}
+					{% endif %}
+					</td>
 					<td>
 					{% for speaker in event.speakers %}
 					{{ speaker.name }}{% if not forloop.last %},{% endif %}
