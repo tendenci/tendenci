@@ -15,14 +15,6 @@
 <div class="t">
     <h1>{% firstof MODULE_RESUMES_LABEL trans 'Resume' %} {% trans "Edit" %}</h1>
 
-    <div class="resume-wrap">
-        <div class="options">
-             <div class="quick-options">
-                {% resume_options request.user resume %}
-             </div>
-        </div>
-
-
         <div class="forms">
         <form enctype="multipart/form-data" action="{% url "resume.edit" resume.id %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
