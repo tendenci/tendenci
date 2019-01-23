@@ -66,8 +66,8 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
 
 
 SEARCH_CATEGORIES_ADMIN = (
-    ('description__icontains', _('Event Description')),
     ('title__icontains', _('Event Title')),
+    ('description__icontains', _('Event Description')),
     ('id', 'Event ID'),
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
@@ -84,8 +84,8 @@ SEARCH_CATEGORIES_ADMIN = (
 )
 
 SEARCH_CATEGORIES = (
-    ('description__icontains', _('Event Description')),
     ('title__icontains', _('Event Title')),
+    ('description__icontains', _('Event Description')),
     ('id', _('Event ID')),
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
@@ -127,11 +127,11 @@ class EventMonthForm(forms.Form):
         self.fields['event_type'].widget.attrs.update({'class': 'form-control input-sm'})
 
 class EventSearchForm(forms.Form):
-    start_dt = forms.CharField(label=_('Start Date/Time'), required=False,
+    start_dt = forms.CharField(label=_('Start Date'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    event_type = forms.ChoiceField(required=False, choices=[])
-    event_group = forms.ChoiceField(required=False, choices=[])
-    registration = forms.BooleanField(required=False)
+    event_type = forms.ChoiceField(label=_('Event Type'), required=False, choices=[])
+    event_group = forms.ChoiceField(label=_('Event Group'), required=False, choices=[])
+    registration = forms.BooleanField(label=_("Events I Have Registered For"), required=False)
     search_category = forms.ChoiceField(choices=SEARCH_CATEGORIES_ADMIN, required=False)
     q = forms.CharField(required=False)
 
@@ -154,6 +154,16 @@ class EventSearchForm(forms.Form):
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
+        
+        for field in self.fields:
+            if field not in ['registration']:
+                widget_attrs = self.fields[field].widget.attrs 
+                if 'class' in widget_attrs:
+                    class_attr = widget_attrs['class'] + ' form-control-custom'
+                else:
+                    class_attr = 'form-control-custom'
+
+                self.fields[field].widget.attrs.update({'class': class_attr})
 
     def clean(self):
         cleaned_data = self.cleaned_data

@@ -1,52 +1,54 @@
-<form class="search-form" action="{% if past %}{% url "event.past_search" %}{% else %}{% url "event.search" %}{% endif %}" method="get">
+<form class="search-form form-horizontal" action="{% if past %}{% url "event.past_search" %}{% else %}{% url "event.search" %}{% endif %}" method="get">
 
-<div class="form-field clearfix">
-    <div class="id_start_dt">
-            <div>
-                <label for="start_dt">{% trans 'Start Date' %}</label>
-            </div>
-            <div class="field">
-                {{ form.start_dt }}
-            </div>
-     </div>
-</div>
+<div id="events-search-fields" class="collapse in">
 
-<div id="event_types_container" class="form-field clearfix">
-    <div class="id_event_types">
-            <div>
-                <label for="event_type">{% trans 'Event Type' %}</label>
-            </div>
-            <div class="field">
-                {{ form.event_type }}
-            </div>
-     </div>
-</div>
-
-<div id="event_groups_container" class="form-field clearfix">
-    <div class="id_event_groups">
-            <div>
-                <label for="event_group">{% trans 'Event Group' %}</label>
-            </div>
-            <div class="field">
-                {{ form.event_group }}
-            </div>
-     </div>
-</div>
-
-{% if form.registration %}
-<div class="form-field clearfix">
-    <div class="id_registration">
-        <div class="label"><br/></div>
-        <div class="field">
-            {{ form.registration }} <label for="id_registration">{% trans "Events I Have Registered For" %}</label>
-        </div>
+<div class="row">
+    <div class="col-sm-6 form-group">
+    <label for="id_start_dt" class="col-sm-4 control-label">{{ form.start_dt.label }}</label>
+    	<div class="col-sm-8">
+         {{ form.start_dt }}
+         </div>
+    </div>
+    <div class="col-sm-6 form-group">
+     <label for="id_event_group" class="col-sm-4 control-label">{{ form.event_group.label }}</label>
+     	<div class="col-sm-8">
+       {{ form.event_group }}
+       </div>
     </div>
 </div>
-{% endif %}
-<div class="clear"></div>
+<div class="row">
+     <div class="col-sm-6 form-group">
+    <label for="id_event_type" class="col-sm-4 control-label">{{ form.event_type.label }}</label>
+    	<div class="col-sm-8">
+        {{ form.event_type }}
+        </div>
+    </div>
+    <div class="col-sm-6 form-group">
+    	<div class="col-sm-offset-4 col-sm-8">
+	         <div class="checkbox">
+	        <label>
+	          {{ form.registration }} {{ form.registration.label }}
+	        </label>
+	     </div>
+      </div>
+    </div>  
+</div>
+  
+<div class="row">
+	<div class="col-md-12 form-group">
+	<label for="id_search_category" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	<div class="col-sm-10">
+			<div>{{ form.q.errors }}</div>
+   	 		{{ form.search_category }} &nbsp;
+   	 		{{ form.q }} &nbsp;
+   	 		<input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+  	</div>
+</div>
+</div>
 
-<div>{{ form.q.errors }}</div>
-{{ form.search_category }}
-{{ form.q }}
-<input class="btn" type="submit" value="{% trans 'Search' %}" />
+</div>
+
+<div class="pull-right">
+<a href="#events-search-fields" data-toggle="collapse"><span class="active hide-show-search">Hide</span> Search Form</a>
+</div>
 </form>

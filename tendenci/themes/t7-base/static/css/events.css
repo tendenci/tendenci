@@ -113,6 +113,23 @@ form.search-form select {
     margin-top: 15px;
 }
 
+/* Search View
+ ------------------------- */
+.form-control-custom{
+	height: 40px;
+	padding: 10px 15px;
+	font-size: 15px;
+	line-height: 1.4;
+	color: #2c3e50;
+	background-color: #ffffff;
+	background-image: none;
+	border: 1px solid #dce4ec;
+	border-radius: 4px;
+}
+#id_event_group, #id_q{
+	width: 200px;
+}
+
 /*= Details View
  ------------------------- */
 

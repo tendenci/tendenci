@@ -13,6 +13,7 @@
 <link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 <link rel="stylesheet" href="{% static 'css/events-search.css' %}">
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
+
 {% endblock %}
 
 {% block content %}
@@ -113,5 +114,18 @@
                 $('#id_q').removeAttr('disabled');
             }
         });
+    </script>
+    <script>
+    $(document).ready(function() {  
+    	$('[data-toggle="collapse"]').click(function() {
+    		var sh_node = $(this).find('.hide-show-search');
+    	  $(sh_node).toggleClass( "active" );
+    	  if ($(sh_node).hasClass("active")) {
+    		  $(sh_node).text("Hide");
+    	  } else {
+    		  $(sh_node).text("Show");
+    	  }
+    	});
+    });
     </script>
 {% endblock %}
