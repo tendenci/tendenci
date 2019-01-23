@@ -30,7 +30,7 @@
 <div class="month-view">
   <div class="row">
     <div class="col-md-12 col-xs-12">
-
+	
       <div class="page-header">
         <ul class="list-inline text-center">
           <li><h1>{{ month_names.1 }} {{ year }}</h1></li>
@@ -61,11 +61,11 @@
     <div class="collapse navbar-collapse" id="events-search-navbar-collapse">
     
 	 <div class="row">
-	 	 <div class="form-group col-sm-3 text-left">
+	 	 <div class="form-group col-sm-2 text-left">
 		    <label for="id_events_in">{{ form.events_in.label }}</label>
 		    {{ form.events_in }}
 		 </div>
-		 <div class="form-group col-sm-3 text-left">
+		 <div class="form-group col-sm-2 text-left">
 		    <label for="id_search_text">{{ form.search_text.label }}</label>
 		    {{ form.search_text }}
 		 </div>
@@ -73,10 +73,18 @@
 		    <label for="id_group">{{ form.group.label }}</label>
 		    {{ form.group }}
 		  </div>
-		  <div class="col-sm-3 text-left">
+		  <div class="form-group col-sm-2 text-left">
+		    <label for="id_event_type">{{ form.event_type.label }}</label>
+		    {{ form.event_type }}
+		  </div>
+		  <div class="col-sm-2 text-left">
 			<div>&nbsp;</div>
 			<input class="btn btn-default btn-sm form" type="submit" value="{% trans 'Find Events' %}" />
 		</div>
+		<div class="col-sm-1 text-right">
+            <div>&nbsp;</div>
+             <a href="{% url "event.search" %}" class="btn btn-primary btn-sm">{% trans "List View" %}</a>
+        </div>
 	 </div>
 		
 	</div>
@@ -152,45 +160,7 @@
       </div> <!-- END calendar-wrap -->
 
     </div> <!-- END col -->
-    {# TODO: If there are no types, don't show sidebar #}
-    <div class="col-md-12 col-xs-12">
-      <div class="well">
-        <div class="month-side-bar">
-          <div class="header">
-            <h2>{% trans "Filter by Type" %}</h2>
-            <hr />
-          </div>
-          <div class="types">
-            <div class="type all-types">
-              <a class="btn btn-default" href="{% url "event.month" year month %}">
-                {% trans "All Events" %}
-              </a>
-            </div>
 
-            {% with type as curr_type %}
-            {% for type in types %}
-
-            {% if curr_type == type.slug %}
-            <div class="type">
-              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};"
-              href="{% url "event.month" year month type.slug %}?latest">{{ type }}</a>
-            </div>
-            {% else %}
-            <div class="type">
-              <a class="btn btn-default" style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.bg_color }};"
-              href="{% url "event.month" year month type.slug %}?latest">{{ type }}</a>
-            </div>
-            {% endif %}
-
-            {% endfor %}
-            {% endwith %}
-
-          </div> <!-- END types -->
-          <div style="clear:both;"></div>
-        </div> <!-- END month-side-bar -->
-      </div> <!-- END well -->
-
-    </div> <!-- END col -->
   </div> <!-- END row -->
 </div> <!-- END month-view -->
 

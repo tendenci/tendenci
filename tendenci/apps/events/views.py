@@ -2820,10 +2820,15 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
             events_in = dparser.parse(form.cleaned_data['events_in'])
         except:
             events_in = ''
+        event_type = form.cleaned_data['event_type']
     else:
         group = 0
         search_text = ''
         events_in = ''
+        event_type = ''
+
+    if event_type:
+        type = event_type
 
     # default/convert month and year
     if month and year:
