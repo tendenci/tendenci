@@ -399,7 +399,7 @@ div.invoice-admin-notes {
 #id_range_end_dt,
 #id_output_type,
 #id_file_type {
-  height: 40px;
+  /*height: 40px;*/
   border: 2px solid #cccccc;
   border-radius: 4px;
 }
