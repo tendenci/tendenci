@@ -87,12 +87,17 @@ class SearchForm(forms.Form):
 
     def search(self, order_by='newest'):
         self.clean()
+        sqs = SearchQuerySet()
+        query = self.cleaned_data['q']
+        
+        if not query:
+            return sqs.none()
+        
         if not order_by:
             order_by = 'newest'
 
-        sqs = SearchQuerySet().filter(status=True)
+        sqs = sqs.filter(status=True)
         user = self.user
-        query = self.cleaned_data['q']
 
         # check to see if there is impersonation
         if hasattr(user,'impersonated_user'):
