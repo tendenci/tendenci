@@ -168,7 +168,11 @@ def decodeUnknown(charset, string):
 def decode_mail_headers(string):
     decoded = email.header.decode_header(string)
     return u' '.join([str(msg, encoding=charset, errors='replace') if charset else str(msg) for msg, charset in decoded])
-    
+
+
+def is_no_reply_address(email_addr):
+    return 'no-reply@' in email_addr or 'noreply@' in email_addr
+
 
 def ticket_from_message(message, queue, quiet):
     # 'message' must be an RFC822 formatted message.
@@ -339,7 +343,7 @@ def ticket_from_message(message, queue, quiet):
 
     if new:
 
-        if sender_email:
+        if sender_email and not is_no_reply_address(sender_email):
             send_templated_mail(
                 'newticket_submitter',
                 context,
