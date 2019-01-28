@@ -158,7 +158,7 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                             )
 
                 form.fields['pricing_option'] = forms.ChoiceField(
-                    label=_('Pricing'),
+                    label=formforform.pricing_name or _('Pricing'),
                     choices = pricing_options,
                     widget=forms.RadioSelect(attrs={'class': 'pricing-field'})
                 )
