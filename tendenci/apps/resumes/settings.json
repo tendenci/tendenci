@@ -1,13 +1,13 @@
  [
     {
-        "default_value": true,
+        "default_value": "true",
         "description": "Module is enabled or not.",
         "data_type": "boolean",
         "update_dt": "2010-08-13 09:33:29",
         "input_type": "select",
         "client_editable": false,
         "name": "enabled",
-        "value": true,
+        "value": "true",
         "label": "Enabled",
         "input_value": "true,false",
         "parent_id": 0,
@@ -34,14 +34,14 @@
         "updated_by": ""
     },
     {
-        "default_value": true,
+        "default_value": "true",
         "description": "When set to 'true', Renewal Reminders will send an email reminding the user to renew their resume",
         "data_type": "boolean",
         "update_dt": "2012-03-29 10:43:51",
         "input_type": "select",
         "client_editable": false,
         "name": "runuserresumesrenewalreminders",
-        "value": false,
+        "value": "false",
         "label": "Renewal Reminders",
         "input_value": "true,false",
         "parent_id": 0,
