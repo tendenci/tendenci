@@ -2833,6 +2833,18 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         except:
             events_in = ''
         event_type = form.cleaned_data['event_type']
+        # If no other criteria specified, show for the next event for that group
+        if group and not any([search_text, events_in, event_type]):
+            [next_event] = Event.objects.filter(groups__in=[group],
+                                    start_dt__gte=datetime.now()
+                                    ).order_by('start_dt')[:1] or [None]
+            if not next_event:
+                [next_event] = Event.objects.filter(groups__in=[group],
+                                    start_dt__lt=datetime.now()
+                                    ).order_by('-start_dt')[:1] or [None]
+            if next_event:
+                month = next_event.start_dt.month
+                year = next_event.start_dt.year
     else:
         group = 0
         search_text = ''
@@ -2888,20 +2900,6 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     month_names = calendar.month_name[month-1:month+2]
     weekdays = calendar.weekheader(10).split()
     cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
-    
-    # re-complie the group list after we have the start_dt and end_dt
-    event_groups_list = Event.objects.filter(start_dt__gte=cal[0][0],
-                                       start_dt__lt=cal[-1][-1]+timedelta(days=1)
-                                       ).distinct().values_list('groups', flat=True)
-    group_filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
-    group_choices = Group.objects.filter(group_filters,
-                                         id__in=event_groups_list
-                                         ).distinct(
-                                    ).order_by('name').values_list('id', 'label', 'name')
-    group_choices = [(id, label or name) for id, label, name in group_choices]
-    form.fields['group'].choices = [('','All Groups')] + list(group_choices)
-    
-    
 
     # Check for empty pages for far-reaching years
     if abs(year - date.today().year) > 6:

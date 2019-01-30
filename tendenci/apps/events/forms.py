@@ -96,6 +96,12 @@ SEARCH_CATEGORIES = (
     ('priority', _('Priority Events')),
 )
 
+def get_search_group_choices():
+    event_group_ids = set(Event.objects.all().values_list('groups', flat=True))
+    groups = Group.objects.filter(
+                    id__in=event_group_ids).distinct(
+                    ).order_by('name').values_list('id', 'label', 'name')
+    return [(id, label or name) for id, label, name in groups]
 
 class EventMonthForm(forms.Form):
     events_in = forms.CharField(label=_('Events In'), required=False,)
@@ -107,13 +113,7 @@ class EventMonthForm(forms.Form):
         user = kwargs.pop('user', None)
         super(EventMonthForm, self).__init__(*args, **kwargs)
 
-        event_groups_list = Event.objects.distinct().values_list('groups', flat=True)
-        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
-        group_choices = Group.objects.filter(group_filters,
-                                             id__in=event_groups_list
-                                             ).distinct(
-                                        ).order_by('name').values_list('id', 'label', 'name')
-        group_choices = [(id, label or name) for id, label, name in group_choices]
+        group_choices = get_search_group_choices()
         self.fields['group'].choices = [('','All Groups')] + list(group_choices)
 
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
@@ -149,10 +149,7 @@ class EventSearchForm(forms.Form):
         type_choices = Type.objects.all().order_by('name').values_list('slug', 'name')
         self.fields['event_type'].choices = [('','All')] + list(type_choices)
 
-        group_filters = get_query_filters(user, 'groups.view_group', perms_field=False)
-        group_choices = Group.objects.filter(group_filters).filter(
-                                        status_detail="active", show_for_events=True).distinct(
-                                        ).order_by('name').values_list('id', 'name')
+        group_choices = get_search_group_choices()
         self.fields['event_group'].choices = [('','All')] + list(group_choices)
 
         self.fields['start_dt'].initial = datetime.now().strftime('%Y-%m-%d')
