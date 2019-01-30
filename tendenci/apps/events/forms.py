@@ -129,6 +129,8 @@ class EventMonthForm(forms.Form):
 class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date'), required=False,
                                widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    end_dt = forms.CharField(label=_('End Date'), required=False,
+                               widget=forms.TextInput(attrs={'class': 'datepicker'}))
     event_type = forms.ChoiceField(label=_('Event Type'), required=False, choices=[])
     event_group = forms.ChoiceField(label=_('Event Group'), required=False, choices=[])
     registration = forms.BooleanField(label=_("Events I Have Registered For"), required=False)

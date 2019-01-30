@@ -365,6 +365,7 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         events = events.select_related()
 
     start_dt = datetime.now()
+    end_dt = None
     event_type = ''
     with_registration = None
     form = EventSearchForm(request.GET or {'start_dt':start_dt.strftime('%Y-%m-%d')},
@@ -374,11 +375,16 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
         event_type = form.cleaned_data.get('event_type', None)
         event_group = form.cleaned_data.get('event_group', None)
         start_dt = form.cleaned_data.get('start_dt', None)
+        end_dt = form.cleaned_data.get('end_dt', None)
         cat = form.cleaned_data.get('search_category', None)
         try:
             start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
         except:
             start_dt = datetime.now()
+        try:
+            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+        except:
+            end_dt = None
 
         if cat == 'priority':
             events = events.filter(**{cat : True })
@@ -392,12 +398,18 @@ def search(request, redirect=False, past=False, template_name="events/search.htm
 
     if past:
         filter_op = 'lt'
+        end_dt_filter_op = 'gte'
     else:
         filter_op = 'gte'
+        end_dt_filter_op = 'lt'
 
-    start_date_filter = {'start_dt__%s' %filter_op: start_dt}
-    end_date_filter = {'end_dt__%s' % filter_op: start_dt }
-    events = events.filter(Q(**start_date_filter) | Q(**end_date_filter))
+    start_date_filter1 = {'start_dt__%s' %filter_op: start_dt}
+    start_date_filter2 = {'end_dt__%s' % filter_op: start_dt }
+    events = events.filter(Q(**start_date_filter1) | Q(**start_date_filter2))
+    if end_dt:
+        end_date_filter1 = {'start_dt__%s' % end_dt_filter_op: end_dt}
+        end_date_filter2 = {'end_dt__%s' % end_dt_filter_op: end_dt }
+        events = events.filter(Q(**end_date_filter1) | Q(**end_date_filter2))
 
     if past:
         events = events.order_by('-start_dt', '-priority')
