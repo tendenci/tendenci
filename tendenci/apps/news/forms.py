@@ -51,7 +51,7 @@ class NewsForm(TendenciBaseForm):
     photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
-    groups = forms.MultipleChoiceField(required=True, choices=[], help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
+    groups = forms.ModelMultipleChoiceField(required=True, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
 
     class Meta:
         model = News
@@ -126,6 +126,35 @@ class NewsForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
+    def __init__(self, *args, **kwargs):
+        super(NewsForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
+
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+
+        #if not self.user.profile.is_superuser:
+        if not self.user.is_superuser:
+            if 'status_detail' in self.fields:
+                self.fields.pop('status_detail')
+
+            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
+
+        self.fields['groups'].queryset = default_groups
+        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
+        self.fields['timezone'].initial = settings.TIME_ZONE
+
+        # only show the remove photo checkbox if there is already a thumbnail
+        if self.instance.thumbnail:
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
+        else:
+            self.fields.pop('remove_photo')
+        self.fields['release_dt'].initial = datetime.now()
+
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
@@ -148,17 +177,6 @@ class NewsForm(TendenciBaseForm):
 
         return photo_upload
 
-    def clean_groups(self):
-        group_ids = self.cleaned_data['groups']
-        groups = []
-        for group_id in group_ids:
-            try:
-                group = Group.objects.get(pk=group_id)
-                groups.append(group)
-            except Group.DoesNotExist:
-                raise forms.ValidationError(_('Invalid group selected.'))
-        return groups
-
     def clean_syndicate(self):
         """
         clean method for syndicate added due to the update
@@ -178,43 +196,6 @@ class NewsForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             news.thumbnail = None
         return news
-
-    def __init__(self, *args, **kwargs):
-        super(NewsForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-        else:
-            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
-            self.fields['groups'].initial = [Group.objects.get_initial_group_id()]
-
-        default_groups = Group.objects.filter(status=True, status_detail="active")
-
-        #if not self.user.profile.is_superuser:
-        if not self.user.is_superuser:
-            if 'status_detail' in self.fields:
-                self.fields.pop('status_detail')
-
-            filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
-
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = default_groups.values_list('pk', 'name')
-
-        self.fields['groups'].choices = groups_list
-        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
-        self.fields['timezone'].initial = settings.TIME_ZONE
-
-        # only show the remove photo checkbox if there is already a thumbnail
-        if self.instance.thumbnail:
-            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.thumbnail.pk, basename(self.instance.thumbnail.file.name))
-        else:
-            self.fields.pop('remove_photo')
-        self.fields['release_dt'].initial = datetime.now()
 
 
 class NewsSearchForm(FormControlWidgetMixin, forms.Form):
