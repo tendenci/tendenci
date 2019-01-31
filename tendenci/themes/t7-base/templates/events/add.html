@@ -92,6 +92,9 @@
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
+        	// Remove multi-select option from groups
+            $('select#id_groups').removeAttr('multiple');
+            $('#id_groups').next('span.help-block').hide();
         	// Date and time picker for start_dt and end_dt
             $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
             $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
