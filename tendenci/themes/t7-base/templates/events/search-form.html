@@ -3,59 +3,61 @@
 <div id="events-search-fields" class="collapse in">
 
 <div class="row">
-    <div class="col-sm-4 form-group">
+    <div class="col-sm-6 form-group">
     <label for="id_start_dt" class="col-sm-4 control-label">{{ form.start_dt.label }}</label>
       <div class="col-sm-8">
          {{ form.start_dt }}
          </div>
     </div>
-  <div class="col-sm-4 form-group">
+  <div class="col-sm-6 form-group">
     <label for="id_end_dt" class="col-sm-4 control-label">{{ form.end_dt.label }}</label>
       <div class="col-sm-8">
          {{ form.end_dt }}
          </div>
     </div>
-    <div class="col-sm-4 form-group">
+    
+</div>
+<div class="row">
+    <div class="col-sm-6 form-group">
      <label for="id_event_group" class="col-sm-4 control-label">{{ form.event_group.label }}</label>
        <div class="col-sm-8">
        {{ form.event_group }}
        </div>
     </div>
-</div>
-<div class="row">
-     <div class="col-sm-4 form-group">
+     <div class="col-sm-6 form-group">
     <label for="id_event_type" class="col-sm-4 control-label">{{ form.event_type.label }}</label>
       <div class="col-sm-8">
         {{ form.event_type }}
         </div>
     </div>
-  <div class="col-md-8 col-sm-12 form-group">
-  <label for="id_search_category" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
-  <div class="col-sm-10">
-      <div>{{ form.q.errors }}</div>
-          {{ form.search_category }} &nbsp;
-          {{ form.q }} &nbsp;
-          <input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
-    </div>
-  </div>
+ 
 </div>
+
+<div class="row">
+     <div class="col-md-12 col-sm-12 form-group">
+	  <label for="id_search_category" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	  <div class="col-sm-10">
+	      <div>{{ form.q.errors }}</div>
+	          {{ form.search_category }} &nbsp;
+	          {{ form.q }} &nbsp;
+	          <input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+	    </div>
+	  </div>
+  </div>
   
 {% if form.registration %}  
 <div class="row">
   <div class="col-sm-12 form-group">
-      <div class="col-sm-4">
         <div class="checkbox">
           <label>
             {{ form.registration }} {{ form.registration.label }}
           </label>
        </div>
-      </div>
     </div>
 </div>
 {% endif %} 
-  
-</div>
 
+</div>
 
 <div class="pull-right">
 <a href="#events-search-fields" data-toggle="collapse"><span class="active hide-show-search">Hide</span> Search Form</a>
