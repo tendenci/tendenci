@@ -37,6 +37,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm, GroupSearchForm
 from tendenci.apps.user_groups.forms import MessageForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
+from tendenci.apps.base.decorators import password_required
 #from tendenci.apps.user_groups.importer.forms import UploadForm
 #from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
 from tendenci.apps.user_groups.importer.utils import user_groups_import_process
@@ -974,6 +975,7 @@ def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_a
 
 
 @login_required
+@password_required
 def import_add(request, form_class=ImportForm,
                 template_name="user_groups/imports/user_groups_add.html"):
     """Event Import Step 1: Validates and saves import file"""
