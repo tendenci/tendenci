@@ -6,11 +6,42 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'css/iconrow.css' %}">
-
     <link rel="stylesheet" href="{% static 'css/admin/django-admin-widgets.css' %}">
-
-    <link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+<style>
+.selector select[multiple], select[size]{
+	height: 250px;
+}
+.selector-available h2, .selector-chosen h2{
+	font-size: 1.3em;
+}
+.edit-profile-perms .selector { width: 840px; }
+.edit-profile-perms .selector select { width: 640px; }
+.edit-profile-perms .selector-available, .edit-profile-perms .selector-chosen { display: block; width: 640px; text-align: center; margin-bottom: 5px; }
+/*.edit-profile-perms .selector-add, .edit-profile-perms .selector-remove { text-indent: 0; background-image: none;}*/
+.selector ul.selector-chooser { display: block; background-image: none; width: 640px;  height: 28px;  margin: 3px 0 !important; padding: 5px;}
+.edit-profile-perms .selector ul.selector-chooser li {
+ display: inline; 
+ float: left;
+ padding: 0 148px; }
+ .selector-remove{
+ 	padding-left: 16px
+ }
+.edit-profile-perms .selector-chosen .selector-filter { display: none; }
+.selector .selector-available input {
+    width: 90%;
+}
+.selector-available, .selector-chosen, .selector ul.selector-chooser {
+	float: none;
+}
+.selector-add {
+    background: url(/static/themes/t7-base/images/admin/selector_stacked-add.gif) top center no-repeat;
+    margin-bottom: 2px;
+}
+.selector-remove {
+    background: url(/static/themes/t7-base/images/admin/selector_stacked-remove.gif) top center no-repeat;
+    margin-bottom: 2px;
+}
+</style>
 
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'js/admin/django-admin.multiselect.js' %}"></script>
@@ -62,7 +93,8 @@
                         </div>
 
                         <div style="clear:both"></div>
-                        <input type="submit" value="{% trans 'Save' %}" />
+                        <input class="btn btn-default" type="submit" value="{% trans 'Save' %}" />
+                        </div>
                     </form>
                 </div>
             </div>
