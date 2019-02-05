@@ -1,3 +1,6 @@
+from six.moves.urllib.parse import urlparse
+from django.contrib.sites.models import Site
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.core.management import call_command
@@ -111,3 +114,18 @@ class Setting(models.Model):
             # delete and set cache for single key and save the value in the database
             delete_setting_cache(self.scope, self.scope_category, self.name)
             cache_setting(self.scope, self.scope_category, self.name, self)
+
+    def update_site_domain(self, site_url):
+        """
+        Update the site domain if site url setting is changed
+        """
+        if self.name == "siteurl" and self.scope == "site":
+            if site_url:
+                django_site = Site.objects.get(pk=settings.SITE_ID)
+                if urlparse(site_url).scheme == "":
+                    # prefix https:// if no scheme
+                    site_url = 'https://%s' % site_url
+                netloc = urlparse(site_url).netloc
+                django_site.domain = netloc
+                django_site.name = netloc
+                django_site.save()

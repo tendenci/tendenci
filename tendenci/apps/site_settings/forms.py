@@ -85,14 +85,7 @@ def save_settings_form(self):
             # update the django site value in the contrib backend
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
-                    django_site = Site.objects.get(pk=1)
-                    if urlparse(field_value).scheme == "":
-                        # prefix http:// if no scheme
-                        field_value = 'http://%s' % field_value
-                    netloc = urlparse(field_value).netloc
-                    django_site.domain = netloc
-                    django_site.name = netloc
-                    django_site.save()
+                    setting.update_site_domain(field_value)
 
             # update checklist for theme logo
             if setting.name == 'logo' and setting.scope_category == 'theme':

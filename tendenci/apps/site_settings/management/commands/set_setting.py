@@ -29,6 +29,8 @@ class Command(BaseCommand):
                 )
                 setting.set_value(value)
                 setting.save()
+                
+                setting.update_site_domain(value)
 
             except Setting.DoesNotExist:
                 if int(options['verbosity']) > 0:
