@@ -19,6 +19,7 @@ from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.perms.utils import has_perm
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -254,6 +255,9 @@ class Profile(Person):
         if user2_compare.profile.allow_search_users():
             if user2_compare.has_perm('profiles.view_profile', self):
                 return True
+
+        if has_perm(user2_compare, 'profiles.view_profile'):
+            return True
 
         # False for everythin else
         return False

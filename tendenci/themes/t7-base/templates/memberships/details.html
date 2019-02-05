@@ -96,7 +96,7 @@
                             <div class="status-label {{ membership.get_status }}">
                                 {{ membership.get_status|capfirst }} Membership</div>
 
-                            {% if user.is_superuser %}
+                            {% if user.is_superuser or has_approve_perm %}
                             <div class="status-action">
                                 <ul class="nav nav-pills nav-stacked">
                                     {% for address, label in membership|get_actions:request.user %}

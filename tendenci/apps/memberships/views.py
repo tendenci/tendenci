@@ -94,14 +94,16 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     member_can_edit_records = get_setting('module', 'memberships', 'member_edit')
 
-    super_user_or_owner = (
-        request.user.profile.is_superuser,
-        request.user == membership.user)
-
-    if not any(super_user_or_owner):
+    has_approve_perm = has_perm(request.user, 'memberships.approve_membershipdefault') and \
+                has_perm(request.user, 'memberships.change_membershipdefault')
+    
+    # allow only superuser, or owner or users with the approve permission to view this page
+    if not any((request.user.profile.is_superuser,
+            request.user == membership.user,
+            has_approve_perm)):
         raise Http403
 
-    if request.user.profile.is_superuser:
+    if request.user.profile.is_superuser or has_approve_perm:
         GET_KEYS = request.GET
 
         if 'approve' in GET_KEYS:
@@ -148,7 +150,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
             'membership': membership,
             'profile_form': profile_form,
             'education_form': education_form,
-            'member_can_edit_records' : member_can_edit_records
+            'member_can_edit_records' : member_can_edit_records,
+            'has_approve_perm': has_approve_perm
         })
 
 
@@ -1359,7 +1362,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     is_owner = request.user == membership.user
     user = request.user
 
-    if not has_perm(request.user, 'memberships.change_membership', membership) and not is_owner:
+    if not has_perm(request.user, 'memberships.change_membershipdefault', membership) and not is_owner:
         raise Http403
 
     app = membership.app
@@ -1486,7 +1489,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
     u = get_object_or_404(User, pk=user_id)
     is_owner = request.user == u
 
-    if not has_perm(request.user, 'memberships.change_membership') and not is_owner:
+    if not has_perm(request.user, 'memberships.change_membershipdefault') and not is_owner:
         raise Http403
 
     memberships = MembershipDefault.objects.filter(user=u).filter(status=True
