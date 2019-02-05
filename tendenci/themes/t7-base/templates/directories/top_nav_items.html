@@ -62,12 +62,14 @@
                         </li>
                     {% endif %}
 
+					{% if not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
                     {% if can_edit_directory %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory_pricing.search' %}">{% trans "Pricing" %}</a>
                             </span>
                         </li>
+                    {% endif %}
                     {% endif %}
 
                     {% if request.user.is_superuser %}
