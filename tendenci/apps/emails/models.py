@@ -121,7 +121,8 @@ class Email(TendenciBaseModel):
             if self.content_type == 'html' or self.content_type == self.CONTENT_TYPE_HTML:
                 msg.content_subtype = 'html'
             if attachments:
-                msg.attachments = attachments
+                for name, value in attachments:
+                    msg.attach(name, value)
             msg.send(fail_silently=fail_silently)
 
     def save(self, user=None, *args, **kwargs):
