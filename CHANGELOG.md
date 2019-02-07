@@ -1,3 +1,32 @@
+### 11.1 [2019-02-07]
+
+* Resumes update
+	- Separated contact_name into first_name and last_name
+	- Changed file name to be lastname-firstname.xxx if available
+	- Updated search and view
+	- Populated contact fields for non-superuser on resumes add
+* Events update
+	- Added the grid view option for event list (can be turned on/off via setting `/settings/module/events/#id_gridview_for_listview`)
+	- Updated month view
+	- Added notice for events to check for abandoned payments
+* Made global search default to not return anything if user didn't enter anything in the search box
+* Added event title field to the model report and fixed some js errors
+* Updated all social media icons in profiles to dark gray
+* Removed contributions, registrants, invoices, photos, profiles and memberships from index as those are not being used and can potentially slow down on search
+* Removed multi-select option from groups for event add/edit
+* Updated `set_setting` command to automatically update site domain when siteurl is changed
+* Fixed boolean settings
+* Fixed group not being preserved on news edit
+* Fixed the issue about above-cap-ind-price not being sometimes on corp renewal
+* Fixed some broken image links and format issues for edit_perms
+* Resolved an permission issue for membership view
+* Fixed an error in email attachments
+* Other minor fixes
+
+**NOTE:**
+
+* The update for the search index requires index to be rebuilt. Please rebuild index with the command `python manage.py rebuild_index`.
+
 ### 11.0.8 [2019-01-07]
 
 **Improvements**
