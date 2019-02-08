@@ -13,8 +13,8 @@ from tendenci.apps.theme.templatetags.static import static
 
 
 class FileAdmin(TendenciBaseModelAdmin):
-    list_display = ['file_preview', 'name', 'file_path', 'owner_link', 'admin_perms', 'admin_status']
-    list_filter = ['status', 'owner_username']
+    list_display = ['file_preview', 'name', 'file_cat', 'file_path', 'owner_link', 'admin_perms', 'admin_status']
+    list_filter = ['status', ('file_cat', admin.RelatedOnlyFieldListFilter), 'owner_username']
     prepopulated_fields = {}
     search_fields = ['file', 'tags']
     fieldsets = (

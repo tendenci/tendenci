@@ -69,9 +69,9 @@ class File(TendenciBaseModel):
     tags = TagField(null=True, blank=True)
     categories = GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
-    file_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Category"),
+    file_cat = models.ForeignKey('FilesCategory', verbose_name=_("Category"),
                                  related_name="file_cat", null=True, on_delete=models.SET_NULL)
-    file_sub_cat = models.ForeignKey('FilesCategory', verbose_name=_("Files Sub Category"),
+    file_sub_cat = models.ForeignKey('FilesCategory', verbose_name=_("Sub Category"),
                                      related_name="file_subcat", null=True, on_delete=models.SET_NULL)
 
     perms = GenericRelation(
