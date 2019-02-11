@@ -527,6 +527,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "",
+        "description": "Enter your Google Tag Manager Container ID. Ex: GTM-XXXX",
+        "data_type": "string",
+        "update_dt": "2019-02-11 18:30:00",
+        "input_type": "text",
+        "client_editable": true,
+        "name": "googletagmanagercontainerid",
+        "value": "",
+        "label": "Google Tag Manager Container ID",
+        "input_value": "",
+        "parent_id": 0,
+        "scope": "site",
+        "scope_category": "global",
+        "store": false,
+        "updated_by": ""
+    },
+    {
         "default_value": " ",
         "description": "The Google API key is used to integrate with Google tools (e.g. GeoCoding).",
         "data_type": "string",
