@@ -27,7 +27,7 @@
   
   <span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
   
-  {% autopaginate photo_sets %}
+  {% autopaginate photo_sets 20 %}
   
   <br />
 
@@ -48,6 +48,8 @@
       {% endfor %}
       
     </div>
+    
+    {% paginate %}
   </div>
   {% endif %}
   <!-- end: photo-sets masonry -->
