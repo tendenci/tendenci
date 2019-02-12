@@ -116,6 +116,8 @@ admin.site.register(Profile, ProfileAdmin)
 
 
 class MyUserAdmin(UserAdmin):
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name',
+                    'show_member_number', 'is_staff', 'is_superuser', 'is_active')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
@@ -124,6 +126,13 @@ class MyUserAdmin(UserAdmin):
         (_('Permissions'), {'fields': ('user_permissions',)}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    
+    def show_member_number(self, instance):
+        [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
+        return member_number
+
+    show_member_number.short_description = 'Member number'
+    show_member_number.admin_order_field = 'profile__member_number'
 
 admin.site.unregister(User)
 admin.site.register(User, MyUserAdmin)
