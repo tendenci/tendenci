@@ -1,3 +1,10 @@
+### 11.1.1 [2019-02-12]
+
+* Updated django version to 1.11.20 to patch a security issue in django 1.11.18
+* Added a site setting for Google Tag Manager container ID
+* Added sort and filter by category for Files admin backend
+* Made staff indexable
+
 ### 11.1 [2019-02-07]
 
 * Resumes update
