@@ -72,10 +72,11 @@
 
     <body id="{% block body_ids %}{% endblock %}" class="{% if request.user.is_superuser %}t-auth-admin-loggedin {% endif %}{% block body_classes %}{% endblock %}">
 		{% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
-	    <!-- Google Tag Manager (noscript) -->
+	        <!-- Google Tag Manager (noscript) -->
 		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}"
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<!-- End Google Tag Manager (noscript) -->
+	        {% endif %}
         {% block top_bar %}
         {% if request.user.is_authenticated %}
             {% if request.user.is_superuser %}
