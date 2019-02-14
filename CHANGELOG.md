@@ -1,3 +1,10 @@
+### 11.1.2 [2019-02-14]
+
+* Added/Fixed pagination for photo sets list
+* Added id and member_number, along with is_superuser and is_active, to UserAdmin
+* Fixed missing {% endif %} in base.html
+* Fixed save not working on page preview
+
 ### 11.1.1 [2019-02-12]
 
 * Updated django version to 1.11.20 to patch a security issue in django 1.11.18
