@@ -281,8 +281,7 @@ For testing, uncomment ``DEBUG = True``
 
 Set ``SECRET_KEY`` and ``SITE_SETTINGS_KEY`` to two different random strings, each at least 50
 characters in length.  Random strings are conveniently available at
-<https://www.grc.com/passwords.htm> (Use the "63 random alpha-numeric characters" string, and
-refresh the page to get an additional string.)
+<https://www.miniwebtool.com/django-secret-key-generator/>
 
 For live sites, set ``ALLOWED_HOSTS`` appropriately.  For testing, the default should be
 sufficient.
