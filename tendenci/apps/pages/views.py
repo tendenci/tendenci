@@ -312,7 +312,7 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
             page = form.save(commit=False)
 
             edit_button = False
-            if request.POST['preview_for'] == 'edit':
+            if request.POST.get('preview_for', '') == 'edit':
                 edit_button = True
 
             f = form.cleaned_data['header_image']
@@ -328,6 +328,42 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                 f.file.seek(0)
                 header.file.save(filename, f, save=False)
                 page.header_image = header
+
+            if 'preview_for' not in request.POST:
+                page.save()
+ 
+                if metaform.is_valid():
+                    #save meta
+                    meta = metaform.save()
+                    page.meta = meta
+
+                if categoryform.is_valid():
+                    ## update the category and subcategory
+                    page.update_category_subcategory(
+                                    categoryform.cleaned_data['category'],
+                                    categoryform.cleaned_data['sub_category']
+                                    )
+
+                # update all permissions
+                page = update_perms_and_save(request, form, page)
+
+                messages.add_message(request, messages.SUCCESS,
+                                 _('Successfully updated %(p)s' % {'p': str(page)}))
+                if not request.user.profile.is_superuser:
+                    # send notification to administrators
+                    recipients = get_notice_recipients('module', 'pages',
+                                                       'pagerecipients')
+                    if recipients:
+                        if notification:
+                            extra_context = {
+                                'object': page,
+                                'request': request,
+                            }
+                            notification.send_emails(recipients,
+                                                     'page_edited',
+                                                     extra_context)
+    
+                return HttpResponseRedirect(reverse('page', args=[page.slug]))
 
             return render_to_resp(request=request, template_name=template,
                context={'page': page,
