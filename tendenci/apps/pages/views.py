@@ -309,27 +309,27 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
                                            request.POST,
                                            prefix='category')
         if form.is_valid():
-           page = form.save(commit=False)
+            page = form.save(commit=False)
 
-           edit_button = False
-           if request.POST['preview_for'] == 'edit':
-               edit_button = True
+            edit_button = False
+            if request.POST['preview_for'] == 'edit':
+                edit_button = True
 
-           f = form.cleaned_data['header_image']
-           if f:
-               header = HeaderImage()
-               header.content_type = ContentType.objects.get_for_model(Page)
-               header.object_id = page.id
-               header.creator = request.user
-               header.creator_username = request.user.username
-               header.owner = request.user
-               header.owner_username = request.user.username
-               filename = "%s-%s" % (page.slug, f.name)
-               f.file.seek(0)
-               header.file.save(filename, f, save=False)
-               page.header_image = header
+            f = form.cleaned_data['header_image']
+            if f:
+                header = HeaderImage()
+                header.content_type = ContentType.objects.get_for_model(Page)
+                header.object_id = page.id
+                header.creator = request.user
+                header.creator_username = request.user.username
+                header.owner = request.user
+                header.owner_username = request.user.username
+                filename = "%s-%s" % (page.slug, f.name)
+                f.file.seek(0)
+                header.file.save(filename, f, save=False)
+                page.header_image = header
 
-           return render_to_resp(request=request, template_name=template,
+            return render_to_resp(request=request, template_name=template,
                context={'page': page,
                                                 'form': form,
                                                 'metaform': metaform,
