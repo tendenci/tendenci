@@ -1,12 +1,13 @@
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Permission
 from django.db.models.base import Model
+from django.contrib.auth.backends import ModelBackend
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import can_view
 
 
-class ObjectPermBackend(object):
+class ObjectPermBackend(ModelBackend):
     """
     Custom backend that supports tendenci's version of group permissions and
     row level permissions, most of the code is copied from django
