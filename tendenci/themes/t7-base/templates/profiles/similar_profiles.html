@@ -19,7 +19,7 @@
   </div>
 
   <form class="form-inline pull-right" style="margin-top:1.5px;" action="" method="get">
-    <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    <input class="form-control" type="text" name="q" value="{{ query }}" />
     <input class="btn btn-default" type="submit" value="{% trans 'Search' %}" />
   </form>
 
@@ -54,7 +54,7 @@
     {% if num_pages > 1%}
     <div id="import-paginate">
         {% if prev %}
-        <a href="?page={{ prev }}">{% trans 'Prev' %}</a>
+        <a href="?page={{ prev }}{% if query %}&q={{ query }}{% endif %}">{% trans 'Prev' %}</a>
         {% else %}
         {% trans 'Prev' %}
          {% endif %}
@@ -66,7 +66,7 @@
                 {% if page == curr_page %}
                 <strong>{{ page }}</strong>
                 {% else %}
-                <a href="?page={{ page }}">{{ page }}</a>
+                <a href="?page={{ page }}{% if query %}&q={{ query }}{% endif %}">{{ page }}</a>
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -74,7 +74,7 @@
         {% if curr_page >= num_pages  %}
         {% trans 'Next' %}
         {% else %}
-        <a href="?page={{ next }}">{% trans 'Next' %}</a>
+        <a href="?page={{ next }}{% if query %}&q={{ query }}{% endif %}">{% trans 'Next' %}</a>
          {% endif %}
     </div>
     {% endif %}

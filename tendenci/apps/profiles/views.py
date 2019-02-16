@@ -22,6 +22,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt
 # for password change
 from django.views.decorators.csrf import csrf_protect
+from django.utils.html import strip_tags
 import simplejson
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -1013,98 +1014,79 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     users_with_duplicate_name = []
     users_with_duplicate_email = []
 
-    # use raw sql to get the accurate number of duplicate names
-    sql = """
-            SELECT first_name , last_name
-            FROM auth_user
-            WHERE first_name <> '' and last_name <> ''
-            GROUP BY first_name , last_name
-            HAVING count(*) > 1
-            ORDER BY last_name, first_name
-        """
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    duplicate_names = cursor.fetchall()
+    duplicate_names = User.objects.values_list(
+        'first_name', 'last_name').annotate( num=Count('*')).filter(num__gt=1
+                            ).exclude(first_name='', last_name='').order_by('last_name')
 
     duplicate_emails = User.objects.values_list(
         'email', flat=True).annotate(
         num_emails=Count('email')).filter(num_emails__gt=1).exclude(email='').order_by('email')
 
-    len_duplicate_names = len(duplicate_names)
-    len_duplicate_emails = len(duplicate_emails)
+    query = strip_tags(request.GET.get('q', ''))
+    if query:
+        duplicate_names = duplicate_names.filter(
+            Q(username__icontains=query) | Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) | Q(email__icontains=query))
+
+        duplicate_emails = duplicate_emails.filter(
+            Q(username__icontains=query) | Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) | Q(email__icontains=query))
+
+    len_duplicate_names = duplicate_names.count()
+    len_duplicate_emails = duplicate_emails.count()
 
     total_groups = len_duplicate_names + len_duplicate_emails
     num_groups_per_page = 20
 
-    query = request.GET.get('q', u'')
-
-    if query:
+    # pagination
+    num_pages = int(math.ceil(total_groups * 1.0 / num_groups_per_page))
+    try:
+        curr_page = int(request.GET.get('page', 1))
+    except:
         curr_page = 1
-        num_pages = 1
-        page_range = []
-    else:
-        num_pages = int(math.ceil(total_groups * 1.0 / num_groups_per_page))
-        try:
-            curr_page = int(request.GET.get('page', 1))
-        except:
-            curr_page = 1
-        if curr_page <= 0 or curr_page > num_pages:
-            curr_page = 1
-        page_range = get_pagination_page_range(num_pages, curr_page=curr_page)
+    if curr_page <= 0 or curr_page > num_pages:
+        curr_page = 1
+    page_range = get_pagination_page_range(num_pages, curr_page=curr_page)
 
-        # slice the duplicate_names and duplicate_emails
-        start_index = (curr_page - 1) * num_groups_per_page
-        end_index = curr_page * num_groups_per_page
-        if len_duplicate_names > 1:
-            if start_index <= len_duplicate_names - 1:
-                if end_index < len_duplicate_names:
-                    duplicate_names = duplicate_names[start_index:end_index]
-                else:
-                    duplicate_names = duplicate_names[start_index:]
-            else:
-                duplicate_names = []
-
-        if len_duplicate_emails > 1:
+    # slice the duplicate_names and duplicate_emails
+    start_index = (curr_page - 1) * num_groups_per_page
+    end_index = curr_page * num_groups_per_page
+    if len_duplicate_names >= 1:
+        if start_index <= len_duplicate_names - 1:
             if end_index < len_duplicate_names:
-                duplicate_emails = []
+                duplicate_names = duplicate_names[start_index:end_index]
             else:
-                start_index = start_index - len_duplicate_names
-                end_index = end_index - len_duplicate_names
-                if start_index < 0:
-                    start_index = 0
+                duplicate_names = duplicate_names[start_index:]
+        else:
+            duplicate_names = []
 
-                if end_index > len_duplicate_emails:
-                    end_index = len_duplicate_emails
+    if len_duplicate_emails >= 1:
+        if end_index < len_duplicate_names:
+            duplicate_emails = []
+        else:
+            start_index = start_index - len_duplicate_names
+            end_index = end_index - len_duplicate_names
+            if start_index < 0:
+                start_index = 0
 
-                if start_index < end_index:
-                    duplicate_emails = duplicate_emails[start_index:end_index]
-                else:
-                    duplicate_emails = []
+            if end_index > len_duplicate_emails:
+                end_index = len_duplicate_emails
 
-    filtered_email_list = User.objects.values_list('email', flat=True)
-    filtered_name_list = User.objects.values_list('first_name', flat=True)
-
-    if query:
-        filtered_email_list = filtered_email_list.filter(
-            Q(username__icontains=query) | Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) | Q(email__icontains=query))
-
-        filtered_name_list = filtered_name_list.filter(
-            Q(username__icontains=query) | Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) | Q(email__icontains=query))
+            if start_index < end_index:
+                duplicate_emails = duplicate_emails[start_index:end_index]
+            else:
+                duplicate_emails = []
 
     for dup_name in duplicate_names:
-        if dup_name[0] and dup_name[1] and dup_name[0] in filtered_name_list:
-            users = User.objects.filter(
-                first_name=dup_name[0],
-                last_name=dup_name[1]).order_by('-last_login')
-            users_with_duplicate_name.append(users)
+        users = User.objects.filter(
+            first_name=dup_name[0],
+            last_name=dup_name[1]).order_by('-last_login')
+        users_with_duplicate_name.append(users)
 
     for email in duplicate_emails:
-        if email and email in filtered_email_list:
-            users = User.objects.filter(
-                email=email).order_by('-last_login')
-            users_with_duplicate_email.append(users)
+        users = User.objects.filter(
+            email=email).order_by('-last_login')
+        users_with_duplicate_email.append(users)
 
     return render_to_resp(request=request, template_name=template_name, context={
         'users_with_duplicate_name': users_with_duplicate_name,
@@ -1115,6 +1097,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
         'num_pages': num_pages,
         'page_range': page_range,
         'user_this': None,
+        'query': query
     })
 
 
