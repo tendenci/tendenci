@@ -1942,7 +1942,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                     pricings[pricing] += 1
         for p in pricings:
             if p.spots_available() < pricings[p]:
-                raise forms.ValidationError(_('{currency_symbol} {title} - space left {space_available}, but registraing {num_registrants}.'.format(
+                raise forms.ValidationError(_('{currency_symbol} {title} - space left {space_available}, but registering {num_registrants}.'.format(
                                                 currency_symbol=tcurrency(p.price), 
                                                 title=p.title, 
                                                 space_available=p.spots_available(),
