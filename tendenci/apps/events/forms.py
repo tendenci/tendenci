@@ -1204,6 +1204,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
             'title',
             'description',
             'quantity',
+            'registration_cap',
             'payment_required',
             'price',
             'include_tax',
@@ -1221,6 +1222,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
           'fields': ['title',
                     'description',
                     'quantity',
+                    'registration_cap',
                     'payment_required',
                     'price',
                     'include_tax',
@@ -1926,6 +1928,27 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
+    
+    def clean(self):
+        return_data = super(RegistrantBaseFormSet, self).clean()
+        # check if we have enough available spaces for price options
+        pricings = {}
+        for form in self.forms:
+            pricing = form.cleaned_data.get('pricing', None)
+            if pricing and pricing.registration_cap:
+                if pricing not in pricings:
+                    pricings[pricing] = 1
+                else:
+                    pricings[pricing] += 1
+        for p in pricings:
+            if p.spots_available() < pricings[p]:
+                raise forms.ValidationError(_('{currency_symbol} {title} - space left {space_available}, but registraing {num_registrants}.'.format(
+                                                currency_symbol=tcurrency(p.price), 
+                                                title=p.title, 
+                                                space_available=p.spots_available(),
+                                                num_registrants=pricings[p])))
+
+        return return_data
 
 
 class RegConfPricingBaseFormSet(BaseFormSet):
@@ -1989,6 +2012,21 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
         self.__class__.__bases__[0].__bases__[0].__bases__ = (RegConfPricingBaseFormSet,)
         super(RegConfPricingBaseModelFormSet, self).__init__(data, files, auto_id, prefix,
                  queryset, **kwargs)
+        
+    def clean(self):
+        return_data = super(RegConfPricingBaseModelFormSet, self).clean()
+        # check and make sure the total of registration limit specified for each pricing
+        # not exceed the limit set for this event
+        pricing = getattr(self.forms[0], 'instance', None)
+        if pricing:
+            limit = pricing.reg_conf.limit
+            if limit > 0:
+                pricings_total_cap = 0
+                for form in self.forms:
+                    pricings_total_cap += form.cleaned_data['registration_cap']
+                if pricings_total_cap > limit:
+                    raise forms.ValidationError(_('The registration limit set for this event is {0}, but the total limit specified for each pricing is {1}'.format(limit, pricings_total_cap)))
+        return return_data
 
 
 class MessageAddForm(forms.ModelForm):

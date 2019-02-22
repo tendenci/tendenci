@@ -270,6 +270,12 @@ class RegConfPricing(OrderingBaseModel):
     title = models.CharField(_('Pricing display name'), max_length=500, blank=True)
     description = models.TextField(_("Pricing description"), blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
+    registration_cap = models.IntegerField(_('Registration limit'),
+                                               default=0,
+                                               help_text=_('The maximum number of registrants ' + \
+                            'allowed for this pricing. 0 indicates unlimited. ' + \
+                            'Note: this number should not exceed the specified registration limit.'))
+    spots_taken = models.IntegerField(default=0)
     groups = models.ManyToManyField(Group, blank=True)
 
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
@@ -318,6 +324,48 @@ class RegConfPricing(OrderingBaseModel):
             if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
+
+    def get_spots_status(self):
+        """
+        Return a tuple of (spots_taken, spots_available) for this pricing.
+        """
+        payment_required = self.reg_conf.payment_required
+
+        params = {
+            'cancel_dt__isnull': True,
+            'pricing_id': self.id
+        }
+
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        spots_taken = Registrant.objects.filter(**params).count()
+
+        if self.registration_cap == 0:  # no limit
+            return (spots_taken, -1)
+
+        if spots_taken >= self.registration_cap:
+            return (spots_taken, 0)
+
+        return (spots_taken, self.registration_cap-spots_taken)
+
+    def spots_available(self):
+        return self.registration_cap - self.spots_taken
+
+    def update_spots_taken(self):
+        payment_required = self.reg_conf.payment_required
+
+        params = {
+            'cancel_dt__isnull': True,
+            'pricing_id': self.id
+        }
+
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        self.spots_taken = Registrant.objects.filter(**params).count()
+        self.save(update_fields=['spots_taken'])
+        
 
     @property
     def registration_has_started(self):

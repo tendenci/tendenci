@@ -61,9 +61,13 @@
         </div>
     </noscript>
 
-    {% if reg_form.errors.values or has_registrant_form_errors or not within_available_spots %}
+    {% if reg_form.errors.values or registrant.non_form_errors or has_registrant_form_errors or not within_available_spots %}
         <div class="errors-box">
             <ul>
+            	{% for error in registrant.non_form_errors %}
+			        <li>{{ error }}</li>
+			    {% endfor %}
+            
                 {% if not within_available_spots %}
                 <li>{% blocktrans with spots_available=event.spots_available %}Only {{ spots_available }} spot{{ spots_available|pluralize }} available. No more {{ spots_available }} registrant{{ spots_available|pluralize }} please!{% endblocktrans %}</li>
                 {% endif %}

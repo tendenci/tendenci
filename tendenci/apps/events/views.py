@@ -37,6 +37,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
+from django.db.models import F
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -1840,6 +1841,7 @@ def register(request, event_id=0,
                                                        is_strict=False,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
+        pricings = pricings.filter(Q(registration_cap=0) | Q(registration_cap__gt=0, spots_taken__lt=F('registration_cap')))
 
         event.has_member_price = pricings.filter(allow_member=True
                                                  ).exclude(

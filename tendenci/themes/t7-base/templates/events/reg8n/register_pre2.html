@@ -43,10 +43,17 @@
                        {{ pricing.end_dt|date:'M j g:i A' }}</p>
                     <p>{{ pricing.description|safe }}</p>
                     <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
+                    {% with pricing as price %}
+                    {% include "events/include/pricing_spots_status.html" %}
+                    {% endwith %}
                 </div>
+                {% if pricing.registration_cap and pricing.spots_available <= 0 %}
+                	<span class="text-danger">{% trans 'Sold out' %}</span>
+                {% else %}
                 <form action="{% url "event.register_individual" event.id pricing.id %}" method="get">
                     <input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />
                 </form>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
