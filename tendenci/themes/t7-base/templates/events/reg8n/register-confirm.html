@@ -239,6 +239,10 @@
             {% if registration.invoice.discount_amount > 0 %}
             <div>{% trans 'Discount' %} {{ registration.invoice.discount_amount|format_currency }}</div>
             {% endif %}
+            {% if registration.invoice.tax %}
+            <div>{% trans 'Subtotal' %} {{ registration.invoice.subtotal|format_currency }}</div>
+            <div>{% trans 'Tax' %} {{ registration.invoice.tax|floatformat:"2" }}</div>
+            {% endif %}
             <div>{% trans 'Total' %} {{ registration.invoice.total|format_currency }}</div>
             <div><strong>{% trans 'Balance' %} {{ registration.invoice.balance|format_currency }}</strong></div>
         </div>

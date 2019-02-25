@@ -13,7 +13,13 @@
             {% elif field.name == "pricing" %}
                 {% if not event.free_event %}
                     {% if not registrant.cleaned_data.override %}
-                        <li>Price:  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}</li>
+                    	{% with registrant.cleaned_data.pricing as pricing %}
+                        <li>{% trans 'Price:' %}  {{ currency_symbol }}{{ registrant.cleaned_data.pricing.price }}
+                        {% if pricing.include_tax %}
+                        ({% trans 'tax:' %} {{ currency_symbol }}{{ pricing.tax_amount }})
+                        {% endif %}
+                        </li>
+                        {% endwith %}
                     {% endif %}
                 {% endif %}
             {% elif field.name == "override_price" %}

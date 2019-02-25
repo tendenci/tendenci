@@ -399,6 +399,12 @@ class RegConfPricing(OrderingBaseModel):
                 filter_and['quantity__lte'] = spots_available
 
         return filter_and, filter_or
+    
+    @property
+    def tax_amount(self):
+        if self.include_tax:
+            return round(self.tax_rate * self.price, 2)
+        return 0
 
     def target_display(self):
         target_str = ''
@@ -679,8 +685,19 @@ class Registration(models.Model):
         if self.reg_conf_price and self.reg_conf_price.include_tax:
             tax = self.reg_conf_price.tax_rate * self.amount_paid
             invoice.tax = tax
+        else:
+            # generally non-table registration
+            if self.registrant_set.filter(pricing__include_tax=True).exists():
+                for override, override_price, price, tax_rate in self.registrant_set.filter(
+                                pricing__include_tax=True).values_list(
+                            'override', 'override_price',
+                            'pricing__price', 'pricing__tax_rate'):
+                    if override:
+                        price = override_price
+                    tax += price * tax_rate
+                invoice.tax = tax
 
-        invoice.subtotal = self.amount_paid + tax
+        invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid + tax
         invoice.balance = invoice.total
         invoice.save()
