@@ -2018,7 +2018,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
         # check and make sure the total of registration limit specified for each pricing
         # not exceed the limit set for this event
         pricing = getattr(self.forms[0], 'instance', None)
-        if pricing:
+        if pricing and hasattr(pricing, 'reg_conf') and pricing.reg_conf:
             limit = pricing.reg_conf.limit
             if limit > 0:
                 pricings_total_cap = 0
