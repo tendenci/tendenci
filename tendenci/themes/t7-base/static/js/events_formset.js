@@ -70,7 +70,7 @@ function update_form_fields(form, original_form, form_number, total, remove) {
     // update the form field values with
     // the original forms
     if (original_form) {
-        original_form.find('input[type="text"]').each(function() {
+        original_form.find('input[type="text"],input[type="number"]').each(function() {
             var input_value = $(this).val();
             var name = $(this).attr('name').replace(search, replacement);
             form.find('input[name=' + name +']').val(input_value);
