@@ -64,6 +64,31 @@ def prepare_authorizenet_sim_form(request, payment):
 
     return form
 
+
+def verify_hash(signature_key, response_d):
+    if not signature_key:
+        return False
+    
+    sha2_hash = response_d.get('x_SHA2_Hash', '')
+
+    text_to_hash = ''
+    # https://www.authorize.net/content/dam/authorize/documents/SIM_guide.pdf
+    fields = ['x_trans_id', 'x_test_request', 'x_response_code', 'x_auth_code', 'x_cvv2_resp_code',
+              'x_cavv_response', 'x_avs_code', 'x_method', 'x_account_number', 'x_amount',
+              'x_company', 'x_first_name', 'x_last_name', 'x_address', 'x_city',
+              'x_state', 'x_zip', 'x_country', 'x_phone', 'x_fax',
+              'x_email', 'x_ship_to_company', 'x_ship_to_first_name', 'x_ship_to_last_name', 'x_ship_to_address',
+              'x_ship_to_city', 'x_ship_to_state', 'x_ship_to_zip', 'x_ship_to_country', 'x_invoice_num',]
+    for field in fields:
+        text_to_hash += '^' + response_d.get(field, '')
+    text_to_hash += '^'
+
+    computed_hash = hmac.new(bytes.fromhex(signature_key),
+                    text_to_hash.encode('utf-8'), hashlib.sha512).hexdigest().upper()
+    return sha2_hash == computed_hash
+
+    
+
 def authorizenet_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
 
@@ -76,27 +101,14 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     with transaction.atomic():
         payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
 
-        # authenticate with md5 hash to make sure the response is securely
-        # received from authorize.net.
-        # client needs to set up the MD5 Hash Value in their account
-        # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
-        md5_hash = response_d.get('x_MD5_Hash', '')
-        # calculate our md5_hash
-        md5_hash_value = settings.AUTHNET_MD5_HASH_VALUE
-        api_login_id = settings.MERCHANT_LOGIN
-        t_id = response_d.get('x_trans_id', '')
-        amount = response_d.get('x_amount', 0)
-
-        s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
-        my_md5_hash = hashlib.md5(s.encode()).hexdigest()
-
-        # don't break the payment process if md5 hash is not set up
-        if md5_hash_value:
-            if my_md5_hash.lower() != md5_hash.lower():
+        # Verify hash to ensure the response is securely received from authorize.net.
+        # Client needs to get the Signature Key in their Authorize.Net account
+        # and assign the key to the settings.py AUTHNET_SIGNATURE_KEY
+        signature_key = settings.AUTHNET_SIGNATURE_KEY
+        if signature_key:
+            is_valid_hash = verify_hash(signature_key, response_d)
+            if not is_valid_hash:
                 raise Http404
-        else:
-            # TODO: email admin to set up MD5 hash
-            pass
 
         if not payment.is_approved:  # if not already processed
             payment_update_authorizenet(request, response_d, payment)

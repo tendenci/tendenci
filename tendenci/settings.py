@@ -628,7 +628,7 @@ MERCHANT_TXN_KEY = ''
 
 # Authorize.Net
 AUTHNET_POST_URL = 'https://secure2.authorize.net/gateway/transact.dll'
-AUTHNET_MD5_HASH_VALUE = ''
+AUTHNET_SIGNATURE_KEY = ''
 
 AUTHNET_CIM_API_TEST_URL = 'https://apitest.authorize.net/xml/v1/request.api'
 AUTHNET_CIM_API_URL = 'https://api2.authorize.net/xml/v1/request.api'
