@@ -1,11 +1,13 @@
 {% if price.registration_cap > 0 %}
+{% with price.get_spots_status as spots_status %}
 <span class="spots-status">
 {% if request.user.is_superuser %}
 {% trans 'Seats total' %} {{ price.registration_cap }}, 
 {% endif %}
-{% trans 'Seats available' %} {{ price.spots_available }} 
-{% if price.spots_available <= 0 %}
+{% trans 'Seats available' %} {{ spots_status.1 }} 
+{% if spots_status.1 <= 0 %}
 	<span class="text-danger">{% trans '(Sold out)' %}</span>
 {% endif %}
 </span>
+{% endwith %}
 {% endif %}

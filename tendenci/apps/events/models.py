@@ -248,6 +248,11 @@ class RegistrationConfiguration(models.Model):
                     )
         if q_obj:
             pricings = pricings.filter(q_obj).distinct()
+            
+        # check and update spots_taken
+        for pricing in pricings:
+            if pricing.registration_cap:
+                pricing.update_spots_taken()
 
         return pricings
 
@@ -329,7 +334,7 @@ class RegConfPricing(OrderingBaseModel):
         """
         Return a tuple of (spots_taken, spots_available) for this pricing.
         """
-        payment_required = self.reg_conf.payment_required
+        payment_required = self.reg_conf.payment_required or self.payment_required
 
         params = {
             'cancel_dt__isnull': True,
@@ -353,7 +358,7 @@ class RegConfPricing(OrderingBaseModel):
         return self.registration_cap - self.spots_taken
 
     def update_spots_taken(self):
-        payment_required = self.reg_conf.payment_required
+        payment_required = self.reg_conf.payment_required or self.payment_required
 
         params = {
             'cancel_dt__isnull': True,
@@ -363,8 +368,10 @@ class RegConfPricing(OrderingBaseModel):
         if payment_required:
             params['registration__invoice__balance'] = 0
 
-        self.spots_taken = Registrant.objects.filter(**params).count()
-        self.save(update_fields=['spots_taken'])
+        spots_taken = Registrant.objects.filter(**params).count()
+        if spots_taken != self.spots_taken:
+            self.spots_taken = spots_taken
+            self.save(update_fields=['spots_taken'])
         
 
     @property

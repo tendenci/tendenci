@@ -58,29 +58,5 @@ def create_notice_types(sender, **kwargs):
         verbosity=verbosity)
 
 
-def update_pricing_spots_taken(sender, **kwargs):
-    pricings = []
-
-    # invoice
-    if sender.__name__ == 'Invoice':
-        invoice = kwargs['instance']
-        obj = invoice.get_object()
-        if isinstance(obj, Registration):
-            for registrant in obj.registrant_set.all():
-                pricing = registrant.pricing
-                if pricing not in pricings:
-                    pricings.append(pricing)
-    # registrant
-    elif sender.__name__ == 'Registrant':
-        registrant = kwargs['instance']
-        pricings.append(registrant.pricing)
-        
-    if pricings:
-        for pricing in pricings:
-            pricing.update_spots_taken()
-
-
 def init_signals():
     post_save.connect(save_contribution, sender=Event, weak=False)
-    post_save.connect(update_pricing_spots_taken, sender=Invoice, weak=False)
-    post_save.connect(update_pricing_spots_taken, sender=Registrant, weak=False)
