@@ -355,7 +355,7 @@ class RegConfPricing(OrderingBaseModel):
         return (spots_taken, self.registration_cap-spots_taken)
 
     def spots_available(self):
-        return self.registration_cap - self.spots_taken
+        return self.get_spots_status()[1]
 
     def update_spots_taken(self):
         payment_required = self.reg_conf.payment_required or self.payment_required

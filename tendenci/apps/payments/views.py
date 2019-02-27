@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.utils.translation import ugettext
+from django.contrib import messages
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.forms import PaymentSearchForm
@@ -30,6 +32,39 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
         invoice.tender(request.user)
         # log an event for invoice edit
         EventLog.objects.log(instance=invoice)
+
+    # For event registration, check if we have enough seats available
+    obj = invoice.get_object()
+    if obj.__class__.__name__ == 'Registration':
+        block_message = ''
+        event = obj.event
+        spots_available = event.get_spots_status()[1]
+        if not spots_available:
+            block_message = ugettext('No seats available for this event. Please cancel your registration or contact event organizer.')
+        else:
+            pricings = {}
+            for registrant in obj.registrant_set.filter(cancel_dt__isnull=True):
+                pricing = registrant.pricing
+                if pricing.registration_cap:
+                    if pricing not in pricings:
+                        pricings[pricing] = 1
+                    else:
+                        pricings[pricing] += 1
+            for p in pricings:
+                price_spots_available = p.spots_available()
+                if price_spots_available < pricings[p]:
+                    if not price_spots_available:
+                        block_message += ugettext('No seats available for price option "{}". '.format(p.title))
+                    else:
+                        block_message += ugettext('The available seats for price option "{}" is not enough for this registration. '.format(p.title))
+            if block_message:
+                block_message += ugettext('Please cancel your registration and re-register at a different price.')
+
+        if block_message:
+            messages.add_message(request, messages.ERROR, block_message)
+            return HttpResponseRedirect(reverse(
+                                'event.registration_confirmation',
+                                args=(event.id, obj.registrant.hash)))
 
     # generate the payment
     payment = Payment()
