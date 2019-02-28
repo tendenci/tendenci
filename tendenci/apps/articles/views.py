@@ -94,10 +94,10 @@ def search(request, template_name="articles/search.html"):
 
         # Handle legacy category links
         if "category:" in query or "sub_category:" in query:
-            key, name = query.split(':')
+            key, name = query.split(':', 1)
             category = Category.objects.filter(name__iexact=name)
             if category.exists():
-                return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, category[0].pk))
+                return HttpResponseRedirect("%s?%s=%s" %(reverse('articles'), key, name))
             else:
                 return HttpResponseRedirect(reverse('articles'))
 
