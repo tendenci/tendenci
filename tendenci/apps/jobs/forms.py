@@ -411,9 +411,12 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
         self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
         data = args[0]
         if data:
-            cat = data.get('cat', None)
+            try:
+                cat = data.get('cat', None)
+            except ValueError:
+                cat = None
             if cat:
-                sub_categories = JobCategory.objects.filter(parent=cat)
+                sub_categories = JobCategory.objects.filter(parent__id=cat)
                 sub_categories_count = sub_categories.count()
                 self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_categories_count})
                 self.fields['sub_cat'].queryset = sub_categories
