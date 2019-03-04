@@ -527,15 +527,43 @@ look like this:
     [Install]
     WantedBy=multi-user.target
 
+
+You'll need to issue the `start` and `enable` commands to start the service and make it run automatically on boot.
+
 To start the service manually:
 ::
 
     sudo systemctl start mysite
-
+    
 To start the service automatically on boot:
 ::
 
     sudo systemctl enable mysite
+
+If you changed the configuration file, you can restart the service with:
+::
+
+    sudo systemctl restart mysite
+    
+or issue the `reload` command:
+::
+
+    sudo systemctl reload mysite
+
+To stop the service:
+::
+
+    sudo systemctl stop mysite
+     
+To disable the service from starting on boot:
+::
+
+    sudo systemctl disable mysite
+    
+To check the status of the service:
+::
+
+    sudo systemctl status mysite
 
 
 logrotate Setup
