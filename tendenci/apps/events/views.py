@@ -180,7 +180,7 @@ def event_custom_reg_form_list(request, event_id, template_name="events/event_cu
     """
     List custom registration forms for this event.
     """
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
     if not has_perm(request.user, 'events.change_event', event):
         raise Http403
 
@@ -289,7 +289,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
 
 @is_enabled('events')
 def speaker_list(request, event_id, template_name='events/speakers.html'):
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     speakers = event.speaker_set.order_by('pk')
 
@@ -4407,7 +4407,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
 @login_required
 def disable_addon(request, event_id, addon_id):
     """disable addon for an event"""
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
@@ -4424,7 +4424,7 @@ def disable_addon(request, event_id, addon_id):
 @login_required
 def enable_addon(request, event_id, addon_id):
     """enable addon for an event"""
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
@@ -4443,7 +4443,7 @@ def enable_addon(request, event_id, addon_id):
 @login_required
 def delete_addon(request, event_id, addon_id):
     """delete an addon for an event"""
-    event = get_object_or_404(Event, pk=event_id)
+    event = get_object_or_404(Event.objects.get_all(), pk=event_id)
 
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
