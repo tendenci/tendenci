@@ -460,3 +460,41 @@ input#id_format_1 {
   border-radius: 4px;
   margin: 10px 0;
 }
+
+/* MASONRY PHOTOS 
+================= */
+.grid-item {
+  float: left;
+}
+#photo-sets-header-wrap *, 
+#photo-sets-header-wrap *:before, 
+#photo-sets-header-wrap *:after {
+  box-sizing:  border-box !important;
+}
+
+.grid {
+  -moz-column-width: 20em;
+  -webkit-column-width: 20em;
+  column-width: 20em;
+  -moz-column-gap: 1em;
+  -webkit-column-gap:1em; 
+  column-gap: 1em;
+  width: 100%;
+}
+
+.grid > .col-sm-4 {
+  display: inline-block;
+  padding: .33rem;
+  width:  100%; 
+  float: none;
+}
+
+.grid-item-content {
+  position: relative;
+  display: block;
+}
+
+.grid-item .thumbnail {
+  padding: 0;
+  margin-bottom: 5px;
+}
