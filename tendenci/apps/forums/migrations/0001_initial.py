@@ -6,7 +6,6 @@ import django.db.models.deletion
 from django.conf import settings
 from tendenci.apps.forums.compat import get_image_field_class
 import tendenci.apps.forums.util
-import annoying.fields
 
 
 class Migration(migrations.Migration):
@@ -138,7 +137,7 @@ class Migration(migrations.Migration):
                 ('post_count', models.IntegerField(default=0, verbose_name='Post count', blank=True)),
                 ('avatar', get_image_field_class()(upload_to=tendenci.apps.forums.util.FilePathGenerator(to='pybb/avatar'), null=True, verbose_name='Avatar', blank=True)),
                 ('autosubscribe', models.BooleanField(default=True, help_text='Automatically subscribe to topics that you answer', verbose_name='Automatically subscribe')),
-                ('user', annoying.fields.AutoOneToOneField(related_name='pybb_profile', verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('user', models.OneToOneField(related_name='pybb_profile', verbose_name='User', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Profile',

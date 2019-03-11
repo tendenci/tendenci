@@ -10,6 +10,8 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 from django.utils.timezone import now as tznow
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import OneToOneField
+
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.models import TendenciBaseModel
 
@@ -326,7 +328,7 @@ class Profile(PybbProfile):
     Profile class that can be used if you doesn't have
     your site profile.
     """
-    user = AutoOneToOneField(get_user_model_path(), related_name='pybb_profile', verbose_name=_('User'), on_delete=models.CASCADE)
+    user = OneToOneField(get_user_model_path(), related_name='pybb_profile', verbose_name=_('User'), on_delete=models.CASCADE)
 
     class Meta(object):
         verbose_name = _('Profile')
