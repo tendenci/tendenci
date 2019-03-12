@@ -23,7 +23,7 @@
 
             <div class="image">
                 <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?q={{ location.get_address }}">
-                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false&key={{ MODULE_LOCATIONS_GOOGLE_MAPS_API_KEY }}" alt="{% trans 'Google Maps view of the Location' %}" title="{% trans 'Google Maps view' %}"></a>
+                <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=10 %}" alt="Google Maps view" title="Google Maps view">
             </div>
 
             <div class="details">
