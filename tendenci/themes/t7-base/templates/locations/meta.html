@@ -1,49 +1,47 @@
 {% load base_tags %}
 {% load base_filters %}
 
-<div class="meta">
-    <div class="meta-left">
+<br />
+ <ul class="list-unstyled t-meta-data">
         {% if user.is_authenticated %}
             {% if not user.profile.is_superuser %}
             {% if user == location.creator or user == location.owner %}
-            <div class="categories">
+            <li class="categories">
                 <strong>{% trans 'Owned by you' %}</strong>{% if not location.status_detail == "active" %} - status: {{ location.obj_status }}{% endif %}
-            </div>
+            </li>
             {% endif %}
             {% endif %}
 
             {% if user.profile.is_superuser or user == location.creator or user == location.owner %}
-                {% meta_creator_owner location %}
+                <li>{% meta_creator_owner location %}</li>
             {% endif %}
         {% endif %}
-    </div>
-    <div class="meta-right">
-
-    </div>
-</div>
+ </ul>
+ 
 {% if user.profile.is_superuser %}
-<div class="editor-bar">
-
-    <div class="perm-status">
-    <ul>
-        <li>{{ location.obj_perms }}</li>
-        <li>{{ location.obj_status }}</li>
+<nav class="navbar navbar-default t-meta-editor-bar">
+  <div class="container-fluid">
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav t-meta-options-links">
+      <li>{{ location.obj_perms }}</li>
+      <li>{{ location.obj_status }}</li>
+    </ul>
+    
+    <ul class="nav navbar-nav navbar-right t-meta-options-links">
+      <!-- start dropdown -->
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
+          {% trans "Options" %} <span class="caret"></span>
+          {% endspaceless %}</a>
+        <ul class="dropdown-menu" role="menu">
+          <li><a class="t-meta-edit-link" href="{% url "location.edit" location.pk %}">{% trans "Edit" %}</a></li>
+          <li><a class="t-meta-eventlog-link" href="{% url 'event_log.search' %}?application=locations&object_id={{ location.pk }}">{% trans "Eventlogs" %}</a></li>
+          <li><a class="t-meta-delete-link" href="{% url 'location.delete' location.pk %}">{% trans "Delete" %}</a></li>
+        </ul>
+      </li> 
+      <!-- end dropdown -->
     </ul>
     </div>
-    <div class="edit-links">
-    <ul>
-        <li><a class="eventlog-link" href="{% url "event_log.search" %}?q=app-id:%20locations-{{ location.pk }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url "location.edit" location.pk %}">{% trans "Edit" %}</a></li>
-        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
-        <div class="options-list">
-            <ul>
-                <li>
-                    <a class="delete" href="{% url "location.delete" location.pk %}">{% trans "Delete" %}</a>
-                </li>
-            </ul>
-        </div>
-        </li>
-    </ul>
-    </div>
-</div>
+  </div>
+</nav>
 {% endif %}

@@ -13,7 +13,9 @@ def geocode_api(**kwargs):
 
     GEOCODE_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
     kwargs['sensor'] = kwargs.get('sensor', 'false')
-    api_key = get_setting('module', 'locations', 'google_maps_api_key')
+    api_key = get_setting('module', 'locations', 'google_geocoding_api_key')
+    if not api_key:
+        api_key = get_setting('module', 'locations', 'google_maps_api_key')
     if api_key:
         kwargs.update({
             'key': api_key

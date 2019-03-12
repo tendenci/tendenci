@@ -34,14 +34,14 @@ class GoogleCMapsURL(Node):
         self.zoom = kwargs.get("zoom", None)
         self.location = Variable(location)
         if origin:
-            self.origin = Variable(origin)
+            self.origin_point = Variable(origin)
         else:
-            self.origin = None
+            self.origin_point = None
 
     def render(self, context):
         location = self.location.resolve(context)
-        if self.origin:
-            origin = self.origin.resolve(context)
+        if self.origin_point:
+            origin = self.origin_point.resolve(context)
         else:
             origin = None
 
