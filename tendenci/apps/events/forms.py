@@ -6,6 +6,7 @@ from ast import literal_eval
 from os.path import splitext, basename
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from dateutil.relativedelta import relativedelta
 
 from django import forms
 from django.db.models import Q
@@ -2372,14 +2373,11 @@ class EventReportFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(EventReportFilterForm, self).__init__(*args, **kwargs)
-        start_dt = datetime.now()
-        end_dt = date.today()
-        end_tm = start_dt.time()
-        temp_end = add_months(end_dt, 1)
-        end_dt = datetime.combine(temp_end, end_tm)
-
-        self.fields['start_dt'].initial = start_dt
-        self.fields['end_dt'].initial = end_dt
+        now = datetime.now()
+        self.initial_start_dt = datetime(now.year, now.month, now.day, 0, 0, 0) - relativedelta(months=1)
+        self.initial_end_dt = self.initial_start_dt + relativedelta(months=2)
+        self.fields['start_dt'].initial = self.initial_start_dt
+        self.fields['end_dt'].initial = self.initial_end_dt
 
     def clean(self):
         data = self.cleaned_data
@@ -2394,7 +2392,11 @@ class EventReportFilterForm(forms.Form):
     def filter(self, queryset=None):
         data = self.cleaned_data
         start_dt = data.get('start_dt')
+        if not start_dt:
+            start_dt = self.initial_start_dt
         end_dt = data.get('end_dt')
+        if not end_dt:
+            end_dt = self.initial_end_dt
 
         if queryset:
             if start_dt and end_dt:

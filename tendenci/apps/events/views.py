@@ -4688,12 +4688,73 @@ def reports_financial(request, template_name="events/financial_reports.html"):
     sort_by = 'start_dt'
     sort_direction = ''
     if form.is_valid():
+        if 'export' in request.GET:
+            identifier = int(time.time())
+            start_dt = form.cleaned_data['start_dt']
+            end_dt = form.cleaned_data['end_dt']
+            sort_by = form.cleaned_data['sort_by']
+            sort_direction = form.cleaned_data['sort_direction']
+            temp_file_path = 'export/events/%s_temp.csv' % identifier
+            default_storage.save(temp_file_path, ContentFile(''))
+            # start the process
+            subprocess.Popen([python_executable(), "manage.py",
+                              "events_financial_export_process",
+                              '--identifier=%s' % identifier,
+                              '--start_dt={}'.format(start_dt),
+                              '--end_dt={}'.format(end_dt),
+                              '--sort_by={}'.format(sort_by),
+                              '--sort_direction={}'.format(sort_direction),
+                              '--user=%s' % request.user.id])
+            # log an event
+            EventLog.objects.log()
+            return HttpResponseRedirect(reverse('event.reports.financial.export_status', args=[identifier]))
+            
         events = form.filter(queryset=events)
         sort_by = form.cleaned_data.get('sort_by') or 'start_dt'
         sort_direction = form.cleaned_data.get('sort_direction')
+    else:
+        events = events.filter(Q(start_dt__gte=form.initial_start_dt) & Q(start_dt__lte=form.initial_end_dt))
     events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
 
     context = {'events' : events,
                 'form' : form}
 
     return render_to_resp(request=request, template_name=template_name, context=context)
+
+
+@login_required
+def financial_export_status(request, identifier, template_name="events/financial_export_status.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/events/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/events/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_resp(request=request, template_name=template_name, context=context)
+
+
+
+@login_required
+def financial_export_download(request, identifier):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    file_name = '%s.csv' % identifier
+    file_path = 'export/events/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="events_financial_export_%s"' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response 
+    

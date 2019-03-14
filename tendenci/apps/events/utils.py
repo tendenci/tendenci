@@ -8,8 +8,10 @@ import math
 import time as ttime
 from datetime import datetime, timedelta
 from datetime import date
+import csv
 from dateutil.rrule import rrule, DAILY, WEEKLY, MONTHLY, YEARLY
 from decimal import Decimal
+import dateutil.parser as dparser
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -17,7 +19,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.db import connection
 from django.db import models
-from django.db.models import Max, Count
+from django.db.models import Max, Count, Q
 from django.template import engines
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
@@ -37,7 +39,7 @@ from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.imports.utils import extract_from_excel
 from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
     format_datetime_range, UnicodeWriter, get_salesforce_access,
-    create_salesforce_contact)
+    create_salesforce_contact, validate_email)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
 
@@ -71,6 +73,96 @@ PLACE_FIELDS = [
     "place__country",
     "place__url",
 ]
+
+def do_events_financial_export(**kwargs):
+    identifier = kwargs['identifier']
+    user_id = kwargs['user_id']
+    try:
+        user_id = int(user_id)
+    except:
+        user_id = None
+
+    start_dt = kwargs['start_dt']
+    if start_dt:
+        try:
+            start_dt = dparser.parse(start_dt)
+        except:
+            start_dt = None
+    end_dt = kwargs['end_dt']
+    if end_dt:
+        try:
+            end_dt = dparser.parse(end_dt)
+        except:
+            end_dt = None
+    sort_by = kwargs['sort_by']
+    if sort_by not in ['start_dt', 'groups__name']:
+        sort_by = 'start_dt'
+    sort_direction = kwargs['sort_direction']
+    if sort_direction not in ['', '-']:
+        sort_direction = ''
+
+    events = Event.objects.all()
+
+    if start_dt and end_dt:
+        events = events.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
+    events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
+    
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    
+    field_list = ['Event ID', 'Event Title', 'Event Date', 'Group Name',
+                  '# of Registrants', 'Registration Total ({})'.format(currency_symbol),
+                  'Add-On Total ({})'.format(currency_symbol),
+                  'Complete Event Total ({})'.format(currency_symbol),
+                  'Amount Collected ({})'.format(currency_symbol),
+                  'Amount Due ({})'.format(currency_symbol),]
+    file_name_temp = 'export/events/%s_temp.csv' % identifier
+    with default_storage.open(file_name_temp, 'w') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(field_list)
+        
+        for event in events:
+            groups = ', '.join(event.groups.values_list('name', flat=True))
+            csv_writer.writerow([event.id, event.title, event.start_dt, groups,
+                                event.registrants_count(), event.registration_total,
+                                event.addons_total, event.money_total,
+                                 event.money_collected, event.money_outstanding])
+    # rename the file name
+    file_name = 'export/events/%s.csv' % identifier
+    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+    print('Done. ', file_name)
+    
+    # notify user that export is ready to download
+    [user] = User.objects.filter(pk=user_id)[:1] or [None]
+    if user and validate_email(user.email):
+        download_url = reverse('event.reports.financial.export_download', args=[identifier])
+
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+            'download_url': download_url,
+            'user': user,
+            'site_url': site_url,
+            'site_display_name': site_display_name,
+            'start_dt': start_dt,
+            'end_dt': end_dt,}
+
+        subject = render_to_string(
+            template_name='events/notices/financial_export_ready_subject.html', context=parms)
+        subject = subject.strip('\n').strip('\r')
+
+        body = render_to_string(
+            template_name='events/notices/financial_export_ready_body.html', context=parms)
+
+        email = Email(
+            recipient=user.email,
+            subject=subject,
+            body=body)
+        email.send()
+
+    # delete the temp file
+    default_storage.delete(file_name_temp)
+    
+    
 
 def render_event_email(event, email):
     """

@@ -1,0 +1,41 @@
+{% extends "events/base.html" %}
+{% load profile_tags %}
+{% load perm_tags %}
+
+{% block title %}{% trans 'Event Financial Export - Status' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+ <div class="page-header">
+   <h1>{% trans "Event Financial Export - Status" %}</h1>
+ </div>
+
+<div id="profile-export">
+
+   {% if download_ready %}
+   <div><a href="{% url 'event.reports.financial' %}">&laquo; {% trans 'Back to Financial Report' %}</a></div>
+   <br />
+   <div{% if not download_ready %} class="display-hide"{% endif %}>
+     <p>{% trans 'The export file is ready, click the download link below to download.' %}</p>
+     <div>
+       <a class="btn btn-primary" href="{% url "event.reports.financial.export_download" identifier %}">
+         {% trans 'Download Now' %}
+       </a>
+     </div>
+   </div>
+
+ {% else %}
+ {% blocktrans %}
+ <p>Your request is being processed. Please check later by <strong>refreshing this page</strong>.</p>
+ <p>In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!</p>
+ {% endblocktrans %}
+ 
+ {% endif %}
+ 
+</div>
+
+{% endblock %}

@@ -29,6 +29,8 @@ urlpatterns = [
 
     # events reports
     url(r'^%s/reports/financial/$' % urlpath, views.reports_financial, name='event.reports.financial'),
+    url(r'^%s/reports/financial/export_status/(?P<identifier>\d+)$' % urlpath, views.financial_export_status, name='event.reports.financial.export_status'),
+    url(r'^%s/reports/financial/download/(?P<identifier>\d+)/$' % urlpath, views.financial_export_download, name='event.reports.financial.export_download'),
 
     url(r'^%s/add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$' % urlpath, views.add, name="event.add"),
 
