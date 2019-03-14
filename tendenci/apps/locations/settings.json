@@ -59,7 +59,7 @@
         "client_editable": true,
         "name": "google_maps_api_key",
         "value": "",
-        "label": "Google Maps API Key",
+        "label": "Google Static Maps API Key",
         "input_value": " ",
         "parent_id": 0,
         "scope": "module",
