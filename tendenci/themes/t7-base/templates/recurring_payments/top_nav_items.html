@@ -15,6 +15,14 @@
                             <span class="content-head text-content-head">{% trans "All R.P." %}</span>
                         </li>
                     {% endif %}
+                    
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'recurring_payments' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
 
                     {% if request.user.is_superuser %}
                         <li class="content-item">
