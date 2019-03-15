@@ -1,3 +1,15 @@
+### 11.2 [2019-03-15]
+
+* Added option to specify registration caps per pricing
+* Added the export option to events financial report
+* Replaced MD5 Hash with SHA-512 based hash utilizing Signature Key for authorize.net payment
+* Improved the performance for /profiles/similar/ and fixed search not working
+* Fixed profile url for officers on study groups detail page
+* Fixed event tax not properly calculated
+* Fixed IntegrityError on deleting user at /admin/auth/user/
+* Fixed locations module
+* Other small fixes
+
 ### 11.1.2 [2019-02-14]
 
 * Added/Fixed pagination for photo sets list
