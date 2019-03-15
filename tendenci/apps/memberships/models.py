@@ -2004,7 +2004,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         Check if membership auto renew can be set up for this membership.
         """
-        if self.status_detail in ['active', 'expired'] and self.expire_dt:
+        if self.status_detail in ['active', 'expired', 'pending'] and self.expire_dt:
             if not self.corporate_membership_id:
                 if get_setting('module', 'recurring_payments', 'enabled') \
                     and get_setting('module', 'memberships', 'autorenew'):
