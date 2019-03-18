@@ -1331,6 +1331,14 @@ class Event(TendenciBaseModel):
             for reg in registrations:
                 total_addons += reg.regaddon_set.all().aggregate(Sum('amount'))['amount__sum'] or 0
         return total_addons
+
+    @property
+    def discount_count(self):
+        """
+        Count the number of discount codes used for this event.
+        """
+        return Registration.objects.filter(event=self, canceled=False,
+                                           invoice__discount_amount__gt=0).count()
     
     @property
     def date(self):

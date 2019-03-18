@@ -1,6 +1,7 @@
 {% extends "events/base-wide.html" %}
 {% load bootstrap_pagination_tags %}
 {% load event_tags %}
+{% load event_filters %}
 {% load base_tags %}
 {% load bootstrap_pagination_tags %}
 {% load perm_tags %}
@@ -46,6 +47,7 @@
         </div>
    </form>
    {% autopaginate events 20 %}
+   {% with events|discount_used as show_discount_count %}
     <table class="table table-striped">
         <thead>
             <tr>
@@ -54,6 +56,9 @@
                 <th>{% trans 'Event Date' %}</th>
                 <th>{% trans 'Group Name' %}</th>
                 <th>{% trans '# of Registrants' %}</th>
+                {% if show_discount_count %}
+                <th>{% trans '# of Discount' %}</th>
+                {% endif %}
                 <th>{% trans 'Registration Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
                 <th>{% trans 'Add-On Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
                 <th>{% trans 'Complete Event Total' %}({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
@@ -73,6 +78,9 @@
                 {% endfor %}
                 </td>
                 <td>{{ event.registrants_count }}</td>
+                {% if show_discount_count %}
+                <td>{{ event.discount_count }}</td>
+                {% endif %}
                 <td>{{ event.registration_total }}</td>
                 <td>{{ event.addons_total }}</td>
                 <td>{{ event.money_total }}</td>
@@ -82,6 +90,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% endwith %}
     {% paginate %}
 </div>
 {% endblock %}

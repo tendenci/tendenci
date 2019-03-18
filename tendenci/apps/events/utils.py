@@ -107,10 +107,19 @@ def do_events_financial_export(**kwargs):
         events = events.filter(Q(start_dt__gte=start_dt) & Q(start_dt__lte=end_dt))
     events = events.order_by('{0}{1}'.format(sort_direction, sort_by))
     
+    show_discount_count = False
+    for event in events:
+        if event.discount_count > 0:
+            show_discount_count = True
+            break
+    
     currency_symbol = get_setting('site', 'global', 'currencysymbol')
     
     field_list = ['Event ID', 'Event Title', 'Event Date', 'Group Name',
-                  '# of Registrants', 'Registration Total ({})'.format(currency_symbol),
+                  '# of Registrants',]
+    if show_discount_count:
+        field_list.append('# of Discount')
+    field_list += ['Registration Total ({})'.format(currency_symbol),
                   'Add-On Total ({})'.format(currency_symbol),
                   'Complete Event Total ({})'.format(currency_symbol),
                   'Amount Collected ({})'.format(currency_symbol),
@@ -122,10 +131,15 @@ def do_events_financial_export(**kwargs):
         
         for event in events:
             groups = ', '.join(event.groups.values_list('name', flat=True))
-            csv_writer.writerow([event.id, event.title, event.start_dt, groups,
-                                event.registrants_count(), event.registration_total,
-                                event.addons_total, event.money_total,
-                                 event.money_collected, event.money_outstanding])
+            row = [event.id, event.title, event.start_dt, groups,
+                   event.registrants_count(),]
+            if show_discount_count:
+                row.append(event.discount_count)
+            row += [event.registration_total,
+                    event.addons_total, event.money_total,
+                    event.money_collected, event.money_outstanding]
+            csv_writer.writerow(row)
+            
     # rename the file name
     file_name = 'export/events/%s.csv' % identifier
     default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
