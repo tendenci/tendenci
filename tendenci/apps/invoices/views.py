@@ -543,8 +543,7 @@ def email_invoice(request, invoice_id, form_class=EmailInvoiceForm,
             if attachment:
                 result = invoice_pdf(request, invoice)
                 kwargs['attachments'] = [("invoice_{}.pdf".format(invoice.id),
-                                      result.getvalue(),
-                                      'application/pdf')]
+                                      result.getvalue())]
             email.send(**kwargs)
 
             EventLog.objects.log(instance=email)
