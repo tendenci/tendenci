@@ -44,7 +44,7 @@
       
       	<div class="text-center">
       	
-		<form action="{% url 'event.month' %}" method="post">{% csrf_token %}
+		<form id="calendar-search-form" action="{% url 'event.month' %}" method="post">{% csrf_token %}
 		
 		<nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -188,4 +188,12 @@
 <script>
 $('#id_events_in').monthpicker();
 </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#id_events_in').on('change', function (e) {
+            $('#calendar-search-form').submit();
+        });
+    });
+</script>
+
 {% endblock %}
