@@ -291,6 +291,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     ]
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_display.append('auto_renew')
+    list_display.append('admin_notes')
     list_display_links = ('name',)
 
     list_filter = [
