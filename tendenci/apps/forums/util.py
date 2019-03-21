@@ -132,6 +132,7 @@ def unescape(text):
 
 def get_pybb_profile(user):
     from . import defaults
+    from .models import Profile
 
     if not user.is_authenticated:
         if defaults.PYBB_ENABLE_ANONYMOUS_POST:
@@ -142,7 +143,7 @@ def get_pybb_profile(user):
     if defaults.PYBB_PROFILE_RELATED_NAME and hasattr(user, defaults.PYBB_PROFILE_RELATED_NAME):
         return getattr(user, defaults.PYBB_PROFILE_RELATED_NAME)
     else:
-        return user
+        return Profile.objects.create(**{'user': user})
 
 
 def get_pybb_profile_model():
