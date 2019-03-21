@@ -1,3 +1,13 @@
+### 11.2.1 [2019-03-21]
+
+* Adjusted event financial report to include discount code quantities
+* Auto refresh the calendar view when the date in Events In field changes
+* Included admin_notes to list_display
+* Updated Pillow to the latest version 5.4.1
+* Fixed ValueError in attachments for email_invoice
+* Fixed error on logout from admin interface
+* Fixed attribute error when loading forums fixtures
+
 ### 11.2 [2019-03-15]
 
 * Added option to specify registration caps per pricing
