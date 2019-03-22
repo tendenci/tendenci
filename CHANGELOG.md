@@ -1,3 +1,7 @@
+### 11.2.2 [2019-03-22]
+
+* Resolved the warning message on migrate to prevent users from being prompted to run 'manage.py makemigrations'
+
 ### 11.2.1 [2019-03-21]
 
 * Adjusted event financial report to include discount code quantities
