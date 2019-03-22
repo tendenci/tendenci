@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=50)),
                 ('label', models.CharField(max_length=255)),
                 ('description', models.TextField()),
-                ('data_type', models.CharField(max_length=10, choices=[('string', 'string'), ('boolean', 'boolean'), ('integer', 'int'), ('file', 'file')])),
+                ('data_type', models.CharField(max_length=10, choices=[('string', 'string'), ('boolean', 'boolean'), ('integer', 'int'), ('file', 'file'), ('decimal', 'decimal')])),
                 ('value', models.TextField(blank=True)),
                 ('default_value', models.TextField(blank=True)),
                 ('input_type', models.CharField(max_length=25, choices=[('text', 'Text'), ('textarea', 'Textarea'), ('select', 'Select'), ('file', 'File')])),

@@ -75,12 +75,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='file',
             name='file_cat',
-            field=models.ForeignKey(related_name='file_cat', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Files Category', to='files.FilesCategory', null=True),
+            field=models.ForeignKey(related_name='file_cat', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Category', to='files.FilesCategory', null=True),
         ),
         migrations.AddField(
             model_name='file',
             name='file_sub_cat',
-            field=models.ForeignKey(related_name='file_subcat', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Files Sub Category', to='files.FilesCategory', null=True),
+            field=models.ForeignKey(related_name='file_subcat', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Sub Category', to='files.FilesCategory', null=True),
         ),
         migrations.AddField(
             model_name='file',
