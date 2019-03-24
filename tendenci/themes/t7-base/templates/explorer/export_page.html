@@ -1,14 +1,5 @@
 {% extends "explorer/base.html" %}
 
-{% block sql_explorer_navlinks %}
-    {% if can_change %}
-      <li><a href="../new/">New Query</a></li>
-      <li><a href="../play/">Playground</a></li>
-    {% endif %}
-    <li><a href="../logs/">Logs</a></li>
-    <li class="active"><a href="{% url 'explorer_extensions.export_page' %}">Data Export</a></li>
-{% endblock %}
-
 {% block sql_explorer_content %}
 <div class="row">
     {% if messages %}
