@@ -1,6 +1,7 @@
 from __future__ import print_function
 from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
 
 
 class Command(BaseCommand):
@@ -22,9 +23,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         import datetime
         import uuid
-        from io import BytesIO
         from django.core.management import call_command
-        from django.core.files import File
         from django.contrib.auth.models import User
         from tendenci.apps.emails.models import Email
         from tendenci.apps.explorer_extensions.models import DatabaseDumpFile, VALID_FORMAT_CHOICES
@@ -68,10 +67,9 @@ class Command(BaseCommand):
 
         print("Creating database dump...")
 
-        content = BytesIO()
-        call_command('dumpdata', format=fmt, stdout=content, exclude=['captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
-
-        dump_obj.dbfile.save(str(uuid.uuid4()), File(content))
+        content = ''
+        dump_obj.dbfile.save(str(uuid.uuid4()), ContentFile(content))
+        call_command('dumpdata', format=fmt, output=dump_obj.dbfile.path, exclude=['captcha.captchastore', 'files.multiplefile', 'events.standardregform', 'help_files', 'explorer_extensions'])
 
         dump_obj.status = "completed"
         dump_obj.end_dt = datetime.datetime.now() + datetime.timedelta(days=3)
