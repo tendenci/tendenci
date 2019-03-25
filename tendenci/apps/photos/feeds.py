@@ -73,13 +73,13 @@ class PhotoSetSitemap(TendenciSitemap):
         return obj.update_dt
 
 
-class ImageSitemap(TendenciSitemap):
-    changefreq = "monthly"
-    priority = 0.3
-
-    def items(self):
-        items = Image.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')
-        return items
-
-    def lastmod(self, obj):
-        return obj.update_dt
+# class ImageSitemap(TendenciSitemap):
+#     changefreq = "monthly"
+#     priority = 0.3
+# 
+#     def items(self):
+#         items = Image.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')
+#         return items
+# 
+#     def lastmod(self, obj):
+#         return obj.update_dt
