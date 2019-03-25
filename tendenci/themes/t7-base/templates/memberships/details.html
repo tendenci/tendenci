@@ -158,146 +158,146 @@
 
             {% if profile_form.display_name.value %}
             <div class="field">
-                <div class="label">{{ profile_form.display_name.label }}</div>
+                <div class="label label-info">{{ profile_form.display_name.label }}</div>
                 <div class="value">{{ profile_form.display_name.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.mailing_name.value %}
             <div class="field">
-                <div class="label">{{ profile_form.mailing_name.label }}</div>
+                <div class="label label-info">{{ profile_form.mailing_name.label }}</div>
                 <div class="value">{{ profile_form.mailing.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.position_title.value %}
             <div class="field">
-                <div class="label">{{ profile_form.position_title.label }}</div>
+                <div class="label label-info">{{ profile_form.position_title.label }}</div>
                 <div class="value">{{ profile_form.position_title.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.address.value or profile_form.address2.value or profile_form.city.value or profile_form.state.value or profile_form.zipcode.value or profile_form.county.value or profile_form.country.value %}
             <div class="field">
-                <div class="label">{% trans 'Address' %}</div>
+                <div class="label label-info">{% trans 'Address' %}</div>
                 <div class="value">{{ membership.user.profile.get_address }}</div>
             </div>
             {% endif %}
             {% if profile_form.address_2.value or profile_form.address2_2.value or profile_form.city_2.value or profile_form.state_2.value or profile_form.zipcode_2.value or profile_form.county_2.value or profile_form.country_2.value %}
             <div class="field">
-                <div class="label">{% trans 'Alternate Address' %}</div>
+                <div class="label label-info">{% trans 'Alternate Address' %}</div>
                 <div class="value">{{ membership.user.profile.get_alternate_address }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.phone.value %}
             <div class="field">
-                <div class="label">{{ profile_form.phone.label }}</div>
+                <div class="label label-info">{{ profile_form.phone.label }}</div>
                 <div class="value">{{ profile_form.phone.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.phone2.value %}
             <div class="field">
-                <div class="label">{{ profile_form.phone2.label }}</div>
+                <div class="label label-info">{{ profile_form.phone2.label }}</div>
                 <div class="value">{{ profile_form.phone2.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.home_phone.value %}
             <div class="field">
-                <div class="label">{{ profile_form.home_phone.label }}</div>
+                <div class="label label-info">{{ profile_form.home_phone.label }}</div>
                 <div class="value">{{ profile_form.home_phone.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.work_phone.value %}
             <div class="field">
-                <div class="label">{{ profile_form.work_phone.label }}</div>
+                <div class="label label-info">{{ profile_form.work_phone.label }}</div>
                 <div class="value">{{ profile_form.work_phone.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.fax.value %}
             <div class="field">
-                <div class="label">{{ profile_form.fax.label }}</div>
+                <div class="label label-info">{{ profile_form.fax.label }}</div>
                 <div class="value">{{ profile_form.fax.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.mobile_phone.value %}
             <div class="field">
-                <div class="label">{{ profile_form.mobile_phone.label }}</div>
+                <div class="label label-info">{{ profile_form.mobile_phone.label }}</div>
                 <div class="value">{{ profile_form.mobile_phone.value }}</div>
             </div>
             {% endif %}
 
             {% if membership.user.email %}
             <div class="field">
-                <div class="label">{% trans 'Email' %}</div>
+                <div class="label label-info">{% trans 'Email' %}</div>
                 <div class="value">{{ membership.user.email }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.email2.value %}
             <div class="field">
-                <div class="label">{{ profile_form.email2.label }}</div>
+                <div class="label label-info">{{ profile_form.email2.label }}</div>
                 <div class="value">{{ profile_form.email2.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.url.value %}
             <div class="field">
-                <div class="label">{{ profile_form.url.label }}</div>
+                <div class="label label-info">{{ profile_form.url.label }}</div>
                 <div class="value">{{ profile_form.url.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.url2.value %}
             <div class="field">
-                <div class="label">{{ profile_form.url2.label }}</div>
+                <div class="label label-info">{{ profile_form.url2.label }}</div>
                 <div class="value">{{ profile_form.url2.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.company.value %}
             <div class="field">
-                <div class="label">{{ profile_form.company.label }}</div>
+                <div class="label label-info">{{ profile_form.company.label }}</div>
                 <div class="value">{{ profile_form.company.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.department.value %}
             <div class="field">
-                <div class="label">{{ profile_form.department.label }}</div>
+                <div class="label label-info">{{ profile_form.department.label }}</div>
                 <div class="value">{{ profile_form.department.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.position_assignment.value %}
             <div class="field">
-                <div class="label">{{ profile_form.position_assignment.label }}</div>
+                <div class="label label-info">{{ profile_form.position_assignment.label }}</div>
                 <div class="value">{{ profile_form.position_assignment.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.spouse.value %}
             <div class="field">
-                <div class="label">{{ profile_form.spouse.label }}</div>
+                <div class="label label-info">{{ profile_form.spouse.label }}</div>
                 <div class="value">{{ profile_form.spouse.value }}</div>
             </div>
             {% endif %}
 
             {% if profile_form.dob.value %}
             <div class="field">
-                <div class="label">{{ profile_form.dob.label }}</div>
+                <div class="label label-info">{{ profile_form.dob.label }}</div>
                 <div class="value">{{ profile_form.dob.value }}</div>
             </div>
             {% endif %}
 
             {% if education_form.school1.value or education_form.degree1.value or education_form.major1.value or education_form.graduation_dt1.value or education_form.school2.value or education_form.degree2.value or education_form.major2.value or education_form.graduation_dt2.value or  education_form.school3.value or education_form.degree3.value or education_form.major3.value or education_form.graduation_dt3.value or education_form.school4.value or education_form.degree4.value or education_form.major4.value or education_form.graduation_dt4.value %}
             <div class="field">
-                <div class="label">{% trans 'Education History' %}</div>
+                <div class="label label-info">{% trans 'Education History' %}</div>
                 {% if  education_form.school1.value or education_form.degree1.value or education_form.major1.value or education_form.graduation_dt1.value %}
                 <div class="value">
                     {% trans 'School' %}: {{ education_form.school1.value }}<br>
@@ -335,175 +335,175 @@
 
             {% if membership.certifications %}
             <div class="field">
-                <div class="label">{% trans 'Certifications' %}</div>
+                <div class="label label-info">{% trans 'Certifications' %}</div>
                 <div class="value">{{ membership.certifications }}</div>
             </div>
             {% endif %}
 
             {% if membership.work_experience %}
             <div class="field">
-                <div class="label">{% trans 'Work Experience' %}</div>
+                <div class="label label-info">{% trans 'Work Experience' %}</div>
                 <div class="value">{{ membership.work_experience }}</div>
             </div>
             {% endif %}
 
             {% if membership.referral_source %}
             <div class="field">
-                <div class="label">{% trans 'Referral Source' %}</div>
+                <div class="label label-info">{% trans 'Referral Source' %}</div>
                 <div class="value">{{ membership.referral_source }}</div>
             </div>
             {% endif %}
 
             {% if membership.referral_source_other %}
             <div class="field">
-                <div class="label">{% trans 'Referral Source (other)' %}</div>
+                <div class="label label-info">{% trans 'Referral Source (other)' %}</div>
                 <div class="value">{{ membership.referral_source_other }}</div>
             </div>
             {% endif %}
 
             {% if membership.referral_source_member_name %}
             <div class="field">
-                <div class="label">{% trans 'Referral Source Member Name' %}</div>
+                <div class="label label-info">{% trans 'Referral Source Member Name' %}</div>
                 <div class="value">{{ membership.referral_source_member_name }}</div>
             </div>
             {% endif %}
 
             {% if membership.referral_source_member_number %}
             <div class="field">
-                <div class="label">{% trans 'Referral Source Member Number' %}</div>
+                <div class="label label-info">{% trans 'Referral Source Member Number' %}</div>
                 <div class="value">{{ membership.referral_source_member_number }}</div>
             </div>
             {% endif %}
 
             {% if membership.affiliation_member_number %}
             <div class="field">
-                <div class="label">{% trans 'Affiliation Member Number' %}</div>
+                <div class="label label-info">{% trans 'Affiliation Member Number' %}</div>
                 <div class="value">{{ membership.affiliation_member_number }}</div>
             </div>
             {% endif %}
 
             {% if membership.primary_practice %}
             <div class="field">
-                <div class="label">{% trans 'Primary Practice' %}</div>
+                <div class="label label-info">{% trans 'Primary Practice' %}</div>
                 <div class="value">{{ membership.primary_practice }}</div>
             </div>
             {% endif %}
 
             {% if membership.how_long_in_practice %}
             <div class="field">
-                <div class="label">{% trans 'How Long in Practice' %}</div>
+                <div class="label label-info">{% trans 'How Long in Practice' %}</div>
                 <div class="value">{{ membership.how_long_in_practice }}</div>
             </div>
             {% endif %}
 
             {% if membership.notes %}
             <div class="field">
-                <div class="label">{% trans 'Notes' %}</div>
+                <div class="label label-info">{% trans 'Notes' %}</div>
                 <div class="value">{{ membership.notes|linebreaks }}</div>
             </div>
             {% endif %}
 
             {% if membership.admin_notes %}
             <div class="field">
-                <div class="label">{% trans 'Admin Notes' %}</div>
+                <div class="label label-info">{% trans 'Admin Notes' %}</div>
                 <div class="value">{{ membership.admin_notes|linebreaks }}</div>
             </div>
             {% endif %}
 
             {% if membership.newsletter_type %}
             <div class="field">
-                <div class="label">{% trans 'Newsletter Type' %}</div>
+                <div class="label label-info">{% trans 'Newsletter Type' %}</div>
                 <div class="value">{{ membership.newsletter_type }}</div>
             </div>
             {% endif %}
 
             {% if membership.directory_type %}
             <div class="field">
-                <div class="label">{% trans 'Directory Type' %}</div>
+                <div class="label label-info">{% trans 'Directory Type' %}</div>
                 <div class="value">{{ membership.directory_type }}</div>
             </div>
             {% endif %}
 
             {% if membership.app %}
             <div class="field">
-                <div class="label">{% trans 'Application' %}</div>
+                <div class="label label-info">{% trans 'Application' %}</div>
                 <div class="value">{{ membership.app }}</div>
             </div>
             {% endif %}
 
             {% if membership.application_complete_dt %}
             <div class="field">
-                <div class="label">{% trans 'Application Complete Date &amp; Time' %}</div>
+                <div class="label label-info">{% trans 'Application Complete Date &amp; Time' %}</div>
                 <div class="value">{{ membership.application_complete_dt }}</div>
             </div>
             {% endif %}
 
             {% if membership.application_approved_dt %}
             <div class="field">
-                <div class="label">{% trans 'Application Approved Date &amp; Time' %}</div>
+                <div class="label label-info">{% trans 'Application Approved Date &amp; Time' %}</div>
                 <div class="value">{{ membership.application_approved_dt }}</div>
             </div>
             {% endif %}
 
             {% if membership.personnel_notified_dt %}
             <div class="field">
-                <div class="label">{% trans 'Personnel Notified Date' %}</div>
+                <div class="label label-info">{% trans 'Personnel Notified Date' %}</div>
                 <div class="value">{{ membership.personnel_notified_dt }}</div>
             </div>
             {% endif %}
 
             {% if membership.payment_received_dt %}
             <div class="field">
-                <div class="label">{% trans 'Payment Received Date &amp; Time' %}</div>
+                <div class="label label-info">{% trans 'Payment Received Date &amp; Time' %}</div>
                 <div class="value">{{ membership.payment_received_dt }}</div>
             </div>
             {% endif %}
 
             {% if membership.payment_method %}
             <div class="field">
-                <div class="label">{% trans 'Payment Method' %}</div>
+                <div class="label label-info">{% trans 'Payment Method' %}</div>
                 <div class="value">{{ membership.payment_method }}</div>
             </div>
             {% endif %}
 
             {% if membership.override %}
             <div class="field">
-                <div class="label">{% trans 'Override' %}</div>
+                <div class="label label-info">{% trans 'Override' %}</div>
                 <div class="value">{{ membership.override }}</div>
             </div>
             {% endif %}
 
             {% if membership.override_price %}
             <div class="field">
-                <div class="label">{% trans 'Override Price' %}</div>
+                <div class="label label-info">{% trans 'Override Price' %}</div>
                 <div class="value">{{ membership.override_price }}</div>
             </div>
             {% endif %}
 
             {% if membership.exported %}
             <div class="field">
-                <div class="label">{% trans 'Exported' %}</div>
+                <div class="label label-info">{% trans 'Exported' %}</div>
                 <div class="value">{{ membership.exported }}</div>
             </div>
             {% endif %}
 
             {% if membership.chapter %}
             <div class="field">
-                <div class="label">{% trans 'Chapter' %}</div>
+                <div class="label label-info">{% trans 'Chapter' %}</div>
                 <div class="value">{{ membership.chapter }}</div>
             </div>
             {% endif %}
 
             {% if membership.areas_of_expertise %}
             <div class="field">
-                <div class="label">{% trans 'Areas of Expertise' %}</div>
+                <div class="label label-info">{% trans 'Areas of Expertise' %}</div>
                 <div class="value">{{ membership.areas_of_expertise }}</div>
             </div>
             {% endif %}
 
             {% if membership.get_corporate_membership %}
             <div class="field">
-                <div class="label">{% trans 'Corporate Membership' %}</div>
+                <div class="label label-info">{% trans 'Corporate Membership' %}</div>
                 {% if request.user.profile.is_superuser %}
                 <div class="value"><a href="{{ membership.get_corporate_membership.get_absolute_url }}">
                     {{ membership.get_corporate_profile.name }} - {{ membership.get_corporate_membership.corporate_membership_type.name }}</a></div>
@@ -516,91 +516,91 @@
 
             {% if membership.home_state %}
             <div class="field">
-                <div class="label">{% trans 'Home State' %}</div>
+                <div class="label label-info">{% trans 'Home State' %}</div>
                 <div class="value">{{ membership.home_state }}</div>
             </div>
             {% endif %}
 
             {% if membership.year_left_native_country %}
             <div class="field">
-                <div class="label">{% trans 'Year Left Native Country' %}</div>
+                <div class="label label-info">{% trans 'Year Left Native Country' %}</div>
                 <div class="value">{{ membership.year_left_native_country }}</div>
             </div>
             {% endif %}
 
             {% if membership.network_sectors %}
             <div class="field">
-                <div class="label">{% trans 'Network Sectors' %}</div>
+                <div class="label label-info">{% trans 'Network Sectors' %}</div>
                 <div class="value">{{ membership.network_sectors }}</div>
             </div>
             {% endif %}
 
             {% if membership.networking %}
             <div class="field">
-                <div class="label">{% trans 'Networking' %}</div>
+                <div class="label label-info">{% trans 'Networking' %}</div>
                 <div class="value">{{ membership.networking }}</div>
             </div>
             {% endif %}
 
             {% if membership.government_worker %}
             <div class="field">
-                <div class="label">{% trans 'Government Worker' %}</div>
+                <div class="label label-info">{% trans 'Government Worker' %}</div>
                 <div class="value">{{ membership.government_worker }}</div>
             </div>
             {% endif %}
 
             {% if membership.government_agency %}
             <div class="field">
-                <div class="label">{% trans 'Government Agency' %}</div>
+                <div class="label label-info">{% trans 'Government Agency' %}</div>
                 <div class="value">{{ membership.government_agency }}</div>
             </div>
             {% endif %}
 
             {% if membership.license_number %}
             <div class="field">
-                <div class="label">{% trans 'License Number' %}</div>
+                <div class="label label-info">{% trans 'License Number' %}</div>
                 <div class="value">{{ membership.license_number }}</div>
             </div>
             {% endif %}
 
             {% if membership.license_state %}
             <div class="field">
-                <div class="label">{% trans 'License State' %}</div>
+                <div class="label label-info">{% trans 'License State' %}</div>
                 <div class="value">{{ membership.license_state }}</div>
             </div>
             {% endif %}
 
             {% if membership.industry %}
             <div class="field">
-                <div class="label">{% trans 'Industry' %}</div>
+                <div class="label label-info">{% trans 'Industry' %}</div>
                 <div class="value">{{ membership.industry }}</div>
             </div>
             {% endif %}
 
             {% if membership.region %}
             <div class="field">
-                <div class="label">{% trans 'Region' %}</div>
+                <div class="label label-info">{% trans 'Region' %}</div>
                 <div class="value">{{ membership.region }}</div>
             </div>
             {% endif %}
 
             {% if membership.company_size %}
             <div class="field">
-                <div class="label">{% trans 'Company Size' %}</div>
+                <div class="label label-info">{% trans 'Company Size' %}</div>
                 <div class="value">{{ membership.company_size }}</div>
             </div>
             {% endif %}
 
             {% if membership.promotion_code %}
             <div class="field">
-                <div class="label">{% trans 'Promotion Code' %}</div>
+                <div class="label label-info">{% trans 'Promotion Code' %}</div>
                 <div class="value">{{ membership.promotion_code }}</div>
             </div>
             {% endif %}
 
             {% if membership.directory %}
             <div class="field">
-                <div class="label">{% trans 'Directory' %}</div>
+                <div class="label label-info">{% trans 'Directory' %}</div>
                 <div class="value">{{ membership.directory }}</div>
             </div>
             {% endif %}
@@ -615,7 +615,7 @@
             {% for label, value in membership.get_demographics %}
                 {% if value %}
                 <div class="field">
-                    <div class="label">{{ label }}</div>
+                    <div class="label label-info">{{ label }}</div>
                     <div class="value">{{ value|safe }}</div>
                 </div>
                 {% endif %}
@@ -630,7 +630,7 @@
 
             {% for archive in membership.get_archived_memberships %}
                 <div class="field">
-                    <div class="label">
+                    <div class="label label-info">
 
                         {% firstof archive.renew_dt|date:"F Y" archive.join_dt|date:"F Y" archive.create_dt|date:"F Y" %} - {% firstof archive.expire_dt|date:"F Y" "Forever" %}
 
