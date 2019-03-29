@@ -33,7 +33,7 @@ $(document).ready(function() {
         //input.attr('type', 'hidden')
         input.hide()
 
-        var label = $('<span><img src="/static/images/icons/drag_icon_16x16.png" alt="drag icon 16x16" title="drag icon 16x16" /></span>')
+        var label = $('<span><img src="/static/themes/t7-base/images/icons/drag_icon_16x16.png" alt="drag icon 16x16" title="drag icon 16x16" /></span>')
         $(pos_td).append(label)
     });
 
@@ -70,7 +70,7 @@ $(document).ready(function() {
                 var label = $(pos_td).children('span').first()
 
                 input.attr('value', index)
-                label.html('<img src="/static/images/icons/drag_icon_16x16.png" />')
+                label.html('<img src="/static/themes/t7-base/images/icons/drag_icon_16x16.png" />')
             });
 
             // Update row classes
