@@ -24,7 +24,7 @@
 {% block content %}
 
 <div class="page-header">
-  <h1>{% trans "Articles" %}</h1>
+  <h1>{% firstof trans MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</h1>
 </div>
 
     {% autopaginate articles 10 %}
