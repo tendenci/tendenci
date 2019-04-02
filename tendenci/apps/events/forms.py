@@ -783,6 +783,8 @@ class EventForm(TendenciBaseForm):
         #self.fields['groups'].choices = groups_list
         self.fields['groups'].queryset = default_groups
         self.fields['timezone'].initial = settings.TIME_ZONE
+        
+        self.fields['type'].required = True
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
