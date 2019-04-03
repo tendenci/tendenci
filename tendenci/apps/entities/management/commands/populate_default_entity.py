@@ -94,7 +94,7 @@ class Command(BaseCommand):
                     for row in model.objects.all():
                         if not row.entity:
                             row.entity = entity
-                            row.save()
+                            row.save(update_fields=['entity'])
                     table_updated.append(table_name)
 
         if verbosity >= 2:
