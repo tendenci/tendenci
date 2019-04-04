@@ -55,6 +55,12 @@ class Command(BaseCommand):
             dest='cp_id',
             default=0,
             help='corp_profile id')
+        parser.add_argument(
+            '--ids',
+            action='store',
+            dest='ids',
+            default='',
+            help='Membership IDs')
 
     def handle(self, *args, **options):
         from tendenci.apps.memberships.utils import process_export
@@ -63,6 +69,7 @@ class Command(BaseCommand):
         export_type = options.get('export_type', 'all')
         export_status_detail = options.get('export_status_detail', 'active')
         identifier = options.get('identifier', None)
+        ids = options.get('ids', '')
 
         if not identifier:
             identifier = int(time.time())
@@ -76,6 +83,7 @@ class Command(BaseCommand):
             export_status_detail=export_status_detail,
             identifier=identifier,
             user_id=user_id,
-            cp_id=cp_id)
+            cp_id=cp_id,
+            ids=ids)
 
         print('Membership export done %s.' % identifier)

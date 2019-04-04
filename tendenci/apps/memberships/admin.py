@@ -1,3 +1,4 @@
+import time as ttime
 from django.db.models import Q
 from django.contrib import admin
 from django.conf import settings
@@ -24,11 +25,12 @@ from tendenci.apps.memberships.models import (
 from tendenci.apps.memberships.forms import (
     MembershipDefaultForm, NoticeForm,
     MembershipAppForm, MembershipAppFieldAdminForm)
-from tendenci.apps.memberships.utils import get_selected_demographic_field_names
+from tendenci.apps.memberships.utils import get_selected_demographic_field_names, run_membership_export
 from tendenci.apps.memberships.middleware import ExceededMaxTypes
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.event_logs.models import EventLog
 
 
 class MembershipStatusDetailFilter(SimpleListFilter):
@@ -162,6 +164,41 @@ def expire_selected(modeladmin, request, queryset):
         membership.expire(request_user=request.user)
 
 expire_selected.short_description = u'Expire selected'
+
+
+def export_selected(modeladmin, request, queryset, export_fields='main_fields'):
+    """
+    Exports the selected memberships.
+    """
+    ids = queryset.values_list('id', flat=True)
+    ids = ','.join([str(id) for id in ids])
+    identifier = int(ttime.time())
+    run_membership_export(request, 
+                          identifier=identifier,
+                          export_fields=export_fields,
+                          ids=ids)
+    # log an event
+    EventLog.objects.log()
+    status_url = reverse('memberships.default_export_status', args=[identifier])
+    return redirect(status_url)
+
+
+def export_selected_main(modeladmin, request, queryset):
+    """
+    Exports the selected memberships.
+    """
+    return export_selected(modeladmin, request, queryset, export_fields='main_fields')
+
+export_selected_main.short_description = 'Export selected (Main fields)'
+
+
+def export_selected_all(modeladmin, request, queryset):
+    """
+    Exports the selected memberships.
+    """
+    return export_selected(modeladmin, request, queryset, export_fields='all_fields')
+
+export_selected_all.short_description = 'Export selected (All fields)'
 
 
 class MembershipDefaultAdmin(admin.ModelAdmin):
@@ -306,6 +343,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         renew_selected,
         disapprove_selected,
         expire_selected,
+        export_selected_main,
+        export_selected_all
     ]
 
     def get_fieldsets(self, request, instance=None):

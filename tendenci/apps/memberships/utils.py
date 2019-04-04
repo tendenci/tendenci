@@ -7,6 +7,7 @@ from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
 import time as ttime
+import subprocess
 from dateutil.relativedelta import relativedelta
 
 from django.http import HttpResponseServerError
@@ -24,7 +25,9 @@ from django.db.models import ForeignKey, OneToOneField
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.core.files.base import ContentFile
 
+from tendenci.libs.utils import python_executable
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.memberships.models import (MembershipType,
@@ -195,6 +198,29 @@ def get_ud_file_instance(demographics, field_name):
     return file_instance
 
 
+def run_membership_export(request,
+        identifier='',
+        export_fields='all_fields',
+        export_type='all',
+        export_status_detail='active',
+        user_id=0, cp_id=0, ids=''):
+    if not identifier:
+        identifier = int(ttime.time())
+    temp_file_path = 'export/memberships/{0}_{1}_temp.csv'.format(identifier, cp_id)
+    default_storage.save(temp_file_path, ContentFile(''))
+    
+    # start the process
+    subprocess.Popen([python_executable(), "manage.py",
+                  "membership_export_process",
+                  '--export_fields=%s' % export_fields,
+                  '--export_type=%s' % export_type,
+                  '--export_status_detail=%s' % export_status_detail,
+                  '--identifier=%s' % identifier,
+                  '--user=%s' % request.user.id,
+                  '--cp_id=%d' % cp_id,
+                  '--ids=%s' % ids,])
+
+
 def get_membership_rows(
         user_field_list,
         profile_field_list,
@@ -205,22 +231,27 @@ def get_membership_rows(
         foreign_keys,
         export_type=u'all',
         export_status_detail=u'',
-        cp_id=0):
+        cp_id=0,
+        ids=''):
 
-    # grab all except the archived
-    memberships = MembershipDefault.objects.filter(
-        status=True).exclude(status_detail='archive')
+    if ids:
+        ids = ids.split(',')
+        memberships = MembershipDefault.objects.filter(id__in=ids)
+    else:
+        # grab all except the archived
+        memberships = MembershipDefault.objects.filter(
+            status=True).exclude(status_detail='archive')
+
+        if export_status_detail:
+            if export_status_detail == 'pending':
+                memberships = memberships.filter(
+                    status_detail__icontains='pending')
+            else:
+                memberships = memberships.filter(
+                    status_detail=export_status_detail)
 
     if not export_type == 'all':
         memberships = memberships.filter(membership_type=export_type)
-
-    if export_status_detail:
-        if export_status_detail == 'pending':
-            memberships = memberships.filter(
-                status_detail__icontains='pending')
-        else:
-            memberships = memberships.filter(
-                status_detail=export_status_detail)
 
     if cp_id:
         memberships = memberships.filter(corp_profile_id=cp_id)
@@ -285,7 +316,7 @@ def process_export(
         export_fields='all_fields',
         export_type='all',
         export_status_detail='active',
-        identifier=u'', user_id=0, cp_id=0):
+        identifier=u'', user_id=0, cp_id=0, ids=''):
     from tendenci.apps.perms.models import TendenciBaseModel
 
     if export_fields == 'main_fields':
@@ -448,7 +479,8 @@ def process_export(
             fks,
             export_type,
             export_status_detail,
-            cp_id)
+            cp_id,
+            ids=ids)
 
         for row_dict in membership_rows:
 

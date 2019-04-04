@@ -602,7 +602,7 @@ def download_default_template(request):
     return render_csv(filename, title_list,
                         data_row_list)
 
-
+from tendenci.apps.memberships.utils import run_membership_export
 @login_required
 @password_required
 def membership_default_export(
@@ -634,18 +634,14 @@ def membership_default_export(
             export_status_detail = form.cleaned_data['export_status_detail']
 
             identifier = int(ttime.time())
-            temp_file_path = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
-            default_storage.save(temp_file_path, ContentFile(''))
+            run_membership_export(request, 
+                          identifier=identifier,
+                          export_fields=export_fields,
+                          export_type=export_type,
+                          export_status_detail=export_status_detail,
+                          user_id=request.user.id,
+                          cp_id=cp_id)
 
-            # start the process
-            subprocess.Popen([python_executable(), "manage.py",
-                          "membership_export_process",
-                          '--export_fields=%s' % export_fields,
-                          '--export_type=%s' % export_type,
-                          '--export_status_detail=%s' % export_status_detail,
-                          '--identifier=%s' % identifier,
-                          '--user=%s' % request.user.id,
-                          '--cp_id=%d' % cp_id])
             # log an event
             EventLog.objects.log()
             status_url = reverse('memberships.default_export_status', args=[identifier])
