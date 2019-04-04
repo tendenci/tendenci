@@ -88,7 +88,10 @@ class SearchForm(forms.Form):
     def search(self, order_by='newest'):
         self.clean()
         sqs = SearchQuerySet()
-        query = self.cleaned_data['q']
+        if self.is_valid():
+            query = self.cleaned_data['q']
+        else:
+            query = ''
         
         if not query:
             return sqs.none()
