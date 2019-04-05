@@ -1,3 +1,12 @@
+### 11.2.3 [2019-04-05]
+
+* Added "Export selected" actions (for both main and all fields) to memberships admin backend
+* Made type required when adding/editing events
+* Fixed databases dump not working
+* Removed unnecessary ImageSitemap from sitemap.xml for the performance reason
+* Fixed memberships details labels
+* Fixed KeyError at /search/
+
 ### 11.2.2 [2019-03-22]
 
 * Resolved the warning message on migrate to prevent users from being prompted to run 'manage.py makemigrations'
