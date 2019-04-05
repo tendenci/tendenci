@@ -250,7 +250,7 @@ class ListCorpMembershipNode(Node):
             except:
                 order = self.kwargs['order']
 
-        items = CorpMembership.objects.all()
+        items = CorpMembership.objects.exclude(status_detail='archive')
         if not allow_anonymous_search:
             if user.is_authenticated:
                 if not user.profile.is_superuser:
