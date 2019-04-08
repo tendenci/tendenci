@@ -108,6 +108,7 @@ class Person(TendenciBaseModel):
     zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
     county = models.CharField(_('county'), max_length=50, blank=True)
     country = models.CharField(_('country'), max_length=255, blank=True)
+    is_billing_address = models.BooleanField(_('Is billing address'), default=True)
 
     # fields to be used for the alternate address
     address_2 = models.CharField(_('address'), max_length=150, blank=True)
@@ -118,6 +119,7 @@ class Person(TendenciBaseModel):
     zipcode_2 = models.CharField(_('zipcode'), max_length=50, blank=True)
     county_2 = models.CharField(_('county'), max_length=50, blank=True)
     country_2 = models.CharField(_('country'), max_length=255, blank=True)
+    is_billing_address_2 = models.BooleanField(_('Is billing address'), default=False)
 
     url = models.CharField(_('url'), max_length=100, blank=True)
 

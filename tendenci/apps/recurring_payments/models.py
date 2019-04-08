@@ -474,15 +474,7 @@ class RecurringPayment(models.Model):
         inv.title = "Recurring Payment Invoice for Billing Cycle %s - %s" % (
                                            billing_cycle['start'].strftime('%m/%d/%Y'),
                                            billing_cycle['end'].strftime('%m/%d/%Y'))
-        inv.bill_to = self.user.get_full_name()
-        inv.bill_to_company = profile.company
-        inv.bill_to_address = profile.address
-        inv.bill_to_city = profile.city
-        inv.bill_to_state = profile.state
-        inv.bill_to_zip_code = profile.zipcode
-        inv.bill_to_country = profile.country
-        inv.bill_to_phone = profile.phone
-        inv.bill_to_email = self.user.email
+        inv.bill_to_user(self.user)
         inv.status = True
 
         if self.taxable and self.tax_rate:

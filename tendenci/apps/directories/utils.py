@@ -81,32 +81,10 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label,
                                               model=directory._meta.model_name)
             inv.object_id = directory.id
-            profile = user.profile
             inv.title = "Directory Add Invoice"
-            inv.bill_to = '%s %s' % (user.first_name, user.last_name)
-            inv.bill_to_first_name = user.first_name
-            inv.bill_to_last_name = user.last_name
-            inv.bill_to_company = profile.company
-            inv.bill_to_address = profile.address
-            inv.bill_to_city = profile.city
-            inv.bill_to_state = profile.state
-            inv.bill_to_zip_code = profile.zipcode
-            inv.bill_to_country = profile.country
-            inv.bill_to_phone = profile.phone
-            inv.bill_to_fax = profile.fax
-            inv.bill_to_email = user.email
-            inv.ship_to = inv.bill_to
-            inv.ship_to_first_name = user.first_name
-            inv.ship_to_last_name = user.last_name
-            inv.ship_to_company = profile.company
-            inv.ship_to_address = profile.address
-            inv.ship_to_city = profile.city
-            inv.ship_to_state = profile.state
-            inv.ship_to_zip_code = profile.zipcode
-            inv.ship_to_country = profile.country
-            inv.ship_to_phone = profile.phone
-            inv.ship_to_fax = profile.fax
-            inv.ship_to_email = user.email
+            inv.bill_to_user(user)
+            inv.ship_to_user(user)
+
             inv.terms = "Due on Receipt"
             inv.due_date = datetime.now()
             inv.ship_date = datetime.now()
