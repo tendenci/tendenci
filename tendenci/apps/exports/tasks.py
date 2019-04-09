@@ -61,7 +61,7 @@ class TendenciExportTask(Task):
             # get the available fields from the model's meta
             opts = item._meta
             d = {}
-            for f in opts.fields + opts.many_to_many:
+            for f in opts.fields + opts.many_to_many + tuple(opts.virtual_fields):
                 if f.name in fields:  # include specified fields only
                     if isinstance(f, ManyToManyField):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
