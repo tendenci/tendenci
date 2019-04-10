@@ -412,7 +412,7 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
         data = args[0]
         if data:
             try:
-                cat = data.get('cat', None)
+                cat = int(data.get('cat', None))
             except ValueError:
                 cat = None
             if cat:

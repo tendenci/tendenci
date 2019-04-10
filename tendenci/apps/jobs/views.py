@@ -84,6 +84,8 @@ def search(request, template_name="jobs/search.html"):
                 jobs = jobs.filter(tags__icontains=tag)
             else:
                 jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
+    else:
+        jobs = Job.objects.none()
 
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous:
