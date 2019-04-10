@@ -79,6 +79,8 @@ def search(request, release_year=None, template_name="news/search.html"):
 
         if not has_perm(request.user, 'news.view_news'):
             news = news.filter(release_dt_local__lte=datetime.now())
+    else:
+        news = News.objects.none()
 
     EventLog.objects.log()
 
