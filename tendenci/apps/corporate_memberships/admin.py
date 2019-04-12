@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
-from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404, redirect
@@ -513,33 +512,6 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
     def get_actions(self, request):
         return None
-
-    def response_change(self, request, obj):
-        """
-        If the 'Save' button is clicked, redirect to fields list
-        with the selected app.
-        """
-        if "_save" in request.POST:
-            opts = obj._meta
-            verbose_name = opts.verbose_name
-            model_name = opts.model_name
-            if obj._deferred:
-                opts_ = opts.proxy_for_model._meta
-                verbose_name = opts_.verbose_name
-                model_name = opts_.model_name
-
-            msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
-                        'name': force_text(verbose_name),
-                        'obj': force_text(obj)}
-            self.message_user(request, msg)
-            post_url = '%s?corp_app_id=%d' % (
-                            reverse('admin:%s_%s_changelist' %
-                                   (opts.app_label, model_name),
-                                   current_app=self.admin_site.name),
-                            obj.corp_app_id)
-            return HttpResponseRedirect(post_url)
-        else:
-            return super(CorpMembershipAppField2Admin, self).response_change(request, obj)
 
 
 class CorpMembershipRepInlineAdmin(admin.TabularInline):
