@@ -1,3 +1,10 @@
+### 11.2.4 [2019-04-15]
+
+* Indicated billing address in the profiles
+* Fixed an error in news export
+* Fixed an error in jobs search
+* Fixed an error in fields edit for membership and corporate membership apps
+
 ### 11.2.3 [2019-04-05]
 
 * Added "Export selected" actions (for both main and all fields) to memberships admin backend
