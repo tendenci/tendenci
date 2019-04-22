@@ -67,7 +67,7 @@ def new(request, template_name="dashboard/new.html"):
         return redirect('theme_editor.picker')
 
     # Redirect to Group dashboard url if any
-    if get_setting('site', 'global', 'groupdashboard'):
+    if get_setting('site', 'global', 'groupdashboard') and not request.user.profile.is_superuser:
         group_dashboard_urls = [m for m in request.user.group_member
                                                     .values_list('group__dashboard_url', flat=True) if m]
         if group_dashboard_urls:
