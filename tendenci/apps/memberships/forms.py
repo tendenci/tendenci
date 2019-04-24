@@ -1166,16 +1166,6 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
 
-        if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
-            if 'corporate_membership_id' not in self.fields:
-                self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
-                auto_renew_discount = get_setting('module', 'memberships', 'autorenewdiscount')
-                if auto_renew_discount:
-                    self.fields['auto_renew'].help_text = _('A {} discount will be applied immediately if you opt in Auto Renew').format(
-                                                                tcurrency(auto_renew_discount))
-
-        self.add_form_control_class()
-
         if self.membership_app.donation_enabled:
             self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
             self.fields['donation_option_value'].label = self.membership_app.donation_label
@@ -1190,6 +1180,21 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             if not (request_user and request_user.is_authenticated and request_user.is_superuser):
                 payment_method_qs = payment_method_qs.exclude(admin_only=True)
             self.fields['payment_method'].queryset = payment_method_qs
+            if payment_method_qs.count() == 1:
+                self.fields['payment_method'].initial = payment_method_qs[0]
+
+        # auto renew field
+        if require_payment and payment_method_qs.filter(is_online=True).count() > 0:
+            if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
+                if 'corporate_membership_id' not in self.fields:
+                    self.fields['auto_renew'] = forms.BooleanField(label=_('Allow Auto Renew (only if credit card payment is selected)'), required=False)
+                    self.fields['auto_renew'].initial = True
+                    auto_renew_discount = get_setting('module', 'memberships', 'autorenewdiscount')
+                    if auto_renew_discount:
+                        self.fields['auto_renew'].help_text = _('A {} discount will be applied immediately if you opt in Auto Renew').format(
+                                                                    tcurrency(auto_renew_discount))
+
+        self.add_form_control_class()
 
     def clean_donation_option_value(self):
         value_list = self.cleaned_data['donation_option_value']
