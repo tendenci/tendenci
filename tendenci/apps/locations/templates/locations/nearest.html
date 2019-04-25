@@ -15,6 +15,16 @@
 {% block content %}
 
 <div class="t">
+	{% if not MODULE_LOCATIONS_GOOGLE_MAPS_API_KEY and request.user.is_superuser %}
+	<div class="alert alert-danger" role="alert"">
+	Google has changed their policies and you must enter a Maps Static API key 
+	<a href="/settings/module/locations/#id_google_maps_api_key">here</a>
+	and a Geocoding API key <a href="/settings/module/locations/#id_google_geocoding_api_key">here</a>. <br /><br />
+	For details, please read  <a href="https://developers.google.com/maps/documentation/maps-static/intro#get-a-key">https://developers.google.com/maps/documentation/maps-static/intro#get-a-key</a>
+	and 
+	<a href="https://developers.google.com/maps/documentation/geocoding/get-api-key">https://developers.google.com/maps/documentation/geocoding/get-api-key</a>.
+	</div>
+	{% endif %}
     <h1>{% trans "Nearest"%} {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}</h1>
 
     <form class="search-form" action="{% url "location.nearest" %}" method="get">
