@@ -1,3 +1,10 @@
+### 11.2.5 [2019-04-30]
+
+* Prevented superuser from being redirected to group dashboard on login
+* Removed schipul.com from fixtures
+* The auto renew checkbox on membership application is default to checked now
+* Replaced the relative to absolute links on registrant email send
+
 ### 11.2.4 [2019-04-15]
 
 * Indicated billing address in the profiles
