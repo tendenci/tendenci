@@ -3651,6 +3651,11 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             email.save(request.user)
             subject = email.subject
 
+            # replace relative to absolute urls
+            site_url = get_setting('site', 'global', 'siteurl')
+            email.body = email.body.replace("src=\"/", "src=\"%s/" % site_url)
+            email.body = email.body.replace("href=\"/", "href=\"%s/" % site_url)
+
             registrant_kwargs = {}
             registrant_kwargs['payment_status'] = form.cleaned_data['payment_status']
             email_registrants(event, email, **registrant_kwargs)
