@@ -51,7 +51,6 @@ def prepare_paypal_form(request, payment):
     return form
 
 def parse_pdt_validation(data):
-    data = data.decode('utf-8')
     result_params = {}
     success = False
     items_list = data.split('\n')
@@ -105,7 +104,7 @@ def validate_with_paypal(request, validate_type):
                               data.encode('utf-8'),
                               headers)
     response = urlopen(request)
-    data = response.read()
+    data = response.read().decode('utf-8')
 
     if validate_type == 'PDT':
         return parse_pdt_validation(data)
