@@ -1,3 +1,7 @@
+### 11.2.6 [2019-05-01]
+
+* Fixed an error in PayPal IPN
+
 ### 11.2.5 [2019-04-30]
 
 * Prevented superuser from being redirected to group dashboard on login
