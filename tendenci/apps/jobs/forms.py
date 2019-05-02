@@ -412,9 +412,9 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
         data = args[0]
         if data:
             try:
-                cat = int(data.get('cat', None))
+                cat = int(data.get('cat', 0))
             except ValueError:
-                cat = None
+                cat = 0
             if cat:
                 sub_categories = JobCategory.objects.filter(parent__id=cat)
                 sub_categories_count = sub_categories.count()
