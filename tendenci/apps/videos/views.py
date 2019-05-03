@@ -7,6 +7,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.videos.models import Video, Category, VideoType
+from tendenci.apps.videos.forms import VideoSearchForm
 
 
 def index(request, cat_slug=None, template_name="videos/list.html"):
@@ -37,35 +38,37 @@ def search(request, cat_slug=None, template_name="videos/list.html"):
     If a search index is available, this page will also
     have the option to search through videos.
     """
-    query = request.GET.get('q', None)
+    form = VideoSearchForm(request.GET)
 
     categories = Category.objects.all()
     video_types = VideoType.objects.all()
-    cat = request.GET.get('cat', cat_slug)
-    vtype = request.GET.get('type', '')
 
     filters = get_query_filters(request.user, 'videos.view_video')
     videos = Video.objects.filter(filters).distinct()
     if request.user.is_authenticated:
         videos = videos.select_related()
 
-    if query:
-        videos = videos.filter(Q(title__icontains=query)|
-                               Q(description__icontains=query))
-    if cat:
-        categories = Category.objects.filter(slug=cat)
-        category = None
-        if categories:
-            category = categories[0]
-        if category:
-            videos = videos.filter(category=category)
-    if vtype:
-        vtypes = VideoType.objects.filter(slug=vtype)
-        video_type = None
-        if vtypes:
-            video_type = vtypes[0]
-        if video_type:
-            videos = videos.filter(video_type=video_type)
+    if form.is_valid():
+        query = form.cleaned_data['q']
+        cat = form.cleaned_data['cat']
+        vtype = form.cleaned_data['vtype']
+        if query:
+            videos = videos.filter(Q(title__icontains=query)|
+                                   Q(description__icontains=query))
+        if cat:
+            categories = Category.objects.filter(slug=cat)
+            category = None
+            if categories:
+                category = categories[0]
+            if category:
+                videos = videos.filter(category=category)
+        if vtype:
+            vtypes = VideoType.objects.filter(slug=vtype)
+            video_type = None
+            if vtypes:
+                video_type = vtypes[0]
+            if video_type:
+                videos = videos.filter(video_type=video_type)
     if get_setting('module', 'videos', 'order_by_release_dt'):
         videos = videos.order_by('-release_dt')
     else:

@@ -82,3 +82,8 @@ class VideoForm(TendenciBaseForm):
         if self.cleaned_data['clear_image']:
             video.image.delete()
         return video
+
+class VideoSearchForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    cat = forms.CharField(required=False, max_length=200,)
+    vtype = forms.CharField(required=False, max_length=200,)
