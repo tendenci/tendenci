@@ -1,3 +1,10 @@
+### 11.2.7 [2019-05-03]
+
+* CRLF for calendar ics file
+* Fixed TypeError in jobs search
+* Fixed TypeError in directories search
+* Made sure fields in videos search get validated to avoid illegal in the query strings
+
 ### 11.2.6 [2019-05-01]
 
 * Fixed an error in PayPal IPN
