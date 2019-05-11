@@ -1,32 +1,42 @@
 # Tendenci Credits
 
-We want to recognize some of the developers of the core of Tendenci, from its beginnings in 2001 as an idealistic side project to the current open source version built on python by an international team. (sorted by date only of when they started working on Tendenci.)
+Thank you to our current core developers adding issues, pull requests, documentation and helping the community. Without idealistic people working on this open source project and trying to change the world, Tendenci would not be possible. 
 
-- Ed Schipul
+- Ed Schipul @eschipul
+- Jenny Qian @jennyq
+- Karl Goetz @goetzk
+- Paul Donohue @PaulSD
+- Adam Bark @AdamBark
+- Jaime Lossada @dco5
+- Ben Sturmfels @BenSturmfels
+- Suraj Prasad @surajprasad
+- Edna Diaz @ediaz1
+- Rachel Schipul @rschipul
+- Leanne Luce @leanneluce
+
+Additional thanks to the people who have contributed to the product as a whole from the beginning. The list is mostly chronological and may not directly reflect their overall contributions. This is just a huge THANK YOU list!
+
 - Jennifer Ulmer
 - Donnell Smith
-- Aaron Long
-- Nse (Charles) Ekpenyong
-- Jenny Qian
 - Kathryn Ciaralli
-- Adil Ahmed (project manager)
-- Eloy Zuniga, Jr.
+- Nse Ekpenyong
+- Adil Ahmed
+- Aaron Long
+- Eloy Zuniga
 - Glen Zangirolami
-- John-Michael Oswalt (JMO)
+- John-Michael Oswalt
 - Sam Lee
 - Alex Ragsdale
-- Felicia Ann Bates (FAB)
-- John-Eddie Ayson (JE)
+- Felicia Ann Bates
+- John-Eddie Ayson
 - JayJay Montalbo
 - Max Chua
-
-
-Tendenci would not exist without them.
-
-Addition thanks to the following people who have contributed to the product as a whole:
-
+- Sarah Worthy
 - Tim Newton
 - David Stagg
 - Loren Lugosch
 - Nabil Bani
-- Sarah Worthy
+
+If you know of someone who should be added to this list and deserves credit, cause we are human and it's hard to keep up, please TELL US! For example someone active on Transifex doing translations, or adding documentation, they are just as appreciated as people submitting issues and pull requests.
+
+PS - A particular "thank you" call out to @goetzk who posted the feedback that reminded me this file existed. Thank you Karl for posting https://github.com/goetzk/tendenci-community/blob/master/community-engagement.rst - and you are correct. I need to do better. I'm learning still, and probably always will be learning from y'all. 
