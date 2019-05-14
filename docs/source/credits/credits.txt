@@ -1,4 +1,5 @@
-# Tendenci Credits
+Tendenci Credits
+================
 
 Thank you to our current core developers adding issues, pull requests, documentation and helping the community. Without idealistic people working on this open source project and trying to change the world, Tendenci would not be possible. 
 

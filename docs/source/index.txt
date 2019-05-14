@@ -51,6 +51,14 @@ Tendenci allows membership management organizations to communicate, manage and c
    templating/*
 
 
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Credits
+
+   credits/*
+
+
 .. Tutorials
 .. ----------
 
