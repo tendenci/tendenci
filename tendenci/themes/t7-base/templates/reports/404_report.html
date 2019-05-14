@@ -1,5 +1,6 @@
 {% extends "reports/base.html" %}
 {% load base_filters %}
+{% load bootstrap_pagination_tags %}
 
 {% block content %}
 <div class="page-header">
@@ -14,6 +15,7 @@
     <th>{% trans "Count" %}</th>
     <th>{% trans "URL" %}</th>
   </tr>
+  {% autopaginate entry_list 20 %}
   {% for entry in entry_list %}
   <tr>
     <td>{{ entry.count }}</td>
@@ -21,6 +23,7 @@
   </tr>
   {% endfor %}
 </table>
+{% paginate %}
 <br />
 {% endif %}
 {% endblock content %}
