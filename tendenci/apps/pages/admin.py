@@ -120,17 +120,18 @@ class PageAdmin(admin.ModelAdmin):
         instance = form.save(commit=False)
         instance = update_perms_and_save(request, form, instance)
 
-        if instance.meta:
-            meta = instance.meta
-        else:
-            meta = MetaTags()
-
-        meta.title = form.cleaned_data['meta_title']
-        meta.description = form.cleaned_data['meta_description']
-        meta.keywords = form.cleaned_data['meta_keywords']
-        meta.canonical_url = form.cleaned_data['meta_canonical_url']
-        meta.save()
-        instance.meta = meta
+        if 'meta_title' in form.cleaned_data:
+            if instance.meta:
+                meta = instance.meta
+            else:
+                meta = MetaTags()
+            
+            meta.title = form.cleaned_data['meta_title']
+            meta.description = form.cleaned_data['meta_description']
+            meta.keywords = form.cleaned_data['meta_keywords']
+            meta.canonical_url = form.cleaned_data['meta_canonical_url']
+            meta.save()
+            instance.meta = meta
         instance.save()
 
         # notifications
