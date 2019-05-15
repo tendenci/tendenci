@@ -58,4 +58,6 @@ class DirectoryIndex(TendenciBaseSearchIndex, indexes.Indexable):
         return all(args)
 
     def prepare_order(self, obj):
-        return obj.activation_dt
+        if obj.activation_dt:
+            return obj.activation_dt
+        return obj.create_dt
