@@ -12,7 +12,7 @@
       
       {% if directory.logo %}
       <p class="t-directories-directory-image-container text-center">
-        <img class="t-directories-directory-image" src="{{ directory.get_logo_url }}" alt="{% firstof directory.headline trans 'Untitled' %}">
+        <img class="t-directories-directory-image img-responsive" src="{{ directory.get_logo_url }}" alt="{% firstof directory.headline trans 'Untitled' %}">
       </p>
       {% endif %}
       
