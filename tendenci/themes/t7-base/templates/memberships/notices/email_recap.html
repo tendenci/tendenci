@@ -27,6 +27,9 @@
         </ol>
         <br />
     {% else %}
+    	<ul>
+    	<li><a href="{{ site_url }}{% url 'membership.notice.log.view' notice.log.id %}">{% trans "View the list of emails sent" %}</a> </li>
+    	</ul>
         <br /><br />
     {% endif %}
 {% endfor %}
