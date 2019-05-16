@@ -5,3 +5,11 @@
 #a-to-z{
 	margin: 1em auto;
 }
+
+.t-directories-directory .social-media-wrap a span{
+    display: inline-block;
+    font-size: 20px;
+    padding: 4px;
+    border: 1px solid #b2b2b2;
+    margin: 4px;
+}

@@ -82,6 +82,13 @@ class Directory(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.CASCADE)
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
+    
+    # social media links
+    linkedin = models.URLField(_('LinkedIn'), blank=True, default='')
+    facebook = models.URLField(_('Facebook'), blank=True, default='')
+    twitter = models.URLField(_('Twitter'), blank=True, default='')
+    instagram = models.URLField(_('Instagram'), blank=True, default='')
+    youtube = models.URLField(_('YouTube'), blank=True, default='')
 
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -148,6 +155,9 @@ class Directory(TendenciBaseModel):
         return all([self.allow_anonymous_view,
                 self.status,
                 self.status_detail in ['active']])
+
+    def has_social_media(self):
+        return any([self.linkedin, self.facebook, self.twitter, self.instagram, self.youtube])
 
     @property
     def logo(self):

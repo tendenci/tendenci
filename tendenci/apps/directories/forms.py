@@ -180,6 +180,11 @@ class DirectoryForm(TendenciBaseForm):
             'email',
             'email2',
             'website',
+            'linkedin',
+            'facebook',
+            'twitter',
+            'instagram',
+            'youtube',
             'tags',
             'pricing',
             'list_type',
@@ -236,6 +241,15 @@ class DirectoryForm(TendenciBaseForm):
                                   'website'
                                  ],
                         'classes': ['contact'],
+                      }),
+                     (_('Social Media'), {
+                      'fields': ['linkedin',
+                                 'facebook',
+                                  'twitter',
+                                  'instagram',
+                                  'youtube',
+                                 ],
+                        'classes': ['social-media'],
                       }),
                       (_('Permissions'), {
                       'fields': ['allow_anonymous_view',

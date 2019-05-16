@@ -1,0 +1,24 @@
+{% if directory.has_social_media %}
+<div class="social-media-wrap">
+	{% blocktrans with name=directory.headline %}
+	Connect with {{ name }}
+	{% endblocktrans %}
+  {% with name=directory.headline %}
+   {% if directory.linkedin %}
+    <a href="{{ directory.linkedin }}" title="{% blocktrans %}Follow {{ name }} on Linkedin{% endblocktrans %}"><span class="fa fa-linkedin-square" style="color: #0077B7;"></span></a>
+   {% endif %}
+   {% if directory.facebook %}
+    <a href="{{ directory.facebook }}" title="{% blocktrans %}Follow {{ name }} on Facebook{% endblocktrans %}"><span class="fa fa-facebook-square" style="color: #3B5999;"></span></a>
+   {% endif %}
+   {% if directory.twitter %}
+    <a href="{{ directory.twitter }}" title="{% blocktrans %}Follow {{ name }} on Twitter{% endblocktrans %}"><span class="fa fa-twitter-square" style="color: #55ACEE;"></span></a>
+   {% endif %}
+   {% if directory.instagram %}
+    <a href="{{ directory.instagram }}" title="{% blocktrans %}Follow {{ name }} on Instagram{% endblocktrans %}"><span class="fa fa-instagram" style="color: #A536B6;"></span></a>
+   {% endif %}
+   {% if directory.youtube %}
+    <a href="{{ directory.youtube }}" title="{% blocktrans %}Follow {{ name }} on YouTube {% endblocktrans %}"><span class="fa fa-youtube-square" style="color: #E02F2F;"></span></a>
+   {% endif %}
+   {% endwith %}
+</div>
+ {% endif %}
