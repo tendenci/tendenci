@@ -218,7 +218,7 @@ def migrate_categories_data(apps, schema_editor):
     from tendenci.apps.directories.models import Directory
     from tendenci.apps.directories.models import Category as DirectoryCategory
 
-    for directory in Directory.objects.all():
+    for directory in Directory.objects.raw('SELECT * FROM directories_directory'):
         directory_cat, directory_sub_cat = None, None
         cat_items = directory.categories.all().order_by('category')
         for cat_item in cat_items:
