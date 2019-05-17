@@ -1,3 +1,15 @@
+### 11.2.8 [2019-05-17]
+
+* Security: upgraded bootstrap from 3.3.1 to 3.4.1 (There are xss vulnerabilities in version less than 3.4.1)
+* Added social media fields to directories
+* Included link to notice log if number of recipients > 50 on memberships notice recap to admin
+* Added img-responsive class to the directory logo
+* Added pagination to 404 reports for the performance reason
+* Fixed boolean settings for forms
+* Fixed KeyError at /admin/pages/page/
+* Fixed error on indexing directories when activation_dt is not set
+* Updated credits based on @goetzk feedback 
+
 ### 11.2.7 [2019-05-03]
 
 * CRLF for calendar ics file
