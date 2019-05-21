@@ -6,18 +6,7 @@ from tendenci.apps.perms.utils import update_perms_and_save
 from tendenci.apps.entities.models import Entity
 
 
-ENTITY_TYPES = (
-    ('', _('SELECT ONE')),
-    ('Committee', _('Committee')),
-    ('Reporting', _('Reporting')),
-    ('Study Group', _('Study Group')),
-    ('Technical Interest Group', _('Technical Interest Group')),
-    ('Other', _('Other')),
-)
-
-
 class EntityAdminForm(forms.ModelForm):
-    entity_type = forms.ChoiceField(choices=ENTITY_TYPES)
 
     class Meta:
         model = Entity

@@ -9,9 +9,17 @@ from tendenci.apps.entities.managers import EntityManager
 
 
 class Entity(models.Model):
+    ENTITY_TYPES = (
+        ('', _('SELECT ONE')),
+        ('Committee', _('Committee')),
+        ('Reporting', _('Reporting')),
+        ('Study Group', _('Study Group')),
+        ('Technical Interest Group', _('Technical Interest Group')),
+        ('Other', _('Other')),
+    )
     guid = models.CharField(max_length=40)
     entity_name = models.CharField(_('Name'), max_length=200, blank=True)
-    entity_type = models.CharField(_('Type'), max_length=200, blank=True)
+    entity_type = models.CharField(_('Type'), choices=ENTITY_TYPES, max_length=200, blank=True, default="Reporting")
     #entity_parent_id = models.IntegerField(_('Parent ID'), default=0)
     entity_parent = models.ForeignKey('self', related_name='entity_children', null=True, blank=True,
                                       on_delete=models.SET_NULL)
