@@ -11,7 +11,7 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.videos.managers import VideoManager
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from .utils import get_embedly_client
+from .utils import get_embedly_client, ASPECT_RATIO
 
 
 class Category(OrderingBaseModel):
@@ -116,7 +116,8 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
     def embed_code(self, **kwargs):
         width = kwargs.get('width') or 600
-        return get_oembed_code(self.video_url, width, 400)
+        height = kwargs.get('height') or 400
+        return get_oembed_code(self.video_url, width, height)
 
     def thumbnail(self):
         return get_oembed_thumbnail(self.video_url, 600, 400)
@@ -196,7 +197,7 @@ class OembedlyCache(models.Model):
                     width, height = int(width), int(height)
                     if width < height:
                         # adjust the height
-                        height = int(round(width/1.78))
+                        height = int(round(width/ASPECT_RATIO))
                     return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
                             width=width,
                             height=height,
