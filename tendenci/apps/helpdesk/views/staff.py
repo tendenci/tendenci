@@ -1224,7 +1224,7 @@ run_report = staff_member_required(run_report)
 
 def save_query(request):
     title = request.POST.get('title', None)
-    shared = request.POST.get('shared', False)
+    shared = request.POST.get('shared', False) in ['on', 'True', True, 'TRUE']
     query_encoded = request.POST.get('query_encoded', None)
 
     if not title or not query_encoded:
