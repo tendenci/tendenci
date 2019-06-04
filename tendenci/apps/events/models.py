@@ -1283,7 +1283,7 @@ class Event(TendenciBaseModel):
     def is_over(self):
         return self.end_dt <= datetime.now()
 
-  @property
+    @property
     def money_collected(self):
         """
         Total collected from this event
