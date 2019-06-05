@@ -1003,9 +1003,10 @@ def membership_default_add(request, slug='', membership_id=None,
 
     if join_under_corporate:
         app_fields = app.fields.filter(Q(display=True) | Q(
-            field_name='corporate_membership_id'))
+            field_name__in=['corporate_membership_id', 'payment_method']))
     else:
-        app_fields = app.fields.filter(display=True)
+        app_fields = app.fields.filter(Q(display=True) | Q(
+            field_name__in=['payment_method']))
 
     if not request.user.profile.is_superuser:
         app_fields = app_fields.filter(admin_only=False)
