@@ -50,8 +50,9 @@ def invoice_pdf(request, invoice):
                              'pdf_version': True,
                             }, request=request)
     result = BytesIO()
-    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
-                      path=get_setting('site', 'global', 'siteurl'))
+    pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
+    #pisa.pisaDocument(BytesIO(html.encode("utf-8")), result,
+    #                  path=get_setting('site', 'global', 'siteurl'))
     return result
 
 def process_invoice_export(start_dt=None, end_dt=None,
