@@ -22,6 +22,19 @@
     ul.registrant-pricing{
     	list-style: none;
     }
+    .input-group-addon{
+    	width: auto;
+    }
+    .gratuity-section{
+    	margin: 2em;
+    	padding: 1em;
+    	border: 1px solid #999;
+    	border-radius: 5px;
+    	box-shadow: 0 2px 5px #eee;
+    }
+    #id_gratuity, #id_gratuity_preferred{
+    	text-align: center;
+    }
 </style>
 {% endblock %}
 
@@ -384,7 +397,67 @@
                     <p>Disclaimer: The availability of discount code is subject to
                     change without any warranty before confirming your registration.</p>
                 {% endif %}
+                           
+                           
+                {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
+                <div class="gratuity-section clearfix">
+                
+	                {% if gratuity_form.errors.values %}
+				        <div class="errors-box">
+				            <ul>
+				                {{ gratuity_form.non_field_errors }}
+				                {% for field in gratuity_form %}
+				                    {% if field.errors %}
+				                        {% for error in field.errors %}
+				                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+				                        {% endfor %}
+				                    {% endif %}
+				                {% endfor %}
+				            </ul>
+				        </div>
+				    {% endif %}
+                
+                	{% if gratuity_form.gratuity %}
+                	<div class="form-group">
+                		<label for="id_gratuity" class="col-xs-6 control-label" style="text-align: right !important;">{{gratuity_form.gratuity.label}}</label>
+                	    <div class="col-xs-6">
+      					{{ gratuity_form.gratuity }}
+      					</div>
+                	</div>
+                	{% endif %}
+                	{% if gratuity_form.gratuity_preferred %}
+                	<div class="form-group">
+                		<label for="id_gratuity_preferred" class="col-xs-6 control-label" style="text-align: right !important;">{% trans "*OR*" %} {{gratuity_form.gratuity_preferred.label}}</label>
+                	    <div class="col-xs-6">
+      					{{ gratuity_form.gratuity_preferred }}
+                         <div class="help-text">{{ gratuity_form.gratuity_preferred.help_text }}</div>
+                         <br />
+                	  </div>
+                	</div>
+                	{% endif %}
+                	
+                	<div id="tbl-gratuity-summary" class="col-sm-6 pull-right">
+                	<table class="table">
+                		<tr>
+                			<td>{% trans "Subtotal:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-subtotal" data-subtotal="{{ subtotal }}">{{ subtotal }}</span></td>
+                		</tr>
+                		<tr>
+                			<td>{% trans "Gratuity:" %}</td><td><span id="tbl-gratuity">0</span>%</td>
+                		</tr>
+                		
+                		<tr{% if not total_tax %} class="hidden"{% endif %}>
+                			<td>{% trans "Tax:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-total_tax" data-total_tax="{{ total_tax }}">{{ total_tax }}</span></td>
+                		</tr>
+                		
+                		<tr>
+                			<td>{% trans "Total:" %}</td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="tbl-gratuity-total">{{ grand_total }}</span></td>
+                		</tr>
+                	</table>
+                	</div>
+                </div>
+                {% endif %}
             </div>
+            
             <input type="hidden" name="confirmed" />
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
@@ -412,6 +485,40 @@
     {% if do_confirmation %}
     $(document).ready(function(){
         $('#fillup-div').addClass('event-registration-hidden');
+        
+        {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
+        var total_tax = $("#tbl-total_tax").data('total_tax');
+        console.log(total_tax);
+        
+        var calc_total = function(subtotal, gratuity){
+            grand_total = parseFloat(subtotal) + parseFloat(total_tax) + parseFloat(subtotal) * parseFloat(gratuity)/100.0;
+            return grand_total.toFixed(2);
+        };
+        
+        var assign_total = function(subtotal){
+        	var gratuity = $("select#id_gratuity").val();
+        	var gratuity_preferred = $("#id_gratuity_preferred").val();
+        	var total;
+        	if (isNaN(gratuity_preferred) || gratuity_preferred == '' || parseFloat(gratuity_preferred) < 0){
+        		total = calc_total(subtotal, gratuity);
+        		$('#tbl-gratuity').html(gratuity);
+        	}else{
+        		total = calc_total(subtotal, gratuity_preferred);
+        		$('#tbl-gratuity').html(gratuity_preferred);
+        	}	        	
+        	$('#tbl-gratuity-total').html(total);
+        };
+    
+        var subtotal = $("#tbl-gratuity-subtotal").data('subtotal');
+        assign_total(subtotal);
+        $('select#id_gratuity').change(function(e){
+        	assign_total(subtotal);
+        });
+        $('input#id_gratuity_preferred').change(function(e){
+        	assign_total(subtotal);
+        });
+    {% endif %}
+    
     });
     {% endif %}
     {% if add_more_registrants %}

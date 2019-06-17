@@ -819,11 +819,17 @@ def get_registrants_prices(*args):
             override_price_table = 0
 
     amount_list = []
+    tax_list = []
     if event.is_table:
         if override_table:
-            amount_list.append(override_price_table)
+            amount = override_price_table
         else:
-            amount_list.append(event_price)
+            amount = event_price
+        amount_list.append(amount)
+        if price and price.tax_rate:
+            tax_list.append(amount * price.tax_rate)
+        else:
+            tax_list.append(0)
 
     else:
         override_price_total = Decimal(0)
@@ -843,6 +849,8 @@ def get_registrants_prices(*args):
                 amount = price.price
 
             amount_list.append(amount)
+            tax_list.append(amount * price.tax_rate)
+            
 
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
@@ -853,7 +861,7 @@ def get_registrants_prices(*args):
                         apps__model=RegistrationConfiguration._meta.model_name)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
-    return amount_list, discount_amount, discount_list
+    return amount_list, discount_amount, discount_list, tax_list
 
 
 def add_registration(*args, **kwargs):
@@ -873,6 +881,7 @@ def add_registration(*args, **kwargs):
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    gratuity = kwargs.get('gratuity', 0)
 
     override_table = False
     override_price_table = Decimal(0)
@@ -883,7 +892,7 @@ def add_registration(*args, **kwargs):
             override_price_table = 0
 
     # get the list of amount for registrants.
-    amount_list, discount_amount, discount_list = get_registrants_prices(*args)
+    amount_list, discount_amount, discount_list, tax_list = get_registrants_prices(*args)
 
     invoice_discount_amount = discount_amount
 
@@ -894,7 +903,8 @@ def add_registration(*args, **kwargs):
         "reg_conf_price": price,
         'is_table': event.is_table,
         'override_table': override_table,
-        'override_price_table': override_price_table
+        'override_price_table': override_price_table,
+        'gratuity': gratuity,
     }
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity

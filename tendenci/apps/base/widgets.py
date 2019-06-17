@@ -108,3 +108,13 @@ class PriceWidget(TextInput):
         input_group_addon_html = '<div class="input-group-addon">%s</div>' % currency_symbol
         input_group_html = '<div class="input-group">%s%s</div>' % (input_group_addon_html, html,)
         return mark_safe(input_group_html)
+
+class PercentWidget(TextInput):
+    def render(self, name, value, attrs=None):
+        html = super(PercentWidget, self).render(name, value, attrs)
+        input_group_addon_html = '<div class="input-group-addon">%</div>'
+        input_group_html = '<div class="input-group">{0}{1}</div>'.format(html, input_group_addon_html)
+        return mark_safe(input_group_html)
+    
+        return mark_safe(html + '%')
+

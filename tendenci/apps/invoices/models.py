@@ -63,6 +63,7 @@ class Invoice(models.Model):
     other = models.CharField(max_length=120, blank=True, null=True)
     message = models.CharField(max_length=150, blank=True, null=True)
     subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    gratuity = models.DecimalField(blank=True, default=0, max_digits=6, decimal_places=4)
     tax_exempt = models.BooleanField(default=True)
     tax_exemptid = models.CharField(max_length=50, blank=True, null=True)
     tax_rate = models.FloatField(blank=True, default=0)
@@ -281,6 +282,10 @@ class Invoice(models.Model):
             return u'void'
 
         return self.status_detail
+
+    @property
+    def graguity_in_percentage(self):
+        return '{:.1%}'.format(self.gratuity)
 
     @property
     def is_tendered(self):

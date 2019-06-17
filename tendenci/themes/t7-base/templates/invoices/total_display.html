@@ -28,6 +28,14 @@
     <td class="td-right">-{{ invoice.discount_amount|format_currency }}</td>
   </tr>
   {% endif %}
+  
+  {% if invoice.gratuity %}
+  <tr>
+    <td>{% trans "Gratuity:" %}</td>
+    <td class="td-right">{{ invoice.graguity_in_percentage }}</td>
+  </tr>
+  {% endif %}
+
   {% if invoice.tax %}
   <tr>
     <td>{% trans "Tax:" %}</td>

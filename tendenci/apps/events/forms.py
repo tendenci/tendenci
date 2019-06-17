@@ -48,6 +48,7 @@ from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.widgets import PercentWidget
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -1297,6 +1298,9 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'payment_required',
             'require_guests_info',
             'discount_eligible',
+            'gratuity_enabled',
+            'gratuity_options',
+            'gratuity_custom_option',
             'allow_free_pass',
             'display_registration_stats',
             'use_custom_reg',
@@ -1313,6 +1317,9 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'payment_required',
                     'require_guests_info',
                     'discount_eligible',
+                    'gratuity_enabled',
+                    'gratuity_options',
+                    'gratuity_custom_option',
                     'allow_free_pass',
                     'display_registration_stats',
                     'use_custom_reg',
@@ -1390,6 +1397,11 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         if self.recurring_edit:
             del self.fields['use_custom_reg']
 
+        # 
+        if not settings.EVENTS_GRATUITY_ENABLED:
+            del self.fields['gratuity_enabled']
+            del self.fields['gratuity_options']
+            del self.fields['gratuity_custom_option']
         self.add_form_control_class()
 
     def clean_use_custom_reg(self):
@@ -1404,6 +1416,35 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             if d['reg_form_id'] == '0':
                 raise forms.ValidationError(_('Please choose a custom registration form'))
         return ','.join(data_list)
+
+    def clean_gratuity_options(self):
+        value = self.cleaned_data['gratuity_options']
+        
+        for opt in value.split(','):
+            is_valid = True
+            negative_number = False
+            opt = opt.strip().strip('%').strip()
+            if '.' in opt:
+                head, tail = opt.split('.')
+                if not head.isdigit() or not tail.isdigit():
+                    is_valid = False
+                else:
+                    if int(head) < 0:
+                        negative_number = True
+            else:
+                if not opt.isdigit():
+                    is_valid = False
+                else:
+                    if int(opt) < 0:
+                        negative_number = True
+            if not is_valid:
+                raise forms.ValidationError(_("'%(value)s' is not a valid Gratuity options."),
+                                            params={'value': opt})
+            if negative_number:
+                raise forms.ValidationError(_("Invalid Gratuity option '%(value)s'. It should be a positive number."),
+                                            params={'value': opt}) 
+                
+        return value
 
     def clean_reminder_days(self):
         value = self.cleaned_data['reminder_days']
@@ -1629,6 +1670,35 @@ class RegistrationForm(forms.Form):
         if override_table and override_price_table <0:
             raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price_table
+
+
+class GratuityForm(forms.Form):
+    gratuity = forms.ChoiceField(label=_('Gratuity:'), required=False, choices=[])
+    gratuity_preferred = forms.FloatField(label=_('Specify your preferred gratuity:'),
+                                          min_value=0, required=False,
+                                          help_text=_('Enter a number. For example, 15 for 15%.'))
+
+    def __init__(self, *args, **kwargs):
+        self.reg_conf = kwargs.pop('reg_conf')
+        super(GratuityForm, self).__init__(*args, **kwargs)
+        
+        if not self.reg_conf.gratuity_enabled:
+            del self.fields['gratuity']
+            del self.fields['gratuity_preferred']
+        else:
+            gratuity_options = self.reg_conf.gratuity_options.split(',')
+            gratuity_choices = []
+            for opt in gratuity_options:
+                gratuity_choices.append((opt.strip('%'), opt))
+            self.fields['gratuity'].choices = gratuity_choices
+            if not self.reg_conf.gratuity_custom_option:
+                del self.fields['gratuity_preferred']
+            else:
+                self.fields['gratuity_preferred'].widget = PercentWidget()
+            
+            # add form-control class
+            for k in self.fields.keys():
+                self.fields[k].widget.attrs['class'] = 'form-control'
 
 
 class FreePassCheckForm(forms.Form):

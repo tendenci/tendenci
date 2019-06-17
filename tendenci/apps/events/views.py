@@ -120,8 +120,9 @@ from tendenci.apps.events.forms import (
     EventSearchForm,
     EventMonthForm,
     EventExportForm,
-     EventSimpleSearchForm,
-     EventReportFilterForm)
+    EventSimpleSearchForm,
+    EventReportFilterForm,
+    GratuityForm)
 from tendenci.apps.events.utils import (
     email_registrants,
     render_event_email,
@@ -1777,6 +1778,7 @@ def register(request, event_id=0,
 
     flat_registrants = []
     discount_applied = False
+    discount_amount = 0
 
     if is_strict:
         # strict requires logged in
@@ -1981,6 +1983,11 @@ def register(request, event_id=0,
     add_more_registrants = False
     flat_ignore_fields = ["DELETE", "override"]
 
+    # gratuity
+    gratuity_form = GratuityForm(request.POST or None, reg_conf=reg_conf)
+    subtotal = 0
+    total_tax = 0
+
     if request.method == 'POST':
         if 'commit' in request.POST:
 
@@ -1994,10 +2001,22 @@ def register(request, event_id=0,
 
                 args = [request, event, reg_form, registrant, addon_formset,
                         pricing, pricing and pricing.price or 0]
-                if 'confirmed' in request.POST:
+                if 'confirmed' in request.POST and gratuity_form.is_valid():
+
+                    # graguity
+                    if 'gratuity' in gratuity_form.cleaned_data:
+                        gratuity = gratuity_form.cleaned_data.get('gratuity')
+                        gratuity_preferred = gratuity_form.cleaned_data.get('gratuity_preferred', None)
+                        if gratuity_preferred is not None:
+                            gratuity = gratuity_preferred
+                        gratuity = Decimal(gratuity) / 100
+                    else:
+                        gratuity = Decimal(0)
 
                     kwargs = {'admin_notes': '',
-                              'custom_reg_form': custom_reg_form}
+                              'custom_reg_form': custom_reg_form,
+                              'gratuity': gratuity}
+
                     # add registration
                     reg8n, reg8n_created = add_registration(*args, **kwargs)
 
@@ -2077,14 +2096,20 @@ def register(request, event_id=0,
                                                     ))
                 else:
                     do_confirmation = True
-                    amount_list, discount_amount, discount_list = get_registrants_prices(*args)
+                    amount_list, discount_amount, discount_list, tax_list = get_registrants_prices(*args)
                     discount_applied = (discount_amount > 0)
 
                     for i, form in enumerate(registrant.forms):
                         if not is_table:
                             form.discount = discount_list[i]
                             form.final_price = amount_list[i]
+                            subtotal += form.final_price
+                        
                         flat_registrants.append(form)
+                        if not is_table:
+                            total_tax += tax_list[i]
+                    if is_table:
+                        total_tax += tax_list[0]
 
         elif 'addmore' in request.POST:
             add_more_registrants = True
@@ -2118,6 +2143,11 @@ def register(request, event_id=0,
         count += 1
     addons_price = addon_formset.get_total_price()
     total_price += addons_price
+    
+    if is_table:
+        subtotal = total_price
+        if discount_applied:
+            subtotal -= discount_amount
 
     # check if we have any error on registrant formset
     has_registrant_form_errors = False
@@ -2147,6 +2177,10 @@ def register(request, event_id=0,
         'flat_registrants': flat_registrants,
         'discount_applied': discount_applied,
         'do_confirmation': do_confirmation,
+        'gratuity_form': gratuity_form,
+        'subtotal': subtotal,
+        'total_tax': round(total_tax, 2),
+        'grand_total': subtotal + total_tax,
         'add_more_registrants' : add_more_registrants,
         'flat_ignore_fields' : flat_ignore_fields,
         'currency_symbol' : get_setting("site", "global", "currencysymbol") or '$'

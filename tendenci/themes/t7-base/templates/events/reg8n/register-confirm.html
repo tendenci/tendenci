@@ -216,6 +216,12 @@
             </tr>
             {% endfor %}
         </table>
+        
+        {% if registration.gratuity %}
+        	<div class="clearfix">
+        	<div class="pull-right">{% trans "Gratuity:" %} {{ registration.graguity_in_percentage }}</div>
+        	</div>
+        {% endif %}
     </div>
 
     <div class="regconf-section payment">

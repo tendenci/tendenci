@@ -522,7 +522,7 @@ GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
 DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # User agent for external retrieval of files/images
-TENDENCI_USER_AGENT = 'Tendenci/8.0 (+https://www.tendenci.com)'
+TENDENCI_USER_AGENT = 'Tendenci/11 (+https://www.tendenci.com)'
 
 # Google Static Maps URL signing secret used to generate a digital signature
 GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
@@ -532,6 +532,10 @@ ALLOW_MP3_UPLOAD = False
 
 # Photos App
 PHOTOS_MAXBLOCK = 2 ** 20  # prevents 'IOError: encoder error -2'
+
+# Events
+# Turn on/off the Gratuity feature - per Ed, allow it to be adjusted in conf/settings.py rather than site settings
+EVENTS_GRATUITY_ENABLED = False
 
 # EMail Settings for Newsletters
 NEWSLETTER_EMAIL_HOST = None
