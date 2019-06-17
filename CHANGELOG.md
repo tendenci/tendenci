@@ -1,3 +1,16 @@
+### 11.2.9 [2019-06-17]
+
+* Update django version to 1.11.21 
+* Fixed issue not being able to edit /admin/entities/entity/
+* Specified the aspect ratio for the video_embed
+* Fixed ValidationError on helpdesk query save
+* Fixed signal "create_usersettings" not working in helpdesk
+* Updated event money output
+* Fixed KeyError for memberships app when the payment_method field was unchecked for some reason
+* Removed the path arg to avoid unnecessary connections for invoices download
+* Added gratuity feature to events
+
+
 ### 11.2.8 [2019-05-17]
 
 * Security: upgraded bootstrap from 3.3.1 to 3.4.1 (There are xss vulnerabilities in version less than 3.4.1)
