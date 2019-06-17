@@ -364,9 +364,12 @@ div.pricing-list-wrap li{
         {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
         {{ event.place.country }}</h4>
     </div>
+  </div>
+  {% endif %}
+    
     <br />
     <!-- FOOTER / META -->
-    <div>
+    <div class="t-footer-meta">
       {% if event.groups.count > 0 %}
       <div><strong>{% trans "Group(s):" %}</strong>
         {% for group in event.groups.all %}
@@ -377,8 +380,7 @@ div.pricing-list-wrap li{
     </div>
     {% include 'events/meta.html' %}
     <br />
-  </div>
-  {% endif %}
+    
 </div>
 
 {% endblock %}
