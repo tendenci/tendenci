@@ -5,8 +5,8 @@
 {% load meta_tags %}
 
 
-{% block title %}{{ article.title }}{% endblock %}
-{% block meta_description %}{{ article.description }}{% endblock %}
+{% block title %}{{ article.get_title }}{% endblock %}
+{% block meta_description %}{{ article.get_description }}{% endblock %}
 {% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
 
