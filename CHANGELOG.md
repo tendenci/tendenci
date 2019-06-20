@@ -1,3 +1,11 @@
+### 11.2.10 [2019-06-20]
+
+* Fixed the meta title and description in articles/view.html
+* Added grid view option for articles
+* Moved meta to have it visible in the events
+* Removed Google+ from social_media/icons.html
+
+
 ### 11.2.9 [2019-06-17]
 
 * Update django version to 1.11.21 
