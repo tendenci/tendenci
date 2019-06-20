@@ -64,9 +64,9 @@
 				<td>
 				 {% with article.category_set as article_cat %}
 				   {% if article_cat.category %}
-				      <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{{ article_cat.category }}</a>
+				      <a href="{% url 'articles' %}?category={{ article_cat.category }}">{{ article_cat.category }}</a>
 				       {% if article_cat.sub_category %}
-				       /  <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{{ article_cat.sub_category }}</a>
+				       /  <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
 				       {% endif %}
 				   {% endif %}
 				   {% endwith %}
