@@ -50,7 +50,8 @@
 		 <tr>
 			 <th>{% trans "Date" %}</th>
 			 <th>{% trans "Title" %}</th>
-			 <th>{% trans "Category/Subcategory" %}</th>
+			 <th>{% trans "Category" %}</th>
+			 <th>{% trans "Subcategory" %}</th>
 			 <th>{% trans "Group" %}</th>
 		 </tr>
 		 {% for article in articles %}
@@ -61,19 +62,23 @@
 				 &nbsp;&nbsp;<a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
 				  {% endif %}
 				</td>
+				
+				{% with article.category_set as article_cat %}
 				<td>
-				 {% with article.category_set as article_cat %}
 				   {% if article_cat.category %}
 				      <a href="{% url 'articles' %}?category={{ article_cat.category }}">{{ article_cat.category }}</a>
-				       {% if article_cat.sub_category %}
-				       /  <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
-				       {% endif %}
 				   {% endif %}
-				   {% endwith %}
 				</td>
-				<td>{{ article.group }}</td>
-			</tr>
-	     {% endfor %}
+				<td>
+			       {% if article_cat.sub_category %}
+			       <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
+			       {% endif %}
+				</td>
+			   {% endwith %}
+				
+			<td>{{ article.group }}</td>
+		</tr>
+	 {% endfor %}
 		 </table>
 {% else %}
     <section>
