@@ -1,4 +1,4 @@
-{% extends "articles/base.html" %}
+{% extends base_template %}
 {% load article_tags %}
 {% load base_tags %}
 {% load bootstrap_pagination_tags %}
@@ -27,7 +27,7 @@
   <h1>{% firstof trans MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</h1>
 </div>
 
-    {% autopaginate articles 10 %}
+    {% autopaginate articles num_per_page %}
     {% article_search %}
     
         <em>
@@ -45,6 +45,37 @@
         </em> 
    <br /><br />
 
+{% if MODULE_ARTICLES_GRIDVIEW_FOR_SEARCH %}
+		 <table class="table table-striped table-bordered">
+		 <tr>
+			 <th>{% trans "Date" %}</th>
+			 <th>{% trans "Title" %}</th>
+			 <th>{% trans "Category/Subcategory" %}</th>
+			 <th>{% trans "Group" %}</th>
+		 </tr>
+		 {% for article in articles %}
+			<tr>
+				<td nowrap>{{ article.release_dt|date }}</td>
+				<td><a href="{% url 'article' article.slug %}">{{ article.headline }}</a>
+				 {% if user.profile.is_superuser %}
+				 &nbsp;&nbsp;<a class="t-meta-edit-link" href="{% url 'article.edit' article.pk %}" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
+				  {% endif %}
+				</td>
+				<td>
+				 {% with article.category_set as article_cat %}
+				   {% if article_cat.category %}
+				      <a href="{% url 'articles' %}?category={{ article_cat.category.pk }}">{{ article_cat.category }}</a>
+				       {% if article_cat.sub_category %}
+				       /  <a href="{% url 'articles' %}?sub_category={{ article_cat.sub_category.pk }}">{{ article_cat.sub_category }}</a>
+				       {% endif %}
+				   {% endif %}
+				   {% endwith %}
+				</td>
+				<td>{{ article.group }}</td>
+			</tr>
+	     {% endfor %}
+		 </table>
+{% else %}
     <section>
         {% for article in articles %}
             {% search_result article %}
@@ -62,6 +93,7 @@
             {% endif %}
         {% endfor %}
     </section>
+{% endif %}
 
     {% paginate %}
 {% endblock %}

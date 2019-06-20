@@ -117,5 +117,22 @@
         "scope_category": "articles",
         "store": false,
         "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "If true, articles search view will show grid view.",
+        "data_type": "boolean",
+        "update_dt": "2019-06-19 16:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "gridview_for_search",
+        "value": "false",
+        "label": "Show Grid View for Search View",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "articles",
+        "store": true,
+        "updated_by": ""
     }
 ]

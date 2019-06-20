@@ -143,8 +143,18 @@ def search(request, template_name="articles/search.html"):
 
     EventLog.objects.log()
 
+    if get_setting('module', 'articles', 'gridview_for_search'):
+        base_template = 'articles/base-wide.html'
+        num_per_page = 25
+    else:
+        base_template = 'articles/base.html'
+        num_per_page = 10
+
     return render_to_resp(request=request, template_name=template_name,
-        context={'articles': articles, 'form' : form})
+        context={'articles': articles,
+                 'form' : form,
+                 'base_template': base_template,
+                 'num_per_page': num_per_page})
 
 
 def search_redirect(request):
