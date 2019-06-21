@@ -179,8 +179,6 @@
         {% endif %}
         
         {% if request.user == user_this or request.user.profile.is_superuser %}
-        {% if MODULE_MEMBERSHIPS_ENABLED %}
-        
         
         <!-- GROUPS -->
         <h3>{% trans 'Groups' %}
@@ -235,6 +233,7 @@
           
           
           <!-- MEMBERSHIPS -->
+          {% if MODULE_MEMBERSHIPS_ENABLED %}
           
           <h3>{% trans 'Memberships' %}
             {% if membership_apps %}
