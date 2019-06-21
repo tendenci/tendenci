@@ -344,7 +344,7 @@ class ListEventsNode(ListNode):
 
         if 'start_dt' in self.kwargs:
             try:
-                start_dt = datetime.strptime(self.kwargs['start_dt'].replace('"', '').replace('"', ''), '%m/%d/%Y-%H:%M')
+                start_dt = datetime.strptime(self.kwargs['start_dt'].replace('"', '').replace("'", ''), '%m/%d/%Y-%H:%M')
             except ValueError:
                 pass
 
@@ -476,6 +476,9 @@ class ListEventsNode(ListNode):
                 items = items.filter(Q(start_dt__lte=tomorrow) & Q(end_dt__gte=today)).extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'}).extra(where=["extract( hour from start_dt ) >= %s"], params=[now.hour])
                 items = items.distinct()
                 items = items.order_by('hour', 'minute', '-priority')
+            elif order == "past":
+                items = items.filter(start_dt__lt=datetime.now())
+                items = items.order_by("-start_dt", '-priority')
             else:
                 items = items.order_by(order)
 
