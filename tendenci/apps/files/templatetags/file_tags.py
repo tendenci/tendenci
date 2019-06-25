@@ -141,6 +141,19 @@ class ListFilesNode(ListNode):
     model = File
     perms = 'files.view_file'
 
+    def custom_model_filter(self, items, user):
+        """
+        If specified, filter by the `file_cat_id` passed in
+        """
+        file_cat_id = self.kwargs.get('file_cat_id', None)
+        if file_cat_id:
+            try:
+                file_cat_id = int(file_cat_id)
+                items = items.filter(file_cat__id=file_cat_id)
+            except ValueError:
+                raise
+        return items
+
 
 @register.tag
 def list_files(parser, token):
