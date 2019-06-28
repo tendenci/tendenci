@@ -12,13 +12,12 @@
 
     {% file_thumbnail layout file %}
 
-    <h2><a href="{% url 'file' file.pk %}">{{ file.get_name|truncatechars:34 }}</a></h2>
+    <h2><a href="{% url 'file' file.pk %}">{{ file.get_name|truncatechars:50 }}</a></h2>
 
     <div class="download">
         <a title="Download {{ file.ext }}" href="{% url 'file' file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
     </div>
 
-    <br />
     <div>
     <div>Secure link: <input type="text" value="{% url 'file' file.pk %}" /> </div>
     <div>Full link (no security): <input type="text" value="{{ file.get_full_url }}" /></div>
