@@ -20,6 +20,7 @@ class GroupAdmin(TendenciBaseModelAdmin):
             'allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms', 'status_detail')}),
     )
     form = GroupAdminForm
+    ordering = ("id",)
 
 #     def has_delete_permission(self, request, obj=None):
 #         if obj and obj.type == 'system_generated':

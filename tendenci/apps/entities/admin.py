@@ -32,6 +32,7 @@ class EntityAdmin(admin.ModelAdmin):
             'entity_parent',
             'status_detail',)},),
     )
+    ordering = ("id",)
 
     def save_model(self, request, object, form, change):
         """
