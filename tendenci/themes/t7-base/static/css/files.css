@@ -4,7 +4,9 @@
 .t h2 {
 	margin: 8px auto 8px 0;
 }
-
+.t-files-title {
+font-size: 22px;	
+}
 .t ul.files-nav {
 	margin: 0; padding: 0;
 	list-style-type: none;
@@ -53,6 +55,7 @@
 .t .files-wrap .file-wrap.list-wrap h2 {
 	width: 85%;
 	margin-bottom: 6px;
+	font-size: 22px;
 }
 
 .t .files-wrap .file-wrap.grid-wrap h2 {
@@ -106,7 +109,9 @@
 }
 
 .t .file-wrap .meta {
-	margin-top: 20px;
+	margin-top: 10px;
+    	background: #F6F6F6;
+    	padding: 5px 8px;
 }
 
 .t .files-wrap .grid-wrap .meta {
@@ -123,6 +128,9 @@
 }
 .t .files-wrap-search .file-wrap .content {
 	margin-bottom: 10px;
+}
+.t .files-wrap .file-wrap .link-paths {
+    margin: 7px 0;
 }
 .t .files-wrap-search .file-wrap .submitted {
 	background-color: #EEE;
