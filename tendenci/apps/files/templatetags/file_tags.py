@@ -143,7 +143,7 @@ class ListFilesNode(ListNode):
 
     def custom_model_filter(self, items, user):
         """
-        If specified, filter by the `file_cat_id` passed in
+        If specified, filter by the `file_cat_id` and/or `file_sub_cat_name` passed in
         """
         file_cat_id = self.kwargs.get('file_cat_id', None)
         if file_cat_id:
@@ -152,6 +152,9 @@ class ListFilesNode(ListNode):
                 items = items.filter(file_cat__id=file_cat_id)
             except ValueError:
                 raise
+        file_sub_cat_name = self.kwargs.get('file_sub_cat_name', '').strip('"\' ')
+        if file_sub_cat_name:
+            items = items.filter(file_sub_cat__name__iexact=file_sub_cat_name)
         return items
 
 
