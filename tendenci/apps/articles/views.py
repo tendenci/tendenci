@@ -102,7 +102,7 @@ def search(request, template_name="articles/search.html"):
                 return HttpResponseRedirect(reverse('articles'))
 
     tag = request.GET.get('tag', None)
-    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
+    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser, user=request.user)
 
     if tag:
         articles = articles.filter(tags__icontains=tag)
@@ -113,6 +113,11 @@ def search(request, template_name="articles/search.html"):
         sub_category = form.cleaned_data['sub_category']
         filter_date = form.cleaned_data['filter_date']
         date = form.cleaned_data['date']
+        try:
+            group = int(form.cleaned_data.get('group', None))
+        except:
+            group = None
+
 
         if cat in ('featured', 'syndicate'):
             articles = articles.filter(**{cat : True } )
@@ -121,6 +126,8 @@ def search(request, template_name="articles/search.html"):
 
         if filter_date and date:
             articles = articles.filter( release_dt__month=date.month, release_dt__day=date.day, release_dt__year=date.year )
+        if group:
+            articles = articles.filter(group_id=group)
 
     if not has_perm(request.user, 'articles.view_article'):
         if request.user.is_anonymous:

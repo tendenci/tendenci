@@ -58,6 +58,12 @@ CONTRIBUTOR_CHOICES = (
 )
 GOOGLE_PLUS_HELP_TEXT = _('Additional Options for Authorship <i class="gauthor-help fa fa-lg fa-question-circle"></i><br>Additional Options for Publisher <i class="gpub-help fa fa-lg fa-question-circle"></i>')
 
+def get_search_group_choices():
+    article_group_ids = set(Article.objects.all().values_list('group', flat=True))
+    groups = Group.objects.filter(
+                    id__in=article_group_ids).distinct(
+                    ).order_by('name').values_list('id', 'label', 'name')
+    return [(id, label or name) for id, label, name in groups]
 
 class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
     search_category = forms.ChoiceField(
@@ -70,10 +76,16 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
     sub_category = CategoryField(label=_('All Subcategories'), choices=[], required=False)
     filter_date = forms.BooleanField(required=False)
     date = forms.DateField(initial=date.today(), required=False)
+    group = forms.ChoiceField(label=_('Group'), required=False, choices=[])
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
+        user = kwargs.pop('user', None)
         super(ArticleSearchForm, self).__init__(*args, **kwargs)
+        
+        # group
+        group_choices = get_search_group_choices()
+        self.fields['group'].choices = [('','All Groups')] + list(group_choices)
 
         if not is_superuser:
             self.fields['search_category'].choices = SEARCH_CATEGORIES
