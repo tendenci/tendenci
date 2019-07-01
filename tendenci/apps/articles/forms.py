@@ -80,7 +80,6 @@ class ArticleSearchForm(FormControlWidgetMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         is_superuser = kwargs.pop('is_superuser', None)
-        user = kwargs.pop('user', None)
         super(ArticleSearchForm, self).__init__(*args, **kwargs)
         
         # group

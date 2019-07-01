@@ -102,7 +102,7 @@ def search(request, template_name="articles/search.html"):
                 return HttpResponseRedirect(reverse('articles'))
 
     tag = request.GET.get('tag', None)
-    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser, user=request.user)
+    form = ArticleSearchForm(request.GET, is_superuser=request.user.is_superuser)
 
     if tag:
         articles = articles.filter(tags__icontains=tag)
