@@ -55,9 +55,8 @@
                  </ul>
                 {% endif %}
             </div>
-       </div>
-        <div style="margin: 5px;">
-           <div class="form-group{% if form.group.errors %} has-error{% endif %}">
+            
+            <div class="form-group{% if form.group.errors %} has-error{% endif %}">
                 {{ form.group.label }}: {{ form.group }}
 
                 {% if form.group.errors %}
@@ -69,6 +68,7 @@
                 {% endif %}
             </div>
        </div>
+        
        
        {% if can_add_article %}
 	  <div class="form-group pull-right">
