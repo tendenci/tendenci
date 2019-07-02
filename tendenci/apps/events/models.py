@@ -1310,7 +1310,9 @@ class Event(TendenciBaseModel):
         )['invoice__total__sum']
 
         # total_sum is the amount of money received when all is said and done
-        return total_sum - self.money_outstanding
+        if total_sum:
+            return total_sum - self.money_outstanding
+        return 0
 
     @property
     def money_outstanding(self):
@@ -1320,7 +1322,7 @@ class Event(TendenciBaseModel):
         balance_sum = Registration.objects.filter(event=self, canceled=False).aggregate(
             Sum('invoice__balance')
         )['invoice__balance__sum']
-        return balance_sum
+        return balance_sum or 0
 
     @property
     def money_total(self):
