@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
+from pylibmc import TooBig
 from tendenci.apps.base.utils import image_rescale, apply_orientation
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
@@ -105,7 +106,10 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     if cache:
         key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain)
-        django_cache.add(key, binary, 60 * 60 * 24 * 30)  # cache for 30 days #issue/134
+        try:
+            django_cache.add(key, binary, 60 * 60 * 24 * 30)  # cache for 30 days #issue/134
+        except TooBig:
+            pass
 
     return binary
 
