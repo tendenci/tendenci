@@ -8,6 +8,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.versions.models import Version
 from tendenci.apps.categories.models import Category
+from tendenci.apps.site_settings.utils import get_setting
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -90,7 +91,10 @@ class TendenciBaseModel(models.Model):
 
     def get_canonical_url(self):
         if hasattr(self, 'meta'):
-            return self.get_meta('canonical_url')
+            canonical_url = self.get_meta('canonical_url')
+            if canonical_url and canonical_url[0] == '/':
+                canonical_url = '{0}{1}'.format(get_setting('site', 'global', 'siteurl'), canonical_url)
+            return canonical_url
 
     class Meta:
         abstract = True
