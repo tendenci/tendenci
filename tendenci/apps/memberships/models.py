@@ -365,7 +365,7 @@ class MembershipSet(models.Model):
 
     @property
     def payment_method(self):
-        return ', '.join(self.memberships().values_list('payment_method__human_name', flat=True))
+        return ', '.join([human_name for human_name in self.memberships().values_list('payment_method__human_name', flat=True) if human_name])
 
     def memberships(self):
         return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
