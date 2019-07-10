@@ -86,6 +86,8 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         if not photo.file_exists():
             raise Http404
         sizes = getattr(photo, 'get_%s_size' % size_name)()
+        if not sizes or not all(sizes):
+            raise Http404
 
     # get download url
     if size_name == 'square':
