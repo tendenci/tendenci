@@ -182,6 +182,7 @@ def ticket_from_message(message, queue, quiet):
     subject = decode_mail_headers(decodeUnknown(message.get_charset(), subject))
     subject = subject.replace("Re: ", "").replace("Fw: ", "").replace("RE: ", "").replace("FW: ", "").replace("Automatic reply: ", "").strip()
 
+    reply_to = message.get('reply-to', None)
     sender = message.get('from', _('Unknown Sender'))
     sender = decode_mail_headers(decodeUnknown(message.get_charset(), sender))
 
@@ -299,6 +300,8 @@ def ticket_from_message(message, queue, quiet):
             description=body,
             priority=priority,
         )
+        if is_no_reply_address(sender_email) and reply_to:
+            t.submitter_email = reply_to
         t.save()
         new = True
         #update = ''
