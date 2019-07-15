@@ -1,3 +1,19 @@
+### 11.2.11 [2019-07-15]
+
+* Added the group option on articles search
+* Added the option to pull past events for list_events template tag
+* Added the options 'file_cat_id' and 'file_sub_cat_name' to the list_files template tag
+* Made some changes for files/search-results.html 
+* Removed "t-files-title" unused class in files.css
+* Changed the default sort order for entities and user groups in the admin backend to sort by id ascending
+* Fixed format issue on profile view when membership is disabled
+* Fixed TypeError at /events/reports/financial/
+* Ensured absolute url for canonial url
+* Fixed an error for invoices reports
+* Fixed an issue for helpdesk when creating a ticket from emails sent from no-reply address
+* Other small fixes
+
+
 ### 11.2.10 [2019-06-20]
 
 * Fixed the meta title and description in articles/view.html
