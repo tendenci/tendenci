@@ -146,7 +146,7 @@ class Topic(models.Model):
     name = models.CharField(_('Subject'), max_length=255)
     created = models.DateTimeField(_('Created'), null=True)
     updated = models.DateTimeField(_('Updated'), null=True)
-    user = models.ForeignKey(get_user_model_path(), verbose_name=_('Owner'), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model_path(), verbose_name=_('Owner'), null=True, on_delete=models.SET_NULL)
     views = models.IntegerField(_('Views count'), blank=True, default=0)
     sticky = models.BooleanField(_('Sticky'), blank=True, default=False)
     closed = models.BooleanField(_('Closed'), blank=True, default=False)
@@ -255,7 +255,7 @@ class RenderableItem(models.Model):
 @python_2_unicode_compatible
 class Post(RenderableItem):
     topic = models.ForeignKey(Topic, related_name='posts', verbose_name=_('Topic'), on_delete=models.CASCADE)
-    user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model_path(), related_name='posts', verbose_name=_('User'), null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField(_('Created'), blank=True, db_index=True)
     updated = models.DateTimeField(_('Updated'), blank=True, null=True)
     user_ip = models.GenericIPAddressField(_('User IP'), default='0.0.0.0')
