@@ -343,7 +343,7 @@ class Ticket(models.Model):
         blank=True,
         null=True,
         verbose_name=_('Assigned to'),
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         )
 
     status = models.IntegerField(
