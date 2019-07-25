@@ -2611,7 +2611,7 @@ class MembershipAppField(OrderingBaseModel):
             if "choices" in arg_names:
                 if self.field_name not in ['membership_type', 'payment_method']:
                     choices = [s.strip() for s in self.choices.split(",")]
-                    field_args["choices"] = list(zip(choices, choices))
+                    field_args["choices"] = [(s.split(':')[0].strip(), s.split(':')[-1].strip()) for s in choices]
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
