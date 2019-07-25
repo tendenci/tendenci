@@ -2514,6 +2514,7 @@ class MembershipApp(TendenciBaseModel):
 class MembershipAppField(OrderingBaseModel):
     LABEL_MAX_LENGTH = 2000
     FIELD_TYPE_CHOICES1 = (
+                    ("", _("Set to Default")),
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
@@ -2540,7 +2541,7 @@ class MembershipAppField(OrderingBaseModel):
     display = models.BooleanField(_("Show"), default=True, blank=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
 
-    field_type = models.CharField(_("Field Type"), choices=FIELD_TYPE_CHOICES,
+    field_type = models.CharField(_("Field Type"), blank=True, choices=FIELD_TYPE_CHOICES,
                                   max_length=64)
     description = models.TextField(_("Description"),
                                    max_length=200,
