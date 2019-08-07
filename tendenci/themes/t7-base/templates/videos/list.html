@@ -1,5 +1,6 @@
 {% extends "videos/base.html" %}
 {% load search_tags %}
+{% load pagination_tags %}
 
 {% block title %}{% if category %}{{category|title}} {% endif %}{% trans 'Videos' %}{% endblock %}
 
@@ -51,7 +52,7 @@
     <div class="grid">
       
       <div class="grid-sizer col-xs-12"></div>
-      
+      {% autopaginate videos 15 %}
       {% for video in videos %}
       
       <div class="grid-item col-md-4 col-sm-4 col-xs-4">
@@ -60,6 +61,7 @@
       
       {% endfor %}
     </div>
+    {% paginate %}
   </div>
   
 </div>
