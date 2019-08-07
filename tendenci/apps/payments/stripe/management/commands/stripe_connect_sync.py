@@ -3,6 +3,7 @@ from datetime import datetime
 import stripe
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from tendenci.apps.payments.stripe.utils import stripe_set_app_info
 
 
 class Command(BaseCommand):
@@ -14,6 +15,7 @@ class Command(BaseCommand):
         from tendenci.apps.payments.stripe.models import StripeAccount, Charge
         
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe_set_app_info(stripe)
         
         stripe_accounts = StripeAccount.objects.filter(status_detail='active')
         for stripe_account in stripe_accounts:

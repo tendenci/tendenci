@@ -1,3 +1,12 @@
+from tendenci import __version__ as tendenci_version
+
+def stripe_set_app_info(stripe):
+    stripe.set_app_info(
+    "Tendenci Stripe App",
+    version=tendenci_version,
+    url="https://www.tendenci.com"
+)
+
 
 def payment_update_stripe(request, charge_response, payment):
     if hasattr(charge_response,'paid') and charge_response.paid:

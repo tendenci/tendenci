@@ -25,6 +25,7 @@ from tendenci.apps.recurring_payments.authnet.utils import payment_update_from_r
 from tendenci.apps.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.stripe.utils import stripe_set_app_info
 
 
 BILLING_PERIOD_CHOICES = (
@@ -151,6 +152,7 @@ class RecurringPayment(models.Model):
         # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
         if self.platform == 'stripe':
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe_set_app_info(stripe)
             card = None
             if self.customer_profile_id:
                 customer = stripe.Customer.retrieve(self.customer_profile_id)
@@ -635,6 +637,7 @@ class RecurringPaymentInvoice(models.Model):
         # charge user
         if  self.recurring_payment.platform == "stripe":
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe_set_app_info(stripe)
             params = {
                        'amount': math.trunc(amount * 100), # amount in cents, again
                        'currency': get_setting('site', 'global', 'currency'),

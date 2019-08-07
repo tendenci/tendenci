@@ -22,13 +22,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.middleware.csrf import _compare_salted_tokens
 import requests
+import stripe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.payments.utils import payment_processing_object_updates
 from tendenci.apps.payments.utils import log_payment, send_payment_notice
 from tendenci.apps.payments.models import Payment
 from .forms import StripeCardForm, BillingInfoForm
-import stripe
 from .utils import payment_update_stripe
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.recurring_payments.models import RecurringPayment
@@ -36,6 +36,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 
 from .models import StripeAccount
+from .utils import stripe_set_app_info
 
 STRIPE_TOKEN_URL = 'https://connect.stripe.com/oauth/token'
 STRIPE_DEAUTHORIZE_URL = 'https://connect.stripe.com/oauth/deauthorize'
@@ -95,6 +96,7 @@ class WebhooksView(View):
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
         event = None
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe_set_app_info(stripe)
 
         try:
             event = stripe.Webhook.construct_event(
@@ -165,6 +167,7 @@ class FetchAccessToken(View):
             
             # retrieve account info
             stripe.api_key = settings.STRIPE_SECRET_KEY
+            stripe_set_app_info(stripe)
             account = stripe.Account.retrieve(stripe_user_id)
             sa.account_name = account.get('display_name', '')
             sa.email = account.get('email', '')
@@ -191,6 +194,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
         if request.method == "POST" and form.is_valid():
             # get stripe token and make a payment immediately
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe_set_app_info(stripe)
             token = request.POST.get('stripe_token')
 
             if billing_info_form.is_valid():
@@ -282,6 +286,7 @@ def update_card(request, rp_id):
         raise Http403
 
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+    stripe_set_app_info(stripe)
     token = request.POST.get('stripeToken')
     try:
         if not rp.customer_profile_id:
