@@ -85,6 +85,7 @@ MIDDLEWARE = [
     'tendenci.apps.mobile.middleware.MobileMiddleware',
     'tendenci.apps.theme.middleware.RequestMiddleware',
     'tendenci.apps.base.middleware.MissingAppMiddleware',
+    'tendenci.apps.base.middleware.RemoveNullByteMiddleware',
     'tendenci.apps.memberships.middleware.ExceededMaxTypesMiddleware',
     'tendenci.apps.forums.middleware.PybbMiddleware',
     'tendenci.apps.profiles.middleware.ProfileLanguageMiddleware',

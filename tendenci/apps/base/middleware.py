@@ -16,3 +16,14 @@ class MissingAppMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         if isinstance(exception, MissingApp):
             return render_to_missing_app(request=request)
+
+
+class RemoveNullByteMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        # Remove Null Byte to avoid Null Byte Injection attack
+        request.GET._mutable = True
+        null_byte = chr(0)
+        if request.method == 'GET' and null_byte in request.GET.values():
+            for k in request.GET:
+                request.GET[k] = request.GET[k].replace(null_byte, '')
+        request.GET._mutable = False
