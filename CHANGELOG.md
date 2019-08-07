@@ -1,3 +1,17 @@
+### 11.2.12 [2019-08-07]
+
+* SECURITY: striped null byte to avoid null byte injection attack
+* Fixed "masonry is not a function" js error for photos
+* Resolved issue not being able to delete users who posted on forum 
+* Prevented tickets from being cascade deleted with user deletion
+* Allowed to specify both name and display name separated by a colon in the choices field
+* Allowed to set back to the default field type for membership app fields
+* Added make payment to financial section of tendenci top menu
+* Commented files that are listed underneath content on event view
+* Added pagination to videos list for performance reason
+* Updated django version to 1.11.23
+
+
 ### 11.2.11 [2019-07-15]
 
 * Added the group option on articles search
