@@ -2,7 +2,7 @@ from tendenci import __version__ as tendenci_version
 
 def stripe_set_app_info(stripe):
     stripe.set_app_info(
-    "Tendenci Stripe App",
+    "Tendenci Stripe Plugin",
     version=tendenci_version,
     url="https://www.tendenci.com"
 )
