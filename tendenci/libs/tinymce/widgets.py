@@ -65,9 +65,9 @@ class TinyMCE(forms.Textarea):
         if tinymce_settings.USE_FILEBROWSER:
             mce_config['file_browser_callback'] = "tendenciFileManager"
         if self.mce_attrs.get('fullpage', False):
-#             del self.mce_attrs['fullpage']
+            del self.mce_attrs['fullpage']
             mce_config['plugins'] = mce_config['plugins'] + ' fullpage'
-#             mce_config['fullpage_default_doctype'] = '<!DOCTYPE html>'
+            mce_config['fullpage_default_doctype'] = '<!DOCTYPE html>'
         mce_config.update(self.mce_attrs)
         if mce_config['mode'] == 'exact':
             mce_config['elements'] = attrs['id']
