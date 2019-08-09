@@ -1,3 +1,8 @@
+### 11.3 [2019-08-09]
+
+* Set app info for stripe
+* Added fullpage plugin to WYSIWYG editor for newsletters 
+
 ### 11.2.12 [2019-08-07]
 
 * SECURITY: striped null byte to avoid null byte injection attack
