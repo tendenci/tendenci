@@ -16,6 +16,12 @@ ALLOWED_LOGO_EXT = (
 )
 
 class StaffForm(TendenciBaseForm):
+    education = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Staff._meta.app_label,
+        'storme_model':Staff._meta.model_name.lower(),
+        'forced_root_block': 'div',
+        'height': '120px'}))
 
     biography = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -61,6 +67,7 @@ class StaffForm(TendenciBaseForm):
             'slug',
             'department',
             'positions',
+            'education',
             'biography',
             'cv',
             'email',

@@ -34,6 +34,7 @@ class StaffAdmin(TendenciBaseModelAdmin):
             'slug',
             'department',
             'positions',
+            'education',
             'biography',
             'cv',
             'email',

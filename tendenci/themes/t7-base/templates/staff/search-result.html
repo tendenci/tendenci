@@ -20,7 +20,8 @@
         <div class="member-info">
           <h4><a href="{{ staff.get_absolute_url }}">{{ staff.name|safe }}</a></h4>
           <p>{% if staff.positions %}{% for position in staff.positions.all %}<strong>{{ position }}</strong><br />{% endfor %}{% endif %}
-            {% if staff.department %}{{ staff.department }}{% endif %}</p>
+            {% if staff.department %}{{ staff.department }}{% endif %}
+            {% if staff.education %}{{ staff.education|safe }}{% endif %}</p>
         </div>
       </div><!-- /staff-item -->
     </div>
