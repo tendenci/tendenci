@@ -19,10 +19,6 @@
         </li>
     {% endif %}
 
-    {% if show_fb_connect|default:False %}
-        <li>{% fb_like_button_iframe news.get_absolute_url height=20 %}</li>
-    {% endif %}
-
     {% if show_source|default:False and news.source %}
         <li><strong>{% trans "Source:" %}</strong> <a href="{% url 'news' %}?q=source:{{ news.source }}">{{ news.source|urlize }}</a></li>
     {% endif %}

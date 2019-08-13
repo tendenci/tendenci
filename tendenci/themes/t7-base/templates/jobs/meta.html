@@ -5,10 +5,6 @@
 <ul class="list-unstyled t-meta-data" style="padding: 10px;">
     <li class="pull-right"><a href="{% url 'job.print_view' job.slug %}"><span class="glyphicon glyphicon-print"></span> {% trans "Print" %}</a></li>
 
-    {% if show_fb_connect|default:False %}
-        <li>{% fb_like_button_iframe job.get_absolute_url height=20 %}</li>
-    {% endif %}
-
     {% with job.cat as job_cat %}
         {% if job_cat %}
             <li>

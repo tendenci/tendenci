@@ -18,9 +18,6 @@
      {% trans "Print" %}</a> </li>
    
    {% comment %}
-   {% if show_fb_connect|default:False %}
-   {% fb_like_button_iframe news.get_absolute_url height=20 %}
-   {% endif %}
    
    {% if show_source|default:False and news.source %}
    <strong>{% trans "Source:" %}</strong> 

@@ -3,9 +3,6 @@
 
 <br />
  <ul class="list-unstyled t-meta-data">
-   {% if show_fb_connect|default:False %}
-   <li>{% fb_like_button_iframe article.get_absolute_url height=20 %}</li>
-   {% endif %}
    
    {% if show_source|default:False and article.source %}
    <li><strong>{% trans "Source:" %}</strong> <span>{{ article.source|urlize }}</span></li>
