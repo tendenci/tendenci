@@ -134,31 +134,15 @@ class TinymceUploadForm(forms.ModelForm):
             self.user = kwargs.pop('user', None)
         else:
             self.user = None
-
+        request_data = kwargs.pop('request_data')
         super(TinymceUploadForm, self).__init__(*args, **kwargs)
 
-    def clean_file(self):
-        data = self.cleaned_data.get('file')
-        # file size check
-        max_upload_size = get_max_file_upload_size(file_module=True)
-        if data.size > max_upload_size:
-            raise forms.ValidationError(_('%(file_name)s - Please keep filesize under %(max_upload_size)s. Current filesize %(data_size)s') % {
-                                            'file_name': data.name,
-                                            'max_upload_size': filesizeformat(max_upload_size),
-                                            'data_size': filesizeformat(data.size)})
-        return data
-
-    def clean(self):
-        # file type check
-        data = self.cleaned_data
-        upload_type = data.get('upload_type', u'').strip()
-        file = data.get('file', None)
+        if request_data.method.lower() == 'post':
+            upload_type = request_data.POST.get('upload_type', 'other')
+        else:
+            upload_type = request_data.GET.get('upload_type', 'other')
         allowed_exts = get_allowed_upload_file_exts(upload_type)
-        ext = os.path.splitext(file.name)[-1]
-        if ext not in allowed_exts:
-            raise forms.ValidationError(_('{file_name} - File extension "{extension}" not supported.').format(file_name=file.name, extension=ext))
-
-        return data
+        self.fields['file'].validators = [FileValidator(allowed_extensions=allowed_exts)]
 
 
 class MostViewedForm(forms.Form):

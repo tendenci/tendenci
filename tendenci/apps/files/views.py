@@ -328,6 +328,11 @@ class FileTinymceCreateView(CreateView):
         context['accept_file_types'] = '|'.join(x[1:] for x in get_allowed_upload_file_exts(context['upload_type']))
 
         return context
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update(request_data=self.request)
+        return kwargs
 
     def form_valid(self, form):
         app_label = self.request.POST['app_label']
