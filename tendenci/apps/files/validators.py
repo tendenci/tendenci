@@ -48,6 +48,12 @@ class FileValidator(object):
             values = [values]
 
         for value in values:
+            # Block file names with a comma or two consecutive dots in it
+            if ',' in value.name:
+                raise ValidationError(_("Invalid file name - comma is not allowed."))
+            if '..' in value.name:
+                raise ValidationError(_("Invalid file name - two consecutive dots are not allowed."))
+            
             # Check the extension
             ext = splitext(value.name)[1].lower()
             if self.allowed_extensions and ext not in self.allowed_extensions:
