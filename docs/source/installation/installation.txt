@@ -261,7 +261,6 @@ Set up some directories appropriately:
 ::
 
     chmod -R -x+X /var/www/mysite/media/
-    mkdir /var/www/mysite/whoosh_index
     sudo mkdir /var/log/mysite
     sudo chown "$(id -u -n)": /var/log/mysite/
 
