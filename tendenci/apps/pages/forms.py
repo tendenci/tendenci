@@ -145,7 +145,6 @@ class PageForm(TendenciBaseForm):
         'template',
         'group',
         'contributor_type',
-        'google_profile',
         'allow_anonymous_view',
         'syndicate',
         'user_perms',
@@ -166,8 +165,7 @@ class PageForm(TendenciBaseForm):
                       'legend': ''
                       }),
                       (_('Contributor'), {
-                       'fields': ['contributor_type',
-                                  'google_profile'],
+                       'fields': ['contributor_type',],
                        'classes': ['boxy-grey'],
                       }),
                       (_('Permissions'), {
@@ -195,8 +193,6 @@ class PageForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-
-        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
 
         if not self.user.profile.is_superuser:
             if 'syndicate' in self.fields: self.fields.pop('syndicate')

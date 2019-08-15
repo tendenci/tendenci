@@ -30,7 +30,6 @@ class ArticleAdmin(TendenciBaseModelAdmin):
         (_('Author'), {
             'fields': ('first_name',
                      'last_name',
-                     'google_profile',
                      'phone',
                      'fax',
                      'email',
@@ -39,7 +38,6 @@ class ArticleAdmin(TendenciBaseModelAdmin):
         }),
         (_('Contributor'), {
             'fields': ('contributor_type',
-                     'google_profile',
                      ),
                     'classes': ('contact',),
         }),

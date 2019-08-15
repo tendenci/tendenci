@@ -39,14 +39,6 @@
   </div>
   {% endif %}
   
-  {% if page.google_profile %}
-  {% if page.has_google_author %}
-  <a href="{{ page.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
-  {% elif page.has_google_publisher %}
-  <a href="{{ page.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
-  {% endif %}
-  {% endif %}
-  
   <div class="t-pages-page-body">
     {{ page.content|safe }}
   </div>

@@ -21,14 +21,6 @@
             <h1>{{ article.headline }}</h1>
         </div>
 
-        {% if article.google_profile %}
-            {% if article.has_google_author %}
-                <a href="{{ article.google_profile }}?rel=author">{% trans "View Author's Google+ Profile" %}</a>
-            {% elif article.has_google_publisher %}
-                <a href="{{ article.google_profile }}" rel="publisher">{% trans "View Publisher's Google+ Page" %}</a>
-            {% endif %}
-        {% endif %}
-
         <div class="t-articles-article-body">
             {{ article.body|safe }}
         </div>

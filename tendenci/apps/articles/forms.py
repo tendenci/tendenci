@@ -162,7 +162,6 @@ class ArticleForm(TendenciBaseForm):
             'contributor_type',
             'first_name',
             'last_name',
-            'google_profile',
             'phone',
             'fax',
             'email',
@@ -192,8 +191,7 @@ class ArticleForm(TendenciBaseForm):
                       'legend': ''
                       }),
                       (_('Contributor'), {
-                       'fields': ['contributor_type',
-                                  'google_profile'],
+                       'fields': ['contributor_type',],
                        'classes': ['boxy-grey'],
                       }),
                       (_('Author'), {
@@ -247,7 +245,6 @@ class ArticleForm(TendenciBaseForm):
             groups_list = default_groups.values_list('pk', 'name')
 
         self.fields['group'].choices = groups_list
-        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
 
         self.fields['release_dt'].initial = datetime.now()

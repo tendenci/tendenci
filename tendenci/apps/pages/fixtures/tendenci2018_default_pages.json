@@ -26,7 +26,6 @@
         "title": "About Us",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -59,7 +58,6 @@
         "title": "Membership Benefits",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -93,7 +91,6 @@
         "title": "Mission/Vision",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -127,7 +124,6 @@
         "title": "How to Use Your Theme",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -161,7 +157,6 @@
         "title": "Theme Resources",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -195,7 +190,6 @@
         "title": "Interior Page Example",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -229,7 +223,6 @@
         "title": "Right Sidebar Layout",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -263,7 +256,6 @@
         "title": "Left Sidebar Layout Example",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -297,7 +289,6 @@
         "title": "Here are some helpful tips for getting started!",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -331,7 +322,6 @@
         "title": "Logging Into Your Site",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -365,7 +355,6 @@
         "title": "Privacy",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -399,7 +388,6 @@
         "title": "Helpfiles & Other Resources",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -433,7 +421,6 @@
         "title": "test",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -467,7 +454,6 @@
         "title": "Volunteer",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -501,7 +487,6 @@
         "title": "Welcome!",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",
@@ -535,7 +520,6 @@
         "title": "Renewal",
         "allow_member_view": false,
         "allow_member_edit": false,
-        "google_profile": "",
         "header_image": null
     },
     "model": "pages.page",

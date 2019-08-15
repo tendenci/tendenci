@@ -41,7 +41,6 @@ class Article(TendenciBaseModel):
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
-    google_profile = models.URLField(_('Google+ URL'), blank=True)
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)

@@ -101,7 +101,6 @@ class Page(BasePage):
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     contributor_type = models.IntegerField(choices=CONTRIBUTOR_CHOICES,
                                            default=CONTRIBUTOR_AUTHOR)
-    google_profile = models.URLField(_('Google+ URL'), blank=True)
     perms = GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
                                       content_type_field="content_type")

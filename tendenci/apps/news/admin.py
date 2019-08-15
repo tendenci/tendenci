@@ -27,7 +27,6 @@ class NewsAdmin(TendenciBaseModelAdmin):
         (_('Contributor'), {'fields': ('contributor_type',)}),
         (_('Author'), {'fields': ('first_name',
                                  'last_name',
-                                 'google_profile',
                                  'phone',
                                  'fax',
                                  'email',

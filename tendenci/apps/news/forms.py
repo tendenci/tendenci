@@ -70,7 +70,6 @@ class NewsForm(TendenciBaseForm):
         'contributor_type',
         'first_name',
         'last_name',
-        'google_profile',
         'phone',
         'fax',
         'email',
@@ -99,8 +98,7 @@ class NewsForm(TendenciBaseForm):
                       'legend': ''
                       }),
                       (_('Contributor'), {
-                       'fields': ['contributor_type',
-                                  'google_profile'],
+                       'fields': ['contributor_type',],
                        'classes': ['boxy-grey'],
                       }),
                       (_('Author'), {
@@ -145,7 +143,6 @@ class NewsForm(TendenciBaseForm):
             default_groups = default_groups.filter(filters).distinct()
 
         self.fields['groups'].queryset = default_groups
-        self.fields['google_profile'].help_text = mark_safe(GOOGLE_PLUS_HELP_TEXT)
         self.fields['timezone'].initial = settings.TIME_ZONE
 
         # only show the remove photo checkbox if there is already a thumbnail
