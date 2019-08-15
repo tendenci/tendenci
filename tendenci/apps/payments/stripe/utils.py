@@ -4,7 +4,8 @@ def stripe_set_app_info(stripe):
     stripe.set_app_info(
     "Tendenci Stripe Plugin",
     version=tendenci_version,
-    url="https://www.tendenci.com"
+    url="https://www.tendenci.com",
+    partner_id="pp_partner_FcOFsMQDoGeT1B"
 )
 
 
