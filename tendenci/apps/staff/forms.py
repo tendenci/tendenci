@@ -2,11 +2,13 @@ import imghdr
 from os.path import splitext
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.forms import TendenciBaseForm
-from tendenci.apps.staff.models import Staff, StaffFile
+from tendenci.apps.staff.models import Staff, StaffFile, Department, Position
 #from tendenci.apps.files.models import File
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -14,6 +16,25 @@ ALLOWED_LOGO_EXT = (
     '.gif',
     '.png'
 )
+
+
+class StaffSearchForm(FormControlWidgetMixin, forms.Form):
+    q = forms.CharField(required=False)
+    department = forms.ChoiceField(label=_('department'), required=False, choices=[])
+    position = forms.ChoiceField(label=_('Position'), required=False, choices=[])
+    
+    def __init__(self, *args, **kwargs):
+        super(StaffSearchForm, self).__init__(*args, **kwargs)
+
+        # department
+        department_choices = Department.objects.values_list('id', 'name').order_by('name')
+        self.fields['department'].choices = [('','All Departments')] + list(department_choices)
+
+        # position
+        position_choices = Position.objects.values_list('id', 'name').order_by('name')
+        self.fields['position'].choices = [('','All Position')] + list(position_choices)
+    
+
 
 class StaffForm(TendenciBaseForm):
     education = forms.CharField(required=False,

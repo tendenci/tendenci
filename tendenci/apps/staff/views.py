@@ -9,6 +9,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
 from tendenci.apps.staff.models import Staff, Department
+from tendenci.apps.staff.forms import StaffSearchForm
 
 
 @is_enabled('staff')
@@ -42,14 +43,28 @@ def search(request, slug=None, template_name="staff/search.html"):
         department = get_object_or_404(Department, slug=slug)
     else:
         department = None
+     
+    query = ''
+    department_id = 0
+    position = 0
+   
+    form = StaffSearchForm(request.GET)
+    if department:
+        del form.fields['department']
 
-    query = request.GET.get('q')
-    # department_id is legacy code that is still used by some sites
-    department_id = request.GET.get('department', '')
+    if form.is_valid():
+        query = form.cleaned_data['q']
+        department_id = form.cleaned_data.get('department', 0)
+        position = form.cleaned_data['position']
+
     try:
         department_id = int(department_id)
     except:
-        department_id = None
+        pass
+    try:
+        position = int(position)
+    except:
+        pass
 
     filters = get_query_filters(request.user, 'staff.view_staff')
     staff = Staff.objects.filter(filters).distinct()
@@ -65,13 +80,17 @@ def search(request, slug=None, template_name="staff/search.html"):
         if department_id:
             staff = staff.filter(department__id=department_id)
             [department] = Department.objects.filter(id=department_id)[:1] or [None]
+            
+    if position:
+        staff = staff.filter(positions__in=[position])
 
     staff = staff.order_by('-position', 'name', '-status', 'status_detail')
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'staff_members':staff, 'department': department})
+        context={'staff_members':staff, 'department': department,
+                 'form': form})
 
 
 @is_enabled('staff')
