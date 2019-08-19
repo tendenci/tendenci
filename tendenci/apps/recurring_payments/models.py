@@ -152,6 +152,7 @@ class RecurringPayment(models.Model):
         # https://www.pcisecuritystandards.org/pdfs/pci_fs_data_storage.pdf
         if self.platform == 'stripe':
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe.api_version = settings.STRIPE_API_VERSION
             stripe_set_app_info(stripe)
             card = None
             if self.customer_profile_id:
@@ -637,6 +638,7 @@ class RecurringPaymentInvoice(models.Model):
         # charge user
         if  self.recurring_payment.platform == "stripe":
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe.api_version = settings.STRIPE_API_VERSION
             stripe_set_app_info(stripe)
             params = {
                        'amount': math.trunc(amount * 100), # amount in cents, again

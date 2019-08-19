@@ -96,6 +96,7 @@ class WebhooksView(View):
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
         event = None
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe.api_version = settings.STRIPE_API_VERSION
         stripe_set_app_info(stripe)
 
         try:
@@ -167,6 +168,7 @@ class FetchAccessToken(View):
             
             # retrieve account info
             stripe.api_key = settings.STRIPE_SECRET_KEY
+            stripe.api_version = settings.STRIPE_API_VERSION
             stripe_set_app_info(stripe)
             account = stripe.Account.retrieve(stripe_user_id)
             sa.account_name = account.get('display_name', '')
@@ -194,6 +196,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
         if request.method == "POST" and form.is_valid():
             # get stripe token and make a payment immediately
             stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+            stripe.api_version = settings.STRIPE_API_VERSION
             stripe_set_app_info(stripe)
             token = request.POST.get('stripe_token')
 
@@ -286,6 +289,7 @@ def update_card(request, rp_id):
         raise Http403
 
     stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+    stripe.api_version = settings.STRIPE_API_VERSION
     stripe_set_app_info(stripe)
     token = request.POST.get('stripeToken')
     try:

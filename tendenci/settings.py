@@ -659,6 +659,7 @@ PAYPAL_SANDBOX_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 # Stripe
 STRIPE_SECRET_KEY = ''
 STRIPE_PUBLISHABLE_KEY = ''
+STRIPE_API_VERSION = '2019-08-14'
 
 # List of merchant accounts you can set up.
 # If you want to set up multiple payment methods (gateways) for memberships,
