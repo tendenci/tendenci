@@ -40,8 +40,7 @@
         "summary": "blah blah summary blah Article summary displays here",
         "meta": null,
         "allow_member_edit": false,
-        "not_official_content": true,
-        "google_profile": ""
+        "not_official_content": true
     },
     "model": "articles.article",
     "pk": 1

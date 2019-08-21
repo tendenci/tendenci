@@ -40,8 +40,7 @@
         "allow_member_view": false,
         "summary": "News item summary",
         "meta": null,
-        "allow_member_edit": false,
-        "google_profile": ""
+        "allow_member_edit": false
     },
     "model": "news.news",
     "pk": 1
