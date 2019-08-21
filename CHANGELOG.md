@@ -1,3 +1,13 @@
+### 11.3.1 [2019-08-21]
+
+* Added education field to the staff module
+* Added department and position dropdowns to staff search
+* Removed Facebook like button
+* Removed Google+ url from anywhere
+* Blocked files with a comma or two consecutive dots in it
+* Specified stripe api version
+* Fixed fullpage plugin for newsletter edit
+
 ### 11.3 [2019-08-09]
 
 * Set app info for stripe
