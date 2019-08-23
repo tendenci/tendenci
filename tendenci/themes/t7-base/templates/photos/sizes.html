@@ -19,10 +19,12 @@
 
     <div id="license-wrap">
         <div class="label">{% trans "License" %}</div>
-        <div class="value">{{ photo.get_license.name }} by
-            <a href="{{ photo.creator.get_absolute_url }}">
-                {{ photo.creator.get_full_name }}
+        <div class="value">{{ photo.get_license.name }}
+           {% if photo.creator %}
+            by <a href="{% url 'profile' photo.creator.username %}">
+               {{ photo.creator.get_full_name }}
             </a>
+            {% endif %}
         </div>
     </div>
 
