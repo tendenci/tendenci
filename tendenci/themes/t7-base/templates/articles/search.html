@@ -15,7 +15,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url 'article.feed' %}" />
 {% endblock %}
 
@@ -105,6 +105,6 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{% static 'js/articles.js' %}"></script>
 {% endblock %}

@@ -13,7 +13,7 @@
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url "event.feed" %}" />
 <link rel="stylesheet" href="{% static 'css/events.css' %}">
 <link rel="stylesheet" href="{% static 'css/tipsy.css' %}">
-<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" />
 <style>
 .month-view .navbar-default {
     background-color: #f8f8f8;
@@ -177,7 +177,7 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/jquery.tipsy.js' %}"></script>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{% static 'js/jquery_plugins/jquery.mtz.monthpicker.js' %}"></script>
 <script type="text/javascript">
   $('.event-item').tipsy({
