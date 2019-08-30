@@ -37,7 +37,8 @@ Fork us at github.com/tendenci  -->
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
     
     {% block jquery_script %}
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.1.0.js"></script>
     {% endblock jquery_script %}
     
     {% block includebootstrap3css %}
@@ -92,23 +93,23 @@ Fork us at github.com/tendenci  -->
     <link href="https://fonts.googleapis.com/css?family=Frank+Ruhl+Libre:300,400,700|Montserrat|Montserrat+Alternates:400,500" rel="stylesheet">
     {% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
     <!-- Google Tag Manager -->
-	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-	})(window,document,'script','dataLayer','{{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}');</script>
-	<!-- End Google Tag Manager -->
-	{% endif %}
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}');</script>
+  <!-- End Google Tag Manager -->
+  {% endif %}
     </head>
   
   
   <body id="{% block body_ids %}{% endblock %}" class="{% if request.user.is_superuser %}t-auth-admin-loggedin {% endif %}{% block body_classes %}{% endblock %}">
-  	{% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
+    {% if SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID %}
     <!-- Google Tag Manager (noscript) -->
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}"
-	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-	<!-- End Google Tag Manager (noscript) -->
-	{% endif %} 
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ SITE_GLOBAL_GOOGLETAGMANAGERCONTAINERID }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  {% endif %} 
     {% block top_bar %}
     {% if request.user.is_superuser %}
     {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
@@ -139,7 +140,7 @@ Fork us at github.com/tendenci  -->
     
     <script type="text/javascript">
       jQuery(document).ready(function () {
-      jQuery('#t-megamenu-lang-dd a').click(function (e) {
+      jQuery('#t-megamenu-lang-dd a').on("click", function (e) {
       var lang = jQuery(this).data('lang');
       jQuery('#t-megamenu-lang-input').attr('value', lang);
       jQuery('#t-megamenu-lang-form').submit();
@@ -167,4 +168,3 @@ Fork us at github.com/tendenci  -->
     </script>
   </body>
 </html>
-      

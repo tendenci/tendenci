@@ -72,11 +72,11 @@ function getPricingList(){
 
 $(document).ready(function(){
     //MISC CONTROLS
-    $('#pricing-check').click(function(){
+    $('#pricing-check').on("click", function(){
         getPricingList();
     });
 
-    $('#discount_check').click(function(){
+    $('#discount_check').on("click", function(){
         var code = $('#id_discount').val();
         var price = $('#total-amount').html();
         var count = 1;
@@ -105,7 +105,7 @@ $(document).ready(function(){
         );
     });
 
-    $('.register-submit').click(function(){
+    $('.register-submit').on("click", function(){
         // validate that emails/memberids are only used once.
 
         emails = $('.registrant-email');

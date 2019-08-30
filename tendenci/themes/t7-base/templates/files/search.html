@@ -38,7 +38,7 @@
             // url exists
             url_exists = function(url){
                 var http = new XMLHttpRequest();
-                http.open('HEAD', url, false);
+                http.open('HEAD', url);
                 http.send();
                 return http.status!=404;
             }

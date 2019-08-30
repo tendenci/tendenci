@@ -98,7 +98,7 @@ function addRegistrant(ele, prefix, price) {
 
         // uncheck the checkbox
         if ($this.attr('type') == 'checkbox'){
-         $this.attr('checked', false);
+         $this.prop('checked', false);
 
          {% if request.user.is_superuser %}
         if ($this.attr('name').search('override') != -1)

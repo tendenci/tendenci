@@ -102,12 +102,13 @@
         {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 
         {% block jquery_script %}
-            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            <script src="https://code.jquery.com/jquery-migrate-3.1.0.js"></script>
         {% endblock jquery_script %}
 
         <script type="text/javascript">
             jQuery(document).ready(function () {
-                jQuery('#t-megamenu-lang-dd a').click(function (e) {
+                jQuery('#t-megamenu-lang-dd a').on("click", function (e) {
                     var lang = jQuery(this).data('lang');
                     jQuery('#t-megamenu-lang-input').attr('value', lang);
                     jQuery('#t-megamenu-lang-form').submit();

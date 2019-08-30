@@ -647,7 +647,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/membapp_tabular_inline_ordering.js'),
             static('js/global/tinymce.event_handlers.js'),
@@ -693,7 +693,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
         return super(MembershipTypeAdmin, self).add_view(request)
 
     class Media:
-        js = ('//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+        js = ('//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
               static('js/membtype.js'),)
 
     @mark_safe
@@ -793,7 +793,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
             static('js/global/tinymce.event_handlers.js'),
             static('js/admin/membnotices.js'),
         )
@@ -893,7 +893,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/admin-list-reorder.js'),
         )
