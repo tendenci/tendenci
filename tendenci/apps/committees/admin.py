@@ -17,10 +17,10 @@ class OfficerAdminInline(admin.TabularInline):
     fieldsets = (
         (None, {
             'fields': (
-            'position',
-            'user',
-            'phone',
-        )},),
+                'position',
+                'user',
+                'phone',
+            )},),
     )
     extra = 0
     model = Officer
@@ -33,7 +33,8 @@ class OfficerAdminInline(admin.TabularInline):
             committee = self.get_object(kwargs['request'], Committee)
             if committee:
                 committee_group = committee.group
-                return UserModelChoiceField(queryset=User.objects.filter(group_member__group=committee.group), label="User")
+                return UserModelChoiceField(queryset=User.objects.filter(group_member__group=committee.group),
+                                            label="User")
             return UserModelChoiceField(queryset=User.objects.none(), label="User")
         return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
 
@@ -112,12 +113,15 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
         Associate the user to each instance saved.
         """
         instances = formset.save(commit=False)
-        for instance in instances:
-            instance.content_type = ContentType.objects.get_for_model(instance.committee)
-            instance.object_id = instance.committee.pk
-            instance.creator = request.user
-            instance.owner = request.user
-            instance.save()
+        if len(instances) > 0:
+            for instance in instances:
+                instance.content_type = ContentType.objects.get_for_model(instance.committee)
+                instance.object_id = instance.committee.pk
+                instance.creator = request.user
+                instance.owner = request.user
+                instance.save()
+        else:
+            formset.save()
 
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
@@ -125,11 +129,13 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             obj.title,
             obj.slug
         )
+
     link.allow_tags = True
 
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:committees_committee_change', args=[obj.pk])
         return link
+
     edit_link.allow_tags = True
     edit_link.short_description = 'edit'
 
@@ -141,6 +147,7 @@ class CommitteeAdmin(TendenciBaseModelAdmin):
             link_icon,
         )
         return link
+
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
 
