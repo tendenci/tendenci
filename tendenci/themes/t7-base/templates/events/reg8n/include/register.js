@@ -12,7 +12,7 @@ function generatePreviewElements(){
 };
 
 $(document).ready(function(){
-    $('#discount_check').click(function(){
+    $('#discount_check').on("click", function(){
         code = $('#id_discount_code').val();
        // price = $('#total-amount').html();
         //count = 1;

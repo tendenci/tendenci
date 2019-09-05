@@ -153,7 +153,7 @@
         var type_options = membership_type.find('li');
         $(type_options).each(function() {
             var $this = $(this);
-            $this.find('label').click(function() {
+            $this.find('label').on("click", function() {
                 if(parseFloat($this.find('label').html().split('$')[1])==0) {
                     payment_method_block.hide();
                  }else{

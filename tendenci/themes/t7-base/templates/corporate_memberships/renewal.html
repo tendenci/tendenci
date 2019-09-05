@@ -507,7 +507,7 @@ div.forms{
         //        IndUpdateSummary(this);
         //});
 
-        $("#id_select_all_members").click(function()
+        $("#id_select_all_members").on("click", function()
         {
             var checked_status = this.checked;
             $("input[name=members]").each(function()

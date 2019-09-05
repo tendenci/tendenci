@@ -29,7 +29,7 @@
         }
     });
 
-    $('.screenshot img').click(function(){
+    $('.screenshot img').on("click", function(){
         var data = $(this).parents('.theme-info').attr('data');
 
         $('.lightbox').each(function(){

@@ -12,7 +12,7 @@ $(document).ready(function() {
 
     initEvents(itemTable);
 
-    $('tr.add-row a').click(function() {
+    $('tr.add-row a').on("click", function() {
         var table = $(this).parents('table');
         var inputs = table.find('tbody tr.dynamic-navitem_set:not(.add_template):not(.deleted_row) .field-position input');
         inputs.each(function(){
@@ -28,7 +28,7 @@ function initEvents(table) {
 
     // Rebind click events
     table.find('span.levelLeft').unbind('click');
-    table.find('span.levelLeft').click(function() {
+    table.find('span.levelLeft').on("click", function() {
         var parent = $(this).parents('td.field-level');
         var levelInput = parent.find('input[type="hidden"]');
         var level = parseInt(levelInput.val()) - 1;
@@ -40,7 +40,7 @@ function initEvents(table) {
     });
 
     table.find('span.levelRight').unbind('click');
-    table.find('span.levelRight').click(function() {
+    table.find('span.levelRight').on("click", function() {
         var parent = $(this).parents('td.field-level');
         var levelInput = parent.find('input[type="hidden"]');
         var level = parseInt(levelInput.val()) + 1;

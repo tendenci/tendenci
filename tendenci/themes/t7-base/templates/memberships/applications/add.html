@@ -270,7 +270,7 @@
         $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
         $('.timepicker').timepicker({'step':15});
         {% if 'discount_code' in membership_form.fields %}
-        $('#discount_check').click(function(){
+        $('#discount_check').on("click", function(){
             var code = $('#id_discount_code').val();
             var model = 'membershipset';
             var prices = '0';

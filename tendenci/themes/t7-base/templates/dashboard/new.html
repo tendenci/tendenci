@@ -265,7 +265,7 @@
             chart.draw(member_data, options);
         }
 
-        $('#t-dashboard-js-icons-toggle').click(function (e) {
+        $('#t-dashboard-js-icons-toggle').on("click", function (e) {
             e.preventDefault();
 
            $('#t-dashboard-js-modules-list').toggleClass('hidden');

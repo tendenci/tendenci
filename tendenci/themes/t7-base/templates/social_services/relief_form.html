@@ -32,7 +32,7 @@ $(document).ready(function(){
     }else {
         $(".form-field .id_other_ethnicity").hide();
     }
-    $(".form-field .id_ethnicity li input").click(function() {
+    $(".form-field .id_ethnicity li input").on("click", function() {
         if ($(this).attr("value") == "other") {
             $(".form-field .id_other_ethnicity").show();
         }else {

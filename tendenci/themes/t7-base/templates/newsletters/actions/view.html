@@ -151,7 +151,7 @@
                 {{ block.super }}
                 <script type="text/javascript">
                   jQuery(document).ready(function(j) {
-                  j("#resend-email").click(function() {
+                  j("#resend-email").on("click", function() {
                   var x = confirm("Resend this newsletter?");
                   if (x == true)
                   window.location.href = "{% url 'newsletter.resend.view' object.pk %}"

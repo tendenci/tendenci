@@ -99,7 +99,7 @@
             var anchor_top = anchor_offset.top;
             $('html, body').animate({scrollTop:anchor_top}, 250);
         });
-        $('.result-collapsable').click(function () {
+        $('.result-collapsable').on("click", function () {
             if ($(this).hasClass('expanded')) {
                 $(this).removeClass('expanded');
                 $(this).addClass('colapsed');

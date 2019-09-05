@@ -62,7 +62,7 @@
   <script type="text/javascript">
     $(document).ready(function(){
       // delete confirmation
-      $('.add-category').click(function(){
+      $('.add-category').on("click", function(){
         select_box = $(this).parent().prev().find('select');
         var category = prompt('Category Name?','').toLowerCase();
         category = category.replace('"','')
@@ -70,7 +70,7 @@
         if (category) select_box.append(option_html)
         return false;
       });
-      $('.add-sub-category').click(function(){
+      $('.add-sub-category').on("click", function(){
         select_box = $(this).parent().prev().find('select');
         var sub_category = prompt('Category Name?','').toLowerCase();
         sub_category = sub_category.replace('"','')
@@ -92,13 +92,13 @@
   <script type="text/javascript">
         $('#meta-form').hide();
         $('#category-form').hide();
-        $('#meta-title').click(function() {
+        $('#meta-title').on("click", function() {
             $('#meta-form').slideToggle('fast');
             if ($('#meta-title span').text() == '+') {
                 $('#meta-title span').text('-');}
             else {$('#meta-title span').text('+');}
         });
-        $('#category-title').click(function() {
+        $('#category-title').on("click", function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}
@@ -106,7 +106,7 @@
         });
     </script>
     <script type="text/javascript">
-        $('.add-row').click(function() {
+        $('.add-row').on("click", function() {
           addForm(this, 'officers');
           // Handle chosen jquery plugin
           $('#officer-table select').removeClass('chzn-done');

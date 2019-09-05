@@ -170,7 +170,7 @@
     $('.position-wrap').hide();
 
     $(function() {
-        $( ".minimize-link" ).click(function(){
+        $( ".minimize-link" ).on("click", function(){
             $(this).parent().toggleClass('minimize-photo');
             $(this).parent().find('.title-wrap').toggle();
             $(this).parent().find('.caption-wrap').toggle();

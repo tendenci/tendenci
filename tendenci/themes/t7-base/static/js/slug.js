@@ -53,7 +53,7 @@ Slugify.prototype.events = function() {
 			self.render_help();
 	});
 
-	$(self.elements.submit).click(function(){
+	$(self.elements.submit).on("click", function(){
 		if (self.elements.slug.val().length == 0) {
 			slug = parse_slug(self.elements.input.val());
 			self.elements.slug.val(slug);

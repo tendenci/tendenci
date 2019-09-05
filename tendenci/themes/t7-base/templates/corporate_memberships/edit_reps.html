@@ -112,7 +112,7 @@
     $(document).ready(function(){
 
         // delete confirmation
-        $('.delete').click(function(){
+        $('.delete').on("click", function(){
             var delete_corp_memb_rep = confirm('Permenantly delete this corporate membership representative?');    // confirm
             if(delete_corp_memb_rep) $(this).parents('.corp-rep').find('form[name="corp-memb-rep-delete"]').submit() // delete: if OK
             return false;    // cancel
@@ -135,7 +135,7 @@
         {% if page == 0 %}
         $('#members-list').hide();
         {% endif %}
-         $('#toggle_members_list').click(function () {
+         $('#toggle_members_list').on("click", function () {
         $('#members-list').toggle();
          });
     });

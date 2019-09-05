@@ -295,7 +295,7 @@ function toogle_tax_rate_field(element) {
 function hook_all_tax_fields_js() {
     $("input[name$='include_tax']").each(function() {
         toogle_tax_rate_field($(this));
-        $(this).click(function() {
+        $(this).on("click", function() {
             toogle_tax_rate_field($(this));
         });
     });
@@ -351,7 +351,7 @@ $(document).ready(function(){
         });
     }
 
-    $('div.formset-add a').click(function(e) {
+    $('div.formset-add a').on("click", function(e) {
         var params = get_formset_and_prefix($(this));
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
         initialize_pickers();
@@ -360,7 +360,7 @@ $(document).ready(function(){
         //return false;
     });
 
-    $('div.formset-delete a').click(function(e) {
+    $('div.formset-delete a').on("click", function(e) {
         var params = get_formset_and_prefix($(this));
         var selector = 'div.' + params.form_set;
         var current_form = $(this).closest('div.formset-functions').prev();

@@ -4,7 +4,7 @@ $(document).ready(function () {
     }else{
         $('div.field-type_exp_method').show();
     }
-    $("input[name=never_expires]").click(function(){
+    $("input[name=never_expires]").on("click", function(){
         $('div.field-type_exp_method').toggle("slow");
     });
 

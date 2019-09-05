@@ -141,7 +141,7 @@ $(document).ready(function(){
     // REGISTRANT CONTROLS
     default_pricings = $('#pricing-choices').html();
     // add registrant set button
-    $("#add-registrants-button").click(function(){
+    $("#add-registrants-button").on("click", function(){
         var pricing = $('input:radio[name=add-registrants-pricing]:checked');
         var price_d = {};
         if(pricing.val()){
@@ -221,7 +221,7 @@ $(document).ready(function(){
         getUserStatus(form);
     });
 
-    $('.registrant-header').click(function() {
+    $('.registrant-header').on("click", function() {
         $(this).parent().children('div:last').toggle();
         if ($(this).children('span.showhide').text() == "+ ") {
             $(this).children('span.showhide').text('- ');

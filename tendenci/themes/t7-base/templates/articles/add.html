@@ -84,7 +84,7 @@
     </script>
     <script type="text/javascript">
         $('#category-form').hide();
-        $('#category-title').click(function() {
+        $('#category-title').on("click", function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}

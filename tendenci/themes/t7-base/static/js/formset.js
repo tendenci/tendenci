@@ -329,7 +329,7 @@ $(document).ready(function(){
         });
     }
 
-    $('div.formset-add a').click(function(e) {
+    $('div.formset-add a').on("click", function(e) {
         var params = get_formset_and_prefix($(this));
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
         initialize_pickers();
@@ -337,7 +337,7 @@ $(document).ready(function(){
         //return false;
     });
 
-    $('div.formset-delete a').click(function(e) {
+    $('div.formset-delete a').on("click", function(e) {
         var params = get_formset_and_prefix($(this));
         var selector = 'div.' + params.form_set;
         var current_form = $(this).closest('div.formset-functions').prev();

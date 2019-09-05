@@ -158,7 +158,7 @@
 <script type="text/javascript">
   
   // photo: delete confirmation
-  $('.photo-options .photo-delete').click(function(){
+  $('.photo-options .photo-delete').on("click", function(){
   var delete_photo = confirm('Permenantly delete photo?');    // confirm
   if(delete_photo) $('form[name="photo-delete"]').submit();    // delete: if OK
   return false;    // cancel
@@ -189,7 +189,7 @@
   // }
   
   // function addClicker(link) {
-  //     $(link).click(function(e){
+  //     $(link).on("click", function(e){
   //         swapPhoto(link.href);
   //         history.pushState(null, null, link.href);
   //         e.preventDefault();

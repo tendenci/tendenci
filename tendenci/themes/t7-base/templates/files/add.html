@@ -40,7 +40,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.add-category').click(function(){
+            $('.add-category').on("click", function(){
                 select_box = $(this).parent().prev().find('select');
                 var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 category = category.replace('"','')
@@ -48,7 +48,7 @@
                 if (category) select_box.append(option_html)
                 return false;
             });
-            $('.add-sub-category').click(function(){
+            $('.add-sub-category').on("click", function(){
                 select_box = $(this).parent().prev().find('select');
                 var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
                 sub_category = sub_category.replace('"','')
@@ -61,13 +61,13 @@
     </script>
     <script type="text/javascript">
         $('#category-form').hide();
-        $('#category-title').click(function() {
+        $('#category-title').on("click", function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}
             else {$('#category-title span').text('+');}
         });
-        $('.file-wrap form input[type="submit"]').click(function() {
+        $('.file-wrap form input[type="submit"]').on("click", function() {
             $.blockUI({
                 message: $('.loading-message')
             });

@@ -7,7 +7,7 @@ function updateElementIndex(el, prefix, ndx){
 }
 
 apply_delete = function(thing){
-    thing.click(function(){
+    thing.on("click", function(){
         var total = $("#id_form-TOTAL_FORMS").val();
         $(this).parent().parent().remove();
         var items = $("#nav-items").find(".nav-item");
@@ -24,7 +24,7 @@ apply_delete = function(thing){
 }
 
 apply_toggle = function(thing){
-    thing.click(function(){
+    thing.on("click", function(){
         $(this).parent().find('.nav-item-detail').toggle();
         $(this).find('.linklabel').html($(this).parent().find('input[name*="-label"]').val());
         var str = $(this).html();
@@ -42,7 +42,7 @@ apply_toggle = function(thing){
 }
 
 apply_move_left = function(thing){
-    thing.click(function(){
+    thing.on("click", function(){
         var level = parseInt($($($(this).parent()).find('.level input')).val()) - 1;
         if (level > -1){
             $($(this).parent()).css('margin-left', (level*20)+'px');
@@ -53,7 +53,7 @@ apply_move_left = function(thing){
 }
 
 apply_move_right = function(thing){
-    thing.click(function(){
+    thing.on("click", function(){
         var level = parseInt($($($(this).parent()).find('.level input')).val()) + 1;
         if (level < 5){
             $($(this).parent()).css('margin-left', (level*20)+'px');
@@ -157,7 +157,7 @@ $(document).ready(function(){
     apply_move_right($('.nav-move-right'));
 
     //custom form add
-    $('#add-custom').click(function(){
+    $('#add-custom').on("click", function(){
         form_number = parseInt($("#id_form-TOTAL_FORMS").val());
         items = $("#nav-items");
         item = $("#base");

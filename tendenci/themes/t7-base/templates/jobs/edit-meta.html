@@ -36,7 +36,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_job = confirm('{% trans "Permenantly delete this" %} {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
                 if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
                 return false;    // cancel

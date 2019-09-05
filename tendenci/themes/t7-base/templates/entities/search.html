@@ -63,7 +63,7 @@
         $(document).ready(function(){
 
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_entity = confirm('{% trans "Permenantly delete" %} {{ MODULE_ENTITIES_LABEL }} ?');    // confirm
                 if(delete_entity) $(this).parents('.entity-wrap').find('form[name="entity-delete"]').submit() // delete: if OK
                 return false;    // cancel

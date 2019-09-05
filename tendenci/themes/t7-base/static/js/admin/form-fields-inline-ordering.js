@@ -62,7 +62,7 @@ jQuery(document).ready(function($) {
             position_field = '';
     });
 
-    $('fieldset .add-row a').click(function(){
+    $('fieldset .add-row a').on("click", function(){
         var table = $(this).parents('table');
         var inputs = table.find('tbody tr.dynamic-fields:not(.add_template):not(.deleted_row) .field-position input');
         inputs.each(function(){

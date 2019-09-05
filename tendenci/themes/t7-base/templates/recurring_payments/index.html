@@ -405,7 +405,7 @@ $(document).ready(function(){
             }
         });
 
-     /* $("#btn-pm").click(function(){
+     /* $("#btn-pm").on("click", function(){
          $.ajax({
            type: "POST",
            url: "{% url "recurring_payment.authnet.retrieve_token" %}",
@@ -433,7 +433,7 @@ $(document).ready(function(){
 
 <script type="text/javascript">
     // disable confirmation
-    $('.disable').click(function(){
+    $('.disable').on("click", function(){
         var disable_account = confirm('Are you sure you want to disable this account?');    // confirm
         if(disable_account) $('form[name="rp-disable"]').submit(); // disable: if OK
         return false;    // cancel

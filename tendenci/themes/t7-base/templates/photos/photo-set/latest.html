@@ -56,7 +56,7 @@
 
 <script type="text/javascript">
   // photo: delete confirmation
-  $('.photo-set .info .actions .delete-set').click(function(){
+  $('.photo-set .info .actions .delete-set').on("click", function(){
   var delete_photo = confirm('{% trans "Permenantly delete photo set?" %}'); // confirm
   if(!delete_photo) return false; // do not delete
   });

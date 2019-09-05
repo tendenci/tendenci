@@ -1,5 +1,5 @@
 (function($){  		
-    $('#t-categories-add-category-help-text button').click(function(){
+    $('#t-categories-add-category-help-text button').on("click", function(){
         select_box = $(this).closest(".form-group").find('select#id_category');
         var category = prompt('{% trans "Category Name?" %}','').toLowerCase();
         category = category.replace('"','');
@@ -10,7 +10,7 @@
         }
         return false;
     });
-    $('#t-categories-add-subcategory-help-text button').click(function(){
+    $('#t-categories-add-subcategory-help-text button').on("click", function(){
         select_box = $(this).closest(".form-group").find('select#id_sub_category');
         var sub_category = prompt('{% trans "Category Name?" %}','').toLowerCase();
         sub_category = sub_category.replace('"','');

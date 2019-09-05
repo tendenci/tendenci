@@ -183,14 +183,14 @@ function googleTranslateElementInit() {
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#ShowFurtherEditOptions").click(function() {
+        $("#ShowFurtherEditOptions").on("click", function() {
             $("#FurtherEditOptions").fadeIn();
             $("#ShowFurtherOptPara").hide();
             return false;
         });
 
         processAddFileClick();
-        $("#ShowFileUpload").click(function() {
+        $("#ShowFileUpload").on("click", function() {
             $("#FileUpload").fadeIn();
             $("#ShowFileUploadPara").hide();
             return false;
@@ -211,7 +211,7 @@ function googleTranslateElementInit() {
     function processAddFileClick() {
         /* Until jQuery includes some 'livequery' functionality in the core
            distribution, this will have to do. */
-        $(".AddAnotherFile>a").click(function() {
+        $(".AddAnotherFile>a").on("click", function() {
             $(this).parent().remove();
             $("#FileUpload>dl").append("<dt><label>{% trans "Attach another File" %}</label></dt><dd><input type='file' name='attachment' id='file' multiple/> <span class='AddAnotherFile'>(<a href='#'>{% trans "Add Another File" %}</a>)</span></dd>");
             processAddFileClick();

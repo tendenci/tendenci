@@ -38,7 +38,7 @@
         $(document).ready(function(){
 
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_committee = confirm("Permenantly delete {% firstof MODULE_COMMITTEES_LABEL 'Committee' %}?");   // confirm
                 if(delete_committee) $(this).parents('.committee-wrap').find('form[name="committee-delete"]').submit() // delete: if OK
                 return false;   // cancel

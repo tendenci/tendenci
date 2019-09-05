@@ -162,7 +162,7 @@
     }
   });
   // Dialog Link
-  $('#event_export_link').click(function(){
+  $('#event_export_link').on("click", function(){
     $('#event_export_dialog').show();
     $('#event_export_dialog').dialog('open');
     return false;

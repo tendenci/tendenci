@@ -79,15 +79,15 @@ $(document).ready(function() {
     toggle_custom_reg_form();
 
 
-    reg_enabled_checkbox.click(function () {
+    reg_enabled_checkbox.on("click", function () {
           toggle_custom_reg_form();
     });
 
-    use_custom_reg_checkbox.click(function () {
+    use_custom_reg_checkbox.on("click", function () {
           toggle_use_custom_reg_options();
     });
 
-    one_or_separate_input_radios.click(function () {
+    one_or_separate_input_radios.on("click", function () {
           toggle_pricing_reg_form();
     });
 
@@ -103,7 +103,7 @@ $(document).ready(function() {
 
     var email_reminder = $('input[id=id_regconf-send_reminder]');
     toggle_email_reminder(email_reminder);
-    email_reminder.click(function(){
+    email_reminder.on("click", function(){
         var $this = $(this);
         toggle_email_reminder($this);
     });
@@ -115,7 +115,7 @@ $(document).ready(function() {
         //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').hide();
         $('div.id_display_registrants_to').parent().hide();
     }
-    $('#id_display_event_registrants').click(function(){
+    $('#id_display_event_registrants').on("click", function(){
         if($("#id_display_event_registrants").is(':checked')){
             //$('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideDown('fast');
             $('div.id_display_registrants_to').parent().slideDown('fast');
@@ -154,7 +154,7 @@ $(document).ready(function() {
         recurOn.hide();
     }
 
-    recurringCheck.click(function(){
+    recurringCheck.on("click", function(){
         if(recurringCheck.is(':checked')){
             repeatFreq.slideDown('fast');
             repeatType.slideDown('fast');

@@ -92,7 +92,7 @@
     $(document).ready(function(){
         // import submit
         // this is used to resubmit the mapping form on confirmation
-        $('#import-confirm').click(function(){
+        $('#import-confirm').on("click", function(){
             $('#mapping-form').submit();
             return false;    // cancel
         });

@@ -203,7 +203,7 @@ window.onload = function() {
         }
     });
 
-    $(".upload-link .upload_btn").click(function() {
+    $(".upload-link .upload_btn").on("click", function() {
         var file_dir = $(this).parent('.glyph').attr('path');
         new qq.FineUploader({
 
@@ -305,7 +305,7 @@ function open_archive(id)
 
 <script type="text/javascript">
     $(document).ready(function(){
-        $('#delete-theme-btn').click(function(){
+        $('#delete-theme-btn').on("click", function(){
             if(window.confirm("{% trans 'Are you sure you want to delete this theme?' %}")){
                 return true;
             } else {
@@ -318,7 +318,7 @@ function open_archive(id)
 <script type="text/javascript">
     $(document).ready(function(){
         //bind the modified one
-        $('.delete').click(function(){
+        $('.delete').on("click", function(){
             if(window.confirm("{% trans 'Are you sure you want to delete this file from your theme?' %}")){
                 return true;
             } else {
@@ -388,7 +388,7 @@ function open_archive(id)
 }
     });
 
-    $('#file-tree li a.folder').click(function() {
+    $('#file-tree li a.folder').on("click", function() {
         if ($(this).hasClass('open')) {
             $(this).text($(this).text().replace('– ', '+ '));
             $(this).removeClass('open');
@@ -408,7 +408,7 @@ $('.links').hide();
 $('.non-editable-file').hover(function() {
    $(this).children('.links').toggle();
 });
-    $('#delete-btn').click(function() {
+    $('#delete-btn').on("click", function() {
       return window.confirm(this.title || '{% trans "Are you sure you want to delete the following file?" %} {{ current_file_path }}');
     });
 </script>

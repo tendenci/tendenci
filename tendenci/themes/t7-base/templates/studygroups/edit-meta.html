@@ -38,7 +38,7 @@
         $(document).ready(function(){
 
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_studygroup = confirm("Permenantly delete {% firstof MODULE_STUDYGROUPS_LABEL 'Study Group' %}?");   // confirm
                 if(delete_studygroup) $(this).parents('.studygroup-wrap').find('form[name="studygroup-delete"]').submit() // delete: if OK
                 return false;   // cancel

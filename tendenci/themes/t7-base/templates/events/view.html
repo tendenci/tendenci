@@ -400,7 +400,7 @@ div.pricing-list-wrap li{
   });
   
   $('.files-wrap').hide();
-  $('a#event_detail_tab').click(function(){
+  $('a#event_detail_tab').on("click", function(){
   var _this = $(this);
   $('.event-wrap .event-tabs .dropdown').removeClass('active');
   _this.parent().addClass('active');
@@ -408,7 +408,7 @@ div.pricing-list-wrap li{
   $('.files-wrap').hide();
   return false;
   });
-  $('a#event_files_tab').click(function(){
+  $('a#event_files_tab').on("click", function(){
   var _this = $(this);
   $('.event-wrap .event-tabs .dropdown').removeClass('active');
   _this.parent().addClass('active');
@@ -419,7 +419,7 @@ div.pricing-list-wrap li{
   
   // speaker description toggle
   $('div.speaker-desc-long').hide();
-  $('a.speaker-desc-toggle').click(function() {
+  $('a.speaker-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.speaker-wrap');
   
@@ -431,7 +431,7 @@ div.pricing-list-wrap li{
   
   // organizer description toggle
   $('div.organizer-desc-long').hide();
-  $('a.organizer-desc-toggle').click(function() {
+  $('a.organizer-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.organizer-wrap');
   
@@ -442,7 +442,7 @@ div.pricing-list-wrap li{
   });
   
   // event description toggle
-  $('a.event-place-desc-toggle').click(function() {
+  $('a.event-place-desc-toggle').on("click", function() {
   var _this = $(this);
   var speaker_wrap = _this.parents('.place');
   
@@ -463,7 +463,7 @@ div.pricing-list-wrap li{
   // }
   // });
   // // Dialog Link
-  // $('#event_export_link').click(function(){
+  // $('#event_export_link').on("click", function(){
   // $('#event_export_dialog').show();
   // $('#event_export_dialog').dialog('open');
   // 

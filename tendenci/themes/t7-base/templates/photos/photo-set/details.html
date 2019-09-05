@@ -116,7 +116,7 @@
   $(document).ready(function(){
   
   // delete confirmation
-  $('.delete-set').click(function(){
+  $('.delete-set').on("click", function(){
   var delete_item = confirm('{% trans "Permenantly delete photo set?" %}');    // confirm
   if(delete_item) $('form[name="delete-photo-set"]').submit() // delete: if OK
   return false;    // cancel

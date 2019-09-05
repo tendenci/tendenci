@@ -188,7 +188,7 @@
   // hide the user form fields
   adv_opt_fields.hide();
   adv_opt_legend.html('<a href="#">' + adv_opt_legend.html() + '</a>');
-  adv_opt_legend.click(function() {
+  adv_opt_legend.on("click", function() {
   adv_opt_fields.toggle();
   return false;
   });

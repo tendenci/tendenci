@@ -8,7 +8,7 @@ $(document).ready(function() {
     }
     var include_tax = $("#id_include_tax");
     toggle_tax_rate_field(include_tax);
-    include_tax.click(function() {
+    include_tax.on("click", function() {
         toggle_tax_rate_field($(this));
     });
 });

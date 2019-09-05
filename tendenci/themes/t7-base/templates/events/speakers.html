@@ -72,7 +72,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // speaker description toggle
-            $('a.speaker-desc-toggle').click(function() {
+            $('a.speaker-desc-toggle').on("click", function() {
                 var _this = $(this);
                 var speaker_wrap = _this.parents('.speaker-wrap');
 

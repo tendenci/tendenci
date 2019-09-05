@@ -50,7 +50,7 @@
             jQuery.each($("select[multiple]"), function () {
              SelectFilter2.init(this.id, "Groups", 0, "/media/");
             });
-            $("#add_groups_submit").click(function(){
+            $("#add_groups_submit").on("click", function(){
                 SelectBox.filter('id_groups_to', '');
                 $("#id_groups_input2").val('');
             });

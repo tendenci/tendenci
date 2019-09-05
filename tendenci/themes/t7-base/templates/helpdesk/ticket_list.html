@@ -251,15 +251,15 @@ $(document).ready(function() {
     $("#searchtabs > ul > li").removeClass().addClass("ui-corner-top ui-state-default");
     $("#searchtabs > div").addClass("ui-tabs-hide");
 
-    $("#select_all").click(function() {
+    $("#select_all").on("click", function() {
         $(".ticket_multi_select").attr('checked', true);
         return false;
     });
-    $("#select_none").click(function() {
+    $("#select_none").on("click", function() {
         $(".ticket_multi_select").attr('checked', false);
         return false;
     });
-    $("#select_inverse").click(function() {
+    $("#select_inverse").on("click", function() {
         $(".ticket_multi_select").each(function() {
             $(this).attr('checked', !$(this).attr('checked'));
         });

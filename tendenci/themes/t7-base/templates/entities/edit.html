@@ -30,7 +30,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_entity = confirm("{% trans 'Permenantly delete' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");    // confirm
                 if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
                 return false;    // cancel

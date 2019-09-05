@@ -124,7 +124,7 @@
 {{ block.super }}
 <script type="text/javascript">
     jQuery(document).ready(function() {
-        jQuery('.email-subject-link').click(function() {
+        jQuery('.email-subject-link').on("click", function() {
             var emailid = jQuery(this).data('emailid');
             jQuery("#emailid").attr('value', emailid);
             jQuery("#email-update-form").submit();

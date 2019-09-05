@@ -878,7 +878,7 @@
 $(document).ready(function(){
   toggle_pwd($('#auto-generate-pwd'));
 
-  $('#auto-generate-pwd').click(function(){
+  $('#auto-generate-pwd').on("click", function(){
     toggle_pwd($(this));
 
   });

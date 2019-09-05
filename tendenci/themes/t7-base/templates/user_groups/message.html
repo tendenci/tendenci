@@ -105,7 +105,7 @@
             handle_to_addr($('input#id_is_test')[0])
 
             // bind click event
-            $('input#id_is_test').click(function(e){
+            $('input#id_is_test').on("click", function(e){
                 handle_to_addr(e.target);
             });
 

@@ -60,7 +60,7 @@
         $(document).ready(function(){
 
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_contact = confirm('{% trans "Permenantly delete" %} {{ MODULE_CONTACTS_LABEL }}?');    // confirm
                 if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
                 return false;    // cancel

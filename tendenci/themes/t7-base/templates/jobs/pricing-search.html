@@ -61,7 +61,7 @@
         $(document).ready(function(){
 
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_job_pricing = confirm('Permenantly delete this job price?');    // confirm
                 if(delete_job_pricing) $(this).parents('.job-wrap-search').find('form[name="job-pricing-delete"]').submit() // delete: if OK
                 return false;    // cancel

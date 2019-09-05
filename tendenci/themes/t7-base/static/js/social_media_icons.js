@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $(".social-popup").click(function(e) {
+    $(".social-popup").on("click", function(e) {
         e.preventDefault();
         var width = 600, height = 400;
         if ($(this).hasClass('social-google')) {

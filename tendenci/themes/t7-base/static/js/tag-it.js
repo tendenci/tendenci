@@ -125,7 +125,7 @@
                 .addClass('ui-widget ui-widget-content ui-corner-all')
                 // Create the input field.
                 .append($('<li class="tagit-new"></li>').append(this._tagInput))
-                .click(function(e) {
+                .on("click", function(e) {
                     var target = $(e.target);
                     if (target.hasClass('tagit-label')) {
                         that._trigger('onTagClicked', e, target.closest('.tagit-choice'));
@@ -327,7 +327,7 @@
             var removeTag = $('<a><span class="text-icon">\xd7</span></a>') // \xd7 is an X
                 .addClass('tagit-close')
                 .append(removeTagIcon)
-                .click(function(e) {
+                .on("click", function(e) {
                     // Removes a tag when the little 'x' is clicked.
                     that.removeTag(tag);
                 });

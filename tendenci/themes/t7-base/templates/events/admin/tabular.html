@@ -328,7 +328,7 @@
         });
 
         // form on submit
-        $('input[type="submit"]').click(function(){
+        $('input[type="submit"]').on("click", function(){
             $('.field-map_to_field select').removeAttr('disabled');
             $('#id_first_name').removeAttr('disabled');
             $('#id_last_name').removeAttr('disabled');

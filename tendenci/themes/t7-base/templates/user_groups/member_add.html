@@ -83,7 +83,7 @@
         jQuery.each($("select[multiple]"), function () {
          SelectFilter2.init(this.id, "Members", 0, "/media/");
         });
-        $("#add_members_submit").click(function(){
+        $("#add_members_submit").on("click", function(){
             SelectBox.filter('id_members_to', '');
             $("#id_members_input2").val('');
         });

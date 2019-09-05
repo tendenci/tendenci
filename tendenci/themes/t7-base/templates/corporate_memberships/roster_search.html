@@ -243,7 +243,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-delete"]');
                 var membership_name = $(this_form).find('input[name="membership_name"]').val();
                 var delete_membership = confirm('{% trans "Permenantly delete membership:" %} ' + membership_name + '?');  // confirm
@@ -252,7 +252,7 @@
             });
 
              // expire confirmation
-            $('.expire').click(function(){
+            $('.expire').on("click", function(){
                 var this_form = $(this).parents('.wrap-search-item').find('form[name="membership-expire"]');
                 var membership_name = $(this_form).find('input[name="membership_name"]').val();
                 var expire_membership = confirm('{% trans "Are you sure you want to expire this membership?" %} ' + membership_name);  // confirm

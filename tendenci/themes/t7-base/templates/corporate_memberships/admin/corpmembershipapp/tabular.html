@@ -212,7 +212,7 @@
 
 
          // form on submit
-        $('input[type="submit"]').click(function(){
+        $('input[type="submit"]').on("click", function(){
             $('.field-field_name input').removeAttr('disabled');
             $('.field-display input').removeAttr('disabled');
             $('.field-required input').removeAttr('disabled');

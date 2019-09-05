@@ -57,7 +57,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
         //bind the modified one
-        $('.copy').click(function(){
+        $('.copy').on("click", function(){
             if(window.confirm("{% trans 'Do you want to override this template file?' %}")){
                 return true;
             } else {

@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $('button.fp_chk_btn').click(function(){
+    $('button.fp_chk_btn').on("click", function(){
         var $this = $(this);
         var registrant_form = $this.closest('.registrant-form');
         var id = parseInt($(registrant_form).find('.item-counter').html()) - 1;
@@ -64,7 +64,7 @@ $(document).ready(function () {
             }
          });
 
-        $('.fp-field input[type=checkbox]').click(function(){
+        $('.fp-field input[type=checkbox]').on("click", function(){
          update_fp_item($(this));
     });
 

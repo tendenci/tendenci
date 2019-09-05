@@ -37,7 +37,7 @@ $(function() {
     ];
     $('textarea:not([class="no-markitup"])').markItUp(mySettings);
 
-    $('#emoticons a').click(function() {
+    $('#emoticons a').on("click", function() {
         var emoticon = $(this).attr("title");
         $.markItUp({replaceWith: emoticon});
         return false;

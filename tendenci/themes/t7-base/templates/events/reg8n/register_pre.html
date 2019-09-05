@@ -104,7 +104,7 @@
 
         // make sure the Table registration is checked when selecting a table option
         var table_reg_radio = $('div.is-table-choice input[type=radio]:last');
-        $('.table-pricing-choice input[type=radio]').click(function(){
+        $('.table-pricing-choice input[type=radio]').on("click", function(){
             if ($(table_reg_radio).attr('checked') !== true){
                 $(table_reg_radio).attr('checked', true);
             }

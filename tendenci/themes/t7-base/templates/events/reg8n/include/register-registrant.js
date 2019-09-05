@@ -335,7 +335,7 @@ $(document).ready(function(){
          }
         return false;   // cancel
     });
-    $('.registrant-header').click(function() {
+    $('.registrant-header').on("click", function() {
         $(this).parent().children('div:last').toggle();
         if ($(this).children('span.showhide').text() == "+ ") {
             $(this).children('span.showhide').text('- ');
@@ -347,7 +347,7 @@ $(document).ready(function(){
 
 
     {% if not event.is_table %}
-    $('.registrant-pricing').click(function(){
+    $('.registrant-pricing').on("click", function(){
         // check if the price has been overrided
          var $this = $(this);
          var registrant_form = $this.closest('.registrant-form');
@@ -383,7 +383,7 @@ $(document).ready(function(){
     });
     {% endif %}
 
-    $('#populate-fields').click(function(e){
+    $('#populate-fields').on("click", function(e){
         e.preventDefault();
         populate_blank_fields();
     });

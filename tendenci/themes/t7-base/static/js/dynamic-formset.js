@@ -14,7 +14,7 @@ function addForm(btn, prefix) {
         updateElementIndex(this, prefix, formCount);
         $(this).val('');
     });
-    $(row).find('.delete-row').click(function() {
+    $(row).find('.delete-row').on("click", function() {
         deleteForm(this, prefix);
     });
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);

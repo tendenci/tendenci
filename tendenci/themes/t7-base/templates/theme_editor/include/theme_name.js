@@ -79,7 +79,7 @@ $(function() {
         }
     });
 
-    $('.copy-theme-btn').click(function(){
+    $('.copy-theme-btn').on("click", function(){
         url = '{% url "theme_editor.theme_copy" %}?theme_edit={{ current_theme }}';
         $('#theme-name-form').dialog({title: 'Copy to new theme'});
         $('#theme-name-form').dialog('open');
@@ -88,7 +88,7 @@ $(function() {
                 .css({'background-color': '#A84524'})
                 .css({'color': '#ffffff'});
     });
-    $('.rename-theme-btn').click(function(){
+    $('.rename-theme-btn').on("click", function(){
         url = '{% url "theme_editor.theme_rename" %}?theme_edit={{ current_theme }}';
         $('#theme-name-form').dialog({title: 'Rename theme'});
         $('#theme-name-form').dialog('open');

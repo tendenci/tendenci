@@ -72,7 +72,7 @@
   }
 
   // delete confirmation
-  $('.delete').click(function(){
+  $('.delete').on("click", function(){
   var delete_file = confirm('{% trans "Permenantly delete file?" %}');    // confirm
   if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
   return false;    // cancel

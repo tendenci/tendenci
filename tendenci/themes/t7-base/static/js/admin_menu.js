@@ -4,12 +4,12 @@ $(document).ready(function() {
         var enterText = $(this).html();
         $(this).text('Close Search');
     });
-    $('#admin-bar li.right.search a').click(function() {
+    $('#admin-bar li.right.search a').on("click", function() {
         $('#admin-bar li.right.search .sub').css('display','none');
         var exitText = $(this).html();
         $(this).text('Search');
     });
-    $('.edit-setting-link').click(function() {
+    $('.edit-setting-link').on("click", function() {
        if ($('#admin-overlay').length == 0) {
            $('body').append('<div id="admin-overlay"></div>');}
        $('#admin-overlay').fadeIn(150);

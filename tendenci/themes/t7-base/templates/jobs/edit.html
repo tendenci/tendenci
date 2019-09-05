@@ -43,7 +43,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_job = confirm('{% trans "Permenantly delete" %} {% firstof MODULE_JOBS_LABEL 'Job' %}?');    // confirm
                 if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
                 return false;    // cancel
@@ -72,13 +72,13 @@
     <script type="text/javascript">
         $('#meta-form').hide();
 /*         $('#category-form').hide(); */
-        $('#meta-title').click(function() {
+        $('#meta-title').on("click", function() {
             $('#meta-form').slideToggle('fast');
             if ($('#meta-title span').text() == '+') {
                 $('#meta-title span').text('-');}
             else {$('#meta-title span').text('+');}
         });
-/*         $('#category-title').click(function() {
+/*         $('#category-title').on("click", function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}

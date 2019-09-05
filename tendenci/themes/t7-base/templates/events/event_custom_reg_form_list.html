@@ -81,7 +81,7 @@
     {{ block.super }}
      <script type="text/javascript">
         $(document).ready(function() {
-            $('.preview-btn').click(function(){
+            $('.preview-btn').on("click", function(){
                 $(this).closest('.reg-form-list-links').find('.form-wrap').toggle('slow');
 
             });

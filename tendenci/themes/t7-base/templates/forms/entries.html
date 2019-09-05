@@ -76,7 +76,7 @@
 <script type="text/javascript">
   $(document).ready(function(){
   // delete confirmation
-  $('.delete').click(function(){
+  $('.delete').on("click", function(){
   var delete_form = confirm('{% trans "Permanently delete entry?" %}');    // confirm
   if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
   return false;    // cancel

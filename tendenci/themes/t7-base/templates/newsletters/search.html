@@ -35,7 +35,7 @@
     {% if user.profile.is_superuser %}
     <script type="text/javascript">
         jQuery(document).ready(function(j) {
-            j(".resend-link").click(function() {
+            j(".resend-link").on("click", function() {
                 var nl = j(this).data('title');
                 var resend_link = j(this).data('href');
                 var x = confirm('Resend the newsletter "' + nl + '"?');

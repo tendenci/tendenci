@@ -70,7 +70,7 @@
       }
     }).mousedown(function() {
        tpOver = true;
-    }).click(function() {
+    }).on("click", function() {
       setTimeVal(elm, this, $tpDiv, settings);
       tpOver = false;
     });

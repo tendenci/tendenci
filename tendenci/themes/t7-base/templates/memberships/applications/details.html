@@ -54,11 +54,11 @@
         for(var i=0; i < mem_options.length; i++) {
             op = $(mem_options[i]);
             if(parseFloat(op.find('label').html().split('$')[1])==0) {
-                op.click(function() {
+                op.on("click", function() {
                     payment.hide();
                 });
             } else {
-                op.click(function() {
+                op.on("click", function() {
                     payment.show();
                 });
             };

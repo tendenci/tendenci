@@ -13,7 +13,7 @@ function gplusHelpTextsInit(siteURL) {
     var gpub_help_options = {'html': true, 'content': gpub_help};
     $('.gpub-help').popover(gpub_help_options);
 
-    $('html').click(function(e) {
+    $('html').on("click", function(e) {
         var target = $(e.target);
         if (!target.is('.popover, .popover-title, .popover-content')) {
             if (!target.is('.gauthor-help')) {

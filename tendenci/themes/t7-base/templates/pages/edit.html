@@ -77,13 +77,13 @@
     <script type="text/javascript">
         $('#meta-form').hide();
         $('#category-form').hide();
-        $('#meta-title').click(function() {
+        $('#meta-title').on("click", function() {
             $('#meta-form').slideToggle('fast');
             if ($('#meta-title span').text() == '+') {
                 $('#meta-title span').text('-');}
             else {$('#meta-title span').text('+');}
         });
-        $('#category-title').click(function() {
+        $('#category-title').on("click", function() {
             $('#category-form').slideToggle('fast');
              if ($('#category-title span').text() == '+') {
                 $('#category-title span').text('-');}
@@ -95,7 +95,7 @@
         });
 
         //Set preview button
-        $('input.previewButton').click(function() {
+        $('input.previewButton').on("click", function() {
             var form = $('div.page-wrap > form');
             var url = form.attr('action');
             $('form #id_preview_for').val('edit');

@@ -263,7 +263,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // speaker description toggle
-            $('a.event-desc-toggle').click(function() {
+            $('a.event-desc-toggle').on("click", function() {
                 var _this = $(this);
                 var event_wrap = _this.parents('.regconf-section');
 

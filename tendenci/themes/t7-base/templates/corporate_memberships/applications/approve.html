@@ -162,7 +162,7 @@
 
     $(document).ready(function()
     {
-        $("#toggle-indiv-entries").click(function()
+        $("#toggle-indiv-entries").on("click", function()
         {
             if ($('#indiv-entries').is(':hidden')){
                 $('#toggle-indiv-entries a').html("Hide Details");

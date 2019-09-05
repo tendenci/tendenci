@@ -388,7 +388,7 @@
 <script type="text/javascript">
   $(".app-links").hide();
   
-  $(".toggle-app-links").click(function(e){
+  $(".toggle-app-links").on("click", function(e){
   $(".app-links").toggle('slow');
   e.preventDefault();
   })

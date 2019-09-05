@@ -117,7 +117,7 @@
     </script>
     <script>
     $(document).ready(function() {  
-    	$('[data-toggle="collapse"]').click(function() {
+    	$('[data-toggle="collapse"]').on("click", function() {
     		var sh_node = $(this).find('.hide-show-search');
     	  $(sh_node).toggleClass( "active" );
     	  if ($(sh_node).hasClass("active")) {

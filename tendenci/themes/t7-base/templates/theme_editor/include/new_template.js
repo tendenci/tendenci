@@ -80,7 +80,7 @@ $(function() {
         }
     });
 
-    $('.new-template-btn').click(function(){
+    $('.new-template-btn').on("click", function(){
         $('#create-tform').dialog('open');
         $('.ui-dialog-buttonset .ui-state-default').first()
                 .css({'background': 'none'})

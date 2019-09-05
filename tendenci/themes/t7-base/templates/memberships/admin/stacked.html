@@ -184,17 +184,17 @@
            $('div.collapse-all-button').hide();
 
         // collapse and expand buttons to toggle the fields
-        $('.collapse-button').click(function(){
+        $('.collapse-button').on("click", function(){
             $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
             $(this).closest('.collapse-expand-button').find('.expand-button').show();
             $(this).hide();
         });
-        $('.expand-button').click(function(){
+        $('.expand-button').on("click", function(){
             $(this).closest('div.inline-related').find('div.inline-fields-to-toggle').show('slideDown');
             $(this).closest('.collapse-expand-button').find('.collapse-button').show();
             $(this).hide();
         });
-        $('.toggle-all-button > .collapse-all-button').click(function(){
+        $('.toggle-all-button > .collapse-all-button').on("click", function(){
             $('div.inline-fields-to-toggle').each(function(){
                 if ($(this).is(':visible')){
                     $(this).hide('slideUp');
@@ -205,7 +205,7 @@
             $('div.expand-all-button').show();
             $(this).hide();
         });
-        $('.toggle-all-button > .expand-all-button').click(function(){
+        $('.toggle-all-button > .expand-all-button').on("click", function(){
             $('div.inline-fields-to-toggle').each(function(){
                 if ($(this).is(':hidden')){
                     $(this).show('slideDown');

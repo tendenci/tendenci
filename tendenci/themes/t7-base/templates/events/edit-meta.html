@@ -36,7 +36,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_event = confirm('{% trans "Permenantly delete" %} {% firstof MODULE_EVENTS_LABEL  trans "Event" %}?');    // confirm
                 if(delete_event) $('.t').find('form[name="event-delete"]').submit() // delete: if OK
                 return false;    // cancel

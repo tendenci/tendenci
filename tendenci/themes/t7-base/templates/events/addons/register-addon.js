@@ -114,7 +114,7 @@ $(document).ready(function(){
         });
     });
 
-    $("#add-addons-button").click(function(){
+    $("#add-addons-button").on("click", function(){
         var addons = $('input:checkbox[name=add-addons]:checked');
         if (addons.length > 0){
             for(var i = 0; i<addons.length; i++){
@@ -152,7 +152,7 @@ $(document).ready(function(){
         addon.hide();
     }
 
-     $('.delete-addon').click(function(){
+     $('.delete-addon').on("click", function(){
         var delete_confirm = confirm('Are you sure you want to delete this addon?');   // confirm
         if(delete_confirm) {
             var form = $(this).parent();

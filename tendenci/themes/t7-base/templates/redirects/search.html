@@ -37,7 +37,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             // delete confirmation
-            $('.delete').click(function(){
+            $('.delete').on("click", function(){
                 var delete_redirect = confirm('{% trans "Permenantly delete redirect?" %}');  // confirm
                 if(delete_redirect) $(this).parents('.redirect-wrap').find('form[name="redirect-delete"]').submit() // delete: if OK
                 return false;   // cancel

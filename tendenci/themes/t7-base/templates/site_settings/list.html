@@ -37,7 +37,7 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function() {
-            $('a.setting-toggle').click(function() {
+            $('a.setting-toggle').on("click", function() {
                 var id = $(this).attr('id').replace('toggle','');
                 $('#description'+id).toggle();
                 if ($("#toggle"+id+":contains('Show')").length > 0) {

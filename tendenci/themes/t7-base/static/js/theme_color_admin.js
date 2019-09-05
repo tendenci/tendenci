@@ -122,7 +122,7 @@ function open_color_palette() {
     }
 }
 
-$('#admin-bar li#themecolor>a').click(function() {
+$('#admin-bar li#themecolor>a').on("click", function() {
     open_color_palette();
     return false;
 });
@@ -144,13 +144,13 @@ themecolor.find('input[name="palette"]').change(function() {
     build_palettes(cp);
 });
 
-themecolor.find('a.paletteSelector').click(function() {
+themecolor.find('a.paletteSelector').on("click", function() {
     themecolor.find('div.colorSelector').slideUp('fast');
     themecolor.find('div.paletteSelector').slideDown('fast');
     return false;
 });
 
-themecolor.find('a.colorSelector').click(function() {
+themecolor.find('a.colorSelector').on("click", function() {
     var paletteSelected = themecolor.find('input[name="palette"]:radio:checked');
     var value = paletteSelected.val();
     if (value !== undefined) {
@@ -160,7 +160,7 @@ themecolor.find('a.colorSelector').click(function() {
     return false;
 });
 
-themecolor.find('button#defaultBtn').click(function() {
+themecolor.find('button#defaultBtn').on("click", function() {
     var paletteSelected = themecolor.find('input[name="palette"]:radio:checked');
     var default_color = themecolor.find('input#default_colors').val();
     colorInput.val(default_color);
@@ -170,7 +170,7 @@ themecolor.find('button#defaultBtn').click(function() {
     themecolor.find('div.paletteSelector').slideDown('fast');
 });
 
-themecolor.find('button#revertBtn').click(function() {
+themecolor.find('button#revertBtn').on("click", function() {
     var paletteSelected = themecolor.find('input[name="palette"]:radio:checked');
     var previous_color = themecolor.find('input#previous_colors').val();
     colorInput.val(previous_color);
