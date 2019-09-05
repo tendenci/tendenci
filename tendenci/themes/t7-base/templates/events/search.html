@@ -111,7 +111,7 @@
                 $('#id_q').attr('disabled', 'disabled');
                 $('#id_q').val('');
             } else {
-                $('#id_q').removeAttr('disabled');
+                $('#id_q').prop('disabled', false );
             }
         });
     </script>

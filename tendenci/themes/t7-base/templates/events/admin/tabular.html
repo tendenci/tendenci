@@ -191,7 +191,7 @@
             // check display on roster
             $(row_added).find('.field-display_on_roster input[type="checkbox"]').attr('checked', 'checked');
             if (field_name !== 'first_name' && field_name !== 'last_name' && field_name !== 'email'){
-                $(row_added).find('.field-required input[type="checkbox"]').removeAttr('checked');
+                $(row_added).find('.field-required input[type="checkbox"]').prop('checked', false );
             }
 
             if (field_name == 'first_name' || field_name == 'last_name' || field_name == 'email'){
@@ -309,7 +309,7 @@
                     // field exists, check if there is delete checkbox and uncheck it if checked.
                     var row = get_mapped_row($this);
                     var delete_checkbox = $(row).find('td.delete input[type="checkbox"]');
-                    //$(delete_checkbox).removeAttr('checked');
+                    //$(delete_checkbox).prop('checked', false );
                     $(delete_checkbox).attr('checked', false);
 
                 }
@@ -329,11 +329,11 @@
 
         // form on submit
         $('input[type="submit"]').on("click", function(){
-            $('.field-map_to_field select').removeAttr('disabled');
-            $('#id_first_name').removeAttr('disabled');
-            $('#id_last_name').removeAttr('disabled');
-            $('#id_email').removeAttr('disabled');
-            $('.inline-related tr.dynamic-fields td.delete input[type="checkbox"]').removeAttr('disabled');
+            $('.field-map_to_field select').prop('disabled', false );
+            $('#id_first_name').prop('disabled', false );
+            $('#id_last_name').prop('disabled', false );
+            $('#id_email').prop('disabled', false );
+            $('.inline-related tr.dynamic-fields td.delete input[type="checkbox"]').prop('disabled', false );
             $('#fields-group td.delete div').show();
         });
 

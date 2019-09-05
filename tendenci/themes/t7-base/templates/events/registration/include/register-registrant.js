@@ -131,7 +131,7 @@ function addRegistrantSet(prefix, pricing_data, initial_data){
         }
     }
     delete_button = $("#delete-hidden").clone(true);
-    delete_button.removeAttr('id');
+    delete_button.prop('id', false );
     container.append(delete_button);
     $('#registrant-forms').append(container);
     return false;

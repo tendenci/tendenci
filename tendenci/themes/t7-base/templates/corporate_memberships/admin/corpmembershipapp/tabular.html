@@ -148,17 +148,17 @@
             if (display === "true"){
                 $(row_added).find('.field-display input[type="checkbox"]').attr('checked', 'checked');
             }else{
-               $(row_added).find('.field-display input[type="checkbox"]').removeAttr('checked');
+               $(row_added).find('.field-display input[type="checkbox"]').prop('checked', false );
             }
             if (required === "true"){
                 $(row_added).find('.field-required input[type="checkbox"]').attr('checked', 'checked');
             }else{
-                $(row_added).find('.field-required input[type="checkbox"]').removeAttr('checked');
+                $(row_added).find('.field-required input[type="checkbox"]').prop('checked', false );
             }
             if (admin_only === "true"){
                 $(row_added).find('.field-admin_only input[type="checkbox"]').attr('checked', 'checked');
             }else{
-                $(row_added).find('.field-admin_only input[type="checkbox"]').removeAttr('checked');
+                $(row_added).find('.field-admin_only input[type="checkbox"]').prop('checked', false );
             }
         }
 
@@ -213,10 +213,10 @@
 
          // form on submit
         $('input[type="submit"]').on("click", function(){
-            $('.field-field_name input').removeAttr('disabled');
-            $('.field-display input').removeAttr('disabled');
-            $('.field-required input').removeAttr('disabled');
-            $('.field-label input').removeAttr('disabled');
+            $('.field-field_name input').prop('disabled', false );
+            $('.field-display input').prop('disabled', false );
+            $('.field-required input').prop('disabled', false );
+            $('.field-label input').prop('disabled', false );
         });
     });
 })(django.jQuery);

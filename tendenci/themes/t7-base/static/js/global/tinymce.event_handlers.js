@@ -30,6 +30,6 @@ resize = function(el) {
 */
 (function($) {
     $(document).ready(function() {
-        $('textarea').removeAttr('required');
+        $('textarea').prop('required', false );
     });
 }(jQuery));
