@@ -1,5 +1,5 @@
 // Update pricing end dates for every event end date change
-$("#id_end_dt_0").change(function() {
+$("#id_end_dt_0").on("change", function() {
     var value = $("#id_end_dt_0").val();
     var date = updateDate(value, -1)
 
@@ -16,14 +16,14 @@ $("#id_end_dt_0").change(function() {
 });
 
 // Update end date to be similar to start date
-$("#id_start_dt_0").change(function() {
+$("#id_start_dt_0").on("change", function() {
     var value = $("#id_start_dt_0").val();
     $("#id_end_dt_0").val(value);
     $("#id_end_dt_0").change();
 });
 
 // Update end time to be 2 hours after to start time
-$("#id_start_dt_1").change(function() {
+$("#id_start_dt_1").on("change", function() {
     var value = $("#id_start_dt_1").val();
     var time = value.split(" ");
     var format = time[1];

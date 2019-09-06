@@ -159,11 +159,11 @@
         $('.photographer-wrap input').val($(this).val())
     });
 
-    $(".bulk-license select").change(function(event) {
+    $(".bulk-license select").on("change", function(event) {
         $(".license-wrap select").val($(this).val());
     });
 
-    $(".bulk-group select").change(function(event) {
+    $(".bulk-group select").on("change", function(event) {
         $(".group-wrap select").val($(this).val());
     });
 

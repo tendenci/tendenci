@@ -102,7 +102,7 @@
                     type: "POST",
                     url: "{% url 'profiles.user_import_get_status' uimport.id %}",
                     success: function (status_data) {
-                        var obj = $.parseJSON(status_data);
+                        var obj = JSON.parse(status_data);
                         value = Math.ceil(100 * parseInt(obj.num_processed) / parseInt(obj.total_rows));
 
                         $this_bar.progressbar("option", "value", value);

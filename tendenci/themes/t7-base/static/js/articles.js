@@ -22,11 +22,11 @@ $(document).ready(function(){
 	check_category();
 	check_filter_date();
 
-	$('#id_search_category').change(function(){
+	$('#id_search_category').on("change", function(){
 		check_category();
 	});
 
-	$('#id_filter_date').change(function(){
+	$('#id_filter_date').on("change", function(){
 		check_filter_date();
 	});
 });

@@ -398,7 +398,7 @@ $(document).ready(function(){
     });
 
 
-    $(override_checkboxes).change(function(){
+    $(override_checkboxes).on("change", function(){
         var checkbox = this;
         var price_box = $(checkbox).closest('.admin-override').next();
         toggle_admin_override(checkbox, price_box);
@@ -409,7 +409,7 @@ $(document).ready(function(){
 
     });
 
-    $('.admin-override_price').change(function() {
+    $('.admin-override_price').on("change", function() {
         var registrant_form = $(this).closest('.registrant-form');
 
         override_update_summary_entry(prefix, registrant_form);
@@ -426,7 +426,7 @@ $(document).ready(function(){
     var override_price_tbl_input = $(override_price_tbl_box).find('input[name=override_price_table]');
     toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
 
-    $(override_tbl_checkboxes).change(function(){
+    $(override_tbl_checkboxes).on("change", function(){
         toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
 
         var override = false;
@@ -447,7 +447,7 @@ $(document).ready(function(){
 
     });
 
-    $(override_price_tbl_input).change(function(){
+    $(override_price_tbl_input).on("change", function(){
         if ($(override_tbl_checkboxes).is(':checked')){
             var override_price = parseFloat($(this).val());
             table_override_update_summary_entry('registrant', true, override_price);

@@ -1,5 +1,5 @@
 //Populate location with value of place
-$('select#id_place-place').change(function() {
+$('select#id_place-place').on("change", function() {
     if($(this).val()) {
         //Get values of place through ajax
         $.post(
@@ -8,7 +8,7 @@ $('select#id_place-place').change(function() {
                 'id':$(this).val(),
             },
             function(data, textStatus, jqXHR){
-                json = $.parseJSON(data);
+                json = JSON.parse(data);
                 if (!json["error"]){
                     $('input#id_place-name').val(json["name"]);
                     $('textarea#id_place-description').html(json["description"]);

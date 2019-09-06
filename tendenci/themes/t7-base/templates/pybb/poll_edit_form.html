@@ -33,7 +33,7 @@
 
     $('#id_poll_type').each(function () {
       toggle_poll_answers_formset($(this).val());
-    }).change(function () {
+    }).on("change", function () {
       toggle_poll_answers_formset($(this).val());
     });
   };

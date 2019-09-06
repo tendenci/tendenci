@@ -23,7 +23,7 @@ jQuery(document).ready(function($){
 
     $('.add-row a').click(update);
 
-    $('#membershipapp_form').submit(function() {
+    $('#membershipapp_form').on("submit", function() {
         update();
     });
 });

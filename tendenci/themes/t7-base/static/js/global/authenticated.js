@@ -28,14 +28,14 @@ $(document).ready(function(){
         });
     }
 
-    $("#admin-bar ul li").has(".sub").not('#themecolor').hover(function(){
+    $("#admin-bar ul li").has(".sub").not('#themecolor').on('mouseenter', function(){
         $(this).children(".sub").addClass('active');
-    }, function() {
+    }).on('mouseleave', function() {
         $(this).children(".sub").removeClass('active');
     });
-    $("#user-bar li").has(".sub").hover(function(){
+    $("#user-bar li").has(".sub").on('mouseenter', function(){
         $(this).children(".sub").addClass('active');
-    }, function() {
+    }).on('mouseleave', function() {
         $(this).children(".sub").removeClass('active');
     });
 

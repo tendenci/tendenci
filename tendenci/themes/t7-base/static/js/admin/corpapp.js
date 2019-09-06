@@ -39,7 +39,7 @@ jQuery(function($) {
 			field_type_toggle($(this).find('select[id$=field_type]'));
 	    });
 		
-		$('select[id$=field_type]').change(function(){
+		$('select[id$=field_type]').on("change", function(){
 			field_type_toggle(this);
 		});
 		

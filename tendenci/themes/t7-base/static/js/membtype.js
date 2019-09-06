@@ -15,7 +15,7 @@ $(document).ready(function () {
         $("#rolling-box").show();
         $("#fixed-box").hide();
     }
-    $("select[name=type_exp_method_0]").change(function(){
+    $("select[name=type_exp_method_0]").on("change", function(){
         $("#rolling-box").toggle("slow");
         $("#fixed-box").toggle();
     });

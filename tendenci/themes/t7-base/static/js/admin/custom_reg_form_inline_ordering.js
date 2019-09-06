@@ -23,7 +23,7 @@ jQuery(document).ready(function($){
 	
     $('.add-row a').click(update);
 
-    $('#customregform_form').submit(function() {
+    $('#customregform_form').on("submit", function() {
         update();
     });
 });

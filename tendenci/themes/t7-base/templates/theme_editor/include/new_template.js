@@ -58,7 +58,7 @@ $(function() {
                             'template_name': tname.val()
                         },
                         function(data, textStatus, jqXHR){
-                            json = $.parseJSON(data);
+                            json = JSON.parse(data);
                             if (json["created"]){
                                 $this.dialog( "close" );
                                 // redirect

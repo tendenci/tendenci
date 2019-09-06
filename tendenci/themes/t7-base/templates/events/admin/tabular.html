@@ -299,7 +299,7 @@
 
 
         // field checkboxes on change
-        $('.mapped-fields .row input[type="checkbox"]').change(function(){
+        $('.mapped-fields .row input[type="checkbox"]').on("change", function(){
             var $this = $(this);
             console.log($this.is(':checked'));
             if ($this.is(':checked')){
@@ -349,7 +349,7 @@
         handle: '.drag-handler',
         items: ".form-row"
     });
-    $("#{{ opts.model_name }}_form").submit(function(e) {
+    $("#{{ opts.model_name }}_form").on("submit", function(e) {
         var sortable_field_name = "{{ inline_admin_formset.opts.sortable_field_name }}",
             i = 0;
         var initial_form_count = $('#id_{{ inline_admin_formset.formset.prefix }}-INITIAL_FORMS').val();

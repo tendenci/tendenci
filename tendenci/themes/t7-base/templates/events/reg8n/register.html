@@ -511,10 +511,10 @@
     
         var subtotal = $("#tbl-gratuity-subtotal").data('subtotal');
         assign_total(subtotal);
-        $('select#id_gratuity').change(function(e){
+        $('select#id_gratuity').on("change", function(e){
         	assign_total(subtotal);
         });
-        $('input#id_gratuity_preferred').change(function(e){
+        $('input#id_gratuity_preferred').on("change", function(e){
         	assign_total(subtotal);
         });
     {% endif %}

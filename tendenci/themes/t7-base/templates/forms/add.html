@@ -46,7 +46,7 @@
             var RECURRING_PAYMENT_YES_VALUE = 2;
 
             /* Take Payment CHANGE Handler */
-            $customPaymentFieldset.change(function () {
+            $customPaymentFieldset.on("change", function () {
                 var pricings = $(this).prop('checked');
 
                 $('#t-forms-builder-pricing-options').toggleClass('hidden', !pricings);
@@ -61,7 +61,7 @@
             $('#id_recurring_payment').closest('.form-group').toggleClass('hidden', !showCustomPaymentFieldset);
 
 
-            $recurringPaymentSelect.change(function () {
+            $recurringPaymentSelect.on("change", function () {
                 var rp = parseInt($(this).val(), 10);
 
                 $('.recurring-payment').closest('.form-group').toggleClass('hidden', rp !== RECURRING_PAYMENT_YES_VALUE);

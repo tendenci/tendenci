@@ -526,12 +526,12 @@ div.forms{
             }
         });
 
-        $("input[name=members]").change(function()
+        $("input[name=members]").on("change", function()
         {
             IndUpdateSummary(this);
         });
 
-        $("input[name=corporate_membership_type]").change(function()
+        $("input[name=corporate_membership_type]").on("change", function()
         {
             TypeUpdateSummary(this);
         });

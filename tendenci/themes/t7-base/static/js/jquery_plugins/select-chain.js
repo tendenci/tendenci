@@ -12,7 +12,7 @@
         return this.each(function () {
             var $$ = $(this);
 
-            $$.change(function () {
+            $$.on("change", function () {
                 var data = null;
                 if (typeof settings.data == 'string') {
                     data = settings.data + '&' + this.name + '=' + $$.val();

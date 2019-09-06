@@ -77,7 +77,7 @@
                 weekend.hide();
             }
 
-            start_dt.change(function() {
+            start_dt.on("change", function() {
                 val = end_dt.val()
                 if ($(this).val() == val) {
                     weekend.hide();
@@ -86,7 +86,7 @@
                 }
             });
 
-            end_dt.change(function() {
+            end_dt.on("change", function() {
                 val = start_dt.val()
                 if ($(this).val() == val) {
                     weekend.hide();

@@ -167,7 +167,7 @@
 						moveToLastPage(table);
 						return false;
 					});
-					$(config.cssPageSize,pager).change(function() {
+					$(config.cssPageSize,pager).on("change", function() {
 						setPageSize(table,parseInt($(this).val()));
 						return false;
 					});

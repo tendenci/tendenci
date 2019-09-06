@@ -105,7 +105,7 @@
         $(document).ready(function () {
             $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
         });
-        $('#id_search_category').change(function(){
+        $('#id_search_category').on("change", function(){
             var category = $('#id_search_category').val();
             if (category==="priority" ) {
                 $('#id_q').attr('disabled', 'disabled');

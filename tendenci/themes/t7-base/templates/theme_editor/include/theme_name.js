@@ -59,7 +59,7 @@ $(function() {
                             'theme_name': newTheme
                         },
                         function(data, textStatus, jqXHR){
-                            json = $.parseJSON(data);
+                            json = JSON.parse(data);
                             if (json["success"]){
                                 $this.dialog( "close" );
                                 // redirect

@@ -131,7 +131,7 @@ function run_now(id){
            url: "{% url "recurring_payment.run_now" %}",
            data: {rp_id : id },
            success: function(result_data){
-                var obj = $.parseJSON(result_data);
+                var obj = JSON.parse(result_data);
              $('td#rp_'+id).html(obj.reason);
              if (obj.processed){
                  $('td#rp_'+id).closest('tr').find('.total-paid').html(obj.total_paid);

@@ -113,7 +113,7 @@
                 weekend.hide();
             }
 
-            start_dt.change(function() {
+            start_dt.on("change", function() {
                 if ($(this).val() == end_dt_val) {
                     weekend.hide();
                 } else {
@@ -121,7 +121,7 @@
                 }
             });
 
-            end_dt.change(function() {
+            end_dt.on("change", function() {
                 if ($(this).val() == start_dt_val) {
                     weekend.hide();
                 } else {
@@ -145,7 +145,7 @@
                 start_event_dt_field.hide();
                 end_event_dt_field.hide();
             }
-            $('#id_all_day').change(function() {
+            $('#id_all_day').on("change", function() {
                 if($(this).prop('checked')) {
                     start_dt_field.hide();
                     end_dt_field.hide();

@@ -31,7 +31,7 @@
 {% endif %}{% endif %}
 <script type="text/javascript">
   jQuery(document).ready(function($) {
-    $("select[name='action']").change(function () {
+    $("select[name='action']").on("change", function () {
       if ($(this).val() == 'add_to_category_and_subcategory') {
           $('.actions.category-form').show();
       } else {

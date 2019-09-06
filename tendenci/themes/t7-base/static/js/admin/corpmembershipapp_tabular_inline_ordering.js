@@ -23,7 +23,7 @@ jQuery(document).ready(function($){
 
     $('.add-row a').click(update);
 
-    $('#corpmembershipapp_form').submit(function() {
+    $('#corpmembershipapp_form').on("submit", function() {
         update();
     });
 });

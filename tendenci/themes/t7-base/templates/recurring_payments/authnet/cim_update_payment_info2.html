@@ -92,7 +92,7 @@
                             $('#dnotes').html("<p>Thank you. Your information has been saved.</p>");
                             $('#dnotes').css({'color':'green', 'font-size':'1.2em', 'padding': '5px'});
                             $('#dnotes').css({'border':'1px solid #DDAC2B', 'background-color': '#F9F6CA', 'width': '80%'});
-                            var obj = $.parseJSON(result_data);
+                            var obj = JSON.parse(result_data);
                             if (!obj.valid_cpp_id){
                                   $('.AuthorizeNetPopupOuter').show();
                                   if (obj.invalid_cpp_id){

@@ -38,7 +38,7 @@ $(document).ready(function(){
                 'model':model,
             },
             function(data, textStatus, jqXHR){
-                json = $.parseJSON(data);
+                json = JSON.parse(data);
                 //alert(json['message'])
                 $('#discount-message').html(json["message"]);
                 if (!json["error"]){
@@ -55,7 +55,7 @@ $(document).ready(function(){
         );
     });
 
-    $('#registration-form').submit(function() {
+    $('#registration-form').on("submit", function() {
         $(this).find('#register-button').off('click').on('click', function() {
             return false;
         }).css('opacity', '0.5');

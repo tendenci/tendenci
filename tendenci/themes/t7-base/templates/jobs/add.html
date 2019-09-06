@@ -105,7 +105,7 @@
                    url: "{% url "job.query_price" %}",
                    data: {'pricing_id': pricing_id, 'list_type': list_type},
                    success: function(ret_data){
-                       var obj = $.parseJSON(ret_data);
+                       var obj = JSON.parse(ret_data);
                        var price = obj.price;
                        if (!isNaN(price) && parseFloat(price) <= 0){
                            payment_method_block.hide();
@@ -117,10 +117,10 @@
             }
         };
         toggle_payment_method();
-        $('#id_pricing').change(function(){
+        $('#id_pricing').on("change", function(){
             toggle_payment_method();
         })
-        $('#id_list_type').change(function(){
+        $('#id_list_type').on("change", function(){
             toggle_payment_method();
         })
 

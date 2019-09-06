@@ -1,4 +1,4 @@
-$("#editorForm").submit(function() {
+$("#editorForm").on("submit", function() {
     var data = {'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
                 'content': editor.getCode()};
     $.ajax({

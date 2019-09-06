@@ -5,7 +5,7 @@
 
   function initTinyMCE($e) {
     if ($e.parents('.empty-form').length == 0) {  // Don't do empty inlines
-      var mce_conf = $.parseJSON($e.attr('data-mce-conf'));
+      var mce_conf = JSON.parse($e.attr('data-mce-conf'));
       if ('media_alt_source' in mce_conf && mce_conf['media_alt_source'] == 'false'){
       	mce_conf['media_alt_source'] = false;
       }
@@ -25,7 +25,7 @@
         mce_conf['elements'] = id;
       }
       if ($e.attr('data-mce-gz-conf')) {
-        tinyMCE_GZ.init($.parseJSON($e.attr('data-mce-gz-conf')));
+        tinyMCE_GZ.init(JSON.parse($e.attr('data-mce-gz-conf')));
       }
       if (!tinyMCE.editors[id]) {
         tinyMCE.init(mce_conf);

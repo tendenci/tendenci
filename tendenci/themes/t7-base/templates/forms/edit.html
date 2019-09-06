@@ -39,7 +39,7 @@
             $('#pricing-options').hide();
             $('.id_payment_methods').hide();
         {% endif %}
-        $('#id_custom_payment').change(function(){
+        $('#id_custom_payment').on("change", function(){
             pricings = $(this).attr('checked');
             if(pricings=='checked'){
                 $('#pricing-options').show();
@@ -52,7 +52,7 @@
             }
         });
 
-        $('#id_recurring_payment').change(function(){
+        $('#id_recurring_payment').on("change", function(){
             recurring_payment = $(this).attr('checked');
             if(recurring_payment=='checked') {
                 $('.recurring-payment').closest('div.form-field').show();

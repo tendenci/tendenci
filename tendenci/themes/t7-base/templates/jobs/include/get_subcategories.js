@@ -5,13 +5,13 @@ $.ajaxSetup({beforeSend: function(xhr, settings){
 }});
 (function($) {
 $(document).ready(function(){
-    $('select#id_cat').change(function() {
+    $('select#id_cat').on("change", function() {
         $.post(
             "{% url "job.get_subcategories" %}",
             {'category':$(this).val(),
              'csrfmiddlewaretoken':$('input[name="csrfmiddlewaretoken"]').val(),},
             function(data, textStatus, jqXHR){
-                var json = $.parseJSON(data);
+                var json = JSON.parse(data);
                 var selector = $('select#id_sub_cat');
                 selector[0].options.length = 0;
                 if (!json["error"]){

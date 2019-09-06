@@ -3,7 +3,7 @@ jQuery(function($) {
 
 	$('.position_field').focus(function() {
 		previousChoice = $(this).val();
-	}).change(function() {
+	}).on("change", function() {
 		var fieldID = $(this).attr('id');
 		var newChoice = $(this).val();
 		$('.position_field').each(function() {

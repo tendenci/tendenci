@@ -21,7 +21,7 @@ $(document).ready(function () {
                     'member_number': member_number,
                 },
                 function(data, textStatus, jqXHR){
-                    json = $.parseJSON(data);
+                    json = JSON.parse(data);
                     //alert(json['message'])
                     var fp_message = $(registrant_form).find('.free-pass-message');
                     $(fp_message).css('padding-left', '2em');

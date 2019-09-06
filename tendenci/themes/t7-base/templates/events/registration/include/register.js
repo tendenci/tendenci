@@ -88,7 +88,7 @@ $(document).ready(function(){
                 'count':count,
             },
             function(data, textStatus, jqXHR){
-                json = $.parseJSON(data);
+                json = JSON.parse(data);
                 //alert(json['message'])
                 $('#discount-message').html(json["message"]);
                 if (!json["error"]){

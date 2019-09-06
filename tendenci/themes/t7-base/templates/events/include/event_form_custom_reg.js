@@ -175,7 +175,7 @@ $(document).ready(function() {
             {% endif %}
         }
     });
-    repeatValue.change(function(){
+    repeatValue.on("change", function(){
         if (($(this).val() == 3) || ($(this).val() == 4)) {
             recurOn.slideDown('fast');
         }else {

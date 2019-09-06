@@ -1,14 +1,14 @@
 //Populate sub categories with value of main category
 
 $(document).ready(function() {
-    $('select#id_file_cat').change(function() {
+    $('select#id_file_cat').on("change", function() {
         // Get sub categories through ajax
         $.post(
             "{% url "file.get_categories" %}",
             {'category':$(this).val(),
              'csrfmiddlewaretoken':$('input[name="csrfmiddlewaretoken"]').val(),},
             function(data, textStatus, jqXHR){
-                var json = $.parseJSON(data);
+                var json = JSON.parse(data);
                 var selector = $('select#id_file_sub_cat');
                 selector[0].options.length = 0;
                 if (!json["error"]){

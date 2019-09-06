@@ -127,7 +127,7 @@ $('#admin-bar li#themecolor>a').on("click", function() {
     return false;
 });
 
-themecolor.find('input[name="palette"]').change(function() {
+themecolor.find('input[name="palette"]').on("change", function() {
     var paletteSelected = themecolor.find('input[name="palette"]:radio:checked');
     var value = paletteSelected.val();
     var cp = cp1;

@@ -371,7 +371,7 @@
                 total_checked_in = 0;
             }
 
-            $('.attended-checkbox input[type=checkbox]').change(function () {
+            $('.attended-checkbox input[type=checkbox]').on("change", function () {
                 var $this = $(this);
                 var action = 'not_checked_in';
                 var id = $this.data('reg');
@@ -387,7 +387,7 @@
                         'action': action
                     },
                     function (data, textStatus, jqXHR) {
-                        json = $.parseJSON(data);
+                        json = JSON.parse(data);
                         if (!json["error"]) {
                             $this.closest('tr').next().find('.attended-checkedin-text').html(json['checked_in_dt'])
                                 .css({opacity: 0.1}).animate({opacity: 1}, 900);

@@ -283,7 +283,7 @@
                     'model':model
                 },
                 function(data, textStatus, jqXHR){
-                    json = $.parseJSON(data);
+                    json = JSON.parse(data);
                     //alert(json['message'])
                     $('#{{ membership_form.discount_code.id_for_label }}-help-block').html(json["message"]);
                 }

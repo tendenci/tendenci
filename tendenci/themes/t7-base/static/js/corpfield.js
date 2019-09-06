@@ -2,7 +2,7 @@ $(document).ready(function () {
 	var mynode = $('select[name=field_type]');
 	show_hide_choices(mynode);
 
-	mynode.change(function(){
+	mynode.on("change", function(){
 		show_hide_choices(this);
 	});
 });

@@ -82,7 +82,7 @@
   $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
   });
 
-  $("select#id_invoice_type").change(function() {
+  $("select#id_invoice_type").on("change", function() {
   if($(this).val() == 'events') {
   $('div.eventFields').show();
   }

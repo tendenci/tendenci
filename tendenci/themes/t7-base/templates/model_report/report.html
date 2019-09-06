@@ -92,7 +92,7 @@
             {% include "model_report/includes/datepicker_options.html" %}
         });
         $('.form_filter fieldset .row:last-child').addClass('last');
-        $('#anchors').change(function () {
+        $('#anchors').on("change", function () {
             var anchor = $(this).val();
             if(!anchor) { return; }
             var anchor_offset = $("#"+anchor).offset();
