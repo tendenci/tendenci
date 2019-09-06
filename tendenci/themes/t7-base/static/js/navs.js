@@ -121,7 +121,7 @@ function showResponse(response, status, xhr, $form)  {
 }
 
 $(document).ready(function(){
-    $('#navs-search-box').keyup(function(){
+    $('#navs-search-box').on("keyup", function(){
         // hide all pages that do not match search-box's value
         var val = $('#navs-search-box').val().toLowerCase();
         var pages = $('.page-select li');

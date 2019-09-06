@@ -6,7 +6,7 @@ $(document).ready(function(){
 			$('#id_q').attr('disabled', 'disabled');
 			$('#id_q').val('');
 		} else {
-			$('#id_q').removeAttr('disabled');
+			$('#id_q').prop('disabled', false );
 		}
 	}
 
@@ -15,7 +15,7 @@ $(document).ready(function(){
 			$('#id_date').attr('disabled', 'disabled');
 			$('#id_date').val('');
 		} else {
-			$('#id_date').removeAttr('disabled');
+			$('#id_date').prop('disabled', false );
 		}
 	}
 

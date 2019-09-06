@@ -145,17 +145,17 @@
 {{ block.super }}
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript">
-    $(".photo-bulk-editor .title").keyup(function(event){
+    $(".photo-bulk-editor .title").on("keyup", function(event){
         $('.title-wrap input').val($(this).val())
     });
-    $(".photo-bulk-editor .caption").keyup(function(event){
+    $(".photo-bulk-editor .caption").on("keyup", function(event){
         $('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
     });
-    $(".photo-bulk-editor .tags").keyup(function(event){
+    $(".photo-bulk-editor .tags").on("keyup", function(event){
         $('.tags-wrap input').val($(this).val())
     });
 
-    $(".photo-bulk-editor .photographer").keyup(function(event){
+    $(".photo-bulk-editor .photographer").on("keyup", function(event){
         $('.photographer-wrap input').val($(this).val())
     });
 

@@ -61,7 +61,7 @@
 		        // Inform the user if there was an error
 		        var errorElement = document.getElementById('card-errors');
 		        errorElement.textContent = result.error.message;
-		        $('.submit-button').removeAttr('disabled');
+		        $('.submit-button').prop('disabled', false );
 		        $('#submit-loader').hide();
 		      } else {
 		       // Send the token to your server

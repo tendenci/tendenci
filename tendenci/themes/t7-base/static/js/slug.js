@@ -43,7 +43,7 @@ Slugify.prototype.events = function() {
 	});
 
 	// the keyup is debatable - personally I didn't like it
-	//$(self.elements.input).keyup(function(){							
+	//$(self.elements.input).on("keyup", function(){							
 	//		self.render_slug();
 	//});
 

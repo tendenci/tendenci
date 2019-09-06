@@ -175,7 +175,7 @@
       }
       return true;
     });
-    $(elm).keyup(function(e) {
+    $(elm).on("keyup", function(e) {
       keyDown = false;
     });
     // Helper function to get an inputs current time as Date object.

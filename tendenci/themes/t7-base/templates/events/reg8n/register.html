@@ -488,7 +488,6 @@
         
         {% if gratuity_form.gratuity or gratuity_form.gratuity_preferred %}
         var total_tax = $("#tbl-total_tax").data('total_tax');
-        console.log(total_tax);
         
         var calc_total = function(subtotal, gratuity){
             grand_total = parseFloat(subtotal) + parseFloat(total_tax) + parseFloat(subtotal) * parseFloat(gratuity)/100.0;

@@ -165,14 +165,14 @@
   });
   
   // keyboard shorcut (left, right)
-  $(document).keyup(function(event){
+  $(document).on("keyup", function(event){
   if(event.target.tagName == 'INPUT') return false; // avoid input fields
   if(event.keyCode == 37) window.location = '{{ photo_prev_url }}'; // left arrow
   else if(event.keyCode == 39) window.location = '{{ photo_next_url }}'; // right arrow
   });
   
   // // keyboard shorcut (left, right)
-  // $(document).keyup(function(event){
+  // $(document).on("keyup", function(event){
   //     if(event.target.tagName == 'INPUT') return false; // avoid input fields
   //     if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
   //     else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
