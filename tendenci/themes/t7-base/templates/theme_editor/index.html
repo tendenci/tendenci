@@ -405,7 +405,9 @@ function open_archive(id)
 $(document).ready(function() {
 $('.links').hide();
 });
-$('.non-editable-file').hover(function() {
+$('.non-editable-file').on("mouseenter", function() {
+   $(this).children('.links').toggle();
+}).on("mouseleave", function() {
    $(this).children('.links').toggle();
 });
     $('#delete-btn').on("click", function() {

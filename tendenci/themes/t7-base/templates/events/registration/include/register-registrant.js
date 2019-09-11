@@ -211,12 +211,12 @@ $(document).ready(function(){
         return false;   // cancel
     });
 
-    $('.first-registrant-email').blur(function(){
+    $('.first-registrant-email').on("blur", function(){
         form = $(this).parent().parent().parent()
         getUserStatus(form);
     });
 
-    $('.first-registrant-memberid').blur(function(){
+    $('.first-registrant-memberid').on("blur", function(){
         form = $(this).parent().parent().parent()
         getUserStatus(form);
     });

@@ -7,7 +7,7 @@
 
             var opts = $.fn.tipsy.elementOptions(this, options);
 
-            $(this).hover(function() {
+            $(this).on("mouseenter", function() {
 
                 $.data(this, 'cancel.tipsy', true);
 
@@ -58,7 +58,7 @@
                     tip.css({visibility: 'visible'});
                 }
 
-            }, function() {
+            }).on("mouseleave", function() {
                 $.data(this, 'cancel.tipsy', false);
                 var self = this;
                 setTimeout(function() {

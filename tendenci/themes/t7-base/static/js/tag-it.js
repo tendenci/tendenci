@@ -163,7 +163,7 @@
 
             // Events.
             this._tagInput
-                .keydown(function(event) {
+                .on("keydown", function(event) {
                     // Backspace is not detected within a keypress, so it must use keydown.
                     if (event.which == $.ui.keyCode.BACKSPACE && that._tagInput.val() === '') {
                         var tag = that._lastTag();
@@ -207,7 +207,7 @@
                         // So let's ensure that it closes.
                         that._tagInput.autocomplete('close');
                     }
-                }).blur(function(e){
+                }).on("blur", function(e){
                     // Create a tag when the element loses focus (unless it's empty).
                     that.createTag(that._cleanedInput());
                 });
