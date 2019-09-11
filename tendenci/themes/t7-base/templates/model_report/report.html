@@ -92,14 +92,14 @@
             {% include "model_report/includes/datepicker_options.html" %}
         });
         $('.form_filter fieldset .row:last-child').addClass('last');
-        $('#anchors').on("change", function () {
+        $('#anchors').change(function () {
             var anchor = $(this).val();
             if(!anchor) { return; }
             var anchor_offset = $("#"+anchor).offset();
             var anchor_top = anchor_offset.top;
             $('html, body').animate({scrollTop:anchor_top}, 250);
         });
-        $('.result-collapsable').on("click", function () {
+        $('.result-collapsable').click(function () {
             if ($(this).hasClass('expanded')) {
                 $(this).removeClass('expanded');
                 $(this).addClass('colapsed');
