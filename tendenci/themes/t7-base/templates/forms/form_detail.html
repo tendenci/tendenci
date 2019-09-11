@@ -50,11 +50,11 @@
             $('.custom-price').on("click", function() {
                 $(this).prev('input[type="radio"]').prop('checked', true);
             });
-            $('.custom-price').focus(function() {
+            $('.custom-price').on("focus", function() {
                 $(this).prev('input[type="radio"]').prop('checked', true);
             });
-            $('.pricing-field').focus(function() {
-                $(this).next('.custom-price').focus();
+            $('.pricing-field').on("focus", function() {
+                $(this).next('.custom-price').trigger("focus");
             });
 
             {% with form.intro_position as intro_pos and form.fields_position as fields_pos and form.pricing_position as pricing_pos %}

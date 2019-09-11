@@ -130,10 +130,10 @@
                     if (target.hasClass('tagit-label')) {
                         that._trigger('onTagClicked', e, target.closest('.tagit-choice'));
                     } else {
-                        // Sets the focus() to the input field, if the user
+                        // Sets the.trigger("focus") to the input field, if the user
                         // clicks anywhere inside the UL. This is needed
                         // because the input field needs to be of a small size.
-                        that._tagInput.focus();
+                        that._tagInput.trigger("focus");
                     }
                 });
 

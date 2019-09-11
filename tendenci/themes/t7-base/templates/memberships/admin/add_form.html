@@ -38,7 +38,7 @@
     </div>
 
 {% if adminform and add %}
-   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
+   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").trigger("focus");</script>
 {% endif %}
 
 {# JavaScript for prepopulated fields #}

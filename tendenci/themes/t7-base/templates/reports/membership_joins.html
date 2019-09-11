@@ -75,7 +75,7 @@
           checkout.setValue(newDate);
           }
           checkin.hide();
-          $('#id_end_date')[0].focus();
+          $('#id_end_date')[0].trigger("focus");
           }).data('datepicker');
 
           var checkout = $('#id_end_date').datepicker({
