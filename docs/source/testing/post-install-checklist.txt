@@ -13,7 +13,7 @@ Basic Functionality Testing
 
 1. Newsletter Sending has been tested
 
-  - Instead of the settings for the regular emails, the newsletter has a separate set of the settings. In your site's conf/local_settings.py, make sure you have the following settings set up.
+  - Instead of the settings for the regular emails, the newsletter has a separate set of the settings. In your site's conf/settings.py, make sure you have the following settings set up.
 
     ::
 

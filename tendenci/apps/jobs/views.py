@@ -115,11 +115,12 @@ def my_jobs(request, template_name = "jobs/my_jobs.html"):
     if not request.user.is_anonymous:
         if get_setting('site', 'global', 'searchindex') and query:
             jobs = Job.objects.search(query, user=request.user)
+            jobs = jobs.order_by('-post_dt')
         else:
             filters = get_query_filters(request.user, 'jobs.view_job')
             jobs = Job.objects.filter(filters).distinct()
             jobs = jobs.select_related()
-        jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+            jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
         jobs = jobs.filter(creator_username=request.user.username)
 
         EventLog.objects.log()

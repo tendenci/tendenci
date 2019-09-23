@@ -606,7 +606,8 @@ TINYMCE_DEFAULT_CONFIG = {
         {'title': 'Default Button', 'value': 'btn btn-default'}
         ],
     'image_class_list': [
-        {'title': 'Responsive', 'value': 'img-responsive'},
+        {'title': 'none', 'value': ''},
+        {'title': 'img-responsive', 'value': 'img-responsive'},
        ],
     'tabfocus_elements': ":prev,:next",
     'convert_urls': 'false',
