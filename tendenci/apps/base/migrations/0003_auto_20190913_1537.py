@@ -11,6 +11,7 @@ def update_jquery_in_theme(apps, schema_editor):
     """
     import re
     import os
+    import sys
     from collections import OrderedDict
     from tendenci.apps.theme.utils import get_theme_root
     
@@ -42,8 +43,8 @@ def update_jquery_in_theme(apps, schema_editor):
                                         ('.removeAttr(\'checked\')', ".prop('checked', false )"),
                                         ('.removeAttr(\'required\')', ".prop('required', false )"),
                                         ('.removeAttr(\'id\')', ".prop('id', false )"),
-                                        ('.unbind(', '.off('),
-                                        ('.bind(', '.on('),
+                                        #('.unbind(', '.off('),
+                                        #('.bind(', '.on('),
                                         ('$.parseJSON', 'JSON.parse'),
                                         ('.change(function', '.on("change", function'),
                                         ('.submit(function', '.on("submit", function'),
@@ -51,7 +52,9 @@ def update_jquery_in_theme(apps, schema_editor):
                                         ('.keydown(', '.on("keydown", '),
                                         ('.blur(', '.on("blur", '),
                                         ('.focus()', '.trigger("focus")'),
-                                        ('.focus(function', '.on("focus", function')])
+                                        ('.focus(function', '.on("focus", function'),
+                                        ('.unload(', '.on("unload", '),
+                                        ('.load(', '.on("load", '),])
     items_to_check = items_find_replace.keys()
     theme_templatges_dir = os.path.join(theme_dir, 'templates')
     #theme_media_dir = os.path.join(theme_dir, 'media')
@@ -62,7 +65,11 @@ def update_jquery_in_theme(apps, schema_editor):
                     file_path = os.path.join(root, file_name)
                     file_changed = False
                     with open(file_path, 'r') as f:
-                        content = f.read()
+                        try:
+                            content = f.read()
+                        except:
+                            print("Error on reading file {}:".format(file_path), sys.exc_info()[0])
+                            raise
                         for item in items_to_check:
                             if item in content:
                                 file_changed = True
