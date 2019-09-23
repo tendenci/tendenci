@@ -23,11 +23,13 @@ def update_jquery_in_theme(apps, schema_editor):
         file_changed = False
         with open(file_path, 'r') as f:
             content = f.read()
-            p = r'({0}[\d\D\s\S\w\W]*?)({1})([\d\D\s\S\w\W]*?{2})'.format(re.escape('{% block jquery_script %}'),
-            re.escape('<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>'),
+            p = r'({0}[\d\D\s\S\w\W]*?<script (type="text/javascript" )?)({1})([\d\D\s\S\w\W]*?{2})'.format(re.escape('{% block jquery_script %}'),
+            re.escape('src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>'),
             re.escape('{% endblock jquery_script %}'))
             if re.search(p, content):
-                content = re.sub(p, r'\1{}\3'.format('<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>'),
+                # Ensure no sites will be broken by including query-migrate
+                content = re.sub(p, r'\1{}\4'.format('src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>' + \
+                                                     '\n\t<script src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"></script>'),
                                  content)
                 file_changed = True 
 
