@@ -425,29 +425,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
-            if request.user.is_anonymous:
-                if entry.get_email_address():
-                    emailfield = entry.get_email_address()
-                    firstnamefield = entry.get_first_name()
-                    lastnamefield = entry.get_last_name()
-                    phonefield = entry.get_phone_number()
-                    password = ''
-                    for i in range(0, 10):
-                        password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
-
-                    user_list = User.objects.filter(email=emailfield).order_by('-last_login')
-                    if user_list:
-                        anonymous_creator = user_list[0]
-                    else:
-                        anonymous_creator = User(username=emailfield[:30], email=emailfield,
-                                                 first_name=firstnamefield, last_name=lastnamefield)
-                        anonymous_creator.set_password(password)
-                        anonymous_creator.is_active = False
-                        anonymous_creator.save()
-                        anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
-                                                    creator=anonymous_creator, phone=phonefield)
-                        anonymous_profile.save()
-                    entry.creator = anonymous_creator
+            if request.user.is_anonymous():
+                entry.creator = entry.check_and_create_user()
             else:
                 entry.creator = request.user
             entry.save()

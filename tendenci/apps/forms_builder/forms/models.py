@@ -436,6 +436,39 @@ class FormEntry(models.Model):
         for entry in self.fields.filter(field__field_function__in=["GroupSubscription", "GroupSubscriptionAuto"]):
             entry.field.execute_function(self, entry.value, user=self.creator)
 
+    def check_and_create_user(self):
+        """
+        Check and create a new user if needed (only if payment is involved or 
+            "Subscribe to Group" functionality is selected).
+        Return the user created or None.
+        """
+        from tendenci.apps.profiles.models import Profile
+        emailfield = self.get_email_address()
+        anonymous_creator = None
+
+        if emailfield:
+            user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+            if user_list:
+                anonymous_creator = user_list[0]
+            else:
+                # Create a new user only if payment is involved or 
+                # "Subscribe to Group" functionality selected
+                if self.form.custom_payment or self.form.recurring_payment or \
+                         self.fields.filter(field__field_function__in=["GroupSubscription",
+                                                                       "GroupSubscriptionAuto"],
+                                            ).exclude(value='').exists():
+                    anonymous_creator = User(username=emailfield[:30], email=emailfield,
+                                             first_name=self.get_first_name(), last_name=self.get_last_name())
+                    anonymous_creator.set_unusable_password()
+                    anonymous_creator.is_active = False
+                    anonymous_creator.save()
+                    anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
+                                                creator=anonymous_creator, phone=self.get_phone_number())
+                    anonymous_profile.save()
+
+        return anonymous_creator
+        
+
 
 class FieldEntry(models.Model):
     """
