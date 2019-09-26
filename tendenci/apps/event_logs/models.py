@@ -36,7 +36,7 @@ class EventLog(models.Model):
     request_method = models.CharField(max_length=10, null=True)
     query_string = models.TextField(null=True)
     robot = models.ForeignKey(Robot, null=True, on_delete=models.SET_NULL)
-    create_dt = models.DateTimeField(auto_now_add=True)
+    create_dt = models.DateTimeField(auto_now_add=True, db_index=True)
 
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
