@@ -36,7 +36,7 @@ stripe==2.35.0
 pycryptodome==3.6.6
 boto==2.40.0
 django-timezone-field==2.1
-django-ses==0.7.1
+django-ses==0.8.12
 django-tastypie==0.14.0
 docutils==0.12
 chardet==3.0.3
