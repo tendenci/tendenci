@@ -16,7 +16,7 @@
         padding-bottom: 40px;
       }
     </style>
-    <link href="{% static "bootstrap/css/bootstrap-theme.min.css" %}" rel="stylesheet"/>
+    <link href="{% static 'bootstrap3/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/admin_overrides.css" %}" />
 
     <!-- <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" /> -->
@@ -26,9 +26,9 @@
         window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";
     //]]>
     </script>
-    <script src="{% static "admin/js/jquery-1.9.1.min.js" %}"></script>
-    <script src="{% static "admin/js/jquery-migrate-1.2.1.min.js" %}"></script>
-    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"></script>
+    <script type="text/javascript" src="{% static 'bootstrap3/js/bootstrap.min.js' %}"></script>
 
     {% block extrahead %}{% endblock %}
 
