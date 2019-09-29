@@ -47,7 +47,7 @@ Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==2.53.2
 raven==6.0.0
-django-admin-bootstrapped>=2.5.8
+git+git://github.com/tendenci/django-admin-bootstrapped.git@master
 django-bootstrap3==9.1.0
 django-app-namespace-template-loader==0.4
 django-annoying
