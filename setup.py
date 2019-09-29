@@ -39,6 +39,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     install_requires=_read_requirements(),
+    dependency_links=['git+https://github.com/tendenci/django-admin-bootstrapped.git@master#egg=django-admin-bootstrapped-2.5.8'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
