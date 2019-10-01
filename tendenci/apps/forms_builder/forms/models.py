@@ -453,7 +453,8 @@ class FormEntry(models.Model):
             else:
                 # Create a new user only if payment is involved or 
                 # "Subscribe to Group" functionality selected
-                if self.form.custom_payment or self.form.recurring_payment or \
+                if get_setting('module', 'forms', 'form_submission_create_user') or \
+                         self.form.custom_payment or self.form.recurring_payment or \
                          self.fields.filter(field__field_function__in=["GroupSubscription",
                                                                        "GroupSubscriptionAuto"],
                                             ).exclude(value='').exists():
