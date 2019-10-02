@@ -53,7 +53,7 @@ Prepare a new Python 3 virtualenv:
 
 In this new virtualenv, ``/srv/mysite/venv/bin/`` has been moved to ``/srv/mysite/bin/``.
 
-Update your SystemD Units, Upstart jobs, cron jobs, and any other scripts which reference
+Update your systemd Units, Upstart jobs, cron jobs, and any other scripts which reference
 ``/srv/mysite/venv/bin/`` to use ``/srv/mysite/bin/`` instead.
 
 If you have already upgraded to Tendenci 11.0 on Python 2 and are upgrading to Python 3 as a separate
