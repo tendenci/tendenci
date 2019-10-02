@@ -1,3 +1,14 @@
+### 11.4 [2019-10-02]
+
+* Upgrade jQuery from 2.1.1 to 3.4.1 (latest)
+***Important*: Back up your site first before running tendenci update! Any third party jQuery plugins you use that are not compatible with the latest version of jQuery will potentially break your site.** 
+* Resolve the issue about django-admin-bootstrapped not compatible with Django 1.11
+* Added none option to image_class_list for tinymce editor
+* Added a setting to control whether or not to create user on form submission (default false)
+**Note that: **  Even if this setting is set to false, a new user will still be created if payment is involved or "Subscribe to Group" functionality is selected. To make your site GDPR compliant, you can add a new checkbox field to your form to obtain user's consent.
+* Other small fixes
+
+
 ### 11.3.1 [2019-08-21]
 
 * Added education field to the staff module
