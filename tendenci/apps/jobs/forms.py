@@ -347,9 +347,9 @@ class JobAdminForm(JobForm):
         super(JobAdminForm, self).__init__(*args, **kwargs)
 
         if hasattr(self, 'user'):
-            self.fields['activation_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['expiration_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
-            self.fields['post_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['activation_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['expiration_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['post_dt'] = forms.SplitDateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
 
     def clean_syndicate(self):
         """
