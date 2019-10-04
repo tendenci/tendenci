@@ -310,6 +310,8 @@ Initialize the database and static files:
     chmod -R -x+X /var/www/mysite/media/
     python manage.py load_tendenci2018_defaults
     python manage.py update_dashboard_stats
+    python manage.py rebuild_index --noinput
+    
 
 
 
