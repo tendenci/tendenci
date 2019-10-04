@@ -84,6 +84,9 @@ def search(request, template_name="jobs/search.html"):
                 jobs = jobs.filter(tags__icontains=tag)
             else:
                 jobs = jobs.filter(Q(title__icontains=query) | Q(description__icontains=query))
+        # filter out expired and not activated
+        if not has_perm(request.user, 'jobs.change_job'):
+            jobs = jobs.filter(activation_dt__lte=datetime.now(), expiration_dt__gt=datetime.now())
     else:
         jobs = Job.objects.none()
 
