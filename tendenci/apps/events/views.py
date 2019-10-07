@@ -3956,6 +3956,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('zip', 'zip'),
         ('country', 'country'),
         ('meal_option', 'meal_option'),
+        ('comments', 'comments'),
         ('date', 'create_dt'),
         ('registration_id', 'registration__pk'),
         ('addons', 'registration__addons_added'),
@@ -4050,7 +4051,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         # stored in the field entries
         fields_to_remove = ['first_name', 'last_name', 'phone',
                             'email', 'company', 'address', 'city',
-                            'state', 'zip', 'country']
+                            'state', 'zip', 'country', 'comments']
         for field in fields_to_remove:
             del registrant_mappings[field]
 
