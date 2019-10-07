@@ -1,3 +1,11 @@
+### 11.4.1 [2019-10-07]
+
+* Updated membership delete to ensure member number is cleaned up from profile and user is removed from associated membership group. 
+* Fixed invalid date/time error on jobs add/edit at admin backend
+* Filtered out expired and not activated jobs from public jobs list.
+* Included comments field on event registrants export.
+
+
 ### 11.4 [2019-10-02]
 
 * Upgrade jQuery from 2.1.1 to 3.4.1 (latest)
