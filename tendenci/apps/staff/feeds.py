@@ -2,6 +2,7 @@ from tendenci.apps.rss.feedsmanager import SubFeed
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import PUBLIC_FILTER
 from tendenci.apps.sitemaps import TendenciSitemap
+from tendenci.apps.base.decorators import strip_control_chars
 
 from tendenci.apps.staff.models import Staff
 
@@ -17,6 +18,7 @@ class LatestEntriesFeed(SubFeed):
     def item_title(self, item):
         return item.name
 
+    @strip_control_chars
     def item_description(self, item):
         return item.biography
 

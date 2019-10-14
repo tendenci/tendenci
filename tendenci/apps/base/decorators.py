@@ -1,4 +1,5 @@
 import time
+import re
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -34,3 +35,14 @@ def password_required(view):
         return redirect(("%s?next=%s") % (reverse("password_again"),
                                           urlquote(request.get_full_path())))
     return decorator
+
+
+def strip_control_chars(func):
+    """
+    This decorater can be used to strip control chars from RSS feeds to avoid the
+    UnserializableContentError because control characters are not supported in XML 1.0.
+    """
+    def wrapper(self, obj):
+        result = func(self, obj)
+        return re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F]', '', result)
+    return wrapper
