@@ -34,7 +34,7 @@
     </div>
     <div class="edit-links">
     <ul>
-        {% if profile.user.is_staff %}
+        {% if request.user.is_staff %}
         <li><a class="eventlog-link" href="{% url "event_log.search" %}?user_id={{ profile.user.pk }}">{% trans "Eventlogs" %}</a></li>
         {% endif %}
         <li><a class="edit-link" href="{% url "profile.edit" profile.user_id %}">{% trans "Edit" %}</a></li>
