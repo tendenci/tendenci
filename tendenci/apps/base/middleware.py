@@ -1,4 +1,6 @@
+import urllib.parse
 from django.utils.deprecation import MiddlewareMixin
+from django.http import QueryDict
 
 from tendenci.apps.base.http import Http403, render_to_403, MissingApp, render_to_missing_app
 
@@ -23,7 +25,7 @@ class RemoveNullByteMiddleware(MiddlewareMixin):
         # Remove Null Byte to avoid Null Byte Injection attack
         request.GET._mutable = True
         null_byte = chr(0)
-        if request.method == 'GET' and null_byte in request.GET.values():
-            for k in request.GET:
-                request.GET[k] = request.GET[k].replace(null_byte, '')
+        if request.method == 'GET' and null_byte in urllib.parse.unquote(request.META['QUERY_STRING']):
+            # reject null byte requests
+            request.GET = QueryDict('')
         request.GET._mutable = False
