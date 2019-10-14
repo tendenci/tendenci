@@ -30,8 +30,11 @@ def meta_og_image(obj, field_name):
             content = getattr(obj, field_name)
             soup = BeautifulSoup(content)
             for image in soup.find_all("img"):
-                image_url = base_url + image["src"]
-                image_list.append(image_url)
+                image_url = image["src"]
+                if image_url:
+                    if image_url[0] == '/' and image_url[:2] != '//':
+                        image_url = base_url + image_url
+                    image_list.append(image_url)
 
         elif isinstance(field, ForeignKey):
             image = getattr(obj, field_name)
