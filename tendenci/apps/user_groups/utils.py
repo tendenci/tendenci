@@ -74,6 +74,7 @@ def process_export(
                    'first_name',
                    'last_name',
                    'email',
+                   'username',
                    'is_active',
                    'is_staff',
                    'is_superuser']
