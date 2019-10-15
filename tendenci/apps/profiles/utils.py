@@ -680,7 +680,6 @@ class ImportUsers(object):
 
         # add to group
         if self.uimport.group:
-
             if not self.uimport.group.is_member(user):
                 params = {'creator_id': self.request_user.pk,
                       'creator_username': self.request_user.username,
@@ -870,7 +869,7 @@ def user_import_parse_csv(mimport):
     """
     normalize_newline(mimport.upload_file.name)
     csv_reader = csv.reader(
-        default_storage.open(mimport.upload_file.name, 'rU'))
+        default_storage.open(mimport.upload_file.name, 'rU'), )
     fieldnames = next(csv_reader)
     fieldnames = normalize_field_names(fieldnames)
 

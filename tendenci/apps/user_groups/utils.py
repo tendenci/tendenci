@@ -2,6 +2,7 @@ from builtins import str
 from collections import OrderedDict
 import time
 from datetime import datetime, date
+import csv
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -11,7 +12,7 @@ from django.template.loader import render_to_string
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.base.utils import UnicodeWriter
+#from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
 
@@ -91,9 +92,9 @@ def process_export(
     field_dict = OrderedDict([(label.lower().replace(" ", "_"), ''
                                ) for label in labels])
 
-    with default_storage.open(file_path_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(list(field_dict.keys()))
+    with default_storage.open(file_path_temp, 'w') as csvfile:        
+        csv_writer = csv.DictWriter(csvfile, fieldnames=list(field_dict.keys()))
+        csv_writer.writeheader()
 
         # process regular group members
         count_members = group.members.filter(
@@ -128,7 +129,7 @@ def process_export(
                         else:
                             row_dict[k] = smart_str(v)
 
-                csv_writer.writerow(list(row_dict.values()))
+                csv_writer.writerow(row_dict)
 
     # rename the file name
     file_path = '%sgroup_%d_%s_%s.csv' % (file_dir,
