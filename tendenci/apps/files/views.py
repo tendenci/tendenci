@@ -134,7 +134,10 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         if image.format == 'GIF':
             params['transparency'] = 0
 
-        image.save(response, image.format, **params)
+        try:
+            image.save(response, image.format, **params)
+        except AttributeError:
+            return response
 
         if file.is_public_file():
             file_name = "%s%s" % (file.get_name(), ".jpg")
