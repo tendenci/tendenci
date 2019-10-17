@@ -1,3 +1,12 @@
+### 11.4.2 [2019-10-08]
+
+* Avoided duplicated base url in og:image tags.
+* Refactored RemoveNullByteMiddleware.
+* Fixed a typo in profiles/meta.html.
+* Stripped control chars from staff feeds to avoid the UnserializableContentError.
+* Replaced UnicodeWriter with the builtin csv for group members, users and memberships export to avoid Null chars being included in exported files. 
+* Fixed a JavaScript error on dashboard when member info is not available. 
+
 ### 11.4.1 [2019-10-07]
 
 * Updated membership delete to ensure member number is cleaned up from profile and user is removed from associated membership group. 
