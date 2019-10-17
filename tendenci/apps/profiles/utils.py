@@ -305,14 +305,14 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/profiles/%s_temp.csv' % identifier
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(field_list)
+    with default_storage.open(file_name_temp, 'w') as csvfile:
+        csv_writer = csv.DictWriter(csvfile, fieldnames=field_list)
+        csv_writer.writeheader()
 
         profiles = Profile.objects.all()
         for profile in profiles:
             p_user = profile.user
-            items_list = []
+            row_dict = {}
             for field_name in field_list:
                 if field_name in profile_field_list:
                     item = getattr(profile, field_name)
@@ -327,8 +327,8 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                items_list.append(item)
-            csv_writer.writerow(items_list)
+                row_dict[field_name] = item
+            csv_writer.writerow(row_dict)
 
     # rename the file name
     file_name = 'export/profiles/%s.csv' % identifier

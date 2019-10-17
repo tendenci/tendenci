@@ -465,9 +465,9 @@ def process_export(
     identifier = identifier or int(ttime.time())
     file_name_temp = 'export/memberships/%s_%d_temp.csv' % (identifier, cp_id)
 
-    with default_storage.open(file_name_temp, 'wb') as csvfile:
-        csv_writer = UnicodeWriter(csvfile, encoding='utf-8')
-        csv_writer.writerow(title_list)
+    with default_storage.open(file_name_temp, 'w') as csvfile:
+        csv_writer = csv.DictWriter(csvfile, fieldnames=title_list)
+        csv_writer.writeheader()
 
         membership_rows = get_membership_rows(
             user_field_list,
@@ -484,7 +484,7 @@ def process_export(
 
         for row_dict in membership_rows:
 
-            items_list = []
+            items_dict = {}
             for field_name in title_list:
                 item = row_dict.get(field_name)
                 if item is None:
@@ -506,8 +506,8 @@ def process_export(
                     elif field_name == 'app':
                         # display membership type name instead of id
                         item = app_ids_dict[item]
-                items_list.append(item)
-            csv_writer.writerow(items_list)
+                items_dict[field_name] = item
+            csv_writer.writerow(items_dict)
 
     # rename the file name
     file_name = 'export/memberships/%s_%d.csv' % (identifier, cp_id)
