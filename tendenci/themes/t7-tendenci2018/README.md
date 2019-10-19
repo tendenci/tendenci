@@ -1,14 +1,14 @@
 # Tendenci2018 — Tendenci Base Theme
-One base starter theme for a Tendenci site. This repo will replace the older "tendenci-project-template" repo.  This theme is a fully responsive, completely customizable Bootstrap theme for Tendenci.
+One base starter theme for a Tendenci site. This theme is a fully responsive, completely customizable Bootstrap theme for Tendenci.
 
 <img src="screenshots/tendenci2018showcase.jpg" alt="Tendenci2018 Responsive Web Design Images for Tendenci Screenshots Tendenci" />
 
 ## Getting Started
 
-If your running Tendenci on your own local machine, feel free to clone or fork the repo. To make changes from Tendenci's browser-based Theme Editor, you can copy and paste templates. Please note that css changes currently on your site may affect the css in this template.
+If you're running Tendenci on your own local machine, feel free to clone or fork the repo. To make changes from Tendenci's browser-based Theme Editor, you can copy and paste templates. Please note that css changes currently on your site may affect the css in this template.
 
 ## Using Bootstrap 3
-[Bootstrap](https://getbootstrap.com/) Built-ins are used to create the foundation for most of the Tendenci modules in the theme.  Using Bootstrap 3 makes it possible to implement site-wide design changes instantly.  The Bootswatch CDN is used in this theme and can be removed to reveal simple Bootstrap classic templates.  Other themes from [Bootswatch](https://bootswatch.com/) can also be used by changing the Bootswatch CDN in the 'base.html' file.
+[Bootstrap](https://getbootstrap.com/) built-ins are used to create the foundation for most of the Tendenci modules in the theme.  Using Bootstrap 3 makes it possible to implement site-wide design changes instantly.  The Bootswatch CDN is used in this theme and can be removed to reveal simple Bootstrap classic templates.  Other themes from [Bootswatch](https://bootswatch.com/) can also be used by changing the Bootswatch CDN in the 'base.html' file.
 
 To add customizations on select pages, add your own unique class or id to prevent affecting the Bootstrap built-ins in other modules.
 
@@ -23,7 +23,7 @@ In the Bootswatch CDN link, you can change only the name of the theme to toggle 
 
 <img src="screenshots/bootswatch-theme-editor.png" width="600" alt="Implementing Bootswatch for Tendenci Screenshots Tendenci" />
 
-### Highly utilized Built-ins include:
+### Highly utilized Built-ins
 When updating the css in your site be mindful that these classes are implemented frequently in this base-theme.  Changes to the classes associated will be site-wide!
 * Panels
 * Navs
@@ -52,7 +52,7 @@ This template was created by [Tendenci](https://tendenci.com)!
 * [Github](https://github.com/tendenci)
 
 ## Bugs and Issues
-Having an issue with this template?  Please submit here on [Tendenci's Base Theme Github](https://github.com/tendenci/tendenci-base-theme/issues).
+Having an issue with this template?  Please submit here on [Tendenci's Github](https://github.com/tendenci/tendenci/issues).
 
 ## Copyright and License
 Copyright Tendenci — The Open Source AMS, 2017 under the GPU license.
