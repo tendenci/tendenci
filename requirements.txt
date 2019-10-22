@@ -4,7 +4,7 @@ configparser
 Django>=1.11.25,<2.0
 django-formtools>=1.0
 pisa
-Pillow==5.4.1
+Pillow==6.2.0
 anyjson>=0.2.4
 django-authority>=0.4
 django-countries>=4.4
