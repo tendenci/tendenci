@@ -27,7 +27,7 @@ License information (GNU GPLv3+) can be found in [LICENSE](https://github.com/te
 
 ## Credits
 
-See [docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)
+See [docs/credits.md](https://tendenci.readthedocs.io/en/latest/credits/credits.html)
 
 ## Monitoring
 
