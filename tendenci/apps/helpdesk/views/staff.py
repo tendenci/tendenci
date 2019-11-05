@@ -319,10 +319,11 @@ def return_ticketccstring_and_show_subscribe(user, ticket):
 
     # check whether current user is a submitter or assigned to ticket
     assignedto_username = str(ticket.assigned_to).upper()
-    submitter_email = ticket.submitter_email.upper()
     strings_to_check = list()
     strings_to_check.append(assignedto_username)
-    strings_to_check.append(submitter_email)
+    if ticket.submitter_email:
+        submitter_email = ticket.submitter_email.upper()
+        strings_to_check.append(submitter_email) 
     if strings_to_check.__contains__(username) or strings_to_check.__contains__(useremail):
         SHOW_SUBSCRIBE = False
 
