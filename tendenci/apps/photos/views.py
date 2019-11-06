@@ -275,6 +275,8 @@ def photo_original(request, id):
     # get image extension
     try:
         ext = photo.image.file.name.split('.')[-1]
+    except FileNotFoundError:
+        raise Http404
     except IndexError:
         ext = "png"
 
