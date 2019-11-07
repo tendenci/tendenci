@@ -159,16 +159,13 @@ class Email(TendenciBaseModel):
         if user2_compare.profile.is_superuser:
             boo = True
         else:
-            if user2_compare == self.user:
-                boo = True
+            if user2_compare == self.creator or user2_compare == self.owner:
+                if self.status:
+                    boo = True
             else:
-                if user2_compare == self.creator or user2_compare == self.owner:
+                if user2_compare.has_perm('emails.edit_email', self):
                     if self.status:
                         boo = True
-                else:
-                    if user2_compare.has_perm('emails.edit_email', self):
-                        if self.status:
-                            boo = True
         return boo
 
     def template_body(self, email_d):
