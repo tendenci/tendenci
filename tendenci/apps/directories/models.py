@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth.models import AnonymousUser
+from django.template.defaultfilters import slugify
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
@@ -131,14 +132,23 @@ class Directory(TendenciBaseModel):
         """
         return DirectoryMeta().get_meta(self, name)
 
+    def __str__(self):
+        return self.headline
+
     def get_absolute_url(self):
         return reverse('directory', args=[self.slug])
 
     def get_renew_url(self):
         return reverse('directory.renew', args=[self.id])
 
-    def __str__(self):
-        return self.headline
+    def set_slug(self):
+        if not self.slug:
+            slug = slugify(self.headline)
+            count = str(Directory.objects.count())
+            if len(slug) + len(count) >= 99:
+                self.slug = '%s-%s' % (slug[:99-len(count)], count)
+            else:
+                self.slug = '%s-%s' % (slug, count)
 
     def save(self, *args, **kwargs):
         if not self.id:

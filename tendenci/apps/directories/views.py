@@ -166,7 +166,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.list_type = 'regular'
 
             if not directory.slug:
-                directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
+                directory.set_slug()
 
             if not can_add_active:
                 directory.status = True
