@@ -30,6 +30,7 @@ from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.urls.resolvers import NoReverseMatch
 
 #from geraldo.generators import PDFGenerator
 
@@ -186,7 +187,10 @@ def referer_url(request):
         referer_url = request.META['HTTP_REFERER'].split(site_url)[-1]
         request.session['membership-referer-url'] = referer_url
 
-    return redirect(next)
+    try:
+        return redirect(next)
+    except NoReverseMatch:
+        raise Http404 
 
 
 def application_detail_default(request, **kwargs):
