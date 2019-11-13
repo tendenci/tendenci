@@ -1,6 +1,7 @@
 import datetime
 import subprocess
 import uuid
+import re
 
 from django.conf import settings
 from django.db import models
@@ -407,14 +408,28 @@ class Newsletter(models.Model):
 
     def generate_article(self, user):
         if not self.article:
+            # Newsletters retains full HTML tags like <html>, <head>, <body> ...,
+            # but we only need the content within the <body> tag for the article body.
+            email_body = self.email.body
+            p = re.compile(r'<body[^>]*>([\d\D\s\S\w\W]*?)</body>')
+            match = p.search(email_body)
+            if match:
+                email_body = match.group(1)
+
+            slug = slugify(self.email.subject)
+            if len(slug) > 100 or Article.objects.filter(slug=slug).exists():
+                count = str(Article.objects.count())
+                slug = '{0}-{1}'.format(slug[:99-len(count)], count)
+            
             article = Article.objects.create(
                 creator=user,
                 creator_username=user.username,
                 owner=user,
                 owner_username=user.username,
-                headline=self.email.subject,
-                slug=slugify(self.email.subject),
-                body=self.email.body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))
+                release_dt=datetime.datetime.now(),
+                headline=self.email.subject[:200],
+                slug=slug,
+                body=email_body.replace('[browser_view_url]', reverse('newsletter.view_from_browser', args=[self.id])))
 
             self.article = article
             self.save()
