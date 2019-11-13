@@ -635,10 +635,10 @@ class MembershipDefault(TendenciBaseModel):
 
         return mark_safe(value)
     
-    def delete(self, using=None, keep_parents=False):
+    def delete(self, **kwargs):
         # Make sure profile member number and group are removed before deleting this membership
         self.expire(self.user)
-        return super(MembershipDefault, self).delete(using=using, keep_parents=keep_parents)
+        return super(MembershipDefault, self).delete(**kwargs)
 
     def demographic_sort_key(self, field_name):
         """
