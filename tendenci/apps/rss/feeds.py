@@ -6,6 +6,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.decorators import strip_control_chars
 
 
 site_url = get_setting('site', 'global', 'siteurl')
@@ -53,6 +54,7 @@ class GlobalFeed(Feed):
             self.load_feeds_items() # load items
         return self.all_items[:max_items]
 
+    @strip_control_chars
     def item_title(self, item):
         feed = self.feed_for_item[item]
         if hasattr(feed, 'title_template') and feed.title_template is not None:
@@ -61,6 +63,7 @@ class GlobalFeed(Feed):
             return render_to_string(template_name=feed.title_template, context={ 'obj' : item })
         return self.get_attr_item('title', item)
 
+    @strip_control_chars
     def item_description(self, item):
         feed = self.feed_for_item[item]
         if hasattr(feed, 'description_template') and feed.description_template is not None:
@@ -72,6 +75,7 @@ class GlobalFeed(Feed):
     def item_pubdate(self, item):
         return self.get_attr_item('pubdate', item)
 
+    @strip_control_chars
     def item_link(self, item):
         return self.get_attr_item('link', item)
 
