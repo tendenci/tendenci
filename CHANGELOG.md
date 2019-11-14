@@ -1,3 +1,15 @@
+### 11.4.3 [2019-11-14]
+
+* Fixed a UnicodeEncodeError in paypal
+* Caught the FileNotFoundError in photos
+* Fixed NoReverseMatch error for /memberships/referer-url/
+* Aavoided value too long error for slug on directory add by non-superuser
+* Removed control chars from rss feeds to avoid UnserializableContentError
+* Fixed AttributeError for projects feed
+* Fixed a TypeError on membership delete (from corporate roster)
+* Added release date and stripped away tags like <html>, <head>, <body>... when an article was generated from a newsletter. 
+
+
 ### 11.4.2 [2019-10-08]
 
 * Avoided duplicated base url in og:image tags.
