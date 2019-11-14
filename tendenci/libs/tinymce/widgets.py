@@ -51,6 +51,7 @@ class TinyMCE(forms.Textarea):
     def __init__(self, content_language=None, attrs=None, mce_attrs=None):
         super(TinyMCE, self).__init__(attrs)
         mce_attrs = mce_attrs or {}
+        mce_attrs['language'] = settings.TINYMCE_DEFAULT_CONFIG.get('language', None)
         self.mce_attrs = mce_attrs
         if 'mode' not in self.mce_attrs:
             self.mce_attrs['mode'] = 'exact'
