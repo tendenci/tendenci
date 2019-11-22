@@ -49,6 +49,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.widgets import PercentWidget
+from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 
 from .fields import UseCustomRegField
 from .widgets import UseCustomRegWidget
@@ -105,7 +106,7 @@ def get_search_group_choices():
                     ).order_by('name').values_list('id', 'label', 'name')
     return [(id, label or name) for id, label, name in groups]
 
-class EventMonthForm(forms.Form):
+class EventMonthForm(ProhibitNullCharactersValidatorMixin, forms.Form):
     events_in = forms.CharField(label=_('Events In'), required=False,)
     search_text = forms.CharField(label=_('Search'), required=False,)
     group = forms.ChoiceField(required=False, choices=[])
@@ -127,6 +128,7 @@ class EventMonthForm(forms.Form):
                                                         'class': 'form-control input-sm'})
         self.fields['group'].widget.attrs.update({'class': 'form-control input-sm'})
         self.fields['event_type'].widget.attrs.update({'class': 'form-control input-sm'})
+    
 
 class EventSearchForm(forms.Form):
     start_dt = forms.CharField(label=_('Start Date'), required=False,

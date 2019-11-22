@@ -22,6 +22,7 @@ from tendenci.apps.accounts.utils import send_registration_activation_email
 from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -125,7 +126,7 @@ class RegistrationCustomForm(RegistrationForm):
         return new_user
 
 
-class LoginForm(forms.Form):
+class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
     username = forms.CharField(label=_("Username"), max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput(render_value=False, attrs={'class': 'form-control'}))
@@ -149,6 +150,7 @@ class LoginForm(forms.Form):
             self.fields['remember'].widget = forms.HiddenInput()
 
     def clean(self):
+        self.cleaned_data = super(LoginForm, self).clean()
         if self._errors:
             return
         #invalidate('auth_user')

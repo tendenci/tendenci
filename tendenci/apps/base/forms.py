@@ -17,6 +17,23 @@ slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')
 
 
+class ProhibitNullCharactersValidatorMixin(object):
+    """
+    Mixin to validate if any of the strings in cleaned_data contain the null character.
+    
+    This issue has been addressed in django 2.2 or later.
+    """
+    def clean(self, *args, **kwargs):
+        cleaned_data = self.cleaned_data
+        message = _('Null characters are not allowed.')
+        code = 'null_characters_not_allowed'
+        for k, v in cleaned_data.items():
+            if '\x00' in str(v):
+                raise forms.ValidationError(message, code)
+
+        return super(ProhibitNullCharactersValidatorMixin, self).clean(*args, **kwargs)
+
+
 class FormControlWidgetMixin(object):
     """
     Mixin that adds 'form-control' class to all fields of a form
