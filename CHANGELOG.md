@@ -1,3 +1,11 @@
+### 11.4.4 [2019-11-26]
+
+* Allowed language option in tinymce
+* Fixed the null character error in events month view and accounts login
+* Removed problematic check on self.user (Thanks Karl Goetz @goetzk)
+* Fixed an IntegrityError in donations
+
+
 ### 11.4.3 [2019-11-14]
 
 * Fixed a UnicodeEncodeError in paypal
