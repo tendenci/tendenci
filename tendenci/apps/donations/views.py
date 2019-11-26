@@ -62,14 +62,14 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 user.save()
 
                 profile_kwarg = {'user':user,
-                                 'company':donation.company,
-                                 'address':donation.address,
-                                 'address2':donation.address2,
-                                 'city':donation.city,
-                                 'state':donation.state,
-                                 'zipcode':donation.zip_code,
-                                 'country':donation.country,
-                                 'phone':donation.phone}
+                                 'company':donation.company or '',
+                                 'address':donation.address or '',
+                                 'address2':donation.address2 or '',
+                                 'city':donation.city or '',
+                                 'state':donation.state or '',
+                                 'zipcode':donation.zip_code or '',
+                                 'country':donation.country or '',
+                                 'phone':donation.phone or ''}
                 if request.user.is_anonymous:
                     profile_kwarg['creator'] = user
                     profile_kwarg['creator_username'] = user.username
