@@ -41,8 +41,8 @@
       {% if form.donation_amount.errors %}
       <div class="errs">{{ form.donation_amount.errors }}</div>
       {% endif %}
-      <label for="id_donation_amount" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'Donation Amount'%} ({{currency_symbol}})</label>
+      <label for="id_donation_amount" class="field-label">
+        {% trans 'Donation Amount'%} ({{currency_symbol}})<em class="body-copy-alert">*</em></label>
       {{ form.donation_amount }}
     </div>
     <div class="clear-left"></div>
@@ -64,8 +64,8 @@
       {% if form.payment_method.errors %}
       <div class="errs">{{ form.payment_method.errors }}</div>
       {% endif %}
-      <label for="id_payment_method" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'Payment Method'%}</label>
+      <label for="id_payment_method" class="field-label">
+        {% trans 'Payment Method'%}<em class="body-copy-alert">*</em></label>
       <div class="payment-method-list">{{ form.payment_method }}</div>
     </div>
     <div class="clear-left"></div>
@@ -78,8 +78,8 @@
       {% if form.first_name.errors %}
       <div class="errs">{{ form.first_name.errors }}</div>
       {% endif %}
-      <label for="id_first_name" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'First Name'%}</label>
+      <label for="id_first_name" class="field-label">
+        {% trans 'First Name'%}<em class="body-copy-alert">*</em></label>
       {{ form.first_name }}
     </div>
     <div class="clear-left"></div>
@@ -88,8 +88,8 @@
       {% if form.last_name.errors %}
       <div class="errs">{{ form.last_name.errors }}</div>
       {% endif %}
-      <label for="id_last_name" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'Last Name'%}</label>
+      <label for="id_last_name" class="field-label">
+        {% trans 'Last Name'%}<em class="body-copy-alert">*</em></label>
       {{ form.last_name }}
     </div>
     <div class="clear-left"></div>
@@ -153,8 +153,8 @@
       {% if form.phone.errors %}
       <div class="errs">{{ form.phone.errors }}</div>
       {% endif %}
-      <label for="id_phone" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'Phone'%}</label>
+      <label for="id_phone" class="field-label">
+        {% trans 'Phone'%}<em class="body-copy-alert">*</em></label>
       {{ form.phone }}
     </div>
     <div class="clear-left"></div>
@@ -163,8 +163,8 @@
       {% if form.email.errors %}
       <div class="errs">{{ form.email.errors }}</div>
       {% endif %}
-      <label for="id_email" class="field-label"><em class="body-copy-alert">*</em>
-        {% trans 'Email'%}</label>
+      <label for="id_email" class="field-label">
+        {% trans 'Email'%}<em class="body-copy-alert">*</em></label>
       {{ form.email }}
     </div>
     <div class="clear-left"></div>
@@ -205,7 +205,7 @@
       {% if captcha_form.captcha.errors %}
       <div class="errs">{{ captcha_form.captcha.errors }}</div>
       {% endif %}
-      <label for="id_captcha" class="field-label">{% trans 'Captcha'%}</label>
+      <label for="id_captcha" class="field-label"></label>
       {{ captcha_form.captcha }}
     </div>
     
