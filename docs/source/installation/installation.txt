@@ -78,7 +78,9 @@ Install ``python3.6-dev`` and ``pip``:
 ::
 
     sudo apt install python3.6-dev --upgrade
-    curl "https://bootstrap.pypa.io/get-pip.py" | python3.6
+    # The python3-distutils is missing in Ubuntu 18.04 https://github.com/pypa/get-pip/issues/43. Install it before proceeding.
+    sudo apt-get install python3-distutils
+    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.6
 
 
 System Preparation on macOS
