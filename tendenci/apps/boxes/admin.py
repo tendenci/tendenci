@@ -11,7 +11,7 @@ from tendenci.apps.theme.templatetags.static import static
 
 class BoxAdmin(TendenciBaseModelAdmin):
     list_display = ('edit_link', 'pk', 'title', 'group', 'tags', 'short_content', 'admin_perms', 'status', 'position')
-    search_fields = ('title', 'content', 'tags', 'group', )
+    search_fields = ('title', 'content', 'tags', 'group__name', )
     list_editable = ['title', 'tags', 'status', 'position', 'group']
     list_filter = ('group', )
     fieldsets = (
