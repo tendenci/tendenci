@@ -45,23 +45,25 @@ class Command(BaseCommand):
         email_sender = get_setting('site', 'global', 'siteemailnoreplyaddress') or settings.DEFAULT_FROM_EMAIL
         email_recipient = ""
         user_id = options['user']
-        if User.objects.filter(pk=user_id).exists():
+        if user_id and User.objects.filter(pk=user_id).exists():
             user = User.objects.get(pk=user_id)
             if user.email:
                 email_recipient = user.email
 
         try:
             print("Updating tendenci")
-            subprocess.check_output("%s -m pip install tendenci --upgrade" % python_executable(), stderr=subprocess.STDOUT, shell=True)
+            output = subprocess.check_output("%s -m pip install -r requirements/tendenci.txt --upgrade" % python_executable(), stderr=subprocess.STDOUT, shell=True)
+            print(output.decode())
             pass_update_tendenci = True
 
         except subprocess.CalledProcessError as e:
-            errors_list.append(e.output)
+            errors_list.append(e.output.decode())
 
         # run deploy iff update_tendenci is successful
         if pass_update_tendenci:
             try:
                 print("Updating tendenci site")
+                call_command('migrate')
                 call_command('deploy')
                 pass_update_tendenci_site = True
             except CommandError as e:
@@ -71,12 +73,12 @@ class Command(BaseCommand):
         if pass_update_tendenci_site:
             try:
                 print("Restarting Server")
-                subprocess.check_output("sudo reload %s" % os.path.basename(settings.PROJECT_ROOT),
+                subprocess.check_output("sudo systemctl restart %s" % os.path.basename(settings.PROJECT_ROOT),
                                     stderr=subprocess.STDOUT, shell=True)
 
             except subprocess.CalledProcessError as e:
-                gunicorn_error_msg = e.output
-                if "reload: Unknown job:" in e.output:
+                gunicorn_error_msg = e.output.decode()
+                if "reload: Unknown job:" in e.output.decode():
                     is_uwsgi = True
 
         # run usgi command iff it was proven that the site is using uwsgi instead
@@ -87,7 +89,7 @@ class Command(BaseCommand):
                                     stderr=subprocess.STDOUT, shell=True)
 
             except subprocess.CalledProcessError as e:
-                uwsgi_error_msg = e.output
+                uwsgi_error_msg = e.output.decode()
 
         if gunicorn_error_msg and uwsgi_error_msg:
             errors_list.append(uwsgi_error_msg)
@@ -112,3 +114,6 @@ class Command(BaseCommand):
             email.to = [email_recipient]
             email.content_subtype = 'html'
             email.send()
+        else:
+            for err in errors_list:
+                print(err)
