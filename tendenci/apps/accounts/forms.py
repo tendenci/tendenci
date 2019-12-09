@@ -74,14 +74,15 @@ class RegistrationCustomForm(RegistrationForm):
         return password1
 
     def clean(self):
+        cleaned_data = super(RegistrationCustomForm, self).clean()
         if self._errors:
             return
-        user = User.objects.filter(email=self.cleaned_data['email'])
+        user = User.objects.filter(email=cleaned_data['email'])
         if user and not self.allow_same_email:
             self.similar_email_found = True
             raise forms.ValidationError(_("Similar emails found"))
 
-        return self.cleaned_data
+        return cleaned_data
 
     def save(self, profile_callback=None, event=None):
         #
