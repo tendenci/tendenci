@@ -1006,8 +1006,8 @@ def validate_email(s, quiet=True):
 
 def get_latest_version():
     from six.moves import xmlrpc_client
-    proxy = xmlrpc_client.ServerProxy('http://pypi.python.org/pypi')
-    return proxy.package_releases('tendenci')[0]
+    with xmlrpc_client.ServerProxy('http://pypi.python.org/pypi') as proxy:
+        return proxy.package_releases('tendenci')[0]
 
 
 def add_tendenci_footer(email_content, content_type='html'):
