@@ -34,7 +34,8 @@ jQuery(function($) {
                     'ChoiceField',
                     'BooleanField',
                     'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
-                    'MultipleChoiceField']
+                    'MultipleChoiceField',
+                    'StateProvinceField']
 
         var current_loc = window.location.pathname;
         if (current_loc.toLowerCase().indexOf("events/customregform") > 0) {
@@ -55,12 +56,33 @@ jQuery(function($) {
                 $select_dd.find('option[value="EmailLastName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailFullName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailPhoneNumber"]').attr('disabled','disabled');
+                $select_dd.find('option[value="company"]').attr('disabled','disabled');
+                $select_dd.find('option[value="address"]').attr('disabled','disabled');
+                $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                $select_dd.find('option[value="state"]').attr('disabled','disabled');
+                $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
+                $select_dd.find('option[value="position_title"]').attr('disabled','disabled');
+                $select_dd.find('option[value="referral_source"]').attr('disabled','disabled');
             }else {
                 $select_dd.find('option[value="GroupSubscription"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailFirstName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailLastName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailFullName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailPhoneNumber"]').attr('disabled','disabled');
+                $select_dd.find('option[value="company"]').attr('disabled','disabled');
+                $select_dd.find('option[value="address"]').attr('disabled','disabled');
+                $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                
+                if (selected_value == 'StateProvinceField'){
+                	$select_dd.find('option[value="GroupSubscription"]').attr('disabled','disabled');
+                	$select_dd.find('option[value="GroupSubscriptionAuto"]').attr('disabled','disabled');
+                    $select_dd.find('option[value="Recipients"]').attr('disabled','disabled');
+                }else{
+                	$select_dd.find('option[value="state"]').attr('disabled','disabled');
+                }
+                $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
+                $select_dd.find('option[value="position_title"]').attr('disabled','disabled');
+                //$select_dd.find('option[value="referral_source"]').attr('disabled','disabled');
             }
     	}
     	else {

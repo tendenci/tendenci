@@ -53,6 +53,13 @@ FIELD_FUNCTIONS = (
     ("EmailFullName", _("Full Name")),
     ("EmailPhoneNumber", _("Phone Number")),
     ("Recipients", _("Email to Recipients")),
+    ("company", _("Company")),
+    ("address", _("Address")),
+    ("city", _("City")),
+    ("state", _("State")),
+    ("zipcode", _("Zip")),
+    ("position_title", _("Position Title")),
+    ("referral_source", _("Referral Source")),
 )
 
 BILLING_PERIOD_CHOICES = (
@@ -396,6 +403,27 @@ class FormEntry(models.Model):
     def get_phone_number(self):
         return self.get_value_of("EmailPhoneNumber")
 
+    def get_company(self):
+        return self.get_value_of("company")
+
+    def get_address(self):
+        return self.get_value_of("address")
+
+    def get_city(self):
+        return self.get_value_of("city")
+
+    def get_state(self):
+        return self.get_value_of("state")
+
+    def get_zipcode(self):
+        return self.get_value_of("zipcode")
+
+    def get_position_title(self):
+        return self.get_value_of("position_title")
+ 
+    def get_referral_source(self):
+        return self.get_value_of("referral_source")
+
     def get_function_email_recipients(self):
         email_list = set()
         for entry in self.fields.order_by('field__position'):
@@ -458,13 +486,33 @@ class FormEntry(models.Model):
                          self.fields.filter(field__field_function__in=["GroupSubscription",
                                                                        "GroupSubscriptionAuto"],
                                             ).exclude(value='').exists():
+                    first_name = self.get_first_name()
+                    last_name = self.get_last_name()
+                    if not (first_name and last_name):
+                        full_name = self.get_full_name()
+                        if full_name:
+                            name_list = full_name.split(" ", 1)
+                            first_name = name_list[0]
+                            last_name = name_list[1] if len(name_list) > 1 else ""
+
                     anonymous_creator = User(username=emailfield[:30], email=emailfield,
-                                             first_name=self.get_first_name(), last_name=self.get_last_name())
+                                             first_name=first_name, last_name=last_name)
                     anonymous_creator.set_unusable_password()
                     anonymous_creator.is_active = False
                     anonymous_creator.save()
-                    anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
-                                                creator=anonymous_creator, phone=self.get_phone_number())
+                    
+                    anonymous_profile = Profile(user=anonymous_creator,
+                                                owner=anonymous_creator,
+                                                creator=anonymous_creator,
+                                                phone=self.get_phone_number(),
+                                                address=self.get_address(),
+                                                company=self.get_company(),
+                                                city=self.get_city(),
+                                                state=self.get_state(),
+                                                zipcode=self.get_zipcode(),
+                                                position_title=self.get_position_title(),
+                                                referral_source=self.get_referral_source(),
+                                                )
                     anonymous_profile.save()
 
         return anonymous_creator
