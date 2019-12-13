@@ -571,6 +571,9 @@ SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
 SOCIAL_AUTH_CREATE_USERS = True
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
+# if True, show alert for tendenci update (if needed) for superuser on login
+SHOW_UPDATE_ALERT = False
+
 
 # ---------------------------------------------------------------------------- #
 # TinyMCE Editor

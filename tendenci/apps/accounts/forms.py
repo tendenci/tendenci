@@ -23,6 +23,8 @@ from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
+from tendenci.apps.base.utils import get_latest_version
+from tendenci import __version__ as version
 
 
 class SetPasswordCustomForm(SetPasswordForm):
@@ -184,6 +186,12 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
                 _(u"Hello %(first_name)s %(last_name)s, you've successfully logged in." % {
                     'first_name' : self.user.first_name or self.user.username,
                     'last_name' : self.user.last_name }))
+            if settings.SHOW_UPDATE_ALERT and request.user.is_superuser:
+                latest_version = get_latest_version()
+                if version != latest_version:
+                    messages.add_message(
+                            request, messages.WARNING,
+                            _("URGENT - your Tendenci version is out of date. Please upgrade immediately. For instructions, please check the docs at https://tendenci.readthedocs.io/en/latest/index.html"))
 
             remember = (self.remember_default if self.hide_remember_me else self.cleaned_data['remember'])
             if remember:
