@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, get_query_filters
@@ -66,7 +67,9 @@ def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
     else:
         form = form_class()
 
-    return render_to_resp(request=request, template_name=template_name, context={'form': form})
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                          context={'form': form})
 
 @login_required
 def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.html"):
@@ -92,7 +95,9 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
 
             return HttpResponseRedirect(reverse('redirects'))
 
-    return render_to_resp(request=request, template_name=template_name, context={'redirect': redirect,'form':form})
+    return render_to_resp(request=request,
+                          template_name=template_name,
+                          context={'redirect': redirect,'form':form,})
 
 @login_required
 def delete(request, id, template_name="redirects/delete.html"):
