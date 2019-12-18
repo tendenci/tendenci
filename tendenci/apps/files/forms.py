@@ -27,6 +27,8 @@ class FileForm(TendenciBaseForm):
                                           queryset=FilesCategory.objects.none(),
                                           empty_label=_("Please choose a category first"),
                                           required=False)
+    status_detail = forms.ChoiceField(
+        choices=(('active', _('Active')), ('inactive', _('Inactive')), ('pending', _('Pending'))))
 
     class Meta:
         model = File
@@ -41,7 +43,8 @@ class FileForm(TendenciBaseForm):
             'member_perms',
             'group_perms',
             'file_cat',
-            'file_sub_cat'
+            'file_sub_cat',
+            'status_detail'
         )
 
         fieldsets = [('', {
@@ -83,6 +86,7 @@ class FileForm(TendenciBaseForm):
             post_data = None
 
         if self.user and not self.user.profile.is_superuser:
+            del self.fields['status_detail']
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
             groups = default_groups.filter(filters).distinct()
             groups_list = list(groups.values_list('pk', 'name'))
