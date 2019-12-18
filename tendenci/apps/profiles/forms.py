@@ -97,15 +97,15 @@ class ProfileSearchForm(forms.Form):
 
 class ProfileForm(TendenciBaseForm):
 
-    first_name = forms.CharField(label=_("First Name"), max_length=100,
+    first_name = forms.CharField(label=_("First Name"), max_length=30,
                                  error_messages={'required': _('First Name is a required field.')})
-    last_name = forms.CharField(label=_("Last Name"), max_length=100,
+    last_name = forms.CharField(label=_("Last Name"), max_length=30,
                                 error_messages={'required': _('Last Name is a required field.')})
     email = EmailVerificationField(label=_("Email"),
                                 error_messages={'required': _('Email is a required field.')})
     email2 = EmailVerificationField(label=_("Secondary Email"), required=False)
 
-    initials = forms.CharField(label=_("Initial"), max_length=100, required=False,
+    initials = forms.CharField(label=_("Initial"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
     display_name = forms.CharField(label=_("Display name"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'30'}))
@@ -115,7 +115,7 @@ class ProfileForm(TendenciBaseForm):
     company = forms.CharField(label=_("Company"), max_length=100, required=False,
                               error_messages={'required': _('Company is a required field.')},
                                widget=forms.TextInput(attrs={'size':'45'}))
-    department = forms.CharField(label=_("Department"), max_length=100, required=False,
+    department = forms.CharField(label=_("Department"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'35'}))
     address = forms.CharField(label=_("Address"), max_length=150, required=False,
                               error_messages={'required': _('Address is a required field.')},
