@@ -91,22 +91,20 @@
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-6 col-xs-12">
-                                            {% if USER_IS_SUPERUSER %}
-                                                {% if MODULE_PAGES_ENABLED %}
-                                                    <li class="content-item">
-                                                        <a href="{% url 'pages' %}"
-                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_stack.png' %}"/><span class="nav-label">{% trans "Pages" %}</span>
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
+                                            {% if MODULE_PAGES_ENABLED %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'pages' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/page_white_stack.png' %}"/><span class="nav-label">{% firstof MODULE_PAGES_LABEL_PLURAL trans "Pages" %}</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
 
-                                                {% if MODULE_STORIES_ENABLED %}
-                                                    <li class="content-item">
-                                                        <a href="{% url 'stories' %}"
-                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/book_open.png' %}"/><span class="nav-label">{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}</span>
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
+                                            {% if MODULE_STORIES_ENABLED %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'stories' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/book_open.png' %}"/><span class="nav-label">{% firstof MODULE_STORIES_LABEL_PLURAL trans "Stories" %}</span>
+                                                    </a>
+                                                </li>
                                             {% endif %}
 
                                                 {% if MODULE_NEWS_ENABLED %}
@@ -372,7 +370,7 @@
                                                         ><img class="nav-icon" src="{% static 'famfamfam/icons/report.png' %}"/><span class="nav-label">{% trans 'Invoicing Reports' %}</span>
                                                     </a>
                                                 </li>
-                                                
+
                                                 {% if MODULE_MAKE_PAYMENT_ENABLED %}
                                                     <li class="content-item">
                                                         <a href="{% url 'make_payment.add' %}"
