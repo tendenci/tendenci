@@ -1,3 +1,23 @@
+### 11.4.5 [2019-12-19]
+
+* Removed the contribution.css link to avoid 404s
+* Updated doc to avoid installation error about "No module named 'distutils.util'"
+* Added an option to show update alert when a superuser logs in and Tendenci version is out date
+* Added the ability to map more fields to profile for custom form
+* Allowed Pages and Stories to appear in apps menu for non-superuser (Thanks @goetzk)
+* Displayed status_detail for admin on file edit
+* Added a warning message on redirects add/edit to indicate that site reload (restart) is needed to have changes to take effect.
+* Updated the max_length of some fields for ProfileForm to not exceed their corresponding ones specified in Profile model to avoid the "value too long" error.
+* Updated the default fixture to change folder names to lowercase for Directory and Staff folders. (And renamed the corresponding folders to their lowercase https://github.com/tendenci/tendenci-project-template/commit/229a508a087fc8b24d5a350c5d223e97ce7e0b96)
+* Fixed a FieldError for boxes at admin backend
+* Updated the update_tendenci command
+* Fixed the issue regarding account registration allowing password and password (confirm) fields with different values
+* Resolved some issues and broken links in getting-started fixture
+* Resolved ResourceWarning: unclosed <socket.socket in get_latest_version
+* Updated django version to 1.11.27 (released on Dec 18, 2019).
+* Updated django-sql-explorer to the latest (1.1.3)
+
+
 ### 11.4.4 [2019-11-26]
 
 * Allowed language option in tinymce
