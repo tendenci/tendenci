@@ -279,7 +279,7 @@
                                                 </ul>
 
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">
-                                                    {% if MODULE_FORUMS_ENABLED and USER_IS_SUPERUSER %}
+                                                    {% if USER_IS_SUPERUSER %}
                                                         <li class="content-item">
                                                             <a href="{% url 'admin:app_list' 'announcements'%}">
                                                                 <img class="nav-icon" src="{% static 'famfamfam/icons/bell.png' %}"/><span class="nav-label">{% trans 'Announcements' %}</span>
