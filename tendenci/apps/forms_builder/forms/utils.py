@@ -190,9 +190,9 @@ def form_entries_to_csv_writer(csv_writer, form):
         for field_entry in values:
             value = field_entry.value
             # Create download URL for file fields.
-            if field_entry.field_id in file_field_ids:
-                url = reverse("admin:forms_form_file", args=(field_entry.id,))
-                value = '{site_url}{url}'.format(site_url=site_url, url=url)
+#             if field_entry.field_id in file_field_ids:
+#                 url = reverse("admin:forms_form_file", args=(field_entry.id,))
+#                 value = '{site_url}{url}'.format(site_url=site_url, url=url)
             # Only use values for fields that currently exist for the form.
             try:
                 row[field_indexes[field_entry.field_id]] = value
