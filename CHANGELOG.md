@@ -1,3 +1,9 @@
+### 11.4.6 [2019-12-30]
+
+* Fixed visibility of announcements in menu (Thanks @AdamBark)
+* Resolved the issue about broken profiles images by using Gravatar's own default image for sites (in development) not having domains yet
+* Updated form export to make the file names in csv to be consistent with the files downloaded
+
 ### 11.4.5 [2019-12-19]
 
 * Removed the contribution.css link to avoid 404s
