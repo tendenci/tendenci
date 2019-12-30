@@ -1,6 +1,7 @@
 import os
 import uuid
 import hashlib
+import re
 from six.moves.urllib.parse import urlencode
 
 from django.db import models
@@ -490,7 +491,14 @@ class Profile(Person):
             c.close()
 
         if not default:
-            default = '%s%s'%(get_setting('site', 'global', 'siteurl'),
+            # Gravatar doesn't accept the url to the default image from an IP address,
+            # as a result, it would show a broken avatar image.
+            # Use Gravatar's own default image for sites not having domains yet
+            site_url = get_setting('site', 'global', 'siteurl')
+            if re.match(r'(http://|https://)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', site_url):
+                default = ''
+            else:
+                default = '%s%s'%(site_url,
                                 static(settings.GAVATAR_DEFAULT_URL))
 
         gravatar_url = "//www.gravatar.com/avatar/" + self.getMD5() + "?"
