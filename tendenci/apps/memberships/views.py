@@ -850,10 +850,12 @@ def membership_default_add(request, slug='', membership_id=None,
 
     if membership_id:
         # it's renewal - make sure they are logged in
-        membership = get_object_or_404(MembershipDefault, id=membership_id)
         if not request.user.is_authenticated:
             return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'),
                                 request.get_full_path()))
+        membership = get_object_or_404(MembershipDefault, id=membership_id)
+        if not (request.user.is_superuser or request.user == membership.user):
+            raise Http403
         is_renewal = True
 
     membership_type_id = request.GET.get('membership_type_id', u'')
