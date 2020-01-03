@@ -63,7 +63,7 @@ def generate_email_subject(form, form_entry):
                 p = re.compile(r'(-\s+)?\[%s\]' % label, re.IGNORECASE)
             else:
                 p = re.compile(r'\[%s\]' % label, re.IGNORECASE)
-            subject = p.sub(value, subject)
+            subject = p.sub(re.escape(value), subject)
 
         # title
         p = re.compile(r'\[title\]', re.IGNORECASE)
