@@ -9,7 +9,7 @@
 
 
 {% block title %}{% spaceless %}
-    {% if MODULE_NEWS_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}{% else %}{% trans "News List" %}{% endif %} - {{ block.super }}
+    {% if MODULE_NEWS_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }}{% endblocktrans %}{% else %}{% trans "News" %}{% endif %} - {{ block.super }}
 {% endspaceless %}{% endblock %}
 
 {% block extra_head %}
@@ -23,9 +23,9 @@
     <h1>
         {% firstof trans SITE_GLOBAL_SITEPRIMARYKEYWORDS trans SITE_GLOBAL_SITEDISPLAYNAME %}
         {% if MODULE_NEWS_LABEL_PLURAL %}
-            {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }} List{% endblocktrans %}
+            {% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }}{% endblocktrans %}
         {% else %}
-            {% trans "News List" %}
+            {% trans "News" %}
         {% endif %}
         {% if release_year %}
         - {{ release_year }}
