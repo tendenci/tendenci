@@ -1115,6 +1115,10 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
     users_ids = (request.session[sid]).get('users', [])
     profiles = []
     for user_id in users_ids:
+        if not User.objects.filter(id=user_id).exists():
+            # user to merge doesn't exist, redirect to the list page
+            del request.session[sid]
+            return redirect("profile.similar")
         profile = Profile.objects.get_or_create(user_id=user_id,
                                     defaults={
                                     'creator_id': request.user.id,
