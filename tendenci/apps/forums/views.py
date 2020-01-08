@@ -741,6 +741,8 @@ def add_subscription(request, topic_id):
 
 @login_required
 def post_ajax_preview(request):
+    if request.method != "POST":
+        raise Http404
     content = request.POST.get('data')
     html = util._get_markup_formatter()(content)
     return render_to_resp(request=request, template_name='pybb/_markitup_preview.html', context={'html': html})
