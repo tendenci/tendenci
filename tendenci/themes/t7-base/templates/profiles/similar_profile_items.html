@@ -7,6 +7,9 @@
         <th>{% trans "First Name" %}</th>
         <th>{% trans "Last Name" %}</th>
         <th>{% trans "Email" %}</th>
+        <th>{% trans "Member ID" %}</th>
+        <th>{% trans "Join Date" %}</th>
+        <th>{% trans "Last Login Date" %}</th>
       </tr>
       {% for user in users %}
       <tr>
@@ -15,6 +18,9 @@
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
         <td>{{ user.email }}</td>
+        <td>{{ user.profile.member_number }}</td>
+        <td>{{ user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>{{ user.last_login|date:"SHORT_DATE_FORMAT" }}</td>
       </tr>
       <input name="id_users" type="hidden" value="{{ user.id }}">
       {% endfor %}
