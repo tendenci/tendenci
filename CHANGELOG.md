@@ -1,3 +1,13 @@
+### 11.4.7 [2020-01-09]
+
+* SECURITY: Prevent unauthorized use of renewal URLs (Thanks @PaulSD)
+* Added the "member id", "join" and "last login" fields to the similar users list
+* Fixed a bad escape error for forms
+* Fixed a IntegrityError for users merge: insert or update on table "profiles_profile" violates foreign key constraint
+* Fixed a TypeError for forums: argument cannot be of 'NoneType' type, must be of text type
+* Avoided NoReverseMatch errors on tag detail
+* Fixed a KeyError error 'start_dt' for events pricing edit
+
 ### 11.4.6 [2019-12-30]
 
 * Fixed visibility of announcements in menu (Thanks @AdamBark)
