@@ -19,7 +19,11 @@
             {% endifchanged %}
 
             {% if item.object %}
+             	{% if item.object.status == False %} {# If an item doesn't have the status attribute, item.object.status would result None. That's why it is campared with False  #}
+                <li>{{ item.object }} ({% trans "Deleted" %})</li>
+                {% else %}
                 <li><a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
+                {% endif %}
             {% endif %}
         {% endfor %}
         </ul>
