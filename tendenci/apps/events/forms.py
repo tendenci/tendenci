@@ -1199,7 +1199,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
 
     def clean(self):
         data = self.cleaned_data
-        if 'end_dt' in data and data['start_dt'] > data['end_dt']:
+        if 'start_dt' in data and 'end_dt' in data and data['start_dt'] > data['end_dt']:
             raise forms.ValidationError(_('Pricing: Start Date/Time should come before End Date/Time'))
         return data
 
