@@ -216,6 +216,7 @@
                   $.ajax({
                       type: "POST",
                       dataType: "json",
+                      data: {app_pk: "{{ object_id }}"},
                       url: "{% url "memberships.get_taken_fields" %}",
                       success: function(status_data){
                         disabledFields = status_data;

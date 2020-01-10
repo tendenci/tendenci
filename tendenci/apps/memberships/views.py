@@ -774,7 +774,10 @@ def get_taken_fields(request):
     Returns a list of json fields no longer available.
     Data type returned is JSON.
     """
-    app_pk = request.POST.get('app_pk') or 0
+    try:
+        app_pk = int(request.POST.get('app_pk')) or 0
+    except ValueError:
+        app_pk = 0
     taken_list = MembershipAppField.objects.filter(
         Q(field_name__startswith='ud'), (Q(display=True) | Q(admin_only=True))).exclude(
             membership_app=app_pk).values_list(
