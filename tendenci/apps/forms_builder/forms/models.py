@@ -60,6 +60,7 @@ FIELD_FUNCTIONS = (
     ("zipcode", _("Zip")),
     ("position_title", _("Position Title")),
     ("referral_source", _("Referral Source")),
+    ("notes", _("Notes")),
 )
 
 BILLING_PERIOD_CHOICES = (
@@ -424,6 +425,9 @@ class FormEntry(models.Model):
     def get_referral_source(self):
         return self.get_value_of("referral_source")
 
+    def get_notes(self):
+        return self.get_value_of("notes")
+
     def get_function_email_recipients(self):
         email_list = set()
         for entry in self.fields.order_by('field__position'):
@@ -512,6 +516,7 @@ class FormEntry(models.Model):
                                                 zipcode=self.get_zipcode(),
                                                 position_title=self.get_position_title(),
                                                 referral_source=self.get_referral_source(),
+                                                notes=self.get_notes(),
                                                 )
                     anonymous_profile.save()
 

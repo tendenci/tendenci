@@ -31,6 +31,7 @@ jQuery(function($) {
     	var fieldset = $dd.parents(".dynamic-fields");
 
         triggers = ['CharField',
+                    'CharField/django.forms.Textarea',
                     'ChoiceField',
                     'BooleanField',
                     'MultipleChoiceField/django.forms.CheckboxSelectMultiple',
@@ -51,7 +52,24 @@ jQuery(function($) {
             if(selected_value == 'CharField'){
                 $select_dd.find('option[value="GroupSubscription"]').attr('disabled','disabled');
                 $select_dd.find('option[value="Recipients"]').attr('disabled','disabled');
+                $select_dd.find('option[value="notes"]').attr('disabled','disabled');  
             }else if(selected_value == 'BooleanField'){
+                $select_dd.find('option[value="EmailFirstName"]').attr('disabled','disabled');
+                $select_dd.find('option[value="EmailLastName"]').attr('disabled','disabled');
+                $select_dd.find('option[value="EmailFullName"]').attr('disabled','disabled');
+                $select_dd.find('option[value="EmailPhoneNumber"]').attr('disabled','disabled');
+                $select_dd.find('option[value="company"]').attr('disabled','disabled');
+                $select_dd.find('option[value="address"]').attr('disabled','disabled');
+                $select_dd.find('option[value="city"]').attr('disabled','disabled');
+                $select_dd.find('option[value="state"]').attr('disabled','disabled');
+                $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
+                $select_dd.find('option[value="position_title"]').attr('disabled','disabled');
+                $select_dd.find('option[value="referral_source"]').attr('disabled','disabled');
+                $select_dd.find('option[value="notes"]').attr('disabled','disabled');
+            }else if(selected_value == 'CharField/django.forms.Textarea'){
+            	$select_dd.find('option[value="GroupSubscription"]').attr('disabled','disabled');
+            	$select_dd.find('option[value="GroupSubscriptionAuto"]').attr('disabled','disabled');
+                $select_dd.find('option[value="Recipients"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailFirstName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailLastName"]').attr('disabled','disabled');
                 $select_dd.find('option[value="EmailFullName"]').attr('disabled','disabled');
@@ -83,6 +101,7 @@ jQuery(function($) {
                 $select_dd.find('option[value="zipcode"]').attr('disabled','disabled');
                 $select_dd.find('option[value="position_title"]').attr('disabled','disabled');
                 //$select_dd.find('option[value="referral_source"]').attr('disabled','disabled');
+                $select_dd.find('option[value="notes"]').attr('disabled','disabled');
             }
     	}
     	else {
