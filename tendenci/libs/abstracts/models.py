@@ -104,6 +104,7 @@ class Person(TendenciBaseModel):
     address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)
     city = models.CharField(_('city'), max_length=50, blank=True)
+    region = models.CharField(_('region'), max_length=50, blank=True, default='')
     state = models.CharField(_('state'), max_length=50, blank=True)
     zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
     county = models.CharField(_('county'), max_length=50, blank=True)

@@ -135,6 +135,12 @@
             </tr>
             
             {% if can_edit or not profile.hide_address %}
+	            {% if profile.region %}
+	            <tr>
+	              <td>{% trans 'Region' %}</td>
+	              <td>{{ profile.region }}</td>
+	            </tr>
+	            {% endif %}
             <tr>
               <td>{% trans 'Address' %}</td>
               <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
