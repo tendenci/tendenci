@@ -44,6 +44,7 @@ class ProfileSearchForm(forms.Form):
                         ('position_title', _('Position Title')),
                         ('phone', _('Phone')),
                         ('city', _('City')),
+                        ('region', _('Region')),
                         ('state', _('State')),
                         ('zipcode', _('Zip Code')),
                         ('country', _('Country')),
