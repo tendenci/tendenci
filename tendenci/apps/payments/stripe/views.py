@@ -186,6 +186,22 @@ class FetchAccessToken(View):
 
 
 def pay_online(request, payment_id, guid='', template_name='payments/stripe/payonline.html'):
+    if not getattr(settings, 'STRIPE_SECRET_KEY', ''):
+        url_setup_guide = 'https://www.tendenci.com/help-files/setting-up-online-payment-processor-and-merchant-provider-on-a-tendenci-site/'
+        url_setup_guide = '<a href="{0}">{0}</a>'.format(url_setup_guide)
+        merchant_provider = get_setting("site", "global", "merchantaccount")
+        msg_string = _('ERROR: Online payment has not yet be set up or configured correctly. ')
+        if request.user.is_superuser:
+            msg_string += _('Please follow the guide {0} to complete the setup process for {1}, then try again.').format(url_setup_guide, merchant_provider)
+        else:
+            msg_string += _('Please contact the site administrator to complete the setup process.')
+            
+        messages.add_message(request, messages.ERROR, _(msg_string))
+        
+        payment = get_object_or_404(Payment, pk=payment_id, guid=guid)
+    
+        return HttpResponseRedirect(reverse('invoice.view', args=[payment.invoice.id]))
+            
     with transaction.atomic():
         payment = get_object_or_404(Payment.objects.select_for_update(), pk=payment_id, guid=guid)
         form = StripeCardForm(request.POST or None)
