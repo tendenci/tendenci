@@ -126,6 +126,7 @@ class MyUserAdmin(UserAdmin):
         (_('Permissions'), {'fields': ('user_permissions',)}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    ordering = ('-id',)
     
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
