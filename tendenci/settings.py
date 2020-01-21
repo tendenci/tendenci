@@ -620,7 +620,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'inline_styles': True,
     'height': 400,
     'extended_valid_elements': "iframe[align<bottom?left?middle?\
-                                right?top|class|\
+                                right?top|class|allowfullscreen|frameborder|\
                                 frameborder|height|id|longdesc|\
                                 marginheight|marginwidth|\
                                 name|scrolling<auto?no?yes|src|\
