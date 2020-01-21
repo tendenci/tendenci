@@ -246,8 +246,8 @@ def event_summary_historical_report(request):
                 .order_by('-count')
     source_colors(summary_data)
 
-    m = 1+len(summary_data)/3
-    mm = 2*m
+    m = 1 + round(len(summary_data)/3)
+    mm = 2 * m
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 
     return render_to_resp(
