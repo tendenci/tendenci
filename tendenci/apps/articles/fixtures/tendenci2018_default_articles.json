@@ -1,7 +1,7 @@
 [
 {
     "fields": {
-        "body": "<p>blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;blah blah body blah&nbsp;</p>",
+        "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis porta ante, ut faucibus odio. Nunc nunc eros, lobortis a sem ut, faucibus sagittis diam. Donec feugiat congue eros. Etiam ac mattis leo. Suspendisse felis mi, luctus non posuere in, efficitur et neque. Duis tincidunt a elit a gravida. Suspendisse eu tincidunt ex, pretium fermentum magna. Nunc et purus et felis blandit placerat. Suspendisse potenti. Fusce nisl est, tempus ac purus id, molestie dapibus massa. Sed in vestibulum leo. Morbi congue ligula efficitur enim scelerisque aliquet. Etiam purus metus, egestas nec lacinia a, porta ut ex. In vehicula, leo et iaculis mattis, ex velit congue nisi, a dictum turpis risus in nibh.</p>",
         "last_name": "",
         "creator": null,
         "allow_user_view": false,
@@ -37,7 +37,7 @@
         "contributor_type": 1,
         "allow_user_edit": false,
         "allow_member_view": false,
-        "summary": "blah blah summary blah Article summary displays here",
+        "summary": "Article summary displays here",
         "meta": null,
         "allow_member_edit": false,
         "not_official_content": true
