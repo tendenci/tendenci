@@ -85,21 +85,31 @@ function update_form_fields(form, original_form, form_number, total, remove) {
 
 function clone_form(selector, type) {
     var current_element = $(selector);
+ // check if we have mceEditor
+    var textarea_id;
+    //var myEditor = $(new_element).find('.mceEditor');
+    var myEditor = $(current_element).find('.mce-tinymce');
+    var old_height;
+    
+    if (myEditor){
+        //var mytextarea = myEditor.parent('.field').find('textarea');
+        var mytextarea = myEditor.parent('div').find('textarea');
+        if (mytextarea){
+            textarea_id = mytextarea.attr('id');
+            tinyMCE.EditorManager.execCommand('mceRemoveEditor', false, textarea_id);
+        }
+    }
+    
     var new_element = current_element.clone(true);
+    if (textarea_id){
+    	tinyMCE.EditorManager.execCommand('mceAddEditor', false, textarea_id);
+    }
+    
     var form_functions = current_element.next();
     var form_functions_clone = form_functions.clone(true);
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
     var form_number = current_element.find('input[name="form-number"]').val();
-    // check if we have mceEditor
-    var textarea_id;
-    var myEditor = $(new_element).find('.mceEditor');
-    if (myEditor){
-        var mytextarea = myEditor.parent('.field').find('textarea');
-        if (mytextarea){
-            textarea_id = mytextarea.attr('id');
-        }
-    }
-
+    
     new_element.find('input.datepicker').removeClass('hasDatepicker')
 
     new_element = update_form_fields(
@@ -131,8 +141,10 @@ function clone_form(selector, type) {
         if (new_textarea_id.substr(0, 3) !='id_'){
             new_textarea_id = 'id_' + new_textarea_id;
         }
-        tinyMCE.execCommand('mceAddControl', false, new_textarea_id);
-        tinyMCE.triggerSave();
+        //tinyMCE.EditorManager.execCommand('mceRemoveEditor', false, 'speaker-1-description');
+        //tinyMCE.execCommand('mceAddEditor', false, new_textarea_id);
+        tinyMCE.EditorManager.execCommand('mceAddEditor', false, new_textarea_id);
+        //tinyMCE.triggerSave();
       }
     }
 
