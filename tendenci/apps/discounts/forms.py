@@ -139,6 +139,9 @@ class DiscountHandlingForm(forms.Form):
     def clean(self):
         code = self.cleaned_data.get('code', '')
         model = self.cleaned_data.get('model', '')
+        null_byte = chr(0)
+        if null_byte in code or null_byte in model:
+            raise forms.ValidationError(_('Not a valid discount code.'))
         [self.discount] = Discount.objects.filter(discount_code=code, apps__model=model)[:1] or [None]
         if not self.discount:
             raise forms.ValidationError(_('This is not a valid discount code.'))
