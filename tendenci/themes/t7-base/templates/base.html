@@ -98,6 +98,8 @@
         {% endblock %}
 
         {% block html_body %}{% endblock %}
+        
+        {% include "credits.html" %}
 
         {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 
