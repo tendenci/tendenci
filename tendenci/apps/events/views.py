@@ -1956,11 +1956,15 @@ def register(request, event_id=0,
                         extra_params=addon_extra_params)
 
     # REGISTRATION form
+    if request.method != 'POST' or registrant.is_valid():
+        c = len(registrant.forms)
+    else:
+        c = 1
     reg_form = RegistrationForm(
             event,
             request.POST or None,
             user=request.user,
-            count=len(registrant.forms),
+            count=c,
         )
 
     # remove captcha for logged in user
@@ -2141,8 +2145,10 @@ def register(request, event_id=0,
             if not deleted:
                 total_price += individual_price
         count += 1
-    addons_price = addon_formset.get_total_price()
-    total_price += addons_price
+
+    if request.method == 'POST' and addon_formset.is_valid():
+        addons_price = addon_formset.get_total_price()
+        total_price += addons_price
     
     if is_table:
         subtotal = total_price
