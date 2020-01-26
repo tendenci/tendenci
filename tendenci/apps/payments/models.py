@@ -131,9 +131,6 @@ class Payment(models.Model):
             if self.creator == user2_compare or \
                 self.owner == user2_compare:
                 return self.status
-        else:
-            # anonymous user
-            return self.guid and self.guid == guid
 
         return False
 
