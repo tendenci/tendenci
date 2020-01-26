@@ -72,7 +72,10 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         image = Image.open(BytesIO(content))
     else:
         if hasattr(file, 'path') and exists(file.path):
-            image = Image.open(file.path)  # get image
+            try:
+                image = Image.open(file.path)  # get image
+            except Image.DecompressionBombError:
+                raise Http404
         else:
             raise Http404
         
