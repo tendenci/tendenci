@@ -52,7 +52,16 @@ class EventLog(models.Model):
     def save(self, *args, **kwargs):
         if not self.uuid:
             self.uuid = str(uuid.uuid4())
+        self.verifydata()
         super(EventLog, self).save(*args, **kwargs)
+        
+    def verifydata(self):
+        # verify each field
+        for field in EventLog._meta.fields:
+            value = getattr(self, field.name)
+            if field.max_length and value and len(value) > field.max_length:
+                value = value[:field.max_length]
+                setattr(self, field.name, value)
 
     def color(self):
         return get_color(str(self.event_id))
