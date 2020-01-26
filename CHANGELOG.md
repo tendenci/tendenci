@@ -1,3 +1,14 @@
+### 11.4.8 [2020-01-25]
+
+* Custom forms can now map more fields in profiles
+* Allowed the allowfullscreen attribute for embeded Youtube vidoes
+* Commented out the non-working historical event logs summary report
+* Updated the content for some default fixtures
+* Moved tendenci link from footer.html to credits.html
+* Updated Pillow to the latest version 7.0.0
+* Added verifydata() to avoid DataError for EventLog
+* Assorted bugfixes
+
 ### 11.4.7 [2020-01-09]
 
 * SECURITY: Prevent unauthorized use of renewal URLs (Thanks @PaulSD)
