@@ -122,7 +122,8 @@ from tendenci.apps.events.forms import (
     EventExportForm,
     EventSimpleSearchForm,
     EventReportFilterForm,
-    GratuityForm)
+    GratuityForm,
+    management_forms_tampered)
 from tendenci.apps.events.utils import (
     email_registrants,
     render_event_email,
@@ -1954,6 +1955,11 @@ def register(request, event_id=0,
                         prefix='addon',
                         event=event,
                         extra_params=addon_extra_params)
+
+    if (request.method == 'POST') and management_forms_tampered(formsets=[registrant, addon_formset]):
+        # our forms has been tampered, maliciously likely
+        return HttpResponseRedirect(request.get_full_path())
+    
 
     # REGISTRATION form
     if request.method != 'POST' or registrant.is_valid():

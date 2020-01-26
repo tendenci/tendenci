@@ -21,6 +21,7 @@ from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.template.defaultfilters import filesizeformat
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 # from captcha.fields import CaptchaField
 from tendenci.apps.events.models import (
@@ -98,6 +99,19 @@ SEARCH_CATEGORIES = (
 
     ('priority', _('Priority Events')),
 )
+
+
+def management_forms_tampered(formsets=None):
+    """
+    Check if management_form is tampered for the list of formsets.
+    """
+    if formsets:
+        for formset in formsets:
+            try:
+                formset.management_form
+            except ValidationError:
+                return True
+    return False
 
 def get_search_group_choices():
     event_group_ids = set(Event.objects.all().values_list('groups', flat=True))
