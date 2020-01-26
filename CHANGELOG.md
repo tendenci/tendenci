@@ -1,3 +1,7 @@
+### 11.4.9 [2020-01-26]
+
+* Handled the case in event registrations when management forms are tampered maliciously 
+
 ### 11.4.8 [2020-01-25]
 
 * Custom forms can now map more fields in profiles
