@@ -86,6 +86,7 @@ def process_export(
                       'state',
                       'zipcode',
                       'country',
+                      'region',
                       'phone',
                       'create_dt']
     labels = user_fields + profile_fields

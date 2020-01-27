@@ -267,6 +267,7 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
             'state',
             'zipcode',
             'country',
+            'region',
             'phone',
             'phone2',
             'fax',
