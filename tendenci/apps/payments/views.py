@@ -112,7 +112,7 @@ def pay_online(request, invoice_id, guid="", merchant_account=None, template_nam
     return render_to_resp(request=request, template_name=template_name, context={'form': form, 'post_url': post_url
         })
 
-
+@login_required
 def view(request, id, guid=None, template_name="payments/view.html"):
     payment = get_object_or_404(Payment, pk=id)
 
