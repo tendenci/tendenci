@@ -195,6 +195,7 @@ class ListCorpMembershipNode(Node):
                 return items.filter(corporate_membership_type_id=m_type)
             except:
                 return items
+        return items
 
     def render(self, context):
         query = u''
