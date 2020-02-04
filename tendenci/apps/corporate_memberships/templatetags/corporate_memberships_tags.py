@@ -203,6 +203,7 @@ class ListCorpMembershipNode(Node):
         limit = None
         order = '-join_dt'
         randomize = False
+        renewed_only = False
 
         allow_anonymous_search = get_setting('module',
                                          'corporate_memberships',
@@ -250,6 +251,10 @@ class ListCorpMembershipNode(Node):
                 order = order.resolve(context)
             except:
                 order = self.kwargs['order']
+                
+        if 'renewed_only' in self.kwargs:
+            renewed_only = bool(self.kwargs['renewed_only'])
+            
 
         items = CorpMembership.objects.exclude(status_detail='archive')
         if not allow_anonymous_search:
@@ -265,6 +270,9 @@ class ListCorpMembershipNode(Node):
         items = self.custom_model_filter(items, user)
 
         objects = []
+        
+        if renewed_only:
+            items = items.filter(renewal=True)
 
         # if order is not specified it sorts by relevance
         if order:
