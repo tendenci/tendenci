@@ -1039,15 +1039,19 @@ def membership_default_add(request, slug='', membership_id=None,
 
     if join_under_corporate and not is_renewal:
         corp_profile = corp_membership.corp_profile
-        profile_initial = {
-            'company': corp_profile.name,
-            'address': corp_profile.address,
-            'address2': corp_profile.address2,
-            'city': corp_profile.city,
-            'state': corp_profile.state,
-            'zipcode': corp_profile.zip,
-            'country': corp_profile.country,
-            'work_phone': corp_profile.phone,}
+        if get_setting('module', 'corporate_memberships', 'defaultcorpinfotoindividual'):
+            profile_initial = {
+                'company': corp_profile.name,
+                'address': corp_profile.address,
+                'address2': corp_profile.address2,
+                'city': corp_profile.city,
+                'state': corp_profile.state,
+                'zipcode': corp_profile.zip,
+                'country': corp_profile.country,
+                'work_phone': corp_profile.phone,}
+        else:
+            profile_initial = {
+                'company': corp_profile.name,}
     else:
         profile_initial = None
 
