@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -22,7 +23,7 @@ class Migration(migrations.Migration):
                 ('charge_dt', models.DateTimeField(verbose_name='Charged On')),
                 ('create_dt', models.DateTimeField(auto_now_add=True, verbose_name='Created On')),
                 ('update_dt', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
-                ('account', models.ForeignKey(related_name='stripe_charges', to='stripe.StripeAccount')),
+                ('account', models.ForeignKey(related_name='stripe_charges', to='stripe.StripeAccount', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
     ]
