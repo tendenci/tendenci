@@ -7,7 +7,6 @@ from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from timezone_field import TimeZoneField
