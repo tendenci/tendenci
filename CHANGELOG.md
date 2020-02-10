@@ -1,3 +1,13 @@
+### 11.4.10 [2020-02-10]
+
+* Included region field to profiles export
+* Added a setting "Pre-populate Corporate Profile to Individual Membership's Application" to allow you to turn on or off the behavior of pre-populating corporate profile to individual membership's application
+* Removed anonymous user access to payments (Thanks @AdamBark)
+* Updated dependencies (including django to 1.11.28) in requirements.txt
+* Resolved some RemovedInDjango20Warning
+* Fixed an AttributeError for list_corporate_memberships
+* Fixed UnserializableContentError for /pages/feed/
+
 ### 11.4.9 [2020-01-26]
 
 * Handled the case in event registrations when management forms are tampered maliciously 
