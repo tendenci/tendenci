@@ -134,7 +134,7 @@ class EventLogManager(Manager):
             event_log.model_name = ct.name
             event_log.application = instance.__module__
             if hasattr(instance, 'guid'):
-                event_log.uuid = instance.guid
+                event_log.uuid = str(instance.guid)
 
         event_log.entity = None
         if 'entity' in kwargs:
