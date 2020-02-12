@@ -80,6 +80,8 @@ def process_export(
                    'is_superuser']
     profile_fields = ['direct_mail',
                       'company',
+                      'department',
+                      'position_title',
                       'address',
                       'address2',
                       'city',
@@ -88,6 +90,8 @@ def process_export(
                       'country',
                       'region',
                       'phone',
+                      'notes',
+                      'referral_source',
                       'create_dt']
     labels = user_fields + profile_fields
 
