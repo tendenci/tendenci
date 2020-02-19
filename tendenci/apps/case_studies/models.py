@@ -29,7 +29,7 @@ class CaseStudy(TendenciBaseModel):
         return self.client
 
     class Meta:
-        permissions = (("view_casestudy","Can view case study"),)
+#         permissions = (("view_casestudy","Can view case study"),)
         verbose_name = 'Case Study'
         verbose_name_plural = 'Case Studies'
         app_label = 'case_studies'

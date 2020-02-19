@@ -56,7 +56,7 @@ class Group(TendenciBaseModel):
     objects = GroupManager()
 
     class Meta:
-        permissions = (("view_group", _("Can view group")),)
+#         permissions = (("view_group", _("Can view group")),)
         verbose_name = _("Group")
         verbose_name_plural = _("Groups")
         ordering = ("name",)

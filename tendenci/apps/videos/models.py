@@ -81,7 +81,7 @@ class Video(OrderingBaseModel, TendenciBaseModel):
         return super(Video, self).save(*args, **kwargs)
 
     class Meta:
-        permissions = (("view_video","Can view video"),)
+        #permissions = (("view_video","Can view video"),)
         ordering = ('position',)
         verbose_name = get_setting('module', 'videos', 'label') or "Video"
         verbose_name_plural = get_setting('module', 'videos', 'label_plural') or "Videos"

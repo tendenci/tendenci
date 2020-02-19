@@ -41,7 +41,7 @@ class Testimonial(OrderingBaseModel, TendenciBaseModel):
     objects = TestimonialManager()
 
     class Meta:
-        permissions = (("view_testimonial","Can view testimonial"),)
+#         permissions = (("view_testimonial","Can view testimonial"),)
         verbose_name = 'Testimonial'
         verbose_name_plural = 'Testimonials'
         ordering = ['position']

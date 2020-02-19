@@ -34,7 +34,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.files.utils import get_image, aspect_ratio, generate_image_cache_key, get_image_from_path
 from tendenci.apps.user_groups.models import Group
-from djcelery.models import TaskMeta
+# from djcelery.models import TaskMeta
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
 #from tendenci.apps.photos.search_indexes import PhotoSetIndex

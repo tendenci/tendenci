@@ -46,7 +46,7 @@ class EventLog(models.Model):
     objects = EventLogManager()
 
     class Meta:
-        permissions = (("view_eventlog", _("Can view eventlog")),)
+#         permissions = (("view_eventlog", _("Can view eventlog")),)
         app_label="event_logs"
 
     def save(self, *args, **kwargs):

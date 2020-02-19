@@ -27,7 +27,7 @@ class Discount(TendenciBaseModel):
     objects = DiscountManager()
 
     class Meta:
-        permissions = (("view_discount",_("Can view discount")),)
+#         permissions = (("view_discount",_("Can view discount")),)
         app_label = 'discounts'
 
     def num_of_uses(self):

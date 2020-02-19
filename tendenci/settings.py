@@ -266,9 +266,9 @@ INSTALLED_APPS = [
     'tendenci.apps.explorer_extensions',
     'explorer',
 
-    # Celery Task System, must stay at the bottom of installed apps
-    'kombu.transport.django',
-    'djcelery',
+#     # Celery Task System, must stay at the bottom of installed apps
+#     'kombu.transport.django',
+#     'djcelery',
 ]
 
 LOGIN_REDIRECT_URL = '/dashboard'
@@ -706,10 +706,10 @@ MESSAGE_TAGS = {
 # Celery Task System
 # ---------------------------------------------------------------------------- #
 
-import djcelery  # noqa: E402
-djcelery.setup_loader()
-BROKER_URL = "django://"
-CELERY_IS_ACTIVE = False
+# import djcelery  # noqa: E402
+# djcelery.setup_loader()
+# BROKER_URL = "django://"
+# CELERY_IS_ACTIVE = False
 
 # USE_SUBPROCESS - in places like exports and long-running
 # processes that can timeout, subprocess will be used

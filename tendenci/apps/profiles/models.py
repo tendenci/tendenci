@@ -106,7 +106,7 @@ class Profile(Person):
     actives = ProfileActiveManager()
 
     class Meta:
-        permissions = (("view_profile", _("Can view profile")),)
+#         permissions = (("view_profile", _("Can view profile")),)
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         app_label = 'profiles'

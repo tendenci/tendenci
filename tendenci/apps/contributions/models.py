@@ -26,7 +26,7 @@ class Contribution(TendenciBaseModel):
         return object
 
     class Meta:
-        permissions = (("view_contribution",_("Can view contribution")),)
+#         permissions = (("view_contribution",_("Can view contribution")),)
         app_label = 'contributions'
 
     def get_absolute_url(self):

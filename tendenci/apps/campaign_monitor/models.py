@@ -38,8 +38,8 @@ class Template(models.Model):
     """
     This represents a Template in Campaign Monitor.
     """
-    class Meta:
-        permissions = (("view_template", _("Can view template")),)
+#     class Meta:
+#         permissions = (("view_template", _("Can view template")),)
 
     template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
@@ -100,8 +100,8 @@ class Campaign(models.Model):
     not yet sent.
     """
 
-    class Meta:
-        permissions = (("view_campaign", _("Can view campaign")),)
+#     class Meta:
+#         permissions = (("view_campaign", _("Can view campaign")),)
 
     STATUS_CHOICES = (
         ('S', _('Sent')),

@@ -103,7 +103,7 @@ class Invoice(models.Model):
     objects = InvoiceManager()
 
     class Meta:
-        permissions = (("view_invoice", _("Can view invoice")), )
+#         permissions = (("view_invoice", _("Can view invoice")), )
         app_label = 'invoices'
 
     def __str__(self):

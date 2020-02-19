@@ -77,7 +77,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
     objects = StoryManager()
 
     class Meta:
-        permissions = (("view_story", _("Can view story")),)
+#         permissions = (("view_story", _("Can view story")),)
         verbose_name_plural = _("stories")
         ordering = ['position']
         app_label = 'stories'

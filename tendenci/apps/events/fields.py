@@ -85,7 +85,7 @@ class UseCustomRegField(MultiValueField):
     ):
         myfields = ()
         super(UseCustomRegField, self).__init__(
-            myfields, required, widget, label, initial, help_text)
+            myfields, required=required, widget=widget, label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
         return self.compress(value)

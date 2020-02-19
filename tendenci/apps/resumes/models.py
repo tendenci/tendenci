@@ -106,7 +106,7 @@ class Resume(TendenciBaseModel):
     objects = ResumeManager()
 
     class Meta:
-        permissions = (("view_resume", _("Can view resume")),)
+#         permissions = (("view_resume", _("Can view resume")),)
         app_label = 'resumes'
 
     def get_meta(self, name):

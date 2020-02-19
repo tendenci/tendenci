@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime
 from datetime import date
 import time as ttime
-from djcelery.models import TaskMeta
+# from djcelery.models import TaskMeta
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect

@@ -164,7 +164,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
     class Meta:
         verbose_name = _("Membership Type")
-        permissions = (("view_membershiptype", _("Can view membership type")),)
+#         permissions = (("view_membershiptype", _("Can view membership type")),)
         app_label = 'memberships'
 
     def __str__(self):

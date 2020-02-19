@@ -25,7 +25,7 @@ class Industry(OrderingBaseModel, TendenciBaseModel):
     objects = IndustryManager()
 
     class Meta:
-        permissions = (("view_industry", _("Can view industry")),)
+#         permissions = (("view_industry", _("Can view industry")),)
         verbose_name = _("Industry")
         verbose_name_plural = _("Industries")
         ordering = ('position','-update_dt')

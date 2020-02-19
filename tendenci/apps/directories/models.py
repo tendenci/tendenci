@@ -119,7 +119,7 @@ class Directory(TendenciBaseModel):
     objects = DirectoryManager()
 
     class Meta:
-        permissions = (("view_directory",_("Can view directory")),)
+#         permissions = (("view_directory",_("Can view directory")),)
         verbose_name = _("Directory")
         verbose_name_plural = _("Directories")
         app_label = 'directories'
@@ -272,7 +272,7 @@ class DirectoryPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_directorypricing", _("Can view directory pricing")),)
+#         permissions = (("view_directorypricing", _("Can view directory pricing")),)
         app_label = 'directories'
 
     def __str__(self):

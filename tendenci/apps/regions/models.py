@@ -24,7 +24,7 @@ class Region(TendenciBaseModel):
     objects = RegionManager()
 
     class Meta:
-        permissions = (("view_region", _("Can view region")),)
+#         permissions = (("view_region", _("Can view region")),)
         verbose_name = _("Region")
         verbose_name_plural = _("Regions")
         app_label = 'regions'

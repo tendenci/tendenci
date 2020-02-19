@@ -37,7 +37,7 @@ class Committee(BasePage):
         return str(self.title)
 
     class Meta:
-        permissions = (("view_committee", "Can view committee"),)
+#         permissions = (("view_committee", "Can view committee"),)
         app_label = 'committees'
 
     def get_absolute_url(self):

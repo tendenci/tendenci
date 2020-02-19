@@ -88,8 +88,8 @@ class NewsletterTemplate(models.Model):
     html_file = models.FileField(upload_to=file_directory, null=True)
     zip_file = models.FileField(upload_to=file_directory, null=True)
 
-    class Meta:
-        permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
+#     class Meta:
+#         permissions = (("view_newslettertemplate", _("Can view newsletter template")),)
 
     def __str__(self):
         return self.name or "No Name"
@@ -200,7 +200,7 @@ class Newsletter(models.Model):
     security_key = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
-        permissions = (("view_newsletter", _("Can view newsletter")),)
+#         permissions = (("view_newsletter", _("Can view newsletter")),)
         verbose_name = _("Newsletter")
         verbose_name_plural = _("Newsletters")
 

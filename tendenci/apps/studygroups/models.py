@@ -37,7 +37,7 @@ class StudyGroup(BasePage):
         return str(self.title)
 
     class Meta:
-        permissions = (("view_studygroup", "Can view studygroup"),)
+#         permissions = (("view_studygroup", "Can view studygroup"),)
         app_label = 'studygroups'
 
     def get_absolute_url(self):

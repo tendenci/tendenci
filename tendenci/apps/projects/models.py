@@ -143,8 +143,8 @@ class Project(TendenciBaseModel):
     def __str__(self):
         return str(self.id)
 
-    class Meta:
-        permissions = (("view_project", "Can view project"),)
+#     class Meta:
+#         permissions = (("view_project", "Can view project"),)
 
     def get_absolute_url(self):
         return reverse('projects.detail', args=[self.slug])

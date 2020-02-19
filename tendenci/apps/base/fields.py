@@ -130,7 +130,7 @@ class CountrySelectField(fields.ChoiceField):
 class PriceField(fields.DecimalField):
 
     def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
-        super(PriceField, self).__init__(max_value, min_value, max_digits, decimal_places, *args, **kwargs)
+        super(PriceField, self).__init__(*args, max_value=max_value, min_value=min_value, max_digits=max_digits, decimal_places=decimal_places, **kwargs)
         self.widget = PriceWidget()
 
     def clean(self, value):

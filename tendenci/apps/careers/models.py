@@ -51,7 +51,7 @@ class Career(TendenciBaseModel):
     objects = CareerManager()
 
     class Meta:
-        permissions = (("view_career", _("Can view career")),)
+#         permissions = (("view_career", _("Can view career")),)
         verbose_name = _("Career")
         verbose_name_plural = _("Careers")
 

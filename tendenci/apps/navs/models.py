@@ -23,7 +23,7 @@ class Nav(TendenciBaseModel):
     objects = NavManager()
 
     class Meta:
-        permissions = (("view_nav",_("Can view nav")),)
+#         permissions = (("view_nav",_("Can view nav")),)
         app_label = 'navs'
 
     def __str__(self):

@@ -36,7 +36,7 @@ class Category(TendenciBaseModel):
                             content_type_field="content_type")
 
     class Meta(object):
-        permissions = (("view_category", _("Can view forum category")),)
+#         permissions = (("view_category", _("Can view forum category")),)
         ordering = ['position']
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')

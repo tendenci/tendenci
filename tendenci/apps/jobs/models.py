@@ -196,7 +196,7 @@ class BaseJob(TendenciBaseModel):
 class Job(BaseJob):
 
     class Meta:
-        permissions = (("view_job", _("Can view job")),)
+#         permissions = (("view_job", _("Can view job")),)
         verbose_name = _("Job")
         verbose_name_plural = _("Jobs")
         app_label = 'jobs'
@@ -237,7 +237,7 @@ class JobPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_jobpricing", _("Can view job pricing")),)
+#         permissions = (("view_jobpricing", _("Can view job pricing")),)
         verbose_name = _("Job Pricing")
         verbose_name_plural = _("Job Pricings")
         app_label = 'jobs'

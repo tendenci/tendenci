@@ -18,7 +18,7 @@ from tendenci.apps.perms.decorators import admin_required
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 from tendenci.apps.files.models import File
-from djcelery.models import TaskMeta
+# from djcelery.models import TaskMeta
 
 from tendenci.apps.locations.models import Location, LocationImport
 from tendenci.apps.locations.forms import LocationForm, LocationFilterForm

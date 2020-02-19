@@ -16,8 +16,8 @@ class Guide(OrderingBaseModel):
     content = models.TextField(blank=True)
     section = models.CharField(max_length=50, choices=SECTION_CHOICES, default="misc")
 
-    class Meta:
-        permissions = (("view_guide",_("Can view guide")),)
+#     class Meta:
+#         permissions = (("view_guide",_("Can view guide")),)
 
     def __str__(self):
         return self.title

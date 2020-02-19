@@ -13,7 +13,7 @@ from tendenci.apps.wp_importer.forms import BlogImportForm
 from tendenci.apps.wp_importer.tasks import WPImportTask
 from tendenci.apps.base.http import MissingApp
 
-from djcelery.models import TaskMeta
+# from djcelery.models import TaskMeta
 
 
 @login_required

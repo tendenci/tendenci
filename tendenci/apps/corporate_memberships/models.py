@@ -414,7 +414,7 @@ class CorpMembership(TendenciBaseModel):
                            'inactive']
 
     class Meta:
-        permissions = (("view_corpmembership", "Can view corporate membership"),)
+#         permissions = (("view_corpmembership", "Can view corporate membership"),)
         if get_setting('module', 'corporate_memberships', 'label'):
             verbose_name = get_setting('module',
                                        'corporate_memberships',

@@ -523,7 +523,7 @@ class Registration(models.Model):
     addons_added = models.TextField(null=True, blank=True)
 
     class Meta:
-        permissions = (("view_registration",_("Can view registration")),)
+#         permissions = (("view_registration",_("Can view registration")),)
         app_label = 'events'
 
     def __str__(self):
@@ -878,7 +878,7 @@ class Registrant(models.Model):
     objects = RegistrantManager()
 
     class Meta:
-        permissions = (("view_registrant", _("Can view registrant")),)
+#         permissions = (("view_registrant", _("Can view registrant")),)
         app_label = 'events'
 
     def __str__(self):
@@ -1246,7 +1246,7 @@ class Event(TendenciBaseModel):
     objects = EventManager()
 
     class Meta:
-        permissions = (("view_event",_("Can view event")),)
+#         permissions = (("view_event",_("Can view event")),)
         app_label = 'events'
 
     def __init__(self, *args, **kwargs):

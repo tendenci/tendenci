@@ -62,7 +62,7 @@ class Speaker(TendenciBaseModel):
         return self.name
 
     class Meta:
-        permissions = (("view_speaker","Can view speaker"),)
+#         permissions = (("view_speaker","Can view speaker"),)
         verbose_name = 'speaker'
         verbose_name_plural = 'speaker'
         get_latest_by = "-start_date"

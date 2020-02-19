@@ -1046,7 +1046,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
     )
 
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
-    donation_opt = forms.MultiValueField(required=False)
+#     donation_opt = forms.MultiValueField(required=False)
     payment_method = PaymentMethodModelChoiceField(
         label=_('Payment Method'),
         widget=forms.RadioSelect(),

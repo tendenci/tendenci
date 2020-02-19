@@ -45,7 +45,7 @@ class Education(TendenciBaseModel):
                 pass
 
     class Meta:
-        permissions = (("view_education", _("Can view education")),)
+#         permissions = (("view_education", _("Can view education")),)
         verbose_name = _("Education")
         verbose_name_plural = _("Educations")
 

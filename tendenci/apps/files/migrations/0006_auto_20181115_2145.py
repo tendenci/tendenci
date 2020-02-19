@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('files', '0005_auto_20180724_1745'),
-        ('user_groups', '0002_group_show_for_memberships'),
+        ('user_groups', '0003_group_show_for_events'),
     ]
 
     operations = [

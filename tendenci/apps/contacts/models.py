@@ -103,7 +103,7 @@ class Contact(TendenciBaseModel):
     objects = ContactManager()
 
     class Meta:
-        permissions = (("view_contact", _("Can view contact")),)
+#         permissions = (("view_contact", _("Can view contact")),)
         app_label = 'contacts'
 
     def get_absolute_url(self):

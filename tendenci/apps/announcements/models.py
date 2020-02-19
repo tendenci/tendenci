@@ -19,7 +19,7 @@ class EmergencyAnnouncement(TendenciBaseModel):
     objects = EmergencyAnnouncementManager()
 
     class Meta:
-        permissions = (("view_emergencyannouncement",_("Can view emergency announcement")),)
+#         permissions = (("view_emergencyannouncement",_("Can view emergency announcement")),)
         verbose_name = _('Emergency Announcement')
         verbose_name_plural = _('Emergency Announcements')
 

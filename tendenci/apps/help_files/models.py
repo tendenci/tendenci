@@ -50,7 +50,7 @@ class HelpFile(TendenciBaseModel):
     objects = HelpFileManager()
 
     class Meta:
-        permissions = (("view_helpfile",_("Can view help file")),)
+#         permissions = (("view_helpfile",_("Can view help file")),)
         app_label = 'help_files'
 
     def get_absolute_url(self):

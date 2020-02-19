@@ -11,8 +11,8 @@ class TypeExpMethodField(forms.MultiValueField):
     def __init__(self, required=True, widget=TypeExpMethodWidget(attrs=None, fields_pos_d=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(TypeExpMethodField, self).__init__(myfields, required, widget,
-                                          label, initial, help_text)
+        super(TypeExpMethodField, self).__init__(myfields, required=required, widget=widget,
+                                          label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
         return self.compress(value)
@@ -58,8 +58,8 @@ class NoticeTimeTypeField(forms.MultiValueField):
     def __init__(self, required=True, widget=NoticeTimeTypeWidget(attrs=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(NoticeTimeTypeField, self).__init__(myfields, required, widget,
-                                          label, initial, help_text)
+        super(NoticeTimeTypeField, self).__init__(myfields, required=required, widget=widget,
+                                          label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
         return self.compress(value)

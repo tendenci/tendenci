@@ -49,7 +49,7 @@ class Location(TendenciBaseModel):
     objects = LocationManager()
 
     class Meta:
-        permissions = (("view_location",_("Can view location")),)
+#         permissions = (("view_location",_("Can view location")),)
         app_label = 'locations'
 
     def __str__(self):

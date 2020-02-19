@@ -82,7 +82,7 @@ class File(TendenciBaseModel):
     objects = FileManager()
 
     class Meta:
-        permissions = (("view_file", _("Can view file")),)
+#         permissions = (("view_file", _("Can view file")),)
         app_label = 'files'
 
     def __init__(self, *args, **kwargs):

@@ -569,7 +569,7 @@ class PhotoSet(OrderingBaseModel, TendenciBaseModel):
     class Meta:
         verbose_name = _('Photo Album')
         verbose_name_plural = _('Photo Album')
-        permissions = (("view_photoset", _("Can view photoset")),)
+#         permissions = (("view_photoset", _("Can view photoset")),)
         app_label = 'photos'
 
     objects = PhotoSetManager()
@@ -731,7 +731,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         return PhotoMeta().get_meta(self, name)
 
     class Meta:
-        permissions = (("view_image", "Can view image"),)
+#         permissions = (("view_image", "Can view image"),)
         app_label = 'photos'
 
     def save(self, *args, **kwargs):

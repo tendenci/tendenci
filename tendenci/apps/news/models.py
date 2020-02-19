@@ -83,7 +83,7 @@ class News(TendenciBaseModel):
     objects = NewsManager()
 
     class Meta:
-        permissions = (("view_news",_("Can view news")),)
+#         permissions = (("view_news",_("Can view news")),)
         verbose_name_plural = _("News")
         app_label = 'news'
 

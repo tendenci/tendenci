@@ -107,7 +107,7 @@ class Page(BasePage):
     objects = PageManager()
 
     class Meta:
-        permissions = (("view_page", _("Can view page")),)
+#         permissions = (("view_page", _("Can view page")),)
         app_label = 'pages'
         
     def save(self, *args, **kwargs): 

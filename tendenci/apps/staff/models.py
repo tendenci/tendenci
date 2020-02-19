@@ -52,7 +52,7 @@ class Staff(OrderingBaseModel, TendenciBaseModel):
         return self.name
 
     class Meta:
-        permissions = (("view_staff","Can view staff"),)
+#         permissions = (("view_staff","Can view staff"),)
         verbose_name = 'Staff'
         verbose_name_plural = 'Staff'
         get_latest_by = "-position"
