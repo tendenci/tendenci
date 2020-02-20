@@ -62,7 +62,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='pages_page_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_page', 'Can view page'),),
             },
         ),
     ]

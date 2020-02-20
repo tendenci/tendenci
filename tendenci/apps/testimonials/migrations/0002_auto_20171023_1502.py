@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='testimonial',
-            options={'ordering': ['position'], 'verbose_name': 'Testimonial', 'verbose_name_plural': 'Testimonials', 'permissions': (('view_testimonial', 'Can view testimonial'),)},
+            options={'ordering': ['position'], 'verbose_name': 'Testimonial', 'verbose_name_plural': 'Testimonials'},
         ),
         migrations.AddField(
             model_name='testimonial',

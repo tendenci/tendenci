@@ -46,7 +46,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Career',
                 'verbose_name_plural': 'Careers',
-                'permissions': (('view_career', 'Can view career'),),
             },
         ),
     ]

@@ -42,7 +42,6 @@ class Migration(migrations.Migration):
                 'ordering': ('position', '-update_dt'),
                 'verbose_name': 'Industry',
                 'verbose_name_plural': 'Industries',
-                'permissions': (('view_industry', 'Can view industry'),),
             },
         ),
     ]

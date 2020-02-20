@@ -45,7 +45,6 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['position'],
                 'verbose_name_plural': 'Boxes',
-                'permissions': (('view_box', 'Can view box'),),
             },
         ),
     ]

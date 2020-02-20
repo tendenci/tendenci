@@ -90,7 +90,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Job',
                 'verbose_name_plural': 'Jobs',
-                'permissions': (('view_job', 'Can view job'),),
             },
         ),
         migrations.CreateModel(
@@ -118,7 +117,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Job Pricing',
                 'verbose_name_plural': 'Job Pricings',
-                'permissions': (('view_jobpricing', 'Can view job pricing'),),
             },
         ),
         migrations.AddField(

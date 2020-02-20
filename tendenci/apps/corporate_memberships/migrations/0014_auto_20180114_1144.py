@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='corpmembership',
-            options={'verbose_name': 'Corporate Membership', 'verbose_name_plural': 'Corporate Memberships', 'permissions': (('view_corpmembership', 'Can view corporate membership'),)},
+            options={'verbose_name': 'Corporate Membership', 'verbose_name_plural': 'Corporate Memberships'},
         ),
         migrations.AlterModelOptions(
             name='corpmembershipapp',

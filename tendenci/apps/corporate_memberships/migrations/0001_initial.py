@@ -50,7 +50,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Corporate Member',
                 'verbose_name_plural': 'Corporate Members',
-                'permissions': (('view_corpmembership', 'Can view corporate membership'),),
             },
         ),
         migrations.CreateModel(

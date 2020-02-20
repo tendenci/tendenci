@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='category',
-            options={'ordering': ['position'], 'verbose_name': 'Category', 'verbose_name_plural': 'Categories', 'permissions': (('view_category', 'Can view forum category'),)},
+            options={'ordering': ['position'], 'verbose_name': 'Category', 'verbose_name_plural': 'Categories'},
         ),
         migrations.AddField(
             model_name='category',

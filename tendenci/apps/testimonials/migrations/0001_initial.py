@@ -48,7 +48,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Testimonial',
                 'verbose_name_plural': 'Testimonials',
-                'permissions': (('view_testimonial', 'Can view testimonial'),),
             },
         ),
         migrations.CreateModel(

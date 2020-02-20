@@ -62,7 +62,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Newsletter',
                 'verbose_name_plural': 'Newsletters',
-                'permissions': (('view_newsletter', 'Can view newsletter'),),
             },
         ),
         migrations.CreateModel(
@@ -77,7 +76,6 @@ class Migration(migrations.Migration):
                 ('zip_file', models.FileField(null=True, upload_to=tendenci.apps.files.models.file_directory)),
             ],
             options={
-                'permissions': (('view_newslettertemplate', 'Can view newsletter template'),),
             },
         ),
     ]

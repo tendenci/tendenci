@@ -69,7 +69,6 @@ class Migration(migrations.Migration):
                 'ordering': ('ordering',),
                 'verbose_name': 'Video',
                 'verbose_name_plural': 'Videos',
-                'permissions': (('view_video', 'Can view video'),),
             },
         ),
         migrations.CreateModel(

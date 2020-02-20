@@ -56,7 +56,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Membership Application',
-                'permissions': (('view_app', 'Can view membership application'),),
             },
         ),
         migrations.CreateModel(
@@ -309,7 +308,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Membership Type',
-                'permissions': (('view_membershiptype', 'Can view membership type'),),
             },
         ),
         migrations.CreateModel(

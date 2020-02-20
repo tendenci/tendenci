@@ -64,7 +64,6 @@ class Migration(migrations.Migration):
                 'get_latest_by': '-position',
                 'verbose_name': 'Staff',
                 'verbose_name_plural': 'Staff',
-                'permissions': (('view_staff', 'Can view staff'),),
             },
         ),
         migrations.CreateModel(

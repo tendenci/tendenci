@@ -99,7 +99,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'User',
                 'verbose_name_plural': 'Users',
-                'permissions': (('view_profile', 'Can view profile'),),
             },
         ),
         migrations.CreateModel(

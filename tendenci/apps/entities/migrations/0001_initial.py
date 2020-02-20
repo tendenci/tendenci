@@ -47,7 +47,6 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ('entity_name',),
                 'verbose_name_plural': 'entities',
-                'permissions': (('view_entity', 'Can view entity'),),
             },
         ),
     ]

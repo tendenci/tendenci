@@ -26,7 +26,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'theme archive',
                 'verbose_name_plural': 'theme archives',
-                'permissions': (('view_themefileversion', 'Can view theme version'),),
             },
         ),
     ]

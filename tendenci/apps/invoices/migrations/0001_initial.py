@@ -93,7 +93,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='invoice_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_invoice', 'Can view invoice'),),
             },
         ),
     ]

@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Region',
                 'verbose_name_plural': 'Regions',
-                'permissions': (('view_region', 'Can view region'),),
             },
         ),
     ]

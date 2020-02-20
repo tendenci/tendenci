@@ -54,7 +54,6 @@ class Migration(migrations.Migration):
                 'ordering': ('name',),
                 'verbose_name': 'Group',
                 'verbose_name_plural': 'Groups',
-                'permissions': (('view_group', 'Can view group'),),
             },
         ),
         migrations.CreateModel(

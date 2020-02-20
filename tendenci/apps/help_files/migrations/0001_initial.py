@@ -60,7 +60,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='help_files_helpfile_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_helpfile', 'Can view help file'),),
             },
         ),
         migrations.CreateModel(

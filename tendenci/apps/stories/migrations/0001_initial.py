@@ -59,7 +59,6 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['position'],
                 'verbose_name_plural': 'stories',
-                'permissions': (('view_story', 'Can view story'),),
             },
         ),
         migrations.CreateModel(

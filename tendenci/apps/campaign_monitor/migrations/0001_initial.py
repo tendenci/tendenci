@@ -37,7 +37,6 @@ class Migration(migrations.Migration):
                 ('reply_to', models.EmailField(max_length=254, null=True, blank=True)),
             ],
             options={
-                'permissions': (('view_campaign', 'Can view campaign'),),
             },
         ),
         migrations.CreateModel(
@@ -81,7 +80,6 @@ class Migration(migrations.Migration):
                 ('zip_file', models.FileField(null=True, upload_to=tendenci.apps.files.models.file_directory)),
             ],
             options={
-                'permissions': (('view_template', 'Can view template'),),
             },
         ),
         migrations.AddField(

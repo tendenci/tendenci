@@ -70,7 +70,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Article',
                 'verbose_name_plural': 'Articles',
-                'permissions': (('view_article', 'Can view article'),),
             },
         ),
     ]

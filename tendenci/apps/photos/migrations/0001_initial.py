@@ -61,7 +61,6 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='photos_image_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_image', 'Can view image'),),
             },
         ),
         migrations.CreateModel(
@@ -126,7 +125,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Photo Album',
                 'verbose_name_plural': 'Photo Album',
-                'permissions': (('view_photoset', 'Can view photoset'),),
             },
         ),
         migrations.CreateModel(
@@ -161,7 +159,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'pool',
                 'verbose_name_plural': 'pools',
-                'permissions': (('view_photopool', 'Can view photopool'),),
             },
         ),
         migrations.CreateModel(

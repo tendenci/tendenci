@@ -69,7 +69,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name_plural': 'News',
-                'permissions': (('view_news', 'Can view news'),),
             },
         ),
         migrations.CreateModel(

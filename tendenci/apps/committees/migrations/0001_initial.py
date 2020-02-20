@@ -57,7 +57,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='committees_committee_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_committee', 'Can view committee'),),
             },
         ),
         migrations.CreateModel(

@@ -38,7 +38,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='navs_nav_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_nav', 'Can view nav'),),
             },
         ),
         migrations.CreateModel(

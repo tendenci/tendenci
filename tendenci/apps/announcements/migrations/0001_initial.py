@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Emergency Announcement',
                 'verbose_name_plural': 'Emergency Announcements',
-                'permissions': (('view_emergencyannouncement', 'Can view emergency announcement'),),
             },
         ),
     ]

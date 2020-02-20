@@ -63,7 +63,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='locations_location_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_location', 'Can view location'),),
             },
         ),
         migrations.CreateModel(

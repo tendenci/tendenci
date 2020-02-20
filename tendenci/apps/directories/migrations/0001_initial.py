@@ -80,7 +80,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Directory',
                 'verbose_name_plural': 'Directories',
-                'permissions': (('view_directory', 'Can view directory'),),
             },
         ),
         migrations.CreateModel(
@@ -103,7 +102,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='directory_pricing_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_directorypricing', 'Can view directory pricing'),),
             },
         ),
         migrations.AddField(

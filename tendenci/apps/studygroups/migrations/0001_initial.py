@@ -72,7 +72,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='studygroups_studygroup_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_studygroup', 'Can view studygroup'),),
             },
         ),
         migrations.AddField(

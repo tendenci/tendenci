@@ -57,7 +57,6 @@ class Migration(migrations.Migration):
                 ('entity', models.ForeignKey(related_name='files_file_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
             ],
             options={
-                'permissions': (('view_file', 'Can view file'),),
             },
         ),
         migrations.CreateModel(

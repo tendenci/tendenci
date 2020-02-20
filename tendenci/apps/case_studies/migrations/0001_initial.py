@@ -45,7 +45,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Case Study',
                 'verbose_name_plural': 'Case Studies',
-                'permissions': (('view_casestudy', 'Can view case study'),),
             },
         ),
         migrations.CreateModel(

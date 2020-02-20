@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='video',
-            options={'ordering': ('position',), 'verbose_name': 'Video', 'verbose_name_plural': 'Videos', 'permissions': (('view_video', 'Can view video'),)},
+            options={'ordering': ('position',), 'verbose_name': 'Video', 'verbose_name_plural': 'Videos'},
         ),
     ]

@@ -43,7 +43,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Education',
                 'verbose_name_plural': 'Educations',
-                'permissions': (('view_education', 'Can view education'),),
             },
         ),
     ]

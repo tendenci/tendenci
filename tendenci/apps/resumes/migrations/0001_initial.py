@@ -70,7 +70,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='resumes_resume_owner', on_delete=django.db.models.deletion.SET_NULL, default=None, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_resume', 'Can view resume'),),
             },
         ),
     ]

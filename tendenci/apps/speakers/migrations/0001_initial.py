@@ -54,7 +54,6 @@ class Migration(migrations.Migration):
                 'get_latest_by': '-start_date',
                 'verbose_name': 'speaker',
                 'verbose_name_plural': 'speaker',
-                'permissions': (('view_speaker', 'Can view speaker'),),
             },
         ),
         migrations.CreateModel(

@@ -170,7 +170,6 @@ class Migration(migrations.Migration):
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),
             ],
             options={
-                'permissions': (('view_event', 'Can view event'),),
             },
         ),
         migrations.CreateModel(
@@ -307,7 +306,6 @@ class Migration(migrations.Migration):
                 ('pricing', models.ForeignKey(to='events.RegConfPricing', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
-                'permissions': (('view_registrant', 'Can view registrant'),),
             },
         ),
         migrations.CreateModel(
@@ -334,7 +332,6 @@ class Migration(migrations.Migration):
                 ('reg_conf_price', models.ForeignKey(to='events.RegConfPricing', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
-                'permissions': (('view_registration', 'Can view registration'),),
             },
         ),
         migrations.CreateModel(

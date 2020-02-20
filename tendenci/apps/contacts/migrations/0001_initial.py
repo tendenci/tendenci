@@ -70,7 +70,6 @@ class Migration(migrations.Migration):
                 ('creator', models.ForeignKey(related_name='contacts_contact_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
-                'permissions': (('view_contact', 'Can view contact'),),
             },
         ),
         migrations.CreateModel(
