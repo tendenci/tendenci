@@ -24,8 +24,8 @@ Tendenci's default configuration `uses the Django database`_ via ``BROKER_URL = 
 
 .. _`uses the Django database`: https://docs.celeryproject.org/en/3.1/getting-started/brokers/django.html
 .. _`no longer supported`: https://docs.celeryproject.org/en/latest/getting-started/brokers/index.html
-.._ `upstreams recommendation`: https://docs.celeryproject.org/en/stable/faq.html#brokers
-.._ `in some circumstances`: https://stackoverflow.com/questions/43264838/celery-when-should-you-choose-redis-as-a-message-broker-over-rabbitmq
+.. _`upstreams recommendation`: https://docs.celeryproject.org/en/stable/faq.html#brokers
+.. _`in some circumstances`: https://stackoverflow.com/questions/43264838/celery-when-should-you-choose-redis-as-a-message-broker-over-rabbitmq
 
 Setup
 =====
@@ -36,13 +36,15 @@ Installing RabbitMQ
 To `install RabbitMQ`_ use apt
 
 ::
+
 	apt-get install rabbitmq-server
 
-.. _`install a broker`: https://docs.celeryproject.org/en/3.1/getting-started/first-steps-with-celery.html#rabbitmq
+.. _`install RabbitMQ`: https://docs.celeryproject.org/en/3.1/getting-started/first-steps-with-celery.html#rabbitmq
 
 Status of RabbitMQ can be checked with the following commands
 
 ::
+
 	rabbitmqctl -n rabbit cluster_status
 	rabbitmqctl -n rabbit status
 
@@ -82,9 +84,10 @@ this:
 Configuring Tendenci
 --------------------
 
-Add settings to your Tendenci project conf/settings.py
+Add settings to your Tendenci project ``conf/settings.py``
 
 ::
+
 	BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 	CELERY_IS_ACTIVE = True
 
@@ -93,6 +96,7 @@ both 'guest' and listening on localhost. In some cases it will be necesary to
 change the configuration - the commands below will help to `configure rabbit`_.
 
 ::
+
 	rabbitmqctl add_user tendenci some_password
 	rabbitmqctl add_vhost website
 	rabbitmqctl set_user_tags tendenci tendenci_tag
@@ -107,6 +111,7 @@ For more information see the RabbitMQ `access and auth`_ documentation.
 Restart tendenci then keep an eye on logs
 
 ::
+
 	service tendenci restart
 	tail -F /var/log/rabbitmq/*log /path/to/tendenci/logs/*.log
 
