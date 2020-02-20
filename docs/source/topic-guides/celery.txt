@@ -49,10 +49,18 @@ Status of RabbitMQ can be checked with the following commands
 	rabbitmqctl -n rabbit status
 
 
-Run Celery as a daemon
-----------------------
+Run Celery
+----------
 
 For Tendenci to offload work, celery must be configured to run as a daemon.
+
+To do this manually run the following from a root prompt or via sudo
+
+::
+
+  python manage.py celeryd --uid www-data --gid www-data --loglevel info --beat
+
+To run as a service a systemd service file should be considered.
 
 Systemd Unit files should be created in ``/etc/systemd/system/`` with a name
 which bares some relationship to your Tendenci install (eg
@@ -75,10 +83,23 @@ this:
               --gid www-data                           \
               --pidfile=/run/mysite-celery.pid         \
               --pythonpath=/var/www/mysite             \
-              --logfile=/var/log/mysite/celery.log
+              --logfile=/var/log/mysite-celery.log
 
     [Install]
     WantedBy=multi-user.target
+
+
+You'll need to issue the `start` and `enable` commands to start the service and make it run automatically on boot.
+
+To start the service manually:
+::
+
+    sudo systemctl start mysite-celery
+
+To start the service automatically on boot:
+::
+
+    sudo systemctl enable mysite-celery
 
 
 Configuring Tendenci
