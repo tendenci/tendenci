@@ -2,8 +2,8 @@ from builtins import str
 import os
 import uuid
 import re
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.request import urlopen
+from urllib.parse import urlparse
+from urllib.request import urlopen
 
 from tendenci.apps.pages.models import Page
 from tendenci.apps.articles.models import Article

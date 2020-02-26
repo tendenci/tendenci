@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User

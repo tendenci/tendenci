@@ -159,7 +159,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     import os
     import posixpath
     import stat
-    from six.moves.urllib.request import unquote
+    from urllib.request import unquote
 
     from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotModified
     from django.utils.http import http_date

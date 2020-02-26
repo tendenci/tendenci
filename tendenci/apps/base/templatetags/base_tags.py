@@ -1,5 +1,5 @@
 import re
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 from hashlib import md5
 
 from tagging.templatetags.tagging_tags import TagsForObjectNode

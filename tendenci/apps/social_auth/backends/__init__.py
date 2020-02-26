@@ -12,9 +12,9 @@ enabled.
 from os import walk
 from os.path import basename
 from uuid import uuid4
-from six.moves.urllib.request import Request, urlopen
-from six.moves.urllib.parse import urlencode
-from six.moves.http_client import HTTPSConnection
+from urllib.request import Request, urlopen
+from urllib.parse import urlencode
+from http import client as HTTPSConnection
 
 from openid.consumer.consumer import Consumer, SUCCESS, CANCEL, FAILURE
 from openid.consumer.discover import DiscoveryFailure

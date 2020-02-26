@@ -1,11 +1,10 @@
-from __future__ import print_function
 from PIL import Image
 from os.path import exists
 from io import BytesIO
 import os
-from six.moves import http_client
-from six.moves.urllib.request import urlopen, Request
-from six.moves.urllib.parse import urlparse, quote, unquote
+from http import client as http_client
+from urllib.request import urlopen, Request
+from urllib.parse import urlparse, quote, unquote
 import socket
 import mimetypes
 from django.db import connection

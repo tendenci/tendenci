@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, absolute_import
 from tendenci.apps.theme.templatetags.static import static
 
 from markdown import Markdown

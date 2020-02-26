@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from django.core.management.base import BaseCommand
 
 from tendenci.apps.site_settings.models import Setting

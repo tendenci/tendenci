@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, CommandError

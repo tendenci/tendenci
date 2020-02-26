@@ -1,7 +1,7 @@
 """
 Management utility to create superusers.
 """
-from __future__ import print_function
+
 from builtins import input
 
 import getpass

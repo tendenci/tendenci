@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from django.core.cache import cache
 from django.conf import settings
 

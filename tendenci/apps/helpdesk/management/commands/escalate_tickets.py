@@ -7,7 +7,7 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 scripts/escalate_tickets.py - Easy way to escalate tickets based on their age,
                               designed to be run from Cron or similar.
 """
-from __future__ import print_function
+
 
 from datetime import timedelta, date
 import getopt

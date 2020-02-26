@@ -1,14 +1,10 @@
-from __future__ import print_function
 from builtins import str
 from os.path import splitext
 import datetime
 import logging
 import uuid
 
-try:
-    import six.moves.cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from django.db import models
 from django.apps import apps

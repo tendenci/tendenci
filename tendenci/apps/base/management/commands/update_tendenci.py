@@ -1,7 +1,6 @@
-from __future__ import print_function
 import os
 import subprocess
-from six.moves import xmlrpc_client
+from xmlrpc import client as xmlrpc_client
 
 from django.conf import settings
 from django.contrib.auth.models import User

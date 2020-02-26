@@ -1,4 +1,3 @@
-from six import with_metaclass
 from builtins import str
 
 from django.urls import reverse
@@ -57,7 +56,8 @@ class DeclarativeMetaclass(type):
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-class Registry(with_metaclass(DeclarativeMetaclass, object)):
+class Registry(object):
+    __metaclass__ = DeclarativeMetaclass
     """
     Base registry class for core and plugin applications
 

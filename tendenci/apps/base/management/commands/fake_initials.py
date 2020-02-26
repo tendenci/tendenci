@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import traceback
 from django.core.management.base import BaseCommand
 from django.core.management import call_command

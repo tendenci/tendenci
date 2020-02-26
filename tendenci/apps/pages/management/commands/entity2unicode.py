@@ -1,5 +1,5 @@
 import re
-from six.moves import html_parser
+from html import parser as html_parser
 from django.core.management.base import BaseCommand
 
 

@@ -3,7 +3,7 @@ Linkedin OAuth support
 
 No extra configurations are needed to make this work.
 """
-from six.moves.urllib.parse import parse_qs
+from urllib.parse import parse_qs
 from xml.etree import ElementTree
 
 from tendenci.apps.social_auth.backends import ConsumerBasedOAuth, OAuthBackend

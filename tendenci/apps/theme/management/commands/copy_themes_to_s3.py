@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import os.path
 from django.core.management.base import BaseCommand
 from django.conf import settings

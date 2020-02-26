@@ -1,4 +1,3 @@
-from __future__ import print_function
 from builtins import object, str
 import os
 import re
@@ -10,8 +9,8 @@ import csv
 import hashlib
 import hmac
 import base64
-from six.moves.urllib.request import Request, build_opener
-from six.moves.urllib.parse import urlparse
+from urllib.request import Request, build_opener
+from urllib.parse import urlparse
 import pytz
 import socket
 from PIL import Image
@@ -1005,7 +1004,7 @@ def validate_email(s, quiet=True):
 
 
 def get_latest_version():
-    from six.moves import xmlrpc_client
+    from xmlrpc import client as xmlrpc_client
     with xmlrpc_client.ServerProxy('http://pypi.python.org/pypi') as proxy:
         return proxy.package_releases('tendenci')[0]
 

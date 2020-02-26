@@ -8,7 +8,7 @@ Pillow==7.0.0
 anyjson>=0.2.4
 django-authority>=0.4
 django-countries>=4.4
-django-form-utils>=0.1.8
+django-form-utils>=1.0.3
 django-localflavor==1.4.1
 dj-pagination>=2.3.0
 django-picklefield>=0.1.6

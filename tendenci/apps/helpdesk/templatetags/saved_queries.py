@@ -5,7 +5,7 @@ templatetags/saved_queries.py - This template tag returns previously saved
                                 queries. Therefore you don't need to modify
                                 any views.
 """
-from __future__ import print_function
+
 
 from django.template import Library
 from django.db.models import Q

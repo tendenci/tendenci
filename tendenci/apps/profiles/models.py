@@ -2,7 +2,7 @@ import os
 import uuid
 import hashlib
 import re
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from django.db import models
 from django.urls import reverse

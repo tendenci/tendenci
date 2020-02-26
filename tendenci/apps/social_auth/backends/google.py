@@ -13,8 +13,8 @@ APIs console https://code.google.com/apis/console/ Identity option.
 
 OpenID also works straightforward, it doesn't need further configurations.
 """
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.request import Request, urlopen
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from django.conf import settings
 import simplejson

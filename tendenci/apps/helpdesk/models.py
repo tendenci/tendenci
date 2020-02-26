@@ -7,7 +7,6 @@ models.py - Model (and hence database) definitions. This is the core of the
             helpdesk structure.
 """
 
-from __future__ import unicode_literals
 from django.db import models
 from django.urls import reverse
 from django.contrib.sites.models import Site
@@ -1034,19 +1033,13 @@ class UserSettings(models.Model):
 
     def _set_settings(self, data):
         # data should always be a Python dictionary.
-        try:
-            import six.moves.cPickle as pickle
-        except ImportError:
-            import pickle
+        import pickle
         from base64 import b64encode
         self.settings_pickled = b64encode(pickle.dumps(data)).decode()
 
     def _get_settings(self):
         # return a python dictionary representing the pickled data.
-        try:
-            import six.moves.cPickle as pickle
-        except ImportError:
-            import pickle
+        import pickle
         from base64 import b64decode
         try:
             return pickle.loads(b64decode(str(self.settings_pickled).encode()))

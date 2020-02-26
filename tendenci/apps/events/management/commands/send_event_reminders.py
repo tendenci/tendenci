@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string

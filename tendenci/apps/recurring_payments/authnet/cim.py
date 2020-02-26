@@ -1,5 +1,5 @@
 import re
-from six.moves.urllib.request import urlopen, Request
+from urllib.request import urlopen, Request
 from xml.etree import ElementTree as ET
 
 from django.conf import settings

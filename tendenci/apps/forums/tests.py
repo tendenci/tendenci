@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 import datetime
 import os
 from django.contrib.auth.models import Permission

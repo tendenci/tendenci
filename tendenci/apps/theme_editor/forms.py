@@ -1,7 +1,7 @@
 # python
 import os
 import codecs
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 # django
 from django import forms

@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from django.utils.translation import ugettext_noop as _
 
 from tendenci.apps.site_settings.utils import get_setting

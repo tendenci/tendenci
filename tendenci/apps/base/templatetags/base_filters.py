@@ -140,7 +140,7 @@ def in_group(user, group):
 
 @register.filter
 def domain(link):
-    from six.moves.urllib.parse import urlparse
+    from urllib.parse import urlparse
     link = urlparse(link)
     return link.hostname
 

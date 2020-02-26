@@ -1,6 +1,6 @@
 import os
 import zipfile
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 from shutil import rmtree, move
 
 from django.core.management.base import BaseCommand, CommandError

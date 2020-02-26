@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from builtins import str
 import base64
 from Crypto.Hash import SHA256

@@ -1,5 +1,5 @@
 import os
-from six.moves import cPickle
+import pickle
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.urls import reverse
@@ -131,7 +131,7 @@ def user_upload_subprocess(request, sid,
         fd = default_storage.open(recap_path, 'r')
         content = fd.read()
         fd.close()
-        recap_dict = cPickle.loads(content)
+        recap_dict = pickle.loads(content)
         recap_dict.update({'users_list': recap_dict['users_list'] +
                                         import_dict['users_list'],
                            'invalid_list': recap_dict['invalid_list'] +
@@ -196,7 +196,7 @@ def user_upload_recap(request, sid):
         content = fd.read()
         fd.close()
 
-        recap_dict = cPickle.loads(content)
+        recap_dict = pickle.loads(content)
 
         output = BytesIO()
         export_wb = Workbook()

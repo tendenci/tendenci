@@ -1,7 +1,6 @@
 # Special encoding for sending the email messsages with
 # non-ascii characters.
 # from __future__ import must occur at the beginning of the file
-from __future__ import unicode_literals
 import datetime
 import random
 import string
@@ -317,11 +316,8 @@ def entries_export(request, id, include_files=False):
         # blank csv document
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="export_entries_%d.csv"' % time.time()
-        import six
         delimiter = ','
-        if six.PY2:
-            # string required because unicode_literals is imported at top
-            delimiter = delimiter.encode('utf-8')
+
         csv.writer(response, delimiter=delimiter)
 
     return response

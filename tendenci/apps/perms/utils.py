@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 

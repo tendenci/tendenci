@@ -56,7 +56,7 @@ Usage example::
 
 
 import os
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 import socket
 if hasattr(socket, 'setdefaulttimeout'):
@@ -85,7 +85,7 @@ urllib2 = None
 try:
     from google.appengine.api import urlfetch
 except ImportError:
-    from six.moves.urllib.request import urlopen, Request
+    from urllib.request import urlopen, Request
 
 if urllib2 is None:
     def _fetch_url(url, data, headers):

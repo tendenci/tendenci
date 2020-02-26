@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _

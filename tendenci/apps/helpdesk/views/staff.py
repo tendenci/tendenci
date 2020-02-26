@@ -6,7 +6,7 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 views/staff.py - The bulk of the application - provides most business logic and
                  renders all staff-facing views.
 """
-from __future__ import unicode_literals
+
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -747,10 +747,7 @@ def ticket_list(request):
         if not (saved_query.shared or saved_query.user == request.user):
             return HttpResponseRedirect(reverse('helpdesk_list'))
 
-        try:
-            import six.moves.cPickle as pickle
-        except ImportError:
-            import pickle
+        import pickle
         from base64 import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
     elif not (  'queue' in request.GET
@@ -862,10 +859,7 @@ def ticket_list(request):
     if 'query' in context and settings.DATABASES['default']['ENGINE'].endswith('sqlite'):
         search_message = _('<p><strong>Note:</strong> Your keyword search is case sensitive because of your database. This means the search will <strong>not</strong> be accurate. By switching to a different database system you will gain better searching! For more information, read the <a href="http://docs.djangoproject.com/en/dev/ref/databases/#sqlite-string-matching">Django Documentation on string matching in SQLite</a>.')
 
-    try:
-        import six.moves.cPickle as pickle
-    except ImportError:
-        import pickle
+    import pickle
     from base64 import b64encode
     urlsafe_query = b64encode(pickle.dumps(query_params)).decode()
 
@@ -1058,10 +1052,7 @@ def run_report(request, report):
         if not (saved_query.shared or saved_query.user == request.user):
             return HttpResponseRedirect(reverse('helpdesk_report_index'))
 
-        try:
-            import six.moves.cPickle as pickle
-        except ImportError:
-            import pickle
+        import pickle
         from base64 import b64decode
         query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
         report_queryset = apply_query(report_queryset, query_params)

@@ -1,7 +1,7 @@
 from builtins import str
 import uuid
 
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from django.db import models
 from tendenci.apps.user_groups.models import Group

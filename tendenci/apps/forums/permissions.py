@@ -3,7 +3,7 @@
 Extensible permission system for pybbm
 """
 
-from __future__ import unicode_literals
+
 from django.db.models import Q
 from tendenci.apps.perms.utils import get_query_filters, has_view_perm
 

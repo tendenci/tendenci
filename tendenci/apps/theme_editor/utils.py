@@ -1,7 +1,7 @@
 import os
 import shutil
 import boto
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 from datetime import datetime
 from dateutil.parser import parse as parse_date
 from operator import itemgetter

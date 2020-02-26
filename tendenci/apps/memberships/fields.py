@@ -36,8 +36,8 @@ class DonationOptionAmountField(forms.MultiValueField):
     def __init__(self, required=True, widget=DonationOptionAmountWidget(attrs=None),
                 label=None, initial=None, help_text=None):
         myfields = ()
-        super(DonationOptionAmountField, self).__init__(myfields, required, widget,
-                                          label, initial, help_text)
+        super(DonationOptionAmountField, self).__init__(myfields, required=required, widget=widget,
+                                          label=label, initial=initial, help_text=help_text)
 
     def clean(self, value):
         return self.compress(value)

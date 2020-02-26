@@ -1,5 +1,5 @@
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.request import urlopen, Request
+from urllib.parse import urlencode
+from urllib.request import urlopen, Request
 import cgi
 from decimal import Decimal
 

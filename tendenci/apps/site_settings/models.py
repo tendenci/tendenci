@@ -1,4 +1,4 @@
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django.db import models

@@ -9,7 +9,7 @@ scripts/get_email.py - Designed to be run from cron, this script checks the
                        helpdesk, creating tickets from the new messages (or
                        adding to existing tickets if needed)
 """
-from __future__ import print_function
+
 from builtins import str
 
 import email
@@ -32,7 +32,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import striptags
 from django.utils.encoding import DjangoUnicodeDecodeError
-from six.moves.html_parser import HTMLParser
+from html import parser as HTMLParser
 from tendenci.apps.helpdesk import settings
 
 try:

@@ -1,6 +1,6 @@
 # coding=utf-8
 from builtins import str
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 import hashlib
 from django.conf import settings
 from django.db import models

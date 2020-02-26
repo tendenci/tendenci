@@ -10,7 +10,7 @@ can be specified by defining ORKUT_EXTRA_DATA setting.
 OAuth settings ORKUT_CONSUMER_KEY and ORKUT_CONSUMER_SECRET are needed
 to enable this service support.
 """
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 from django.conf import settings
 import simplejson

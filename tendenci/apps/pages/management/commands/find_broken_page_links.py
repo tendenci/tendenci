@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import requests
 from requests.exceptions import (
     MissingSchema, InvalidSchema, InvalidURL, ConnectionError)

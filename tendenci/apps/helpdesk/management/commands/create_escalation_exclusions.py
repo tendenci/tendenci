@@ -8,7 +8,7 @@ scripts/create_escalation_exclusion.py - Easy way to routinely add particular
                                          days to the list of days on which no
                                          escalation should take place.
 """
-from __future__ import print_function
+
 
 from datetime import timedelta, date
 import getopt

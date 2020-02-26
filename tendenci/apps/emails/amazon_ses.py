@@ -20,8 +20,8 @@
 #THE SOFTWARE.
 
 from builtins import str
-from six.moves import http_client
-from six.moves.urllib.parse import urlencode
+from http import client as http_client
+from urllib.parse import urlencode
 import hashlib
 import hmac
 import logging

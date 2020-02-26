@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.db import migrations
@@ -9,10 +8,7 @@ from tendenci.apps.helpdesk.settings import DEFAULT_USER_SETTINGS
 
 def pickle_settings(data):
     """Pickling as defined at migration's creation time"""
-    try:
-        import six.moves.cPickle as pickle
-    except ImportError:
-        import pickle
+    import pickle
     from base64 import b64encode
     return b64encode(pickle.dumps(data)).decode()
 

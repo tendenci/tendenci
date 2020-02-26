@@ -4,10 +4,7 @@ import time
 import logging
 import traceback
 
-try:
-    import six.moves.cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from django.conf import settings
 from django.core.mail import mail_admins

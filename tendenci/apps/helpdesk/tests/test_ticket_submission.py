@@ -1,4 +1,4 @@
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from django.test import TestCase
 from django.core import mail
 from django.test.client import Client

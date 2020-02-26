@@ -1,6 +1,6 @@
 import csv
-from six.moves.urllib.parse import urlencode
-from six.moves.urllib.request import urlopen
+from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage

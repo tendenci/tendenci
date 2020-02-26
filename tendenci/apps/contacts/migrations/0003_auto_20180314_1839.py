@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations
 import timezone_field.fields
 from tendenci.apps.base.utils import get_timezone_choices

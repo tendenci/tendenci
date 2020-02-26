@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import unicode_literals
+
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save, post_delete, pre_save

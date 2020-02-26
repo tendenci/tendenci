@@ -1,5 +1,5 @@
-from __future__ import unicode_literals
-from __future__ import print_function
+
+
 from builtins import input
 
 from django.utils.timezone import now, timedelta

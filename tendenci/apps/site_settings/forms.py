@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from ast import literal_eval
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from django import forms
 from django.conf import settings as django_settings

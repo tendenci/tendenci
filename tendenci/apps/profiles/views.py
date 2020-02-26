@@ -481,7 +481,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                     user_edit.is_superuser = 1
                     user_edit.is_staff = 1
                     # remove them from auth_group if any - they don't need it
-                    user_edit.groups = []
+                    user_edit.groups.set([])
                 elif security_level == 'staff':
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 1
@@ -489,7 +489,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 0
                     # remove them from auth_group if any
-                    user_edit.groups = []
+                    user_edit.groups.set([])
 
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False

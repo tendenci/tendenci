@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import re
 from django.core.management.base import BaseCommand
 

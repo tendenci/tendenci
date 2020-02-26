@@ -1,7 +1,7 @@
 from builtins import str
 import os
 import simplejson as json
-from six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 import mimetypes
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
