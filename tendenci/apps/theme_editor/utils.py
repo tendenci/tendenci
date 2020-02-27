@@ -1,6 +1,6 @@
 import os
 import shutil
-import boto
+import boto3
 from urllib.request import urlopen
 from datetime import datetime
 from dateutil.parser import parse as parse_date
@@ -166,11 +166,10 @@ def get_all_files_list(root_dir, theme):
     s3_files_folders = {'contents': []}
     theme_folder = settings.THEME_S3_PATH+'/'+theme
     theme_base_url = settings.AWS_LOCATION+'/'+theme_folder+'/'
-    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
-                           settings.AWS_SECRET_ACCESS_KEY)
-    bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
-
-    for item in bucket.list(prefix=theme_folder):
+    # Before using S3 storage, the AWS credentials should be set up https://pypi.org/project/boto3/
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    for item in bucket.objects.filter(Prefix=theme_folder):
 
         editable = False
         if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
