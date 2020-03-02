@@ -112,7 +112,7 @@ class Email(TendenciBaseModel):
 
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
-                               add_tendenci_footer(self.body),
+                               add_tendenci_footer(self.body, content_type=self.content_type),
                                self.sender,
                                recipient_list,
                                recipient_bcc_list,

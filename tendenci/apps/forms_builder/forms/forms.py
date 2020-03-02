@@ -2,6 +2,7 @@ from builtins import str
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
+import re
 
 from django import forms
 from importlib import import_module
@@ -221,6 +222,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             if isinstance(value,list):
                 value = ','.join(value)
             if not value: value=''
+            
+            # make links not clickable if submitted by non-interactive user
+            if self.user.is_anonymous() or not self.user.is_active:
+                p = re.compile(r'(http[s]?)://([^\.]+)\.([^\./]+)')
+                value = re.subn(p, r'\1 : // \2 . \3 ', value)[0]
             field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
             field_entry.save()
 
