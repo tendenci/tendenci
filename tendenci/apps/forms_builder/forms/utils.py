@@ -8,13 +8,16 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
 
-def generate_admin_email_body(entry, form_for_form):
+def generate_admin_email_body(entry, form_for_form, user=None):
     """
         Generates the email body so that is readable
     """
     context = {}
     site_url = get_setting('site', 'global', 'siteurl')
-    template = get_template('forms/admin_email_content.html')
+    if not user or user.is_anonymous or not user.is_active:
+        template = get_template('forms/admin_email_content_text.html')
+    else:
+        template = get_template('forms/admin_email_content.html')
 
     # fields to loop through in the template
     context['fields'] = entry.entry_fields()

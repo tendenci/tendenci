@@ -460,7 +460,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 email.send(fail_silently=True)
 
             # Email copies to admin
-            admin_body = generate_admin_email_body(entry, form_for_form)
+            admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
             email_from = email_to or email_from # Send from the email entered.
             email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
@@ -494,6 +494,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 if email_copies:
                     email.body = admin_body
                     email.recipient = email_copies
+                    if request.user.is_anonymous or not request.user.is_active:
+                        email.content_type = 'text'
                     email.send(fail_silently=True, attachments=attachments)
 
                 # Email copies to recipient list indicated in the form
