@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from django.contrib import auth as auth_views
-from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView, PasswordChangeDoneView
+from django.contrib.auth.views import (PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView,
+                                       LogoutView)
 from . import views, forms
 from tendenci.apps.registration import views as reg_views
 from tendenci.apps.profiles import views as prof_views
@@ -22,8 +22,7 @@ urlpatterns = [
         name='auth_login'),
 
     url(r'^logout/$',
-        auth_views.logout,
-        {'template_name': 'accounts/logout.html'},
+        LogoutView.as_view(template_name='accounts/logout.html'),
         name='auth_logout'),
 
     url(r'^password/change/(?P<id>\d+)/$',
@@ -39,18 +38,16 @@ urlpatterns = [
         name='auth_password_reset'),
 
     url(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>.+)/$',
-        PasswordResetConfirmView.as_view(),
-        {'set_password_form': forms.SetPasswordCustomForm, 'template_name': 'registration/custom_password_reset_confirm.html'},
+        PasswordResetConfirmView.as_view(form_class=forms.SetPasswordCustomForm,
+                                         template_name='registration/custom_password_reset_confirm.html'),
         name='password_reset_confirm'),
 
     url(r'^password/reset/complete/$',
-        PasswordResetCompleteView.as_view(),
-        {'template_name': 'registration/custom_password_reset_complete.html'},
+        PasswordResetCompleteView.as_view(template_name='registration/custom_password_reset_complete.html'),
         name='password_reset_complete'),
 
     url(r'^password/reset/done/$',
-        PasswordChangeDoneView.as_view(),
-        {'template_name': 'registration/custom_password_reset_done.html'},
+        PasswordResetDoneView.as_view(template_name='registration/custom_password_reset_done.html'),
         name='password_reset_done'),
 
     url(r'^register/$',
