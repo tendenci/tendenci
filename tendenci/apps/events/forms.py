@@ -1061,6 +1061,7 @@ class SpeakerForm(FormControlWidgetMixin, BetterModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        kwargs.update({'use_required_attribute': False})
         super(SpeakerForm, self).__init__(*args, **kwargs)
         if self.instance.id:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
@@ -1160,6 +1161,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
         kwargs.pop('reg_form_queryset', None)
         self.user = kwargs.pop('user', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
+        kwargs.update({'use_required_attribute': False})
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         kwargs.update({'initial': {'start_dt':datetime.now(),
                         'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
