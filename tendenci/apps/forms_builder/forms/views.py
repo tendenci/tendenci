@@ -421,7 +421,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid() and (not billing_form or billing_form.is_valid()):
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
-            if request.user.is_anonymous():
+            if request.user.is_anonymous:
                 entry.creator = entry.check_and_create_user()
             else:
                 entry.creator = request.user

@@ -52,7 +52,7 @@ class MakePayment(models.Model):
         super(MakePayment, self).save()
 
     def allow_view_by(self, user2_compare):
-        if user2_compare.is_authenticated():
+        if user2_compare.is_authenticated:
             # superuser, creator and owner can view
             return user2_compare.profile.is_superuser or \
                 (self.status and (self.creator == user2_compare or \

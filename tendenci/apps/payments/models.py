@@ -127,7 +127,7 @@ class Payment(models.Model):
         if user2_compare.profile.is_superuser:
             return True
 
-        if not user2_compare.is_anonymous():
+        if not user2_compare.is_anonymous:
             if self.creator == user2_compare or \
                 self.owner == user2_compare:
                 return self.status
