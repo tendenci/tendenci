@@ -730,7 +730,7 @@ def organizer_edit(request, id, form_class=OrganizerForm, template_name="events/
     except: # else: create an organizer
         organizer = Organizer()
         organizer.save()
-        organizer.event = [event]
+        organizer.event.set([event])
         organizer.save()
 
     if request.method == "POST":
@@ -1356,7 +1356,7 @@ def add(request, year=None, month=None, day=None, is_template=False,
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
                 groups = form_event.cleaned_data['groups']
-                event.groups = groups
+                event.groups.set(groups)
                 if is_template:
                     event.status_detail = 'template'
                 event.save(log=False)
@@ -1421,10 +1421,10 @@ def add(request, year=None, month=None, day=None, is_template=False,
 
                     regconf_price.save()
 
-                organizer.event = [event]
+                organizer.event.set([event])
                 organizer.save() # save again
                 
-                sponsor.event = [event]
+                sponsor.event.set([event])
                 sponsor.save()
 
                 # update event
