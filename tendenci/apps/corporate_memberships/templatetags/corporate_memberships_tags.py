@@ -281,11 +281,15 @@ class ListCorpMembershipNode(Node):
             else:
                 items = items.order_by(order)
 
-        if randomize:
-            items = list(items)
-            objects = random.sample(items, min(len(items), limit))
-        else:
-            objects = items[:limit]
+        if items.count() > 0:
+            if randomize:
+                if limit:
+                    num_to_show = min(items.count(), limit)
+                else:
+                    num_to_show = items.count()
+                objects = random.sample(list(items), num_to_show)
+            else:
+                objects = items[:limit]
 
         context[self.context_var] = objects
         return ""
