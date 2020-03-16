@@ -128,9 +128,9 @@ Fork us at github.com/tendenci  -->
     {% include "top_menu/user_top-new.html" %}
     {% endif %}
     {% endif %}
-    
-    {% emergency_announcement request.user %}
     {% endblock %}
+
+   {% emergency_announcement request.user %}
     
     {% block html_body %}{% endblock %}
     
