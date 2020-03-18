@@ -1,2 +1,0 @@
-name:{{ object.name }}
-slug:{{ object.slug }}

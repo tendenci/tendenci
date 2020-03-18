@@ -1,1 +1,0 @@
-../../../../themes/t8-base/static/js/tendenci-ams-dashboard-ordering.js

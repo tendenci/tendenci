@@ -1,1 +1,0 @@
-../../../../themes/t8-base/static/js/social_media_icons.js

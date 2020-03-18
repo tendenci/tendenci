@@ -1,7 +1,0 @@
-{{ object.name }}
-{{ object.slug }}
-{{ object.label }}
-{{ object.type }}
-{{ object.description }}
-{{ object.notes }}
-{{ object.status_detail }}

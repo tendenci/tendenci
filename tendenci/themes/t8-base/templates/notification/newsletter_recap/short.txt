@@ -1,2 +1,0 @@
-
-{% blocktrans %}Newsletter {{ subject }} submission recap {% endblocktrans %}

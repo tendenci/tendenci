@@ -1,2 +1,0 @@
-
-{% blocktrans with object.headline as article %}New article ({{ article }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

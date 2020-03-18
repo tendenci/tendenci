@@ -1,2 +1,0 @@
-
-{% blocktrans with object.title as objtitle %}New resume ({{ objtitle }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

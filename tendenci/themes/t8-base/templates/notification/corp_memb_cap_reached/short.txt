@@ -1,1 +1,0 @@
-Membership Cap Reached by Corporate {{ corp_profile.name|safe }} {{ site_url }}{{ view_link }}

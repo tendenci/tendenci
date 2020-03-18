@@ -1,4 +1,0 @@
-#changelist table thead th:first-child + th,
-#changelist table thead th:first-child + th + th {
-    width: 70px !important;
-}

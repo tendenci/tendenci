@@ -1,1 +1,0 @@
-../../../../themes/t8-base/static/js/jquery.tipsy.js

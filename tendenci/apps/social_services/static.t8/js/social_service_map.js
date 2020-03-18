@@ -1,1 +1,0 @@
-../../../../themes/t8-base/static/js/social_service_map.js
