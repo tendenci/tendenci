@@ -7,7 +7,5 @@ recursive-include tendenci/libs *
 recursive-include tendenci/locale *
 recursive-include tendenci/themes *
 prune tendenci/apps/*/static.t7
-prune tendenci/apps/*/static.t8
 prune tendenci/apps/*/templates.t7
-prune tendenci/apps/*/templates.t8
 global-exclude __pycache__

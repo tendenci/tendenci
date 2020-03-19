@@ -8,7 +8,8 @@
 | 5.x.x   | :x: |
 | 6.x.x   | :x: |
 | 7.x.x   | :x: |
-| 11.0.x  | :white_check_mark: |
+| 11.0.x  | :x: |
+| 12.0.x  | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
