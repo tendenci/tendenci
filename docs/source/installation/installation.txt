@@ -66,21 +66,21 @@ For Ubuntu 18.04, add the universe repository:
     sudo add-apt-repository universe
 
 
-If on for Ubuntu 16.04 (skip if on 18.04), install Python 3.6 (Ubuntu 16.04 comes with Python 3.5. Ubuntu 18.04 has Python 3.6 installed by default.):
+Install Python 3.7:
 ::
 
-    sudo add-apt-repository ppa:jonathonf/python-3.6
+    sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
-    sudo apt install python3.6
+    sudo apt install python3.7
     
 
-Install ``python3.6-dev`` and ``pip``:
+Install ``python3.7-dev`` and ``pip``:
 ::
 
-    sudo apt install python3.6-dev --upgrade
+    sudo apt install python3.7-dev --upgrade
     # The python3-distutils is missing in Ubuntu 18.04 https://github.com/pypa/get-pip/issues/43. Install it before proceeding.
     sudo apt-get install python3-distutils
-    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.6
+    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.7
 
 
 System Preparation on macOS
@@ -188,7 +188,7 @@ Prepare a virtualenv for Tendenci:
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3.6 -m virtualenv -p python3.6 mysite
+    python3.7 -m virtualenv -p python3.7 mysite
     sudo chown root /srv/
 
 To use the virtualenv, you must "activate" it:
@@ -231,7 +231,7 @@ If you have anaconda installed on your machine, you must specify the path to the
 that you would like to use:
 ::
 
-    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.6/bin/python3 venv
+    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.7/bin/python3 venv
 
 The commands shown above for activating/deactivating the virtualenv on Ubuntu should also work on
 macOS.
@@ -270,7 +270,7 @@ Install Tendenci and its dependencies:
 ::
 
     cd /var/www/mysite/
-    pip install --no-binary psycopg2 -r requirements/dev.txt --upgrade
+    pip install -r requirements/dev.txt --upgrade
 
 
 Tendenci Configuration
@@ -296,11 +296,11 @@ Set ``TIME_ZONE`` to the local time zone configured on the system running Tenden
 Tendenci Preparation
 --------------------
 
-Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.6):
+Copy "tendenci2018" theme to the themes directory (adjust your path if your virtualenv path is different or you're running a different python version rather than python 3.7):
 ::
 
     mkdir /var/www/mysite/themes/tendenci2018
-    cp -r /srv/mysite/lib/python3.6/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/mysite/themes/tendenci2018/
+    cp -r /srv/mysite/lib/python3.7/site-packages/tendenci/themes/t7-tendenci2018/* /var/www/mysite/themes/tendenci2018/
 
 
 Initialize the database and static files:
