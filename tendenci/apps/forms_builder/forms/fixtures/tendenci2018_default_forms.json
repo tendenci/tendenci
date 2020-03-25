@@ -454,7 +454,7 @@
 },
 {
     "fields": {
-        "field_type": "DateField/django.forms.extras.SelectDateWidget",
+        "field_type": "DateField/django.forms.widgets.SelectDateWidget",
         "form": 2,
         "visible": true,
         "default": "",
