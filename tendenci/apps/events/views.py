@@ -1393,7 +1393,7 @@ def add(request, year=None, month=None, day=None, is_template=False,
                             speaker_bind[speaker_name] = speaker_file
 
                 for speaker in speakers:
-                    speaker.event = [event]
+                    speaker.event.set([event])
                     speaker.save()
                     assign_files_perms(speaker)
 
