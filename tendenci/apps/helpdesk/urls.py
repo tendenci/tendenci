@@ -9,6 +9,7 @@ urls.py - Mapping of URL's to our various views. Note we always used NAMED
 
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
 
 from . import settings as helpdesk_settings
 from .views import feeds, staff, public, api, kb
@@ -189,8 +190,8 @@ urlpatterns += [
 #         name='login'),
 
     url(r'^logout/$',
-        auth_views.logout,
-        {'template_name': 'helpdesk/registration/login.html', 'next_page': '../'},
+        LogoutView.as_view(template_name='helpdesk/registration/login.html',
+                           next_page='../'),
         name='logout'),
 ]
 
