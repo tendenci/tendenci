@@ -48,14 +48,14 @@ django-storages==1.9.1
 Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==3.141.0
-raven==6.0.0
+raven==6.10.0
 tendenci-django-admin-bootstrapped>=4.0
 django-bootstrap3==12.0.3
 django-app-namespace-template-loader==0.4
 django-annoying
 unidecode
 Markdown
-bleach
+bleach>=3.1.4
 unicodecsv
 Embedly>=0.5.0
 # dependencies for helpdesk
