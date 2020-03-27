@@ -67,8 +67,8 @@ class SpeakerAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            static('js/jquery-1.4.2.min.js'),
-            static('js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js'),
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/admin-list-reorder-ordering.js'),
             static('js/global/tinymce.event_handlers.js'),
         )

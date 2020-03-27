@@ -54,9 +54,6 @@ class CaseStudyAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            static('js/jquery-1.4.2.min.js'),
-            static('js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js'),
-            static('js/admin/case-studies-dynamic-sort.js'),
             static('js/global/tinymce.event_handlers.js'),
         )
         css = {'all': [static('css/admin/dynamic-inlines-with-sort.css')], }
