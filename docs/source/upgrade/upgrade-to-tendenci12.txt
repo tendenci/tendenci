@@ -1,0 +1,27 @@
+Upgrade 11.X to 12.0
+====================
+
+
+Step 1: Prepare for Upgrade
+---------------------------
+
+Back up your site and database!
+
+Replace the content of the ``requirements/tendenci.txt`` with the following :
+::
+
+    tendenci>=12,<13
+
+
+Step 2: Upgrade Tendenci
+------------------------
+
+Run:
+::
+
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
+    pip install -r requirements/tendenci.txt --upgrade
+    python manage.py migrate
+    python manage.py deploy
+    python manage.py clear_cache
