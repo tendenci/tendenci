@@ -258,7 +258,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
                 charge_response = stripe.Charge.create(**params)
                 # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                 #charge_response = simplejson.loads(charge)
-            except stripe.error.CardError as e:
+            except (stripe.error.CardError, stripe.error.InvalidRequestError) as e:
                 # it's a decline
                 json_body = e.json_body
                 err  = json_body and json_body['error']
@@ -266,6 +266,7 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
                 message = err and err['message']
                 charge_response = '{message} status={status}, code={code}'.format(
                             message=message, status=e.http_status, code=code)
+                
             except Exception as e:
                 charge_response = e.message
 
