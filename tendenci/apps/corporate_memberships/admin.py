@@ -540,7 +540,7 @@ class CorpMembershipInlineAdmin(admin.TabularInline):
     can_delete = False
     ordering = ("-create_dt", '-expiration_dt')
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
