@@ -1,7 +1,7 @@
 ### 12.0 [2020-03-30]
  
 * Requires Django 2.2. Django 1.11 is no longer supported.
-* T11 sites can be smoothly migrated. Please follow the guide in docs/source/upgrade/upgrade-to-tendenci12.txt.
+* T11 sites can be smoothly migrated to T12. For migration, please follow the guide in docs/source/upgrade/upgrade-to-tendenci12.txt.
 
 ### 11.4.10 [2020-02-10]
 
