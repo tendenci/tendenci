@@ -239,8 +239,8 @@ class EventLogManager(Manager):
                     event_log.user_ip_address = event_log.user_ip_address.split(",")[-1].replace(" ", "")
 
                 event_log.user_ip_address = event_log.user_ip_address[-15:]
-                event_log.http_referrer = smart_bytes(request.META.get('HTTP_REFERER', '')[:255], errors='replace')
-                event_log.http_user_agent = smart_bytes(request.META.get('HTTP_USER_AGENT', ''), errors='replace')
+                event_log.http_referrer = smart_bytes(request.META.get('HTTP_REFERER', ''), errors='replace').decode()
+                event_log.http_user_agent = smart_bytes(request.META.get('HTTP_USER_AGENT', ''), errors='replace').decode()
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
                 event_log.query_string = request.META.get('QUERY_STRING', '')
 
