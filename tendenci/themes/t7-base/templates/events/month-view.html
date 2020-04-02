@@ -123,7 +123,7 @@
 
               {% for event in events|slice:"2" %}
               <div class="event-item" title="{{ event.type }}: {{ event }}"
-              style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}" itemscope itemtype="http://schema.org/Event">
+              style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}" itemscope itemtype="https://schema.org/Event">
                 {% if event.priority %}
                 <div class="event-priority"></div>
                 {% endif %}

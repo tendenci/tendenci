@@ -1,7 +1,7 @@
 {% load base_filters %}
 {% load perm_tags %}
 
-<span itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+<span itemprop="offers" itemscope itemtype="https://schema.org/Offer">
   {% if registration.enabled %}
   {% if event.is_over and not request.user.is_superuser %}
   <meta itemprop="availability" content="{% trans "Event has ended" %}">

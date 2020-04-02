@@ -61,7 +61,7 @@ div.pricing-list-wrap li{
 {% has_perm user events.change_event as can_edit %}
 
 <div id="events-view">
-  <div class="event-wrap" itemscope itemtype="http://schema.org/Event">
+  <div class="event-wrap" itemscope itemtype="https://schema.org/Event">
     
     <!-- TOP -->
     <br />
@@ -300,7 +300,7 @@ div.pricing-list-wrap li{
         
       </div>
       
-      <div class="vitals place" itemprop="location" itemscope itemtype="http://schema.org/PostalAddress">
+      <div class="vitals place" itemprop="location" itemscope itemtype="https://schema.org/PostalAddress">
         <h4 class="time-period">{% trans "Location" %}</h4>
         <p><strong>{{ event.place.name }}</strong></p>
         <p>{{ event.place.address }}<br />

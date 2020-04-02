@@ -21,7 +21,7 @@
             {% endif %}
 
             <div class="image">
-                <a title="{% trans 'Google Directions' %}" href="http://maps.google.com/maps?q={{ location.get_address }}">
+                <a title="{% trans 'Google Directions' %}" href="https://maps.google.com/maps?q={{ location.get_address }}">
                 <img src="{% google_cmaps_url location size=200x200 markers=color:red|label:A zoom=10 %}" alt="Google Maps view" title="Google Maps view">
             </div>
 

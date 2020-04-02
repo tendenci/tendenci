@@ -8,7 +8,7 @@
       {% if TEMPLATE_RSS_FEED_LIST_RSS_FEED %}
         {% get_rss TEMPLATE_RSS_FEED_LIST_RSS_FEED as rss %}
       {% else %}
-        {% get_rss "http://blog.schipul.com/feed/" as rss %}
+        {% get_rss "https://blog.schipul.com/feed/" as rss %}
       {% endif %}
         {% with ":"|add:TEMPLATE_RSS_FEED_LIST_LIMIT as slice_limit %}
         {% for entry in rss.entries|slice:slice_limit %}
