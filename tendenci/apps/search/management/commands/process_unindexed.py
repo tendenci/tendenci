@@ -38,7 +38,7 @@ class Command(BaseCommand):
             # Remove is required because soft-deletes cannot be updated
             # in the index as the index cannot query for them to update
             # them.
-            params = {'age': max_age, 'batch-size': 25, 'remove': True, 'verbosity': verbosity}
+            params = {'age': max_age, 'batchsize': 25, 'remove': True, 'verbosity': verbosity}
 
             call_command('update_index', *items, **params)
             unindexed_items.delete()
