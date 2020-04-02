@@ -1,15 +1,15 @@
 [
     {
-        "default_value": "tendenci2018",
+        "default_value": "tendenci2020",
         "description": "The current theme in use for the website.",
         "data_type": "string",
         "update_dt": "2011-08-04 12:38:23",
         "input_type": "select",
         "client_editable": true,
         "name": "theme",
-        "value": "tendenci2018",
+        "value": "tendenci2020",
         "label": "Theme",
-        "input_value": "tendenci2018",
+        "input_value": "tendenci2020",
         "parent_id": 0,
         "scope": "module",
         "scope_category": "theme_editor",
