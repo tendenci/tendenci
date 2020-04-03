@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('enclosure_url', models.CharField(max_length=500, verbose_name='Enclosure URL', blank=True)),
                 ('enclosure_type', models.CharField(max_length=120, verbose_name='Enclosure Type', blank=True)),
                 ('enclosure_length', models.IntegerField(default=0, verbose_name='Enclosure Length')),
-                ('not_official_content', models.BooleanField(default=True, verbose_name='Official Content')),
+                ('not_official_content', models.BooleanField(blank=True, default=True, verbose_name='Official Content')),
                 ('creator', models.ForeignKey(related_name='articles_article_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='articles_article_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, default=tendenci.apps.user_groups.utils.get_default_group, to='user_groups.Group', null=True)),

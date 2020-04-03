@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('expiration_dt', models.DateTimeField(null=True, blank=True)),
                 ('start_dt', models.DateTimeField(null=True, blank=True)),
                 ('job_url', models.CharField(max_length=300, blank=True)),
-                ('syndicate', models.BooleanField(default=True, verbose_name='Include in RSS feed')),
+                ('syndicate', models.BooleanField(blank=True, default=True, verbose_name='Include in RSS feed')),
                 ('design_notes', models.TextField(blank=True)),
                 ('contact_company', models.CharField(max_length=300, blank=True)),
                 ('contact_name', models.CharField(max_length=150, blank=True)),

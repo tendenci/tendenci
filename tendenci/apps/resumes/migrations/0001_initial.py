@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                 ('expiration_dt', models.DateTimeField(null=True, blank=True)),
                 ('resume_url', models.CharField(max_length=300, blank=True)),
                 ('resume_file', models.FileField(default='', upload_to=tendenci.apps.resumes.models.file_directory, max_length=260, verbose_name='Upload your resume here', blank=True)),
-                ('syndicate', models.BooleanField(default=False, verbose_name='Include in RSS feed')),
+                ('syndicate', models.BooleanField(blank=True, default=False, verbose_name='Include in RSS feed')),
                 ('contact_name', models.CharField(max_length=150, blank=True)),
                 ('contact_address', models.CharField(max_length=50, blank=True)),
                 ('contact_address2', models.CharField(max_length=50, blank=True)),

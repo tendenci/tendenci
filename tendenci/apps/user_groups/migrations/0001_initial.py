@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('dashboard_url', models.CharField(default='', help_text='Enable Group Dashboard Redirect in site settings to use this feature.', max_length=255, verbose_name='Dashboard URL', blank=True)),
                 ('type', models.CharField(default='distribution', max_length=75, blank=True, choices=[('distribution', 'Distribution'), ('security', 'Security'), ('system_generated', 'System Generated')])),
                 ('email_recipient', models.CharField(max_length=255, verbose_name='Recipient Email', blank=True)),
-                ('show_as_option', models.BooleanField(default=True, verbose_name='Display Option')),
+                ('show_as_option', models.BooleanField(blank=True, default=True, verbose_name='Display Option')),
                 ('allow_self_add', models.BooleanField(default=True, verbose_name='Allow Self Add')),
                 ('allow_self_remove', models.BooleanField(default=True, verbose_name='Allow Self Remove')),
                 ('sync_newsletters', models.BooleanField(default=True, verbose_name='Sync for newsletters')),

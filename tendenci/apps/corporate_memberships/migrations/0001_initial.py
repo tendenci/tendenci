@@ -145,8 +145,8 @@ class Migration(migrations.Migration):
             name='CorpMembershipRep',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('is_dues_rep', models.BooleanField(default=True, verbose_name='is dues rep?')),
-                ('is_member_rep', models.BooleanField(default=True, verbose_name='is member rep?')),
+                ('is_dues_rep', models.BooleanField(blank=True, default=True, verbose_name='is dues rep?')),
+                ('is_member_rep', models.BooleanField(blank=True, default=True, verbose_name='is member rep?')),
             ],
         ),
         migrations.CreateModel(

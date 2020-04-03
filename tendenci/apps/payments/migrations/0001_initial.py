@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('cust_id', models.CharField(default=0, max_length=20)),
                 ('tax', models.CharField(max_length=16, blank=True)),
                 ('duty', models.CharField(max_length=16, blank=True)),
-                ('verified', models.BooleanField(default=False)),
+                ('verified', models.BooleanField(blank=True, default=False)),
                 ('submit_dt', models.DateTimeField(null=True, blank=True)),
                 ('create_dt', models.DateTimeField(auto_now_add=True)),
                 ('update_dt', models.DateTimeField(auto_now=True)),
