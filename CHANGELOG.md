@@ -1,3 +1,12 @@
+### 12.0.1 [2020-04-03]
+
+* Renamed tendenci2018 theme to tendenci2020 
+* Replaced http:// with https:// for urls
+* Corrected batchsize option for process_unindexed command
+* Fixed a DataError for event_logs
+* Avoided value exceeding FIELD_MAX_LENGTH for forms
+* Resolved some migration warnings
+
 ### 12.0 [2020-03-30]
  
 * Requires Django 2.2. Django 1.11 is no longer supported.
