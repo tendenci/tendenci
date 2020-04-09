@@ -1,7 +1,7 @@
 future
 six
 configparser
-Django>=2.2.10,<3.0
+Django>=2.2.12,<3.0
 django-formtools>=1.0
 pisa
 Pillow==7.0.0
