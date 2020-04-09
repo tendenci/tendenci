@@ -1,3 +1,11 @@
+### 12.0.2 [2020-04-09]
+
+* Updated django version to 2.2.12
+* Some bugfixes for profiles and groups permission edit
+* Fixed a TypeError when payment is not fully set up
+* Updated format for the groups perms edit 
+* Appended ?rel=0 to avoid unrelated youtube videos being displayed when video finishes
+
 ### 12.0.1 [2020-04-03]
 
 * Renamed tendenci2018 theme to tendenci2020 
