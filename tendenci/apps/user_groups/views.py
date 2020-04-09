@@ -246,7 +246,7 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
         form = form_class(instance=group_edit)
 
     if form.is_valid():
-        group_edit.permissions = form.cleaned_data['permissions']
+        group_edit.permissions.set(form.cleaned_data['permissions'])
         group_edit.save()
         return HttpResponseRedirect(group_edit.get_absolute_url())
 
