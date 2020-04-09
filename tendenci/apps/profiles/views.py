@@ -599,7 +599,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
     else:
         form = form_class(instance=user_edit)
     if form.is_valid():
-        user_edit.user_permissions = form.cleaned_data['user_permissions']
+        user_edit.user_permissions.set(form.cleaned_data['user_permissions'])
         user_edit.save()
 
         EventLog.objects.log(instance=profile)
