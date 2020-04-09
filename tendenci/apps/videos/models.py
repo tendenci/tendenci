@@ -98,8 +98,6 @@ class Video(OrderingBaseModel, TendenciBaseModel):
 
         TODO: Contribute more video service embed URL's
         """
-        import re
-
         url_pattern = r'https:\/\/www\.youtube\.com\/watch\?v=(\w+)'
         share_pattern = r'https:\/\/youtu\.be\/(\w+)'
 
@@ -166,7 +164,7 @@ class OembedlyCache(models.Model):
     @staticmethod
     def get_code(url, width, height):
         if url.find('youtu') != -1:
-            return '<iframe width="{width}" height="{height}" src="{url}" allowfullscreen></iframe>'.format(
+            return '<iframe width="{width}" height="{height}" src="{url}?rel=0" allowfullscreen></iframe>'.format(
                             width=width,
                             height=height,
                             url=get_embed_ready_url(url))
