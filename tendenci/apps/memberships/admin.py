@@ -618,7 +618,7 @@ clone_apps.short_description = 'Clone selected forms'
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('id', 'name', 'application_form_link', 'status_detail')
+    list_display = ('id', 'name', 'application_form_link', 'status_detail', 'field_sort_link')
     list_display_links = ('name',)
     search_fields = ('name', 'status_detail')
     fieldsets = (
@@ -656,6 +656,15 @@ class MembershipAppAdmin(admin.ModelAdmin):
         css = {'all': [static('css/admin/dynamic-inlines-with-sort.css'),
                        static('css/memberships-admin.css')], }
 
+    @mark_safe
+    def field_sort_link(self, instance):
+        return '<a href="%s?membership_app_id=%d">%s</a>' % (
+                reverse('admin:memberships_membershipappfield_changelist'),
+                        instance.id,
+                        _('Sort Fields'))
+    field_sort_link.short_description = ''
+
+
 
 class MembershipTypeAdmin(TendenciBaseModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'show_group', 'require_approval',
@@ -668,7 +677,7 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
         (_('Expiration Method'), {'fields': ('never_expires', 'type_exp_method',)}),
-        (_('Renewal Options'), {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
+        (_('Renewal Options for this membership type'), {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
                                         'renewal_price',
                                         'renewal_period_start',
                                         'renewal_period_end',)}),

@@ -300,7 +300,7 @@ class Migration(migrations.Migration):
                 ('fixed_option2_rollover_days', models.IntegerField(default=0, help_text='Membership signups after this date covers the following calendar year as well.')),
                 ('renewal_period_start', models.IntegerField(default=30, help_text='How long (in days) before the memberships expires can the member renew their membership.', verbose_name='Renewal Period Start')),
                 ('renewal_period_end', models.IntegerField(default=30, help_text='How long (in days) after the memberships expires can the member renew their membership.', verbose_name='Renewal Period End')),
-                ('expiration_grace_period', models.IntegerField(default=0, help_text='The number of days after the membership expires their membership is still active.', verbose_name='Expiration Grace Period')),
+                ('expiration_grace_period', models.IntegerField(default=0, help_text='The number of days (maximum 100) after the membership expires their membership is still active.', verbose_name='Expiration Grace Period')),
                 ('creator', models.ForeignKey(related_name='memberships_membershiptype_creator', on_delete=django.db.models.deletion.SET_NULL, default=None, editable=False, to=settings.AUTH_USER_MODEL, null=True)),
                 ('entity', models.ForeignKey(related_name='memberships_membershiptype_entity', on_delete=django.db.models.deletion.SET_NULL, default=None, blank=True, to='entities.Entity', null=True)),
                 ('group', models.ForeignKey(related_name='membership_types', to='user_groups.Group', help_text='Members joined will be added to this group', on_delete=django.db.models.deletion.CASCADE)),

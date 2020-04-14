@@ -1,0 +1,15 @@
+{% extends "django_admin_bootstrapped:admin/change_list.html" %}
+{% load admin_urls admin_list bootstrapped_goodies_tags %}
+{% load membership_tags %}
+
+{% block object-tools %}
+{{ block.super }}
+	{% with request.GET.membership_app_id as membership_app_id %}
+	<h4 class="pull-right"> 
+	{% if membership_app_id %} {% trans 'Showing fields for:' %} <a href="{% url 'admin:memberships_membershipapp_change' membership_app_id %}">{% get_membership_app membership_app_id %}</a>
+	{% else %}
+	{% trans 'Click the "Filter" above to select an App' %}
+	{% endif %}
+	</h4>
+	{% endwith %}
+{% endblock %}

@@ -210,6 +210,22 @@ class MembershipTypeForm(TendenciBaseForm):
         self.fields['type_exp_method'].widget = TypeExpMethodWidget(attrs={'id': 'type_exp_method'},
                                                                     fields_pos_d=fields_pos_d)
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        # Make sure Expiretion Grace Period <= Renewal Period End
+        expiration_grace_period = self.cleaned_data['expiration_grace_period']
+        renewal_period_end = self.cleaned_data['renewal_period_end']
+        if expiration_grace_period > renewal_period_end:
+            raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
+        return cleaned_data
+
+
+    def clean_expiration_grace_period(self):
+        value = self.cleaned_data['expiration_grace_period']
+        if value > 100:
+            raise forms.ValidationError(_("This number should be less than 100 (days)."))
+        return value
+
     def clean_type_exp_method(self):
         value = self.cleaned_data['type_exp_method']
 

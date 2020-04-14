@@ -86,3 +86,22 @@ def membership_current_app(context, user, membership=None):
         "user": user
     })
     return context
+
+@register.simple_tag(takes_context=True)
+def get_membership_app(context, app_id):
+    """
+    Get membership app by id.
+    """
+    from tendenci.apps.memberships.models import MembershipApp
+    from tendenci.apps.perms.utils import has_perm
+    
+    request = context.get('request')
+    if not has_perm(request.user, 'memberships.view_membershipapp'):
+        return None
+
+    try:
+        app_id = int(app_id)
+    except:
+        return None
+    [membership_app] = MembershipApp.objects.filter(id=app_id)[:1] or [None]
+    return membership_app

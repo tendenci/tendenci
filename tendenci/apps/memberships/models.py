@@ -158,7 +158,7 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     renewal_period_end = models.IntegerField(_('Renewal Period End'), default=30,
             help_text=_("How long (in days) after the memberships expires can the member renew their membership."))
     expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0,
-            help_text=_("The number of days after the membership expires their membership is still active."))
+            help_text=_("The number of days (maximum 100) after the membership expires their membership is still active."))
 
     objects = MembershipTypeManager()
 
