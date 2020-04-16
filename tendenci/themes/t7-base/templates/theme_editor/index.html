@@ -22,26 +22,11 @@
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
-<div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span> in theme <span class="highlight">{{ current_theme }}</span></big></div>
+<div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span></big></div>
 {% endif %}
 <table class="table" id="file-editor" width="100%">
     <tr>
         <td width="20%" valign="top">
-            <div class="theme-selection well well-small">
-                <h4>{% if theme_read_only %}{% trans 'Currently viewing' %}{% else %}{% trans 'Currently editing' %}{% endif %}:</h4>
-                <form method="GET" action="">
-                    {{ theme_form.theme_edit }}
-                </form>
-             
-             	{% ifnotequal ACTIVE_THEME current_theme %}
-		          <p><a href="{% url 'home' %}?theme={{ current_theme }}" target="_blank">{% blocktrans %}Preview <strong>{{ current_theme }}</strong> on your site{% endblocktrans %} &raquo;</a></p>
-		        {% endifnotequal %}
-                <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}.
-                {% if theme_count > 1 %}
-                <a href="{% url "theme_editor.picker" %}">{% trans "Change" %} &raquo;</a>
-                {% endif %}
-                </p>
-            </div>
             <div id="right_files_list">
 	            <div class="well well-small">
 	                <h4>{% if theme_read_only %}{% trans "Choose a folder or file to view:" %}{% else %}{% trans "Choose a folder or file to edit:" %}{% endif %}</h4>

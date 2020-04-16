@@ -68,7 +68,7 @@ table#file-editor div.pwd {
 
 #right_files_list {
 	margin-left: 10px;
-	margin-top: 10px;
+	/*margin-top: 10px;*/
 }
 
 #right_files_list h2 {

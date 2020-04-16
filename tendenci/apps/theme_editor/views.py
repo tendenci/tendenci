@@ -136,11 +136,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # Add a space for the blank template to make it editable.
     content = get_file_content(theme_root, selected_theme, current_file_path) or ' '
     file_form = form_class({'content': content})
-    theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
 
     return render_to_resp(request=request, template_name=template_name, context={
         'file_form': file_form,
-        'theme_form': theme_form,
         'current_theme': selected_theme,
         'current_file_path': current_file_path,
         'current_file': current_file,
