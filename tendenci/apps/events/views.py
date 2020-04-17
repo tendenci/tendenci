@@ -2914,6 +2914,9 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     if year <= 1900 or year >= 9999:
         raise Http404
 
+    if month < 1 or month > 12: 
+        raise Http404
+
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
 
