@@ -785,7 +785,7 @@ def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
 
     file_path = ""
     task_id = ""
-    if not settings.CELERY_IS_ACTIVE:
+    if not getattr(settings, 'CELERY_IS_ACTIVE', None):
         task = ZipPhotoSetTask()
         file_path = task.run(photo_set)
     else:

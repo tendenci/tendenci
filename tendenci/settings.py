@@ -709,7 +709,7 @@ MESSAGE_TAGS = {
 # import djcelery  # noqa: E402
 # djcelery.setup_loader()
 # BROKER_URL = "django://"
-# CELERY_IS_ACTIVE = False
+CELERY_IS_ACTIVE = False
 
 # USE_SUBPROCESS - in places like exports and long-running
 # processes that can timeout, subprocess will be used
