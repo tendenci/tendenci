@@ -67,10 +67,6 @@ class ArticleMeta():
 #            values_list.append(site_name)
 
         title = ' '.join(values_list)
-        # truncate the meta title to 100 characters
-        max_length = 100
-        if len(title) > max_length:
-            title = '%s...' % title[:(max_length - 3)]
 
         return title
 
