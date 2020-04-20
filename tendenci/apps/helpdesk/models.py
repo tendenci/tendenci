@@ -514,7 +514,17 @@ class Ticket(models.Model):
 
         self.modified = timezone.now()
 
+        self.verifydata()
         super(Ticket, self).save(*args, **kwargs)
+
+    def verifydata(self):
+        # verify each field
+        for field in Ticket._meta.fields:
+            if field.max_length:
+                value = getattr(self, field.name)
+                if value and len(value) > field.max_length:
+                    value = value[:field.max_length]
+                    setattr(self, field.name, value)
 
 
 class FollowUpManager(models.Manager):
