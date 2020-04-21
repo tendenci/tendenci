@@ -1430,9 +1430,14 @@ class CorpMembershipApp(TendenciBaseModel):
         return '--'
 
     def _add_reps_group(self, **kwargs):
+        # check if the group has been created already
+        name = kwargs.get('name')
+        if Group.objects.filter(name=name).exists():
+            return Group.objects.get(name=name)
+        
         return Group.objects.create(
-                    name=kwargs.get('name'),
-                    label=kwargs.get('name'),
+                    name=name,
+                    label=name,
                     slug=kwargs.get('slug'),
                     type='system_generated',
                     show_as_option=False,
