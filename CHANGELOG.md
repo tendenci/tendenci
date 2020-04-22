@@ -1,3 +1,13 @@
+### 12.0.3 [2020-04-21]
+
+* Updated membership backend UX
+* Meta title update for articles and news - removed the 100 characters limit and the silly "..."
+* Removed the themes dropdown on theme editor 
+* Fixed a IllegalMonthError at events month view (ex: /events/2020/0/)
+* Fixed a AttributeError at photos zip
+* Avoided a DataError at get_email command 
+* Fixed a TypeError for forms
+
 ### 12.0.2 [2020-04-09]
 
 * Updated django version to 2.2.12
