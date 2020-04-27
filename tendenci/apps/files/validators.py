@@ -53,7 +53,7 @@ class FileValidator(object):
                 raise ValidationError(_("Invalid file name - comma is not allowed."))
             if '..' in value.name:
                 raise ValidationError(_("Invalid file name - two consecutive dots are not allowed."))
-            
+
             # Check the extension
             ext = splitext(value.name)[1].lower()
             if self.allowed_extensions and ext not in self.allowed_extensions:
@@ -64,19 +64,6 @@ class FileValidator(object):
 
                 raise ValidationError(message)
 
-            # Check the content type
-            try:
-                mime_type = magic.from_buffer(value.read(1024), mime=True)
-                if self.allowed_mimetypes and mime_type not in self.allowed_mimetypes:
-                    message = self.mime_message % {
-                        'mimetype': mime_type,
-                        'allowed_mimetypes': ', '.join(self.allowed_mimetypes)
-                    }
-
-                    raise ValidationError(message)
-            except AttributeError:
-                raise ValidationError(_('File type is not valid'))
-
             # Check the file size
             filesize = len(value)
             if self.max_size and filesize > self.max_size:
@@ -86,3 +73,24 @@ class FileValidator(object):
                 }
 
                 raise ValidationError(message)
+
+
+            # Check the content type
+            try:
+                # Magic doesn't recognise old Word and Excel Documents (.doc, .xls) unless it can see the whole document, 
+                # so give it the whole file
+                if ext in ('.doc', '.xls'):
+                    mime_type = magic.from_buffer(value.read(), mime=True)
+
+                else:
+                    mime_type = magic.from_buffer(value.read(1024), mime=True)
+
+                if self.allowed_mimetypes and mime_type not in self.allowed_mimetypes:
+                    message = self.mime_message % {
+                        'mimetype': mime_type,
+                        'allowed_mimetypes': ', '.join(self.allowed_mimetypes)
+                    }
+
+                    raise ValidationError(message)
+            except AttributeError:
+                raise ValidationError(_('File type is not valid'))
