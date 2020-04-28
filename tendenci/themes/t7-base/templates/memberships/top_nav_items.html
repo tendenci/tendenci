@@ -91,7 +91,7 @@
                             {% if can_view_memb or allow_view or user == membership.user  %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{{ app_object.user.get_absolute_url }}">{% trans "View Profile" %}</a>
+                                        <a href="{% url 'profile' membership.user.username  %}">{% trans "View Profile" %}</a>
                                     </span>
                                 </li>
                             {% endif %}
@@ -99,7 +99,7 @@
                             {% if can_edit_memb %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}?next={{ request.path }}">{% trans "Edit Membership" %}</a>
+                                        <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}?next={{ request.path }}">{% trans "Admin:Edit Membership" %}</a>
                                     </span>
                                 </li>
                             {% endif %}

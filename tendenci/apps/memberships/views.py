@@ -1370,7 +1370,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
 
     membership = get_object_or_404(MembershipDefault, pk=id)
     is_owner = request.user == membership.user
-    user = request.user
+    user = membership.user
 
     if not has_perm(request.user, 'memberships.change_membershipdefault', membership) and not is_owner:
         raise Http403
@@ -1409,6 +1409,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
         'request_user': request.user,
         'customer': user or request.user,
         'membership_app': app,
+        'edit_mode': True,
     }
 
     education_form = EducationForm(app_fields, request.POST or None, user=user or request.user)

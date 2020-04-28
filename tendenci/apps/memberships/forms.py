@@ -1086,6 +1086,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
         multiple_membership = kwargs.pop('multiple_membership', False)
         self.is_renewal = kwargs.pop('is_renewal', False)
         self.renew_from_id = kwargs.pop('renew_from_id', None)
+        self.edit_mode = kwargs.pop('edit_mode', False)
 
         if 'join_under_corporate' in kwargs:
             self.join_under_corporate = kwargs.pop('join_under_corporate')
@@ -1182,15 +1183,19 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
                 #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
 
-        if self.membership_app.donation_enabled:
+        if not self.edit_mode and self.membership_app.donation_enabled:
             self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
             self.fields['donation_option_value'].label = self.membership_app.donation_label
             self.fields['donation_option_value'].widget = DonationOptionAmountWidget(attrs={},
                                                 default_amount=self.membership_app.donation_default_amount)
             require_payment = True
 
+        if self.edit_mode:
+            require_payment = False
+
         if not require_payment:
-            del self.fields['payment_method']
+            if 'payment_method' in self.fields:
+                del self.fields['payment_method']
         else:
             payment_method_qs = self.membership_app.payment_methods.all()
             if not (request_user and request_user.is_authenticated and request_user.is_superuser):
@@ -1273,8 +1278,9 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
 
         # set owner & creator
         if request_user:
-            membership.creator = request_user
-            membership.creator_username = request_user.username
+            if not self.edit_mode:
+                membership.creator = request_user
+                membership.creator_username = request_user.username
             membership.owner = request_user
             membership.owner_username = request_user.username
 
