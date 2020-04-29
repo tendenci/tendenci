@@ -286,13 +286,17 @@ def add(request, form_class=ArticleForm,
                                            request.POST,)
             if form.is_valid() and categoryform.is_valid():
                 article = form.save()
+                article.creator = request.user
+                article.creator_username = request.user.username
+                
+                # add all permissions
+                update_perms_and_save(request, form, article)
+                
                 article.update_category_subcategory(
                                     categoryform.cleaned_data['category'],
                                     categoryform.cleaned_data['sub_category']
                                     )
-
-                # add all permissions and save the model
-                update_perms_and_save(request, form, article)
+                
                 msg_string = 'Successfully added %s' % str(article)
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 

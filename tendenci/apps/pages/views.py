@@ -32,6 +32,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
 from tendenci.apps.categories.models import CategoryItem
+from tendenci.apps.perms.utils import assign_files_perms
 
 
 @is_enabled('pages')
@@ -393,7 +394,9 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
         categoryform = category_form_class(content_type,
                                            request.POST,)
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
-            page = form.save()
+            page = form.save(commit=False)
+            # add all permissions and save the model
+            page = update_perms_and_save(request, form, page)
 
             # handle header image
             f = form.cleaned_data['header_image']
@@ -409,6 +412,8 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
                 f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
+                page.save()
+                assign_files_perms(page, files=[page.header_image])
 
             #save meta
             meta = metaform.save()
@@ -419,9 +424,6 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
                                     categoryform.cleaned_data['category'],
                                     categoryform.cleaned_data['sub_category']
                                     )
-
-            # add all permissions
-            page = update_perms_and_save(request, form, page)
 
             messages.add_message(request, messages.SUCCESS,
                                  _('Successfully added %(p)s' % {'p': str(page)}))
