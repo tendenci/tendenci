@@ -1497,7 +1497,7 @@ def copy_event(event, user, reuse_rel=False):
             reminder_days = old_regconf.reminder_days,
             registration_email_text = old_regconf.registration_email_text,
         )
-        new_regconf.payment_method = old_regconf.payment_method.all()
+        new_regconf.payment_method.set(old_regconf.payment_method.all())
         new_regconf.save()
         new_event.registration_configuration = new_regconf
         new_event.save()
@@ -1516,7 +1516,7 @@ def copy_event(event, user, reuse_rel=False):
                 allow_user = pricing.allow_user,
                 allow_member = pricing.allow_member,
             )
-            new_pricing.groups = pricing.groups.all()
+            new_pricing.groups.set(pricing.groups.all())
 
     #copy addons
     for addon in event.addon_set.all():
