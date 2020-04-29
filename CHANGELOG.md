@@ -1,3 +1,9 @@
+### 12.0.4 [2020-04-29]
+
+* Resolved some issues in memberships edit
+* Fixed a TypeError at clone event
+* Resolved the issue about creator not being assigned on pages and articles add 
+
 ### 12.0.3 [2020-04-21]
 
 * Updated membership backend UX
