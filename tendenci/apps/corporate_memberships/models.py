@@ -1603,6 +1603,9 @@ class CorpMembershipAppField(OrderingBaseModel):
                         field_args["choices"] = list(zip(choices, choices))
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
+                # django.forms.extras moved to django.forms.widgets since Django 1.9
+                if module == 'django.forms.extras':
+                    module = 'django.forms.widgets'
                 field_args["widget"] = getattr(import_module(module), widget)
 
             return field_class(**field_args)
