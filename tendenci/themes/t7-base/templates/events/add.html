@@ -49,6 +49,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <link href="{% static 'tiny_mce/custom.css' %}" type="text/css" media="all" rel="stylesheet">
     <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
     <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
     <script type="text/javascript" src="{% static 'tiny_mce/init_tinymce.js' %}"></script>
