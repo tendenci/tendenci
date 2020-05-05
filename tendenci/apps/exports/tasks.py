@@ -61,7 +61,7 @@ class TendenciExportTask(Task):
             # get the available fields from the model's meta
             opts = item._meta
             d = {}
-            for f in opts.fields + opts.many_to_many + tuple(opts.virtual_fields):
+            for f in opts.get_fields() + opts.many_to_many:
                 if f.name in fields:  # include specified fields only
                     if isinstance(f, ManyToManyField):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
@@ -69,7 +69,8 @@ class TendenciExportTask(Task):
                         value = getattr(item, f.name)
                     elif isinstance(f, GenericRelation):
                         generics = f.value_from_object(item).all()
-                        value = ["%s" % obj for obj in generics]
+                        value = ["%s" % obj for obj in generics if obj !='']
+                        value = ', '.join(value)
                     else:
                         value = f.value_from_object(item)
                         if value:
