@@ -369,17 +369,15 @@ class Newsletter(models.Model):
         if self.resumes:
             resumes_list, resumes_content = newsletter_resumes_list(request, self.resumes_days, simplified)
 
-        try:
-            events_type = self.events_type
+        events_content = ""
+        events_list = []
+        events_type = self.events_type
+        if self.events:
             events_list, events_content = newsletter_events_list(
                 request,
                 start_dt=self.event_start_dt,
                 end_dt=self.event_end_dt,
                 simplified=simplified)
-
-        except ImportError:
-            events_list = []
-            events_type = None
 
         data = {
                 'opening_text': opening_txt,
