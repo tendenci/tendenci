@@ -459,7 +459,8 @@ def process_export(
 
         fks = set(user_fks + profile_fks + demographic_fks + membership_fks)
 
-    membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name'))
+    membership_ids_dict = dict(MembershipType.objects.all().values_list('id', 'name').union(
+                               MembershipType.objects.all_inactive().values_list('id', 'name')))
     app_ids_dict = dict(MembershipApp.objects.all().values_list('id', 'name'))
 
     identifier = identifier or int(ttime.time())
@@ -500,7 +501,7 @@ def process_export(
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
-                    elif field_name == 'membership_type':
+                    elif field_name == 'membership_type' and item in membership_ids_dict:
                         # display membership type name instead of id
                         item = membership_ids_dict[item]
                     elif field_name == 'app':
