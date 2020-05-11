@@ -121,8 +121,8 @@ class ItemAdminForm(forms.ModelForm):
         data = self.cleaned_data.get('url_field')
 
         if data:
-            if not data[:4].lower() == "http" and not data[:1] == "/":
-                # Append a beginning forward slash if none and not http
+            if not data[:4].lower() == "http" and not data[:1] == "/" and not data[:4] == "tel:":
+                # Append a beginning forward slash if none and not http and not tel:
                 data = "/%s" % data
 
         return data
