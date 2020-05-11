@@ -2045,9 +2045,11 @@ class RegistrantBaseFormSet(BaseFormSet):
         return return_data
 
 
-class RegConfPricingBaseFormSet(BaseFormSet):
+
+class RegConfPricingBaseModelFormSet(BaseModelFormSet):
+
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
-                 initial=None, error_class=ErrorList, **kwargs):
+                 queryset=None, *, initial=None, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         reg_form_required = kwargs.pop('reg_form_required', None)
         user = kwargs.pop('user', None)
@@ -2057,56 +2059,22 @@ class RegConfPricingBaseFormSet(BaseFormSet):
             self.reg_form_required = reg_form_required
         if user:
             self.user = user
-
-        super(RegConfPricingBaseFormSet, self).__init__(data, files, auto_id, prefix,
-                 initial, error_class)
+        super(RegConfPricingBaseModelFormSet, self).__init__(data=data, files=files, auto_id=auto_id, prefix=prefix,
+                 queryset=queryset, initial=initial, **kwargs)
 
     def _construct_form(self, i, **kwargs):
         """
         Instantiates and returns the i-th form instance in a formset.
         """
-        defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
-
-        #defaults['form_index'] = i
         if hasattr(self, 'reg_form_queryset'):
-            defaults['reg_form_queryset'] = self.reg_form_queryset
+            kwargs['reg_form_queryset'] = self.reg_form_queryset
         if hasattr(self, 'reg_form_required'):
-            defaults['reg_form_required'] = self.reg_form_required
+            kwargs['reg_form_required'] = self.reg_form_required
         if hasattr(self, 'user'):
-            defaults['user'] = self.user
-
-        if self.data or self.files:
-            defaults['data'] = self.data
-            defaults['files'] = self.files
-        if self.initial:
-            try:
-                defaults['initial'] = self.initial[i]
-            except IndexError:
-                pass
-        # Allow extra forms to be empty.
-        if i >= self.initial_form_count():
-            defaults['empty_permitted'] = True
-        defaults.update(kwargs)
-        form = self.form(**defaults)
-        self.add_fields(form, i)
-        return form
-
-
-class RegConfPricingBaseModelFormSet(BaseModelFormSet):
-
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
-                 queryset=None, **kwargs):
-        # This is nasty, but i only need to replace the BaseFormSet so that we
-        # can pass a parameter to our pricing form.
-        # Apparently, we don't want to rewrite the entire BaseModelFormSet class.
-        # So, here is what we do:
-        # 1)  create a class RegConfPricingBaseFormSet - a subclass of BaseFormSet
-        # 2)  change the base class of BaseModelFormSet to
-        #     RegConfPricingBaseFormSet instead of BaseFormSet
-        self.__class__.__bases__[0].__bases__[0].__bases__ = (RegConfPricingBaseFormSet,)
-        super(RegConfPricingBaseModelFormSet, self).__init__(data, files, auto_id, prefix,
-                 queryset, **kwargs)
+            kwargs['user'] = self.user
+        return super(RegConfPricingBaseModelFormSet, self)._construct_form(i, **kwargs)
         
+
     def clean(self):
         return_data = super(RegConfPricingBaseModelFormSet, self).clean()
         # check and make sure the total of registration limit specified for each pricing
