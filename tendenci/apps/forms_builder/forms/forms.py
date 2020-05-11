@@ -576,6 +576,8 @@ class PricingForm(FormControlWidgetMixin, forms.ModelForm):
                         }),]
 
     def __init__(self, *args, **kwargs):
+        if kwargs.get('empty_permitted', True):
+            kwargs['use_required_attribute'] = False
         super(PricingForm, self).__init__(*args, **kwargs)
         # Setup initial values for billing_cycle and billing_dt_select
         # in order to have empty values for extra forms.
