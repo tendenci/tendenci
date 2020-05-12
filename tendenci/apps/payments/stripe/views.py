@@ -268,7 +268,10 @@ def pay_online(request, payment_id, guid='', template_name='payments/stripe/payo
                             message=message, status=e.http_status, code=code)
                 
             except Exception as e:
-                charge_response = e.message
+                if hasattr(e, 'message'):
+                    charge_response = e.message
+                else:
+                    charge_response = str(e)
 
             # add a rp entry now
             if hasattr(charge_response,'paid') and charge_response.paid:
