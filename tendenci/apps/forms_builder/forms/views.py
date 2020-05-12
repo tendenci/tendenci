@@ -87,14 +87,10 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         raise Http403
 
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
-    RecurringPaymentFormSet = inlineformset_factory(Form, RecurringPayment, form=RecurringPaymentForm, extra=2)
-
+#     RecurringPaymentFormSet = inlineformset_factory(Form, RecurringPayment, form=RecurringPaymentForm, extra=2)
+    formset = PricingFormSet(request.POST or None, instance=form_instance)
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
-        if form_instance.recurring_payment:
-            formset = RecurringPaymentFormSet(request.POST, instance=form_instance)
-        else:
-            formset = PricingFormSet(request.POST, instance=form_instance)
         if form.is_valid() and formset.is_valid():
             form_instance = form.save(commit=False)
             form_instance = update_perms_and_save(request, form, form_instance)
@@ -110,10 +106,6 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
-        if form_instance.recurring_payment:
-            formset = RecurringPaymentFormSet(instance=form_instance)
-        else:
-            formset = PricingFormSet(instance=form_instance)
     return render_to_resp(request=request, template_name=template_name,context={
         'form':form,
         'formset':formset,
@@ -369,6 +361,8 @@ def search(request, template_name="forms/search.html"):
         forms = forms.filter(Q(title__icontains=query) | Q(intro__icontains=query) | Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
+    print(forms.count())
+    print(forms.query)
 
     EventLog.objects.log()
 
