@@ -1,3 +1,12 @@
+### 12.0.7 [2020-05-13]
+
+* Updated nav editor to allow tel: links
+* Cleaned up RegConfPricingBaseFormSet
+* Fixed a ValueError for PricingForm
+* Fixed an AttributeError for stripe payment
+* Resolved some issues for forms so that users with permissions can add/edit forms at front end instead of admin backend
+
+
 ### 12.0.6 [2020-05-10]
 
 * Resolved the issue about tinymce menu not showing on fullscreen for events add/edit
