@@ -21,6 +21,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views import generic
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
+from tendenci.apps.perms.decorators import is_enabled
 
 from . import compat, defaults, util
 from .compat import get_atomic_func
@@ -63,7 +64,16 @@ class RedirectToLoginMixin(object):
         return '/'
 
 
-class IndexView(generic.ListView):
+class IsEnabledMixin(object):
+    """
+    Mixin to check if forums is enabled.
+    """
+    @method_decorator(is_enabled('forums'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(IsEnabledMixin, self).dispatch(request, *args, **kwargs)
+
+
+class IndexView(IsEnabledMixin, generic.ListView):
 
     template_name = 'pybb/index.html'
     context_object_name = 'categories'
@@ -80,7 +90,7 @@ class IndexView(generic.ListView):
         return perms.filter_categories(self.request.user, Category.objects.filter(status=True).order_by('position'))
 
 
-class CategoryView(RedirectToLoginMixin, generic.DetailView):
+class CategoryView(IsEnabledMixin, RedirectToLoginMixin, generic.DetailView):
 
     template_name = 'pybb/index.html'
     context_object_name = 'category'
@@ -111,7 +121,7 @@ class CategoryView(RedirectToLoginMixin, generic.DetailView):
         return super(CategoryView, self).get(*args, **kwargs)
 
 
-class ForumView(RedirectToLoginMixin, PaginatorMixin, generic.ListView):
+class ForumView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, generic.ListView):
 
     paginate_by = defaults.PYBB_FORUM_PAGE_SIZE
     context_object_name = 'topic_list'
@@ -153,7 +163,7 @@ class ForumView(RedirectToLoginMixin, PaginatorMixin, generic.ListView):
         return super(ForumView, self).get(*args, **kwargs)
 
 
-class LatestTopicsView(PaginatorMixin, generic.ListView):
+class LatestTopicsView(IsEnabledMixin, PaginatorMixin, generic.ListView):
 
     paginate_by = defaults.PYBB_FORUM_PAGE_SIZE
     context_object_name = 'topic_list'
@@ -185,7 +195,7 @@ class PybbFormsMixin(object):
         return self.poll_answer_formset_class
 
 
-class TopicView(RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.ListView):
+class TopicView(IsEnabledMixin, RedirectToLoginMixin, PaginatorMixin, PybbFormsMixin, generic.ListView):
     paginate_by = defaults.PYBB_TOPIC_PAGE_SIZE
     template_object_name = 'post_list'
     template_name = 'pybb/topic.html'
@@ -385,7 +395,7 @@ class PostEditMixin(PybbFormsMixin):
                                                              pollformset=pollformset))
 
 
-class AddPostView(PostEditMixin, generic.CreateView):
+class AddPostView(IsEnabledMixin, PostEditMixin, generic.CreateView):
 
     template_name = 'pybb/add_post.html'
 
@@ -451,7 +461,7 @@ class AddPostView(PostEditMixin, generic.CreateView):
         return self.object.get_absolute_url()
 
 
-class EditPostView(PostEditMixin, generic.UpdateView):
+class EditPostView(IsEnabledMixin, PostEditMixin, generic.UpdateView):
 
     model = Post
 
@@ -491,7 +501,7 @@ class UserView(generic.DetailView):
         return ctx
 
 
-class UserPosts(PaginatorMixin, generic.ListView):
+class UserPosts(IsEnabledMixin, PaginatorMixin, generic.ListView):
     model = Post
     paginate_by = defaults.PYBB_TOPIC_PAGE_SIZE
     template_name = 'pybb/user_posts.html'
@@ -514,7 +524,7 @@ class UserPosts(PaginatorMixin, generic.ListView):
         return context
 
 
-class UserTopics(PaginatorMixin, generic.ListView):
+class UserTopics(IsEnabledMixin, PaginatorMixin, generic.ListView):
     model = Topic
     paginate_by = defaults.PYBB_FORUM_PAGE_SIZE
     template_name = 'pybb/user_topics.html'
@@ -537,7 +547,7 @@ class UserTopics(PaginatorMixin, generic.ListView):
         return context
 
 
-class PostView(RedirectToLoginMixin, generic.RedirectView):
+class PostView(IsEnabledMixin, RedirectToLoginMixin, generic.RedirectView):
 
     permanent = False
 
@@ -678,7 +688,7 @@ class OpenTopicView(TopicActionBaseView):
         topic.save()
 
 
-class TopicPollVoteView(PybbFormsMixin, generic.UpdateView):
+class TopicPollVoteView(IsEnabledMixin, PybbFormsMixin, generic.UpdateView):
     model = Topic
     http_method_names = ['post', ]
 
