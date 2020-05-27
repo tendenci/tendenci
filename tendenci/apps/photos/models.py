@@ -967,10 +967,11 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     def image_dimensions(self):
         try:
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                im = PILImage.open(self.get_file_from_remote_storage())
+                with PILImage.open(self.get_file_from_remote_storage()) as im:
+                    return im.size
             else:
-                im = PILImage.open(self.image.path)
-            return im.size
+                with PILImage.open(self.image.path) as im:
+                    return im.size
         except Exception:
             return (0, 0)
 
