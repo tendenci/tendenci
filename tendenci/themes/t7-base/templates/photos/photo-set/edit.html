@@ -15,7 +15,13 @@
     <form method="POST" action="">{% csrf_token %}
         {{ photoset_form|styled_form }}
         <input type="hidden" name="action" value="edit" />
-        <input type="submit" value="{% trans 'Edit' %}"/>
+		<div>&nbsp;</div>
+		<div class="row">
+		  <div class="col-sm-9 col-sm-offset-3">
+			 <input class="btn btn-primary" type="submit" value="{% trans 'Save' %}"/>
+			</div>
+		</div>
+       <div>&nbsp;</div>
     </form>
     </div>
 {% endblock %}
