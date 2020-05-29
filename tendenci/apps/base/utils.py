@@ -233,6 +233,9 @@ def tcurrency(mymoney):
         ex: 30000.232 -> $30,000.23
             -30000.232 -> $(30,000.23)
     """
+    if mymoney is None:
+        return 'n/a'
+    
     currency_symbol = get_setting("site", "global", "currencysymbol")
     allow_commas = get_setting("site", "global", "allowdecimalcommas")
 
