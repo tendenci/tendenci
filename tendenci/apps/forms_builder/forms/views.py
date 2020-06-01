@@ -486,8 +486,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 if email_copies:
                     email.body = admin_body
                     email.recipient = email_copies
-                    if request.user.is_anonymous or not request.user.is_active:
-                        email.content_type = 'text'
+#                     if request.user.is_anonymous or not request.user.is_active:
+#                         email.content_type = 'text'
                     email.send(fail_silently=True, attachments=attachments)
 
                 # Email copies to recipient list indicated in the form

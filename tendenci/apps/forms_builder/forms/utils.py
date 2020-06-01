@@ -14,10 +14,10 @@ def generate_admin_email_body(entry, form_for_form, user=None):
     """
     context = {}
     site_url = get_setting('site', 'global', 'siteurl')
-    if not user or user.is_anonymous or not user.is_active:
-        template = get_template('forms/admin_email_content_text.html')
-    else:
-        template = get_template('forms/admin_email_content.html')
+#     if not user or user.is_anonymous or not user.is_active:
+#         template = get_template('forms/admin_email_content_text.html')
+#     else:
+    template = get_template('forms/admin_email_content.html')
 
     # fields to loop through in the template
     context['fields'] = entry.entry_fields()
