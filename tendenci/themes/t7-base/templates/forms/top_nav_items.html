@@ -42,11 +42,19 @@
                     </li>
 
                     {% if can_add_form %}
+                       {% if request.user.is_staff %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'admin:forms_form_add' %}">{% trans "Add Form" %}</a>
                             </span>
                         </li>
+                    {% else %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'form_add' %}">{% trans "Add Form" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
                     {% endif %}
 
                     {% if user.profile.is_staff %}

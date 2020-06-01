@@ -361,8 +361,6 @@ def search(request, template_name="forms/search.html"):
         forms = forms.filter(Q(title__icontains=query) | Q(intro__icontains=query) | Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
-    print(forms.count())
-    print(forms.query)
 
     EventLog.objects.log()
 
