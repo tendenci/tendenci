@@ -1,3 +1,14 @@
+### 12.0.8 [2020-06-01]
+
+* Resolved the issue about redirects not working for forums
+* Fixed a ResourceWarning: unclosed file for command precache_photo
+* Tweaked the submit button for /photos/set/edit/ 
+* Fixed a FieldError for /memberships/reports/expired_members/
+* Users with permissions can now access forms link in the top nav
+* Reverted back plain text email to html (to make email format consistent for logged in and non-logged users)
+* Fixed an issue about user dropdown not working for committee edit at admin backend
+
+
 ### 12.0.7 [2020-05-13]
 
 * Updated nav editor to allow tel: links
