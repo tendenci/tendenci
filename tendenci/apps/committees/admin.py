@@ -35,12 +35,10 @@ class OfficerAdminInline(admin.TabularInline):
         return super(OfficerAdminInline, self).formfield_for_dbfield(field, **kwargs)
 
     def get_object(self, request, model):
-        object_id = request.META['PATH_INFO'].strip('/').split('/')[-1]
-        try:
-            object_id = int(object_id)
-        except ValueError:
-            return None
-        return model.objects.get(pk=object_id)
+        object_id = request.resolver_match.kwargs.get('object_id', None)
+        if object_id:
+            return model.objects.get(pk=object_id)
+        return None
 
 
 class CommitteeAdmin(TendenciBaseModelAdmin):
