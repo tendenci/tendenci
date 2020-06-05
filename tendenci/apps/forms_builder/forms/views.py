@@ -450,6 +450,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 email.recipient = email_to
                 email.body = submitter_body
                 email.send(fail_silently=True)
+                # log an event
+                EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
 
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form, user=request.user)
