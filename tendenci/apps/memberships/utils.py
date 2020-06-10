@@ -307,7 +307,7 @@ def get_membership_rows(
 
 def get_obj_field_value(field_name, obj, is_foreign_key=False):
     value = getattr(obj, field_name)
-    if value and is_foreign_key:
+    if value and is_foreign_key and hasattr(value, 'id'):
         value = value.id
     return value
 
