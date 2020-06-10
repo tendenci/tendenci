@@ -68,6 +68,16 @@
         </p>
       </div>
     </div>
+
+	<div>
+      <div class="form-inline">
+        <p>
+            {% trans "Skip members that have opted for Don't Send Email in their profile:" %}
+          <strong>{% if object.enforce_direct_mail_flag  %}{% trans 'Yes' %} {% else %}{% trans 'No' %}{% endif %}</strong>
+        </p>
+      </div>
+    </div>
+
     <div class='step-section cf'>
 
       <div>

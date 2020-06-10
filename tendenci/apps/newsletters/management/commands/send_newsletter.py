@@ -75,6 +75,16 @@ class Command(BaseCommand):
 
         counter = 0
         for recipient in recipients:
+            if hasattr(recipient.member, 'profile'):
+                profile = recipient.member.profile
+            else:
+                profile = None
+
+            # Skip if Don't Send Email is on
+            if newsletter.enforce_direct_mail_flag:
+                if profile and not profile.direct_mail:
+                    continue
+
             # skip if not a valid email address
             if not validate_email(recipient.member.email):
                 continue

@@ -166,7 +166,7 @@ class MarketingStepThreeForm(forms.ModelForm):
 class MarketingStepFourForm(forms.ModelForm):
     class Meta:
         model = Newsletter
-        fields = ('subject', 'send_to_email2', 'sla', 'member_only', 'group')
+        fields = ('subject', 'send_to_email2', 'enforce_direct_mail_flag', 'sla', 'member_only', 'group')
 
     def __init__(self, *args, **kwargs):
         super(MarketingStepFourForm, self).__init__(*args, **kwargs)
@@ -178,6 +178,10 @@ class MarketingStepFourForm(forms.ModelForm):
                 (False, _('No')),
                 ),
             label=_('include emal2'))
+        self.fields['enforce_direct_mail_flag'].widget = forms.Select(choices=(
+                (True, _('Yes')),
+                (False, _('No')),
+                ),)
 
     def clean_group(self):
         data = self.cleaned_data
