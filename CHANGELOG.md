@@ -1,3 +1,12 @@
+### 12.0.9 [2020-06-12]
+
+* Updated Django version to 2.2.13
+* Enforced No Email flag on newsletter send. - If selected, newsletter send will not send emails to members that have opted for Don't Send Email in their profile.
+* Added an option for non-renewing members to stop receiving notices. - Some sites set up several reminder notices to members as they approach expiration. Sometimes a member will respond upon receipt of the first notice that they are not interested in renewing. This option allows admin to turn off notices for them.
+* Fixed a DataError value too long for first_name on account register
+* Avoided a AttributeError in memberships export
+* Added eventlog on forms confirmation email send
+
 ### 12.0.8 [2020-06-01]
 
 * Resolved the issue about redirects not working for forums
