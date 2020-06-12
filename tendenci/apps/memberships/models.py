@@ -477,6 +477,7 @@ class MembershipDefault(TendenciBaseModel):
     renewal = models.BooleanField(blank=True, default=False)
     auto_renew = models.BooleanField(blank=True, default=False)
     renew_from_id = models.IntegerField(blank=True, null=True)
+    reminder = models.BooleanField(_('Receive renewal reminders'), default=True)
     certifications = models.CharField(max_length=500, blank=True)
     work_experience = models.TextField(blank=True)
     referer_url = models.CharField(max_length=500, blank=True, editable=False)

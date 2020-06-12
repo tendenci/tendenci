@@ -328,6 +328,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_display.append('auto_renew')
     list_display.append('admin_notes')
+    list_display.append('reminder')
+    list_editable = ['reminder',]
     list_display_links = ('name',)
 
     list_filter = [
@@ -432,12 +434,6 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         if not has_perm(request.user, 'memberships.approve_membershipdefault'):
             del actions['approve_selected']
         return actions
-
-    def save_form(self, request, form, change):
-        """
-        Save membership [+ more] model
-        """
-        return form.save(request=request, commit=False)
 
     def add_view(self, request, form_url='', extra_context=None):
         """
