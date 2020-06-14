@@ -32,6 +32,9 @@ class SetPasswordCustomForm(SetPasswordForm):
         super(SetPasswordCustomForm, self).__init__(*args, **kwargs)
 
         self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        password_requirements = get_setting('module', 'users', 'password_text')
+        if password_requirements:
+            self.fields['new_password1'].help_text = password_requirements
         self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
 
     def clean_new_password1(self):
@@ -64,6 +67,9 @@ class RegistrationCustomForm(RegistrationForm):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
 
         super(RegistrationCustomForm, self).__init__(*args, **kwargs)
+        password_requirements = get_setting('module', 'users', 'password_text')
+        if password_requirements:
+            self.fields['password1'].help_text = password_requirements
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
