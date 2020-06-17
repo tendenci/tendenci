@@ -1,3 +1,10 @@
+### 12.0.10 [2020-06-17]
+
+* Resolved the issue about Password requirements text incorrectly populating on account register (Thanks @rob-hills) 
+* Tightened password requirements - 1) Ensured a default password regex is used if not set up in site settings. 2) Added password requirements check on profile add and change password forms.
+* Fixed KeyError: 'MODULE_PAGES_LABEL_PLURAL'
+* Fixed a KeyError on membership change page at admin backend.
+
 ### 12.0.9 [2020-06-12]
 
 * Updated Django version to 2.2.13
