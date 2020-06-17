@@ -435,6 +435,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             del actions['approve_selected']
         return actions
 
+    def save_form(self, request, form, change):
+        """
+        Given a ModelForm return an unsaved instance. ``change`` is True if
+        the object is being changed, and False if it's being added.
+        """
+        if form.Meta.fields == ['reminder']:
+            return form.save(commit=False)
+
+        return form.save(request=request, commit=False)
+
     def add_view(self, request, form_url='', extra_context=None):
         """
         Intercept add page and redirect to form.
