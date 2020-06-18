@@ -26,21 +26,34 @@ from tendenci.apps.base.forms import ProhibitNullCharactersValidatorMixin
 from tendenci.apps.base.utils import get_latest_version
 from tendenci import __version__ as version
 
+PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
+PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
 
 class SetPasswordCustomForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(SetPasswordCustomForm, self).__init__(*args, **kwargs)
 
         self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
+        self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
+        if not self.password_regex:
+            self.password_regex = PASSWORD_REGEX_DEFAULT
+            self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+
+        if not self.password_help_text:
+            if self.fields['new_password1'].help_text:
+                self.password_help_text = self.fields['new_password1'].help_text
+            else:
+                self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+
+        self.fields['new_password1'].help_text = self.password_help_text
+
         self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
 
     def clean_new_password1(self):
         new_password1 = self.cleaned_data.get('new_password1')
-        password_regex = get_setting('module', 'users', 'password_requirements_regex')
-        password_requirements = get_setting('module', 'users', 'password_text')
-        if password_regex:
-            if not re.match(password_regex, new_password1):
-                raise forms.ValidationError(mark_safe("The password does not meet the requirements: %s" % password_requirements))
+        if not re.match(self.password_regex, new_password1):
+            raise forms.ValidationError(mark_safe("The password does not meet the requirements: %s" % self.password_help_text))
 
         return new_password1
 
@@ -64,14 +77,24 @@ class RegistrationCustomForm(RegistrationForm):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
 
         super(RegistrationCustomForm, self).__init__(*args, **kwargs)
+        self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
+        self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
+        if not self.password_regex:
+            self.password_regex = PASSWORD_REGEX_DEFAULT
+            self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+
+        if not self.password_help_text:
+            if self.fields['password1'].help_text:
+                self.password_help_text = self.fields['password1'].help_text
+            else:
+                self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+
+        self.fields['password1'].help_text = self.password_help_text
 
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
-        password_regex = get_setting('module', 'users', 'password_requirements_regex')
-        password_requirements = get_setting('module', 'users', 'password_text')
-        if password_regex:
-            if not re.match(password_regex, password1):
-                raise forms.ValidationError(mark_safe(_("The password does not meet the requirements: %(p)s" % {'p': password_requirements })))
+        if not re.match(self.password_regex, password1):
+            raise forms.ValidationError(mark_safe(_("The password does not meet the requirements: %(p)s" % {'p': self.password_help_text })))
 
         return password1
 

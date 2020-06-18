@@ -1,3 +1,19 @@
+### 12.0.10 [2020-06-17]
+
+* Resolved the issue about Password requirements text incorrectly populating on account register (Thanks @rob-hills) 
+* Tightened password requirements - 1) Ensured a default password regex is used if not set up in site settings. 2) Added password requirements check on profile add and change password forms.
+* Fixed KeyError: 'MODULE_PAGES_LABEL_PLURAL'
+* Fixed a KeyError on membership change page at admin backend.
+
+### 12.0.9 [2020-06-12]
+
+* Updated Django version to 2.2.13
+* Enforced No Email flag on newsletter send. - If selected, newsletter send will not send emails to members that have opted for Don't Send Email in their profile.
+* Added an option for non-renewing members to stop receiving notices. - Some sites set up several reminder notices to members as they approach expiration. Sometimes a member will respond upon receipt of the first notice that they are not interested in renewing. This option allows admin to turn off notices for them.
+* Fixed a DataError value too long for first_name on account register
+* Avoided a AttributeError in memberships export
+* Added eventlog on forms confirmation email send
+
 ### 12.0.8 [2020-06-01]
 
 * Resolved the issue about redirects not working for forums

@@ -328,6 +328,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         list_display.append('auto_renew')
     list_display.append('admin_notes')
+    list_display.append('reminder')
+    list_editable = ['reminder',]
     list_display_links = ('name',)
 
     list_filter = [
@@ -435,8 +437,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     def save_form(self, request, form, change):
         """
-        Save membership [+ more] model
+        Given a ModelForm return an unsaved instance. ``change`` is True if
+        the object is being changed, and False if it's being added.
         """
+        if form.Meta.fields == ['reminder']:
+            return form.save(commit=False)
+
         return form.save(request=request, commit=False)
 
     def add_view(self, request, form_url='', extra_context=None):

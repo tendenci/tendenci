@@ -30,6 +30,8 @@ APPS = ('profiles', 'user_groups', 'articles',
         'locations', 'files', 'directories', 'resumes',
         'memberships', 'corporate_memberships')
 
+PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
+PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
 
 class ProfileSearchForm(forms.Form):
     SEARCH_CRITERIA_CHOICES = (
@@ -302,6 +304,19 @@ class ProfileForm(TendenciBaseForm):
                         self.fields[myfield].required = True
                         continue
 
+        if 'password1' in self.fields:
+            self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
+            self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
+            if not self.password_regex:
+                self.password_regex = PASSWORD_REGEX_DEFAULT
+                self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+            if not self.password_help_text:
+                if self.fields['password1'].help_text:
+                    self.password_help_text = self.fields['password1'].help_text
+                else:
+                    self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+            self.fields['password1'].help_text = self.password_help_text
+
     def clean_username(self):
         """
         Validate that the username is alphanumeric and is not already
@@ -314,6 +329,16 @@ class ProfileForm(TendenciBaseForm):
         except User.DoesNotExist:
             return self.cleaned_data['username']
         raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        if not re.match(self.password_regex, password1):
+            # At least MIN_LENGTH long
+            # r'^(?=.{8,})(?=.*[0-9=]).*$'
+            if not re.match(self.password_regex, password1):
+                raise forms.ValidationError(mark_safe("The password does not meet the requirements"))
+
+        return password1
 
     def clean(self):
         """
@@ -668,15 +693,26 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
         self.fields['new_password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.fields['new_password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
 
+        self.password_regex = (get_setting('module', 'users', 'password_requirements_regex')).strip()
+        self.password_help_text = (get_setting('module', 'users', 'password_text')).strip()
+        if not self.password_regex:
+            self.password_regex = PASSWORD_REGEX_DEFAULT
+            self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+        if not self.password_help_text:
+            if self.fields['new_password1'].help_text:
+                self.password_help_text = self.fields['new_password1'].help_text
+            else:
+                self.password_help_text = PASSWORD_HELP_TEXT_DEFAULT
+            
+        self.fields['new_password1'].help_text = self.password_help_text
+
     def clean_new_password1(self):
         password1 = self.cleaned_data.get('new_password1')
-        password_regex = get_setting('module', 'users', 'password_requirements_regex')
-        password_requirements = get_setting('module', 'users', 'password_text')
-        if password_regex:
+        if not re.match(self.password_regex, password1):
             # At least MIN_LENGTH long
             # r'^(?=.{8,})(?=.*[0-9=]).*$'
-            if not re.match(password_regex, password1):
-                raise forms.ValidationError(mark_safe("The new password does not meet the requirements </li><li>%s" % password_requirements))
+            if not re.match(self.password_regex, password1):
+                raise forms.ValidationError(mark_safe("The new password does not meet the requirements: %s" % self.password_help_text))
 
         return password1
 
