@@ -7,10 +7,16 @@ Step 1: Prepare for Upgrade
 
 Back up your site and database!
 
-Replace the content of the ``requirements/tendenci.txt`` with the following :
+Replace the content of the ``requirements/tendenci.txt`` with the following:
 ::
 
     tendenci>=12,<13
+
+
+For production sites, also update the content of the ``requirements/prod.txt``:
+::
+
+    curl https://raw.githubusercontent.com/tendenci/tendenci-project-template/master/requirements/prod.txt > requirements/prod.txt
 
 
 Step 2: Upgrade Tendenci
@@ -21,7 +27,10 @@ Run:
 
     cd /var/www/mysite/
     source /srv/mysite/bin/activate
-    pip install -r requirements/tendenci.txt --upgrade
+    # For production sites, run
+    pip install -r requirements/prod.txt --upgrade
+    # For dev sites on your local, run
+    pip install -r requirements/dev.txt --upgrade
     python manage.py migrate
     python manage.py deploy
     python manage.py clear_cache
