@@ -506,7 +506,7 @@ def process_export(
                         item = membership_ids_dict[item]
                     elif field_name == 'app':
                         # display membership type name instead of id
-                        item = app_ids_dict[item]
+                        item = app_ids_dict.get(item, '')
                 items_dict[field_name] = item
             csv_writer.writerow(items_dict)
 
