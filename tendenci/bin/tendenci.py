@@ -79,12 +79,10 @@ class CreateProject(Command):
         utility_args = ['django-admin.py',
                         'startproject',
                         '--template=' + template_path,
-                        '--ext=html,rst',
-                        '--name=Dockerfile',
                         project_name]
 
-        if dest_dir:
-            utility_args.append(dest_dir)
+        #if dest_dir:
+            #utility_args.append(dest_dir)
 
         utility = ManagementUtility(utility_args)
         utility.execute()
@@ -93,7 +91,7 @@ class CreateProject(Command):
 
 
 COMMANDS = {
-    'start': CreateProject(),
+    'startproject': CreateProject(),
 }
 
 
