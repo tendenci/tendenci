@@ -248,7 +248,7 @@ If you have not already activated your virtualenv, make sure you do so before co
 Install Django:
 ::
 
-    pip install "Django>=2.2,<3.0"
+    pip install tendenci
 
 Create a new Django project based on the Tendenci template:
 ::
@@ -256,7 +256,7 @@ Create a new Django project based on the Tendenci template:
     sudo mkdir /var/www/
     sudo chown "$(id -u -n)" /var/www/
     cd /var/www/
-    django-admin.py startproject --template=https://github.com/tendenci/tendenci-project-template/archive/master.zip mysite
+    tendenci startproject mysite mysite
     sudo chown root /var/www/
 
 Set up some directories appropriately:
