@@ -1,3 +1,10 @@
+### 12.0.11 [2020-06-24]
+
+* Added tendenci console script for nice install command  (Thanks @iokiwi)
+* Restrict non-admins from sending newsletters to certain groups 
+* Avoided a potential KeyError on memberships export
+* Updated T12 upgrade guide
+
 ### 12.0.10 [2020-06-17]
 
 * Resolved the issue about Password requirements text incorrectly populating on account register (Thanks @rob-hills) 
