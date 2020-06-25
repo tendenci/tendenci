@@ -272,12 +272,23 @@
                                                     </li>
                                                     {% endif %}
 
-                                                    {% if MODULE_NEWSLETTERS_ENABLED and USER_IS_SUPERUSER %}
-                                                    <li class="content-item">
-                                                        <a href="{% url 'newsletter.list' %}"
-                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/email_go.png' %}"/><span class="nav-label">{% trans 'Newsletters' %}</span>
-                                                        </a>
-                                                    </li>
+                                                    {% if MODULE_NEWSLETTERS_ENABLED %}
+                                                    {% if USER_IS_SUPERUSER %}
+	                                                    <li class="content-item">
+	                                                        <a href="{% url 'newsletter.list' %}"
+	                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/email_go.png' %}"/><span class="nav-label">{% trans 'Newsletters' %}</span>
+	                                                        </a>
+	                                                    </li>
+                                                    {% else %}
+                                                        {% has_perm user newsletters.add_newsletter as can_add_newsletter %}
+	                                                    {% if can_add_newsletter %}
+	                                                    <li class="content-item">
+	                                                        <a href="{% url 'newsletter.list' %}"
+	                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/email_go.png' %}"/><span class="nav-label">{% trans 'Newsletters' %}</span>
+	                                                        </a>
+	                                                    </li>
+	                                                    {% endif %}
+                                                    {% endif %}
                                                     {% endif %}
                                                 </ul>
 

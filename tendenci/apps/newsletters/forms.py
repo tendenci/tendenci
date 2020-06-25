@@ -15,6 +15,8 @@ from tendenci.apps.newsletters.models import (
     DAYS_CHOICES,
     INCLUDE_CHOICES
 )
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.user_groups.models import Group
 
 EMAIL_SEARCH_CRITERIA_CHOICES = (
     ('subject__icontains', _('Subject')),
@@ -80,6 +82,12 @@ class OldGenerateForm(forms.ModelForm):
         self.fields['group'].empty_label = _('SELECT ONE')
         self.fields['event_start_dt'].initial = datetime.date.today()
         self.fields['event_end_dt'].initial = datetime.date.today() + datetime.timedelta(days=30)
+        
+        default_groups = Group.objects.filter(status=True, status_detail="active")
+        if not self.request.user.is_superuser:
+            filters = get_query_filters(self.request.user, 'user_groups.view_group', **{'perms_field': False})
+            default_groups = default_groups.filter(filters).distinct()
+        self.fields['group'].queryset = default_groups
 
         for key in not_required:
             self.fields[key].required = False

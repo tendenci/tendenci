@@ -59,4 +59,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
+    entry_points="""
+        [console_scripts]
+        tendenci=tendenci.bin.tendenci:main
+    """
 )
