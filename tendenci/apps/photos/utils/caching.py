@@ -47,6 +47,9 @@ def cache_photo_size(id, size, crop=False, quality=90, download=False, constrain
     # if image not rendered; quit
     if not image:
         return request_path
+    
+    if image.mode in ("RGBA", "P"):
+        image = image.convert('RGB')
 
     response = HttpResponse(content_type='image/jpeg')
     response['Content-Disposition'] = ' filename="%s"' % photo.image_filename()
