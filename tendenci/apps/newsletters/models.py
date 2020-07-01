@@ -231,7 +231,8 @@ class Newsletter(models.Model):
             'date_last_resent',
             'email_sent_count',
             'resend_count',
-            'security_key'
+            'security_key',
+            'article'
         ]
         field_names = [field.name
             for field in self.__class__._meta.fields
