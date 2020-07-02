@@ -60,7 +60,7 @@ urlpatterns = [
 
     # speakers_list view does not exist
     url(r'^%s/(?P<event_id>\d+)/speakers/$' % urlpath, views.speaker_list, name="event.speakers"),
-    url(r'^%s/(?P<event_id>\d+)/attendees$' % urlpath, views.view_attendees, name="event.attendees"),
+    url(r'^%s/(?P<event_id>\d+)/attendees/$' % urlpath, views.view_attendees, name="event.attendees"),
 
     #delete
     url(r'^%s/speaker/(?P<id>\d+)/delete/$' % urlpath, views.delete_speaker, name='event.delete_speaker'),
