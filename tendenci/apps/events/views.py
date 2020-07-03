@@ -2604,8 +2604,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         fields=('salutation', 'first_name', 'last_name', 'mail_name', 'email',
                     'position_title', 'company_name', 'phone', 'address', 'city',
                     'state', 'zip', 'country', 'meal_option', 'comments')
-        fields = [field_name for field_name in fields if get_setting(
-                            'module', 'events', 'regform_%s_visible' % field_name)]
+        fields = [field_name for field_name in fields 
+                     if ((get_setting('module', 'events', 'regform_%s_visible' % field_name) and field_name != 'zip')\
+                        or (field_name == 'zip' and get_setting('module', 'events', 'regform_zip_code_visible')))]
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(
             Registrant, extra=0,
