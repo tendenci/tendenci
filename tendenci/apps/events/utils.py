@@ -320,55 +320,57 @@ def get_ievent(request, d, event_id):
     site_url = get_setting('site', 'global', 'siteurl')
 
     event = Event.objects.get(id=event_id)
-    e_str = "BEGIN:VEVENT\n"
-
-    # organizer
-    organizers = event.organizer_set.all()
-    if organizers:
-        organizer_name_list = [organizer.name for organizer in organizers]
-        e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
+    e_str = "BEGIN:VEVENT\r\n"
 
     # date time
     time_zone = event.timezone
     if not time_zone:
         time_zone = settings.TIME_ZONE
 
+    e_str += "DTSTAMP:{}\r\n".format(adjust_datetime_to_timezone(datetime.now(), time_zone, 'UTC').strftime('%Y%m%dT%H%M%SZ'))
+
+    # organizer
+    organizers = event.organizer_set.all()
+    if organizers:
+        organizer_name_list = [organizer.name for organizer in organizers]
+        e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
+
     if event.start_dt:
-        start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'GMT')
+        start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'UTC')
         start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
-        e_str += "DTSTART:%s\n" % (start_dt)
+        e_str += "DTSTART:%s\r\n" % (start_dt)
     if event.end_dt:
-        end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'GMT')
+        end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'UTC')
         end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
-        e_str += "DTEND:%s\n" % (end_dt)
+        e_str += "DTEND:%s\r\n" % (end_dt)
 
     # location
     if event.place:
-        e_str += "LOCATION:%s\n" % (event.place.name)
+        e_str += "LOCATION:%s\r\n" % (event.place.name)
 
-    e_str += "TRANSP:OPAQUE\n"
-    e_str += "SEQUENCE:0\n"
+    e_str += "TRANSP:OPAQUE\r\n"
+    e_str += "SEQUENCE:0\r\n"
 
     # uid
-    e_str += "UID:uid%d@%s\n" % (event.pk, d['domain_name'])
+    e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
 
     event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
     d['event_url'] = event_url
 
     # text description
-    e_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
+    e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
     #  html description
-    e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
+    e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\r\n" % (build_ical_html(event,d))
 
-    e_str += "SUMMARY:%s\n" % strip_tags(event.title)
-    e_str += "PRIORITY:5\n"
-    e_str += "CLASS:PUBLIC\n"
-    e_str += "BEGIN:VALARM\n"
-    e_str += "TRIGGER:-PT30M\n"
-    e_str += "ACTION:DISPLAY\n"
-    e_str += "DESCRIPTION:Reminder\n"
-    e_str += "END:VALARM\n"
-    e_str += "END:VEVENT\n"
+    e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
+    e_str += "PRIORITY:5\r\n"
+    e_str += "CLASS:PUBLIC\r\n"
+    e_str += "BEGIN:VALARM\r\n"
+    e_str += "TRIGGER:-PT30M\r\n"
+    e_str += "ACTION:DISPLAY\r\n"
+    e_str += "DESCRIPTION:Reminder\r\n"
+    e_str += "END:VALARM\r\n"
+    e_str += "END:VEVENT\r\n"
 
     return e_str
 
@@ -383,15 +385,18 @@ def get_vevents(user, d):
     filters = get_query_filters(user, 'events.view_event')
     events = Event.objects.filter(filters).filter(start_dt__gte=datetime.now())
     events = events.order_by('start_dt')
+    
+    dtstamp = adjust_datetime_to_timezone(datetime.now(), settings.TIME_ZONE, 'UTC').strftime('%Y%m%dT%H%M%SZ')
 
     for event in events:
-        e_str += "BEGIN:VEVENT\n"
+        e_str += "BEGIN:VEVENT\r\n"
+        e_str += "DTSTAMP:{}\r\n".format(dtstamp)
 
         # organizer
         organizers = event.organizer_set.all()
         if organizers:
             organizer_name_list = [organizer.name for organizer in organizers]
-            e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
+            e_str += "ORGANIZER:%s\r\n" % (', '.join(organizer_name_list))
 
         # date time
         time_zone = event.timezone
@@ -401,57 +406,66 @@ def get_vevents(user, d):
         if event.start_dt:
             start_dt = adjust_datetime_to_timezone(event.start_dt, time_zone, 'GMT')
             start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
-            e_str += "DTSTART:%s\n" % (start_dt)
+            e_str += "DTSTART:%s\r\n" % (start_dt)
         if event.end_dt:
             end_dt = adjust_datetime_to_timezone(event.end_dt, time_zone, 'GMT')
             end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
-            e_str += "DTEND:%s\n" % (end_dt)
+            e_str += "DTEND:%s\r\n" % (end_dt)
 
         # location
         if event.place:
-            e_str += "LOCATION:%s\n" % (event.place.name)
+            e_str += "LOCATION:%s\r\n" % (event.place.name)
 
-        e_str += "TRANSP:OPAQUE\n"
-        e_str += "SEQUENCE:0\n"
+        e_str += "TRANSP:OPAQUE\r\n"
+        e_str += "SEQUENCE:0\r\n"
 
         # uid
-        e_str += "UID:uid%d@%s\n" % (event.pk, d['domain_name'])
+        e_str += "UID:uid%d@%s\r\n" % (event.pk, d['domain_name'])
 
         event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
         d['event_url'] = event_url
 
         # text description
-        e_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
+        e_str += "DESCRIPTION:%s\r\n" % (build_ical_text(event,d))
         #  html description
-        e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
+        #e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
 
-        e_str += "SUMMARY:%s\n" % strip_tags(event.title)
-        e_str += "PRIORITY:5\n"
-        e_str += "CLASS:PUBLIC\n"
-        e_str += "BEGIN:VALARM\n"
-        e_str += "TRIGGER:-PT30M\n"
-        e_str += "ACTION:DISPLAY\n"
-        e_str += "DESCRIPTION:Reminder\n"
-        e_str += "END:VALARM\n"
-        e_str += "END:VEVENT\n"
+        e_str += "SUMMARY:%s\r\n" % strip_tags(event.title)
+        e_str += "PRIORITY:5\r\n"
+        e_str += "CLASS:PUBLIC\r\n"
+        e_str += "BEGIN:VALARM\r\n"
+        e_str += "TRIGGER:-PT30M\r\n"
+        e_str += "ACTION:DISPLAY\r\n"
+        e_str += "DESCRIPTION:Reminder\r\n"
+        e_str += "END:VALARM\r\n"
+        e_str += "END:VEVENT\r\n"
 
     return e_str
 
 
 def build_ical_text(event, d):
-    ical_text = "--- This iCal file does *NOT* confirm registration.\n"
-    ical_text += "Event details subject to change. ---\n"
-    ical_text += '%s\n\n' % d['event_url']
+    reg8n_guid = d.get('reg8n_guid')
+    reg8n_id = d.get('reg8n_id')
+    try:
+        reg8n_id = int(reg8n_id)
+    except:
+        reg8n_id = 0
+    if not (reg8n_guid and reg8n_id):
+        ical_text = "--- This iCal file does *NOT* confirm registration.\r\n"
+    else:
+        ical_text = "--- "
+    ical_text += "Event details subject to change. ---\r\n"
+    ical_text += '%s\r\n\r\n' % d['event_url']
 
     # title
-    ical_text += "Event Title: %s\n" % strip_tags(event.title)
+    ical_text += "Event Title: %s\r\n" % strip_tags(event.title)
 
     # start_dt
-    ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
+    ical_text += 'Start Date / Time: %s %s\r\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
 
     # location
     if event.place:
-        ical_text += 'Location: %s\n' % (event.place.name)
+        ical_text += 'Location: %s\r\n' % (event.place.name)
 
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
@@ -461,9 +475,9 @@ def build_ical_text(event, d):
 
     # speaker
     speakers = event.speaker_set.all()
-    if speakers:
+    if speakers.count() > 0:
         speaker_name_list = [speaker.name for speaker in speakers]
-        ical_text += 'Speaker: %s\n' % (', '.join(speaker_name_list))
+        ical_text += 'Speaker: %s\r\n' % (', '.join(speaker_name_list))
 
     # maps
     show_map_link = False
@@ -471,7 +485,7 @@ def build_ical_text(event, d):
                 or (event.place and event.place.address and event.place.zip):
         show_map_link = True
     if show_map_link:
-        ical_text += "Google\n"
+        ical_text += "Google\r\n"
         ical_text += "http://maps.google.com/maps?q="
         ical_text += event.place.address.replace(" ", "+")
         if event.place.city:
@@ -484,17 +498,27 @@ def build_ical_text(event, d):
             ical_text += ','
             ical_text += event.place.zip
 
-        ical_text += "\n\nForecast\n"
-        ical_text += "http://www.weather.com/weather/monthly/%s\n\n" % (event.place.zip)
+        ical_text += "\r\n\r\nForecast\n"
+        ical_text += "http://www.weather.com/weather/monthly/%s\r\n\r\n" % (event.place.zip)
 
-    ical_text += strip_tags(event.description)
+    ical_text += strip_tags((event.description).replace('&nbsp;', " "))
+    
+    if reg8n_guid and reg8n_id:
+        if Registration.objects.filter(guid=reg8n_guid, id=reg8n_id, event_id=event.id).exists():
+            registration_email_text = event.registration_configuration.registration_email_text
+            if registration_email_text:
+                ical_text += '%s\r\n' % (strip_tags((event.registration_configuration.registration_email_text).replace('&nbsp;', " ")))
 
-    ical_text += "--- This iCal file does *NOT* confirm registration."
-    ical_text += "Event details subject to change. ---\n\n"
-    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\n"
+    if not (reg8n_guid and reg8n_id):
+        ical_text += "--- This iCal file does *NOT* confirm registration."
+    else:
+        ical_text += "--- "
+    ical_text += "Event details subject to change. ---\r\n\r\n"
+    ical_text += "--- By Tendenci - The Open Source AMS for Associations ---\r\n"
 
     ical_text  = ical_text.replace(';', '\\;')
     ical_text  = ical_text.replace('\n', '\\n')
+    ical_text  = ical_text.replace('\r', '\\r')
 
     return ical_text
 
@@ -559,6 +583,19 @@ def build_ical_html(event, d):
         ical_html += "http://www.weather.com/weather/monthly/%s</div><br /><br />" % (event.place.zip)
 
     ical_html += '<div>%s</div>' % (event.description)
+    
+    reg8n_guid = d.get('reg8n_guid')
+    reg8n_id = d.get('reg8n_id')
+    try:
+        reg8n_id = int(reg8n_id)
+    except:
+        reg8n_id = 0
+    if reg8n_guid and reg8n_id:
+        if Registration.objects.filter(guid=reg8n_guid, id=reg8n_id, event_id=event.id).exists():
+            registration_email_text = event.registration_configuration.registration_email_text
+            if registration_email_text:
+                ical_html += '<br />'
+                ical_html += '<div>%s</div>' % (event.registration_configuration.registration_email_text)
 
     ical_html += "<div>--- This iCal file does *NOT* confirm registration."
     ical_html += "Event details subject to change. ---</div>"

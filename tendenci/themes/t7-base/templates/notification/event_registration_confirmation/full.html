@@ -143,6 +143,10 @@
 
 {% endif %}
 
+<div style="padding:10px; font-size:1.2em;">
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url "event.ics_single" event.pk reg8n.guid %}?reg8n_id={{ reg8n.id }}">{% trans "Add this event to your calendar" %}</a>
+</div>
+
 {% if event.description and event.registration_configuration.registration_email_type and event.registration_configuration.registration_email_type != 'custom' %}
 <div>{{ event.description|relative_to_absolute_urls|safe }}</div>
 {% endif %}

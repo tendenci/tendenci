@@ -486,7 +486,7 @@ def icalendar(request):
             ics.close()
     if not ics_str:
         ics_str = "BEGIN:VCALENDAR\r\n"  
-        ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci 11.0 MIMEDIR//EN\r\n"
+        ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci 12 MIMEDIR//EN\r\n"
         ics_str += "VERSION:2.0\r\n"
         ics_str += "METHOD:PUBLISH\r\n"
 
@@ -503,9 +503,13 @@ def icalendar(request):
     return response
 
 
-def icalendar_single(request, id):
+def icalendar_single(request, id, guid=''):
+    reg8n_guid = guid
+    reg8n_id = request.GET.get('reg8n_id')
+    
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
-    d = {}
+    d = {'reg8n_guid': reg8n_guid,
+         'reg8n_id': reg8n_id}
 
     if not Event.objects.filter(pk=id).exists():
         raise Http404
@@ -518,7 +522,7 @@ def icalendar_single(request, id):
         d['domain_name'] = ""
 
     ics_str = "BEGIN:VCALENDAR\r\n"
-    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 11.0 MIMEDIR//EN\r\n"
+    ics_str += "PRODID:-//Tendenci - The Open Source AMS for Associations//Tendenci Codebase 12 MIMEDIR//EN\r\n"
     ics_str += "VERSION:2.0\r\n"
     ics_str += "METHOD:PUBLISH\r\n"
 
