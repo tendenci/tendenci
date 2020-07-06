@@ -207,10 +207,14 @@ def search(request, template_name="files/search.html"):
     filters = get_query_filters(request.user, 'files.view_file')
     files = File.objects.filter(filters).distinct()
     if query:
-        files = files.filter(Q(file__icontains=query)|
-                             Q(name__icontains=query)|
-                             Q(description__icontains=query)|
-                             Q(tags__icontains=query))
+        if 'tag:' in query:
+            tag = query.strip('tag:')
+            files = files.filter(tags__icontains=tag)
+        else:
+            files = files.filter(Q(file__icontains=query)|
+                                 Q(name__icontains=query)|
+                                 Q(description__icontains=query)|
+                                 Q(tags__icontains=query))
     if category:
         files = files.filter(file_cat=category)
     if sub_category:
