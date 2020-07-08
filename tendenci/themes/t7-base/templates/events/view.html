@@ -333,6 +333,13 @@ div.pricing-list-wrap li{
         </h4>
         {% registration_pricing_and_button event request.user %}
       </div>
+
+       
+        {% if can_view_attendees %}
+            <div class="vitals">
+				<a href="{% url 'event.attendees' event.id %}">{% trans "View Attendees" %}</a>
+            </div>
+        {% endif %}
       {% endif %}
       
       <br />

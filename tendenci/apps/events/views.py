@@ -271,6 +271,7 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
     if pricing:
         pricing = pricing.order_by('position', '-price')
         free_event = not bool([p for p in pricing if p.price > 0])
+    can_view_attendees = event.can_view_registrants(request.user)
 
     return render_to_resp(request=request, template_name=template_name, context={
         'days': days,
@@ -285,7 +286,8 @@ def details(request, id=None, private_slug=u'', template_name="events/view.html"
         'speaker_files': speaker_files,
         'organizer_files': organizer_files,
         'place_files': place_files,
-        'free_event': free_event
+        'free_event': free_event,
+        'can_view_attendees': can_view_attendees
     })
 
 

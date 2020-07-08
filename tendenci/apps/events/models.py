@@ -1400,7 +1400,7 @@ class Event(TendenciBaseModel):
                 return True
             if user.profile.is_member and self.display_registrants_to == 'member':
                 return True
-            if not user.profile.is_member and not user.is_anonymous and self.display_registrants_to == 'user':
+            if not user.is_anonymous and self.display_registrants_to == 'user':
                 return True
 
         return False
