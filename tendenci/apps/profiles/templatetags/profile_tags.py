@@ -3,6 +3,8 @@ from django.template import Library
 from django.conf import settings
 from django.template.loader import render_to_string
 
+from tendenci.apps.theme.templatetags.static import static
+
 
 register = Library()
 
@@ -86,7 +88,7 @@ def gravatar(user, size=settings.GAVATAR_DEFAULT_SIZE, **kwargs):
     try:
         url = user.profile.get_gravatar_url(size=size)
     except:
-        return ''
+        url = static(settings.GAVATAR_DEFAULT_URL)
 
     context = dict(kwargs, **{
         'user': user,

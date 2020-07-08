@@ -25,7 +25,7 @@
 <div class="t">
     <div class="event-wrap">
         <div class="info">
-            <h1>{{ event.title }}</h1>
+            <h1><a href="{% url 'event' event.id %}">{{ event.title }}</a></h1>
             <div class="event-date">
                 {% for span in event.date_spans %}
                     {% if span.same_date %}
@@ -60,7 +60,7 @@
                             </div>
                         {% else %}
                         <div class="registration-notice">{% trans "Event registration is currently ongoing" %}</div>
-                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                        <input class="btn btn-success" type="submit" name="submit" value="{% trans 'Register' %}" />
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -82,8 +82,8 @@
                 <div class="attendee">
                     <div class="image-wrap">
                         {% gravatar registrant.user 80 %}
-                    </div>
                     <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
+                    </div>
                 </div>
                 {% endfor %}
                 </div>
