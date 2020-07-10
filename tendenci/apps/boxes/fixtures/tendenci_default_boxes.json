@@ -352,15 +352,15 @@
 {
     "fields": {
         "status": true,
-        "create_dt": "2017-03-06T01:01:55.149",
+        "create_dt": "2020-03-06T01:01:55.149",
         "group": 1,
-        "update_dt": "2017-03-20T13:39:26.971",
+        "update_dt": "2020-03-20T13:39:26.971",
         "allow_user_edit": false,
         "allow_user_view": false,
         "creator": null,
         "allow_member_view": false,
         "entity": 1,
-        "content": "<p><img class=\"img-responsive\" src=\"http://placehold.it/700x450\" alt=\"\" /></p>",
+        "content": "<p><img class=\"img-responsive\" src=\"https://via.placeholder.com/700x450\" alt=\"\" /></p>",
         "tags": "tendencidemo",
         "title": "About",
         "owner_username": "system_generated",
