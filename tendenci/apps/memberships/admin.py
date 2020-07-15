@@ -894,10 +894,10 @@ class AppListFilter(SimpleListFilter):
 
 class MembershipAppField2Admin(admin.ModelAdmin):
     model = MembershipAppField
-    list_display = ['id', 'label', 'field_name', 'display',
+    list_display = ['id', 'edit_link', 'label', 'field_name', 'app_id', 'display',
               'required', 'admin_only', 'position',
               ]
-    list_display_links = ('label',)
+    list_display_links = ('edit_link',)
 
     readonly_fields = ('membership_app', 'field_name')
 
@@ -912,6 +912,14 @@ class MembershipAppField2Admin(admin.ModelAdmin):
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/admin-list-reorder.js'),
         )
+
+    def edit_link(self, obj):
+        return "Edit"
+    edit_link.short_description = _('edit')
+
+    def app_id(self, obj):
+        return obj.membership_app.id
+    app_id.short_description = _('App ID')
 
     def get_fieldsets(self, request, obj=None):
         extra_fields = ['description', 'help_text',
