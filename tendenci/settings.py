@@ -283,6 +283,10 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 DEFAULT_FROM_EMAIL = 'root@localhost'
 
+# File upload permissions
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o770
+FILE_UPLOAD_PERMISSIONS = 0o660
+
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
