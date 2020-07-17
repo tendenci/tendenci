@@ -63,6 +63,55 @@
     #t-admin-megamenu-apps-dd .panel-body .list-unstyled:first-child {
         margin-top: 0;
     }
+  #t-main-navbar-nav-1>li>a {
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #212932;
+    font-weight: bold;
+    background-color: #e2e2e2;
+    margin-bottom: 15px;
+  }
+#t-admin-megamenu-profile-dd {
+   min-width: 100%;
+   padding: 0 15px;
+}
+#t-admin-megamenu-apps-dd {
+    min-width: 100%;
+}
+#t-admin-megamenu-reports-dd {
+    min-width: 100%;
+}
+#t-admin-megamenu-apps-dd {
+  min-width: 100%;
+}
+#t-admin-megamenu-community-dd {
+    min-width: 100%;
+    padding: 0 15px;
+}
+#t-admin-megamenu #t-admin-megamenu-support-dd {
+    padding: 0 15px;
+}
+#t-admin-megamenu #t-admin-megamenu-pages-dd {
+  padding: 0 15px;
+}
+#t-admin-megamenu li.content-item {
+    padding: 12px 0;
+}
+
+#t-admin-megamenu .dropdown-menu .nav-label{
+    color: #4F4F4F;
+}
+#t-admin-megamenu .dropdown-menu {
+  margin-top: 0;
+  background-color: #ffffff;
+}
+#t-admin-megamenu #navbar-collapse {
+    background-color: #333333;
+}
+#t-admin-megamenu .yamm .yamm-content {
+    padding: 0;
+}
+
 }
 
 
