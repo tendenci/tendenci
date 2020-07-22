@@ -25,6 +25,7 @@ from tendenci.apps.directories.module_meta import DirectoryMeta
 from tendenci.apps.directories.managers import DirectoryManager
 from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.apps.regions.models import Region
 
 
 def file_directory(instance, filename):
@@ -68,6 +69,7 @@ class Directory(TendenciBaseModel):
     state = models.CharField(_('State'), max_length=50, blank=True)
     zip_code = models.CharField(_('Zip Code'), max_length=50, blank=True)
     country = models.CharField(_('Country'), max_length=50, blank=True)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
     phone = models.CharField(max_length=50, blank=True)
     phone2 = models.CharField(_('Phone 2'), max_length=50, blank=True)
     fax = models.CharField(_('Fax'), max_length=50, blank=True)

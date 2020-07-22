@@ -23,6 +23,7 @@ from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_
     STATUS_CHOICES)
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.files.utils import get_max_file_upload_size
+from tendenci.apps.regions.models import Region
 
 
 ALLOWED_LOGO_EXT = (
@@ -64,6 +65,10 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
                              )
     search_category = forms.ChoiceField(label=_('Search By'),
                                         choices=SEARCH_CATEGORIES_ADMIN, required=False)
+    region = forms.ModelChoiceField(label=_("Region"),
+                                      queryset=Region.objects.filter(status_detail='active'),
+                                      empty_label="-----------",
+                                      required=False)
     cat = forms.ModelChoiceField(label=_("Category"),
                                       queryset=DirectoryCategory.objects.filter(parent=None),
                                       empty_label="-----------",
@@ -166,6 +171,7 @@ class DirectoryForm(TendenciBaseForm):
             'logo',
             'source',
             'timezone',
+            'region',
             'first_name',
             'last_name',
             'address',
@@ -212,6 +218,7 @@ class DirectoryForm(TendenciBaseForm):
                                  'tags',
                                  'source',
                                  'timezone',
+                                 'region',
                                  'activation_dt',
                                  'pricing',
                                  'expiration_dt',

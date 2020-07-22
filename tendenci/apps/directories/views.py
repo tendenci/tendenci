@@ -73,11 +73,15 @@ def search(request, template_name="directories/search.html"):
         search_method = form.cleaned_data['search_method']
         cat = form.cleaned_data.get('cat')
         sub_cat = form.cleaned_data.get('sub_cat')
+        region = form.cleaned_data.get('region')
 
         if cat:
             directories = directories.filter(cat=cat)
         if sub_cat:
             directories = directories.filter(sub_cat=sub_cat)
+
+        if region:
+            directories = directories.filter(region=region)
 
         if query and 'tag:' in query:
             tag = query.strip('tag:')

@@ -47,6 +47,23 @@
             </div>
         </fieldset>
 
+       <fieldset>
+            <div class="form-group{% if form.region.errors %} has-error{% endif %}">
+			<label for="{{ form.region.id_for_label }}" class="control-label">{{ form.region.label }}</label>
+                {{ form.region }}
+
+                {% if form.region.errors %}
+                    <p class="help-block">
+                        <ul class="list-unstyled">
+                            {% for error in form.region.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                {% endif %}
+            </div>
+        </fieldset>
+
         <fieldset>
             <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
                 {{ form.cat }}
