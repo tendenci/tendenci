@@ -13,6 +13,10 @@
         <li><strong>{% trans "Source:" %}</strong> <span>{{ directory.source|urlize }}</span></li>
     {% endif %}
 
+   {% if directory.region %}
+        <li><strong>{% trans "Region:" %}</strong> <span>{{ directory.region }}</span></li>
+    {% endif %}
+
     {% if show_contact|default:False %}
         <address>
             {% if directory.first_name and directory.last_name %}
