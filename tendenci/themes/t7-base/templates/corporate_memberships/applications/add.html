@@ -92,7 +92,7 @@
                       {% for error in field.errors %}
                         <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">
                         {{ field.label }} - {{ error }}
-                        }</a></p>
+                        </a></p>
                       {% endfor %}
                 {% endif %}
             {% endfor %}

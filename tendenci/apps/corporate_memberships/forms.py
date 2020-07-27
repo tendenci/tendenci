@@ -482,6 +482,15 @@ class CorpProfileForm(CorpProfileBaseForm):
             _("This secret code is already taken. Please use a different one.")
             )
         return self.cleaned_data['secret_code']
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if name:
+            if CorpProfile.objects.all_inactive().filter(name=name).exists():
+                raise forms.ValidationError(
+                _("'%s' is not available. Please use a different name." % name)
+                )
+        return self.cleaned_data['name']
 
     def clean_number_employees(self):
         number_employees = self.cleaned_data['number_employees']
