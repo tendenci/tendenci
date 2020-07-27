@@ -104,6 +104,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
                 sub_categories_count = sub_categories.count()
                 self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_categories_count})
                 self.fields['sub_cat'].queryset = sub_categories
+        # remove region field if no directories associated with any region
+        if not Directory.objects.filter(region__isnull=False).exists():
+            del self.fields['region']
 
     def clean(self):
         cleaned_data = self.cleaned_data
