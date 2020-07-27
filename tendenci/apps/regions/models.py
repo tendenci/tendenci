@@ -9,9 +9,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.regions.managers import RegionManager
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 
-class Region(TendenciBaseModel):
+class Region(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=40)
     region_name = models.CharField(_('Name'), max_length=200)
     region_code = models.CharField(_('Region Code'), max_length=200)
@@ -27,6 +28,7 @@ class Region(TendenciBaseModel):
 #         permissions = (("view_region", _("Can view region")),)
         verbose_name = _("Region")
         verbose_name_plural = _("Regions")
+        ordering = ['position']
         app_label = 'regions'
 
     def __str__(self):
