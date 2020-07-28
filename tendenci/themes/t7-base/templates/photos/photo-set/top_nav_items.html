@@ -1,0 +1,110 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user photos.add_photoset as can_add_photoset %}
+{% has_perm user photos.delete_photoset as can_delete_photoset %}
+
+{% if app_object %}
+    {% has_perm user photos.view_photoset app_object as can_view_photo_set %}
+    {% has_perm user photos.change_image app_object as can_edit_photo_set %}
+    {% has_perm user photos.delete_image app_object as can_delete_photo_set %}
+{% endif %}
+
+
+<ul class="dropdown-menu">
+    <li>
+        <div class="yamm-content custom-yamm-content content-dropdown">
+            <div class="row">
+                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                    {% if app_object %}
+                        <li>
+                            <span class="content-head text-content-head">{% trans "All Photos" %}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if can_edit_setting %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'settings.index' 'module' 'photos' %}">{% trans "Settings" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'photoset_latest' %}">{% trans "Search Sets" %}</a>
+                        </span>
+                    </li>
+
+                    {% if can_add_photoset %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'photoset_add' %}">{% trans "Add Photo Set" %}</a>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if app_object %}
+                    {% if can_view_photo_set or can_edit_photo_set %}
+                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                            <li>
+                                <span class="content-head text-content-head">{% trans "This Photo Set" %}</span>
+                            </li>
+
+                            {% if can_view_photo_set %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Set" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_photo_set %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'photoset_edit' app_object.pk %}">{% trans "Edit Set" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_edit_photo_set %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'photos_batch_add' app_object.pk %}">{% trans "Add Photos" %}</a>
+                                    </span>
+                                </li>
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'photos_batch_edit' app_object.pk %}">{% trans "Edit Photos" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if user.profile.is_superuser %}
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a href="{% url 'photoset_zip' app_object.pk %}">{% trans "Download Zip" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                            {% if can_delete_photo_set %}
+                                <li class="divider"></li>
+
+                                <li class="content-item">
+                                    <span class="app-name">
+                                        <a class="delete" href="{% url 'photoset_delete' app_object.pk %}">{% trans "Delete Set" %}</a>
+                                    </span>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</ul>

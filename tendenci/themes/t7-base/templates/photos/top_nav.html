@@ -8,6 +8,8 @@
 {% block current_app %}
     {% if photo %}
         {% photo_current_app request.user photo %}
+    {% elif photo_set %}
+        {% photo_set_current_app request.user photo_set %}
     {% else %}
         {% photo_current_app request.user %}
     {% endif %}
