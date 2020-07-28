@@ -285,6 +285,15 @@ def obfuscate_email(email, linktext=None, autoescape=None):
 obfuscate_email.needs_autoescape = True
 
 @register.filter_function
+def b64encode(s):
+    """
+    Return a base64 string
+    """
+    import base64
+    str_bytes = s.encode('ascii')
+    return base64.b64encode(str_bytes).decode('ascii')
+
+@register.filter_function
 def split_str(s, args):
     """
     Split a string using the python string split method
