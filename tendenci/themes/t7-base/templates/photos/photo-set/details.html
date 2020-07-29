@@ -27,80 +27,46 @@
 
 <div class="col-md-12">
   
-  <div class="page-header">
-    <h1 class="set-name">{{ photo_set.name }}</h1> 
-  </div>
-  
-  {% fb_like_button_iframe photo_set.get_absolute_url %}
-  
   <nav>  
     <ul class="pager">
       <li class="previous"><a href="{% url "photoset_latest" %}"><span aria-hidden="true">&larr;</span> {% trans "Back to Albums" %}</a></li>
     </ul>
   </nav>  
-  
-  <table class="wrap">
-    <tr><td class="set-info">
-      <div class="thumbnail">
-        {% if photo_set.get_cover_photo %}
-        <a href="{% url "photo" photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" /></a>
-        {% else %}
-        <img src="{{ photo_set.get_default_cover_photo_small }}" alt="{{ photo_set.name|truncatechars:123 }}" title="{{ photo_set.name|truncatechars:123 }}" />
-        {% endif %}
-      </div>
-      
-      <div class="quick-info">
-        {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if request.user.is_superuser %}
-        <span class="visibility">
-          &middot; {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
-        </span>
-        {% endif %}
-      </div>
-      
-      <div class="set-description">
+
+  <div class="page-header">
+    <h1 class="set-name">{{ photo_set.name }} {{ photo_set.obj_lock }}</h1>
+	
+	<div class="set-description">
         {{ photo_set.description|safe|urlize|linebreaks }}
-      </div>
-      
-      <ul class="actions list-unstyled">
-        {% photo_set_options request.user photo_set %}
-      </ul>
-      
-      </td>
-      <td class="set-photos">
+    </div>
+  </div>
         
-        <div id="photos-wrap">
-          {% if photos %}
-          {% autopaginate photos 48 %}
-          <div class="thumb-row clearfix">
+    <div id="photos-wrap">
+      {% if photos %}
+      {% autopaginate photos 48 %}
+      <div class="thumb-row clearfix">
+          <div class="grid">
             
-            <div class="container-fluid">  
-              <div class="grid">
-                
-                <div class="grid-sizer col-xs-12"></div>
-                
-                {% for photo in photos %}
-                <div class="grid-item col-md-4 col-sm-4 col-xs-4">
-                  <div class="thumbnail">
-                    <a href="{% url "photo" photo.pk photo_set.pk %}">
-                      <img class="img-responsive" src="{% url "photo_original" photo.pk %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}"/>
-                    </a>
-                  </div>
-                </div>
-                
-                {% endfor %}
+            {% for photo in photos %}
+            <div class="grid-item col-md-4 col-sm-4 col-xs-4">
+              <div class="thumbnail">
+                <a href="{% url "photo" photo.pk photo_set.pk %}">
+                  <img class="img-responsive" src="{% url "photo_original" photo.pk %}" alt="{{ photo.title|truncatechars:123 }}" title="{{ photo.title|truncatechars:123 }}"/>
+                </a>
               </div>
             </div>
             
+            {% endfor %}
           </div>
-          <div style="clear:both; height:10px;"></div>
-          {% paginate %}
-          {% else %}
-          <p>{% trans "No photos were found." %}</p>
-          {% endif %}
-        </div>
         
-      </td></tr>
-  </table>
+      </div>
+      <div style="clear:both; height:10px;"></div>
+      {% paginate %}
+      {% else %}
+      <p>{% trans "No photos were found." %}</p>
+      {% endif %}
+    </div>
+
 </div>
 
 <!-- delete form -->

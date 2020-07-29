@@ -77,6 +77,41 @@ class TendenciBaseModel(models.Model):
 
         return mark_safe(value)
 
+    @property
+    def obj_lock(self):
+        from tendenci.apps.perms.fields import has_groups_perms
+        t = '<i style="color:{color};" title="{perm}, {status}" class="fa fa-{lock_type}" aria-hidden="true"></i>'
+
+        color = 'brown'
+        lock_type = 'unlock-alt'
+        if self.allow_anonymous_view:
+            perm = 'Public'
+        elif self.allow_user_view:
+            perm = 'Users'
+            lock_type = 'lock'
+        elif self.allow_member_view:
+            perm = 'Members'
+            lock_type = 'lock'
+        elif has_groups_perms(self):
+            perm = 'Groups'
+            lock_type = 'lock'
+        else:
+            perm = 'Private'
+            color = 'red'
+            lock_type = 'lock'
+
+        if self.status and self.status_detail == 'active':
+            if self.allow_anonymous_view:
+                color = 'green'
+                perm = 'Public'
+        else:
+            color = 'red'
+            lock_type = 'lock'
+
+        value = t.format(color=color, perm=perm, status=self.status_detail, lock_type=lock_type)
+
+        return mark_safe(value)
+
     def get_title(self):
         if hasattr(self, 'meta'):
             return self.get_meta('title')
