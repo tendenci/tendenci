@@ -1,3 +1,29 @@
+### 12.0.12 [2020-07-30]
+
+* Updated django-ses to 1.0.2
+* Updated Pillow to 7.2.0
+* Updated django version to 2.2.14
+* added top nav options for photo set
+* Updated photo set details view to make photos span the full width of the page
+* Made regions sortable
+* Added region field to directories
+* Added two settings, FILE_UPLOAD_DIRECTORY_PERMISSIONS and FILE_UPLOAD_PERMISSIONS, for file upload permissions
+* Included edit link and app id to the memberships fields list
+* Removed bad test data (test and testing) from corp membership default fixture
+* Avoided corp memberships approval email being sent twice
+* Updated tendenci_default_boxes.json
+* Resolved the issue on corporate membership add when the company name entered exists but soft deleted
+* Fixed top menu unreadable in mobile 
+* Fixed tag not working in files search
+* Fixed the issue about the enabled zip code field not displaying in the event registrant edit
+* Updaed and fixed some issues for iCalendar
+* Resolved the issue about event attendees not being linked if "Display Attendees" is turned on
+* Added missing trailing slash for events attendees page
+* Fixed articles not being created from cloned newsletters
+* Fixed OSError: cannot write mode RGBA as JPEG
+* Fixed an import error in model_report for python3.8 (Thanks @theox26 and Aaron Oxenrider)
+
+
 ### 12.0.11 [2020-06-24]
 
 * Added tendenci console script for nice install command  (Thanks @iokiwi)
