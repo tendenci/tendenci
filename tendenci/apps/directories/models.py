@@ -26,6 +26,7 @@ from tendenci.apps.directories.managers import DirectoryManager
 from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.regions.models import Region
+from tendenci.apps.entities.models import Entity
 
 
 def file_directory(instance, filename):
@@ -50,6 +51,8 @@ class Directory(TendenciBaseModel):
 
     guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
+    entity = models.OneToOneField(Entity, blank=True, null=True,
+                                  on_delete=models.SET_NULL,)
     timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     headline = models.CharField(_('Name'), max_length=200, blank=True)
     summary = models.TextField(blank=True)
