@@ -398,7 +398,8 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
     if 'reply_to' in extra_context:
         reply_to = extra_context['reply_to']
-        headers['Reply-To'] = reply_to
+        if reply_to:
+            headers['Reply-To'] = reply_to
     else:
         reply_to = ''
 
