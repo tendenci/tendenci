@@ -10,7 +10,8 @@ def assign_entity_to_directory(apps, schema_editor):
     directories_directory table.
     """
     Entity = apps.get_model("entities", "Entity")
-    default_entity_parent = Entity.objects.first()
+    # make sure we pick the first one with the lowest id
+    default_entity_parent = Entity.objects.all().order_by('id').first()
     Directory = apps.get_model("directories", "Directory")
     for directory in Directory.objects.all():
         entity = directory.entity
