@@ -879,7 +879,8 @@ class CorpMembership(TendenciBaseModel):
         else:
             # send an email to dues reps
             recipients = dues_rep_emails_list(self)
-            recipients.append(self.creator.email)
+            if self.creator:
+                recipients.append(self.creator.email)
             # avoid duplicate emails
             recipients = set(recipients)
             extra_context = {
