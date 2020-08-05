@@ -32,6 +32,12 @@ class Command(BaseCommand):
                 corp_membership.status_detail = 'expired'
                 corp_membership.save()
 
+                # Check directory and set to inactive
+                corp_profile = corp_membership.corp_profile
+                if corp_profile.directory:
+                    corp_profile.directory.status_detail = 'inactive'
+                    corp_profile.directory.save()
+
                 # individual memberships under this corporate
                 memberships = MembershipDefault.objects.filter(
                             corporate_membership_id=corp_membership.id

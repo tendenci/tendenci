@@ -17,6 +17,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.db.models.signals import post_delete
+from django.template.defaultfilters import slugify
 
 #from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.tinymce import models as tinymce_models
@@ -25,6 +26,7 @@ from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.entities.models import Entity
+from tendenci.apps.directories.models import Directory
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.memberships.models import (MembershipType,
                                                 MembershipApp,
@@ -212,6 +214,8 @@ class CorpProfile(TendenciBaseModel):
     number_employees = models.IntegerField(default=0)
     chapter = models.CharField(_('Chapter'), max_length=150,
                                blank=True, default='')
+    directory = models.OneToOneField(Directory, blank=True, null=True,
+                                  on_delete=models.SET_NULL,)
     tax_exempt = models.BooleanField(_("Tax exempt"), default=False)
 
     annual_revenue = models.CharField(_('Annual revenue'), max_length=75,
@@ -258,6 +262,7 @@ class CorpProfile(TendenciBaseModel):
             # create an entity
             entity = Entity.objects.create(
                     entity_name=self.name,
+                    entity_type='Corporate Membership',
                     entity_parent = self.parent_entity,
                     email=self.email,
                     allow_anonymous_view=False)
@@ -361,6 +366,48 @@ class CorpProfile(TendenciBaseModel):
     def get_dues_rep(self):
         [rep] = self.reps.filter(is_dues_rep=True)[:1] or [None]
         return rep
+
+    def get_directory_slug(self):
+        slug = slugify(self.name)
+        if Directory.objects.filter(slug=slug).exists():
+            slug = '{slug}-corp-{id}'.format(slug=slug, id=self.id)
+        return slug
+
+    def add_directory(self):
+        if get_setting('module',  'corporate_memberships', 'adddirectory'):
+            if not self.directory:
+                # 'entity_parent': self.entity,
+                directory_entity = Entity.objects.create(
+                                    entity_name=self.name,
+                                    entity_type='Directory',
+                                    entity_parent = self.entity,
+                                    email=self.email,
+                                    allow_anonymous_view=False)
+                params = {'entity': directory_entity,
+                          'headline':  self.name,
+                          'slug': self.get_directory_slug(),
+                          'guid': str(uuid.uuid4()),
+                          'address': self.address,
+                          'address2': self.address2,
+                          'city': self.city,
+                          'state': self.state,
+                          'zip_code': self.zip,
+                          'country': self.country,
+                          'region': self.region,
+                          'phone': self.phone,
+                          'email': self.email,
+                          'website': self.url,
+                          'allow_anonymous_view': self.allow_anonymous_view,
+                          'allow_user_view': self.allow_user_view,
+                          'allow_member_view': self.allow_member_view,
+                          'creator': self.creator,
+                          'creator_username': self.creator_username,
+                          'owner': self.owner,
+                          'owner_username': self.owner_username,
+                          'status_detail': 'pending'
+                          }
+                self.directory = Directory.objects.create(**params)
+                self.save()
 
 
 class CorpMembership(TendenciBaseModel):
@@ -796,6 +843,10 @@ class CorpMembership(TendenciBaseModel):
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
+        if get_setting('module',  'corporate_memberships', 'adddirectory'):
+            # add a directory entry for this corp
+            self.corp_profile.add_directory()
+
         # create salesforce lead if applicable
         sf = get_salesforce_access()
         if sf:
@@ -889,6 +940,13 @@ class CorpMembership(TendenciBaseModel):
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
+            
+            # directory
+            if self.corp_profile.directory:
+                directory = self.corp_profile.directory
+                if directory.status_detail != 'active':
+                    directory.status_detail = 'active'
+                    directory.save()
 
             # 2) approve the individual memberships
             group = self.corporate_membership_type.membership_type.group
@@ -1038,6 +1096,12 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
+            
+            self.corp_profile.creator = self.creator
+            self.corp_profile.creator_username = self.creator_username
+            self.corp_profile.owner = self.owner
+            self.corp_profile.owner_username = self.owner_username
+            self.corp_profile.save()
 
             # assign creator to be dues_rep
             if not CorpMembershipRep.objects.filter(

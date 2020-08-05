@@ -10,6 +10,7 @@ def assign_entity_to_directory(apps, schema_editor):
     directories_directory table.
     """
     Entity = apps.get_model("entities", "Entity")
+    default_entity_parent = Entity.objects.first()
     Directory = apps.get_model("directories", "Directory")
     for directory in Directory.objects.all():
         entity = directory.entity
@@ -17,7 +18,8 @@ def assign_entity_to_directory(apps, schema_editor):
             if Directory.objects.filter(entity=entity).exclude(id=directory.id).exists():
                 # create an entity for this directory to make entity unique in the directories
                 params = {'entity_name': '{name} (Directory ID: {id})'.format(name=directory.headline, id=directory.id),
-                          'entity_type': 'Reporting',
+                          'entity_type': 'Directory',
+                          'entity_parent': default_entity_parent,
                           'guid': str(uuid.uuid4()),
                           'contact_name': '{first_name} {last_name}'.format(first_name=directory.first_name, last_name=directory.last_name),
                           'phone': directory.phone,

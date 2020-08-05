@@ -1346,6 +1346,27 @@
 },
 {
     "fields": {
+        "default_value": "",
+        "field_type": "CharField",
+        "corp_app": 1,
+        "description": "",
+        "css_class": "",
+        "required": false,
+        "label": "Parent Entity",
+        "help_text": "",
+        "field_layout": "1",
+        "admin_only": false,
+        "position": 3,
+        "choices": null,
+        "field_name": "parent_entity",
+        "display": false,
+        "size": "m"
+    },
+    "model": "corporate_memberships.corpmembershipappfield",
+    "pk": 49
+},
+{
+    "fields": {
         "name": "tendenci.com",
         "corp_profile": 3
     },

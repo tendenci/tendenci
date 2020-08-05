@@ -14,6 +14,9 @@ class Entity(models.Model):
         ('Committee', _('Committee')),
         ('Reporting', _('Reporting')),
         ('Study Group', _('Study Group')),
+        ('Directory', _('Directory')),
+        ('Corporate Membership', _('Corporate Membership')),
+        ('Membership', _('Membership')),
         ('Technical Interest Group', _('Technical Interest Group')),
         ('Other', _('Other')),
     )

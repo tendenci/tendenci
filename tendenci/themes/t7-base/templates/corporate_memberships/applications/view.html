@@ -34,6 +34,11 @@
         {% include "corporate_memberships/action_options.html" %}
         </div>
         {% endwith %}
+		{% if corp_profile.directory %}
+		{% if corp_profile.directory.status_detail == 'active' or request.user.is_superuser %}
+		<a href="{% url 'directory' corp_profile.directory.slug  %}">{% trans "Go to Directory" %}</a>
+		{% endif %}
+		{% endif %}
 
         {% if corp_profile.logo %}
          <div class="t-corp-membership-logo">

@@ -135,7 +135,7 @@
         "store": true,
         "updated_by": ""
     },
-        {
+    {
         "default_value": "true",
         "description": "By default, the individual membership application will be pre-populated with the corporate entity's address/contact info when an individual joining under a corporate. You can turn off this behavior by setting it to false.",
         "data_type": "boolean",
@@ -145,6 +145,23 @@
         "name": "defaultcorpinfotoindividual",
         "value": "true",
         "label": "Pre-populate Corporate Profile to Individual Membership's Application",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "corporate_memberships",
+        "store": false,
+        "updated_by": ""
+    },
+    {
+        "default_value": "false",
+        "description": "It defines whether or not a directory listing will be created for corporate memberships upon join approval.",
+        "data_type": "boolean",
+        "update_dt": "2020-08-02 14:30:30",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "adddirectory",
+        "value": "false",
+        "label": "Corporate Memberships Get Listed in Directories",
         "input_value": "true,false",
         "parent_id": 0,
         "scope": "module",
