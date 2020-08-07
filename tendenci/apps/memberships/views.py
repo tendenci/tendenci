@@ -1083,7 +1083,7 @@ def membership_default_add(request, slug='', membership_id=None,
         [membership] = user.membershipdefault_set.filter(
             membership_type=membership_type_id).order_by('-pk')[:1] or [None]
 
-    demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None, membership=membership)
+    demographics_form = DemographicsForm(app_fields, request.POST or None, request.FILES or None, request=request, membership=membership)
 
     membership_initial = {}
     if membership:

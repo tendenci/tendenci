@@ -999,6 +999,28 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                         self.fields[field_name].initial = getattr(self.demographics, field_name)
 
         self.add_form_control_class()
+        
+    def assign_file_perms(self, file_instance):
+        """
+        Assign permissions for the uploaded file.
+        """
+        member_protection = get_setting('module', 'memberships', 'memberprotection')
+        # set perms
+        file_instance.allow_anonymous_view = False
+        file_instance.allow_user_view = False
+        file_instance.allow_member_view = False
+        file_instance.is_public = False
+        
+        if member_protection == 'public':
+            file_instance.allow_anonymous_view = True
+            file_instance.is_public = True
+        elif member_protection == 'all-members':
+            file_instance.allow_member_view = True
+        if self.request and self.request.user.is_authenticated:
+            file_instance.creator = self.request.user
+            file_instance.creator_username = self.request.user.username
+            file_instance.owner = self.request.user
+            file_instance.owner_username = self.request.user.username
 
     def save(self, commit=True, *args, **kwargs):
         pks ={}
@@ -1025,6 +1047,8 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                         file_instance.file = new_file
                     else:
                         file_instance = MembershipFile(file=new_file)
+
+                    self.assign_file_perms(file_instance)
 
                     file_instance.save()
                     data = {
