@@ -113,8 +113,17 @@
                                     {% empty %}
                                         <li>{{ membership.status_note }}</li>
                                     {% endfor %}
-                                </ul>
 
+                                     {% if membership.application_approved and membership.application_approved_user %}
+                                      {% url 'profile' membership.application_approved_user.username as approved_user_url %}
+                                     <li><i class="pull-right">{% blocktrans with approved_by=membership.application_approved_user.username approved_dt=membership.application_approved_dt|date:'m/d/Y' %}
+                                      Approved by <a href="{{ approved_user_url }}">{{ approved_by }}</a> on {{ approved_dt }} {% endblocktrans %}</i></li>
+                                     {% elif membership.application_denied and membership.application_approved_denied_user %}
+                                        {% url 'profile' membership.application_approved_denied_user.username as denied_user_url %}
+                                     <li><i>{% blocktrans with denied_by=membership.application_approved_denied_user.username denied_dt=membership.application_approved_denied_dt|date:'m/d/Y' %}
+                                      Denied by <a href="{{ denied_user_url }}">{{ denied_by }}</a> on {{ denied_dt }} {% endblocktrans %}</i></li>
+                                     {% endif %}
+                                </ul>
                             </div>
                             {% else %}
                             <div class="status-action">
