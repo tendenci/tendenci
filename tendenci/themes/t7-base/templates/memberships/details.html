@@ -28,10 +28,12 @@
                 <a href="{% url "membership.details" membership.pk %}?print">
                     {% trans "Print Page" %}</a>
 
-                {% if member_can_edit_records and user == membership.user %}
-                <a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
-				{% elif user.is_superuser %}
-				<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
+                {% if member_can_edit_records %}
+					{% if user == membership.user %}
+                	<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
+					{% elif user.is_superuser %}
+					<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
+					 {% endif %}
                 {% endif %}
 
 				{% if user.is_superuser %}
