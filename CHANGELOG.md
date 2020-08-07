@@ -1,3 +1,15 @@
+### 12.0.13 [2020-08-07]
+
+* Updated Django version to 2.2.15
+* Added the approved/denied info in the admin area on membership details page
+* Included entity_type to the entities list_display
+* Made entity a OneToOneField in directory
+* Added an option to add a directory for corporate memberships on join
+* Added the missing parent_entity field to corp app 1
+* Fixed an error in email send due to None Reply-To
+* Fixed a AttributeError: 'NoneType' object has no attribute 'email' 
+* Made file perms match with the setting "Member Protection"
+
 ### 12.0.12 [2020-07-30]
 
 * Updated django-ses to 1.0.2
