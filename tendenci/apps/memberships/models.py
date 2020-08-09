@@ -44,6 +44,7 @@ from tendenci.apps.directories.models import Directory
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
 from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.files.validators import FileValidator
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^tinymce\.models\.HTMLField'])
@@ -2628,6 +2629,8 @@ class MembershipAppField(OrderingBaseModel):
                 if module == 'django.forms.extras':
                     module = 'django.forms.widgets'
                 field_args["widget"] = getattr(import_module(module), widget)
+            if self.field_type == 'FileField':
+                field_args["validators"] = [FileValidator()]
 
             return field_class(**field_args)
         return None

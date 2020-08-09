@@ -42,6 +42,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.files.validators import FileValidator
 
 
 THIS_YEAR = datetime.today().year
@@ -989,7 +990,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
                         membership_app=self.app, display=True)
                     if ud_field.field_type == u'FileField':
-                        self.fields[field_name] = forms.FileField(label=ud_field.label, required=False)
+                        self.fields[field_name] = forms.FileField(label=ud_field.label, required=False, validators=[FileValidator()])
                         file_instance = get_ud_file_instance(self.demographics, field_name)
 
                         if file_instance:

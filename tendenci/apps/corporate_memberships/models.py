@@ -60,6 +60,7 @@ from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.base.utils import truncate_words
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.files.models import File
+from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
 
 
@@ -1674,6 +1675,8 @@ class CorpMembershipAppField(OrderingBaseModel):
                 if module == 'django.forms.extras':
                     module = 'django.forms.widgets'
                 field_args["widget"] = getattr(import_module(module), widget)
+            if self.field_type == 'FileField':
+                field_args["validators"] = [FileValidator()]
 
             return field_class(**field_args)
         return None
