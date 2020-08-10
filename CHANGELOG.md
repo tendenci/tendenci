@@ -1,3 +1,7 @@
+### 12.0.14 [2020-08-09]
+
+* Applied FileValidator to file fields for membership and corp membership forms
+
 ### 12.0.13 [2020-08-07]
 
 * Updated Django version to 2.2.15
