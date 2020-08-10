@@ -1,4 +1,4 @@
-
+{% load base_filters %}
 {% if events %}
     <h3 style="font-size: 24px; font-family: Helvetica, Arial, sans-serif; margin: 0px;">
     {# named area for jump links #}
@@ -30,7 +30,22 @@
 
         {% if not simplified  %}
             <tr><td align="left"><font face="Arial" size="2" color="#000000">
-            <b>{% trans "Updated:" %}</b> {{ event.update_dt|date:"l d-M-Y h:i A" }} </font>
+			<strong>{% trans 'Date and Time:' %}</strong>
+            {% for span in event.date_spans %}
+		        {% if span.same_date %}
+			        {{ span.start_dt|date:"D, N j, Y" }}
+			        {% if not forloop.last %} and {% endif %}
+		        {% else %}
+			        {{ span.start_dt|date:"D, M. j" }} - {{ span.end_dt|date:"D, M. j, Y" }}
+			        {% if not forloop.last %} and {% endif %}
+		        {% endif %}
+	        {% endfor %}
+	        
+          {% if not event.all_day %}
+            {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone.zone|timezone_label }}
+         {% endif %}
+
+            </font>
             </td></tr>
         {% endif %}
 
