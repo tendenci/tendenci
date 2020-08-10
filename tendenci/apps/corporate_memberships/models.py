@@ -2167,7 +2167,7 @@ class Notice(models.Model):
                                     recipient=recipient,
                                     anonymous_join_login_info=anonymous_join_login_info),
                         'corporate_membership_total': CorpMembership.objects.count(),
-                        'sender': notice.sender,
+                        'sender': get_setting('site', 'global', 'siteemailnoreplyaddress'),
                         'sender_display': notice.sender_display,
                     }
                     if notice.sender:
