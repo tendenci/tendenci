@@ -53,6 +53,10 @@ class FileValidator(object):
                 raise ValidationError(_("Invalid file name - comma is not allowed."))
             if '..' in value.name:
                 raise ValidationError(_("Invalid file name - two consecutive dots are not allowed."))
+            if len(value.name) > 100:
+                # The max_length (260) is set way too high in the File model, while Memcached does not accept keys longer than 250. 
+                # Instead of changing the max_length in model, set limit here so that it does not break the existing db
+                raise ValidationError(_("Invalid file name - the length of file name should be shorter than 100."))
             
             # Check the extension
             ext = splitext(value.name)[1].lower()

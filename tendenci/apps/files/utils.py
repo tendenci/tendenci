@@ -20,6 +20,8 @@ from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 from tendenci.apps.files.models import File as TFile
 from tendenci.apps.site_settings.utils import get_setting
 
+# Memcached does not accept keys longer than this.
+MEMCACHE_MAX_KEY_LENGTH = 250
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
@@ -258,6 +260,10 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, con
         key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop, str_quality, str_constrain))
     else:
         key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop, str_quality, str_constrain))
+        if len(key) > MEMCACHE_MAX_KEY_LENGTH:
+            truncated_file_name = file.name[:(MEMCACHE_MAX_KEY_LENGTH-1-len('.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), str_size, str_crop, str_quality, str_constrain))))]
+            key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), truncated_file_name, str_size, str_crop, str_quality, str_constrain))
+
     # Remove spaces so key is valid for memcached
     key = key.replace(" ", "_")
 
