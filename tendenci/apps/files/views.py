@@ -5,6 +5,8 @@ from urllib.request import urlopen
 import mimetypes
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+from functools import reduce
+from operator import or_
 
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
@@ -200,6 +202,7 @@ def search(request, template_name="files/search.html"):
 
     if form.is_valid():
         query = form.cleaned_data.get('q', '')
+        query = query.strip()
         category = form.cleaned_data.get('file_cat', None)
         sub_category = form.cleaned_data.get('file_sub_cat', None)
         group = form.cleaned_data.get('group', None)
@@ -211,10 +214,15 @@ def search(request, template_name="files/search.html"):
             tag = query.strip('tag:')
             files = files.filter(tags__icontains=tag)
         else:
+            tags_list = [item.strip() for item in query.split(',') if item.strip()]
+            if len(tags_list) > 1:
+                tags_q = reduce(or_, (Q(tags__icontains=item) for item in tags_list))
+            else:
+                tags_q = Q(tags__icontains=tags_list[0])
             files = files.filter(Q(file__icontains=query)|
                                  Q(name__icontains=query)|
                                  Q(description__icontains=query)|
-                                 Q(tags__icontains=query))
+                                 tags_q)
     if category:
         files = files.filter(file_cat=category)
     if sub_category:
