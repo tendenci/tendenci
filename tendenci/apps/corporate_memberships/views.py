@@ -116,7 +116,6 @@ def corp_members_donated(request,
                                 'corp_profile__name', 'donation_amount',
                                 'invoice', 'create_dt', 'status_detail'
                                 ).order_by('-donation_amount', 'corp_profile__name')
-    print(corp_members)
 
     return render_to_resp(request=request, template_name=template_name,
                               context={'corp_members': corp_members,})

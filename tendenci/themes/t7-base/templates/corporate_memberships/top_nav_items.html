@@ -88,6 +88,20 @@
                             </span>
                         </li>
 
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
+                            <li class="content-item">
+                                <span class="app-name">
+                                    <a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a>
+                                </span>
+                            </li>
+                        {% endif %}
+
+                         <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'reports-corp-members-donated' %}">{% trans "View Donated on Renewal" %}</a>
+                            </span>
+                         </li>
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'admin:app_list' 'corporate_memberships' %}">{% trans 'Admin Backend' %}</a>
@@ -105,14 +119,6 @@
                                 <a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</a>
                             </span>
                         </li>
-
-                        {% if MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
-                            <li class="content-item">
-                                <span class="app-name">
-                                    <a href="{% url 'corp_memb.reports.free_passes_list' %}">{% trans "Free Passes List" %}</a>
-                                </span>
-                            </li>
-                        {% endif %}
                     {% endif %}
                 </ul>
 
