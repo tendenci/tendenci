@@ -1,4 +1,5 @@
 import imghdr
+import decimal
 from os.path import splitext
 import operator
 from uuid import uuid4
@@ -22,7 +23,8 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.industries.models import Industry
-from tendenci.apps.memberships.fields import NoticeTimeTypeField
+from tendenci.apps.memberships.fields import (NoticeTimeTypeField, DonationOptionAmountField)
+from tendenci.apps.memberships.widgets import DonationOptionAmountWidget
 from tendenci.apps.corporate_memberships.widgets import NoticeTimeTypeWidget
 from tendenci.apps.corporate_memberships.models import (
     CorporateMembershipType,
@@ -685,6 +687,12 @@ class CorpMembershipRenewForm(forms.ModelForm):
         self.fields['members'].choices = members_choices
         self.fields['members'].label = _("Select the individual members you " +
                                         "want to renew")
+        
+        if self.corpmembership_app.donation_enabled:
+            self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
+            self.fields['donation_option_value'].label = self.corpmembership_app.donation_label
+            self.fields['donation_option_value'].widget = DonationOptionAmountWidget(attrs={},
+                                                default_amount=self.corpmembership_app.donation_default_amount)
 
         #if not self.instance.corporate_membership_type.membership_type.renewal_price:
         self.fields['select_all_members'].initial = False
@@ -710,6 +718,21 @@ class CorpMembershipRenewForm(forms.ModelForm):
                         _("You've selected {count} individual members, but the maximum allowed is {cap}.".format(count=count_members,  cap=cmt.membership_cap)) )
 
         return cleaned_data
+
+    def clean_donation_option_value(self):
+        value_list = self.cleaned_data['donation_option_value']
+        if value_list:
+            donation_option, donation_amount = value_list
+            if donation_option == 'custom':
+                # validate donation_amount
+                try:
+                    donation_amount = donation_amount.replace('$', '').replace(',', '')
+                    donation_amount = decimal.Decimal(donation_amount)
+                    return (donation_option, donation_amount)
+                except decimal.InvalidOperation:
+                    raise forms.ValidationError(_("Please enter a valid donation amount."))
+
+        return value_list
 
 
 class RosterSearchAdvancedForm(forms.Form):

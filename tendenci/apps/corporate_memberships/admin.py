@@ -106,6 +106,9 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'memb_app'
                            )},),
         (_('Parent Entities'), {'fields': ('parent_entities',)}),
+        (_('Donation'), {'fields': ('donation_enabled', 'donation_label', 'donation_default_amount'),
+                         'description': _('If donation is enabled, a field will be added to the application\
+                         on renewal to allow users to select the default amount or specify an amount to donate')}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',

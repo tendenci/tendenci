@@ -1,0 +1,47 @@
+{% extends "reports/base.html" %}
+{% load bootstrap_pagination_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<style>
+.text-right{
+  text-align: right !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{% trans "Corporate Memberships Donated On Renewal" %}</h1>
+</div>
+
+<div>
+{% autopaginate corp_members 30 %}
+<table class="table table-tendenci-reports">
+    <tr>
+        <th>{% trans "Corporation" %}</th>
+        <th>{% trans "Amount Donated" %} ({{ SITE_GLOBAL_CURRENCYSYMBOL }})</th>
+        <th>{% trans "Invoice" %}</th>
+        <th>{% trans "Date" %}</th>
+        <th>{% trans "Status" %}</th>
+
+    </tr>
+
+  {% for cm in corp_members %}
+    <tr>
+        <td><a href="{% url 'corpmembership.view' cm.id %}">{{ cm.corp_profile__name }}</a></td>
+        <td>{{ cm.donation_amount }}</td>
+        <td>{% if cm.invoice %}<a href="{% url 'invoice.view' cm.invoice %}">{{ cm.invoice }}</a>{% endif %}</td>
+        <td>{{ cm.create_dt|date:"F j, Y" }}</td>
+        <td>{{ cm.status_detail }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% paginate %}
+
+</div>
+
+{% endblock content %}

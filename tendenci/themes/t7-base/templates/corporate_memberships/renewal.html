@@ -176,8 +176,29 @@ div.forms{
               {% if form.corporate_membership_type.help_text %}
               <div class="help-text">{{ form.corporate_membership_type.help_text }}</div>
               {% endif %}
-           </div>
         </div>
+    </div>
+
+	{% if 'donation_option_value' in form.fields %}
+	 <div class="form-field">
+          <div class="field-label">
+              {{ form.donation_option_value.label_tag }}
+          </div>
+          {% if form.donation_option_value.errors %}
+          <div class="alert alert-danger" role="alert">
+              {% for error in form.donation_option_value.errors %}
+              <p>{{ error }}</p>
+              {% endfor %}
+          </div>
+          {% endif %}
+          <div class="field">
+              {{ form.donation_option_value }}
+          </div>
+          {% if form.donation_option_value.help_text %}
+          <div class="help-text">{{ form.donation_option_value.help_text }}</div>
+          {% endif %}
+	 </div>
+	{% endif %}	
 
 
      <div class="form-field">
@@ -236,8 +257,8 @@ div.forms{
         <div id="summary-content">
             <table id="summary-price">
                 <tr>
-                    <td width="26%" class="summary-header">&nbsp;</td>
-                    <td width="20%" class="summary-header">{% trans "Qty" %}</td>
+                    <td width="30%" class="summary-header">&nbsp;</td>
+                    <td width="14%" class="summary-header">{% trans "Qty" %}</td>
                     <td width="27%" class="summary-header">{% trans "Unit Price" %}</td>
                     <td width="27%" class="summary-header">{% trans "Sub-total" %}</td>
                 </tr>
@@ -270,6 +291,16 @@ div.forms{
                     </td>
                     <td class="right">
                         {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="above-cap-ind-sub-total">{{ summary_data.above_cap_individual_total }}</span>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if 'donation_option_value' in form.fields %}
+                <tr id="donation-cal">
+                    <td>{{ form.donation_option_value.label }}</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span data-donation-default-amount="{{ summary_data.donation_default_amount }}" id="donation-amount">{{ summary_data.donation_amount }}</span>
                     </td>
                 </tr>
                 {% endif %}
@@ -393,6 +424,10 @@ div.forms{
 
         }
 
+        //var donation_amount = parseFloat($("#donation-amount").html());
+       // if (isNaN(donation_amount)){donation_amount=0;}
+        //total_amount = total_amount + donation_amount;
+
         $("#ind-qty").html(ind_qty);
         $("#ind-sub-total").html(ind_sub_total.toFixed(2));
         $("#total-amount").html(total_amount.toFixed(2));
@@ -489,11 +524,37 @@ div.forms{
 
         // update total amount
         if (update_total){
-            total_amount = (above_cap_ind_sub_total + parseFloat(new_corp_price) + parseFloat(ind_sub_total)).toFixed(2);
+	        var donation_amount = parseFloat($("#donation-amount").html());
+            if (isNaN(donation_amount)){donation_amount=0;}
+            total_amount = (donation_amount + above_cap_ind_sub_total + parseFloat(new_corp_price) + parseFloat(ind_sub_total)).toFixed(2);
             $("#total-amount").html(total_amount);
         }
 
     }
+
+    function DonationUpdateSummary(donation){
+	    var donation_option = $("input[name='donation_option_value_0']:checked").val();
+        var donation_amount_default = parseFloat($('#donation-amount').data('donation-default-amount'));
+	    var donation_amount = 0;
+        
+        //console.log(donation_option);
+		if(donation_option){
+			if (donation_option == 'default'){
+				donation_amount = donation_amount_default;
+			}else{
+				if (donation_option == 'custom'){
+				    donation_amount = parseFloat($("input[name='donation_option_value_1']").val());
+				    if (isNaN(donation_amount)){
+					    donation_amount = 0;}
+				}
+			}     
+	    }
+
+        $("#donation-amount").html(donation_amount.toFixed(2));
+        var total_amount = (donation_amount + parseFloat($("#corp-sub-total").html()) + parseFloat($("#ind-sub-total").html()) + parseFloat($("#above-cap-ind-sub-total").html())).toFixed(2);
+        $("#total-amount").html(total_amount);
+	    
+	}
 
     $(document).ready(function()
     {
@@ -534,6 +595,15 @@ div.forms{
         $("input[name=corporate_membership_type]").on("change", function()
         {
             TypeUpdateSummary(this);
+        });
+
+        $("input[name=donation_option_value_0]").on("change", function()
+        {
+            DonationUpdateSummary(this);
+        });
+        $("input[name=donation_option_value_1]").on("change", function()
+        {
+            DonationUpdateSummary(this);
         });
 
         {% if summary_data.apply_cap and summary_data.allow_above_cap %}

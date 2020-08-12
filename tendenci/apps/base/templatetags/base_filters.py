@@ -402,6 +402,10 @@ def datedelta(dt, range_):
     return dt
 
 @register.filter
+def subtract(value, arg):
+    return value - arg
+
+@register.filter
 def split(str, splitter):
     return str.split(splitter)
 

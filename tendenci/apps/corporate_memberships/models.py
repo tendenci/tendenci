@@ -441,6 +441,7 @@ class CorpMembership(TendenciBaseModel):
                                        on_delete=models.SET_NULL)
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
+    donation_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
 
     anonymous_creator = models.ForeignKey('Creator', null=True, on_delete=models.SET_NULL)
     admin_notes = models.TextField(_('Admin notes'),
@@ -1442,6 +1443,11 @@ class CorpMembershipApp(TendenciBaseModel):
     include_tax = models.BooleanField(default=False)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0,
                                    help_text=_('Example: 0.0825 for 8.25%.'))
+
+    donation_enabled = models.BooleanField(_("Enable Donation on Renewal"), default=False)
+    donation_label = models.CharField(_("Label"), max_length=255, blank=True, null=True)
+    donation_default_amount = models.DecimalField(_("Default Amount"), max_digits=15,
+                                                  decimal_places=2, blank=True, default=0)
 
     dues_reps_group = models.ForeignKey(Group, null=True,
         related_name='dues_reps_group',

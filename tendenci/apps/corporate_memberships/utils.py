@@ -266,6 +266,13 @@ def corp_memb_inv_add(user, corp_memb, app=None, **kwargs):
             inv.total = total
             inv.balance = total
 
+        # Check for donation
+        donation_amount = kwargs.get('donation_amount', None)
+        if donation_amount:
+            inv.subtotal += donation_amount
+            inv.total += donation_amount
+            inv.balance += donation_amount
+
         inv.estimate = True
         inv.status_detail = 'estimate'
         inv.save(user)
