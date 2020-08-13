@@ -316,7 +316,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
     list_display = [
         'id',
-        'name',
+        'edit_link',
+        'view_on_site',
+        'user_profile',
         'email',
         'member_number',
         'membership_type_link',
@@ -330,7 +332,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     list_display.append('admin_notes')
     list_display.append('reminder')
     list_editable = ['reminder',]
-    list_display_links = ('name',)
+    list_display_links = ('edit_link',)
 
     list_filter = [
         MembershipStatusDetailFilter,
@@ -372,14 +374,31 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-    def name(self, instance):
-        name = '%s %s' % (
-            instance.user.first_name,
-            instance.user.last_name,
+    def edit_link(self, obj):
+        return "Edit"
+    edit_link.short_description = _('edit')
+
+    @mark_safe
+    def view_on_site(self, obj):
+        if not hasattr(obj, 'get_absolute_url'):
+            return None
+
+        link_icon = static('images/icons/external_16x16.png')
+        link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
+            obj.get_absolute_url(),
+            obj,
+            link_icon,
         )
-        name.strip()
-        return name
-    name.admin_order_field = 'user__last_name'
+        return link
+    view_on_site.short_description = _('view')
+
+    @mark_safe
+    def user_profile(self, instance):
+        return '<a href="%s">%s</a>' % (
+              reverse('profile', args=[instance.user.username]),
+              instance.user.get_full_name() or instance.user.username,)
+    user_profile.short_description = _('User Profile')
+    user_profile.admin_order_field = 'user__last_name'
 
     def email(self, instance):
         return instance.user.email
