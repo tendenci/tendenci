@@ -775,7 +775,7 @@ class CorpMembership(TendenciBaseModel):
     def copy(self):
         corp_membership = self.__class__()
         field_names = [field.name for field in self.__class__._meta.fields]
-        ignore_fields = ['id', 'renewal', 'renew_dt', 'status',
+        ignore_fields = ['id', 'renewal', 'renew_dt', 'status', 'donation_amount',
                          'status_detail', 'approved', 'approved_denied_dt',
                          'approved_denied_user', 'anonymous_creator']
         for field in ignore_fields:
