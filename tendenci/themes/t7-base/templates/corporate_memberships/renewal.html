@@ -539,10 +539,10 @@ div.forms{
         
         //console.log(donation_option);
 		if(donation_option){
-			if (donation_option == 'default'){
+			if (donation_option === 'default'){
 				donation_amount = donation_amount_default;
 			}else{
-				if (donation_option == 'custom'){
+				if (donation_option === 'custom'){
 				    donation_amount = parseFloat($("input[name='donation_option_value_1']").val());
 				    if (isNaN(donation_amount)){
 					    donation_amount = 0;}
@@ -551,7 +551,9 @@ div.forms{
 	    }
 
         $("#donation-amount").html(donation_amount.toFixed(2));
-        var total_amount = (donation_amount + parseFloat($("#corp-sub-total").html()) + parseFloat($("#ind-sub-total").html()) + parseFloat($("#above-cap-ind-sub-total").html())).toFixed(2);
+        var above_cap_ind_sub_total = parseFloat($("#above-cap-ind-sub-total").html());
+        if (isNaN(above_cap_ind_sub_total)){above_cap_ind_sub_total= 0;}
+        var total_amount = (donation_amount + parseFloat($("#corp-sub-total").html()) + parseFloat($("#ind-sub-total").html()) + above_cap_ind_sub_total).toFixed(2);
         $("#total-amount").html(total_amount);
 	    
 	}
