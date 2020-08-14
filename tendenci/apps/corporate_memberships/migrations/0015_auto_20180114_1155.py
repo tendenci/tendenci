@@ -21,5 +21,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(add_reps_groups),
+        # This operation is not necessary and it is also causing conflicts 
+        # with db changes in a later migration (0019)- commenting it out
+        #migrations.RunPython(add_reps_groups),
     ]
