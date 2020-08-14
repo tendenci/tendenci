@@ -1,3 +1,12 @@
+### 12.1 [2020-08-14]
+
+* New feature: Donation option on corporate memberships renewal
+* Changed the updated date to event date for events list generated for newsletters
+* Fixed an InvalidCacheKey error
+* Resolved the issue regarding multiple tags cannot be searched in files search
+* Updated the memberships list at admin backend to include the view and profile columns
+* Updated group slug pattern to fix a potential NoReverseMatch error when a forward slash (/) is included in the slug. 
+
 ### 12.0.14 [2020-08-09]
 
 * Applied FileValidator to file fields for membership and corp membership forms
