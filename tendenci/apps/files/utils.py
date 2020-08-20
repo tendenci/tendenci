@@ -21,7 +21,7 @@ from tendenci.apps.files.models import File as TFile
 from tendenci.apps.site_settings.utils import get_setting
 
 # Memcached does not accept keys longer than this.
-MEMCACHE_MAX_KEY_LENGTH = 250
+MEMCACHE_MAX_KEY_LENGTH = 247
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
