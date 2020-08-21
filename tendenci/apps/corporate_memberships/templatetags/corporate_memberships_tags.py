@@ -204,6 +204,7 @@ class ListCorpMembershipNode(Node):
         order = '-join_dt'
         randomize = False
         renewed_only = False
+        exclude_expired = False
 
         allow_anonymous_search = get_setting('module',
                                          'corporate_memberships',
@@ -254,6 +255,9 @@ class ListCorpMembershipNode(Node):
                 
         if 'renewed_only' in self.kwargs:
             renewed_only = bool(self.kwargs['renewed_only'])
+
+        if 'exclude_expired' in self.kwargs:
+            exclude_expired = bool(self.kwargs['exclude_expired'])
             
 
         items = CorpMembership.objects.exclude(status_detail='archive')
@@ -273,6 +277,9 @@ class ListCorpMembershipNode(Node):
         
         if renewed_only:
             items = items.filter(renewal=True)
+            
+        if exclude_expired:
+            items = items.exclude(status_detail='expired')
 
         # if order is not specified it sorts by relevance
         if order:
@@ -321,7 +328,7 @@ def list_corporate_memberships(parser, token):
 
     Example::
 
-        {% list_corporate_memberships as corpmembership_list limit=5 corporate_membership_type=1 %}
+        {% list_corporate_memberships as corpmembership_list limit=5 renewed_only=True exclude_expired=True corporate_membership_type=1 %}
         {% for corpmembership in corpmembership_list %}
             {{ corpmembership.corp_profile.name }}
         {% endfor %}
