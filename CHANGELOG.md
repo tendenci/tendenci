@@ -1,3 +1,8 @@
+### 12.1.1 [2020-08-21]
+
+* Adjusted MEMCACHE_MAX_KEY_LENGTH 247 to resolve the InvalidCacheKey error
+* Added the exclude_expired option to the list_corporate_memberships 
+
 ### 12.1 [2020-08-14]
 
 * New feature: Donation option on corporate memberships renewal
