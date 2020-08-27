@@ -29,7 +29,7 @@ from tendenci.apps.events.models import (
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
-    RecurringEvent
+    RecurringEvent, Registrant
 )
 
 from form_utils.forms import BetterModelForm
@@ -307,6 +307,10 @@ class FormForCustomRegForm(forms.ModelForm):
             self.default_pricing = getattr(self.event, 'default_pricing', None)
 
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
+        
+        max_length_dict = dict([(field.name, field.max_length) for field in Registrant._meta.fields\
+                                if hasattr(field, 'max_length')])
+        
         for field in self.form_fields:
             if field.map_to_field:
                 field_key = field.map_to_field
@@ -324,7 +328,10 @@ class FormForCustomRegForm(forms.ModelForm):
             field_args = {"label": mark_safe(field.label), "required": field.required}
             arg_names = field_class.__init__.__code__.co_varnames
             if "max_length" in arg_names:
-                field_args["max_length"] = FIELD_MAX_LENGTH
+                if field.map_to_field and field.map_to_field in max_length_dict:
+                    field_args["max_length"] = max_length_dict[field.map_to_field]
+                else:
+                    field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 choices = field.choices.split(",")
                 field_args["choices"] = list(zip(choices, choices))
@@ -388,7 +395,7 @@ class FormForCustomRegForm(forms.ModelForm):
         if hasattr(self.event, 'has_member_price') and \
                     get_setting('module', 'events', 'requiresmemberid') and \
                     self.event.has_member_price:
-            self.fields['memberid'] = forms.CharField(label=_('Member ID'), required=False,
+            self.fields['memberid'] = forms.CharField(label=_('Member ID'), max_length=50, required=False,
                                 help_text=_('Please enter a member ID if a member price is selected.'))
 
         # add override and override_price to allow admin override the price
@@ -1749,6 +1756,9 @@ class RegistrantForm(forms.Form):
         super(RegistrantForm, self).__init__(*args, **kwargs)
 
         reg_conf=self.event.registration_configuration
+        
+        max_length_dict = dict([(field.name, field.max_length) for field in Registrant._meta.fields\
+                                if hasattr(field, 'max_length') and field.name in self.FIELD_NAMES])
 
         # add changes in the stardard registration form
         for field_name in self.FIELD_NAMES:
@@ -1767,7 +1777,10 @@ class RegistrantForm(forms.Form):
                     field_class = getattr(forms, field_class)
                 arg_names = field_class.__init__.__code__.co_varnames
                 if "max_length" in arg_names:
-                    field_args["max_length"] = 100
+                    if field_name in max_length_dict:
+                        field_args["max_length"] = max_length_dict[field_name]
+                    else:
+                        field_args["max_length"] = 50
                 if "choices" in arg_names:
                     choices = get_setting('module', 'events', 'regform_%s_choices' % field_name)
                     choices = choices.split(",")
@@ -1808,7 +1821,7 @@ class RegistrantForm(forms.Form):
         if hasattr(self.event, 'has_member_price') and \
                  get_setting('module', 'events', 'requiresmemberid') and \
                  self.event.has_member_price:
-            self.fields['memberid'] = forms.CharField(label=_('Member ID'), required=False,
+            self.fields['memberid'] = forms.CharField(label=_('Member ID'), max_length=50, required=False,
                                 help_text=_('Please enter a member ID if a member price is selected.'))
 
         if not self.event.is_table and not self.event.free_event:

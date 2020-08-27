@@ -223,7 +223,16 @@ class Invoice(models.Model):
         if not self.entity_id and self.object_type:
             self.entity = self.get_entity()
 
+        self.verifydata()
         super(Invoice, self).save()
+
+    def verifydata(self):
+        # verify each field
+        for field in Invoice._meta.fields:
+            value = getattr(self, field.name)
+            if field.max_length and value and len(value) > field.max_length:
+                value = value[:field.max_length]
+                setattr(self, field.name, value)
 
     def delete(self, *args, **kwargs):
         """
