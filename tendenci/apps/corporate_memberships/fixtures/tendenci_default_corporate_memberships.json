@@ -1436,7 +1436,7 @@
     "fields": {
         "status": true,
         "create_dt": "2016-04-22T09:47:33.614",
-        "notice_time": "after",
+        "notice_time": "attimeof",
         "content_type": "html",
         "update_dt": "2016-04-22T09:47:33.614",
         "email_content": "<p>Thank you for applying for a corporate membership with {{ site_display_name }}. Your corporate membership has been approved.</p>\r\n<p><br />To view the complete application, go to {{ view_link }}.</p>\r\n<p>To view the invoice, go to {{ invoice_link }}.</p>\r\n<p>Please note&nbsp; that completing the application for corporate membership does not yet give you access to your corporate membership benefits from your account.</p>\r\n<p>To take advantage of the corporate membership benefits, please submit your details on the form {{ individuals_join_url }}.</p>\r\n<p>To add additional individuals under your corporate membership, go to {{ individuals_join_url }}.</p>\r\n<p>{{ authentication_info }}</p>\r\n<p>{{ anonymous_join_login_info }}<br /><br />Thanks!<br /><br />{{ site_contact_name }}<br />{{ site_display_name }}<br />Time submitted: {{ time_submitted }}</p>",

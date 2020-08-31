@@ -2042,6 +2042,15 @@ class Notice(models.Model):
                                      corporate_membership.invoice.get_absolute_url())
         else:
             invoice_link = ''
+            
+        if corporate_membership.corp_profile.directory:
+            directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                                    args=[corporate_membership.corp_profile.directory.slug]))
+            directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                                    args=[corporate_membership.corp_profile.directory.id]))
+        else:
+            directory_url = ''
+            directory_edit_url = ''
 
         corp_app = CorpMembershipApp.objects.current_app()
         authentication_info = render_to_string(
@@ -2062,6 +2071,8 @@ class Notice(models.Model):
             'renew_link': "%s%s" % (site_url,
                                     corporate_membership.get_renewal_url()),
             'invoice_link': invoice_link,
+            'directory_url': directory_url,
+            'directory_edit_url': directory_edit_url,
             'individuals_join_url': '%s%s' % (site_url,
                                 reverse('membership_default.corp_pre_add',
                                         args=[corporate_membership.id])),

@@ -239,6 +239,15 @@ class Command(BaseCommand):
             else:
                 invoice_link = ''
 
+            if membership.corp_profile.directory:
+                directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                                                     args=[membership.corp_profile.directory.slug]))
+                directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                                    args=[membership.corp_profile.directory.id]))
+            else:
+                directory_url = ''
+                directory_edit_url = ''
+
             global_context.update({
                 'name': corp_profile.name,
                 'email': corp_profile.email,
@@ -251,7 +260,11 @@ class Command(BaseCommand):
                 'invoice_link': invoice_link,
                 'authentication_info': authentication_info,
                 'individuals_join_url': individuals_join_url,
+                'directory_url': directory_url,
+                'directory_edit_url': directory_edit_url,
             })
+            
+            
 
             for recipient in representatives:
                 body = notice.email_content
