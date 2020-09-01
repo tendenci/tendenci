@@ -42,3 +42,8 @@ class Command(BaseCommand):
                     member=membership.user,
                     group=membership.membership_type.group
                 ).delete()
+
+                # Check directory and set to inactive
+                if membership.directory:
+                    membership.directory.status_detail = 'inactive'
+                    membership.directory.save()

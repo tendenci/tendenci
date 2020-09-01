@@ -20,6 +20,7 @@ from django.utils.safestring import mark_safe
 from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from django.db.models.fields import AutoField
+from django.template.defaultfilters import slugify
 
 from tendenci.apps.base.utils import day_validate, is_blank, tcurrency
 from tendenci.apps.site_settings.utils import get_setting
@@ -45,6 +46,7 @@ from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.entities.models import Entity
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], [r'^tinymce\.models\.HTMLField'])
@@ -927,6 +929,16 @@ class MembershipDefault(TendenciBaseModel):
             # no need to check if group.is_member because group.add_user will check it
             if group:
                 group.add_user(self.user)
+                
+            if get_setting('module',  'memberships', 'adddirectory'):
+                # add a directory entry for this membership
+                self.add_directory()
+        else:
+            # directory - set to active on renewal
+            if self.directory:
+                if self.directory.status_detail != 'active':
+                    self.directory.status_detail = 'active'
+                    self.directory.save()
 
         return self
 
@@ -2018,6 +2030,49 @@ class MembershipDefault(TendenciBaseModel):
                     return True
         return False
 
+    def get_directory_slug(self):
+        slug = slugify(self.user.get_full_name())
+        if Directory.objects.filter(slug=slug).exists():
+            slug = '{slug}-membership-{id}'.format(slug=slug, id=self.id)
+        return slug
+
+    def add_directory(self):
+        if get_setting('module',  'memberships', 'adddirectory'):
+            if not self.directory:
+                # 'entity_parent': self.entity,
+                directory_entity = Entity.objects.create(
+                                    entity_name=self.user.get_full_name(),
+                                    entity_type='Directory',
+                                    entity_parent = self.entity,
+                                    email=self.user.email,
+                                    allow_anonymous_view=False)
+                profile = self.user.profile
+                params = {'entity': directory_entity,
+                          'headline':  directory_entity.entity_name,
+                          'slug': self.get_directory_slug(),
+                          'guid': str(uuid.uuid4()),
+                          'address': profile.address,
+                          'address2': profile.address2,
+                          'city': profile.city,
+                          'state': profile.state,
+                          'zip_code': profile.zipcode,
+                          'country': profile.country,
+                          'region': self.region,
+                          'phone': profile.phone,
+                          'email': self.user.email,
+                          'website': profile.url,
+                          'allow_anonymous_view': self.allow_anonymous_view,
+                          'allow_user_view': self.allow_user_view,
+                          'allow_member_view': self.allow_member_view,
+                          'creator': self.creator,
+                          'creator_username': self.creator_username,
+                          'owner': self.owner,
+                          'owner_username': self.owner_username,
+                          'status_detail': 'pending'
+                          }
+                self.directory = Directory.objects.create(**params)
+                self.save()
+
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')
 
@@ -2254,6 +2309,15 @@ class Notice(models.Model):
             invoice_link = ''
             donation_amount = ''
             total_amount = ''
+        if membership.directory:
+            site_url = global_setting('siteurl')
+            directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                                    args=[membership.directory.slug]))
+            directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                                    args=[membership.directory.id]))
+        else:
+            directory_url = ''
+            directory_edit_url = ''
         context.update({
             'first_name': membership.user.first_name,
             'last_name': membership.user.last_name,
@@ -2269,6 +2333,8 @@ class Notice(models.Model):
             'membership_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'view_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'invoice_link': '%s%s' % (global_setting('siteurl'), invoice_link),
+            'directory_url': directory_url,
+            'directory_edit_url': directory_edit_url,
             'renew_link': '%s%s' % (global_setting('siteurl'), membership.get_absolute_url()),
             'link_to_setup_auto_renew': '%s%s' % (global_setting('siteurl'), reverse('memberships.auto_renew_setup', args=[membership.user.id] )),
             'corporate_membership_notice': corporate_msg,

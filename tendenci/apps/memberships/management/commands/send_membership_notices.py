@@ -249,6 +249,15 @@ class Command(BaseCommand):
             else:
                 payment_method_name = ''
 
+            if membership.directory:
+                directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                                                     args=[membership.directory.slug]))
+                directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                                    args=[membership.directory.id]))
+            else:
+                directory_url = ''
+                directory_edit_url = ''
+
             context.update({
                 'member_number': membership.member_number,
                 'payment_method': payment_method_name,
@@ -258,7 +267,9 @@ class Command(BaseCommand):
                 'renew_link': '%s%s' % (site_url, membership.get_absolute_url()),
                 'mymembershipslink': '%s%s' % (site_url, membership.get_absolute_url()),
                 'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
-                'renewlink': '%s%s' % (site_url, membership.get_absolute_url())
+                'renewlink': '%s%s' % (site_url, membership.get_absolute_url()),
+                'directory_url': directory_url,
+                'directory_edit_url': directory_edit_url,
             })
 
             body = fieldify(body)

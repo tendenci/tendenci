@@ -613,10 +613,12 @@
             {% endif %}
 
             {% if membership.directory %}
+            {% if membership.directory.status_detail == 'active' or request.user.is_superuser %}
             <div class="field">
                 <div class="label label-info">{% trans 'Directory' %}</div>
-                <div class="value">{{ membership.directory }}</div>
+                <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
             </div>
+            {% endif %}
             {% endif %}
 
         </fieldset>

@@ -855,6 +855,9 @@ def get_notice_token_help_text(notice=None):
                     'site_display_name',
                     'time_submitted',
                     ]
+    if get_setting('module',  'memberships', 'adddirectory'):
+        other_labels.append('directory_url')
+        other_labels.append('directory_edit_url')
     help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
     help_text += "<ul>"
     for label in other_labels:
