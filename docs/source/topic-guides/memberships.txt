@@ -75,3 +75,16 @@ The Join date is set when they apply. You may want to set up notices to go out:
 - 7 days after expiration, to see if they still want to renew (usually they can based on the Membership Type grace period)
 
 Notices cannot be sent manually. Notices are more geared towards information related to a single member (their join date, their expiration date) and not really members on a whole. If several members are expiring at once, they will all receive an individual notice with information relevant to them. There is a list of available "tokens" that can be used to in the Notice Email content that are replaced with info relevant to that person.
+
+
+Questions & Answers
+-------------------
+
+1. How to enable the functionality that members can have their directory listings automatically created for them upon join approval?
+
+  To enable this functionality, just turn on the setting "Memberships Get Listed in Directories" at https://www.yourdomainname/settings/module/memberships/%23id_adddirectory#id_adddirectory
+
+  The directories created will be in pending status that require admin approval before going to public. To notify members to update their directory listings, you can include a paragraph in the approval notification to link them to the directory view and edit pages. These are the corresponding template tags you can  use in the email content: ``{{ directory_url }}`` and ``{{ directory_edit_url }}``. 
+  
+  
+  
