@@ -84,7 +84,7 @@ Questions & Answers
 
   To enable this functionality, just turn on the setting "Memberships Get Listed in Directories" at https://www.yourdomainname/settings/module/memberships/%23id_adddirectory#id_adddirectory
 
-  The directories created will be in pending status that require admin approval before going to public. To notify members to update their directory listings, you can include a paragraph in the approval notification to link them to the directory view and edit pages. These are the corresponding template tags you can  use in the email content: ``{{ directory_url }}`` and ``{{ directory_edit_url }}``. 
+  The directories created will be in pending status. To notify members to update and publish their directory listings, you can include a paragraph in the approval notification to link them to the directory view and edit pages. These are the corresponding template tags you can  use in the email content: ``{{ directory_url }}`` and ``{{ directory_edit_url }}``. 
   
   
   

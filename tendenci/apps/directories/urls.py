@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^%s/pricing/search/$' % urlpath, views.pricing_search, name="directory_pricing.search"),
     url(r'^%s/pending/$' % urlpath, views.pending, name="directory.pending"),
     url(r'^%s/approve/(?P<id>\d+)/$' % urlpath, views.approve, name="directory.approve"),
+    url(r'^%s/publish/(?P<id>\d+)/$' % urlpath, views.publish, name="directory.publish"),
     url(r'^%s/thank-you/$' % urlpath, views.thank_you, name="directory.thank_you"),
 
     # export directory

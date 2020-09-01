@@ -472,6 +472,22 @@ def pending(request, template_name="directories/pending.html"):
 
 @is_enabled('directories')
 @login_required
+def publish(request, id):
+    directory = get_object_or_404(Directory, pk=id)
+    if directory.can_publish_by(request.user):
+        directory.status = True
+        directory.status_detail = 'active'
+        directory.allow_anonymous_view = True
+        directory.save()
+
+        msg_string = 'Successfully published %s' % directory
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+    return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
+
+
+@is_enabled('directories')
+@login_required
 def approve(request, id, template_name="directories/approve.html"):
     can_view_directories = has_perm(request.user, 'directories.view_directory')
     can_change_directories = has_perm(request.user, 'directories.change_directory')

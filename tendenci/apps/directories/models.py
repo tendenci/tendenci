@@ -259,6 +259,25 @@ class Directory(TendenciBaseModel):
             return True
         else:
             return False
+        
+    def can_publish_by(self, this_user):
+        """
+        Check if this directory can be published by this_user.
+        
+        Return ``True`` if this pending directory is associated with an active membership
+        or corporate membership, and this_user is the ``creator`` or ``owner`` of 
+        this directory.
+        """
+        if self.status_detail == 'pending':
+            if this_user == self.creator or this_user == self.owner:
+                [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
+                if m: return True
+                if hasattr(self, 'corpprofile'):
+                    corp_membership = self.corpprofile.corp_membership
+                    if corp_membership and corp_membership.status_detail == 'active':
+                        return True
+        return False
+
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)

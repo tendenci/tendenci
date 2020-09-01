@@ -626,6 +626,9 @@ label.required:after {
 .t-status-active, .t-status-published {
     color: #ffffff;
 }
+.t-status-pending {
+    color: #8a6d3b;
+}
 .t-perm-private {
     color: gold;
 }

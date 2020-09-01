@@ -95,7 +95,7 @@
             {% if user == directory.creator or user == directory.owner %}
                 <li><strong>{% trans "Owned by you" %}</strong></li>
                 {% if not directory.status_detail == "active" %}
-                    <li><strong>{% trans "Status:" %}</strong> <span>{{ directory.obj_status }}</span></li>
+                    <li><strong>{% trans "Status:" %}</strong> <span class="text-warning">{{ directory.status_detail|capfirst }}</span></li>
                 {% endif %}
             {% endif %}
         {% endif %}
