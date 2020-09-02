@@ -24,10 +24,10 @@ class TendenciBaseModel(models.Model):
     update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
     creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="%(app_label)s_%(class)s_creator", editable=False)
-    creator_username = models.CharField(max_length=50)
+    creator_username = models.CharField(max_length=150)
     owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
         related_name="%(app_label)s_%(class)s_owner")
-    owner_username = models.CharField(max_length=50)
+    owner_username = models.CharField(max_length=150)
     status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
 

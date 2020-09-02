@@ -78,10 +78,10 @@ class Payment(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="payment_creator",
                                 null=True, on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50, null=True)
+    creator_username = models.CharField(max_length=150, null=True)
     owner = models.ForeignKey(User, related_name="payment_owner",
                               null=True, on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50, null=True)
+    owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 

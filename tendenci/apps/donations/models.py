@@ -27,9 +27,9 @@ class Donation(models.Model):
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True,  related_name="donation_creator", on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50, null=True)
+    creator_username = models.CharField(max_length=150, null=True)
     owner = models.ForeignKey(User, null=True, related_name="donation_owner", on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50, null=True)
+    owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.NullBooleanField(default=True)
 

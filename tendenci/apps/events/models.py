@@ -1558,9 +1558,9 @@ class CustomRegForm(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50)
+    creator_username = models.CharField(max_length=150)
     owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50)
+    owner_username = models.CharField(max_length=150)
     status = models.CharField(max_length=50, default='active')
 
     # registrant fields to be selected

@@ -22,11 +22,11 @@ class AcctEntry(models.Model):
     creator = models.ForeignKey(User, related_name="accentry_creator",
                                  null=True,
                                  on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50, default='')
+    creator_username = models.CharField(max_length=150, default='')
     owner = models.ForeignKey(User, related_name="accentry_owner",
                               null=True,
                               on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50, default='')
+    owner_username = models.CharField(max_length=150, default='')
     status = models.BooleanField(default=True)
 
     objects = AcctEntryManager()
