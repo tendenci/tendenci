@@ -26,9 +26,9 @@ class MakePayment(models.Model):
     invoice_id = models.IntegerField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True,  related_name="make_payment_creator", on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50, null=True)
+    creator_username = models.CharField(max_length=150, null=True)
     owner = models.ForeignKey(User, null=True, related_name="make_payment_owner", on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50, null=True)
+    owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True)
 

@@ -2245,9 +2245,9 @@ class Notice(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True, on_delete=models.SET_NULL)
-    creator_username = models.CharField(max_length=50, null=True)
+    creator_username = models.CharField(max_length=150, null=True)
     owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True, on_delete=models.SET_NULL)
-    owner_username = models.CharField(max_length=50, null=True)
+    owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(choices=STATUS_DETAIL_CHOICES,
                                      default=STATUS_DETAIL_ACTIVE, max_length=50)
     status = models.BooleanField(default=True)
