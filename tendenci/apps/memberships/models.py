@@ -896,6 +896,14 @@ class MembershipDefault(TendenciBaseModel):
         self.action_taken = True
         self.action_taken_dt = self.action_taken_dt or NOW
 
+        # check creator and owner
+        if not (self.creator and self.creator_username):
+            self.creator = self.user
+            self.creator_username = self.user.username
+        if not (self.owner and self.owner_username):
+            self.owner = self.user
+            self.owner_username = self.user.username
+
         self.set_join_dt()
         self.set_renew_dt()
         self.set_expire_dt()
