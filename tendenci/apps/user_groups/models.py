@@ -63,7 +63,7 @@ class Group(TendenciBaseModel):
         app_label = 'user_groups'
 
     def __str__(self):
-        return self.label or self.name
+        return self.name
 
     def get_absolute_url(self):
         return reverse('group.detail', args=[self.slug])

@@ -1162,7 +1162,7 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
     end_dt = forms.SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6), help_text=_('The date time this price ceases to be available'))
     price = PriceField(label=_('Price'), max_digits=21, decimal_places=2, initial=0.00)
     #dates = Reg8nDtField(label=_("Start and End"), required=False)
-    groups = forms.MultipleChoiceField(required=False, choices=[])
+    groups = forms.ModelMultipleChoiceField(required=False, queryset=None, help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
     payment_required = forms.ChoiceField(required=False,
                                          choices=(('True', _('Yes')), ('False', _('No'))),
                                          initial='True')
@@ -1181,34 +1181,11 @@ class Reg8nConfPricingForm(FormControlWidgetMixin, BetterModelForm):
 
         default_groups = Group.objects.filter(status=True, status_detail="active")
 
-        if self.user and not self.user.profile.is_superuser:
+        if not self.user or not self.user.profile.is_superuser:
             filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-            groups = default_groups.filter(filters).distinct()
-            groups_list = list(groups.values_list('pk', 'name'))
+            default_groups = default_groups.filter(filters).distinct()
 
-            users_groups = self.user.profile.get_groups()
-            for g in users_groups:
-                if [g.id, g.name] not in groups_list:
-                    groups_list.append([g.id, g.name])
-        else:
-            groups_list = list(default_groups.values_list('pk', 'name'))
-
-        groups_list.insert(0, ['', '------------'])
-        self.fields['groups'].choices = groups_list
-
-    def clean_groups(self):
-        group_list = self.cleaned_data['groups']
-        groups = []
-
-        for group_id in group_list:
-            if group_id:
-                try:
-                    Group.objects.get(pk=group_id)
-                    groups.append(group_id)
-                except Group.DoesNotExist:
-                    raise forms.ValidationError(_('Invalid group selected.'))
-
-        return Group.objects.filter(pk__in=groups)
+        self.fields['groups'].queryset = default_groups
 
     def clean_tax_rate(self):
         tax_rate = self.cleaned_data['tax_rate']
