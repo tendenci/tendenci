@@ -33,15 +33,27 @@ class AuthenticationBackend(RemoteUserBackend):
                     user = UserModel(username=username)
                     user.set_unusable_password()
                     user.save()
-                    Profile.objects.create_profile(user=user)
+                    profile = Profile.objects.create_profile(user=user)
+                elif user:
+                    profile = getattr(user, 'profile', None)
+                    if not profile:
+                        profile = Profile.objects.create_profile(user=user)
 
-                self.sync_user(user, user_info)
+                if user:
+                    self.sync_user(user, user_info)
+                    self.sync_user(profile, user_info, ObjModel=Profile)
+
                 return user if self.user_can_authenticate(user) else None
 
         return None
     
-    def sync_user(self, user, user_info):
+    def sync_user(self, user, user_info, ObjModel=UserModel):
         # Updated other user field
+        fields_dict = {}
+        for field in ObjModel._meta.fields:
+            if field.name in user_info and hasattr(field, 'max_length'):
+                fields_dict[field.name] = field
+        
         updated = False
         for user_attr in settings.OAUTH2_USER_ATTR_MAPPING.keys():
             user_info_attr = settings.OAUTH2_USER_ATTR_MAPPING[user_attr]
@@ -49,11 +61,12 @@ class AuthenticationBackend(RemoteUserBackend):
                 if hasattr(user, user_attr):
                     value = user_info.get(user_info_attr, '')
                     if value:
+                        # clean data
+                        if user_attr in fields_dict and len(value) > fields_dict[user_attr].max_length:
+                            value =  value[:fields_dict[user_attr].max_length]
                         setattr(user, user_attr, value)
                         updated = True
+
         if updated:
             user.save()
-            
-    def clean_user_data(self):
-        pass
-        
+
