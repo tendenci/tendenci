@@ -578,6 +578,33 @@ SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 # if True, show alert for tendenci update (if needed) for superuser on login
 SHOW_UPDATE_ALERT = False
 
+#------------------------------------
+# OAuth2 client
+OAUTH2_REMOTE_APP_NAME = ''
+OAUTH2_CLIENT_ID = ''
+OAUTH2_CLIENT_SECRET = ''
+OAUTH2_ACCESS_TOKEN_URL = ''
+OAUTH2_ACCESS_TOKEN_PARAMS = None
+OAUTH2_AUTHORIZE_URL = ''
+OAUTH2_AUTHORIZE_PARAMS = None
+OAUTH2_API_BASE_URL = ''
+OAUTH2_CLIENT_KWARGS = {
+    'scope': 'profile',
+    'token_endpoint_auth_method': 'client_secret_basic',
+    'token_placement': 'header',
+}
+# username is a required field in mapping
+OAUTH2_USER_ATTR_MAPPING={
+    'username': 'username',
+    'email': 'email',
+    'first_name': 'given_name',
+    'last_name': 'family_name'
+}
+OAUTH2_LOGIN_ENDPOINT = ''
+OAUTH2_USERINFO_ENDPOINT = ''
+# logout url for oauth2 server
+OAUTH2_LOGOUT_REDIRECT_URL = ''
+# AUTHENTICATION_BACKENDS = ['tendenci.apps.oauth2_client.backends.AuthenticationBackend'] + AUTHENTICATION_BACKENDS
 
 # ---------------------------------------------------------------------------- #
 # TinyMCE Editor

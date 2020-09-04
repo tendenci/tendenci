@@ -66,4 +66,5 @@ xhtml2pdf==0.2.2
 python-magic
 XlsxWriter==0.9.6
 nameparser
+Authlib==0.14.3
 
