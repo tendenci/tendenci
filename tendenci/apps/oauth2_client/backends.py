@@ -1,7 +1,10 @@
-#from django.contrib.auth.backends import ModelBackend
+import pytz
+
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.contrib.auth.backends import RemoteUserBackend
+from django.core import exceptions
+
 from tendenci.apps.profiles.models import Profile
 
 UserModel = get_user_model()
@@ -23,6 +26,7 @@ class AuthenticationBackend(RemoteUserBackend):
     def get_user_by_user_info(self, user_info, create=True):
         if user_info:
             username = user_info.get(settings.OAUTH2_USER_ATTR_MAPPING.get('username', ''), None)
+            username = self.clean_username(username)
             if username:
                 [user] = UserModel.objects.filter(username=username)[:1] or [None]
                 if user and not user.is_active:
@@ -48,7 +52,9 @@ class AuthenticationBackend(RemoteUserBackend):
         return None
     
     def sync_user(self, user, user_info, ObjModel=UserModel):
-        # Updated other user field
+        """
+        Updated other user and/or profile fields if needed.
+        """
         fields_dict = {}
         for field in ObjModel._meta.fields:
             if field.name in user_info and hasattr(field, 'max_length'):
@@ -61,12 +67,53 @@ class AuthenticationBackend(RemoteUserBackend):
                 if hasattr(user, user_attr):
                     value = user_info.get(user_info_attr, '')
                     if value:
-                        # clean data
-                        if user_attr in fields_dict and len(value) > fields_dict[user_attr].max_length:
-                            value =  value[:fields_dict[user_attr].max_length]
-                        setattr(user, user_attr, value)
-                        updated = True
+                        if user_attr in fields_dict:
+                            # clean data
+                            value = self.clean_data(value, fields_dict[user_attr])
+                            if value:
+                                setattr(user, user_attr, value)
+                                updated = True
 
         if updated:
             user.save()
 
+    def clean_username(self, username):
+        """
+        Perform any cleaning on the "username" prior to using it to get or
+        create the user object.  Return the cleaned username.
+        """
+        field = [field for field in UserModel._meta.fields if field.name=='username'][0]
+
+        return self.clean_data(username, field)
+
+    def clean_data(self, value, field):
+        """
+        Clean the data ``value`` for the field.
+        """
+        field_type = field.get_internal_type()
+        if field.name !='username' and field_type in ['CharField', 'EmailField',
+                                                      'URLField', 'SlugField']:
+            # if length is too long, truncate it. But not for username
+            if len(value) > field.max_length:
+                value = value[:field.max_length]
+            if field.name == 'time_zone':
+                if value not in pytz.all_timezones:
+                    timezone_map = {'AST': 'Canada/Atlantic',
+                                     'EST': 'US/Eastern',
+                                     'CST': 'US/Central',
+                                     'MST': 'US/Mountain',
+                                     'AKST': 'US/Alaska',
+                                     'PST': 'US/Pacific',
+                                     'GMT': 'UTC'
+                                     }
+                    if value in timezone_map:
+                        value = timezone_map[value]
+                    else:
+                        value = None
+
+        # set to None if it doesn't pass the validation
+        try:
+            field.run_validators(value)
+        except exceptions.ValidationError:
+            value = None
+        return value
