@@ -1,0 +1,52 @@
+SSO
+===
+
+Tendenci has an oAuth2 client built in that you can use to set up single sign-on (SSO) for your tendenci site. To enable
+the oAuth2 client, follow these 3 steps:
+
+1. Add ``oauth2_client`` to the INSTALLED_APPS in your ``conf/settings.py``:
+::
+
+    INSTALLED_APPS += ['tendenci.apps.oauth2_client',]
+
+
+
+2. Add oauth2 urls to the urlpatterns list in your ``conf/urls.py`` (you can change the url path):
+::
+
+    urlpatterns = pre_urlpatterns + [
+
+        #url(r'^', include('example_app.urls')),
+        url(r'^oauth2/', include('tendenci.apps.oauth2_client.urls')),
+    ] + post_urlpatterns
+
+
+3. Set up these settings in your ``conf/settings.py`` (adjust yours accordingly):
+::
+
+	AUTHENTICATION_BACKENDS = ['tendenci.apps.oauth2_client.backends.AuthenticationBackend'] + AUTHENTICATION_BACKENDS
+
+	OAUTH2_REMOTE_APP_NAME = 'example'
+	OAUTH2_CLIENT_ID = 'Example Client ID'
+	OAUTH2_CLIENT_SECRET = 'Example Client Secret'
+	OAUTH2_ACCESS_TOKEN_URL = 'https://www.example.com/oauth2/token'
+	OAUTH2_ACCESS_TOKEN_PARAMS = None
+	OAUTH2_AUTHORIZE_URL = 'https://www.example.com/oauth2/authorize'
+	OAUTH2_AUTHORIZE_PARAMS = None
+	OAUTH2_API_BASE_URL = 'https://www.example.com/'
+	OAUTH2_USERINFO_ENDPOINT = 'https://www.example.com/oauth2/userInfo'
+	OAUTH2_LOGOUT_REDIRECT_URL = 'https://www.example.com/logout' 
+	OAUTH2_CLIENT_KWARGS = {
+    	'scope': 'openid profile',
+    	'token_endpoint_auth_method': 'client_secret_basic',
+   		'token_placement': 'header',
+	}
+	OAUTH2_USER_ATTR_MAPPING={
+    	'username': 'email', 
+    	'email': 'email',
+    	'first_name': 'given_name',
+    	'last_name': 'family_name'
+	}
+	
+For the ``OAUTH2_USER_ATTR_MAPPING`` setting, you can add more fields like ``phone``, ``address``, ``city``, ``state``, 
+``zipcode``, ``country``... 
