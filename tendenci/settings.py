@@ -600,7 +600,6 @@ OAUTH2_USER_ATTR_MAPPING={
     'first_name': 'given_name',
     'last_name': 'family_name'
 }
-OAUTH2_LOGIN_ENDPOINT = ''
 OAUTH2_USERINFO_ENDPOINT = ''
 # logout url for oauth2 server
 OAUTH2_LOGOUT_REDIRECT_URL = ''
