@@ -612,13 +612,23 @@
             </div>
             {% endif %}
 
-            {% if membership.directory %}
-            {% if membership.directory.status_detail == 'active' or request.user.is_superuser %}
-            <div class="field">
-                <div class="label label-info">{% trans 'Directory' %}</div>
-                <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
-            </div>
-            {% endif %}
+
+            {% if MODULE_MEMBERSHIPS_ADDDIRECTORY %}
+	            {% if membership.directory %}
+	                 {% if request.user.is_superuser or request.user == membership.user %}
+			            <div class="field">
+			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+			                <div class="value"><a href="{% url 'directory' membership.directory.slug  %}">{{ membership.directory }}</a></div>
+			            </div>
+	                 {% endif %}
+	            {% else %}
+                        {% if request.user.is_superuser and membership.status_detail == 'active' %}
+			            <div class="field">
+			                <div class="label label-info">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</div>
+			                <div>{% trans 'None' %} <a href="{% url 'membership.add_directory' membership.id  %}">{% trans 'Admin: Add a Directory' %}</a></div>
+			            </div>
+	                 {% endif %}
+	            {% endif %}
             {% endif %}
 
         </fieldset>

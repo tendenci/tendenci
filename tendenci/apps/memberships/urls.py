@@ -15,6 +15,7 @@ urlpatterns = [
     url(r"^%s/(?P<id>\d+)/$" % urlpath, views.membership_details, name="membership.details"),
     url(r"^%s/delete/(?P<id>\d+)/$" % urlpath, views.delete, name="membership.delete"),
     url(r"^%s/expire/(?P<id>\d+)/$" % urlpath, views.expire, name="membership.expire"),
+    url(r"^%s/add_directory/(?P<id>\d+)/$" % urlpath, views.membership_add_directory, name="membership.add_directory"),
 
     # import to membership default
     url(r"^%s/import_default/$" % urlpath, views.membership_default_import_upload,

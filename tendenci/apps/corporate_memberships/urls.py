@@ -15,6 +15,7 @@ urlpatterns = [
     url(r"^%s/get_app_fields/$" % urlpath,
         views.get_app_fields_json,
         name="corpmemberships.get_app_fields"),
+    url(r"^%s/add_directory/(?P<id>\d+)/$" % urlpath, views.corp_membership_add_directory, name="corp_membership.add_directory"),
 
     url(r"^%s/applications/(?P<slug>[\w\-]+)/preview/$" % urlpath,
         views.app_preview,  name="corpmembership_app.preview"),

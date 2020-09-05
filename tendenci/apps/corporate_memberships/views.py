@@ -571,6 +571,32 @@ def corpprofile_view(request, id, template="corporate_memberships/profiles/view.
                    'invoices': invoices
                    })
 
+@is_enabled('corporate_memberships')
+@is_enabled('directories')
+@login_required
+def corp_membership_add_directory(request, id):
+    """
+    Add a directory for this active corporate memberships (if directory does not exist already).
+    Only superuser can perform this action.
+    """
+    corp_profile = get_object_or_404(CorpProfile, pk=id)
+    corp_membership = corp_profile.corp_membership
+    if not corp_membership or not corp_membership.is_active or corp_profile.directory:
+        raise Http404
+    
+    if not get_setting('module',  'corporate_memberships', 'adddirectory'):
+        raise Http404
+    
+    if request.user.profile.is_superuser:
+        corp_profile.add_directory()
+
+        msg_string = 'Successfully add the directory %s' % corp_profile.directory
+        messages.add_message(request, messages.SUCCESS, _(msg_string))
+
+        return HttpResponseRedirect(reverse('corpmembership.view', args=[corp_membership.id]))
+
+    raise Http403
+
 
 @is_enabled('corporate_memberships')
 def corpmembership_view(request, id,

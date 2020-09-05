@@ -269,7 +269,7 @@ class Directory(TendenciBaseModel):
         this directory.
         """
         if self.status_detail == 'pending':
-            if this_user == self.creator or this_user == self.owner:
+            if this_user.is_superuser or this_user == self.creator or this_user == self.owner:
                 [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
                 if m: return True
                 if hasattr(self, 'corpprofile'):
