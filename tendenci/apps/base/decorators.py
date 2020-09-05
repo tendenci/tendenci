@@ -25,6 +25,15 @@ def ssl_required(view_func):
 def password_required(view):
     """Decorator to force a password promt"""
     def decorator(request, *args, **kwargs):
+        if settings.PASSWORD_UNUSABLE:
+            # Since users cannot log in to the site directly, there is
+            # no password can be entered.
+            # Why don't we force them to log in again? Because
+            # @password_required always comes after the @login_required,
+            # at this point, user is already logged in. In order to 
+            # redirect them back to IdP, we'd need to log them out first,
+            # which would lead to an infinite loop. 
+            return view(request, *args, **kwargs)
         if 'password_promt' in request.session and \
             isinstance(request.session['password_promt'], dict) and \
             request.session['password_promt'].get('value', False):

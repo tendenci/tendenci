@@ -604,7 +604,8 @@ OAUTH2_USERINFO_ENDPOINT = ''
 # logout url for oauth2 server
 OAUTH2_LOGOUT_REDIRECT_URL = ''
 # AUTHENTICATION_BACKENDS = ['tendenci.apps.oauth2_client.backends.AuthenticationBackend'] + AUTHENTICATION_BACKENDS
-
+# If your site doesn't have direct login and password is not usable, you can set this setting to True.
+PASSWORD_UNUSABLE = False
 # ---------------------------------------------------------------------------- #
 # TinyMCE Editor
 # ---------------------------------------------------------------------------- #
