@@ -1,3 +1,21 @@
+### 12.2 [2020-09-05]
+
+**New Features and Improvements**
+
+* An oauth2 client for tendenci that you can use to set up single sign-on (SSO)
+* Added an option to add a directory for memberships on join approval
+* Directory owner or creator can publish their directories if they are created with their memberships or corporate memberships
+* If directory for memberships or corporate memberships is enabled, admin can add a directory and associate it with an existing membership or corp membership.
+* Included `directory_url` and `directory_edit_url` tags for membership and corporate membership notices so that they can be added in the approval notifications to link members to their directory view and edit pages
+* Added the support for LibreOffice/OpenOffice Document upload (Thanks evanspaeder)
+
+**Fixes**
+
+* Updated django version to 2.2.16 (Django 2.2.16 fixes two security issues and two data loss bugs in 2.2.15)
+* Fixed max_length for creator_username and owner_username fields that does not match with username's (Thanks evanspaeder)
+* Fixed a DataError in event registration
+* Fixed the issue about selected groups being de-selected on event pricing edit
+
 ### 12.1.1 [2020-08-21]
 
 * Adjusted MEMCACHE_MAX_KEY_LENGTH 247 to resolve the InvalidCacheKey error
