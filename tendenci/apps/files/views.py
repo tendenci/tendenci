@@ -356,7 +356,7 @@ class FileTinymceCreateView(CreateView):
             object_id = int(self.request.POST['object_id'])
         except:
             object_id = 0
-        self.object = form.save()
+        self.object = form.save(commit=False)
         self.object.object_id = object_id
         try:
             self.object.content_type = ContentType.objects.get(app_label=app_label, model=model)
