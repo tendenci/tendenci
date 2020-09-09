@@ -657,10 +657,7 @@ def files(request, id):
     """
     import os
     import mimetypes
-    from django.http import Http404
     from django.core.files.base import ContentFile
-    from django.core.files.storage import default_storage
-    from tendenci.apps.perms.utils import has_view_perm
     from tendenci.apps.forms_builder.forms.models import FieldEntry
 
     field = get_object_or_404(FieldEntry, pk=id)
@@ -669,7 +666,7 @@ def files(request, id):
     base_name = os.path.basename(field.value)
     mime_type = mimetypes.guess_type(base_name)[0]
 
-    if not has_view_perm(request.user, 'forms.view_form', form):
+    if not has_perm(request.user,'forms.change_form', form):
         raise Http403
 
     if not mime_type:
