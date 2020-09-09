@@ -1,3 +1,8 @@
+### 12.2.1 [2020-09-08]
+
+* Adjusted (or corrected) the files path for files uploaded in wysiwyg editor. For example, files uploaded in pages will go to files/page/, files uploaded in boxes will go to files/box...
+* Files access of custom forms is restricted only to those who have the forms change permission rather than view permission.
+
 ### 12.2 [2020-09-05]
 
 **New Features and Improvements**
