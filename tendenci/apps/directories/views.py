@@ -45,13 +45,14 @@ def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
     directory = get_object_or_404(Directory, slug=slug)
 
-    if has_view_perm(request.user,'directories.view_directory',directory):
+    if has_view_perm(request.user, 'directories.view_directory', directory) \
+         or directory.can_publish_by(request.user):
         EventLog.objects.log(instance=directory)
 
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory})
-    else:
-        raise Http403
+
+    raise Http403
 
 
 @is_enabled('directories')
@@ -229,7 +230,8 @@ def query_price(request):
 def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.html"):
     directory = get_object_or_404(Directory, pk=id)
 
-    if not has_perm(request.user,'directories.change_directory', directory):
+    if not (has_perm(request.user,'directories.change_directory', directory) \
+            or directory.can_publish_by(request.user)):
         raise Http403
 
     if request.user.is_superuser:
@@ -475,6 +477,8 @@ def pending(request, template_name="directories/pending.html"):
 def publish(request, id):
     directory = get_object_or_404(Directory, pk=id)
     if directory.can_publish_by(request.user):
+        if not directory.activation_dt:
+            directory.activation_dt = datetime.now()
         directory.status = True
         directory.status_detail = 'active'
         directory.allow_anonymous_view = True

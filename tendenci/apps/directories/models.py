@@ -265,16 +265,25 @@ class Directory(TendenciBaseModel):
         Check if this directory can be published by this_user.
         
         Return ``True`` if this pending directory is associated with an active membership
-        or corporate membership, and this_user is the ``creator`` or ``owner`` of 
-        this directory.
+        or corporate membership, and this_user owns the membership or is a representative
+        of the corporate membership, or is the ``creator`` or ``owner`` of this directory.
         """
         if self.status_detail == 'pending':
-            if this_user.is_superuser or this_user == self.creator or this_user == self.owner:
-                [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
-                if m: return True
-                if hasattr(self, 'corpprofile'):
-                    corp_membership = self.corpprofile.corp_membership
-                    if corp_membership and corp_membership.status_detail == 'active':
+            [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
+            if m:
+                if any([this_user.is_superuser,
+                       this_user==self.creator,
+                       this_user==self.owner,
+                       this_user==m.user]):
+                    return True
+
+            if hasattr(self, 'corpprofile'):
+                corp_membership = self.corpprofile.corp_membership
+                if corp_membership and corp_membership.status_detail == 'active':
+                    if any([this_user.is_superuser,
+                           this_user==self.creator,
+                           this_user==self.owner,
+                           self.corpprofile.is_rep(this_user)]):
                         return True
         return False
 
