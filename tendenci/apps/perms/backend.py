@@ -127,7 +127,8 @@ class ObjectPermBackend(ModelBackend):
             has_attr_aov = hasattr(obj, "allow_anonymous_view")
             has_attr_auv = hasattr(obj, "allow_user_view")
             has_attr_amv = hasattr(obj, "allow_member_view")
-            if all([has_attr_aov, has_attr_auv, has_attr_amv]):
+            obj_is_active = hasattr(obj, "status_detail") and getattr(obj, 'status_detail') in ['active', 'published']
+            if all([has_attr_aov, has_attr_auv, has_attr_amv, obj_is_active]):
                 if obj.allow_anonymous_view:
                     return True
                 if user.is_authenticated and obj.allow_user_view:
