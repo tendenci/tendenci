@@ -151,15 +151,18 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     Example user.3482938481
     """
 
-    django_max_un_length = 30
+    django_max_un_length = 150
     max_length = django_max_un_length - 3  # to account for appended numbers
 
     # only letters and digits
-    fn = re.sub(r'[^A-Za-z0-9]', u'', fn)
-    ln = re.sub(r'[^A-Za-z0-9]', u'', ln)
+    fn = re.sub(r'[^A-Za-z0-9]', '', fn)
+    ln = re.sub(r'[^A-Za-z0-9]', '', ln)
 
     # only letters digits underscores dashes @ + .
-    em = re.sub(r'[^\w@+.-]', u'', em)
+    em = re.sub(r'[^\w@+.-]', '', em)
+    
+    if em:
+        return make_username_unique(em[:max_length].lower())
 
     if fn and ln:
         un = '%s.%s' % (fn, ln)
@@ -171,8 +174,6 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     if ln:
         return make_username_unique(ln[:max_length].lower())
 
-    if em:
-        return make_username_unique(em.split('@')[0][:max_length].lower())
 
     int_string = ''.join([choice(digits) for x in range(10)])
     return 'user.%s' % int_string

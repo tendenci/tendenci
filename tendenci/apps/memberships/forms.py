@@ -779,7 +779,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             user.last_name = user.last_name or user_attrs['last_name']
         else:
             created = True
-            user_attrs['username'] = user_attrs['username'] or \
+            user_attrs['username'] = user_attrs['username'] or user_attrs['email'] or \
                 Profile.spawn_username(user_attrs['first_name'][:1], user_attrs['last_name'])
 
             user = User.objects.create_user(
