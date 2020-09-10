@@ -166,6 +166,8 @@ def index(request, username='', template_name="profiles/index.html"):
     else:
         membership_apps = None
 
+    directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
+
     return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
         "user_this": user_this,
@@ -176,6 +178,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
         'memberships': memberships,
+        'directories': directories,
         'registrations': registrations,
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,

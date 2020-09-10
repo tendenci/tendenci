@@ -313,6 +313,25 @@
           {% endif  %}
           {% endif %}
           
+
+		  <!-- DIRECTORIES -->
+          {% if directories %}
+          {% if request.user.is_superuser or request.user == profile.user %}
+		  <h3>{% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "Directories" %}</h3>
+
+          <div class="table-responsive">
+            <table class="table">
+              {% for directory in directories %}
+              <tr>
+                <td>
+                  <a href="{{ directory.get_absolute_url }}">{{ directory.headline }}</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </table>
+          </div>
+          {% endif %}
+          {% endif %}
           
           <!-- EVENTS -->
           
