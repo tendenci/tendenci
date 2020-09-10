@@ -14,12 +14,17 @@
     <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
         <div class="page-header">
             <h1>{{ directory.headline }}</h1>
-           {% if directory|directory_can_publish_by:user %}
-			<div class="pull-right">
-             <a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
-		     <a href="{% url 'directory.publish' directory.id %}" class="btn btn-success">{% trans "Publish it" %}</a>
-			</div>
-	      {% endif %}
+		   {% if directory.status_detail == 'pending' %}
+				<div class="pull-right">
+				{% if directory|is_directory_owner_with_membership:user %}
+             	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
+                {% endif %}
+             	{% if request.user.is_superuser %}
+		     	<a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
+             	{% endif %}
+				</div>
+	      	
+			{% endif %}
         </div>
 
         <div class="t-directories-directory-body">

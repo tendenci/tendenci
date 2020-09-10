@@ -260,31 +260,29 @@ class Directory(TendenciBaseModel):
         else:
             return False
         
-    def can_publish_by(self, this_user):
+    def has_membership_with(self, this_user):
         """
-        Check if this directory can be published by this_user.
+        Check if this directory is associated with a membership or a corporate membership
+        that this user owns. 
         
-        Return ``True`` if this pending directory is associated with an active membership
+        Return ``True`` if this directory is associated with an active membership
         or corporate membership, and this_user owns the membership or is a representative
         of the corporate membership, or is the ``creator`` or ``owner`` of this directory.
         """
-        if self.status_detail == 'pending':
-            [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
-            if m:
-                if any([this_user.is_superuser,
-                       this_user==self.creator,
-                       this_user==self.owner,
-                       this_user==m.user]):
-                    return True
+        [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
+        if m:
+            if any([this_user==self.creator,
+                   this_user==self.owner,
+                   this_user==m.user]):
+                return True
 
-            if hasattr(self, 'corpprofile'):
-                corp_membership = self.corpprofile.corp_membership
-                if corp_membership and corp_membership.status_detail == 'active':
-                    if any([this_user.is_superuser,
-                           this_user==self.creator,
-                           this_user==self.owner,
-                           self.corpprofile.is_rep(this_user)]):
-                        return True
+        if hasattr(self, 'corpprofile'):
+            corp_membership = self.corpprofile.corp_membership
+            if corp_membership and corp_membership.status_detail == 'active':
+                if any([this_user==self.creator,
+                       this_user==self.owner,
+                       self.corpprofile.is_rep(this_user)]):
+                    return True
         return False
 
 

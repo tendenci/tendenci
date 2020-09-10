@@ -3,5 +3,5 @@ register = Library()
 
 
 @register.filter
-def directory_can_publish_by(directory, user):
-    return directory.can_publish_by(user)
+def is_directory_owner_with_membership(directory, user):
+    return directory.has_membership_with(user)
