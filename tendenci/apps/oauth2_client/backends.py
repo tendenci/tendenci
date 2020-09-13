@@ -42,7 +42,6 @@ class AuthenticationBackend(RemoteUserBackend):
                     profile = getattr(user, 'profile', None)
                     if not profile:
                         profile = Profile.objects.create_profile(user=user)
-
                 if user:
                     self.sync_user(user, user_info)
                     self.sync_user(profile, user_info, ObjModel=Profile)
@@ -69,7 +68,7 @@ class AuthenticationBackend(RemoteUserBackend):
                     if value:
                         if user_attr in fields_dict:
                             # clean data
-                            value = self.clean_data(value, fields_dict[user_attr])
+                            value = self.clean_data(value, fields_dict[user_attr], model_instance=user)
                             if value:
                                 setattr(user, user_attr, value)
                                 updated = True
@@ -86,7 +85,7 @@ class AuthenticationBackend(RemoteUserBackend):
 
         return self.clean_data(username, field)
 
-    def clean_data(self, value, field):
+    def clean_data(self, value, field, model_instance=None):
         """
         Clean the data ``value`` for the field.
         """
@@ -113,7 +112,11 @@ class AuthenticationBackend(RemoteUserBackend):
 
         # set to None if it doesn't pass the validation
         try:
-            field.run_validators(value)
+            if model_instance:
+                value = field.clean(value, model_instance)
+            else:
+                value = field.to_python(value)
+                field.run_validators(value)
         except exceptions.ValidationError:
             value = None
         return value
