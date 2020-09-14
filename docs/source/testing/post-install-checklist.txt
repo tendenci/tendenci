@@ -17,10 +17,24 @@ Basic Functionality Testing
 
     ::
 
+        # To send newsletters via an SMTP server (example: mailgun):
         NEWSLETTER_EMAIL_HOST = '<email-host>'
         NEWSLETTER_EMAIL_PORT = <email-port>
         NEWSLETTER_EMAIL_HOST_USER = '<email-host-user>'
         NEWSLETTER_EMAIL_HOST_PASSWORD = '<email-host-password>'
+
+        # OR
+
+        # To send newsletters via Amazon SES:
+        NEWSLETTER_EMAIL_BACKEND = "django_ses.SESBackend"
+        AWS_ACCESS_KEY_ID = '<aws-access-key-id>'
+        AWS_SECRET_ACCESS_KEY = '<aws-secret-access-key>'
+        # Additionally, if you are not using the default AWS region of us-east-1,
+        # you need to specify a region, like so:
+        AWS_SES_REGION_NAME = 'us-west-2'
+        AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
+
+
 
   - Then, set up a test group. Send a newsletter. Make sure content is coming through. Has footer content been customized?
 
