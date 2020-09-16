@@ -97,7 +97,9 @@ def make_invoice_for_entry(entry, **kwargs):
     Create an invoice for a Form Entry.
     """
 
-    price = entry.pricing.price or kwargs.get('custom_price')
+    price = entry.pricing.price
+    if price is None:
+        price = kwargs.get('custom_price')
     now = datetime.now()
 
     inv = Invoice()

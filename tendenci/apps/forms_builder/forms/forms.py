@@ -189,11 +189,11 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
 
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
-        pricing_option = self.form.pricing_set.get(pk=pricing_pk)
+        [pricing_option] = self.form.pricing_set.filter(pk=pricing_pk)[:1] or [None]
         custom_price = self.data.get('custom_price_%s' % pricing_pk)
 
         # if not price set
-        if not pricing_option.price:
+        if not pricing_option or pricing_option.price is None:
             # then price is custom
 
             if not custom_price:  # custom price has a value
