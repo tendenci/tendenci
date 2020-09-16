@@ -552,10 +552,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     EventLog.objects.log(instance=form)
 
                     # redirect to online payment
-                    if (entry.payment_method.machine_name).lower() == 'credit-card':
-                        return redirect('payment.pay_online', invoice.id, invoice.guid)
-                    # redirect to invoice page
-                    return redirect('invoice.view', invoice.id, invoice.guid)
+                    if invoice.balance > 0:
+                        if (entry.payment_method.machine_name).lower() == 'credit-card':
+                            return redirect('payment.pay_online', invoice.id, invoice.guid)
+                        # redirect to invoice page
+                        return redirect('invoice.view', invoice.id, invoice.guid)
 
             # default redirect
             if form.completion_url:
