@@ -15,7 +15,7 @@
         <div class="page-header">
             <h1>{{ directory.headline }}</h1>
 		   {% if directory.status_detail == 'pending' %}
-				<div class="pull-right">
+				<div class="pull-right clearfix">
 				{% if directory|is_directory_owner_with_membership:user %}
              	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
                 {% endif %}
@@ -35,6 +35,10 @@
             {% endif %}
 
             {{ directory.body|safe }}
+
+			{% if directory.corpprofile %}
+			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}">{% trans "View Corp Member Profile" %}</a></p>
+			{% endif %}
         </div>
 
 		{% if directory.has_social_media %}
