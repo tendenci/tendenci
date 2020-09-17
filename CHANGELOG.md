@@ -1,3 +1,14 @@
+### 12.2.2 [2020-09-17]
+
+* Directory owners can view and edit their directories, but only admin can publish directories that are created with memberships and corporate memberships.
+* Updated memberships to have email address take precedence over first name and last name when assigning a username.
+* Added the link to directory listing, if any, on user profile and at the bottom of corp member profile.
+* Added the link to corp member profile, if any, on directory listing. 
+* Updated post-install-checklist.txt for newsletters settings.
+* Updated boto3 to 1.12.8 and django-ses to 1.0.3.
+* Fixed the issue about pricing 0.00 not working for custom forms.
+* Resolved the issue regarding custom forms showing page's nav menu instead of form's when a custom template is selected.
+
 ### 12.2.1 [2020-09-08]
 
 * Adjusted (or corrected) the files path for files uploaded in wysiwyg editor. For example, files uploaded in pages will go to files/page/, files uploaded in boxes will go to files/box...
