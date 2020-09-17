@@ -1,0 +1,9 @@
+{% if MODULE_CORPORATE_MEMBERSHIPS_ADDDIRECTORY %}
+        {% if corp_profile.directory %}
+             <a href="{% url 'directory' corp_profile.directory.slug  %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}: {{ corp_profile.directory }}</a>
+        {% else %}
+                {% if request.user.is_superuser and corporate_membership.status_detail == 'active' %}
+				{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}: {% trans 'None' %} <a href="{% url 'corp_membership.add_directory' corp_profile.id  %}">{% trans 'Admin: Add a Directory' %}</a>
+             {% endif %}
+        {% endif %}
+{% endif %}
