@@ -1,4 +1,5 @@
 {% load page_tags %}
+{% load forms_tags %}
 
 {% if request.user.is_authenticated %}
 <div id="t-admin-megamenu" class="navbar-inverse navbar-fixed-top yamm t-megamenu" role="navigation">
@@ -31,7 +32,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{% spaceless %}
                         <img class="nav-icon" src="{% block nav_icon_url %}{% static 'famfamfam/icons/page_white_stack.png' %}{% endblock %}">
-                        <span class="nav-label">{% block nav_label %}{% trans "Pages" %}{% endblock %}</span>
+                        <span class="nav-label">{% block nav_label %}{% if form %}{% firstof MODULE_FORMS_LABEL trans "Forms" %}{% else %}{% trans "Pages" %}{% endif %}{% endblock %}</span>
                         <span class="caret"></span>
                     {% endspaceless %}</a>
 
@@ -42,7 +43,11 @@
                         {% if page %}
                             {% page_current_app request.user page %}
                         {% else %}
-                            {% page_current_app request.user %}
+                            {% if form %}
+                                {% form_current_app request.user form %}
+                            {% else %}
+                                {% page_current_app request.user %}
+                             {% endif %}
                         {% endif %}
                     {% endblock %}
               </li>
