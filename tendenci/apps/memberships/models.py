@@ -2578,9 +2578,22 @@ class MembershipApp(TendenciBaseModel):
         params['slug'] = params['slug'][:200]
         params['name'] = params['name'][:155]
         app_cloned = self.__class__.objects.create(**params)
+        
+        # ud fields - avoid using the same ud fields for cloned app
+        all_ud_names = ['ud%d' % (x+1) for x in range(30)]
+        used_ud_field_names = [field.field_name for field in MembershipAppField.objects.filter(field_name__in=all_ud_names, display=True)]
+        available_ud_field_names = [name for name in all_ud_names if name not in used_ud_field_names]
+        
+        this_app_ud_names = [field.field_name for field in self.fields.filter(field_name__in=all_ud_names, display=True)]
+        ud_replace_with = available_ud_field_names[:len(this_app_ud_names)]
+        
         # clone fiellds
         fields = self.fields.all()
         for field in fields:
+            if field.field_name in this_app_ud_names:
+                field.display = False
+            elif field.field_name in ud_replace_with:
+                field.display = True 
             field.clone(app_cloned)
 
         return app_cloned
