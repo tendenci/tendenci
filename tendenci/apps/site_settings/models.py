@@ -47,7 +47,7 @@ class Setting(models.Model):
 
     def get_absolute_url(self):
         return reverse("setting.permalink",
-                args=[self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
+                args=[self.scope, self.scope_category, self.name]).replace('%23', '#')
 
     def __str__(self):
         return "(%s) %s" %(self.name, self.label)

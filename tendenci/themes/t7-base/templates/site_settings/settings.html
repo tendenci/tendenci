@@ -11,13 +11,13 @@
     <h2 id="id_{{ settings.grouper }}">{{ settings.grouper|capfirst }}</h2>
     <ul>
         {% for setting in settings.list|dictsort:"label" %}
-            {% url "setting.permalink" setting.scope setting.scope_category setting.name as permalink %}
+            {% url "settings.index" setting.scope setting.scope_category as setting_cat_url %}
             {% if not setting.client_editable %}
                 {% if user.is_superuser %}
-                    <li><a href="{{ permalink }}">{{ setting.label }}</a></li>
+                    <li><a href="{{ setting_cat_url }}#id_{{ setting.name }}">{{ setting.label }}</a></li>
                 {% endif %}
             {% else %}
-                <li><a href="{{ permalink }}">{{ setting.label }}</a></li>
+                <li><a href="{{ setting_cat_url }}#id_{{ setting.name }}">{{ setting.label }}</a></li>
             {% endif %}
         {% endfor %}
     </ul>
