@@ -970,8 +970,12 @@ class MembershipAppField2Admin(admin.ModelAdmin):
 
         return obj
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def change_view(self, request, object_id=None, form_url='', extra_context=None):
+        return super(MembershipAppField2Admin, self).change_view(request, object_id, form_url,
+                               extra_context=dict(show_delete=False))
+
+#     def has_delete_permission(self, request, obj=None):
+#         return False
 
     def has_add_permission(self, request):
         return False
