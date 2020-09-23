@@ -1,3 +1,9 @@
+### 12.2.3 [2020-09-23]
+
+* Fixed links on the full settings list not being linked to the specific settings.
+* Avoided using the same ud fields for cloned membership applications because same UD fields can't be re-used across applications.
+* Resolved a permission issue on deleting unneeded membership applications (and corporate membership applications).
+
 ### 12.2.2 [2020-09-17]
 
 * Directory owners can view and edit their directories, but only admin can publish directories that are created with memberships and corporate memberships.
