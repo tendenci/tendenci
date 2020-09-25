@@ -202,6 +202,8 @@ class CorpProfile(TendenciBaseModel):
                                blank=True, default='')
     phone = models.CharField(_('Phone'), max_length=50,
                              blank=True, default='')
+    phone2 = models.CharField(_('phone2'), max_length=50,
+                              blank=True, default='')
     email = models.CharField(_('Email'), max_length=200,
                              blank=True, default='')
     url = models.CharField(_('URL'), max_length=100, blank=True,

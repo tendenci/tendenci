@@ -78,6 +78,16 @@
             {{ corp_profile.phone }}
             </div>
         </div>
+		{% if corp_profile.phone2 %}
+		<div class="row">
+            <div class="col-xs-4">
+                {% trans 'Phone2' %}
+            </div>
+            <div class="col-xs-6">
+            {{ corp_profile.phone2 }}
+            </div>
+        </div>
+		{% endif %}
         <div class="row">
             <div class="col-xs-4">
                 {% trans 'Website' %}
