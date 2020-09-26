@@ -1673,7 +1673,12 @@ class CorpMembershipAppField(OrderingBaseModel):
                             'corporate_membership_type',
                             'payment_method']:
                     if self.choices == 'yesno':
-                        field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
+                        field_args["choices"] = ((True, _('Yes')), (False, _('No')),)
+                        if self.default_value:
+                            if self.default_value.lower() == 'yes':
+                                field_args['initial'] = True
+                            elif self.default_value.lower() == 'no':
+                                field_args['initial'] = False
                     else:
                         choices = self.choices.split(",")
                         field_args["choices"] = list(zip(choices, choices))
