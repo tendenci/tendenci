@@ -1,3 +1,8 @@
+### 12.2.5 [2020-09-25]
+
+* Fixed an error in corporate memberships import (Thanks @evanspaeder)
+* Added missing phone2 field to corp profile (The phone2 field exists on app, but was missing in CorpProfile model).
+
 ### 12.2.3 [2020-09-23]
 
 * Fixed links on the full settings list not being linked to the specific settings.
