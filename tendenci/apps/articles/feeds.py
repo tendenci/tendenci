@@ -7,6 +7,7 @@ from tendenci.apps.perms.utils import PUBLIC_FILTER
 from tendenci.apps.sitemaps import TendenciSitemap
 
 from tendenci.apps.articles.models import Article
+from tendenci.apps.base.decorators import strip_control_chars
 
 
 class LatestEntriesFeed(SubFeed):
@@ -22,15 +23,18 @@ class LatestEntriesFeed(SubFeed):
                 release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
         return items
 
+    @strip_control_chars
     def item_title(self, item):
         return item.headline
 
+    @strip_control_chars
     def item_description(self, item):
         return item.body
 
     def item_pubdate(self, item):
         return item.release_dt
 
+    @strip_control_chars
     def item_link(self, item):
         return item.get_absolute_url()
 
