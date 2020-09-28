@@ -1,3 +1,12 @@
+### 12.2.6 [2020-09-28]
+
+* Fixed default value not working for boolean field on corporate membership application.
+* Fixed profile/add form username limits #894 (Thanks @evanspaeder)
+* Fixed duplicate slug error on membership app clone #893
+* Fixed newsletters are not searchable in Event Logs #892
+* Applied strip_control_chars to feed for articles and news to resolve an UnserializableContentError: Control characters are not supported in XML 1.0.
+
+
 ### 12.2.5 [2020-09-25]
 
 * Fixed an error in corporate memberships import (Thanks @evanspaeder)
