@@ -1,5 +1,6 @@
 import imghdr
 import decimal
+import chardet
 from os.path import splitext
 import operator
 from uuid import uuid4
@@ -922,11 +923,15 @@ class CorpMembershipUploadForm(forms.ModelForm):
         if not key:
             raise forms.ValidationError(_('Please specify the key to identify duplicates'))
 
-        file_content = upload_file.read().decode('utf-8')
+        file_content = upload_file.read()
+        encoding = chardet.detect(file_content)['encoding']
+        file_content = file_content.decode(encoding)
+
         upload_file.seek(0)
         header_line_index = file_content.find('\n')
         header_list = ((file_content[:header_line_index]
                             ).strip('\r')).split(',')
+
         if 'company_name' not in header_list:
             msg_string = """
                         'Field company_name used to identify the duplicates
