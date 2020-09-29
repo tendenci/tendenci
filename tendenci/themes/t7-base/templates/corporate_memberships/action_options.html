@@ -16,7 +16,7 @@
     {% endif %}
 {% else %}
     {% if request.user.is_superuser and corp_membership.is_join_pending %}
-         <a class="btn btn--info btn-sm" href="{% url "corpmembership.approve" corp_membership.pk %}" title="Approve/Disapprove">{% trans "Admin: Approve / Disapprove" %}</a>
+         <a class="btn btn-info btn-sm" href="{% url "corpmembership.approve" corp_membership.pk %}" title="Approve/Disapprove">{% trans "Admin: Approve / Disapprove" %}</a>
     {% endif %}
 
     {% if corp_membership.can_renew %}
