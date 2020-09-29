@@ -225,13 +225,6 @@ def corpmembership_add(request, slug='',
     """
     creator = None
     hash = request.GET.get('hash', '')
-    if not request.user.is_authenticated:
-        if hash:
-            [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
-        if not creator:
-            # anonymous user - redirect them to enter their
-            # contact email before processing
-            return HttpResponseRedirect(reverse('corpmembership.add_pre'))
 
     if not slug:
         app = CorpMembershipApp.objects.current_app()
@@ -244,6 +237,18 @@ def corpmembership_add(request, slug='',
         if app.id != current_app.id:
             return HttpResponseRedirect(reverse('corpmembership_app.preview',
                                                 args=[app.slug]))
+    if not request.user.is_authenticated:
+        # handle anonymous user
+        if not has_perm(request.user, 'corporate_memberships.view_corpmembershipapp', app):
+            raise Http403
+        
+        if hash:
+            [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
+        if not creator:
+            # anonymous user - redirect them to enter their
+            # contact email before processing
+            return HttpResponseRedirect(reverse('corpmembership.add_pre'))
+
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
