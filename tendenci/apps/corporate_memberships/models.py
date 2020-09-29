@@ -1162,9 +1162,10 @@ class CorpMembership(TendenciBaseModel):
         return False
 
     def allow_edit_by(self, this_user):
-        if self.is_active or self.is_expired:
-            if this_user.profile.is_superuser:
+        if this_user.profile.is_superuser:
                 return True
+
+        if self.is_active or self.is_expired:
             if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
