@@ -1,3 +1,13 @@
+### 12.2.7 [2020-09-30]
+
+* Fixed corp_membership encoding detection (Thanks @evanspaeder)
+* Added an edit button for admin on pending corp membership for easy editing
+* Fixed a potential encoding issue on memberships import
+* Updated memberships and corporate membership imports to use detected encoding instead of hard-coded utf-8
+* Updated the corporate membership add to redirect anonymous user to login instead of add_pre if "public can view" is unchecked
+* Formated the pricing end date to also show year  #889
+* Resolved corporate membership types not being imported along with their associated corporate memberships 
+
 ### 12.2.6 [2020-09-28]
 
 * Fixed default value not working for boolean field on corporate membership application.
