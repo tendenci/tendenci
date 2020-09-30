@@ -20,6 +20,12 @@
 	.corp-expired{
 		color: red;
 	}
+	.label-td-left{
+		text-align:right; width:50%;
+	}
+	.value-td-right{
+		text-align:left; width:50%;
+	}
     </style>
 {% endblock %}
 
@@ -43,22 +49,22 @@
          </div>
        {% endif %}
 
-        <div class="t-corpmemberships-corpmembership-body">
+        <table class="table t-corpmemberships-corpmembership-body">
             {% for field_obj in app_fields %}
-                <section id="t-corpmemberships-application-field-{{ field_obj.id }}" class="t-corpmemberships-application-field">
+                <tr id="t-corpmemberships-application-field-{{ field_obj.id }}" class="t-corpmemberships-application-field">
                     {# We have a section label #}
                     {% if field_obj.field_name == "" %}
+                      <td colspan="2">
                         {% if not forloop.last %}
                             <h3 class="t-field-sectionlabel t-corpmemberships-application-field-sectionlabel
                                            {% if field_obj.admin_only%} t-admin-only-header{% endif %}
                                            {% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}"
                                 >{{ field_obj.label }}</h3>
                         {% endif %}
+                        </td>
                     {% else %}
-                        <div class="t-field-sectionrow t-corpmemberhsips-application-field-sectionrow
-                                        {% if field_obj.admin_only %} t-admin-only{% endif %}
-                                        {% if field_obj.css_class %} {{ field_obj.css_class }}{% endif %}">
                             {% if field_obj.field_name == "reps" %}
+                                <td colspan="2">
                                 {% if field_obj.value %}
                                     <table class="table table-striped t-corpmemberships-reps-field" id="t-corpmemberships-reps-field-{{ field_obj.pk }}">
                                         <thead>
@@ -90,17 +96,17 @@
                                         <a class="btn btn-primary" href="{% url 'corpmembership.edit_corp_reps' corporate_membership.pk %}">{% trans "Add Representatives" %}</a>
                                     {% endif %}
                                 {% endif %}
+                               </td>
                             {% else %}
                                 {% if field_obj.field_name != "" and field_obj.value != "" %}
-                                    <dl class="dl-horizontal">
-                                    <dt class="t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
+                                    <td class="label-td-left t-field-fieldlabel t-corpmemberships-application-field-fieldlabel
                                                   {% if field_obj.short_label %} t-short-label{% endif %}
                                                   {% if field_obj.required %} t-required{% endif %}
                                                   {% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
-                                        {% blocktrans with label=field_obj.label %}{{ label }}:{% endblocktrans %}
-                                    </dt>
+                                       {{ field_obj.label }}:
+                                    </td>
 
-                                    <dd class="t-field-fieldvalue t-corpmemberships-application-field-fieldvalue{% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
+                                    <td class="value-td-right t-field-fieldvalue t-corpmemberships-application-field-fieldvalue{% if field_obj.field_div_class %} {{ field_obj.field_div_class }}{% endif %}">
                                         {% if field_obj.is_date %}
                                             {{ field_obj.value|date:"long" }}
                                         {% else %}
@@ -122,18 +128,17 @@
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
-                                    </dd>
-                                    </dl>
+                                    </td>
                                 {% endif %}
                             {% endif %}
-                        </div>
                     {% endif %}
 
-                </section>
+                </tr>
             {% endfor %}
 
             {% if user_can_edit and MODULE_CORPORATE_MEMBERSHIPS_USEFREEPASS %}
-                <section class="t-corpmemberships-free-passes">
+                <tr class="t-corpmemberships-free-passes">
+				<td colspan="2">
                     <h3 class="t-field-sectionlabel t-corpmemberships-free-passes-label">{% trans "Free Passes" %}</h3>
 
                     <div class="t-field-sectionrow t-corpmemberships-free-passes-row">
@@ -193,11 +198,13 @@
                             </table>
                         </div>
                     {% endif %}
-                </section>
+				</td>
+                </tr>
             {% endif %}
+    
+        </table>
 
-            {% include "corporate_memberships/timeline.html" %}
-        </div>
+		 {% include "corporate_memberships/timeline.html" %}
         {% include "corporate_memberships/applications/meta.html" %}
     </article>
     <br />
