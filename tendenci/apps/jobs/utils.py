@@ -25,20 +25,6 @@ def get_payment_method_choices(user):
             return ()
 
 
-def get_job_unique_slug(slug):
-    # check if this slug already exists
-    jobs = Job.objects.filter(slug__istartswith=slug)
-
-    if jobs:
-        t_list = [j.slug[len(j.slug):] for j in jobs]
-        num = 1
-        while str(num) in t_list:
-            num += 1
-        slug = '%s-%s' % (slug, str(num))
-
-    return slug
-
-
 def job_set_inv_payment(user, job, pricing):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
         if not job.invoice:
