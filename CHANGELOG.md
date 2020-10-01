@@ -1,3 +1,7 @@
+### 12.2.8 [2020-09-30]
+
+* Updated format for corporate membership view to avoid long labels being cut off
+
 ### 12.2.7 [2020-09-30]
 
 * Fixed corp_membership encoding detection (Thanks @evanspaeder)
