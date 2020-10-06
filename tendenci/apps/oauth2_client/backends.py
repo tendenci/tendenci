@@ -2,15 +2,15 @@ import pytz
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.contrib.auth.backends import RemoteUserBackend
 from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.perms.backend import ObjectPermBackend
 
 UserModel = get_user_model()
 
 
-class AuthenticationBackend(RemoteUserBackend):
+class AuthenticationBackend(ObjectPermBackend):
     """
     Authenticates against access token.
     """
