@@ -154,7 +154,7 @@ class RegistrationCustomForm(RegistrationForm):
 
 class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
 
-    username = forms.CharField(label=_("Username"), max_length=30, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label=_("Username"), max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput(render_value=False, attrs={'class': 'form-control'}))
     #remember = forms.BooleanField(label=_("Remember Me"), help_text=_("If checked you will stay logged in for 3 weeks"), required=False)
     remember = forms.BooleanField(label=_("Remember Login"), required=False)
@@ -225,7 +225,7 @@ class LoginForm(ProhibitNullCharactersValidatorMixin, forms.Form):
         return False
 
 class PasswordResetForm(forms.Form):
-    email = forms.EmailField(label=_("E-mail"), max_length=75, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(label=_("E-mail"), max_length=254, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     def clean_email(self):
         """
