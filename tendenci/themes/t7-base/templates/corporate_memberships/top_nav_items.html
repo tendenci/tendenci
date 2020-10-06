@@ -4,7 +4,7 @@
 
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-
+{% has_perm user corporate_memberships.approve_corpmembership as can_approve_corpmemb %}
 {% if app_object %}
     {% has_perm user corporate_memberships.view_corpmembership app_object as can_view_corpmemb %}
     {% allow_view_corp app_object user as allow_view %}
@@ -68,6 +68,14 @@
                         </span>
                     </li>
 
+					{% if can_approve_corpmemb %}
+                        <li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'corpmembership.pending_list' %}">{% trans "View Pending" %}</a>
+                            </span>
+                        </li>
+					 {% endif %}
+
                     {% if user.profile.is_superuser %}
                     	<li class="divider"></li>
                     	<li class="content-item">
@@ -76,12 +84,6 @@
                             </span>
                         </li>
                     	
-                        <li class="content-item">
-                            <span class="app-name">
-                                <a href="{% url 'corpmembership.pending_list' %}">{% trans "View Pending" %}</a>
-                            </span>
-                        </li>
-
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'corpmembership.cap_status' %}">{% trans "View Cap Status" %}</a>

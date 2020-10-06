@@ -762,14 +762,16 @@ def corpmembership_search(request, my_corps_only=False,
         if my_corps_only or not allow_anonymous_search:
             raise Http403
     is_superuser = request.user.profile.is_superuser
+    has_approve_perm = has_perm(request.user, 'corporate_memberships.approve_corpmembership')
 
     # legacy pending url
     query = request.GET.get('q')
     if query == 'is_pending:true':
         pending_only = True
 
-    if pending_only and not is_superuser:
-        raise Http403
+    if pending_only:
+        if not has_approve_perm:
+            raise Http403
 
     # field names for search criteria choices
     names_list = ['name', 'address', 'city', 'state',
@@ -784,7 +786,7 @@ def corpmembership_search(request, my_corps_only=False,
     except:
         cp_id = 0
 
-    if pending_only and is_superuser:
+    if pending_only and has_approve_perm:
         # pending list only for admins
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
@@ -932,8 +934,7 @@ def corpmembership_approve(request, id,
                 template="corporate_memberships/applications/approve.html"):
     corporate_membership = get_object_or_404(CorpMembership, id=id)
 
-    user_is_superuser = request.user.profile.is_superuser
-    if not user_is_superuser:
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership', corporate_membership):
         raise Http403
 
     # if not in pending, go to view page

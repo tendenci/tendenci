@@ -62,8 +62,9 @@ class ObjectPermBackend(ModelBackend):
     def get_all_permissions(self, user_obj):
         if user_obj.is_anonymous:
             return set()
+
         if not hasattr(user_obj, '_perm_cache'):
-            user_obj._perm_cache = set([u"%s.%s" % (p.content_type.app_label, p.codename) for p in user_obj.user_permissions.select_related()])
+            user_obj._perm_cache = set(["%s.%s" % (p.content_type.app_label, p.codename) for p in user_obj.user_permissions.select_related()])
             user_obj._perm_cache.update(self.get_group_permissions(user_obj))
         return user_obj._perm_cache
 

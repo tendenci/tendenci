@@ -476,6 +476,7 @@ class CorpMembership(TendenciBaseModel):
         else:
             verbose_name = _("Corporate Membership")
             verbose_name_plural = _("Corporate Memberships")
+        permissions = (("approve_corpmembership", _("Can approve corporate memberships")),)
         app_label = 'corporate_memberships'
 
     def __str__(self):

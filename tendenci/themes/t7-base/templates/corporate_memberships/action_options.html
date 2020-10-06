@@ -1,4 +1,5 @@
-
+{% load perm_tags %}
+{% has_perm request.user corporate_memberships.approve_corpmembership corp_membership as can_approve_corpmemb %}
 <div>
 <span class="corp-{{ corp_membership.real_time_status_detail|slugify }}">{% if not corp_membership.is_pending  %}{{ corp_membership.real_time_status_detail }}{% endif %}</span>
 {% if corp_membership.status_detail == "archive" %}
@@ -19,7 +20,7 @@
         <a href="{% url "corpmembership.approve" corp_membership.id %}" title="Admin: Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
     {% endif %}
 {% else %}
-    {% if request.user.is_superuser and corp_membership.is_join_pending %}
+    {% if corp_membership.is_join_pending and can_approve_corpmemb %}
          <a class="btn btn-info" href="{% url "corpmembership.approve" corp_membership.pk %}" title="Admin: Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
     {% endif %}
 
