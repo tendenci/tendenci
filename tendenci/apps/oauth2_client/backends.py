@@ -56,7 +56,7 @@ class AuthenticationBackend(ObjectPermBackend):
         """
         fields_dict = {}
         for field in ObjModel._meta.fields:
-            if field.name in user_info and hasattr(field, 'max_length'):
+            if field.name in settings.OAUTH2_USER_ATTR_MAPPING and hasattr(field, 'max_length'):
                 fields_dict[field.name] = field
         
         updated = False
