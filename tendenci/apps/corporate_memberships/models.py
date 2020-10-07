@@ -476,7 +476,7 @@ class CorpMembership(TendenciBaseModel):
         else:
             verbose_name = _("Corporate Membership")
             verbose_name_plural = _("Corporate Memberships")
-        permissions = (("approve_corpmembership", _("Can approve corporate memberships")),)
+        permissions = (("approve_corpmembership", _("Can approve corporate memberships")),("change_pendingcorpmembership", _("Can change pending corporate memberships")),)
         app_label = 'corporate_memberships'
 
     def __str__(self):
@@ -1180,6 +1180,9 @@ class CorpMembership(TendenciBaseModel):
                     if self.owner:
                         if this_user.id == self.owner.id:
                             return True
+
+        if self.is_pending and has_perm(this_user, 'corporate_memberships.change_pendingcorpmembership'):
+            return True
 
         return False
 
