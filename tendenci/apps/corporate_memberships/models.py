@@ -1181,6 +1181,10 @@ class CorpMembership(TendenciBaseModel):
                         if this_user.id == self.owner.id:
                             return True
 
+        # if they can approve, they can edit the pending corporate membership             
+        if self.is_pending and has_perm(this_user, 'corporate_memberships.approve_corpmembership'):
+            return True
+
         return False
 
     def get_renewal_period_dt(self):
