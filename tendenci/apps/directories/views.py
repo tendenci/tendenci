@@ -77,9 +77,9 @@ def search(request, template_name="directories/search.html"):
         region = form.cleaned_data.get('region')
 
         if cat:
-            directories = directories.filter(cat=cat)
+            directories = directories.filter(cats__in=[cat])
         if sub_cat:
-            directories = directories.filter(sub_cat=sub_cat)
+            directories = directories.filter(sub_cats__in=[sub_cat])
 
         if region:
             directories = directories.filter(region=region)
@@ -182,6 +182,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
             directory = update_perms_and_save(request, form, directory)
+            form.save_m2m()
 
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
@@ -259,6 +260,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                     directory.logo = None
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
+            form.save_m2m()
             msg_string = 'Successfully updated %s' % directory
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
@@ -304,9 +306,11 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 @login_required
 def get_subcategories(request):
     if request.is_ajax() and request.method == "POST":
-        category = request.POST.get('category', None)
-        if category:
-            sub_categories = DirectoryCategory.objects.filter(parent=category)
+        categories = request.POST.get('categories', None)
+        categories = [int(cat) for cat in categories.split(',') if cat.isdigit()]
+        if categories:
+            print('categories=', categories)
+            sub_categories = DirectoryCategory.objects.filter(parent__in=categories)
             count = sub_categories.count()
             sub_categories = list(sub_categories.values_list('pk','name'))
             data = json.dumps({"error": False,

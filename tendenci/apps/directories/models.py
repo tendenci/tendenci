@@ -113,6 +113,10 @@ class Directory(TendenciBaseModel):
                                  related_name="directory_cat", null=True, on_delete=models.SET_NULL)
     sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
                                  related_name="directory_subcat", null=True, on_delete=models.SET_NULL)
+    cats = models.ManyToManyField(Category, verbose_name=_("Categories"),
+                                  related_name="directory_cats",)
+    sub_cats = models.ManyToManyField(Category, verbose_name=_("Sub Categories"),
+                                  related_name="directory_subcats",)
     # legacy categories needed for data migration
     categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",

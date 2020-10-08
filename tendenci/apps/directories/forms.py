@@ -155,14 +155,14 @@ class DirectoryForm(TendenciBaseForm):
     pricing = forms.ModelChoiceField(queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'),
                     **request_duration_defaults)
 
-    cat = forms.ModelChoiceField(label=_("Category"),
-                                      queryset=DirectoryCategory.objects.filter(parent=None),
-                                      empty_label="-----------",
-                                      required=False)
-    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
-                                          queryset=DirectoryCategory.objects.none(),
-                                          empty_label=_("Please choose a category first"),
-                                          required=False)
+    cats = forms.ModelMultipleChoiceField(label=_("Categories"),
+                                          queryset=DirectoryCategory.objects.filter(parent=None),
+                                          required=False,
+                                          help_text=_('Hold down "Control", or "Command" on a Mac, to select more than one.'))
+    sub_cats = forms.ModelMultipleChoiceField(label=_("Subcategories"),
+                                          queryset=None,
+                                          required=False,
+                                          help_text=_('Please choose a category first'))
 
     class Meta:
         model = Directory
@@ -207,8 +207,8 @@ class DirectoryForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'cat',
-            'sub_cat',
+            'cats',
+            'sub_cats',
             'status_detail',
         )
 
@@ -269,14 +269,16 @@ class DirectoryForm(TendenciBaseForm):
                                  ],
                       'classes': ['permissions'],
                       }),
-                      (_('Category'), {
-                        'fields': ['cat',
-                                   'sub_cat'
-                                   ],
-                        'classes': ['boxy-grey job-category'],
-                      }),
+#                       (_('Category'), {
+#                         'fields': ['cats',
+#                                    'sub_cats'
+#                                    ],
+#                         'classes': ['boxy-grey job-category'],
+#                       }),
                      (_('Administrator Only'), {
-                      'fields': ['syndicate',
+                      'fields': ['cats',
+                                 'sub_cats',
+                                 'syndicate',
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
@@ -307,22 +309,24 @@ class DirectoryForm(TendenciBaseForm):
         self.fields['timezone'].initial = settings.TIME_ZONE
 
         # cat and sub_cat
+        self.fields['sub_cats'].queryset = DirectoryCategory.objects.exclude(parent=None)
         if self.user.profile.is_superuser:
-            self.fields['sub_cat'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
+            self.fields['sub_cats'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
                                         reverse('admin:directories_category_changelist'),
                                         _('Manage Categories'),))
-        if self.instance and self.instance.pk:
-            self.fields['sub_cat'].queryset = DirectoryCategory.objects.filter(
-                                                        parent=self.instance.cat)
-        if args:
-            post_data = args[0]
-        else:
-            post_data = None
-        if post_data:
-            cat = post_data.get('cat', '0')
-            if cat and cat != '0' and cat != u'':
-                cat = DirectoryCategory.objects.get(pk=int(cat))
-                self.fields['sub_cat'].queryset = DirectoryCategory.objects.filter(parent=cat)
+#         if self.instance and self.instance.pk:
+#             self.fields['sub_cats'].queryset = DirectoryCategory.objects.filter(
+#                                                         parent__in=self.instance.cats.all())
+#         if args:
+#             post_data = args[0]
+#         else:
+#             post_data = None
+#         if post_data:
+#             cats = post_data.get('cats', None)
+#             if cats:
+#                 cats = [int(cat) for cat in cats if cat.isdigit()]
+#                 cats = DirectoryCategory.objects.filter(pk__in=cats)
+#                 self.fields['sub_cats'].queryset = DirectoryCategory.objects.filter(parent__in=cats)
 
         # expiration_dt = activation_dt + requested_duration
         fields_to_pop = ['expiration_dt']
@@ -337,6 +341,8 @@ class DirectoryForm(TendenciBaseForm):
                 'post_dt',
                 'activation_dt',
                 'syndicate',
+                'cats',
+                'sub_cats',
                 'status_detail'
             ]
 
