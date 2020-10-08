@@ -33,6 +33,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 
 
 @is_enabled('invoices')
