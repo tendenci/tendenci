@@ -62,9 +62,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     notify = request.GET.get('notify', u'')
     guid = guid or u''
 
-    merchant_login = (  # boolean value
-        hasattr(settings, 'MERCHANT_LOGIN') and
-        settings.MERCHANT_LOGIN)
+    # boolean value
+    merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
     obj = invoice.get_object()
     obj_name = u''
