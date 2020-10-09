@@ -308,11 +308,16 @@ def get_subcategories(request):
     if request.is_ajax() and request.method == "POST":
         categories = request.POST.get('categories', None)
         categories = [int(cat) for cat in categories.split(',') if cat.isdigit()]
+        count = 0
+        sub_categories = []
         if categories:
-            print('categories=', categories)
-            sub_categories = DirectoryCategory.objects.filter(parent__in=categories)
-            count = sub_categories.count()
-            sub_categories = list(sub_categories.values_list('pk','name'))
+            for cat in categories:
+                sub_cats = list(DirectoryCategory.objects.filter(parent_id=cat).values_list('id', 'name'))
+                if len(sub_cats) > 0:
+                    count += len(sub_cats)
+                    cat_name = DirectoryCategory.objects.filter(id=cat).values_list('name', flat=True)[0]
+                    sub_categories.append({'cat_name': cat_name,  'sub_cats': sub_cats})
+
             data = json.dumps({"error": False,
                                "sub_categories": sub_categories,
                                "count": count})

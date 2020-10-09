@@ -126,6 +126,22 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         return cleaned_data
 
 
+def _get_sub_cats_choices(directory=None):
+    #choices = [('', '------------------'),]
+    choices = []
+    cats = DirectoryCategory.objects.filter(parent=None)
+    if directory:
+        cats = cats.filter(id__in=directory.cats.all())
+    for cat in cats:
+        my_choices = []
+        sub_cats = DirectoryCategory.objects.filter(parent=cat)
+        for sub_cat in sub_cats:
+            my_choices.append((sub_cat.id, sub_cat.name))
+        if my_choices:
+            choices.append((cat.name, my_choices))
+    return choices
+
+
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(label=_("Description"), required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
@@ -310,6 +326,8 @@ class DirectoryForm(TendenciBaseForm):
 
         # cat and sub_cat
         self.fields['sub_cats'].queryset = DirectoryCategory.objects.exclude(parent=None)
+        self.fields['sub_cats'].choices = _get_sub_cats_choices(directory=self.instance)
+        
         if self.user.profile.is_superuser:
             self.fields['sub_cats'].help_text = mark_safe('<a href="{0}">{1}</a>'.format(
                                         reverse('admin:directories_category_changelist'),
