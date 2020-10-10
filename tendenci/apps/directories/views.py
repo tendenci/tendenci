@@ -75,11 +75,13 @@ def search(request, template_name="directories/search.html"):
         cat = form.cleaned_data.get('cat')
         sub_cat = form.cleaned_data.get('sub_cat')
         region = form.cleaned_data.get('region')
+        cat = [int(c) for c in cat if c.isdigit()]
+        sub_cat = [int(c) for c in sub_cat if c.isdigit()]
 
         if cat:
-            directories = directories.filter(cats__in=[cat])
+            directories = directories.filter(cats__in=list(cat))
         if sub_cat:
-            directories = directories.filter(sub_cats__in=[sub_cat])
+            directories = directories.filter(sub_cats__in=list(sub_cat))
 
         if region:
             directories = directories.filter(region=region)

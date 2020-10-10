@@ -69,13 +69,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
                                       queryset=Region.objects.filter(status_detail='active'),
                                       empty_label="-----------",
                                       required=False)
-    cat = forms.ModelChoiceField(label=_("Category"),
-                                      queryset=DirectoryCategory.objects.filter(parent=None),
-                                      empty_label="-----------",
+    cat = forms.MultipleChoiceField(label=_("Category"),
                                       required=False)
-    sub_cat = forms.ModelChoiceField(label=_("Subcategory"),
-                                          queryset=DirectoryCategory.objects.none(),
-                                          empty_label=_("Subcategories"),
+    sub_cat = forms.MultipleChoiceField(label=_("Subcategory"),
                                           required=False)
     q = forms.CharField(required=False)
     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
@@ -91,19 +87,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         # setup categories
         categories = DirectoryCategory.objects.filter(parent__isnull=True)
         categories_count = categories.count()
-        self.fields['cat'].queryset = categories
-        self.fields['cat'].empty_label = _('Categories (%(c)s)' % {'c' : categories_count})
-        data = args[0]
-        if data:
-            try:
-                cat = int(data.get('cat', 0))
-            except ValueError:
-                cat = 0
-            if cat:
-                sub_categories = DirectoryCategory.objects.filter(parent__id=cat)
-                sub_categories_count = sub_categories.count()
-                self.fields['sub_cat'].empty_label = _('Subcategories (%(c)s)' % {'c' : sub_categories_count})
-                self.fields['sub_cat'].queryset = sub_categories
+        empty_label =  _('ALL Categories (%(c)s)' % {'c' : categories_count})
+        self.fields['cat'].choices = _get_cats_choices(empty_label=empty_label)
+        self.fields['sub_cat'].choices = _get_sub_cats_choices(empty_label=_('ALL SubCategories'))
         # remove region field if no directories associated with any region
         if not Directory.objects.filter(region__isnull=False).exists():
             del self.fields['region']
@@ -126,9 +112,25 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         return cleaned_data
 
 
-def _get_sub_cats_choices(directory=None):
-    #choices = [('', '------------------'),]
-    choices = []
+def _get_cats_choices(directory=None, empty_label=None):
+    if empty_label:
+        choices = [('', empty_label),]
+    else:
+        choices = []
+    cats = DirectoryCategory.objects.filter(parent=None)
+    if directory:
+        cats = cats.filter(id__in=directory.cats.all())
+    for cat in cats:
+        choices.append((cat.id, cat.name))
+
+    return choices
+
+
+def _get_sub_cats_choices(directory=None, empty_label=None):
+    if empty_label:
+        choices = [('', empty_label),]
+    else:
+        choices = []
     cats = DirectoryCategory.objects.filter(parent=None)
     if directory:
         cats = cats.filter(id__in=directory.cats.all())
