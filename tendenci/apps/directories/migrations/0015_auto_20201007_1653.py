@@ -58,8 +58,8 @@ def migrate_categories_for_templates():
     {% with directory.cats_list as cats_list %}
     {% if cats_list %}
         <li>
-            <ul class="list-inline">
-               {% for cat, sub_cats in cats_list %}
+           {% for cat, sub_cats in cats_list %}
+               <ul class="list-inline">
                 <li><strong>{% trans "Category:" %}</strong> 
                    <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>
                  </li>
@@ -71,8 +71,8 @@ def migrate_categories_for_templates():
                        {% endfor %}
                     </li>
                 {% endif %}
-                {% endfor %}
-            </ul>
+             </ul>
+          {% endfor %}
         </li>
     {% endif %}
     {% endwith %}
