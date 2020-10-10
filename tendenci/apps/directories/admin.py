@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from tendenci.apps.directories.models import DirectoryPricing
 from tendenci.apps.directories.forms import DirectoryPricingForm
 from tendenci.apps.directories.models import Category as DirectoryCategory
+from tendenci.apps.theme.templatetags.static import static
 
 
 class DirectoryAdmin(admin.ModelAdmin):
@@ -25,7 +26,7 @@ admin.site.register(DirectoryPricing, DirectoryPricingAdmin)
 
 
 class CategoryAdminInline(admin.TabularInline):
-    fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    fieldsets = ((None, {'fields': ('name', 'slug', 'position')}),)
     prepopulated_fields = {'slug': ['name']}
     model = DirectoryCategory
     extra = 0
@@ -40,11 +41,24 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
         'name',
         'sub_categories',
         'slug',
+        'position'
     ]
     list_display_links = ('name', )
+    list_editable = ['position']
     inlines = (CategoryAdminInline,)
     prepopulated_fields = {'slug': ['name']}
     fieldsets = ((None, {'fields': ('name', 'slug')}),)
+    ordering = ['position']
+    
+    class Media:
+        css = {
+            "all": (static("css/websymbols.css"),)
+        }
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
+            static('js/admin/admin-list-reorder.js'),
+        )
 
     @mark_safe
     def sub_categories(self, instance):

@@ -27,13 +27,14 @@ from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.regions.models import Region
 from tendenci.apps.entities.models import Entity
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 
 def file_directory(instance, filename):
     filename = correct_filename(filename)
     return 'directories/%d/%s' % (instance.id, filename)
 
-class Category(models.Model):
+class Category(OrderingBaseModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
@@ -41,7 +42,7 @@ class Category(models.Model):
     class Meta:
         unique_together = ('slug', 'parent',)
         verbose_name_plural = _("Categories")
-        ordering = ('name',)
+        ordering = ('position', 'name')
         app_label = 'directories'
 
     def __str__(self):
