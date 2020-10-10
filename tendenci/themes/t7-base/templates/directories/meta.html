@@ -67,28 +67,26 @@
         </address>
     {% endif %}
 
-    {% with directory.cats.all as directory_cats %}
-        {% if directory_cats %}
-            <li>
-                <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> 
-                       {% for cat in directory_cats %}
-                       <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>{% if not forloop.last %}, {% endif %}
+	{% with directory.cats_list as cats_list %}
+    {% if cats_list %}
+        <li>
+            <ul class="list-inline">
+               {% for cat, sub_cats in cats_list %}
+                <li><strong>{% trans "Category:" %}</strong> 
+                   <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>
+                 </li>
+                 {% if sub_cats %}
+                    <li>|</li>
+                    <li><strong>{% trans "Subcategory:" %}</strong> 
+                       {% for sub_cat in sub_cats %}
+                       <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
                        {% endfor %}
-                     </li>
-                     {% with directory.sub_cats.all as directory_sub_cats %}
-                     {% if directory_sub_cats %}
-                        <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> 
-                           {% for sub_cat in directory_sub_cats %}
-                           <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
-                           {% endfor %}
-                        </li>
-                    {% endif %}
-                    {% endwith %}
-                </ul>
-            </li>
-        {% endif %}
+                    </li>
+				{% endif %}
+				{% endfor %}
+            </ul>
+        </li>
+    {% endif %}
     {% endwith %}
 
     {% if directory.tags %}

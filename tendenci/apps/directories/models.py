@@ -245,6 +245,13 @@ class Directory(TendenciBaseModel):
 
     def age(self):
         return datetime.now() - self.create_dt
+    
+    def cats_list(self):
+        items = []
+        for cat in self.cats.all():
+            sub_cats = self.sub_cats.filter(parent=cat)
+            items.append((cat, list(sub_cats)))
+        return items
 
     @property
     def category_set(self):
