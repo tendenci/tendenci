@@ -3,6 +3,9 @@ from tendenci.apps.forms_builder.forms.signals import init_signals
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
 
+# See also: django.core.validators.slug_re
+slug_re = "[-a-zA-Z0-9_]+"
+
 init_signals()
 
 urlpath = get_setting('module', 'forms', 'url')
@@ -10,26 +13,34 @@ if not urlpath:
     urlpath = "forms"
 
 urlpatterns = [
-    re_path(r"^%s/$" % urlpath, views.search, name="forms"),
-    re_path(r"^%s/entries/export/(?P<id>\d+)/full$" % urlpath, views.entries_export,
+    # Form search/list
+    re_path(fr"^{urlpath}/$", views.search, name="forms"),
+
+    # Form design
+    re_path(fr"^{urlpath}/add/$", views.add, name="form_add"),
+    re_path(fr"^{urlpath}/export/$", views.export, name="form_export"),
+    re_path(fr"^{urlpath}/update_fields/(?P<id>\d+)$", views.update_fields, name="form_field_update"),
+    re_path(fr"^{urlpath}/edit/(?P<id>\d+)$", views.edit, name="form_edit"),
+    re_path(fr"^{urlpath}/delete/(?P<id>\d+)$", views.delete, name="form_delete"),
+    re_path(fr"^{urlpath}/copy/(?P<id>\d+)$", views.copy, name="form_copy"),
+    re_path(fr"^{urlpath}/payment/(?P<invoice_id>\d+)/(?P<invoice_guid>[\d\w-]+)?/$", views.form_entry_payment, name="form_entry_payment"),
+
+    # Form use
+    re_path(fr"^{urlpath}/files/(?P<id>\d+)$", views.files, name="form_files"),
+    re_path(fr"^{urlpath}/(?P<slug>{slug_re})/sent/$", views.form_sent, name="form_sent"),
+    re_path(fr"^{urlpath}/(?P<slug>{slug_re})/$", views.form_detail, name="form_detail"),
+
+    # Form entry management
+    re_path(fr"^{urlpath}/entries/(?P<id>\d+)$", views.entries, name="form_entries"),
+    re_path(fr"^{urlpath}/entries/delete/(?P<id>\d+)$", views.entry_delete, name="form_entry_delete"),
+    re_path(fr"^{urlpath}/entries/export/(?P<id>\d+)/full$", views.entries_export,
             {'include_files': True, }, name="form_entries_export_full"),
-    re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/status/$' % urlpath, views.entries_export_status, name="form_entries_export_status"),
-    re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/check/$' % urlpath, views.entries_export_check, name="form_entries_export_check"),
-    re_path(r'^%s/entries/export/(?P<task_id>[-\w]+)/download/$' % urlpath, views.entries_export_download, name="form_entries_export_download"),
+    re_path(fr'^{urlpath}/entries/export/(?P<task_id>[-\w]+)/status/$', views.entries_export_status, name="form_entries_export_status"),
+    re_path(fr'^{urlpath}/entries/export/(?P<task_id>[-\w]+)/check/$', views.entries_export_check, name="form_entries_export_check"),
+    re_path(fr'^{urlpath}/entries/export/(?P<task_id>[-\w]+)/download/$', views.entries_export_download, name="form_entries_export_download"),
 
-    re_path(r"^%s/entries/delete/(?P<id>\d+)$" % urlpath, views.entry_delete, name="form_entry_delete"),
-    re_path(r"^%s/add/$" % urlpath, views.add, name="form_add"),
-    re_path(r"^%s/export/$" % urlpath, views.export, name="form_export"),
-    re_path(r"^%s/update_fields/(?P<id>\d+)$" % urlpath, views.update_fields, name="form_field_update"),
-    re_path(r"^%s/edit/(?P<id>\d+)$" % urlpath, views.edit, name="form_edit"),
-    re_path(r"^%s/delete/(?P<id>\d+)$" % urlpath, views.delete, name="form_delete"),
-    re_path(r"^%s/copy/(?P<id>\d+)$" % urlpath, views.copy, name="form_copy"),
-    re_path(r"^%s/entry/(?P<id>\d+)$" % urlpath, views.entry_detail, name="form_entry_detail"),
-    re_path(r"^%s/entry/edit/(?P<id>\d+)$" % urlpath, views.form_detail, name="form_entry_edit"),
-    re_path(r"^%s/entries/(?P<id>\d+)$" % urlpath, views.entries, name="form_entries"),
-    re_path(r"^%s/payment/(?P<invoice_id>\d+)/(?P<invoice_guid>[\d\w-]+)?/$" % urlpath, views.form_entry_payment, name="form_entry_payment"),
+    re_path(fr"^{urlpath}/entry/(?P<id>\d+)$", views.entry_detail, name="form_entry_detail"),
 
-    re_path(r"^%s/files/(?P<id>\d+)$" % urlpath, views.files, name="form_files"),
-    re_path(r"^%s/(?P<slug>.*)/sent/$" % urlpath, views.form_sent, name="form_sent"),
-    re_path(r"^%s/(?P<slug>.*)/$" % urlpath, views.form_detail, name="form_detail"),
+    # Form memory management
+    re_path(fr"^{urlpath}/memories/(?P<id>\d+)$", views.memories, name="form_memories")
 ]

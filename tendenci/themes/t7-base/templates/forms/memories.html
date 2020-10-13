@@ -19,28 +19,44 @@
   <div class="page-header">
     <h1>{% firstof MODULE_FORMS_LABEL trans 'Form' %} {% trans 'Memories' %}</h1>
     <h2>{{ form.title }}</h2>
-    <p>{{ memories | length }} memories in total.</p>
+    <p>This form is configured to remember submissions so that when it is opened again it
+    is pre-filled with what was last submitted.</p>
+    <p>Memory is tied either to a user (if logged in when submitting the form) or to a
+    session (when not logged in). User connected memories do not expire, and last
+    indefinetly, while session connected memories have the lifespan of a browser session
+    identifying cookie, currently configured for {{age_limit | duration:"phrase_and,days"}}</p>
+    <p>{{ memories | length }} memories are currently stored for this form.</p>
   </div>
-  
-{% autopaginate memories 10 %}
-  
+
+ {% autopaginate memories 10 %}
+
  {% for memory in memories %}
-	  <div class="panel panel-default">  
+	  <div class="panel panel-default">
 	    <div class="panel-body">
 	      <ul class="list-inline">
-	        
 	        <li class="pull-left">
-	{#        Consider linking to the last form entry detail that matches  #}
-	{#          <a href="{{ entry.get_absolute_url }}">#}
+	        	{% if memory.form_memory__user %}
+	        	<b>User</b>: {{ memory.form_memory__user }}<br>
+	        	{% elif memory.form_memory__session %}
+	        	<b>User</b>: Anonymous (session id: {{ memory.form_memory__session }})<br>
+	        	{% else %}
+	        	<b>User</b>: Anonymous (and not associated with a session - should never have been saved)<br>
+	        	{% endif %}
+	        	<b>Saved</b>: {{ memory.form_memory__save_dt }}<br>
+	        	<b>Age</b>: {{ memory.form_memory__age | duration:"phrase_and,days+" }}<br>
+	        	{% if memory.form_memory__session %}
+	        	<b>Expires</b>: {{ memory.form_memory__session.expire_date }}<br>
+	        	{% endif %}
 	          	{% for field, value in memory.items %}
-	            	<b>{{ field }}</b>: {{ value }}<br>
+		        	{% if not field|startswith:'form_memory__' %}
+	            		<b>{{ field }}</b>: {{ value }}<br>
+		        	{% endif  %}
 	          	{% endfor %}
-	{#          </a>#}
 	        </li>
 	      </ul>
 	    </div>
 	  </div>
-  {% endfor %}
+ {% endfor %}
 </div>
 
 {% paginate %}

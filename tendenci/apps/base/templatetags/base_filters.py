@@ -6,7 +6,7 @@ import codecs
 import phonenumbers
 from PIL import Image
 from dateutil.parser import parse
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from decimal import Decimal
 from django.template import Library
@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.storage import default_storage
+from django.template.defaultfilters import pluralize
 
 from tendenci.apps.base.utils import strip_entities, strip_html
 from tendenci.apps.site_settings.utils import get_setting
@@ -94,7 +95,7 @@ def date(value, arg=None):
     if not value:
         return u''
     if arg is None:
-        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT 
+        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
     else:
         if arg == 'long':
             return date_long(value)
@@ -343,7 +344,6 @@ twitterize.needs_autoescape = True
 @register.filter
 @stringfilter
 def twitterdate(value):
-    from datetime import datetime, timedelta
     time = value.replace(" +0000", "")
     dt = datetime.strptime(time, "%a, %d %b %Y %H:%M:%S")
     return dt + timedelta(hours=-6)
@@ -390,8 +390,6 @@ def thumbnail(file, size='200x200'):
 
 @register.filter_function
 def datedelta(dt, range_):
-    from datetime import timedelta
-
     range_type = 'add'
     # parse the range
     if '+' in range_:
@@ -449,7 +447,6 @@ def format_string(value, arg):
 @register.filter
 def md5_gs(value, arg=None):
     import hashlib
-    from datetime import datetime, timedelta
 
     hashdt = ''
     if arg and int(arg):
@@ -526,3 +523,154 @@ def url_complete(value):
 def zip_lists(a, b):
     """zip lists together"""
     return zip(a, b)
+
+@register.filter
+def duration(value, args=None):
+    '''
+    Format a timedelta object cleanly.
+
+    Based originally on: https://stackoverflow.com/a/65293775/4002633
+
+    And extensively evolved to include a resolution and genralised handling.
+
+    The arguments are provided in a CSV list, for example:
+
+    {{timedelta|duration:"phrase,minutes"}}
+
+    Has two arguments both keywords as follows:
+
+    mode: "phrase", "phrase_and", "phrase_lines", "clock"
+    resolution: "years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds", "microseconds"
+
+    optionally 'resolution' have a trailing "+" to request that if there is less than one 'resolution' element
+    to drill down to the first non zero smaller component and report that.
+
+    '''
+    if not isinstance(value, timedelta):
+        return value
+
+    if args is None:
+        return False
+
+    arg_list = [arg.strip() for arg in args.split(',')]
+
+    mode = arg_list[0]  # Required argument
+    assert mode in ["phrase", "phrase_and", "phrase_lines", "clock"], "Unsupported mode"
+
+    # An optional argument
+    # Comes in as a string, leaves as an int
+    # Can have a trail + to request 'zero' avoidance if possible
+    resolutions = ["years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds", "microseconds"]
+
+    try:
+        avoid_zero = False
+        resolution = arg_list[1]
+        if resolution.strip().endswith('+'):
+            resolution = resolution[:-1]
+            avoid_zero = True
+
+        assert resolution in resolutions
+        resolution = resolutions.index(resolution)
+    except IndexError:
+        resolution = 0
+
+    remainder = value
+    response = ""
+    element = {}
+    first_non_zero = None
+    for r in resolutions:
+        element_value = (remainder.days // 365 if r == "years"
+                    else remainder.days // 30 if r == "months"
+                    else remainder.days // 7 if r == "weeks"
+                    else int(remainder.days) if r == "days"
+                    else remainder.total_seconds() // 3600 if r == "hours"
+                    else remainder.total_seconds() // 60 if r == "minutes"
+                    else int(remainder.total_seconds()) if r == "seconds"
+                    else int(remainder.total_seconds() * 1000) if r == "milliseconds"
+                    else int(remainder.total_seconds() * 1000 * 1000) if r == "microseconds"
+                    else 0)
+
+        element[r] = int(element_value)
+
+        if element_value > 0:
+            remainder -= (timedelta(days=element_value * 365) if r == "years"
+                     else timedelta(days=element_value * 30) if r == "months"
+                     else timedelta(days=element_value * 7) if r == "weeks"
+                     else timedelta(days=element_value) if r == "days"
+                     else timedelta(hours=element_value) if r == "hours"
+                     else timedelta(minutes=element_value) if r == "minutes"
+                     else timedelta(seconds=element_value) if r == "seconds"
+                     else timedelta(seconds=element_value / 1000) if r == "milliseconds"
+                     else timedelta(seconds=element_value / 1000 / 1000) if r == "microseconds"
+                     else 0)
+
+            if not first_non_zero:
+                first_non_zero  = r
+
+    if mode in ("phrase", "phrase_and", "phrase_lines"):
+        response = []
+
+        for r in element:
+            if element[r] and resolution >= resolutions.index(r):
+                response.append(f"{element[r]} {r[:-1]}{pluralize(element[r])}")
+
+        if mode in ("phrase", "phrase_and"):
+            delim = ", "
+        elif mode == "phrase_lines":
+            delim = "<br>"
+
+        if response:
+            phrase = delim.join(response)
+            if mode == "phrase_and" and ", " in phrase:
+                phrase = re.sub(r", (\d+ \w+)$", r" and \1", phrase)
+            # The response is a phrase with spaces between the numbers and units
+            # and after the commas, sort of like:
+            #     3 days, 6 hours, 34 minutes
+            # and if the browser wraps this it should wrap atthe commas and
+            # not at the spaces between the numbers and units. So we force the
+            # latter to be non breaking spaces, and make the string safe so they
+            # render (as is needed when the delim is <br> too).
+            phrase = re.sub(r"([^,])(\s)(\S)", r"\1&nbsp;\3", phrase)
+            response = mark_safe(phrase)
+        elif avoid_zero and first_non_zero:
+            value = element[first_non_zero]
+            response = f"{value} {first_non_zero[:-1]}{pluralize(value)}"
+        else:
+            response = "zero"
+
+    elif mode == "clock":
+
+        response = []
+
+        for r in ["years", "months", "weeks", "days"]:
+            if element[r] and resolution >= resolutions.index(r):
+                response.append(f"{element[r]} {r[:-1]}{pluralize(element[r])}")
+
+        if (element['hours'] or
+            element['minutes'] or
+            element['seconds'] or
+            element['milliseconds'] or
+            element['microseconds']) and resolution >= resolutions.index('hours'):
+                time_string = f"{str(element['hours']).zfill(2)}"
+                if resolution >= resolutions.index('minutes'):
+                    time_string += f":{str(element['minutes']).zfill(2)}"
+
+                    if (element['seconds'] or
+                        element['milliseconds'] or
+                        element['microseconds']) and resolution >= resolutions.index('seconds'):
+                            time_string += f":{str(element['seconds']).zfill(2)}"
+
+                            if (element['milliseconds'] or
+                                element['microseconds']) and resolution >= resolutions.index('milliseconds'):
+                                    if element['microseconds'] and resolution >= resolutions.index('microseconds'):
+                                        time_string += f".{str(element['milliseconds'] * 1000 + element['microseconds']).zfill(6)}"
+                                    else:
+                                        time_string += f".{str(element['milliseconds']).zfill(3)}"
+                else:
+                    time_string += ":00"
+
+                response.append(time_string)
+
+        response = ", ".join(response)
+
+    return response
