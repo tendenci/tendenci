@@ -1,5 +1,5 @@
 import simplejson as json
-from io import BytesIO
+from io import StringIO
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
@@ -12,7 +12,7 @@ class Command(BaseCommand):
         """
         Build the initial settings json file via DB records
         """
-        string_io = BytesIO()
+        string_io = StringIO()
         call_command('dumpdata', 'site_settings', stdout=string_io)
         string_io.seek(0)
         s = json.loads(string_io.read())
@@ -24,3 +24,4 @@ class Command(BaseCommand):
         f = open('settings.json', 'w')
         f.write(json_dumps)
         f.close()
+
