@@ -151,13 +151,15 @@ class ObjectPermBackend(ModelBackend):
             return False
 
         # check creator and owner
-        if hasattr(obj, 'creator'):
-            if obj.creator_id == user.id:
-                return True
-        if hasattr(obj, 'owner'):
-            if obj.owner_id == user.id:
-                return True
-
+        if perm_type not in ('approve', 'delete'):
+            # Non-admin creator or owner shouldn't be able to approve or delete their own items
+            if hasattr(obj, 'creator'):
+                if obj.creator_id == user.id:
+                    return True
+            if hasattr(obj, 'owner'):
+                if obj.owner_id == user.id:
+                    return True
+    
         if not isinstance(obj, Model):
             return False
 
