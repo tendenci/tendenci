@@ -41,6 +41,11 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     """
     Invoice information, payment attempts (successful and unsuccessful).
     """
+    if get_setting("module", "invoices", "disallow_private_urls"):
+        guid = None
+        if not request.user.is_authenticated:
+            raise Http403
+
     invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
 
     if not invoice.allow_view_by(request.user, guid):

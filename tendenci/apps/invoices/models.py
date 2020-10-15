@@ -15,6 +15,7 @@ from tendenci.apps.invoices.listeners import update_profiles_total_spend
 from tendenci.apps.accountings.utils import (make_acct_entries, make_acct_entries_reversing,
                                              make_acct_entries_initial_reversing)
 from tendenci.apps.entities.models import Entity
+from tendenci.apps.site_settings.utils import get_setting
 
 STATUS_DETAIL_CHOICES = (
     ('estimate', _('Estimate')),
@@ -323,8 +324,9 @@ class Invoice(models.Model):
         if has_perm(user2_compare, 'invoices.view_invoice'):
             return True
 
-        if self.guid == guid:
-            return True
+        if not get_setting("module", "invoices", "disallow_private_urls"):
+            if self.guid == guid:
+                return True
 
         if user2_compare.is_authenticated:
             if user2_compare in [self.creator, self.owner] or \
