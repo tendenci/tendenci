@@ -1208,7 +1208,7 @@ class Event(TendenciBaseModel):
     description = models.TextField(blank=True)
     all_day = models.BooleanField(default=False)
     start_dt = models.DateTimeField()
-    end_dt = models.DateTimeField()
+    end_dt = models.DateTimeField()    
     timezone = TimeZoneField(verbose_name=_('Time Zone'), default='US/Central', choices=get_timezone_choices(), max_length=100)
     place = models.ForeignKey('Place', null=True, on_delete=models.SET_NULL)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False, on_delete=models.CASCADE)
@@ -1223,6 +1223,11 @@ class Event(TendenciBaseModel):
     groups = models.ManyToManyField(Group, default=get_default_group, related_name='events')
     tags = TagField(blank=True)
     priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
+
+    # age range
+    age_range = models.BooleanField(_('Age Range?'), default=False)
+    low_age = models.IntegerField(_("From"), default=0, blank=True)
+    high_age = models.IntegerField(_("To"), null=True, blank=True)
 
     # recurring events
     is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)

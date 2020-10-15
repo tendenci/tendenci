@@ -160,6 +160,29 @@
                 }
             });
 
+            //only show age range when checked
+            var ageRange = $('#id_age_range'),
+                lowAge = $('#id_low_age').closest('.form-group'),
+                highAge = $('#id_high_age').closest('.form-group');
+            
+            if (ageRange.prop('checked')) {
+                lowAge.show();
+                highAge.show();
+            } else {
+                lowAge.hide();
+                highAge.hide();
+            }
+
+            ageRange.change(function(){
+                if (ageRange.prop('checked')) {
+                    lowAge.show();
+                    highAge.show();
+                } else {
+                    lowAge.hide();
+                    highAge.hide();
+                }
+            });
+
             $('.regconfpricing_formset .section-description').addClass('well');
 
             var hide_forms_on_enabled_fn = function() {
