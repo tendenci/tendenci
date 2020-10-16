@@ -332,7 +332,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     list_display.append('admin_notes')
     list_display.append('reminder')
     list_editable = ['reminder',]
-    list_display_links = ('edit_link',)
+    list_display_links = ('id',)
 
     list_filter = [
         MembershipStatusDetailFilter,
@@ -374,8 +374,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-    def edit_link(self, obj):
-        return "Edit"
+    @mark_safe
+    def edit_link(self, instance):
+        return '<a href="%s" title="Edit at Front End">%s</a>' % (
+                reverse('membership_default.edit',args=[instance.id]),
+                _('Edit'),)
     edit_link.short_description = _('edit')
 
     @mark_safe

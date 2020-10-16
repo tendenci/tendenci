@@ -1393,7 +1393,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     """
     member_can_edit_records = get_setting('module', 'memberships', 'member_edit')
 
-    if not member_can_edit_records:
+    if not (member_can_edit_records or request.user.profile.is_superuser):
         raise Http404
 
     membership = get_object_or_404(MembershipDefault, pk=id)
