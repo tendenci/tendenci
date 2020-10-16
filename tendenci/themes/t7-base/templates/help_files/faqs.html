@@ -1,0 +1,63 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+  
+{% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %} - {% blocktrans with t=topic %}{{ t }} Topic{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}}{% endblock %}
+  
+  {% block extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/helpfiles.css' %}">
+  {% endblock %}
+ 
+  {% block content %}
+
+<div class="container">  
+  <div id="help-files-topic">
+    
+    <nav aria-label="help files navigation">
+      <ol class="breadcrumb">
+        <li><a href="{% url "help_files" %}">
+          {% trans "All" %} 
+          {% firstof MODULE_HELP_FILES_LABEL_PLURAL trans 'Help Files' %}
+          </a></li>
+        <li class="active">
+        	FAQs
+        </li>
+      </ol>
+    </nav>
+    
+    {% help_file_search %}
+    
+    <div class="page-header">    
+      <h1>{% trans 'Frequently Asked Questions' %}</h1>
+    </div>  
+    
+    <p>Answers to frequently asked questions:</p>
+    
+    {% if help_files %}
+    <section id="TOC" class="TOC">
+    	<ol>
+	      {% for help_file in help_files %}
+			 <li><a href="#{{ help_file.slug }}">{{ help_file.question }}</a></li>
+	      {% endfor %}
+    	</ol>
+    </section>
+    
+    <section id="FAQs" class="FAQs">
+	    <div class="list-group">
+	      {% for help_file in help_files %}
+	      {% has_perm user help_files.change_helpfile help_file as can_edit %}
+	      <h2><a name="{{ help_file.slug }}" href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">
+	        {{ help_file.question }}
+	      </a></h2>
+	      {{ help_file.answer | safe }}
+	      {% if user.profile.is_superuser %} {{ help_file.obj_perms }}{% endif %}
+	      {% endfor %}
+	    </div>
+	    {% endif %}
+    </section>
+    
+  </div>
+  {% endblock %}
+</div>
