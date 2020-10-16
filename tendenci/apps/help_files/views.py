@@ -70,6 +70,18 @@ def topic(request, id, template_name="help_files/topic.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'topic':topic, 'help_files':help_files})
 
+@is_enabled('help_files')
+def faqs(request, template_name="help_files/faqs.html"):
+    """ List of FAQ help files """
+    filters = get_query_filters(request.user, 'help_files.view_helpfile')
+    help_files = HelpFile.objects.filter(filters).filter(is_faq=True).distinct()
+    if not request.user.is_anonymous:
+        help_files = help_files.select_related()
+
+    EventLog.objects.log(description="FAQs viewed")
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'help_files':help_files})
 
 @is_enabled('help_files')
 def detail(request, slug, template_name="help_files/details.html"):
