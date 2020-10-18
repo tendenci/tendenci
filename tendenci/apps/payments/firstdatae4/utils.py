@@ -26,6 +26,10 @@ def prepare_firstdatae4_form(request, payment):
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
     x_logo_URL = get_setting('site', 'global', 'merchantlogo')
+    if get_setting("site", "global", "merchantauthorizeonly"):
+        x_type = 'AUTH_ONLY'
+    else:
+        x_type = 'AUTH_CAPTURE'
 
     params = {
               'x_fp_sequence':payment.id,
@@ -59,6 +63,7 @@ def prepare_firstdatae4_form(request, payment):
               'x_phone':payment.phone,
               'x_show_form':'PAYMENT_FORM',
               'x_logo_URL':x_logo_URL,
+              'x_type': x_type
         }
     if settings.FIRSTDATA_USE_RELAY_RESPONSE:
         params.update({'x_relay_response':'TRUE',

@@ -26,9 +26,6 @@ class PaymentForm(forms.Form):
     x_show_form = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="PAYMENT_FORM")
     #x_logo_URL = getSetting("global", "MerchantLogo")
     x_type = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="AUTH_CAPTURE")
-    if get_setting("site", "global", "merchantauthorizeonly"):
-        x_type = forms.CharField(max_length=20, widget=forms.HiddenInput, initial="AUTH_ONLY")
-
     x_method = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="CC")
     x_fp_sequence = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="CC")
     x_version = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="3.1")
