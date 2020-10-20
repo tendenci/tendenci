@@ -565,7 +565,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
             # default redirect
             if form.completion_url:
-                return HttpResponseRedirect(form.completion_url.strip())
+                completion_url = form.completion_url.strip().replace('[entry_id]', str(entry.id))
+                return HttpResponseRedirect(completion_url)
             return redirect("form_sent", form.slug)
 
     # set form's template to forms/base.html if no template or template doesn't exist
