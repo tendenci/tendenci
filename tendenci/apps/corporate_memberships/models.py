@@ -63,7 +63,6 @@ from tendenci.apps.files.models import File
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
 
-
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
@@ -1163,23 +1162,24 @@ class CorpMembership(TendenciBaseModel):
         return False
 
     def allow_edit_by(self, this_user):
+        if not this_user.is_authenticated:
+            return False
+
         if this_user.profile.is_superuser:
                 return True
 
-        if self.is_active or self.is_expired:
+        if self.is_active or self.is_pending:
             if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
-            if not this_user.is_anonymous:
-                if self.is_active:
-                    if self.is_rep(this_user):
-                        return True
-                    if self.creator:
-                        if this_user.id == self.creator.id:
-                            return True
-                    if self.owner:
-                        if this_user.id == self.owner.id:
-                            return True
+            if self.is_rep(this_user):
+                return True
+            if self.creator:
+                if this_user.id == self.creator.id:
+                    return True
+            if self.owner:
+                if this_user.id == self.owner.id:
+                    return True
 
         # if they can approve, they can edit the pending corporate membership             
         if self.is_pending and has_perm(this_user, 'corporate_memberships.approve_corpmembership'):
