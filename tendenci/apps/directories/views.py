@@ -530,16 +530,12 @@ def approve(request, id, template_name="directories/approve.html"):
         directory.save()
 
         # send email notification to user
-        recipients = [directory.creator.email]
+        recipients = directory.get_owner_emails_list()
         if recipients:
-            extra_context = {
-                'object': directory,
-                'request': request,
-            }
-            try:
-                send_email_notification('directory_approved_user_notice', recipients, extra_context)
-            except:
-                pass
+            notification.send_emails(recipients, 
+                'directory_approved_user_notice', {
+                        'object': directory,
+                        'request': request,})
 
         msg_string = 'Successfully approved %s' % directory
         messages.add_message(request, messages.SUCCESS, _(msg_string))
