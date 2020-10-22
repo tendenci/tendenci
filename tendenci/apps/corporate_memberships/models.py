@@ -108,6 +108,10 @@ NOTICE_TYPES = (
 
 
 class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
+    REQUIRE_APPROVAL_CHOICES = (
+        ("for_all", _("for ALL (Paid & Non-Paid)")),
+        ("for_non_paid_only", _("for Non-Paid Only")),
+    )
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
@@ -144,6 +148,10 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
+    require_approval = models.CharField(_('Require Approval'), 
+                                        choices=REQUIRE_APPROVAL_CHOICES,
+                                        default='for_non_paid_only',
+                                        max_length=20)
 
     objects = CorpMembershipTypeManager()
 
@@ -729,24 +737,26 @@ class CorpMembership(TendenciBaseModel):
         from tendenci.apps.perms.utils import get_notice_recipients
 
         # approve it
-        if self.renewal:
-            self.approve_renewal(request)
-        else:
-            params = {'create_new': False,
-                      'assign_to_user': None}
-            if self.anonymous_creator:
-                [assign_to_user] = User.objects.filter(
-                            first_name=self.anonymous_creator.first_name,
-                            last_name=self.anonymous_creator.last_name,
-                            email=self.anonymous_creator.email
-                                )[:1] or [None]
-                if assign_to_user:
-                    params['assign_to_user'] = assign_to_user
-                    params['create_new'] = False
-                else:
-                    params['create_new'] = True
-
-            self.approve_join(request, **params)
+        if request.user.profile.is_superuser or \
+                self.corporate_membership_type.require_approval == 'for_non_paid_only':
+            if self.renewal:
+                self.approve_renewal(request)
+            else:
+                params = {'create_new': False,
+                          'assign_to_user': None}
+                if self.anonymous_creator:
+                    [assign_to_user] = User.objects.filter(
+                                first_name=self.anonymous_creator.first_name,
+                                last_name=self.anonymous_creator.last_name,
+                                email=self.anonymous_creator.email
+                                    )[:1] or [None]
+                    if assign_to_user:
+                        params['assign_to_user'] = assign_to_user
+                        params['create_new'] = False
+                    else:
+                        params['create_new'] = True
+    
+                self.approve_join(request, **params)
 
         # send notification to administrators
         recipients = get_notice_recipients('module',
