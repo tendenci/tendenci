@@ -32,6 +32,7 @@ def add(request, form_class=EmailForm, template_name="emails/edit.html"):
         context={'form':form, 'email':None})
 
 
+@login_required
 def view(request, id, template_name="emails/view.html"):
     email = get_object_or_404(Email, pk=id)
 

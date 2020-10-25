@@ -62,11 +62,13 @@ from tendenci.apps.memberships.forms import (
     EducationForm,
     DemographicsForm,
     MembershipDefault2Form,
-    AutoRenewSetupForm)
+    AutoRenewSetupForm,
+    MessageForm)
 from tendenci.apps.memberships.utils import (prepare_chart_data,
     get_days, get_over_time_stats,
     get_membership_stats, ImportMembDefault,
-    get_membership_app, get_membership_summary_data)
+    get_membership_app, get_membership_summary_data,
+    email_pending_members)
 from tendenci.apps.base.forms import CaptchaForm
 from tendenci.apps.perms.decorators import is_enabled
 
@@ -182,6 +184,111 @@ def membership_add_directory(request, id):
         return HttpResponseRedirect(reverse('membership.details', args=[membership.id]))
 
     raise Http403
+
+
+@login_required
+def message_pending_members(request, email_id=None, form_class=MessageForm, template_name='memberships/message/pending-members.html'):
+    from django.template import Context, Template
+    from tendenci.apps.emails.models import Email
+    from tendenci.apps.theme.utils import get_theme_search_order, is_builtin_theme, get_theme_root
+
+    # Allow only for admin
+    if not request.user.profile.is_superuser:
+        raise Http403
+    
+    if email_id:
+        email = get_object_or_404(Email, id=email_id)
+    else:
+        email = None
+
+    default_subject = ''
+    default_body = ''
+    for theme in get_theme_search_order():
+        if is_builtin_theme(theme):
+            theme_root = get_theme_root(theme)
+        else:
+            theme_root = get_theme_root()
+        default_subject_file_path = os.path.join(theme_root, 'templates', 'memberships/message/pending-members-subject.txt')
+        default_body_file_path = os.path.join(theme_root, 'templates', 'memberships/message/pending-members-body.txt')
+        
+        if os.path.isfile(default_subject_file_path):
+            with open(default_subject_file_path) as fp:
+                default_subject = fp.read()
+        if os.path.isfile(default_body_file_path):
+            with open(default_body_file_path) as fp:
+                default_body = fp.read()
+
+    form = form_class(request.POST or None, instance=email, initial={'subject': default_subject, 'body': default_body})
+    
+    if request.method == "POST":
+        if form.is_valid():
+            email = form.save()
+            email.sender_display = request.user.get_full_name()
+            email.reply_to = request.user.email
+            email.recipient = request.user.email
+            email.content_type = "html"
+            email.allow_anonymous_view = False
+            email.allow_user_view = False
+            email.allow_member_view = False
+            email.save(request.user)
+            email.recipient_type = form.cleaned_data['recipient_type']
+            subject = email.subject
+
+            if email.recipient_type == 'myself':
+                email.recipient = request.user.email
+                tmp_body = email.body
+                template = Template(email.body)
+                context = Context({'site_url': get_setting('site', 'global', 'siteurl'),
+                                   'site_display_name': get_setting('site', 'global', 'sitedisplayname'),
+                                   "first_name": request.user.first_name,
+                                   'last_name': request.user.last_name,
+                                   'view_url': '{{ view_url }}',
+                                   'edit_url': '{{ edit_url }}'})
+                [membership] = request.user.membershipdefault_set.exclude(status_detail='archive')[:1] or [0]
+                if membership:
+                    site_url = get_setting('site', 'global', 'siteurl')
+                    context.update({'view_url': '{0}{1}'.format(site_url, reverse('membership.details', args=[membership.id])),
+                                    'edit_url': '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[membership.id]))})
+                email.body = template.render(context)
+                email.send()
+                email.body = tmp_body
+                
+                msg_string = 'Successfully sent email "%s" to myself.' % (subject)
+                messages.add_message(request, messages.SUCCESS, msg_string)
+    
+                return HttpResponseRedirect(reverse('membership.message_pending', args=([email.id])))
+            else:
+                pending_members, total_sent = email_pending_members(email, recipient_type=email.recipient_type)
+
+                opts = {}
+                opts['summary'] = '<font face=""Arial"" color=""#000000"">'
+                opts['summary'] += 'Emails sent to ALL pending members ({})</font><br><br>'.format(total_sent)
+                opts['summary'] += '<font face=""Arial"" color=""#000000"">'
+                opts['summary'] += 'Email Sent Appears Below in Raw Format'
+                opts['summary'] += '</font><br><br>'
+                opts['summary'] += email.body
+    
+                # send summary
+                email.subject = 'SUMMARY: %s' % email.subject
+                email.body = opts['summary']
+                email.recipient = request.user.email
+                email.send()
+    
+                EventLog.objects.log(instance=email)
+                msg_string = 'Successfully sent email "%s" to pending members (%d).' % (subject, total_sent)
+                messages.add_message(request, messages.SUCCESS, msg_string)
+                
+                template_name='memberships/message/pending-members-conf.html'
+    
+                return render_to_resp(request=request, template_name=template_name,
+                          context={'total_sent': total_sent,
+                                   'pending_members': pending_members,
+                                   'recipient_type': email.recipient_type})
+
+
+    return render_to_resp(request=request, template_name=template_name,
+                          context={'form': form})
+
 
 
 def membership_applications(request, template_name="memberships/applications/list.html"):

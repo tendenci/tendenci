@@ -1,0 +1,22 @@
+{% extends "memberships/base.html" %}
+
+{% block content %}
+
+<div class="t-message-pending">
+	{% if recipient_type == 'pending_members' %}
+    <h1>{% trans "Email to Pending Members Confirmation" %}</h1>
+	{% else %}
+  <h1>{% trans "Email to Pending Corp Members Confirmation" %}</h1>
+	{% endif %}
+	<div>{% trans "Total sent:" %} {{ total_sent }}</div>
+	<div>&nbsp;</div>
+	
+	<ol>
+    {% for member in pending_members %}
+	<li>
+		<a href="{{ member.get_absolute_url }}">{{ member }}</a>
+	</li>
+	{% endfor %}
+	</ol>
+</div>
+{% endblock %}
