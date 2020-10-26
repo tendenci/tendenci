@@ -1,3 +1,30 @@
+### 12.3 [2020-10-26]
+
+* Added the functionality to allow admin to email pending members or pending corp members.  
+* Enabled multiple categories and sub-categories for directories.
+* Added the sort ability to directory categories with drag-and-drop.
+* Added the approve_corpmembership perm so that users can be assigned to approve corporate memberships without granting them the superuser privilege.
+* Added a setting to turn on/off private (obscure) url access without login required.
+* Added the require_approval field to the corporate membership type with 2 choices "for ALL" and "for Non-Paid Only" (default to "for Non-Paid Only"). Currently, the non-paid corporate memberships are set to pending, while the paid ones are approved automatically. This allows admin to set to require approval for all applicants.
+* Updated email to directory owners (If a directory is created from memberships, the owner is the associated member. If a directory is created from corporate memberships, the owners are the representatives.) upon approval.
+* Allowed the owners of corp memberships to edit their own pending applications.
+* Updated the base class for oauth2_client backend.
+* updated gevent version to the latest 20.9.0.
+* updated format for corp approve.
+* Updated the edit link for memberships admin list - linked "Edit" to the frontend edit page, and "ID" to the backend edit.
+* Avoided creating default entity and group in the initial_migrate.
+* Added a simple command to show settings (Thanks @bernd-wechner).
+* Added a FAQs view to the help_files app (Thanks @bernd-wechner).
+* Tidied layout of the template themes/t7-tendenci2020/templates/base.html (Thanks @bernd-wechner).
+* Fixed Pay Online button not showing.
+* Fixed field lengths in accounts forms (Thanks @evanspaeder)
+* Fixed empty app list /base/apps-list/.
+* Fixed broken list_tables command.
+* Resolved an error in firstdatae4.
+* Fixed an error in the command settings_build_init_json (Thanks @bernd-wechner).
+* Fixed x_type initial issue for the firstdatae4.
+* Removed the extra "\" in email subject when [full name] is used in subject template for custom forms.
+
 ### 12.2.8 [2020-09-30]
 
 * Updated format for corporate membership view to avoid long labels being cut off
