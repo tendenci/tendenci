@@ -77,6 +77,14 @@ The Join date is set when they apply. You may want to set up notices to go out:
 Notices cannot be sent manually. Notices are more geared towards information related to a single member (their join date, their expiration date) and not really members on a whole. If several members are expiring at once, they will all receive an individual notice with information relevant to them. There is a list of available "tokens" that can be used to in the Notice Email content that are replaced with info relevant to that person.
 
 
+Email to Pending Members or Corp Members
+----------------------------------------
+
+This functionality allows admin to send email notifications immediately to pending members or representatives of pending corporate members.
+It is linked under the "Management Tools" section on the "Membership Reposts" page https://www.yourdomain/memberships/reports/ 
+(From admin top menu, Reports -> 1. Membership Overview -> All Membership Reports).
+
+
 Questions & Answers
 -------------------
 
