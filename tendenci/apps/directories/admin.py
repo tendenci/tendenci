@@ -43,7 +43,7 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
         'slug',
         'position'
     ]
-    list_display_links = ('name', )
+    list_display_links = ('id', )
     list_editable = ['position']
     inlines = (CategoryAdminInline,)
     prepopulated_fields = {'slug': ['name']}

@@ -29,6 +29,7 @@ from tendenci.apps.regions.models import Region
 from tendenci.apps.entities.models import Entity
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.base.utils import validate_email
+from tendenci.apps.base.validators import UnicodeNameValidator
 
 
 def file_directory(instance, filename):
@@ -36,7 +37,7 @@ def file_directory(instance, filename):
     return 'directories/%d/%s' % (instance.id, filename)
 
 class Category(OrderingBaseModel):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, validators=[UnicodeNameValidator()],)
     slug = models.SlugField()
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 

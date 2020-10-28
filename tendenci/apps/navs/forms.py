@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.models import Nav, NavItem
+from tendenci.apps.base.validators import UnicodeNameValidator
 
 class NavForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -41,6 +42,10 @@ class NavForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
+    def __init__(self, *args, **kwargs):
+        super(NavForm, self).__init__(*args, **kwargs)
+        self.fields['title'].validators.append(UnicodeNameValidator())
+
 
 class PageSelectForm(forms.Form):
     pages = forms.ModelMultipleChoiceField(label = _('Pages'),
