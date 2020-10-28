@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django import forms
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.html import strip_tags
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
@@ -152,7 +153,7 @@ class StudyGroupAdmin(TendenciBaseModelAdmin):
         link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('studygroups.detail', args=[obj.slug]),
-            obj.title,
+            strip_tags(obj.title),
             link_icon,
         )
         return link
