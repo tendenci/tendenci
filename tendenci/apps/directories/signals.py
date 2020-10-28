@@ -24,6 +24,14 @@ def create_notice_types(sender, **kwargs):
                                     _("Directory Eligible for Renewal"),
                                     _("A directory is eligible for renewal"),
                                     verbosity=verbosity)
+    notification.create_notice_type("affiliate_requested_to_owner",
+                                    _("Affiliation Request Submitted Owner Notice"),
+                                    _("An affiliation request has been submitted - owner notice"),
+                                    verbosity=verbosity)
+    notification.create_notice_type("affiliate_requested_to_submitter",
+                                    _("Affiliation Request Submitted Submitter Notice"),
+                                    _("An affiliation request has been submitted - submitter notice"),
+                                    verbosity=verbosity)
 
 
 def init_signals():

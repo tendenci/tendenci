@@ -126,6 +126,8 @@ class Directory(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
+    
+    affiliates = models.ManyToManyField("Directory", through='Affiliateship')
 
     objects = DirectoryManager()
 
@@ -330,6 +332,93 @@ class Directory(TendenciBaseModel):
 
         return list(set(emails_list))
 
+    def get_corp_profile(self):
+        if hasattr(self, 'corpprofile'):
+            return self.corpprofile
+
+    def get_corp_type(self):
+        """
+        Returns the corporate membership type that associates with the directory.
+        """
+        corp_profile = self.get_corp_profile()
+        if corp_profile:
+            corp_membership = corp_profile.corp_membership
+            if corp_membership:
+                return corp_membership.corporate_membership_type
+
+    def get_membership(self):
+        [membership] = list(self.membershipdefault_set.filter(status_detail='active'))[:1] or [None]
+        return membership
+
+    def get_member_type(self):
+        """
+        Returns the membership type that associates with the directory.
+        """
+        membership = self.get_membership()
+        if membership:
+            return membership.membership_type
+
+    def can_connect_from(self, directory_from):
+        """
+        Check if this directory can be connected from ``directory_from``.
+        """
+        from .affiliates.utils import types_in_allowed_connection
+        if get_setting('module', 'directories', 'affiliation_limited'):
+            corp_type = self.get_corp_type()
+            member_type = directory_from.get_member_type()
+            if corp_type and member_type:
+                if types_in_allowed_connection(corp_type, member_type):
+                    return True
+            return False
+        else:
+            return True
+        
+    def allow_associate_by(self, user_this):
+        """
+        Check if user_this is allowed to send affiliate requests.
+        
+        If the connection is limited to the allowed connection, 
+        this user will need to have a valid membership with the
+        membership type is in the allowed types. 
+        """
+        from .affiliates.utils import types_in_allowed_connection
+        if not user_this or not user_this.is_authenticated:
+            return False
+
+        if user_this.is_superuser:
+            return True
+        
+        if get_setting('module', 'directories', 'affiliation_limited'):
+            if not hasattr(self, 'corpprofile'):
+                return False
+        
+            corp_type = self.get_corp_type()
+            memberships = user_this.membershipdefault_set.filter(
+                    status=True, status_detail='active')
+            if memberships:        
+                for membership in memberships:
+                    if types_in_allowed_connection(corp_type, membership.membership_type):
+                        return True
+            return False
+        else:
+            return True
+
+
+class Affiliateship(models.Model):
+    directory = models.ForeignKey(Directory, related_name='affiliateship_directories',
+                                      on_delete=models.CASCADE)
+    affiliated = models.ForeignKey(Directory, related_name='affiliateship_affiliated_directories',
+                                       on_delete=models.CASCADE)
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    creator = models.ForeignKey(User, null=True, default=None,
+                                on_delete=models.SET_NULL,
+                                editable=False)
+ 
+    class Meta:
+        unique_together = ('directory', 'affiliated',)
+        verbose_name = _("Directory Affiliateship")
+        app_label = 'directories'
+
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
@@ -381,3 +470,46 @@ class DirectoryPricing(models.Model):
                 return self.regular_price
             else:
                 return self.premium_price
+
+
+# class AffiliateRequest(models.Model):
+#     to_directory = models.ForeignKey(Directory, related_name='to_directory',
+#                                        on_delete=models.CASCADE)
+#     from_directory = models.ForeignKey(Directory, related_name='from_directory',
+#                                             on_delete=models.CASCADE)
+#     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+#     creator = models.ForeignKey(User, null=True, default=None,
+#                                 on_delete=models.SET_NULL,
+#                                 editable=False)
+#  
+#     class Meta:
+#         app_label = 'directories'
+#  
+#  
+# class RequestEmail(TendenciBaseModel):
+#     """
+#     The emails for request to associate.
+#     """
+#     affiliate_request = models.ForeignKey(AffiliateRequest, null=True, on_delete=models.SET_NULL)
+#     sender = models.ForeignKey(User,
+#         null=True, on_delete=models.SET_NULL)
+#     recipients = models.CharField(max_length=255, blank=True, default='')
+#     message = models.TextField(blank=False)
+#      
+#     def __str__(self):
+#         return 'Submission for %s' % self.affiliate_request
+# 
+# 
+# class AllowedConnection(models.Model):
+#     """
+#     This model stores the allowed connection for marketplace listings (directories).
+#     
+#     Each corp type can allow multiple member types.
+#     """
+#     corp_type = models.OneToOneField("CorporateMembershipType", on_delete=models.CASCADE)
+#     member_types = models.ManyToManyField("MembershipType")
+#     
+#     class Meta:
+#         ordering = ("corp_type",)
+#         app_label = 'directories'
+

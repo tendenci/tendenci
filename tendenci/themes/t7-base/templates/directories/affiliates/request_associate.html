@@ -1,0 +1,38 @@
+{% extends "directories/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Request to Associate' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t clearfix">
+	<h1>{% trans "Request to Associate to " %} {{ to_directory }}</h1>
+	<p>Fill out the form below. <br />
+	{% if corp_type %}
+	Note that only {{ allowed_member_types }} can 
+	associate to this {{ corp_type }}.
+	{% endif %}
+	</p>
+	<div class="news-wrap">
+        <form action="." class="form-horizontal" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ request_form|styled_form }}
+
+            <div class="form-group">
+            	<div class="col-sm-offset-3 col-sm-9">
+                	<button type="submit" class="btn btn-primary text-capitalize">
+                    {% trans 'Submit Request' %}
+                	</button>
+           		</div>
+       		 </div>
+        </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
