@@ -1,3 +1,8 @@
+### 12.3.2 [2020-10-29]
+
+* **SECURITY**: Updated exports to prevent potential CSV injection in the exported CSV files.
+* Added the missing FileValidator to restrict files to images for case studies edit only at admin backend.
+
 ### 12.3.1 [2020-10-28]
 
 * **SECURITY**: Fixed a potential HTML Injection and XSS vulnerability in a few area of admin backend.
