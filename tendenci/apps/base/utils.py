@@ -74,6 +74,20 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 ORIENTATION_EXIF_TAG_KEY = 274
 
 
+def escape_csv(payload):
+    """
+    Escape the begining character in ('@','+','-', '=', '|')
+    to prevent CSV Injection.
+    
+    This function is based on the gist https://gist.github.com/ZephrFish/ab951ca43d95f68e557c9c2e5ca6f2cc
+    """
+    if payload and isinstance(payload, str): 
+        if payload[0] in ('@','+','-', '=', '|'):
+            payload = "'" + payload
+            payload = payload.replace("|", "\|")
+        return payload
+
+
 def is_valid_domain(email_domain):
     """
     Check if it's a valid email domain.

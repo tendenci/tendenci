@@ -12,6 +12,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from celery.task import Task
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.exports.utils import render_csv
+from tendenci.apps.base.utils import escape_csv
 
 class TendenciExportTask(Task):
     """Export Task for Celery
@@ -89,6 +90,7 @@ class TendenciExportTask(Task):
             for field in fields:
                 # clean the derived values into unicode
                 value = str(d[field]).rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
             data_row_list.append(data_row)

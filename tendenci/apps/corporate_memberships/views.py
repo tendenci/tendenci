@@ -89,6 +89,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import escape_csv
 
 
 @is_enabled('corporate_memberships')
@@ -1732,6 +1733,8 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                         elif isinstance(row_item_list[i], time):
                             row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
+                        elif isinstance(row_item_list[i], str):
+                            row_item_list[i] = escape_csv(row_item_list[i])
                 csv_writer.writerow(row_item_list)
 
             # log an event

@@ -20,6 +20,7 @@ from tendenci.apps.emails.models import Email
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.storage import get_default_storage
+from tendenci.apps.base.utils import escape_csv
 
 
 def resize_s3_image(image_path, width=200, height=200):
@@ -229,6 +230,8 @@ def process_export(export_fields='all_fields', export_status_detail='',
                     elif field_name == 'invoice':
                         # display total vs balance
                         item = 'Total: %d / Balance: %d' % (item.total, item.balance)
+                    elif isinstance(item, str):
+                        item = escape_csv(item)
                 items_list.append(item)
             csv_writer.writerow(items_list)
 
