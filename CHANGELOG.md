@@ -1,3 +1,9 @@
+### 12.3.1 [2020-10-28]
+
+* **SECURITY**: Fixed a potential HTML Injection and XSS vulnerability in a few area of admin backend.
+* Fixed a ValueError for directory add.
+ 
+
 ### 12.3 [2020-10-26]
 
 * Added the functionality to allow admin to email pending members or pending corp members.  
