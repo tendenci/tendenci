@@ -85,7 +85,7 @@ def escape_csv(payload):
         if payload[0] in ('@','+','-', '=', '|'):
             payload = "'" + payload
             payload = payload.replace("|", "\|")
-        return payload
+    return payload
 
 
 def is_valid_domain(email_domain):
