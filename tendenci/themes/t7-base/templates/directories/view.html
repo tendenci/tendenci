@@ -24,14 +24,6 @@
              	{% endif %}
 				</div>
 			{% endif %}
-			
-			{% if MODULE_DIRECTORIES_AFFILIATES_ENABLED and directory.status_detail == 'active' %}
-			{% if directory|allow_request_to_associate:user %}
-			<div class="pull-right clearfix">
-			<a href="{% url 'affiliates.request_associate' directory.id %}" class="btn btn-success">{% trans "Request to Associate with" %}</a>
-			</div>
-			{% endif %}
-			{% endif %}
         </div>
 
         <div class="t-directories-directory-body">

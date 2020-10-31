@@ -30,7 +30,7 @@ from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
-from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Directory, DirectoryPricing, Affiliateship
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
@@ -48,9 +48,41 @@ def details(request, slug=None, template_name="directories/view.html"):
     if has_view_perm(request.user, 'directories.view_directory', directory) \
          or directory.has_membership_with(request.user):
         EventLog.objects.log(instance=directory)
-
+        
+        if get_setting('module', 'directories', 'affiliates_enabled'):
+            affiliates_dict = {}
+            for d in directory.affiliates.all():
+                member_type = d.get_member_type()
+                member_type_name = member_type and member_type.name or ''
+                if member_type_name in affiliates_dict:
+                    affiliates_dict[member_type_name].append(d)
+                else:
+                    affiliates_dict[member_type_name] = [d]
+            # make a list of list, group by member_type_name, 
+            # so that it can be sorted with the template tag dictsort
+            # [(member_type_name, [d1, d2, ..]),...]
+            affiliates_list = list(affiliates_dict.items())
+            
+            # list of directories that this directory is affiliated to
+            affiliated_dict = {}
+            for affiliateship in Affiliateship.objects.filter(affiliate=directory):
+                d = affiliateship.directory
+                corp_type = d.get_corp_type()
+                corp_type_name = corp_type and corp_type.name or ''
+                if corp_type_name in affiliated_dict:
+                    affiliated_dict[corp_type_name].append(d)
+                else:
+                    affiliated_dict[corp_type_name] = [d]
+                
+            affiliated_list = list(affiliated_dict.items())
+        else:
+            affiliates_list = None
+            affiliated_list = None
+            
         return render_to_resp(request=request, template_name=template_name,
-            context={'directory': directory})
+            context={'directory': directory,
+                     'affiliates_list': affiliates_list,
+                     'affiliated_list': affiliated_list})
 
     raise Http403
 

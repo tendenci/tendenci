@@ -464,7 +464,7 @@ class Directory(TendenciBaseModel):
 class Affiliateship(models.Model):
     directory = models.ForeignKey(Directory, related_name='affiliateship_directories',
                                       on_delete=models.CASCADE)
-    affiliated = models.ForeignKey(Directory, related_name='affiliateship_affiliated_directories',
+    affiliate = models.ForeignKey(Directory, related_name='affiliateship_affiliate_directories',
                                        on_delete=models.CASCADE)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     creator = models.ForeignKey(User, null=True, default=None,
@@ -472,8 +472,9 @@ class Affiliateship(models.Model):
                                 editable=False)
  
     class Meta:
-        unique_together = ('directory', 'affiliated',)
+        unique_together = ('directory', 'affiliate',)
         verbose_name = _("Directory Affiliateship")
+        ordering = ['directory', 'affiliate']
         app_label = 'directories'
 
 

@@ -78,11 +78,11 @@ def approve(request, affiliate_request_id):
         raise Http403
 
     from_directory = affiliate_request.from_directory
-    if not Affiliateship.objects.filter().exists():
+    if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
         # Add affiliate
         Affiliateship.objects.create(
             directory=directory,
-            affiliated=from_directory,
+            affiliate=from_directory,
             creator=request.user)
 
         # Email to the submitter of the affiliate request
