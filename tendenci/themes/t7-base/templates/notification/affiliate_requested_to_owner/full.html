@@ -46,8 +46,13 @@
 </table>
 
 <p>
-To review and approve this request, please go to <a href="">{{ SITE_GLOBAL_SITEURL }}{{ request_review_url }}.</a>
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.request_approve' affiliate_request.id %}">Approve Request</a>
+OR 
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.request_reject' affiliate_request.id %}">Reject Request</a>
 </p>
+<p>To view all requests, please go to {{ SITE_GLOBAL_SITEURL }}{##}
+</p>
+
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
 
 </body>

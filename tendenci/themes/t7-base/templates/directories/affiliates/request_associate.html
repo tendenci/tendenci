@@ -10,13 +10,15 @@
 
 {% block content %}
 <div class="t clearfix">
-	<h1>{% trans "Request to Associate to " %} {{ to_directory }}</h1>
-	<p>Fill out the form below. <br />
+	<h1>{% trans "Request to Associate" %}</h1>
+	<h3>{% trans "To: " %}<a href="{% url 'directory' directory.slug %}">{{ directory }}</a> {% if corp_type %}<small>({{ corp_type }})</small>{% endif %}</h3>
+
+	<div class="well">Fill out the form below. <br />
 	{% if corp_type %}
 	Note that only {{ allowed_member_types }} can 
-	associate to this {{ corp_type }}.
+	request to associate.
 	{% endif %}
-	</p>
+	</div>
 	<div class="news-wrap">
         <form action="." class="form-horizontal" method="post">{% csrf_token %}
         <div class="forms">

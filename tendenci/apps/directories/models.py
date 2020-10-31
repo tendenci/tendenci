@@ -358,6 +358,27 @@ class Directory(TendenciBaseModel):
         if membership:
             return membership.membership_type
 
+    def is_owner(self, user_this):
+        if not user_this or not user_this.is_authenticated:
+            return False
+
+        # is creator or owner
+        if user_this == self.creator or user_this == self.owner:
+            return True
+
+        # is corp rep
+        if hasattr(self, 'corpprofile'):
+            if self.corpprofile.reps.filter(user__in=[user_this]):
+                return True
+        
+        # member
+        membership = self.get_membership
+        if membership and membership.user == user_this:
+            return True
+        
+        return False
+
+
     def can_connect_from(self, directory_from):
         """
         Check if this directory can be connected from ``directory_from``.
@@ -375,7 +396,7 @@ class Directory(TendenciBaseModel):
         
     def allow_associate_by(self, user_this):
         """
-        Check if user_this is allowed to send affiliate requests.
+        Check if user_this is allowed to submit affiliate requests.
         
         If the connection is limited to the allowed connection, 
         this user will need to have a valid membership with the
@@ -384,14 +405,15 @@ class Directory(TendenciBaseModel):
         from .affiliates.utils import types_in_allowed_connection
         if not user_this or not user_this.is_authenticated:
             return False
+    
+        if get_setting('module', 'directories', 'affiliation_limited'):
+            if not hasattr(self, 'corpprofile'):
+                return False
 
         if user_this.is_superuser:
             return True
         
         if get_setting('module', 'directories', 'affiliation_limited'):
-            if not hasattr(self, 'corpprofile'):
-                return False
-        
             corp_type = self.get_corp_type()
             memberships = user_this.membershipdefault_set.filter(
                     status=True, status_detail='active')
@@ -402,6 +424,41 @@ class Directory(TendenciBaseModel):
             return False
         else:
             return True
+
+    def allow_approve_affiliations_by(self, user_this):
+        """
+        Check if user_this is allowed to approve affiliate requests.
+        
+        Superuser or the directory owner can approve.
+        The directory owners include creator, owner, and associated corp reps.
+        """
+        if not user_this or not user_this.is_authenticated:
+            return False
+
+        if user_this.is_superuser:
+            return True
+
+        # is creator or owner
+        if user_this == self.creator or user_this == self.owner:
+            return True
+
+        # is a corp rep
+        if get_setting('module', 'directories', 'affiliation_limited'):
+            if hasattr(self, 'corpprofile'):
+                if self.corpprofile.reps.filter(user__in=[user_this]):
+                    return True
+
+        return False
+
+    def allow_reject_affiliations_by(self, user_this):
+        """
+        Check if user_this is allowed to reject affiliate requests.
+        
+        Superuser or the directory owner can reject.
+        The directory owners include creator, owner, and associated corp reps.
+        """
+        return self.allow_approve_affiliations_by(user_this)
+
 
 
 class Affiliateship(models.Model):

@@ -60,7 +60,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         """
         Save the request form and send email notifications
         """
-        request_email = super(RequestAssociateForm, self).save(*args, **kwargs)
+        self.instance = super(RequestAssociateForm, self).save(*args, **kwargs)
         [affiliate_request] = AffiliateRequest.objects.filter(
             to_directory=self.to_directory,
             from_directory=self.from_directory,
@@ -70,17 +70,17 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
                 to_directory=self.to_directory,
                 from_directory=self.from_directory,
                 creator= self.request.user,)
-        request_email.affiliate_request = affiliate_request
-        request_email.sender = self.request.user
+        self.instance.affiliate_request = affiliate_request
+        self.instance.sender = self.request.user
         
         # get recipients emails
-        request_email.recipients = self.to_directory.get_owner_emails_list()
+        self.instance.recipients = self.to_directory.get_owner_emails_list()
         
-        request_email.save()
+        self.instance.save()
         
-        self.send_emails(request_email)
+        self.send_emails(self.instance)
 
-        return request_email
+        return self.instance
 
     def send_emails(self, request_email):
         # email notifications
@@ -95,6 +95,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
                 'message': request_email.message,
                 'first_name': request_email.sender.first_name,
                 'last_name': request_email.sender.last_name,
+                'affiliate_request': self.instance.affiliate_request,
             }
             
             # to to_directory owner
