@@ -75,14 +75,19 @@ def details(request, slug=None, template_name="directories/view.html"):
                     affiliated_dict[corp_type_name] = [d]
                 
             affiliated_list = list(affiliated_dict.items())
+            
+            # list of affiliate requests
+            affiliate_requests = directory.from_directory.all()
         else:
             affiliates_list = None
             affiliated_list = None
+            affiliate_requests = None
             
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory,
                      'affiliates_list': affiliates_list,
-                     'affiliated_list': affiliated_list})
+                     'affiliated_list': affiliated_list,
+                     'affiliate_requests': affiliate_requests})
 
     raise Http403
 

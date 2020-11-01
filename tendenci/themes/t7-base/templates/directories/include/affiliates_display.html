@@ -1,0 +1,61 @@
+{% load directory_filters %}
+
+{% if affiliates_list %}
+	{% with affiliates_list|dictsort:0 as sorted_affiliates_list %}
+		<h3>{% trans "Affiliates" %}</h3>
+		{% for type_name, affiliates in sorted_affiliates_list %}
+		<h4>{{ type_name }}</h4>
+			<ol>
+			{% for affiliate in affiliates %}
+			<li><a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a></li>
+			{% endfor %}
+			</ol>
+		{% endfor %}
+	{% endwith %}
+	{% endif %}
+	
+	{% if affiliated_list %}
+	{% with affiliated_list|dictsort:0 as sorted_affiliated_list %}
+		<h3>{% trans "Associated With" %}</h3>
+		{% for type_name, affiliated_directories in sorted_affiliated_list %}
+		<h4>{{ type_name }}</h4>
+			<ol>
+			{% for d in affiliated_directories %}
+			<li><a href="{% url 'directory' d.slug %}">{{ d.headline }}</a></li>
+			{% endfor %}
+			</ol>
+			<br />
+		{% endfor %}
+	{% endwith %}
+{% endif %}
+	
+{% if MODULE_DIRECTORIES_AFFILIATES_ENABLED and directory.status_detail == 'active' %}
+	{% if directory|allow_request_to_associate:user %}
+	<br />
+	<div>
+	<a href="{% url 'affiliates.request_associate' directory.id %}" class="btn btn-success">{% trans "Request to Associate with" %}</a>
+	</div>
+	<br />
+	
+	{% if request.user.is_superuser or directory|is_owner:user %}
+	<div>
+	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "Review, Approve or Reject Affiliate Requests" %}</a>
+	</div>
+	<br />
+	{% endif %}
+	
+	{% else %}
+	    {% if affiliate_requests %}
+			{% if request.user.is_superuser or directory|is_owner:user %}
+			    <h4>{% trans "Requested to associate with:" %}</h4>
+				<ol>
+				{% for affiliate_request in affiliate_requests %}
+					<li><a href="{% url 'directory' affiliate_request.to_directory.slug %}">{{ affiliate_request.to_directory.headline }}</a></li>
+				{% endfor %}
+				</ol>
+				<br />
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	
+{% endif %}	
