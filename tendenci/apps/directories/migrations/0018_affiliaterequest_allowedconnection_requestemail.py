@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('memberships', '0012_auto_20200902_1545'),
         ('corporate_memberships', '0024_corporatemembershiptype_require_approval'),
-        ('directories', '0017_auto_20201027_1237'),
+        ('directories', '0017_auto_20201028_1946'),
     ]
 
     operations = [
