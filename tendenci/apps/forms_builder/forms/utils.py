@@ -7,6 +7,7 @@ from django.urls import reverse
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
+from tendenci.apps.base.utils import escape_csv
 
 def generate_admin_email_body(entry, form_for_form, user=None):
     """
@@ -193,7 +194,7 @@ def form_entries_to_csv_writer(csv_writer, form):
             row[-1] = entry_time
 
         for field_entry in values:
-            value = field_entry.value
+            value = escape_csv(field_entry.value)
             # Create download URL for file fields.
 #             if field_entry.field_id in file_field_ids:
 #                 url = reverse("admin:forms_form_file", args=(field_entry.id,))

@@ -6,6 +6,7 @@ from celery.task import Task
 from tendenci.apps.events.ics.utils import create_ics
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.events.models import Event
+from tendenci.apps.base.utils import escape_csv
 
 class EventsExportTask(Task):
     """Export Task for Celery
@@ -110,6 +111,7 @@ class EventsExportTask(Task):
                 elif field in event_d:
                     value = event_d[field]
                 value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
             if event.place:
@@ -118,6 +120,7 @@ class EventsExportTask(Task):
                 for field in place_fields:
                     value = place_d[field]
                     value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
                     data_row.append(value)
 
             if event.registration_configuration:
@@ -129,6 +132,7 @@ class EventsExportTask(Task):
                     else:
                         value = conf_d[field]
                     value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
                     data_row.append(value)
 
             if event.speaker_set.all():
@@ -138,6 +142,7 @@ class EventsExportTask(Task):
                     for field in speaker_fields:
                         value = speaker_d[field]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the speaker columns
@@ -153,6 +158,7 @@ class EventsExportTask(Task):
                     for field in organizer_fields:
                         value = organizer_d[field]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the organizer columns
@@ -169,6 +175,7 @@ class EventsExportTask(Task):
                     for field in pricing_fields:
                         value = pricing_d[field]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the pricing columns

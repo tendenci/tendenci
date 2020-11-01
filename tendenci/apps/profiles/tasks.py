@@ -2,6 +2,7 @@ from celery.task import Task
 from celery.registry import tasks
 from tendenci.apps.imports.utils import render_excel
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.base.utils import escape_csv
 
 
 class ExportProfilesTask(Task):
@@ -130,6 +131,7 @@ class ExportProfilesTask(Task):
                 profile.original_username,
                 '\n',
             ]
+            data_row = [escape_csv(value) for value in data_row]
             data_rows.append(data_row)
 
         return render_excel(filename, field_list, data_rows, '.csv')

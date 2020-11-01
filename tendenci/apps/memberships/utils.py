@@ -42,6 +42,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
 from tendenci.apps.educations.models import Education
+from tendenci.apps.base.utils import escape_csv
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -507,6 +508,8 @@ def process_export(
                     elif field_name == 'app':
                         # display membership type name instead of id
                         item = app_ids_dict.get(item, '')
+                    elif isinstance(item, str):
+                        item = escape_csv(item)
                 items_dict[field_name] = item
             csv_writer.writerow(items_dict)
 

@@ -4,6 +4,8 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.case_studies.models import CaseStudy, Image
 # from tendenci.apps.files.models import File
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.files.utils import get_allowed_upload_file_exts
 
 class CaseStudyForm(TendenciBaseForm):
     overview = forms.CharField(required=False,
@@ -62,3 +64,4 @@ class FileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(FileForm, self).__init__(*args, **kwargs)
+        self.fields['file'].validators = [FileValidator(allowed_extensions=get_allowed_upload_file_exts(file_type='image'))]

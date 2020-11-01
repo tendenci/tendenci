@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils.html import strip_tags
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
@@ -389,7 +390,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
             obj.get_absolute_url(),
-            obj,
+            strip_tags(obj),
             link_icon,
         )
         return link

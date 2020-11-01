@@ -132,15 +132,16 @@ def _get_sub_cats_choices(directory=None, empty_label=None):
     else:
         choices = []
     cats = DirectoryCategory.objects.filter(parent=None)
-    if directory:
-        cats = cats.filter(id__in=directory.cats.all())
-    for cat in cats:
-        my_choices = []
-        sub_cats = DirectoryCategory.objects.filter(parent=cat)
-        for sub_cat in sub_cats:
-            my_choices.append((sub_cat.id, sub_cat.name))
-        if my_choices:
-            choices.append((cat.name, my_choices))
+    if cats.exists():
+        if directory and directory.id:
+            cats = cats.filter(id__in=directory.cats.all())
+        for cat in cats:
+            my_choices = []
+            sub_cats = DirectoryCategory.objects.filter(parent=cat)
+            for sub_cat in sub_cats:
+                my_choices.append((sub_cat.id, sub_cat.name))
+            if my_choices:
+                choices.append((cat.name, my_choices))
     return choices
 
 

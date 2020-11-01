@@ -10,6 +10,8 @@ from tendenci.apps.articles.models import Article
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import escape_csv
+
 
 def process_export(identifier, user_id):
     field_list = [
@@ -58,6 +60,8 @@ def process_export(identifier, user_id):
                     item = item.strftime('%Y-%m-%d')
                 elif isinstance(item, time):
                     item = item.strftime('%H:%M:%S')
+                else:
+                    item = escape_csv(item)
                 items_list.append(item)
             csv_writer.writerow(items_list)
 

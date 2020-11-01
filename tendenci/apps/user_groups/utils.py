@@ -15,6 +15,7 @@ from tendenci.apps.profiles.models import Profile
 #from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import escape_csv
 
 def member_choices(group, member_label):
     """
@@ -134,6 +135,8 @@ def process_export(
                             row_dict[k] = v.strftime('%Y-%m-%d')
                         else:
                             row_dict[k] = smart_str(v)
+                    else:
+                        row_dict[k] = escape_csv(v)
 
                 csv_writer.writerow(row_dict)
 
