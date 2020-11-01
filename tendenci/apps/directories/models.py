@@ -372,7 +372,7 @@ class Directory(TendenciBaseModel):
                 return True
         
         # member
-        membership = self.get_membership
+        membership = self.get_membership()
         if membership and membership.user == user_this:
             return True
         

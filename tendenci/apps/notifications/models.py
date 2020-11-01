@@ -423,8 +423,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     # removing newlines
     subject = ''.join(subject.splitlines())
     body = add_tendenci_footer(body)
-    print('label=', label)
-    print('emails=', emails)
+
     for email_addr in emails:
         if is_valid_domain(email_addr):
             recipients = [email_addr]

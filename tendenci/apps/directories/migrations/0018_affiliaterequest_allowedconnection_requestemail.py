@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('recipients', models.CharField(blank=True, default='', max_length=255)),
                 ('message', models.TextField()),
                 ('create_dt', models.DateTimeField(auto_now_add=True, verbose_name='Created On')),
-                ('affiliate_request', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='directories.AffiliateRequest')),
+                ('affiliate_request', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='directories.AffiliateRequest', related_name='request_emails')),
                 ('creator', models.ForeignKey(default=None, editable=False, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='affiliate_requestemail_creator', to=settings.AUTH_USER_MODEL)),
                 ('sender', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],

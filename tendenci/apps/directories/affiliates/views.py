@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, Http404
+from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.csrf import csrf_protect
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -61,6 +63,7 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
             'request_form': request_form,})
 
 
+@csrf_protect
 @login_required
 def approve(request, affiliate_request_id):
     """
@@ -77,39 +80,44 @@ def approve(request, affiliate_request_id):
     if not directory.allow_approve_affiliations_by(request.user):
         raise Http403
 
-    from_directory = affiliate_request.from_directory
-    if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
-        # Add affiliate
-        Affiliateship.objects.create(
-            directory=directory,
-            affiliate=from_directory,
-            creator=request.user)
-
-        # Email to the submitter of the affiliate request
-        site_display_name = get_setting('site', 'global', 'sitedisplayname')
-        site_url = get_setting('site', 'global', 'siteurl')
-        params = {
-            'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
-            'SITE_GLOBAL_SITEURL': site_url,
-            'directory': directory,
-            'from_directory': from_directory,
-            'first_name': affiliate_request.creator.first_name,
-            'reply_to': request.user.email,
-        }
-        notification.send_emails([affiliate_request.creator.email],
-                'affiliate_approved_to_submitter', params)
+    if request.method in ["POST"]:
+        from_directory = affiliate_request.from_directory
+        if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
+            # Add affiliate to the directory
+            Affiliateship.objects.create(
+                directory=directory,
+                affiliate=from_directory,
+                creator=request.user)
     
-
-        msg_string = _('Successfully approved the affiliate request from %s') \
-                % str(from_directory)
-        messages.add_message(request, messages.SUCCESS, msg_string)
+            # Email to the submitter of the affiliate request
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            params = {
+                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+                'SITE_GLOBAL_SITEURL': site_url,
+                'directory': directory,
+                'from_directory': from_directory,
+                'first_name': affiliate_request.creator.first_name,
+                'reply_to': request.user.email,
+            }
+            notification.send_emails([affiliate_request.creator.email],
+                    'affiliate_approved_to_submitter', params)
+        
     
-    # Remove the request
-    affiliate_request.delete()
+            msg_string = _('Successfully approved the affiliate request from %s') \
+                    % str(from_directory)
+            messages.add_message(request, messages.SUCCESS, msg_string)
+        
+        # Remove the request
+        affiliate_request.delete()
+        
+        if 'ajax' in request.POST:
+            return HttpResponse('Ok')
 
     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
 
+@csrf_protect
 @login_required
 def reject(request, affiliate_request_id):
     """
@@ -126,33 +134,38 @@ def reject(request, affiliate_request_id):
     if not directory.allow_reject_affiliations_by(request.user):
         raise Http403
 
-    from_directory = affiliate_request.from_directory
-    if not Affiliateship.objects.filter().exists():
-
-        # Email to the submitter of the affiliate request rejected
-        site_display_name = get_setting('site', 'global', 'sitedisplayname')
-        site_url = get_setting('site', 'global', 'siteurl')
-        params = {
-            'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
-            'SITE_GLOBAL_SITEURL': site_url,
-            'directory': directory,
-            'from_directory': from_directory,
-            'first_name': affiliate_request.creator.first_name,
-            'reply_to': request.user.email,
-        }
-        notification.send_emails([affiliate_request.creator.email],
-                'affiliate_rejected_to_submitter', params)
+    if request.method in ["POST"]:
+        from_directory = affiliate_request.from_directory
+        if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
     
+            # Email to the submitter of the affiliate request rejected
+            site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            site_url = get_setting('site', 'global', 'siteurl')
+            params = {
+                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+                'SITE_GLOBAL_SITEURL': site_url,
+                'directory': directory,
+                'from_directory': from_directory,
+                'first_name': affiliate_request.creator.first_name,
+                'reply_to': request.user.email,
+            }
 
-        msg_string = _('Successfully rejected the affiliate request from %s') \
-                % str(from_directory)
-    else:
-        msg_string = _('%s us already associated.') \
-                % str(from_directory)
-    messages.add_message(request, messages.SUCCESS, msg_string)
+            notification.send_emails([affiliate_request.creator.email],
+                    'affiliate_rejected_to_submitter', params)
+        
     
-    # Remove the request
-    affiliate_request.delete()
+            msg_string = _('Successfully rejected the affiliate request from %s') \
+                    % str(from_directory)
+        else:
+            msg_string = _('%s us already associated.') \
+                    % str(from_directory)
+        messages.add_message(request, messages.SUCCESS, msg_string)
+        
+        # Remove the request
+        affiliate_request.delete()
+        
+        if 'ajax' in request.POST:
+            return HttpResponse('Ok')
 
     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
@@ -211,8 +224,25 @@ def delete_affiliate(request, directory_id, from_directory_id):
     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
 
+@login_required
+def requests_list(request, directory_id, template_name="directories/affiliates/requests_list.html"):
+    if not get_setting('module', 'directories', 'affiliates_enabled'):
+        raise Http404
+    
+    directory = get_object_or_404(Directory, pk=directory_id)
 
-
+    # Check user permission
+    if not any([request.user.is_superuser,
+                directory.is_owner(request.user)]):
+        raise Http403
+    
+    affiliate_requests = AffiliateRequest.objects.filter(to_directory=directory)
+    
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'directory': directory,
+            'affiliate_requests': affiliate_requests,
+            'count': affiliate_requests.count()})
 
 
 

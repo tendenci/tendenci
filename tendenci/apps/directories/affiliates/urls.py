@@ -9,6 +9,6 @@ urlpatterns = [
         views.approve, name="affiliates.request_approve"),
     url(r'^reject/(?P<affiliate_request_id>\d+)/$',
         views.reject, name="affiliates.request_reject"),
-#     url(r'^%s/requests-list/(?P<directory_id>\d+)/$' % urlpath,
-#         views.requests_list, name="affiliates.requests_list"),
+    url(r'^requests-list/(?P<directory_id>\d+)/$',
+        views.requests_list, name="affiliates.requests_list"),
 ]

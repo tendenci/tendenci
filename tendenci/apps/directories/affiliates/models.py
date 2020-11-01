@@ -26,7 +26,9 @@ class RequestEmail(models.Model):
     """
     The emails for request to associate.
     """
-    affiliate_request = models.ForeignKey(AffiliateRequest, null=True, on_delete=models.SET_NULL)
+    affiliate_request = models.ForeignKey(AffiliateRequest, null=True,
+                                          related_name='request_emails',
+                                           on_delete=models.CASCADE)
     sender = models.ForeignKey(User,
         null=True, on_delete=models.SET_NULL)
     recipients = models.CharField(max_length=255, blank=True, default='')
