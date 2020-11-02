@@ -170,6 +170,7 @@ def reject(request, affiliate_request_id):
     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
 
+@csrf_protect
 @login_required
 def cancel(request, affiliate_request_id):
     """
@@ -187,18 +188,23 @@ def cancel(request, affiliate_request_id):
                 from_directory.is_owner(request.user)]):
         raise Http403
     
-    msg_string = _('Successfully canceled the affiliate request with %s') \
-                % str(affiliate_request.to_directory)
-    messages.add_message(request, messages.SUCCESS, msg_string)
+    if request.method in ["POST"]:
+        msg_string = _('Successfully canceled the affiliate request with %s') \
+                    % str(affiliate_request.to_directory)
+        messages.add_message(request, messages.SUCCESS, msg_string)
 
-    # delete the request
-    affiliate_request.delete()
+        # delete the request
+        affiliate_request.delete()
+
+        if 'ajax' in request.POST:
+            return HttpResponse('Ok')
 
     return HttpResponseRedirect(reverse('directory', args=[from_directory.slug]))
 
 
+@csrf_protect
 @login_required
-def delete_affiliate(request, directory_id, from_directory_id):
+def delete_affiliate(request, directory_id, affiliate_id):
     """
     Delete an affiliate. 
     """
@@ -207,19 +213,23 @@ def delete_affiliate(request, directory_id, from_directory_id):
 
     # Get the affiliate_request and directory
     directory = get_object_or_404(Directory, id=directory_id)
-    from_directory = get_object_or_404(Directory, id=from_directory_id)
+    from_directory = get_object_or_404(Directory, id=affiliate_id)
     
     # Check user permission
     if not any([request.user.is_superuser,
                 directory.is_owner(request.user)]):
         raise Http403
     
-    msg_string = _('Successfully removed the affiliate %s') \
-                % str(from_directory)
-    messages.add_message(request, messages.SUCCESS, msg_string)
+    if request.method in ["POST"]:
+        msg_string = _('Successfully removed the affiliate %s') \
+                    % str(from_directory)
+        messages.add_message(request, messages.SUCCESS, msg_string)
+    
+        # delete the request
+        directory.affiliates.remove(from_directory)
 
-    # delete the request
-    directory.affiliates.remove(from_directory)
+        if 'ajax' in request.POST:
+            return HttpResponse('Ok')
 
     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 

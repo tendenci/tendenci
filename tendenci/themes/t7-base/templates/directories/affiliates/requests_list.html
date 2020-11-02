@@ -20,7 +20,7 @@
 	<div>	
 	{% for a_request in affiliate_requests %}
 	{% with a_request.from_directory as from_directory %}
-		<div class="row affiliate-request-wrap" style="margin: 1em auto; padding: 1em; border-top: 1px dashed #ccc;">
+		<div id="ar{{ a_request.id }}" class="row affiliate-request-wrap" style="margin: 1em auto; padding: 1em; border-top: 1px dashed #ccc;">
 			<div class="col-xs-4">
 			{% if from_directory.logo %}
 			<img class="t-directories-directory-image img-responsive" style="max-width:130px;" border="0" src="{{ from_directory.get_logo_url }}" alt="">
@@ -45,6 +45,7 @@
 	{% endwith %}
 	{% endfor %}
     </div>
+	<p>&nbsp;</p>
 </div>
 {% endblock %}
 
@@ -64,7 +65,7 @@
             // approve confirmation
             $('.approve').on("click", function(e){
 	            e.preventDefault();
-                var approve_affiliate_request = confirm('{% trans "Are you sure to approve this request?" %}?');  // confirm
+                var approve_affiliate_request = confirm('{% trans "Approve this request?" %}?');  // confirm
                 if(approve_affiliate_request){ // approve: if OK
 					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
 					var approve_url = $(this).attr('href');
@@ -81,7 +82,7 @@
 			// reject confirmation
             $('.reject').on("click", function(e){
 				e.preventDefault();
-                var reject_affiliate_request = confirm('{% trans "Are you sure to reject this request?" %}?');  // confirm
+                var reject_affiliate_request = confirm('{% trans "Are you sure you want to reject this request?" %}?');  // confirm
                 if(reject_affiliate_request){ // reject: if OK
 					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
 					var reject_url = $(this).attr('href');

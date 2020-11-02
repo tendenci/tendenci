@@ -46,11 +46,9 @@
 </table>
 
 <p>
-<a href="{{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.request_approve' affiliate_request.id %}">Approve Request</a>
-OR 
-<a href="{{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.request_reject' affiliate_request.id %}">Reject Request</a>
+To review, approve or reject this request, please go to {{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}#ar{{ affiliate_request.id }}
 </p>
-<p>To view all requests, please go to {{ SITE_GLOBAL_SITEURL }}{##}
+<p><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}">View All Requests</a>
 </p>
 
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>

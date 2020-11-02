@@ -7,7 +7,9 @@
 		<h4>{{ type_name }}</h4>
 			<ol>
 			{% for affiliate in affiliates %}
-			<li><a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a></li>
+			<li class="affiliate-wrap"><a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a> &nbsp;&nbsp;&nbsp;
+			    <a href="{% url 'affiliates.delete_affiliate' directory.id affiliate.id %}"  class="delete btn btn-default btn-xs">{% trans "Remove" %}</a>
+			</li>
 			{% endfor %}
 			</ol>
 		{% endfor %}
@@ -39,7 +41,7 @@
 	
 	{% if request.user.is_superuser or directory|is_owner:user %}
 	<div>
-	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "Review, Approve or Reject Affiliate Requests" %}</a>
+	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "All Affiliate Requests" %}</a>
 	</div>
 	<br />
 	{% endif %}
@@ -47,10 +49,12 @@
 	{% else %}
 	    {% if affiliate_requests %}
 			{% if request.user.is_superuser or directory|is_owner:user %}
-			    <h4>{% trans "Requested to associate with:" %}</h4>
+			    <h3>{% trans "Requested to Associate with" %}</h3>
 				<ol>
 				{% for affiliate_request in affiliate_requests %}
-					<li><a href="{% url 'directory' affiliate_request.to_directory.slug %}">{{ affiliate_request.to_directory.headline }}</a></li>
+					<li class="affiliate-request-wrap" style="margin: 3px auto;"><a href="{% url 'directory' affiliate_request.to_directory.slug %}">{{ affiliate_request.to_directory.headline }}</a> &nbsp;&nbsp;&nbsp;
+					<a href="{% url 'affiliates.request_cancel' affiliate_request.id %}"  class="cancel btn btn-default btn-xs">{% trans "Cancel" %}</a>
+					</li>
 				{% endfor %}
 				</ol>
 				<br />
