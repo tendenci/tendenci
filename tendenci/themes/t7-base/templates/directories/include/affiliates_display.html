@@ -8,7 +8,9 @@
 			<ol>
 			{% for affiliate in affiliates %}
 			<li class="affiliate-wrap"><a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a> &nbsp;&nbsp;&nbsp;
+			{% if request.user.is_superuser or directory|is_owner:user %}
 			    <a href="{% url 'affiliates.delete_affiliate' directory.id affiliate.id %}"  class="delete btn btn-default btn-xs">{% trans "Remove" %}</a>
+			{% endif %}
 			</li>
 			{% endfor %}
 			</ol>

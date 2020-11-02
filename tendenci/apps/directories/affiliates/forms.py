@@ -46,9 +46,12 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         except Resolver404:
             raise forms.ValidationError(_("Your marketplace listing is not valid. Please check your URL."))
 
-        if 'slug' in resolver.kwargs and Directory.objects.filter(slug=resolver.kwargs['slug']).exists():
+        if 'slug' in resolver.kwargs and resolver.view_name == 'directory' \
+                and Directory.objects.filter(slug=resolver.kwargs['slug']).exists():
             self.from_directory = Directory.objects.get(slug=resolver.kwargs['slug'])
-            if not self.to_directory.can_connect_from(self.from_directory):
+            if not (self.request.user.is_superuser or self.from_directory.is_owner(self.request.user)):
+                raise forms.ValidationError(_("You are not allowed to submit this listing."))
+            elif not self.to_directory.can_connect_from(self.from_directory):
                 raise forms.ValidationError(_("This connection is not allowed."))
         else:
             raise forms.ValidationError(_("Invalid marketplace listing."))
