@@ -15,7 +15,7 @@ from .utils import get_content_from_template
 
 
 class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
-    from_directory_url = forms.URLField(label=_('Your Listing'))
+    from_directory_url = forms.URLField(label=_('Your Listing URL'))
     message = forms.CharField(max_length=1000,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     
@@ -33,7 +33,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['from_directory_url'].help_text = _('Example: %s/%s/example/') % (
                                         get_setting('site', 'global', 'siteurl'),
                                         get_setting('module', 'directories', 'url'))
-        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing')})
+        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL')})
 
     def clean_from_directory_url(self):
         from_directory_url = self.cleaned_data['from_directory_url']

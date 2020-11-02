@@ -67,8 +67,10 @@
             {% endif %}
         </address>
     {% endif %}
-
+	
+	{% if directory.status_detail == 'active' %}
 	{% include "directories/include/affiliates_display.html" %}
+	{% endif %}
 
 	{% with directory.cats_list as cats_list %}
     {% if cats_list %}

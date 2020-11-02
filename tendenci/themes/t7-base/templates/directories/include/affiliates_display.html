@@ -43,7 +43,7 @@
 	
 	{% if request.user.is_superuser or directory|is_owner:user %}
 	<div>
-	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "All Affiliate Requests" %}</a>
+	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "View All Affiliate Requests" %}</a>
 	</div>
 	<br />
 	{% endif %}

@@ -14,7 +14,7 @@
 	<div>
 	<a href="{% url 'directory' directory.slug %}">{{ directory.headline }}</a>
 	</div>
-	<div><em>{% blocktrans %}{{ count }} affiliate request{{ pluralize }}{% endblocktrans %}</em></div>
+	<div><em>{% blocktrans with count_pluralize=count|pluralize %}{{ count }} affiliate request{{ count_pluralize }}{% endblocktrans %}</em></div>
 
 
 	<div>	
