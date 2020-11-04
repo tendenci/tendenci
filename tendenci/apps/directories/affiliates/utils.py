@@ -11,7 +11,14 @@ def get_allowed_affiliate_types(corp_type):
         allowed_affiliate_types += list(ac.member_types.all())
         
     return allowed_affiliate_types
- 
+
+
+def corp_type_accepts_connection(corp_type):
+    """
+    Given a corp_type, return True if corp_type accepts connection, else False.
+    """
+    return AllowedConnection.objects.filter(corp_type=corp_type).exists()
+
  
 def types_in_allowed_connection(corp_type, member_type):
     """

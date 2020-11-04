@@ -403,12 +403,15 @@ class Directory(TendenciBaseModel):
         this user will need to have a valid membership with the
         membership type is in the allowed types. 
         """
-        from .affiliates.utils import types_in_allowed_connection
+        from .affiliates.utils import types_in_allowed_connection, corp_type_accepts_connection
         if not user_this or not user_this.is_authenticated:
             return False
     
         if get_setting('module', 'directories', 'affiliation_limited'):
             if not hasattr(self, 'corpprofile'):
+                return False
+            corp_type = self.get_corp_type()
+            if not corp_type_accepts_connection(corp_type):
                 return False
 
         if user_this.is_superuser:

@@ -95,6 +95,7 @@ def approve(request, affiliate_request_id):
             params = {
                 'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
                 'SITE_GLOBAL_SITEURL': site_url,
+                'MODULE_DIRECTORIES_LABEL_PLURAL': get_setting('module', 'directories', 'label_plural'),
                 'directory': directory,
                 'from_directory': from_directory,
                 'first_name': affiliate_request.creator.first_name,
@@ -104,7 +105,7 @@ def approve(request, affiliate_request_id):
                     'affiliate_approved_to_submitter', params)
         
     
-            msg_string = _('Successfully approved the affiliate request from %s') \
+            msg_string = _('Successfully accepted the affiliate request from %s') \
                     % str(from_directory)
             messages.add_message(request, messages.SUCCESS, msg_string)
         
@@ -144,17 +145,20 @@ def reject(request, affiliate_request_id):
             params = {
                 'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
                 'SITE_GLOBAL_SITEURL': site_url,
+                'MODULE_DIRECTORIES_LABEL_PLURAL': get_setting('module', 'directories', 'label_plural'),
                 'directory': directory,
                 'from_directory': from_directory,
                 'first_name': affiliate_request.creator.first_name,
                 'reply_to': request.user.email,
             }
 
-            notification.send_emails([affiliate_request.creator.email],
-                    'affiliate_rejected_to_submitter', params)
+            # Let's not send a decline message. If the company wants to reach out 
+            # they have the individual's contact info and they can do so directly.
+            #notification.send_emails([affiliate_request.creator.email],
+            #        'affiliate_rejected_to_submitter', params)
         
     
-            msg_string = _('Successfully rejected the affiliate request from %s') \
+            msg_string = _('Successfully declined the affiliate request from %s') \
                     % str(from_directory)
         else:
             msg_string = _('%s us already associated.') \

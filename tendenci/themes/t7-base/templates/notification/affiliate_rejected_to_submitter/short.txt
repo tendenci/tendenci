@@ -1,1 +1,1 @@
-Your request to associate to {{ directory }} is rejected
+Your request to associate to {{ directory }} is declined

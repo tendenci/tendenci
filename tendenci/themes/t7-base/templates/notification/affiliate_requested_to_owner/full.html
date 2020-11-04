@@ -1,57 +1,13 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-<title>{% trans "Request to Associate" %}</title>
-<meta charset="UTF-8">
-</head>
-
-<body bgcolor="#FFFFFF" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-<table>
-    <tr>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#4f6b72;">Marketplace Listing</span>
-        </td>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#000000;">{{ SITE_GLOBAL_SITEURL }}{{ from_directory.get_absolute_url }}</span>
-        </td>
-   </tr>
-
-    <tr>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#4f6b72;">First Name</span>
-        </td>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#000000;">{{ first_name }}</span>
-        </td>
-   </tr>
-
-   <tr>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#4f6b72;">Last Name</span>
-        </td>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#000000;">{{ last_name }}</span>
-        </td>
-   </tr>
-
-    <tr>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#4f6b72;">Message</span>
-        </td>
-        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
-            <span style="font-size:9.0pt;color:#000000;">{{ message }}</span>
-        </td>
-   </tr>
-
-</table>
-
 <p>
-To review, approve or reject this request, please go to {{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}#ar{{ affiliate_request.id }}
+{{ first_name }} {{ last_name }} {{ SITE_GLOBAL_SITEURL }}{{ from_directory.get_absolute_url }} has requested to 
+affiliate with your organization in the {{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }}.
 </p>
-<p>View All Requests: {{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}
+<p>
+{{ first_name }} {{ last_name }} holds the following certification(s): {# TODO: List of active certifications #}
+</p>
+<p>
+If you wish to view or accept your affiliation requests, please go to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} 
+at: {{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}#ar{{ affiliate_request.id }}.
 </p>
 
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
-
-</body>
-</html>

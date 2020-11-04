@@ -1,1 +1,1 @@
-Your request to associate to {{ directory }} has been approved
+Your request to associate to {{ directory }} has been accepted

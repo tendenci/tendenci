@@ -36,8 +36,8 @@
 				{% endfor %}
 				<br />
 				<div class="affiliate-request-actions">
-					<a href="{% url 'affiliates.request_approve' a_request.id %}" class="approve btn btn-primary">{% trans "Approve" %}</a> &nbsp;&nbsp;&nbsp;
-					<a href="{% url 'affiliates.request_reject' a_request.id %}"  class="reject btn btn-default">{% trans "Reject" %}</a>
+					<a href="{% url 'affiliates.request_approve' a_request.id %}" class="approve btn btn-primary">{% trans "Accept" %}</a> &nbsp;&nbsp;&nbsp;
+					<a href="{% url 'affiliates.request_reject' a_request.id %}"  class="reject btn btn-default">{% trans "Decline" %}</a>
 				</div>
 			</div>
 			
@@ -65,7 +65,7 @@
             // approve confirmation
             $('.approve').on("click", function(e){
 	            e.preventDefault();
-                var approve_affiliate_request = confirm('{% trans "Approve this request?" %}?');  // confirm
+                var approve_affiliate_request = confirm('{% trans "Accept this request?" %}?');  // confirm
                 if(approve_affiliate_request){ // approve: if OK
 					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
 					var approve_url = $(this).attr('href');
@@ -75,14 +75,14 @@
 						type: "POST",
 						data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
 					    }).success(function(msg){
-					    	action_btns_wrap.html('<span class="text-success">APPROVED!</span>');
+					    	action_btns_wrap.html('<span class="text-success">ACCEPTED!</span>');
 					  });
 				}  // end if
             });
 			// reject confirmation
             $('.reject').on("click", function(e){
 				e.preventDefault();
-                var reject_affiliate_request = confirm('{% trans "Are you sure you want to reject this request?" %}?');  // confirm
+                var reject_affiliate_request = confirm('{% trans "Are you sure you want to decline this request?" %}?');  // confirm
                 if(reject_affiliate_request){ // reject: if OK
 					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
 					var reject_url = $(this).attr('href');
@@ -92,7 +92,7 @@
 						type: "POST",
 						data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
 						}).success(function(msg){
-					    	action_btns_wrap.html('<strong><span class="text-muted">REJECTED</span></strong>');
+					    	action_btns_wrap.html('<strong><span class="text-muted">Declined</span></strong>');
 					  });
 	
 				}  // end if

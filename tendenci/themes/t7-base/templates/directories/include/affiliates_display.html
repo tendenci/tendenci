@@ -2,12 +2,16 @@
 
 {% if affiliates_list %}
 	{% with affiliates_list|dictsort:0 as sorted_affiliates_list %}
-		<h3>{% trans "Affiliates" %}</h3>
+		<h3>{% trans "Affiliations" %}</h3>
 		{% for type_name, affiliates in sorted_affiliates_list %}
 		<h4>{{ type_name }}</h4>
 			<ol>
 			{% for affiliate in affiliates %}
-			<li class="affiliate-wrap"><a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a> &nbsp;&nbsp;&nbsp;
+			<li class="affiliate-wrap">
+				{% if affiliate.logo %}
+					<img class="img-responsive" style="max-width:50px; display: inline;" border="0" src="{{ affiliate.get_logo_url }}" alt="">
+				{% endif %}
+				<a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a> &nbsp;&nbsp;&nbsp;
 			{% if request.user.is_superuser or directory|is_owner:user %}
 			    <a href="{% url 'affiliates.delete_affiliate' directory.id affiliate.id %}"  class="delete btn btn-default btn-xs">{% trans "Remove" %}</a>
 			{% endif %}
@@ -25,7 +29,12 @@
 		<h4>{{ type_name }}</h4>
 			<ol>
 			{% for d in affiliated_directories %}
-			<li><a href="{% url 'directory' d.slug %}">{{ d.headline }}</a></li>
+			<li>
+			    {% if d.logo %}
+					<img class="img-responsive" style="max-width:50px; display: inline;" border="0" src="{{ d.get_logo_url }}" alt="">
+				{% endif %}
+				<a href="{% url 'directory' d.slug %}">{{ d.headline }}</a>
+			</li>
 			{% endfor %}
 			</ol>
 			<br />
@@ -37,7 +46,7 @@
 	{% if directory|allow_request_to_associate:user %}
 	<br />
 	<div>
-	<a href="{% url 'affiliates.request_associate' directory.id %}" class="btn btn-success">{% trans "Request to Associate with" %}</a>
+	<a href="{% url 'affiliates.request_associate' directory.id %}" class="btn btn-success">{% blocktrans with headline=directory.headline %}Request to Associate with {{ headline }}{% endblocktrans %}</a>
 	</div>
 	<br />
 	

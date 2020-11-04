@@ -93,6 +93,7 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
             params = {
                 'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
                 'SITE_GLOBAL_SITEURL': site_url,
+                'MODULE_DIRECTORIES_LABEL_PLURAL': get_setting('module', 'directories', 'label_plural'),
                 'directory': self.to_directory,
                 'from_directory': self.from_directory,
                 'message': request_email.message,
