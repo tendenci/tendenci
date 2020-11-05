@@ -316,6 +316,16 @@ class DirectoryForm(TendenciBaseForm):
 
         if self.instance.logo:
             self.initial['logo'] = self.instance.logo
+        self.logo_extension_error_message = _('The logo must be of jpg, gif, or png image type.')
+        self.logo_mime_error_message = _('The logo is an invalid image. Try uploading another logo.')
+        if self.instance.pk:
+            if self.instance.get_membership():
+                # individual - display "Photo" instead of Logo
+                self.fields['logo'].label = _('Photo')
+                self.fields['logo'].help_text=_('Only jpg, gif, or png images.')
+                self.logo_extension_error_message = _('The photo must be of jpg, gif, or png image type.')
+                self.logo_mime_error_message = _('The photo is an invalid image. Try uploading another photo.')
+            
 
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -393,12 +403,12 @@ class DirectoryForm(TendenciBaseForm):
 
                 # check the extension
                 if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
+                    raise forms.ValidationError(self.logo_extension_error_message)
 
                 # check the image header
                 image_type = '.%s' % imghdr.what('', logo.read())
                 if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
+                    raise forms.ValidationError(self.logo_mime_error_message)
 
                 max_upload_size = get_max_file_upload_size()
                 if logo.size > max_upload_size:
