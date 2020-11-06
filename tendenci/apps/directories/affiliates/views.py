@@ -11,6 +11,7 @@ from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.directories.models import Directory, Affiliateship
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.notifications import models as notification
+from tendenci.apps.event_logs.models import EventLog
 
 from .forms import RequestAssociateForm
 from .utils import get_allowed_affiliate_types
@@ -48,6 +49,11 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
     if request.method == "POST":
         if request_form.is_valid():
             request_email = request_form.save()
+            # log an event
+            description = _('Requested to associate to {to_directory} from {from_directory}.').format(
+                    to_directory=request_email.affiliate_request.to_directory,
+                    from_directory=request_email.affiliate_request.from_directory)
+            EventLog.objects.log(instance=request_email.affiliate_request, description=description)
 
             msg_string = _('Successfully submitted the affiliate request to the owner of %s') \
                     % str(request_email.affiliate_request.to_directory)
@@ -103,7 +109,11 @@ def approve(request, affiliate_request_id):
             }
             notification.send_emails([affiliate_request.creator.email],
                     'affiliate_approved_to_submitter', params)
-        
+
+            # log an event
+            description = _('Approved affiliate request from {from_directory} to {to_directory}.').format(
+                    from_directory=from_directory, to_directory=directory)
+            EventLog.objects.log(instance=affiliate_request, description=description)
     
             msg_string = _('Successfully accepted the affiliate request from %s') \
                     % str(from_directory)
@@ -140,24 +150,28 @@ def reject(request, affiliate_request_id):
         if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
     
             # Email to the submitter of the affiliate request rejected
-            site_display_name = get_setting('site', 'global', 'sitedisplayname')
-            site_url = get_setting('site', 'global', 'siteurl')
-            params = {
-                'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
-                'SITE_GLOBAL_SITEURL': site_url,
-                'MODULE_DIRECTORIES_LABEL_PLURAL': get_setting('module', 'directories', 'label_plural'),
-                'directory': directory,
-                'from_directory': from_directory,
-                'first_name': affiliate_request.creator.first_name,
-                'reply_to': request.user.email,
-            }
+            #site_display_name = get_setting('site', 'global', 'sitedisplayname')
+            #site_url = get_setting('site', 'global', 'siteurl')
+            #params = {
+            #    'SITE_GLOBAL_SITEDISPLAYNAME': site_display_name,
+            #    'SITE_GLOBAL_SITEURL': site_url,
+            #    'MODULE_DIRECTORIES_LABEL_PLURAL': get_setting('module', 'directories', 'label_plural'),
+            #    'directory': directory,
+            #    'from_directory': from_directory,
+            #    'first_name': affiliate_request.creator.first_name,
+            #    'reply_to': request.user.email,
+            #}
 
             # Let's not send a decline message. If the company wants to reach out 
             # they have the individual's contact info and they can do so directly.
             #notification.send_emails([affiliate_request.creator.email],
             #        'affiliate_rejected_to_submitter', params)
-        
-    
+
+            # log an event
+            description = _('Declined affiliate request from {from_directory} to {to_directory}.').format(
+                    from_directory=from_directory, to_directory=directory)
+            EventLog.objects.log(instance=affiliate_request, description=description)
+
             msg_string = _('Successfully declined the affiliate request from %s') \
                     % str(from_directory)
         else:
@@ -193,6 +207,11 @@ def cancel(request, affiliate_request_id):
         raise Http403
     
     if request.method in ["POST"]:
+        # log an event
+        description = _('Canceled affiliate request from {from_directory} to {to_directory}.').format(
+                from_directory=from_directory, to_directory=affiliate_request.to_directory)
+        EventLog.objects.log(instance=affiliate_request, description=description)
+
         msg_string = _('Successfully canceled the affiliate request with %s') \
                     % str(affiliate_request.to_directory)
         messages.add_message(request, messages.SUCCESS, msg_string)
@@ -225,6 +244,11 @@ def delete_affiliate(request, directory_id, affiliate_id):
         raise Http403
     
     if request.method in ["POST"]:
+        # log an event
+        description = _('Deleted the affiliate {from_directory} from {to_directory}.').format(
+                from_directory=from_directory, to_directory=directory)
+        EventLog.objects.log(instance=directory, description=description)
+
         msg_string = _('Successfully removed the affiliate %s') \
                     % str(from_directory)
         messages.add_message(request, messages.SUCCESS, msg_string)
