@@ -75,6 +75,7 @@
                 <li><strong>{% trans "Category:" %}</strong> 
                    <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>
                  </li>
+				 {% if not MODULE_DIRECTORIES_DISABLESUBCATEGORIES %}
                  {% if sub_cats %}
                     <li>|</li>
                     <li><strong>{% trans "Subcategory:" %}</strong> 
@@ -82,6 +83,7 @@
                        <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
                        {% endfor %}
                     </li>
+				{% endif %}
 				{% endif %}
 			 </ul>
 	      {% endfor %}

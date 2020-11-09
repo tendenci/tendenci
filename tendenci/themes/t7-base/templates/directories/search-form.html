@@ -79,6 +79,7 @@
                 {% endif %}
             </div>
 
+			{% if not MODULE_DIRECTORIES_DISABLESUBCATEGORIES %}
             <div class="form-group{% if form.sub_cat.errors %} has-error{% endif %}">
                 {{ form.sub_cat }}
 
@@ -92,6 +93,7 @@
                     </p>
                 {% endif %}
             </div>
+			{% endif %}
 
             <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
         </fieldset>

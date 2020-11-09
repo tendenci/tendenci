@@ -39,9 +39,12 @@
     <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/email-verification.js' %}"></script>
 
+	{% if not MODULE_DIRECTORIES_DISABLESUBCATEGORIES %}
     <script type="text/javascript">
     {% include 'directories/include/get_subcategories.js' %}
     </script>
+	{% endif %}
+
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_headline',
