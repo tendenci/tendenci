@@ -24,6 +24,7 @@ from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField, PriceField
 from tendenci.apps.files.utils import get_max_file_upload_size
 from tendenci.apps.regions.models import Region
+from tendenci.apps.site_settings.utils import get_setting
 
 
 ALLOWED_LOGO_EXT = (
@@ -93,6 +94,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
         # remove region field if no directories associated with any region
         if not Directory.objects.filter(region__isnull=False).exists():
             del self.fields['region']
+
+        if 'sub_cat' in self.fields and get_setting('module', 'directories', 'disablesubcategories'):
+            self.fields.pop('sub_cat')
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -380,6 +384,16 @@ class DirectoryForm(TendenciBaseForm):
         for f in list(set(fields_to_pop)):
             if f in self.fields:
                 self.fields.pop(f)
+
+        if 'sub_cats' in self.fields and get_setting('module', 'directories', 'disablesubcategories'):
+            self.fields.pop('sub_cats')
+
+        if 'sub_cats' not in self.fields:
+            if self.user.profile.is_superuser:
+                self.fields['cats'].help_text += mark_safe('<br /><a href="{0}">{1}</a>'.format(
+                            reverse('admin:directories_category_changelist'),
+                            _('Manage Categories'),))
+            
 
     def clean_syndicate(self):
         """

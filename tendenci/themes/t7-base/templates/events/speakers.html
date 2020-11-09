@@ -34,9 +34,10 @@
             {% for speaker in speakers %}
                 <div class="speaker-wrap panel panel-default">
                   <div class="panel-body">
+                    
                     {% if speaker.get_photo %}
                     <div class="speaker-photo col-xs-3">
-                      <img alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url "file" speaker.get_photo.pk %}"  width="100" />
+                      <img class="img-responsive" alt="Speaker: {{ speaker.name }}" title="Speaker: {{ speaker.name|truncatechars:114 }}" src="{% url "file" speaker.get_photo.pk %}"  width="100" />
                     </div>
                     {% endif %}
                     <div class="speaker">
@@ -46,7 +47,7 @@
                     <div class="speaker-desc-short">
                         {{ speaker.description|striptags|safe|truncatewords:"50" }}
                     </div>
-                    <div class="speaker-desc-long">
+                    <div class="speaker-desc-long hide">
                         {{ speaker.description|safe|urlize|linebreaks }}
                     </div>
                     {% else %}
@@ -78,7 +79,7 @@
 
                 _this.hide();
                 speaker_wrap.find('div.speaker-desc-short').hide();
-                speaker_wrap.find('div.speaker-desc-long').show();
+                speaker_wrap.find('div.speaker-desc-long').removeClass('hide').show();
                 return false;
             });
         });
