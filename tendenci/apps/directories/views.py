@@ -36,7 +36,6 @@ from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
 
