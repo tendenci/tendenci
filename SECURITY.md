@@ -8,10 +8,11 @@
 | 5.x.x   | :x: |
 | 6.x.x   | :x: |
 | 7.x.x   | :x: |
-| 11.0.x  | :x: |
-| 12.0.x  | :white_check_mark: |
+| 11.x.x  | :x: |
+| 12.3.2  | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-Please post any possible vulnerabilities on github issues. Even better to submit a pull request with a fix
+Please see https://www.tendenci.com/security/. 
+Even better to submit a pull request with a fix
 and join the Tendenci Open Source AMS community.

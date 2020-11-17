@@ -96,7 +96,11 @@ def mark_all_seen(request):
         notice.save()
     return HttpResponseRedirect(reverse("notification_notices"))
 
+@login_required
 def email(request, guid):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     email = get_object_or_404(NoticeEmail, guid=guid)
     only_content = 'only-content' in request.GET
     return render_to_resp(request=request, template_name="notification/email.html", context={

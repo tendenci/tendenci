@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.jobs.models import Job, JobPricing
+from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.site_settings.utils import get_setting

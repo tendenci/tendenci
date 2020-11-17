@@ -24,7 +24,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.base.views import file_display
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (get_notice_recipients,
-    has_perm, has_view_perm, get_query_filters, update_perms_and_save)
+    has_perm, has_view_perm, get_query_filters, update_perms_and_save, assign_files_perms)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
@@ -36,7 +36,6 @@ from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
 
@@ -566,6 +565,8 @@ def approve(request, id, template_name="directories/approve.html"):
             directory.owner_username = request.user.username
 
         directory.save()
+        # assign files permissions
+        assign_files_perms(directory)
 
         # send email notification to user
         recipients = directory.get_owner_emails_list()

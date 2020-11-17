@@ -1,6 +1,6 @@
 from django import forms
 from django.conf import settings
-from tendenci.apps.site_settings.utils import get_setting
+
 
 class PaymentForm(forms.Form):
     x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.MERCHANT_LOGIN)
