@@ -644,7 +644,7 @@ def clone_apps(modeladmin, request, queryset):
 clone_apps.short_description = 'Clone selected forms'
 
 
-class MembershipAppAdmin(admin.ModelAdmin):
+class MembershipAppAdmin(TendenciBaseModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
     list_display = ('id', 'name', 'application_form_link', 'status_detail', 'field_sort_link')
