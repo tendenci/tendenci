@@ -1,3 +1,13 @@
+### 12.3.3 [2020-11-17]
+
+* Updated similar users list to be case-insensitive.
+* Resolved the issue about speaker photo overlaps the text.
+* Updated django version to 2.2.17.
+* Updated the notifications email view to superuser only.
+* Fixed value too long for NoticeEmail.
+* Fixed missing file perms re-assignment on directories approal.
+
+
 ### 12.3.2 [2020-10-29]
 
 * **SECURITY**: Updated exports to prevent potential CSV injection in the exported CSV files.
