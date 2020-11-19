@@ -848,6 +848,11 @@ class EventForm(TendenciBaseForm):
         end_dt = cleaned_data.get("end_dt")
         start_event_date = cleaned_data.get('start_event_date')
         end_event_date = cleaned_data.get('end_event_date')
+        
+        if not isinstance(start_dt, datetime):
+            raise forms.ValidationError(_('Please enter a valid Start Date/Time.'))
+        if not isinstance(end_dt, datetime):
+            raise forms.ValidationError(_('Please enter a valid End Date/Time.'))
 
         if start_dt > end_dt:
             errors = self._errors.setdefault("end_dt", ErrorList())

@@ -22,7 +22,7 @@
         <form class="form-horizontal" action="{% url "event.minimal_add" %}" method="post" enctype="multipart/form-data">{% csrf_token %}
             {{ form|styled_form }}
             {{ form_place|styled_form }}
-            <input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
+            <input class="btn btn-primary" type="submit" value="Add {% firstof MODULE_EVENTS_LABEL trans 'Event' %}" />
         </form>
     </div>
 
@@ -32,13 +32,14 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <link href="{% static 'tiny_mce/custom.css' %}" type="text/css" media="all" rel="stylesheet">
+    <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
     <script type="text/javascript" src="{% url 'tinymce-filebrowser' %}"></script>
     <script type="text/javascript" src="{% static 'tiny_mce/init_tinymce.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/slug.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/formset.js' %}"></script>
     <script type="text/javascript">
         var slugit = new Slugify({
             input_element : 'input#id_title',
@@ -48,27 +49,22 @@
             limit : 150
         });
 
-        function find_field(name) {
-            //finds a field given a label
-            //don't use if multiple fields share the same label
-            labels = $(".form-group").find("label");
-            label = labels[0];
-            i = 0;
-            while((label.innerHTML!=name) && (i < labels.length)) {
-                i++;
-                label = labels[i];
-            };
-            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
-            return field;
-        };
-
         //script for hiding and showing the 'On weekend' field
         //when nesessary.
         $(document).ready(function() {
-            weekend = $('.id_on_weekend');
-            start_dt = $(find_field("Start Date/Time").find('input')[0]);
+			// Remove multi-select option from groups
+            $('select#id_groups').prop('multiple', false );
+            $('#id_groups').next('span.help-block').hide();
+        	// Date and time picker for start_dt and end_dt
+            $('#id_start_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_start_dt_1').timepicker({'timeFormat': 'h:i A'});
+            $('#id_end_dt_0').datepicker({ dateFormat: 'yy-mm-dd' });
+            $('#id_end_dt_1').timepicker({'timeFormat': 'h:i A'});
+
+            weekend = $('#id_on_weekend').closest('.form-group');
+            start_dt = $('input#id_start_dt_0');
             start_dt_val = start_dt.val();
-            end_dt = $(find_field("End Date/Time").find('input')[0]);
+            end_dt =  $('input#id_end_dt_0');
             end_dt_val = end_dt.val();
 
             if(start_dt_val != end_dt_val){
