@@ -8,6 +8,10 @@ def create_notice_types(sender, **kwargs):
                                     _("Help File Requested"),
                                     _("A help file has been requested."),
                                     verbosity=verbosity)
+    notification.create_notice_type("help_file_added",
+                                    _("Help File Added"),
+                                    _("A help file has been added."),
+                                    verbosity=verbosity)
 
 
 def init_signals():
