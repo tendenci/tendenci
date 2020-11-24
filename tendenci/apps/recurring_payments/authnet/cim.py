@@ -74,10 +74,10 @@ class CIMBase(object):
         return parent_node
 
     def process_request(self, xml_root):
-        request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
+        request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root, encoding='utf-8').decode("utf-8"))
         #print request_xml_str
         request = Request(self.cim_url,
-                                bytes(request_xml_str, encoding='UTF-8'),
+                                request_xml_str.encode('utf-8'),
                                 {'Content-Type': 'text/xml',
                                 'encoding': 'utf-8'})
         response = urlopen(request)

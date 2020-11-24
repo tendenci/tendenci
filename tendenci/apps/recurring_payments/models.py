@@ -415,7 +415,8 @@ class RecurringPayment(models.Model):
             billing_dt = billing_cycle['end'] + relativedelta(days=self.num_days)
 
         return billing_dt
-    
+
+    @property
     def is_membership_auto_renew(self):
         return self.object_content_type and self.object_content_type.name == 'Membership'
 
