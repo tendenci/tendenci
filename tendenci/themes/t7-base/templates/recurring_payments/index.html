@@ -130,8 +130,8 @@
                   <br />
           {% endif %}
          </div>
-
-    {% if memberships %}
+    {% if rp.is_membership_auto_renew %}
+    	{% if memberships %}
         <div>
         <table class="table">
             <tr>
@@ -150,6 +150,12 @@
             {% endfor %}
         </table>
         </div>
+		{% else %}
+			<div>{% trans "No memberships set up yet" %}</div>
+			{% if rp.memberships_not_tied %}
+			<a href="{% url 'memberships.auto_renew_setup' rp.user.id %}">{% trans "Set up auto renew" %}</a>
+			{% endif %}
+		{% endif %}
 
     {% else %}
         <div>

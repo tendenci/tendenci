@@ -1658,7 +1658,7 @@ def memberships_auto_renew_setup(request, user_id, template='memberships/auto_re
         if not rp:
             raise Http404
 
-    if rp.status_detail == 'disabled':
+    if rp.status_detail != 'active':
         rp.status_detail = 'active'
         rp.save()
 
