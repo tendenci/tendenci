@@ -17,7 +17,7 @@ $(document).ready(function(){
                 selector.children().remove("optgroup");
                 if (!json["error"]){
                     if (json["count"] < 1) {
-                        selector.append('<option value="" selected="selected">No sub-categories available</option>');
+                        //selector.append('<option value="" selected="selected">No sub-categories available</option>');
                     } else {
 	                    for (var i=0; i<json["count"]; i++) {
 		                    var cat_name = json['sub_categories'][i].cat_name;
