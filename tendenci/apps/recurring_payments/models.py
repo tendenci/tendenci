@@ -426,7 +426,7 @@ class RecurringPayment(models.Model):
         """
         now = datetime.now()
 
-        if self.is_membership_auto_renew():
+        if self.is_membership_auto_renew:
             # check and renew for memberships with auto-renew enabled
             # that are expired or to be expired within 24 hours.
             memberships = self.memberships
