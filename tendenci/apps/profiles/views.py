@@ -196,7 +196,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     allow_member_search = get_setting('module', 'users', 'allowmembersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.view_profile'):
         # block anon
         if request.user.is_anonymous:
             if not allow_anonymous_search:
@@ -217,7 +217,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     # decide whether or not to display the membership types drop down
     display_membership_type = False
-    if membership_view_perms == 'public' or request.user.profile.is_superuser:
+    if membership_view_perms == 'public' or has_perm(request.user, 'profiles.view_profile'):
         display_membership_type = True
     else:
         if membership_view_perms in ['all-members', 'member-type']:
@@ -275,6 +275,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
+    if not has_perm(request.user, 'profiles.view_profile'):
         if request.user.is_authenticated and request.user.profile.is_member:
             if allow_member_search:
                 filters = (Q(status=True) & Q(status_detail='active'))
@@ -1003,7 +1004,7 @@ def user_education_edit(request, username, form_class=EducationForm, template_na
 
 @login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.change_profile'):
         raise Http403
 
     if request.method == 'POST':
@@ -1109,7 +1110,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
 @password_required
 def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.change_profile'):
         raise Http403
 
     sid = str(sid)
