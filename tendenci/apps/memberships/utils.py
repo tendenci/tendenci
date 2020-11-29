@@ -1962,6 +1962,9 @@ def email_pending_members(email, **kwargs):
     if recipient_type == 'pending_members':
         pending_members =  MembershipDefault.objects.filter(status=True,
                                         status_detail__contains='ending')
+        membership_type = kwargs.get('membership_type')
+        if membership_type:
+            pending_members = pending_members.filter(membership_type=membership_type)
 
         for member in pending_members:
             first_name = member.user.first_name
@@ -1990,6 +1993,9 @@ def email_pending_members(email, **kwargs):
         # to pending corp members
         pending_corp_members = CorpMembership.objects.filter(status=True,
                                         status_detail__contains='ending')
+        corpmembership_type = kwargs.get('corpmembership_type')
+        if corpmembership_type:
+            pending_corp_members = pending_corp_members.filter(corporate_membership_type=corpmembership_type)
         
         for corp_member in pending_corp_members:
             reps = corp_member.corp_profile.reps.all()

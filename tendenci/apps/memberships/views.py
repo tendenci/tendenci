@@ -232,6 +232,8 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
             email.allow_member_view = False
             email.save(request.user)
             email.recipient_type = form.cleaned_data['recipient_type']
+            membership_type = form.cleaned_data['membership_type']
+            corpmembership_type = form.cleaned_data['corpmembership_type']
             subject = email.subject
 
             if email.recipient_type == 'myself':
@@ -258,11 +260,22 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
     
                 return HttpResponseRedirect(reverse('membership.message_pending', args=([email.id])))
             else:
-                pending_members, total_sent = email_pending_members(email, recipient_type=email.recipient_type)
-
+                pending_members, total_sent = email_pending_members(email, recipient_type=email.recipient_type,
+                                                                    membership_type=membership_type,
+                                                                    corpmembership_type=corpmembership_type)
+                if email.recipient_type == 'pending_members':
+                    if not membership_type:
+                        dest = _('ALL pending members')
+                    else:
+                        dest = membership_type.name
+                else:
+                    if not corpmembership_type:
+                        dest = _('ALL pending corp members')
+                    else:
+                        dest = corpmembership_type.name
                 opts = {}
                 opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-                opts['summary'] += 'Emails sent to ALL pending members ({})</font><br><br>'.format(total_sent)
+                opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
                 opts['summary'] += '<font face=""Arial"" color=""#000000"">'
                 opts['summary'] += 'Email Sent Appears Below in Raw Format'
                 opts['summary'] += '</font><br><br>'
@@ -283,7 +296,9 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
                 return render_to_resp(request=request, template_name=template_name,
                           context={'total_sent': total_sent,
                                    'pending_members': pending_members,
-                                   'recipient_type': email.recipient_type})
+                                   'recipient_type': email.recipient_type,
+                                   'membership_type': membership_type,
+                                   'corpmembership_type': corpmembership_type})
 
 
     return render_to_resp(request=request, template_name=template_name,
