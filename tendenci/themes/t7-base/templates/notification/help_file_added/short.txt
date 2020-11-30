@@ -1,0 +1,1 @@
+{% blocktrans with object.question as helpfile_question %}New help file ({{ helpfile_question }}) added for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

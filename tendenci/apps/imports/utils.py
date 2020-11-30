@@ -420,10 +420,10 @@ def get_unique_username(user):
     p = re.compile(r'[^\w.@+-]+', re.IGNORECASE)
     user.username = p.sub('', user.username)
 
-    # the maximum length of username is 30
-    # truncate to 27 to leave some room to append more if needed.
-    if len(user.username) > 27:
-        user.username = user.username[:27]
+    # the maximum length of username is 150
+    # truncate to 147 to leave some room to append more if needed.
+    if len(user.username) > 147:
+        user.username = user.username[:147]
     # check if this username already exists
     users = User.objects.filter(username__istartswith=user.username)
 

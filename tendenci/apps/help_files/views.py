@@ -106,19 +106,23 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
             if form.is_valid():
                 help_file = form.save(commit=False)
 
+                if not request.user.is_superuser:
+                    help_file.status_detail = 'pending'
+
                 # add all permissions and save the model
                 help_file = update_perms_and_save(request, form, help_file)
                 form.save_m2m()
                 msg_string = 'Successfully added %s' % help_file
                 messages.add_message(request, messages.SUCCESS, _(msg_string))
 
-#                # send notification to administrator(s) and module recipient(s)
-#                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-#                # if recipients and notification:
-#                     notification.send_emails(recipients,'help_file_added', {
-#                         'object': help_file,
-#                         'request': request,
-#                     })
+                # send notification to administrator(s) and module recipient(s)
+                if not request.user.is_superuser:
+                    recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+                    if recipients:
+                        notification.send_emails(recipients,'help_file_added', {
+                             'object': help_file,
+                             'request': request,
+                        })
 
                 return HttpResponseRedirect(reverse('help_file.details', args=[help_file.slug]))
         else:

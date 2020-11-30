@@ -12,7 +12,8 @@ register = Library()
 def directory_options(context, user, directory):
     context.update({
         "opt_object": directory,
-        "user": user
+        "user": user,
+        "is_member_of_directory": directory.has_membership_with(user)
     })
     return context
 

@@ -76,7 +76,7 @@ class HelpFileForm(TendenciBaseForm):
         'storme_model':HelpFile._meta.model_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('draft',_('Draft')),('active',_('Active'))))
+        choices=(('draft',_('Draft')), ('pending',_('Pending')), ('active',_('Active'))))
 
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=False)
 

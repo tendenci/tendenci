@@ -4246,7 +4246,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
         raise Http404
 
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES, user=request.user, prefix="event")
+        form = form_class(request.POST, request.FILES, user=request.user,)
         form_place = PlaceForm(request.POST, prefix="place")
         if form.is_valid() and form_place.is_valid():
             event = form.save(commit=False)
@@ -4307,7 +4307,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
                 return redirect(reverse('event', args=[event.pk]))
             return redirect('events')
     else:
-        form = form_class(user=request.user, prefix="event")
+        form = form_class(user=request.user,)
         form_place = PlaceForm(prefix="place")
 
     return render_to_resp(request=request, template_name=template_name, context={

@@ -4,6 +4,7 @@
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user profiles.add_profile as can_add_profile %}
+{% has_perm user profiles.change_profile as has_change_perm %}
 
 {% if app_object %}
     {% has_perm user profiles.view_profile app_object as can_view_profile %}
@@ -49,7 +50,7 @@
                         </li>
                     {% endif %}
 
-                    {% if user.profile.is_superuser %}
+                    {% if has_change_perm %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'profile.similar' %}">{% trans "Similar Users List" %}</a>

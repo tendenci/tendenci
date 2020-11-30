@@ -52,6 +52,7 @@ direct_response_fields = (
                         'balance_on_card',
                           )
 
+
 def direct_response_dict(direct_response_str):
     """
     Return a dictionary from a direct response string.
@@ -62,12 +63,11 @@ def direct_response_dict(direct_response_str):
 #        "St.,Bellevue,WA,98004,USA,000-000-" + \
 #        "0000,,mark@example.com,John,Doe,,123 Main St.,Bellevue,WA,98004,USA,1.00,0.00,2.00,FALSE,PONUM000001," + \
 #        "D18EB6B211FE0BBF556B271FDA6F92EE,M,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,"
-
     response_dict = {}
     max_length = len(direct_response_fields)
     # the x_delim_char we specified is || (in cim.py)
-    # the actual delimiter in the response_code is comma now
-    direct_response_list = direct_response_str.split(',')
+    # the delimiter in the response_code WAS comma, but now it's ||
+    direct_response_list = direct_response_str.split('||')
     for i, value in enumerate(direct_response_list):
         if i < max_length:
             response_dict[direct_response_fields[i]] = value
