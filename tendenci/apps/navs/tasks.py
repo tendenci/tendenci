@@ -4,6 +4,7 @@ from django.db.models import Max, Count
 from celery.task import Task
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.navs.models import Nav
+from tendenci.apps.base.utils import escape_csv
 
 class NavsExportTask(Task):
     """Export Task for Celery
@@ -53,6 +54,7 @@ class NavsExportTask(Task):
             for field in nav_fields:
                 value = nav_d[field]
                 value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
             if nav.navitem_set.all():
@@ -62,6 +64,7 @@ class NavsExportTask(Task):
                     for field in nav_item_fields:
                         value = nav_item_d[field]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the nav_item columns

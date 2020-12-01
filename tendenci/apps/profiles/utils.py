@@ -26,6 +26,7 @@ from tendenci.apps.base.utils import UnicodeWriter, normalize_newline
 from tendenci.apps.emails.models import Email
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import escape_csv
 
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
@@ -329,6 +330,8 @@ def process_export(export_fields='all_fields', identifier=u'', user_id=0):
                         item = item.strftime('%Y-%m-%d')
                     elif isinstance(item, time):
                         item = item.strftime('%H:%M:%S')
+                    elif isinstance(item, str):
+                        item = escape_csv(item)
                 row_dict[field_name] = item
             csv_writer.writerow(row_dict)
 

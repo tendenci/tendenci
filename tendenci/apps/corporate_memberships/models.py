@@ -63,7 +63,6 @@ from tendenci.apps.files.models import File
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
 
-
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
@@ -109,6 +108,10 @@ NOTICE_TYPES = (
 
 
 class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
+    REQUIRE_APPROVAL_CHOICES = (
+        ("for_all", _("for ALL (Paid & Non-Paid)")),
+        ("for_non_paid_only", _("for Non-Paid Only")),
+    )
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
@@ -145,6 +148,10 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     number_passes = models.PositiveIntegerField(_('Number Passes'),
                                                default=0,
                                                blank=True)
+    require_approval = models.CharField(_('Require Approval'), 
+                                        choices=REQUIRE_APPROVAL_CHOICES,
+                                        default='for_non_paid_only',
+                                        max_length=20)
 
     objects = CorpMembershipTypeManager()
 
@@ -202,6 +209,8 @@ class CorpProfile(TendenciBaseModel):
                                blank=True, default='')
     phone = models.CharField(_('Phone'), max_length=50,
                              blank=True, default='')
+    phone2 = models.CharField(_('phone2'), max_length=50,
+                              blank=True, default='')
     email = models.CharField(_('Email'), max_length=200,
                              blank=True, default='')
     url = models.CharField(_('URL'), max_length=100, blank=True,
@@ -474,6 +483,7 @@ class CorpMembership(TendenciBaseModel):
         else:
             verbose_name = _("Corporate Membership")
             verbose_name_plural = _("Corporate Memberships")
+        permissions = (("approve_corpmembership", _("Can approve corporate memberships")),)
         app_label = 'corporate_memberships'
 
     def __str__(self):
@@ -727,24 +737,26 @@ class CorpMembership(TendenciBaseModel):
         from tendenci.apps.perms.utils import get_notice_recipients
 
         # approve it
-        if self.renewal:
-            self.approve_renewal(request)
-        else:
-            params = {'create_new': False,
-                      'assign_to_user': None}
-            if self.anonymous_creator:
-                [assign_to_user] = User.objects.filter(
-                            first_name=self.anonymous_creator.first_name,
-                            last_name=self.anonymous_creator.last_name,
-                            email=self.anonymous_creator.email
-                                )[:1] or [None]
-                if assign_to_user:
-                    params['assign_to_user'] = assign_to_user
-                    params['create_new'] = False
-                else:
-                    params['create_new'] = True
-
-            self.approve_join(request, **params)
+        if request.user.profile.is_superuser or \
+                self.corporate_membership_type.require_approval == 'for_non_paid_only':
+            if self.renewal:
+                self.approve_renewal(request)
+            else:
+                params = {'create_new': False,
+                          'assign_to_user': None}
+                if self.anonymous_creator:
+                    [assign_to_user] = User.objects.filter(
+                                first_name=self.anonymous_creator.first_name,
+                                last_name=self.anonymous_creator.last_name,
+                                email=self.anonymous_creator.email
+                                    )[:1] or [None]
+                    if assign_to_user:
+                        params['assign_to_user'] = assign_to_user
+                        params['create_new'] = False
+                    else:
+                        params['create_new'] = True
+    
+                self.approve_join(request, **params)
 
         # send notification to administrators
         recipients = get_notice_recipients('module',
@@ -1160,22 +1172,28 @@ class CorpMembership(TendenciBaseModel):
         return False
 
     def allow_edit_by(self, this_user):
-        if self.is_active or self.is_expired:
-            if this_user.profile.is_superuser:
+        if not this_user.is_authenticated:
+            return False
+
+        if this_user.profile.is_superuser:
                 return True
+
+        if self.is_active or self.is_pending:
             if has_perm(this_user, 'corporate_memberships.change_corpmembership'):
                 return True
 
-            if not this_user.is_anonymous:
-                if self.is_active:
-                    if self.is_rep(this_user):
-                        return True
-                    if self.creator:
-                        if this_user.id == self.creator.id:
-                            return True
-                    if self.owner:
-                        if this_user.id == self.owner.id:
-                            return True
+            if self.is_rep(this_user):
+                return True
+            if self.creator:
+                if this_user.id == self.creator.id:
+                    return True
+            if self.owner:
+                if this_user.id == self.owner.id:
+                    return True
+
+        # if they can approve, they can edit the pending corporate membership             
+        if self.is_pending and has_perm(this_user, 'corporate_memberships.approve_corpmembership'):
+            return True
 
         return False
 
@@ -1671,7 +1689,12 @@ class CorpMembershipAppField(OrderingBaseModel):
                             'corporate_membership_type',
                             'payment_method']:
                     if self.choices == 'yesno':
-                        field_args["choices"] = ((1, _('Yes')), (0, _('No')),)
+                        field_args["choices"] = ((True, _('Yes')), (False, _('No')),)
+                        if self.default_value:
+                            if self.default_value.lower() == 'yes':
+                                field_args['initial'] = True
+                            elif self.default_value.lower() == 'no':
+                                field_args['initial'] = False
                     else:
                         choices = self.choices.split(",")
                         field_args["choices"] = list(zip(choices, choices))

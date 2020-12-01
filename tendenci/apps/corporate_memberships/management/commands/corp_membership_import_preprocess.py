@@ -43,12 +43,12 @@ class Command(BaseCommand):
                 f = default_storage.open(mimport.upload_file.name)
                 f2 = default_storage.open(path2, 'wb+')
                 encoding_updated = False
+                encoding = chardet.detect(f.read())['encoding']
+                if encoding == 'ISO-8859-1' or \
+                    encoding == 'ISO-8859-2':
+                    encoding = 'latin-1'
                 for chunk in f.chunks():
-                    encoding = chardet.detect(chunk)['encoding']
                     if encoding not in ('ascii', 'utf8'):
-                        if encoding == 'ISO-8859-1' or \
-                            encoding == 'ISO-8859-2':
-                            encoding = 'latin-1'
                         chunk = chunk.decode(encoding)
                         chunk = chunk.encode('utf8')
                         encoding_updated = True

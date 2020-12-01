@@ -1,3 +1,85 @@
+### 12.3.3 [2020-11-17]
+
+* Updated similar users list to be case-insensitive.
+* Resolved the issue about speaker photo overlaps the text.
+* Updated django version to 2.2.17.
+* Updated the notifications email view to superuser only.
+* Fixed value too long for NoticeEmail.
+* Fixed missing file perms re-assignment on directories approal.
+
+
+### 12.3.2 [2020-10-29]
+
+* **SECURITY**: Updated exports to prevent potential CSV injection in the exported CSV files.
+* **SECURITY**: Added the missing FileValidator to restrict files to images for case studies edit only at admin backend.
+
+### 12.3.1 [2020-10-28]
+
+* **SECURITY**: Fixed a potential HTML Injection and XSS vulnerability in a few area of admin backend.
+* Fixed a ValueError for directory add.
+ 
+
+### 12.3 [2020-10-26]
+
+* Added the functionality to allow admin to email pending members or pending corp members.  
+* Enabled multiple categories and sub-categories for directories.
+* Added the sort ability to directory categories with drag-and-drop.
+* Added the approve_corpmembership perm so that users can be assigned to approve corporate memberships without granting them the superuser privilege.
+* Added a setting to turn on/off private (obscure) url access without login required.
+* Added the require_approval field to the corporate membership type with 2 choices "for ALL" and "for Non-Paid Only" (default to "for Non-Paid Only"). Currently, the non-paid corporate memberships are set to pending, while the paid ones are approved automatically. This allows admin to set to require approval for all applicants.
+* Updated email to directory owners (If a directory is created from memberships, the owner is the associated member. If a directory is created from corporate memberships, the owners are the representatives.) upon approval.
+* Allowed the owners of corp memberships to edit their own pending applications.
+* Updated the base class for oauth2_client backend.
+* updated gevent version to the latest 20.9.0.
+* updated format for corp approve.
+* Updated the edit link for memberships admin list - linked "Edit" to the frontend edit page, and "ID" to the backend edit.
+* Avoided creating default entity and group in the initial_migrate.
+* Added a simple command to show settings (Thanks @bernd-wechner).
+* Added a FAQs view to the help_files app (Thanks @bernd-wechner).
+* Tidied layout of the template themes/t7-tendenci2020/templates/base.html (Thanks @bernd-wechner).
+* Fixed Pay Online button not showing.
+* Fixed field lengths in accounts forms (Thanks @evanspaeder)
+* Fixed empty app list /base/apps-list/.
+* Fixed broken list_tables command.
+* Resolved an error in firstdatae4.
+* Fixed an error in the command settings_build_init_json (Thanks @bernd-wechner).
+* Fixed x_type initial issue for the firstdatae4.
+* Removed the extra "\" in email subject when [full name] is used in subject template for custom forms.
+
+### 12.2.8 [2020-09-30]
+
+* Updated format for corporate membership view to avoid long labels being cut off
+
+### 12.2.7 [2020-09-30]
+
+* Fixed corp_membership encoding detection (Thanks @evanspaeder)
+* Added an edit button for admin on pending corp membership for easy editing
+* Fixed a potential encoding issue on memberships import
+* Updated memberships and corporate membership imports to use detected encoding instead of hard-coded utf-8
+* Updated the corporate membership add to redirect anonymous user to login instead of add_pre if "public can view" is unchecked
+* Formated the pricing end date to also show year  #889
+* Resolved corporate membership types not being imported along with their associated corporate memberships 
+
+### 12.2.6 [2020-09-28]
+
+* Fixed default value not working for boolean field on corporate membership application.
+* Fixed profile/add form username limits #894 (Thanks @evanspaeder)
+* Fixed duplicate slug error on membership app clone #893
+* Fixed newsletters are not searchable in Event Logs #892
+* Applied strip_control_chars to feed for articles and news to resolve an UnserializableContentError: Control characters are not supported in XML 1.0.
+
+
+### 12.2.5 [2020-09-25]
+
+* Fixed an error in corporate memberships import (Thanks @evanspaeder)
+* Added missing phone2 field to corp profile (The phone2 field exists on app, but was missing in CorpProfile model).
+
+### 12.2.3 [2020-09-23]
+
+* Fixed links on the full settings list not being linked to the specific settings.
+* Avoided using the same ud fields for cloned membership applications because same UD fields can't be re-used across applications.
+* Resolved a permission issue on deleting unneeded membership applications (and corporate membership applications).
+
 ### 12.2.2 [2020-09-17]
 
 * Directory owners can view and edit their directories, but only admin can publish directories that are created with memberships and corporate memberships.

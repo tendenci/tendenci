@@ -9,31 +9,33 @@
 <style>
     .block-inline{
         display: inline-block;
-        vertical-align: top;
     }
+    table.corp-approve > tbody > tr > th, table.corp-approve > tbody > tr > td {
+    	border: none;
+	}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="t">
      <h1>{% trans "Corporate Membership Submission" %}</h1>
-
-     <div>
-         <div class="field-label block-inline">
+<table class="table corp-approve">
+     <tr>
+         <td class="field-label block-inline">
              {{ field_labels.name }}:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
              <strong><a href="{% url "corpmembership.view" corporate_membership.id %}" target="_blank">{{ corporate_membership.corp_profile.name }}</a></strong>
              {% if corporate_membership.is_pending %}
              <span class="text-danger">({% trans 'Pending' %})</span>
              {% endif %}
-         </div>
-     </div>
-     <div>
-         <div class="field-label block-inline">
+         </td>
+     </tr>
+     <tr>
+         <td class="field-label block-inline">
              {{ field_labels.address }}:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
             {% if corporate_membership.corp_profile.address %}
                     {{ corporate_membership.corp_profile.address }}
                 {% endif %}
@@ -50,45 +52,45 @@
                 {% if corporate_membership.corp_profile.zip %}
                     {{ corporate_membership.corp_profile.zip }}
                 {% endif %}
-         </div>
-     </div>
+         </td>
+     </tr>
 
      {% if corporate_membership.corp_profile.phone %}
-     <div>
-         <div class="field-label block-inline">
+     <tr>
+         <td class="field-label block-inline">
              {{ field_labels.phone }}:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
             <strong>{{ corporate_membership.corp_profile.phone }}</strong>
-         </div>
-     </div>
+         </td>
+     </tr>
      {% endif %}
 
      {% if corporate_membership.corp_profile.email %}
-     <div>
-         <div class="field-label block-inline">
+     <tr>
+         <td class="field-label block-inline">
              {{ field_labels.email }}:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
            <strong> {{ corporate_membership.corp_profile.email }}</strong>
-         </div>
-     </div>
+         </td>
+     </tr>
      {% endif %}
-     <br />
-    <div>
-         <div class="field-label block-inline">
+     <tr><td>&nbsp;</td></tr>
+    <tr>
+         <td class="field-label block-inline">
              <strong>{% trans "Join Date"%}</strong>:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
             <strong>{{ corporate_membership.join_dt }}</strong>
-         </div>
-     </div>
+         </td>
+   </tr>
 
-     <div>
-         <div class="field-label block-inline">
+     <tr>
+         <td class="field-label block-inline">
              <strong>{% trans "Expiration Date"%}</strong>:
-         </div>
-         <div class="block-inline">
+         </td>
+         <td class="block-inline">
            <strong> {{ corporate_membership.expiration_dt }}</strong>
             {% if corporate_membership.is_expired %}
                 {% if corporate_membership.is_in_grace_period %}
@@ -97,9 +99,9 @@
                     <span style="color:red">{% trans "(expired)" %}</span>
                 {% endif %}
             {% endif %}
-         </div>
-     </div>
-
+         </td>
+     </tr>
+</table>
 
    {% if corporate_membership.renewal %}
        <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>

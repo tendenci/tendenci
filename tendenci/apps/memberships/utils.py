@@ -42,6 +42,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.apps.emails.models import Email
 from tendenci.apps.educations.models import Education
+from tendenci.apps.base.utils import escape_csv
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -507,6 +508,8 @@ def process_export(
                     elif field_name == 'app':
                         # display membership type name instead of id
                         item = app_ids_dict.get(item, '')
+                    elif isinstance(item, str):
+                        item = escape_csv(item)
                 items_dict[field_name] = item
             csv_writer.writerow(items_dict)
 
@@ -1941,3 +1944,82 @@ def get_membership_summary_data():
          'total_expired': total_expired,
          'total_in_grace_period': total_in_grace_period,
          'total_total': total_total})
+
+
+def email_pending_members(email, **kwargs):
+    """
+    Email to pending members or corporate members.
+    """
+    from django.template import Context, Template
+    from tendenci.apps.corporate_memberships.models import CorpMembership
+    site_url = get_setting('site', 'global', 'siteurl')
+    site_display_name = get_setting('site', 'global', 'sitedisplayname')
+    tmp_body = email.body
+    
+    recipient_type = kwargs.get('recipient_type')
+    total_sent = 0
+    
+    if recipient_type == 'pending_members':
+        pending_members =  MembershipDefault.objects.filter(status=True,
+                                        status_detail__contains='ending')
+        membership_type = kwargs.get('membership_type')
+        if membership_type:
+            pending_members = pending_members.filter(membership_type=membership_type)
+
+        for member in pending_members:
+            first_name = member.user.first_name
+            last_name = member.user.last_name
+    
+            email.recipient = member.user.email
+    
+            if email.recipient:
+                view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
+                edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
+                template = Template(email.body)
+                context = Context({'site_url': site_url,
+                                   'site_display_name': site_display_name,
+                                   "first_name": first_name,
+                                   'last_name': last_name,
+                                   'view_url': view_url,
+                                   'edit_url': edit_url,})
+                email.body = template.render(context)
+    
+                email.send()
+                total_sent += 1
+    
+            email.body = tmp_body  # restore to the original
+        return pending_members, total_sent
+    else:
+        # to pending corp members
+        pending_corp_members = CorpMembership.objects.filter(status=True,
+                                        status_detail__contains='ending')
+        corpmembership_type = kwargs.get('corpmembership_type')
+        if corpmembership_type:
+            pending_corp_members = pending_corp_members.filter(corporate_membership_type=corpmembership_type)
+        
+        for corp_member in pending_corp_members:
+            reps = corp_member.corp_profile.reps.all()
+            for rep in reps:
+                first_name = rep.user.first_name
+                last_name = rep.user.last_name
+
+                email.recipient = rep.user.email
+
+                if email.recipient:
+                    view_url = '{0}{1}'.format(site_url, reverse('corpmembership.view', args=[corp_member.id]))
+                    edit_url = '{0}{1}'.format(site_url, reverse('corpmembership.edit', args=[corp_member.id]))
+                    template = Template(email.body)
+                    context = Context({'site_url': site_url,
+                                       'site_display_name': site_display_name,
+                                       "first_name": first_name,
+                                       'last_name': last_name,
+                                       'view_url': view_url,
+                                       'edit_url': edit_url,})
+                    email.body = template.render(context)
+
+                    email.send()
+                    total_sent += 1
+
+                email.body = tmp_body  # restore to the original
+        return pending_corp_members, total_sent
+    

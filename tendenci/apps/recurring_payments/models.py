@@ -140,9 +140,19 @@ class RecurringPayment(models.Model):
 
     @property
     def memberships(self):
-        if self.object_content_type and self.object_content_type.name == 'Membership':
+        if self.is_membership_auto_renew:
             return self.object_content_type.model_class().objects.filter(user=self.user,
                                                     auto_renew=True,
+                                                    status=True,
+                                                    status_detail__in=['active', 'expired']
+                                             ).order_by('-expire_dt')
+        return None
+
+    @property
+    def memberships_not_tied(self):
+        if self.is_membership_auto_renew:
+            return self.object_content_type.model_class().objects.filter(user=self.user,
+                                                    auto_renew=False,
                                                     status=True,
                                                     status_detail__in=['active', 'expired']
                                              ).order_by('-expire_dt')
@@ -406,13 +416,17 @@ class RecurringPayment(models.Model):
 
         return billing_dt
 
+    @property
+    def is_membership_auto_renew(self):
+        return self.object_content_type and self.object_content_type.name == 'Membership'
+
     def check_and_generate_invoices(self, last_billing_cycle=None):
         """
         Check and generate invoices if needed.
         """
         now = datetime.now()
 
-        if self.object_content_type and self.object_content_type.name == 'Membership':
+        if self.is_membership_auto_renew:
             # check and renew for memberships with auto-renew enabled
             # that are expired or to be expired within 24 hours.
             memberships = self.memberships

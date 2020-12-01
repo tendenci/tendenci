@@ -43,6 +43,8 @@ class CorpMembershipImportProcessor(object):
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid',
                                                'corp_profile']])
+        self.all_corporate_membership_type_ids = CorporateMembershipType.objects.values_list(
+                                                    'id', flat=True)
         self.private_settings = self.set_default_private_settings()
         self.t4_timezone_map = {'AST': 'Canada/Atlantic',
                              'EST': 'US/Eastern',
@@ -80,6 +82,45 @@ class CorpMembershipImportProcessor(object):
             d['allow_member_view'] = True
         return d
 
+    def clean_corporate_membership_type(self, cmemb_data, **kwargs):
+        """
+        Ensure we have a valid corporate membership type.
+        """
+        is_valid = True
+        error_msg = ''
+
+        if 'corporate_membership_type' in cmemb_data and cmemb_data['corporate_membership_type']:
+            value = cmemb_data['corporate_membership_type']
+
+            if str(value).isdigit():
+                value = int(value)
+                if value not in self.all_corporate_membership_type_ids:
+                    is_valid = False
+                    error_msg = 'Invalid corporate membership type "%d"' % value
+                else:
+                    cmemb_data['corporate_membership_type'] = value
+            else:
+                if not CorporateMembershipType.objects.filter(
+                                            name=value).exists():
+                    is_valid = False
+                    error_msg = 'Invalid corporate membership type "%s"' % value
+                else:
+                    cmemb_data['corporate_membership_type'] = CorporateMembershipType.objects.filter(
+                                                                name=value
+                                                                ).values_list(
+                                                                    'id', flat=True)[0]
+        else:
+            # the spread sheet doesn't have the corporate_membership_type field,
+            # assign the default one
+            if CorporateMembershipType.objects.all().exists():
+                cmemb_data['corporate_membership_type'] = CorporateMembershipType.objects.all(
+                                                            ).order_by('id')[0]
+            else:
+                is_valid = False
+                error_msg = 'No corporate membership type. Please add one to the site.'
+
+        return is_valid, error_msg
+
     def validate_fields(self, cmemb_data, key):
         """
         1. Check if we have enough data to process for this row.
@@ -93,6 +134,9 @@ class CorpMembershipImportProcessor(object):
 #         if 'status_detail' in cmemb_data:
 #             if cmemb_data['status_detail'] in ['archive', 'archived']:
 #                 error_msg.append('No import for archived.')
+        is_valid, emsg = self.clean_corporate_membership_type(cmemb_data)
+        if not is_valid:
+            error_msg.append(emsg)
 
         return ' '.join(error_msg)
 
@@ -263,9 +307,7 @@ class CorpMembershipImportProcessor(object):
 
         self.assign_import_values_from_dict(corp_memb, action_info['corp_memb_action'])
 
-        if corp_memb.status is None or corp_memb.status == '' or \
-            self.cmemb_data.get('status', '') == '':
-            corp_memb.status = True
+        corp_memb.status = True
         if not corp_memb.status_detail:
             corp_memb.status_detail = 'active'
         else:

@@ -67,18 +67,28 @@
         </address>
     {% endif %}
 
-    {% with directory.cat as directory_cat %}
-        {% if directory_cat %}
-            <li>
-                <ul class="list-inline">
-                    <li><strong>{% trans "Category:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}">{{ directory_cat.name }}</a></li>
-                    {% if directory.sub_cat %}
-                        <li>|</li>
-                        <li><strong>{% trans "Subcategory:" %}</strong> <a href="{% url 'directories' %}?cat={{ directory_cat.pk }}&sub_cat={{ directory.sub_cat.pk }}">{{ directory.sub_cat.name }}</a></li>
-                    {% endif %}
-                </ul>
-            </li>
-        {% endif %}
+	{% with directory.cats_list as cats_list %}
+    {% if cats_list %}
+        <li>
+           {% for cat, sub_cats in cats_list %}
+               <ul class="list-inline">
+                <li><strong>{% trans "Category:" %}</strong> 
+                   <a href="{% url 'directories' %}?cat={{ cat.pk }}">{{ cat.name }}</a>
+                 </li>
+				 {% if not MODULE_DIRECTORIES_DISABLESUBCATEGORIES %}
+                 {% if sub_cats %}
+                    <li>|</li>
+                    <li><strong>{% trans "Subcategory:" %}</strong> 
+                       {% for sub_cat in sub_cats %}
+                       <a href="{% url 'directories' %}?sub_cat={{ sub_cat.pk }}">{{ sub_cat.name }}</a>{% if not forloop.last %}, {% endif %}
+                       {% endfor %}
+                    </li>
+				{% endif %}
+				{% endif %}
+			 </ul>
+	      {% endfor %}
+        </li>
+    {% endif %}
     {% endwith %}
 
     {% if directory.tags %}

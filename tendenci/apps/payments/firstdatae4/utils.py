@@ -4,6 +4,8 @@ import hashlib
 from django.conf import settings
 from django.http import Http404
 from django.db import transaction
+from django.shortcuts import get_object_or_404
+
 from .forms import PaymentForm
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.payments.utils import payment_processing_object_updates
@@ -24,6 +26,10 @@ def prepare_firstdatae4_form(request, payment):
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
     x_logo_URL = get_setting('site', 'global', 'merchantlogo')
+    if get_setting("site", "global", "merchantauthorizeonly"):
+        x_type = 'AUTH_ONLY'
+    else:
+        x_type = 'AUTH_CAPTURE'
 
     params = {
               'x_fp_sequence':payment.id,
@@ -57,6 +63,7 @@ def prepare_firstdatae4_form(request, payment):
               'x_phone':payment.phone,
               'x_show_form':'PAYMENT_FORM',
               'x_logo_URL':x_logo_URL,
+              'x_type': x_type
         }
     if settings.FIRSTDATA_USE_RELAY_RESPONSE:
         params.update({'x_relay_response':'TRUE',
@@ -77,27 +84,24 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
 
     with transaction.atomic():
         #payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
-        payment = Payment.objects.select_for_update().first(pk=x_invoice_num)
-        if not payment:
-            return None
-
-        # authenticate with md5 hash to make sure the response is securely
-        # received from firstdata.
-        md5_hash = response_d.get('x_MD5_Hash', '')
-        # calculate our md5_hash
-        response_key = settings.FIRSTDATA_RESPONSE_KEY
-        api_login_id = settings.MERCHANT_LOGIN
-        t_id = response_d.get('x_trans_id', '')
-        amount = response_d.get('x_amount', 0)
-
-        s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
-        my_md5_hash = hashlib.md5(s.encode()).hexdigest()
-
-        if settings.FIRSTDATA_USE_RELAY_RESPONSE:
+        payment = get_object_or_404(Payment.objects.select_for_update(), pk=x_invoice_num)
+        if not payment.is_approved:
+            # authenticate with md5 hash to make sure the response is securely
+            # received from firstdata.
+            md5_hash = response_d.get('x_MD5_Hash', '')
+            # calculate our md5_hash
+            response_key = settings.FIRSTDATA_RESPONSE_KEY
+            api_login_id = settings.MERCHANT_LOGIN
+            t_id = response_d.get('x_trans_id', '')
+            amount = response_d.get('x_amount', 0)
+    
+            s = '%s%s%s%s' % (response_key, api_login_id, t_id, amount)
+            my_md5_hash = hashlib.md5(s.encode()).hexdigest()
+    
+            #if settings.FIRSTDATA_USE_RELAY_RESPONSE:
             if my_md5_hash.lower() != md5_hash.lower():
                 raise Http404
-
-        if not payment.is_approved:  # if not already processed
+    
             payment_update_firstdatae4(request, response_d, payment)
             payment_processing_object_updates(request, payment)
 
@@ -106,7 +110,7 @@ def firstdatae4_thankyou_processing(request, response_d, **kwargs):
 
             # send payment recipients notification
             send_payment_notice(request, payment)
-
+    
         return payment
 
 def payment_update_firstdatae4(request, response_d, payment, **kwargs):

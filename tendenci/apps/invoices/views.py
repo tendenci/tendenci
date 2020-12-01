@@ -15,7 +15,6 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.template.loader import get_template
@@ -33,6 +32,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
 
 
 @is_enabled('invoices')
@@ -40,6 +40,11 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     """
     Invoice information, payment attempts (successful and unsuccessful).
     """
+    if get_setting("module", "invoices", "disallow_private_urls"):
+        guid = None
+        if not request.user.is_authenticated:
+            raise Http403
+
     invoice = get_object_or_404(Invoice.objects.all_invoices(), pk=id)
 
     if not invoice.allow_view_by(request.user, guid):
@@ -62,9 +67,8 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     notify = request.GET.get('notify', u'')
     guid = guid or u''
 
-    merchant_login = (  # boolean value
-        hasattr(settings, 'MERCHANT_LOGIN') and
-        settings.MERCHANT_LOGIN)
+    # boolean value
+    merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
     obj = invoice.get_object()
     obj_name = u''

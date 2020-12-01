@@ -1,0 +1,24 @@
+<p>{% blocktrans with request.user.get_full_name as author %}The following help file was
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{ author }}{% endblocktrans %}.
+  {% if request.user.is_superuser %}(superuser){% else %} {% trans "It needs to be activated" %}{% endif %}:</p>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans 'Question:' %}</td>
+    <td width="75%"><b>{{ object.question }}</b></td>
+  </tr>
+  <tr>
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans 'Topics:' %}</td>
+    <td width="75%"><b>{% for topic in object.topics.all %}{{ topic }}{% if not forloop.last %}, {% endif %}{% endfor %}</b></td>
+  </tr>
+</table>
+<p>{% trans 'To view the details of this help file, go to:' %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+
+{% if not request.user.is_superuser %}
+  <br>
+<p>{% trans 'To activate this help file, go to:' %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url 'help_files.edit' object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url 'help_files.edit' object.id %}</a></b> </p>
+{% endif %}
+
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>

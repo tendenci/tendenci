@@ -27,21 +27,24 @@ from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.regions.models import Region
 from tendenci.apps.entities.models import Entity
+from tendenci.libs.abstracts.models import OrderingBaseModel
+from tendenci.apps.base.utils import validate_email
+from tendenci.apps.base.validators import UnicodeNameValidator
 
 
 def file_directory(instance, filename):
     filename = correct_filename(filename)
     return 'directories/%d/%s' % (instance.id, filename)
 
-class Category(models.Model):
-    name = models.CharField(max_length=255)
+class Category(OrderingBaseModel):
+    name = models.CharField(max_length=255, validators=[UnicodeNameValidator()],)
     slug = models.SlugField()
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('slug', 'parent',)
         verbose_name_plural = _("Categories")
-        ordering = ('name',)
+        ordering = ('position', 'name')
         app_label = 'directories'
 
     def __str__(self):
@@ -113,6 +116,10 @@ class Directory(TendenciBaseModel):
                                  related_name="directory_cat", null=True, on_delete=models.SET_NULL)
     sub_cat = models.ForeignKey(Category, verbose_name=_("Sub Category"),
                                  related_name="directory_subcat", null=True, on_delete=models.SET_NULL)
+    cats = models.ManyToManyField(Category, verbose_name=_("Categories"),
+                                  related_name="directory_cats",)
+    sub_cats = models.ManyToManyField(Category, verbose_name=_("Sub Categories"),
+                                  related_name="directory_subcats",)
     # legacy categories needed for data migration
     categories = GenericRelation(CategoryItem,
                                           object_id_field="object_id",
@@ -241,6 +248,13 @@ class Directory(TendenciBaseModel):
 
     def age(self):
         return datetime.now() - self.create_dt
+    
+    def cats_list(self):
+        items = []
+        for cat in self.cats.all():
+            sub_cats = self.sub_cats.filter(parent=cat)
+            items.append((cat, list(sub_cats)))
+        return items
 
     @property
     def category_set(self):
@@ -284,6 +298,38 @@ class Directory(TendenciBaseModel):
                        self.corpprofile.is_rep(this_user)]):
                     return True
         return False
+
+    def get_owner_emails_list(self):
+        """
+        Returns a list of owner's email addresses.
+        
+        It's tricky because directory doesn't have a clear owner. 
+        Since the owner field can be changed to whoever last edited, we'll
+        check the creator, the email address field, member or reps if 
+        it is created from memberships and corp memberships, respectively.
+        """
+        emails_list = []
+        # creator
+        if self.creator and validate_email(self.creator.email):
+            emails_list.append(self.creator.email)
+
+        # the email field  
+        if validate_email(self.email):
+            emails_list.append(self.email)
+
+        # member
+        [m] = self.membershipdefault_set.filter(status_detail='active')[:1] or [None]
+        if m and validate_email(m.user.email):
+            emails_list.append(m.user.email)
+
+        # corp reps
+        if hasattr(self, 'corpprofile'):
+            corp_reps = self.corpprofile.reps.all()
+            for rep in corp_reps:
+                if validate_email(rep.user.email):
+                    emails_list.append(rep.user.email)
+
+        return list(set(emails_list))
 
 
 class DirectoryPricing(models.Model):

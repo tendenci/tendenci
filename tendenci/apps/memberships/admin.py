@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.utils.html import strip_tags
 
 from tendenci.apps.base.http import Http403
 from tendenci.apps.memberships.forms import MembershipTypeForm
@@ -332,7 +333,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     list_display.append('admin_notes')
     list_display.append('reminder')
     list_editable = ['reminder',]
-    list_display_links = ('edit_link',)
+    list_display_links = ('id',)
 
     list_filter = [
         MembershipStatusDetailFilter,
@@ -374,8 +375,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
         return fieldsets
 
-    def edit_link(self, obj):
-        return "Edit"
+    @mark_safe
+    def edit_link(self, instance):
+        return '<a href="%s" title="Edit at Front End">%s</a>' % (
+                reverse('membership_default.edit',args=[instance.id]),
+                _('Edit'),)
     edit_link.short_description = _('edit')
 
     @mark_safe
@@ -386,7 +390,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         link_icon = static('images/icons/external_16x16.png')
         link = '<a href="%s" title="%s"><img src="%s" alt="external_16x16" title="external icon"/></a>' % (
             obj.get_absolute_url(),
-            obj,
+            strip_tags(obj),
             link_icon,
         )
         return link
@@ -640,7 +644,7 @@ def clone_apps(modeladmin, request, queryset):
 clone_apps.short_description = 'Clone selected forms'
 
 
-class MembershipAppAdmin(admin.ModelAdmin):
+class MembershipAppAdmin(TendenciBaseModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
     list_display = ('id', 'name', 'application_form_link', 'status_detail', 'field_sort_link')
@@ -970,8 +974,12 @@ class MembershipAppField2Admin(admin.ModelAdmin):
 
         return obj
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def change_view(self, request, object_id=None, form_url='', extra_context=None):
+        return super(MembershipAppField2Admin, self).change_view(request, object_id, form_url,
+                               extra_context=dict(show_delete=False))
+
+#     def has_delete_permission(self, request, obj=None):
+#         return False
 
     def has_add_permission(self, request):
         return False

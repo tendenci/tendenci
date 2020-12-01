@@ -216,7 +216,7 @@ class GroupPermissionForm(forms.ModelForm):
         super(GroupPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         # only display the permissions for the apps in APPS
-        content_types = ContentType.objects.exclude(app_label='auth')
+        content_types = ContentType.objects.exclude(app_label='auth').exclude(model='membershipset')
 
         self.fields['permissions'].queryset = Permission.objects.filter(
                                         content_type__in=content_types)

@@ -2573,7 +2573,7 @@ class MembershipApp(TendenciBaseModel):
         """
         params = dict([(field.name, getattr(self, field.name))
                        for field in self._meta.fields if not field.__class__==AutoField])
-        params['slug'] = 'clone-%d-%s' % (self.id, params['slug'])
+        params['slug'] = '%s-%d' % (params['slug'], int(time.time()))
         params['name'] = 'Clone of %s' % params['name']
         params['slug'] = params['slug'][:200]
         params['name'] = params['name'][:155]

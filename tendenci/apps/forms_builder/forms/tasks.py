@@ -19,6 +19,7 @@ from celery.task import Task
 from tendenci.apps.exports.utils import full_model_to_dict, render_csv
 from tendenci.apps.forms_builder.forms.models import Form
 from tendenci.apps.forms_builder.forms.utils import form_entries_to_csv_writer
+from tendenci.apps.base.utils import escape_csv
 
 
 class FormsExportTask(Task):
@@ -86,6 +87,7 @@ class FormsExportTask(Task):
                 else:
                     value = form_d[field]
                 value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
             if form.fields.all():
@@ -95,6 +97,7 @@ class FormsExportTask(Task):
                     for f in field_fields:
                         value = field_d[f]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the field columns
@@ -110,6 +113,7 @@ class FormsExportTask(Task):
                     for f in pricing_fields:
                         value = pricing_d[f]
                         value = str(value).replace(os.linesep, ' ').rstrip()
+                        value = escape_csv(value)
                         data_row.append(value)
 
             # fill out the rest of the field columns

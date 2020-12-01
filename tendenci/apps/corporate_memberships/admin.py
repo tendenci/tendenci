@@ -35,7 +35,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
-    option_fields = ['position', 'status_detail']
+    option_fields = ['require_approval', 'position', 'status_detail']
     if get_setting('module', 'corporate_memberships', 'usefreepass'):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
@@ -507,8 +507,12 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
         return obj
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def change_view(self, request, object_id=None, form_url='', extra_context=None):
+        return super(CorpMembershipAppField2Admin, self).change_view(request, object_id, form_url,
+                               extra_context=dict(show_delete=False))
+
+#     def has_delete_permission(self, request, obj=None):
+#         return False
 
     def has_add_permission(self, request):
         return False

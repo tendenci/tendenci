@@ -1,0 +1,58 @@
+{% extends "memberships/base.html" %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="t-message-pending">
+    <h1>{% trans "Email to Pending Members or Corp Members" %}</h1>
+
+	<div class="text-center">
+	 <a href="{% url "admin:memberships_membershipdefault_changelist" %}?status_detail=pending"">{% trans "View Pending Members" %}</a> &nbsp;&nbsp;&nbsp;&nbsp;
+	 <a href="{% url "admin:corporate_memberships_corpmembership_changelist" %}?status_detail=pending">{% trans "View Pending Corp Members" %}</a> 
+	</div>
+	<div>&nbsp;</div>
+	
+    <form id="t-articles-article-form" class="form-horizontal" action="." method="post">{% csrf_token %}
+        {{ form|styled_form }}
+
+        <div class="form-group">
+            <em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>.
+        </div>
+
+		<div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary text-capitalize">
+                  {% trans "Send Email" %}
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">  
+    (function($) {
+        var mt = $( "select[name='membership_type']" );
+		$("input[value='pending_members']").closest('div.radio').append(mt);
+		$("label[for='id_membership_type']").closest('div.form-group').remove();
+		
+		var cmt = $( "select[name='corpmembership_type']" );
+		$("input[value='pending_corp_members']").closest('div.radio').append(cmt);
+		$("label[for='id_corpmembership_type']").closest('div.form-group').remove();
+     })(jQuery);
+ </script>
+
+{% endblock %}

@@ -40,7 +40,7 @@
                     <strong>{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</strong></p>
                 <div class="pricing-info">
                     <p><strong>{% trans "Available Before" %}:</strong>
-                       {{ pricing.end_dt|date:'M j g:i A' }}</p>
+                       {{ pricing.end_dt|date:'M j Y g:i A' }}</p>
                     <p>{{ pricing.description|safe }}</p>
                     <p><strong>{% trans "Price" %}:</strong> {{ pricing.price|format_currency }}</p>
                     {% with pricing as price %}

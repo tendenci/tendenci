@@ -89,6 +89,7 @@ from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.utils import escape_csv
 
 
 @is_enabled('corporate_memberships')
@@ -225,13 +226,6 @@ def corpmembership_add(request, slug='',
     """
     creator = None
     hash = request.GET.get('hash', '')
-    if not request.user.is_authenticated:
-        if hash:
-            [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
-        if not creator:
-            # anonymous user - redirect them to enter their
-            # contact email before processing
-            return HttpResponseRedirect(reverse('corpmembership.add_pre'))
 
     if not slug:
         app = CorpMembershipApp.objects.current_app()
@@ -244,6 +238,18 @@ def corpmembership_add(request, slug='',
         if app.id != current_app.id:
             return HttpResponseRedirect(reverse('corpmembership_app.preview',
                                                 args=[app.slug]))
+    if not request.user.is_authenticated:
+        # handle anonymous user
+        if not has_perm(request.user, 'corporate_memberships.view_corpmembershipapp', app):
+            raise Http403
+        
+        if hash:
+            [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
+        if not creator:
+            # anonymous user - redirect them to enter their
+            # contact email before processing
+            return HttpResponseRedirect(reverse('corpmembership.add_pre'))
+
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
@@ -469,7 +475,8 @@ def corpmembership_edit(request, id,
 
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
-        app_fields = app_fields.filter(admin_only=False)
+        if not (corp_membership.is_pending and has_perm(request.user, 'corporate_memberships.approve_corpmembership')):
+            app_fields = app_fields.filter(admin_only=False)
     if corp_membership.is_expired:
         # if it is expired, remove the expiration_dt field so they can
         # renew this corporate membership
@@ -757,14 +764,16 @@ def corpmembership_search(request, my_corps_only=False,
         if my_corps_only or not allow_anonymous_search:
             raise Http403
     is_superuser = request.user.profile.is_superuser
+    has_approve_perm = has_perm(request.user, 'corporate_memberships.approve_corpmembership')
 
     # legacy pending url
     query = request.GET.get('q')
     if query == 'is_pending:true':
         pending_only = True
 
-    if pending_only and not is_superuser:
-        raise Http403
+    if pending_only:
+        if not has_approve_perm:
+            raise Http403
 
     # field names for search criteria choices
     names_list = ['name', 'address', 'city', 'state',
@@ -779,7 +788,7 @@ def corpmembership_search(request, my_corps_only=False,
     except:
         cp_id = 0
 
-    if pending_only and is_superuser:
+    if pending_only and has_approve_perm:
         # pending list only for admins
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
@@ -927,8 +936,7 @@ def corpmembership_approve(request, id,
                 template="corporate_memberships/applications/approve.html"):
     corporate_membership = get_object_or_404(CorpMembership, id=id)
 
-    user_is_superuser = request.user.profile.is_superuser
-    if not user_is_superuser:
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership', corporate_membership):
         raise Http403
 
     # if not in pending, go to view page
@@ -1725,6 +1733,8 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
                         elif isinstance(row_item_list[i], time):
                             row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
+                        elif isinstance(row_item_list[i], str):
+                            row_item_list[i] = escape_csv(row_item_list[i])
                 csv_writer.writerow(row_item_list)
 
             # log an event

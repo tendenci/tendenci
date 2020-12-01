@@ -1,4 +1,4 @@
-{% extends "articles/base.html" %}
+{% extends "help_files/base.html" %}
 {% load help_file_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
@@ -18,7 +18,7 @@
         <form action="{% url "help_files.edit" help_file.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Save' %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Save' %} {% firstof MODULE_HELP_FILES_LABEL trans 'Help File' %}" />
         </div>
         </form>
     </div>

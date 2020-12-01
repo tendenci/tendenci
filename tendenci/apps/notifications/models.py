@@ -191,7 +191,7 @@ class NoticeEmail(models.Model):
     """
     guid = models.CharField(max_length=50)
     sender = models.CharField(max_length=200, blank=True)
-    emails = models.CharField(max_length=200, blank=True)
+    emails = models.CharField(max_length=300, blank=True)
     bcc = models.CharField(max_length=200, blank=True)
     notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'), on_delete=models.CASCADE)
     reply_to = models.CharField(max_length=100, blank=True)
@@ -212,7 +212,16 @@ class NoticeEmail(models.Model):
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or str(uuid.uuid4())
+        self.verifydata()
         super(NoticeEmail, self).save(*args, **kwargs)
+
+    def verifydata(self):
+        # verify each field
+        for field in NoticeEmail._meta.fields:
+            value = getattr(self, field.name)
+            if field.max_length and value and len(value) > field.max_length:
+                value = value[:field.max_length]
+                setattr(self, field.name, value)
 
     def resend(self):
         headers = {}

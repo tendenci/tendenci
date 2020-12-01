@@ -80,13 +80,13 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-        $(document).ready(function () {
-            var $catAndSubcatSelect = $('#id_cat, #id_sub_cat'),
-                $directoriesSearchForm = $('#t-directories-search-form');
+//        $(document).ready(function () {
+//            var $catAndSubcatSelect = $('#id_cat, #id_sub_cat'),
+//                $directoriesSearchForm = $('#t-directories-search-form');
 
-            $catAndSubcatSelect.on('change', function (e) {
-                $directoriesSearchForm.submit();
-            });
-        });
+ //           $catAndSubcatSelect.on('change', function (e) {
+ //               $directoriesSearchForm.submit();
+ //           });
+ //       });
     </script>
 {% endblock %}

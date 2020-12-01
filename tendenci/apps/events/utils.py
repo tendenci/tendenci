@@ -42,6 +42,7 @@ from tendenci.apps.base.utils import (adjust_datetime_to_timezone,
     create_salesforce_contact, validate_email)
 from tendenci.apps.exports.utils import full_model_to_dict
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import escape_csv
 
 
 try:
@@ -302,6 +303,8 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
                 style = styles['date_style']
             else:
                 style = styles['default_style']
+                if isinstance(val, str):
+                    val = escape_csv(val)
 
             # style the invoice balance column
             if col == balance_index:
@@ -2019,6 +2022,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             elif field in event_d:
                 value = event_d[field]
             value = str(value).replace(os.linesep, ' ').rstrip()
+            value = escape_csv(value)
             data_row.append(value)
 
         if event.place:
@@ -2027,6 +2031,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
             for field in place_fields:
                 value = place_d[field]
                 value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
         if event.registration_configuration:
@@ -2039,6 +2044,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 else:
                     value = conf_d[field]
                 value = str(value).replace(os.linesep, ' ').rstrip()
+                value = escape_csv(value)
                 data_row.append(value)
 
         if event.speaker_set.all():
@@ -2048,6 +2054,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 for field in speaker_fields:
                     value = speaker_d[field]
                     value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
                     data_row.append(value)
 
         # fill out the rest of the speaker columns
@@ -2063,6 +2070,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                 for field in organizer_fields:
                     value = organizer_d[field]
                     value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
                     data_row.append(value)
 
         # fill out the rest of the organizer columns
@@ -2082,6 +2090,7 @@ def process_event_export(start_dt=None, end_dt=None, event_type=None,
                     else:
                         value = pricing_d[field]
                     value = str(value).replace(os.linesep, ' ').rstrip()
+                    value = escape_csv(value)
                     data_row.append(value)
 
         # fill out the rest of the pricing columns

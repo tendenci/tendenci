@@ -24,7 +24,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.base.views import file_display
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.perms.utils import (get_notice_recipients,
-    has_perm, has_view_perm, get_query_filters, update_perms_and_save)
+    has_perm, has_view_perm, get_query_filters, update_perms_and_save, assign_files_perms)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
@@ -36,7 +36,6 @@ from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm
                                                DirectoryRenewForm, DirectoryExportForm)
 from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.base.utils import send_email_notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
 
@@ -75,11 +74,14 @@ def search(request, template_name="directories/search.html"):
         cat = form.cleaned_data.get('cat')
         sub_cat = form.cleaned_data.get('sub_cat')
         region = form.cleaned_data.get('region')
+        cat = [int(c) for c in cat if c.isdigit()]
+        if sub_cat:
+            sub_cat = [int(c) for c in sub_cat if c.isdigit()]
 
         if cat:
-            directories = directories.filter(cat=cat)
+            directories = directories.filter(cats__in=list(cat))
         if sub_cat:
-            directories = directories.filter(sub_cat=sub_cat)
+            directories = directories.filter(sub_cats__in=list(sub_cat))
 
         if region:
             directories = directories.filter(region=region)
@@ -182,6 +184,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
             directory = update_perms_and_save(request, form, directory)
+            form.save_m2m()
 
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
@@ -259,6 +262,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                     directory.logo = None
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
+            form.save_m2m()
             msg_string = 'Successfully updated %s' % directory
             messages.add_message(request, messages.SUCCESS, _(msg_string))
 
@@ -304,11 +308,18 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 @login_required
 def get_subcategories(request):
     if request.is_ajax() and request.method == "POST":
-        category = request.POST.get('category', None)
-        if category:
-            sub_categories = DirectoryCategory.objects.filter(parent=category)
-            count = sub_categories.count()
-            sub_categories = list(sub_categories.values_list('pk','name'))
+        categories = request.POST.get('categories', None)
+        categories = [int(cat) for cat in categories.split(',') if cat.isdigit()]
+        count = 0
+        sub_categories = []
+        if categories:
+            for cat in categories:
+                sub_cats = list(DirectoryCategory.objects.filter(parent_id=cat).values_list('id', 'name'))
+                if len(sub_cats) > 0:
+                    count += len(sub_cats)
+                    cat_name = DirectoryCategory.objects.filter(id=cat).values_list('name', flat=True)[0]
+                    sub_categories.append({'cat_name': cat_name,  'sub_cats': sub_cats})
+
             data = json.dumps({"error": False,
                                "sub_categories": sub_categories,
                                "count": count})
@@ -517,18 +528,16 @@ def approve(request, id, template_name="directories/approve.html"):
             directory.owner_username = request.user.username
 
         directory.save()
+        # assign files permissions
+        assign_files_perms(directory)
 
         # send email notification to user
-        recipients = [directory.creator.email]
+        recipients = directory.get_owner_emails_list()
         if recipients:
-            extra_context = {
-                'object': directory,
-                'request': request,
-            }
-            try:
-                send_email_notification('directory_approved_user_notice', recipients, extra_context)
-            except:
-                pass
+            notification.send_emails(recipients, 
+                'directory_approved_user_notice', {
+                        'object': directory,
+                        'request': request,})
 
         msg_string = 'Successfully approved %s' % directory
         messages.add_message(request, messages.SUCCESS, _(msg_string))

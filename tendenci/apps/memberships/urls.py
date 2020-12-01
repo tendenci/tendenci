@@ -16,6 +16,8 @@ urlpatterns = [
     url(r"^%s/delete/(?P<id>\d+)/$" % urlpath, views.delete, name="membership.delete"),
     url(r"^%s/expire/(?P<id>\d+)/$" % urlpath, views.expire, name="membership.expire"),
     url(r"^%s/add_directory/(?P<id>\d+)/$" % urlpath, views.membership_add_directory, name="membership.add_directory"),
+    url(r'^%s/message/pending_members/$' % urlpath, views.message_pending_members, name='membership.message_pending'),
+    url(r'^%s/message/pending_members/(?P<email_id>\d+)/$' % urlpath, views.message_pending_members, name='membership.message_pending'),
 
     # import to membership default
     url(r"^%s/import_default/$" % urlpath, views.membership_default_import_upload,

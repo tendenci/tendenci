@@ -22,7 +22,6 @@ app_exclude_list = [
         u'event_logs',
         u'meta',
         u'mobile',
-        u'newsletters',
         u'perms',
         u'registry',
         u'robots',

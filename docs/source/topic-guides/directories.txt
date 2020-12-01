@@ -11,3 +11,16 @@ Directory Pricing
 ~~~~~~~~~~~~~~~~~
 
 Directories can have different price options for posting based on the length of time they are posted.
+
+
+Directory Categories
+~~~~~~~~~~~~~~~~~~~~
+
+One way to organize your directories listings is by using categories. Clicking the "Manage Categories" 
+link either from admin top menu under the Directories or from add or edit pages (right below the category and subcategory fields) will lead 
+you to the admin backend where you can add or edit categories. You can drag and drop to sort categories. Each category
+can have one or more subcategories.
+
+The categories and subcategories added at admin backend will then show in the category and subcategory dropdowns respectively
+on directory add and edit. You can assign one or multiple categories and subcategories to a directory.
+

@@ -1,3 +1,5 @@
+{% load perm_tags %}
+{% has_perm user profiles.change_profile as has_change_perm %}
 <div class="group">
   <form method="POST" action="">{% csrf_token %}
     <table class="table table-tendenci-reports">
@@ -25,7 +27,7 @@
       <input name="id_users" type="hidden" value="{{ user.id }}">
       {% endfor %}
     </table>
-    {% if request.user.is_superuser %}
+    {% if has_change_perm %}
     <input class="btn btn-success btn-sm" type="submit" value="{% trans 'Merge these users' %}" />
     {% endif %}
   </form>

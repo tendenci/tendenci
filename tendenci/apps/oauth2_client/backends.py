@@ -2,15 +2,15 @@ import pytz
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.contrib.auth.backends import RemoteUserBackend
 from django.core import exceptions
 
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.perms.backend import ObjectPermBackend
 
 UserModel = get_user_model()
 
 
-class AuthenticationBackend(RemoteUserBackend):
+class AuthenticationBackend(ObjectPermBackend):
     """
     Authenticates against access token.
     """
@@ -56,7 +56,7 @@ class AuthenticationBackend(RemoteUserBackend):
         """
         fields_dict = {}
         for field in ObjModel._meta.fields:
-            if field.name in user_info and hasattr(field, 'max_length'):
+            if field.name in settings.OAUTH2_USER_ATTR_MAPPING and hasattr(field, 'max_length'):
                 fields_dict[field.name] = field
         
         updated = False

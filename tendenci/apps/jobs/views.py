@@ -1,6 +1,7 @@
 from builtins import str
 from datetime import timedelta, datetime
 import json
+import time
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -210,9 +211,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             # semi-anon job posts don't get a slug field on the form
             # see __init__ method in JobForm
             if not job.slug:
-                #job.slug = get_job_unique_slug(slugify(job.title))
-                job.slug = '%s-%s' % (slugify(job.title),
-                                        object_type.objects.count())
+                job.slug = '%s-%d' % (slugify(job.title), int(time.time()))
 
             job = update_perms_and_save(request, form, job)
 

@@ -56,8 +56,7 @@ class DeclarativeMetaclass(type):
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
-class Registry(object):
-    __metaclass__ = DeclarativeMetaclass
+class Registry(metaclass=DeclarativeMetaclass):
     """
     Base registry class for core and plugin applications
 

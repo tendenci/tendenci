@@ -10,9 +10,11 @@ from tendenci.apps.navs.managers import NavManager
 from tendenci.apps.navs.signals import update_nav_links
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.navs.utils import clear_nav_cache
+from tendenci.apps.base.validators import UnicodeNameValidator
+
 
 class Nav(TendenciBaseModel):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, validators=[UnicodeNameValidator()],)
     description = models.TextField(blank=True, null=True)
     megamenu = models.BooleanField(default=False)
 
