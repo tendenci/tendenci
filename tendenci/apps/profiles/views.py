@@ -350,6 +350,9 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
+    base_template = 'profiles/base-wide.html'
+    if memberships_search:
+        base_template = 'memberships/base-wide.html'
 
     EventLog.objects.log()
     return render_to_resp(request=request, template_name=template_name,
@@ -358,7 +361,8 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
-            'memberships_search': memberships_search})
+            'memberships_search': memberships_search,
+            'base_template': base_template})
 
 
 @login_required

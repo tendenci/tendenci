@@ -73,6 +73,11 @@ class Command(BaseCommand):
         email.body = email.body.replace("src=\"/", "src=\"%s/" % self.site_url)
         email.body = email.body.replace("href=\"/", "href=\"%s/" % self.site_url)
 
+        if newsletter.group and newsletter.group.membership_types.all().exists():
+            membership_type = newsletter.group.membership_types.all()[0]
+        else:
+            membership_type = None
+
         counter = 0
         for recipient in recipients:
             if hasattr(recipient.member, 'profile'):
@@ -113,6 +118,15 @@ class Command(BaseCommand):
 
             if '[browser_view_url]' in body:
                 body = body.replace('[browser_view_url]', newsletter.get_browser_view_url())
+
+            if membership_type:
+                [membership] = recipient.member.membershipdefault_set.exclude(
+                        status_detail='archive').order_by('-create_dt')[:1] or [None]
+                if membership:
+                    # do find and replace
+                    urls_dict = membership.get_common_urls()
+                    for key in urls_dict.keys():
+                        body = body.replace('[%s]' % key, urls_dict[key])
 
             email_to_send = Email(
                     subject=subject,
