@@ -1202,6 +1202,12 @@ class ImportMembDefault(object):
                              'PST': 'US/Pacific',
                              'GMT': 'UTC'
                              }
+
+        # all user groups (group is a ManyToMany field in MembershipType)
+        self.group_model =  MembershipType.group.field.related_model().__class__
+        self.all_group_ids = self.group_model.objects.values_list(
+                                        'id', flat=True)
+        
         # all membership types
         self.all_membership_type_ids = MembershipType.objects.values_list(
                                         'id', flat=True)
@@ -1299,15 +1305,12 @@ class ImportMembDefault(object):
                 else:
                     memb_data['membership_type'] = value
             else:
-                if not MembershipType.objects.filter(
-                                            name=value).exists():
+                candidates = MembershipType.objects.filter(name=value)
+                if not candidates.exists():
                     is_valid = False
                     error_msg = 'Invalid membership type "%s"' % value
                 else:
-                    memb_data['membership_type'] = MembershipType.objects.filter(
-                                            name=value
-                                            ).values_list(
-                                            'id', flat=True)[0]
+                    memb_data['membership_type'] = candidates.values_list('id', flat=True)[0]
         else:
             # the spread sheet doesn't have the membership_type field,
             # assign the default one
@@ -1324,6 +1327,36 @@ class ImportMembDefault(object):
                     is_valid = False
                     error_msg = 'No membership type. Please add one to the site.'
 
+        return is_valid, _(error_msg)
+
+    def clean_groups(self, memb_data, **kwargs):
+        """
+        if "groups" is in memb_data, convert to a list of group_ids as best possible 
+        """
+        is_valid = True
+        error_msg = ''
+
+        if 'groups' in memb_data and memb_data['groups']:
+            values = [g.strip() for g in memb_data['groups'].split(',')]
+            group_ids = []
+            for i, value in enumerate(values):
+                if str(value).isdigit():
+                    value = int(value)
+                    if value not in self.all_group_ids:
+                        is_valid = False
+                        error_msg = 'Invalid %s "%d"' % (self.group_model._meta.model_name, value)
+                    else:
+                        group_ids.append(value)
+                else:
+                    candidates = self.group_model.objects.filter(name=value)
+                    if not candidates.exists():
+                        is_valid = False
+                        error_msg = 'Invalid %s "%s"' % (self.group_model._meta.model_name, value)
+                    else:
+                        group_ids.append(candidates.values_list('id', flat=True)[0])
+        
+            memb_data['groups'] = group_ids
+        
         return is_valid, _(error_msg)
 
     def clean_app(self, memb_data):
@@ -1437,8 +1470,12 @@ class ImportMembDefault(object):
                                                   self.key)
         if is_valid:
             self.clean_corporate_membership(self.memb_data)
-            is_valid, error_msg = self.clean_membership_type(
+            
+            is_valid, error_msg = self.clean_groups(
                                                 self.memb_data)
+            if is_valid:
+                is_valid, error_msg = self.clean_membership_type(
+                                                    self.memb_data)
             if is_valid:
                 is_valid, error_msg = self.clean_app(self.memb_data)
 
@@ -1702,8 +1739,7 @@ class ImportMembDefault(object):
 
         # membership
         if not memb:
-            memb = MembershipDefault(
-                    user=user)
+            memb = MembershipDefault(user=user)
 
         self.assign_import_values_from_dict(memb, action_info['memb_action'])
         if not memb.creator:
@@ -1788,14 +1824,23 @@ class ImportMembDefault(object):
                 profile.member_number = ''
                 profile.save()
 
-        # add to group only for the active memberships
-        if memb.is_active:
-            # group associated to membership type
-            params = {'creator_id': self.request_user.pk,
-                      'creator_username': self.request_user.username,
-                      'owner_id': self.request_user.pk,
-                      'owner_username': self.request_user.username}
-            memb.membership_type.group.add_user(memb.user, **params)
+        params = {'creator_id': self.request_user.pk,
+                  'creator_username': self.request_user.username,
+                  'owner_id': self.request_user.pk,
+                  'owner_username': self.request_user.username}
+
+        # if "groups" are provided in the import, respect those an apply them
+        group_ids = memb_data.get('groups', '')
+        if group_ids:
+            # we assumed group_ids is a cleaned list of existing group ids 
+            # i.e self.clean_groups() has been called
+            for group_id in group_ids:
+                self.group_model.objects.get(id=group_id).add_user(memb.user, **params)
+        else:
+            # Add member to default group only if active (legacy behaviour) 
+            if memb.is_active:
+                # group associated to membership type
+                memb.membership_type.group.add_user(memb.user, **params)
 
     def is_active(self, memb):
         return all([memb.status,
