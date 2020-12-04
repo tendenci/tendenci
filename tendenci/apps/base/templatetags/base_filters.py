@@ -5,7 +5,7 @@ import pytz
 import codecs
 from PIL import Image
 from dateutil.parser import parse
-from datetime import datetime
+from datetime import datetime, time
 
 from decimal import Decimal
 from django.template import Library
@@ -48,7 +48,7 @@ def date_short(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.SHORT_DATETIME_FORMAT
+            arg = settings.SHORT_DATETIME_FORMAT if value.time() != time() else settings.SHORT_DATE_FORMAT
     try:
         return formats.date_format(value, arg)
     except AttributeError:
@@ -70,7 +70,7 @@ def date_long(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.DATETIME_FORMAT
+            arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT
     try:
         return formats.date_format(value, arg)
     except AttributeError:
@@ -87,11 +87,11 @@ def date(value, arg=None):
     if not value:
         return u''
     if arg is None:
-        arg = settings.DATETIME_FORMAT
+        arg = settings.DATETIME_FORMAT if value.time() != time() else settings.DATE_FORMAT 
     else:
         if arg == 'long':
             return date_long(value)
-        if arg == 'short':
+        elif arg == 'short':
             return date_short(value)
     try:
         return formats.date_format(value, arg)
@@ -100,7 +100,7 @@ def date(value, arg=None):
             return format(value, arg)
         except AttributeError:
             return ''
-date_long.is_safe = False
+date.is_safe = False
 
 @register.filter_function
 def order_by(queryset, args):
