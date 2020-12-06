@@ -9,6 +9,8 @@ from dateutil.parser import parse
 from datetime import datetime, time
 
 from decimal import Decimal
+from urllib.parse import urlencode
+
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
@@ -526,3 +528,14 @@ def url_complete(value):
 def zip_lists(a, b):
     """zip lists together"""
     return zip(a, b)
+
+@register.filter
+def with_parameters(request, parameter):
+    """ Given a request returns the path of that request with the provided GET paramters added or substituting existing ones."""
+    d = dict(request.GET.items())
+    for param in parameter.split('&'):
+        key, value = param.split('=', 1)
+        d[key] = value
+
+    return f"{request.path}?{urlencode(d)}"
+

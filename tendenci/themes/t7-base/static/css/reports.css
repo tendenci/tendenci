@@ -115,6 +115,13 @@ tr.odd {
   font-weight: bold;
   vertical-align: middle;
 }
+
+/* Header links for sorting columns should be subtle not distracting */
+.table th a {
+  color: inherit; 		               
+  text-decoration: inherit !important; 
+}
+
 .table td {
   vertical-align: top;
   border-top: 1px solid #ddd;
