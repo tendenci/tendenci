@@ -12,7 +12,6 @@ from datetime import datetime, timedelta, date
 from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
  
-
 from django.urls import reverse
 from django.urls.resolvers import NoReverseMatch
 from django.contrib.auth.models import User
@@ -25,7 +24,7 @@ from django.db.models.fields import AutoField, PositiveIntegerField
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
-from django.db.models import ForeignKey, OneToOneField, Aggregate, CharField, Value
+from django.db.models import ForeignKey, OneToOneField
 from django.db.models.query_utils import Q
 from django.db.models.functions import Cast
 from django.core.files.storage import default_storage
