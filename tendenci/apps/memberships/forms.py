@@ -1314,7 +1314,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             Membership.user
             Membership.user.profile
             Membership.invoice
-            Membership.user.group_set()
+            Membership.user.user_groups
         """
         user = kwargs.pop('user')
         request = kwargs.pop('request')
@@ -1937,7 +1937,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             Membership.user.profile
             Membership.user.education
             Membership.invoice
-            Membership.user.group_set()
+            Membership.user.user_groups
         """
         request = kwargs.pop('request')
 
