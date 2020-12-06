@@ -38,7 +38,7 @@ def detail(request, slug, template_name="studygroups/detail.html"):
         has_group_view_permission = False
         #Check user for group view permissions
         if request.user.is_authenticated:
-            groups = request.user.group_set.all()
+            groups = request.user.user_groups.all()
             perms = has_groups_perms(study_group).filter(group__in=groups)
             for perm in perms:
                 #Check if permission has view studygroup permission
