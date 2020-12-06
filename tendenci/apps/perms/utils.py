@@ -316,7 +316,7 @@ def _specific_view(user, obj):
     sqs = SearchQuerySet()
     sqs = sqs.models(obj.__class__)
 
-    groups = [g.pk for g in user.group_set.all()]
+    groups = [g.pk for g in user.user_groups.all()]
 
     q_primary_key = SQ(primary_key=obj.pk)
     q_groups = SQ(groups_can_view__in=groups)
