@@ -61,6 +61,10 @@
                             {% endif %}
                         {% endif %}
 
+                        {% if membership.membership_type %}
+                            <b>{% trans "Membership Type:" %}</b> <span style="white-space:nowrap">{{ membership.membership_type }}</span><br />
+                        {% endif %}
+
                         {% if membership.status_detail %}
                             <b>{% trans "Application Status:" %}</b> {{ membership.status_detail }}<br />
                         {% endif %}
