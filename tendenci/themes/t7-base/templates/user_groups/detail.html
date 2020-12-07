@@ -39,6 +39,9 @@
         <li><a href="{% url "group.message" group.slug %}">{% blocktrans %}Email all {{ count_members }} member{% endblocktrans %}{{ count_members|pluralize }}</a></li>
         {% endif %}
         
+        <li><a href="{% url "group.adduser" group.slug %}">
+          {% trans "Add/Remove Group Members" %}</a></li>
+
         <li><a href="{% url "group.edit_perms" group.pk %}">
           {% trans "Change Group Member Permissions" %}</a></li>
         
