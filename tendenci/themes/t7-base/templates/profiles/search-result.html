@@ -85,15 +85,15 @@
 
                         {% if request.user.profile.is_superuser or request.user == profile.user %}
                             {% if membership.create_dt %}
-                                <b>{% trans "Create Date:" %}</b> {{ membership.create_dt }}<br />
+                                <b>{% trans "Create Date:" %}</b> {{ membership.create_dt | date }}<br />
                             {% endif %}
 
                             {% if membership.join_dt %}
-                                <b>{% trans "Join Date:" %}</b> {{ membership.join_dt }}<br />
+                                <b>{% trans "Join Date:" %}</b> {{ membership.join_dt | date }}<br />
                             {% endif %}
 
                             {% if membership.expire_dt %}
-                                <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt }}<br />
+                                <b>{% trans "Expire Date:" %}</b> {{ membership.expire_dt | date }}<br />
                             {% endif %}
                         {% endif %}
                     </div>
