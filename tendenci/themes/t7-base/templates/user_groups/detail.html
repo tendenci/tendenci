@@ -80,7 +80,11 @@
     {% autopaginate groupmemberships 100 %}
     {% paginate %}
     <div class="group-member-list">
-      <p>Group members in sets of 100</p>
+      <p>{{ count_members }} group members 
+	    {% if count_members > 100 %}
+    	in sets of 100
+	    {% endif %}
+      </p>
       {% for gm in groupmemberships %}
       <div class="group-member {% cycle 'gray' '' %}">
         
