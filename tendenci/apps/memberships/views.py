@@ -9,7 +9,7 @@ import time as ttime
 import subprocess
 import calendar
 from collections import OrderedDict
-from dateutil.parser import parse as dparse
+from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
  
 from django.urls import reverse
@@ -595,7 +595,7 @@ def membership_default_import_preview(request, mimport_id,
                     if u[dt].strip():
                         try:
                             u[dt] = str(dparse(u[dt]))
-                        except:
+                        except ParserError:
                             u[dt] = "Error"
                     else:
                         u[dt] = "None"
@@ -609,7 +609,7 @@ def membership_default_import_preview(request, mimport_id,
             for u in users_list:
                 try:
                     u['membership_type'] = MembershipType.objects.get(pk=int(str(u['membership_type']).strip())).name
-                except:
+                except (ValueError, MembershipType.DoesNotExist):
                     u['membership_type'] = 'None'
 
         return render_to_resp(request=request, template_name=template_name, context={
