@@ -592,18 +592,25 @@ def membership_default_import_preview(request, mimport_id,
         for dt in ['join_dt', 'expire_dt']:
             if dt in fieldnames:
                 for u in users_list:
-                    u[dt] = str(dparse(u[dt]))
-                    
+                    if u[dt].strip():
+                        try:
+                            u[dt] = str(dparse(u[dt]))
+                        except:
+                            u[dt] = "Error"
+                    else:
+                        u[dt] = "None"
+
         # Similarly membership_type if imported must be 
         # imported as the id of a membership_type and it's 
         # useful to get feedback on integrity at the preview
         # before committing the import.
         # TODO: This could generalize to all ID type imports supported
         if 'membership_type' in fieldnames:
-            try:
-                u['membership_type'] = MembershipType.objects.get(pk=int(u['membership_type'])).name
-            except:
-                u['membership_type'] = 'None'
+            for u in users_list:
+                try:
+                    u['membership_type'] = MembershipType.objects.get(pk=int(str(u['membership_type']).strip())).name
+                except:
+                    u['membership_type'] = 'None'
 
         return render_to_resp(request=request, template_name=template_name, context={
             'mimport': mimport,
