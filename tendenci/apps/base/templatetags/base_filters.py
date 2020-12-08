@@ -136,7 +136,7 @@ def in_group(user, group):
     if group:
         if isinstance(user, AnonymousUser):
             return False
-        return group in [dict['pk'] for dict in user.group_set.values('pk')]
+        return group in [dict['pk'] for dict in user.user_groups.values('pk')]
     else:
         return False
 
