@@ -311,8 +311,10 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     # group
     if group:
-        profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
-                                    group__id=group).values_list('member', flat=True))
+        if group > 0:
+            profiles = profiles.filter(user__user_groups=group)
+        else:
+            profiles = profiles.filter(user__user_groups=None)
 
     profiles = profiles.distinct()
 

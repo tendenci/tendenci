@@ -16,7 +16,7 @@ def user3_sqs(sqs, **kwargs):
     (status+status_detail+(anon OR user)) OR (who_can_view__exact)
     """
     user = kwargs.get('user')
-    groups = [g.pk for g in user.group_set.all()]
+    groups = [g.pk for g in user.user_groups.all()]
     status_detail = kwargs.get('status_detail', 'active')
 
     status_q = Q(status=True, status_detail=status_detail)

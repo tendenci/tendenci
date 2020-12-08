@@ -90,7 +90,7 @@ class ProfileSearchForm(forms.Form):
 
         # group choices
         filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-        group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
+        group_choices = [(0, _('SELECT ONE')), (-1, _('NONE - Not in any group!'))] + list(Group.objects.filter(
                             status=True, status_detail="active"
                              ).filter(filters).distinct().order_by('name'
                             ).values_list('pk', 'name'))
