@@ -2357,7 +2357,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     # Note the template can render a list without this annotation and
     # shoudlm fall on such a method.  
     if connection.vendor == 'postgresql':
-        members = members.annotate(user_group_list=StringAgg('user__user_groups__name', ', ', ordering='user__user_groups__name'))
+        members = members.annotate(user_group_list=StringAgg('user__user_groups__name', ', ', ordering='user__user_groups__id'))
     
     if descending:
         order_by = '-' + order_by

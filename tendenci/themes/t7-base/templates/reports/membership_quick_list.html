@@ -17,7 +17,7 @@
             <th><a href="{% order_by request order_by 'user__last_name' %}">{% trans "Last Name" %}</a></th>
             <th><a href="{% order_by request order_by 'user__first_name' %}">{% trans "First Name" %}</a></th>
             <th><a href="{% order_by request order_by 'user__profile__company' %}">{% trans "Company" %}</a></th>
-            <th>{% if member.user_group_list %}
+            <th>{% if members.first.user_group_list %}
             		<a href="{% order_by request order_by 'user_group_list' %}">
 	            {% endif %}
 	            {% trans "Groups" %}
