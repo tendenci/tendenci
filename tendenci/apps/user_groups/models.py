@@ -47,7 +47,7 @@ class Group(TendenciBaseModel):
     auto_respond = models.BooleanField(_('Auto Responder'), default=False)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
-    members = models.ManyToManyField(User, through='GroupMembership')
+    members = models.ManyToManyField(User, through='GroupMembership', related_name='user_groups')
 
     group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.CASCADE)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)

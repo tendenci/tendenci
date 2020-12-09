@@ -88,5 +88,9 @@
             $("#id_members_input2").val('');
         });
     });
+	$(function () {
+	   $("#id_members_from").attr("size", Math.max(10, Math.min(20, $("#id_members_from option").length)));
+	   $("#id_members_to").attr("size",Math.max(10, Math.min(20, $("#id_members_to option").length)));
+	});    
 </script>
 {% endblock %}
