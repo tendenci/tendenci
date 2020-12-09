@@ -1,0 +1,14 @@
+{% load base_tags %}
+<div class="wrap-search-item">
+  <div class="search-item chapters-search-item">
+    <div class="panel panel-default">
+      
+      <div class="panel-heading">
+        <h3><a href="{{ chapter.get_absolute_url }}">{{ chapter.title }}</a></h3>
+      </div>
+      
+      {% include "chapters/meta.html" %}
+      
+    </div>
+  </div>
+</div>
