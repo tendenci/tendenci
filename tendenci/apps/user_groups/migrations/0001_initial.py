@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='group',
             name='members',
-            field=models.ManyToManyField(to=settings.AUTH_USER_MODEL, through='user_groups.GroupMembership'),
+            field=models.ManyToManyField(related_name='user_groups', to=settings.AUTH_USER_MODEL, through='user_groups.GroupMembership'),
         ),
         migrations.AddField(
             model_name='group',
