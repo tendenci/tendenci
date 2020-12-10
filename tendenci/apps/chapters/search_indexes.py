@@ -4,7 +4,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 from tendenci.apps.chapters.models import Chapter
 
-class ChapterIndex(TendenciBaseSearchIndex):
+class ChapterIndex(TendenciBaseSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title',)
 
