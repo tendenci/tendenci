@@ -43,7 +43,7 @@ class OfficerAdminInline(admin.TabularInline):
 
 
 class ChapterAdmin(TendenciBaseModelAdmin):
-    list_display = ('view_on_site', 'edit_link', 'title', 'group', 'admin_perms', 'admin_status')
+    list_display = ('view_on_site', 'edit_link', 'title', 'group', 'entity', 'admin_perms', 'admin_status')
     search_fields = ('title', 'content',)
     list_editable = ('title', 'group',)
     fieldsets = (
