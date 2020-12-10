@@ -120,6 +120,7 @@ urlpatterns += [
     url(r'^', include('tendenci.apps.newsletters.urls')),
 
     url(r'^', include('tendenci.apps.committees.urls')),
+    url(r'^', include('tendenci.apps.chapters.urls')),
     url(r'^', include('tendenci.apps.case_studies.urls')),
     url(r'^', include('tendenci.apps.donations.urls')),
     url(r'^', include('tendenci.apps.speakers.urls')),

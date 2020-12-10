@@ -1,0 +1,14 @@
+{% extends 'top_menu/admin_top-new.html' %}
+{% load chapter_tags %}
+
+{% block nav_icon_url %}{% static 'famfamfam/icons/chart_organisation.png' %}{% endblock %}
+
+{% block nav_label %}{% trans 'Chapters' %}{% endblock %}
+
+{% block current_app %}
+    {% if chapter %}
+        {% chapter_current_app request.user chapter %}
+    {% else %}
+        {% chapter_current_app request.user %}
+    {% endif %}
+{% endblock %}

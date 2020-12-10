@@ -1,0 +1,143 @@
+{% load l10n %}
+{% load styled_forms %}
+{% load chapter_tags %}
+{% load base_filters %}
+
+{% if form.errors.values %}
+<div class="errors">
+There were some problems in the form. Please review. Thanks!
+{% for error in form.non_field_errors %}
+    <p><a href="#">{{ error }}</a></p>
+{% endfor %}
+{% if form.fieldsets.fieldsets %}
+    {% for fieldset in form.fieldsets %}
+        {% for field in fieldset %}
+            {% if field.errors %}
+            {% for error in field.errors %}
+                <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+            {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% else %}
+    {% for field in form %}
+        {% if field.errors %}
+              {% for error in field.errors %}
+                  <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+              {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</div>
+{% endif %}
+
+{% if form.fieldsets.fieldsets %}
+    {% for fieldset in form.fieldsets %}
+      {% if fieldset.boundfields %}
+      <fieldset class="{{ fieldset.classes }}">
+        {% if fieldset.legend %}
+          <legend>{{ fieldset.legend }}</legend>
+        {% endif %}
+        {% if fieldset.description %}
+          <p class="section-description">{{ fieldset.description }}</p>
+        {% endif %}
+        {% for field in fieldset %}
+        {% if field.is_hidden %}
+            {{ field }}
+        {% else %}
+            {# Insert officer-formset before Notes #}
+            {% if not fieldset.legend and field.auto_id == 'id_notes' and formset %}
+                {% chapter_officer_formset formset %}
+            {% endif %}
+
+            <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classes }}{% endif %}">
+             <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+
+             <div class="col-sm-9">
+                 {% if field|is_checkbox %}
+                     <div class="checkbox">
+                         <label>{{ field }}</label>
+                     </div>
+                 {% elif field|is_checkboxselectmultiple %}
+                     {% for choice in field.field.choices %}
+                         <div class="checkbox">
+                             <label>
+                                 <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                             </label>
+                         </div>
+                     {% endfor %}
+                 {% elif field|is_radioselect %}
+                     {% for choice in field.field.choices %}
+                         <div class="radio">
+                             <label>
+                                 <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                             </label>
+                         </div>
+                     {% endfor %}
+                 {% else %}
+                     {{ field }}
+                 {% endif %}
+
+                 {% if field.errors %}
+                     {% for error in field.errors %}
+                         <span class="help-block">{{ error }}</span>
+                     {% endfor %}
+                 {% endif %}
+
+                 {% if field.help_text %}
+                     <span class="help-block">{{ field.help_text|safe }}</span>
+                 {% endif %}
+             </div>
+         </div>
+        {% endif %}
+        {% endfor %}
+      </fieldset>
+      {% endif %}
+    {% endfor %}
+{% else %}
+    {% for field in form %}
+    {% if field.is_hidden %}
+        {{ field }}
+    {% else %}
+        <div class="form-group{% if field.errors %} has-error{% endif %}{% if field.field.css_classes %} {{ field.field.css_classses }}{% endif %}">
+                <label {% if not field|is_checkboxselectmultiple and not field|is_radioselect %}for="{{ field.id_for_label }}"{% endif %} class="control-label col-sm-3{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+
+                <div class="col-sm-9">
+                    {% if field|is_checkbox %}
+                        <div class="checkbox">
+                            <label>{{ field }}</label>
+                        </div>
+                    {% elif field|is_checkboxselectmultiple %}
+                        {% for choice in field.field.choices %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    {% elif field|is_radioselect %}
+                        {% for choice in field.field.widget.choices %}
+                            <div class="radio">
+                                <label>
+                                    <input type="radio"{% if choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}"{% for attr_name, attr_value in field.field.widget.attrs.items %} {{ attr_name }}="{{ attr_value }}"{% endfor %}>{{ choice.1|unlocalize }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <span class="help-block">{{ field.help_text|safe }}</span>
+                    {% endif %}
+                </div>
+            </div>
+    {% endif %}
+    {% endfor %}
+{% endif %}
