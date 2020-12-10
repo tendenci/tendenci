@@ -43,7 +43,11 @@
                     {% if can_add_chapter %}
                         <li class="content-item">
                             <span class="app-name">
+                                {% if request.user.is_superuser %}
+                                 <a href="{% url 'admin:chapters_chapter_add' %}">{% trans "Add Chapter" %}</a>
+                                {% else %}
                                 <a href="{% url 'chapters.add' %}">{% trans "Add Chapter" %}</a>
+                                {% endif %}
                             </span>
                         </li>
                     {% endif %}

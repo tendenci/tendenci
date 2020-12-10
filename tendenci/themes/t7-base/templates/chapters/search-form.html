@@ -18,7 +18,11 @@
   
   {% if can_add_chapters %}
   <div class="form-group pull-right">
-    <a class="btn btn-primary" href="/chapters/add/">Add Chapter</a>
+     {% if request.user.is_superuser %}
+     <a class="btn btn-primary" href="{% url 'admin:chapters_chapter_add' %}">{% trans "Add Chapter" %}</a>
+    {% else %}
+    <a class="btn btn-primary" href="/chapters/add/">{% trans "Add Chapter" %}</a>
+    {% endif %}
   </div>
   {% endif %}
   
