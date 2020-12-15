@@ -1,0 +1,45 @@
+#!/bin/bash
+############################################################################################
+## Publish this app to the Test Server
+
+# To mount the router and webserver we need to have SSH access and SSH keys installed
+# as we'll use sshfs to mount them if needed
+rsa_file=/home/bernd/.ssh/id_rsa
+
+# The name of the app
+app=help_files
+
+# Web Server properties
+server_name=Arachne
+server_account=weaver@arachne.lan
+
+# This is possibly alreadymounted - I use a bash alias to mount it
+# This should definitely be the same mapping as that alias or sparks might fly.
+server_mount_dir=$HOME/Mounts/weaver
+server_dir=/data
+
+# Ensure the server is properly mounted (or we can't publish to them)
+mountpoint -q $server_mount_dir
+if [ $? != 0 ];then
+	if [ ! -d $server_mount_dir ]; then
+		echo "Creating destination directory $server_mount_dir ..."
+	    mkdir -p $server_mount_dir
+	fi
+
+	echo Mounting $server_mount_dir ...
+	sshfs -o IdentityFile=$rsa_file $server_account:$server_dir $server_mount_dir
+else
+	echo "Destination directory: $server_mount_dir"
+fi
+
+# Do the source files files first 
+source_dir=$(pwd)
+dest_dir=$server_mount_dir/venv/tendenci/lib/python3.8/site-packages/tendenci/apps/$app
+echo "Copying $source_dir to $dest_dir ..."
+rsync -b $source_dir/* $dest_dir
+
+# Then the template files 
+source_dir=$(realpath $(pwd)/../../themes/t7-base/templates/$app)
+dest_dir=$server_mount_dir/venv/tendenci/lib/python3.8/site-packages/tendenci/themes/t7-base/templates/$app
+echo "Copying $source_dir to $dest_dir ..."
+rsync -b $source_dir/* $dest_dir
