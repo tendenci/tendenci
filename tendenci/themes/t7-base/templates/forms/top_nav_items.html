@@ -23,7 +23,7 @@
                 <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
-                            <span class="content-head text-content-head">{% trans "All Forms" %}</span>
+                            <span class="content-head text-content-head">{% trans "All Forms" %}:</span>
                         </li>
                     {% endif %}
 
@@ -70,7 +70,7 @@
                     {% if can_view_form or can_edit_form %}
                         <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
-                                <span class="content-head text-content-head">{% trans "This Form" %}</span>
+                                <br><span class="content-head text-content-head">{% trans "This Form" %}:</span>
                             </li>
 
                             {% if can_view_form %}
