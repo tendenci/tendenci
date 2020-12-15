@@ -607,13 +607,13 @@ def membership_default_import_preview(request, mimport_id,
         # TODO: This could generalize to all ID type imports supported
         if 'membership_type' in fieldnames:
             mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
-            
-            try:
-                mt = int(str(u['membership_type']))
-            except ValueError:
-                mt = 'Value Error'
-                
+
             for u in users_list:
+                try:
+                    mt = int(str(u['membership_type']))
+                except ValueError:
+                    mt = 'Value Error'
+                    
                 u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={
