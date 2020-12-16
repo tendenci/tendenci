@@ -197,7 +197,8 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category') 
 
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid() and formset.is_valid():
-            chapter = form.save(commit=False)
+            chapter = form.save()
+
             # update all permissions and save the model
             chapter = update_perms_and_save(request, form, chapter)
 

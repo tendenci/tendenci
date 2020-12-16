@@ -7,6 +7,12 @@
     <div class="page-header">
       <h1>{{ chapter.title }}</h1>
     </div>
+
+    {% if chapter.featured_image %}
+    <div class="chapter-featured-image">
+        <img src="{% url 'file' chapter.featured_image.id %}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
+    </div>
+    {% endif %}
     
     <div class="chapter-mission">
       {{ chapter.mission|safe }}

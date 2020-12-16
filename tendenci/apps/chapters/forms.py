@@ -1,11 +1,15 @@
+from os.path import splitext, basename
+
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import BaseInlineFormSet
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.chapters.models import Chapter, Officer
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
+from tendenci.apps.files.validators import FileValidator
 
 class ChapterForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
@@ -20,6 +24,9 @@ class ChapterForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Chapter._meta.app_label,
         'storme_model':Chapter._meta.model_name.lower()}))
+    photo_upload = forms.FileField(label=_('Featured Image'), required=False,
+                                   validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
+
 
     class Meta:
         model = Chapter
@@ -32,6 +39,7 @@ class ChapterForm(TendenciBaseForm):
         'content',
         'notes',
         'sponsors',
+        'photo_upload',
         'contact_name',
         'contact_email',
         'join_link',
@@ -49,6 +57,7 @@ class ChapterForm(TendenciBaseForm):
                                  'content',
                                  'notes',
                                  'sponsors',
+                                 'photo_upload',
                                  'contact_name',
                                  'contact_email',
                                  'join_link',
@@ -74,6 +83,8 @@ class ChapterForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(ChapterForm, self).__init__(*args, **kwargs)
+        if self.instance.featured_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
         if self.instance.pk:
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -82,6 +93,15 @@ class ChapterForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
+            
+    def save(self, *args, **kwargs):
+        chapter = super(ChapterForm, self).save(*args, **kwargs)
+        # save photo
+        if 'photo_upload' in self.cleaned_data:
+            photo = self.cleaned_data['photo_upload']
+            if photo:
+                chapter.save(photo=photo)
+        return chapter
 
 
 class ChapterAdminForm(TendenciBaseForm):
@@ -102,6 +122,8 @@ class ChapterAdminForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    photo_upload = forms.FileField(label=_('Featured Image'), required=False,
+                                   validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
 
     class Meta:
         model = Chapter
@@ -114,6 +136,7 @@ class ChapterAdminForm(TendenciBaseForm):
         'mission',
         'content',
         'notes',
+        'photo_upload',
         'contact_name',
         'contact_email',
         'join_link',
@@ -133,6 +156,9 @@ class ChapterAdminForm(TendenciBaseForm):
             self.fields['mission'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['notes'].widget.mce_attrs['app_instance_id'] = 0
+        if self.instance.featured_image:
+            self.fields['photo_upload'].help_text = 'Current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.featured_image.pk, basename(self.instance.featured_image.file.name))
+            self.fields['photo_upload'].required = False
 
 
 class ChapterAdminChangelistForm(TendenciBaseForm):

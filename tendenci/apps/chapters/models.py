@@ -2,6 +2,7 @@ from builtins import str
 
 from django.db import models
 from django.urls import reverse
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
@@ -13,6 +14,7 @@ from tendenci.apps.chapters.managers import ChapterManager
 from tendenci.apps.chapters.module_meta import ChapterMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.entities.models import Entity
+from tendenci.apps.files.models import File
 
 
 class Chapter(BasePage):
@@ -24,6 +26,10 @@ class Chapter(BasePage):
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
     sponsors =tinymce_models.HTMLField(blank=True, default='')
+    featured_image = models.ForeignKey(File, null=True, default=None,
+                              related_name='chapters',
+                              help_text=_('Only jpg, gif, or png images.'),
+                              on_delete=models.SET_NULL)
     contact_name = models.CharField(max_length=200, null=True, blank=True)
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
@@ -54,6 +60,24 @@ class Chapter(BasePage):
 
     def officers(self):
         return Officer.objects.filter(chapter=self).order_by('pk')
+    
+    def save(self, *args, **kwargs):
+        photo_upload = kwargs.pop('photo', None)
+
+        super(Chapter, self).save(*args, **kwargs)
+        if photo_upload and self.pk:
+            image = File(content_type=ContentType.objects.get_for_model(self.__class__),
+                         object_id=self.pk,
+                         creator=self.creator,
+                         creator_username=self.creator_username,
+                         owner=self.owner,
+                         owner_username=self.owner_username)
+            photo_upload.file.seek(0)
+            image.file.save(photo_upload.name, photo_upload)
+            image.save()
+
+            self.featured_image = image
+            self.save()
 
 
 class Position(models.Model):
