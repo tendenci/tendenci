@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import strip_tags
+from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.perms.utils import update_perms_and_save
@@ -43,9 +44,9 @@ class OfficerAdminInline(admin.TabularInline):
 
 
 class ChapterAdmin(TendenciBaseModelAdmin):
-    list_display = ('view_on_site', 'edit_link', 'title', 'group', 'entity', 'admin_perms', 'admin_status')
+    list_display = ('view_on_site', 'edit_link', 'title', 'group_link', 'entity', 'admin_perms', 'admin_status')
     search_fields = ('title', 'content',)
-    list_editable = ('title', 'group',)
+    list_editable = ('title',)
     fieldsets = (
         (None, {'fields': (
             'title',
@@ -133,6 +134,15 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:chapters_chapter_change', args=[obj.pk])
         return link
     edit_link.short_description = 'edit'
+    
+    @mark_safe
+    def group_link(self, instance):
+        group_url = reverse('group.detail',args=[instance.group.slug])
+        group_name = instance.group.name
+                            
+        return f'<a href="{group_url}" title="{group_name}">{group_name}</a>'
+    group_link.short_description = _('group')
+    group_link.admin_order_field = 'group'
 
     @mark_safe
     def view_on_site(self, obj):
