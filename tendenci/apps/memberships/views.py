@@ -9,8 +9,9 @@ import time as ttime
 import subprocess
 import calendar
 from collections import OrderedDict
+from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
-
+ 
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -568,9 +569,52 @@ def membership_default_import_preview(request, mimport_id,
             user_display = imd.process_default_membership(idata)
 
             user_display['row_num'] = idata.row_num
+            for f in ['join_dt', 'expire_dt', 'membership_type']:
+                if f in idata.row_data:
+                    user_display[f] = idata.row_data[f]
+            
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
+                
+        # DateTime fields are sensitive to parse failures
+        # They are not parsed in the preview yet, in fact all 
+        # data travens as strings to be cleaned and parsd just 
+        # before being saved to the respecive models. Datetimes 
+        # and dates are parsed with dateutil.parser, so we fo
+        # that here specifically so that someone importing dates
+        # sees a preview of the parse success/failure before 
+        # committing.
+        #
+        # We elect join_dt and expire_dt as the two most likely 
+        # dates of interest to someone importing members en 
+        # masse.
+        for dt in ['join_dt', 'expire_dt']:
+            if dt in fieldnames:
+                for u in users_list:
+                    if u[dt].strip():
+                        try:
+                            u[dt] = str(dparse(u[dt]))
+                        except ParserError:
+                            u[dt] = "Error"
+                    else:
+                        u[dt] = "None"
+
+        # Similarly membership_type if imported must be 
+        # imported as the id of a membership_type and it's 
+        # useful to get feedback on integrity at the preview
+        # before committing the import.
+        # TODO: This could generalize to all ID type imports supported
+        if 'membership_type' in fieldnames:
+            mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
+
+            for u in users_list:
+                try:
+                    mt = int(str(u['membership_type']))
+                except ValueError:
+                    mt = 'Value Error'
+                    
+                u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={
             'mimport': mimport,
