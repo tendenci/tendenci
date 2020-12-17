@@ -393,7 +393,6 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     'as it is required for setting up a recurring ' +
                     'payment for anonymous users.')
 
-    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
     if form.custom_payment and not form.recurring_payment:
         billing_form = BillingForm(request.POST or None)
         if request.user.is_authenticated:
@@ -404,6 +403,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     else:
         billing_form = None
 
+    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
