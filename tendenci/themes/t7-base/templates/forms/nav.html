@@ -59,7 +59,6 @@
                 {% endif %}
                 {% if can_edit_form %}
                     <li><a href="{% url "admin:forms_form_change" nav_object.pk %}">{% trans "Edit Form" %}</a></li>
-                    <li><a href="{% url "admin:forms_form_change" nav_object.pk %}">{% trans "Edit Form Fields" %}</a></li>
                 {% endif %}
                 {% if can_add_form %}
                     <li><a href="{% url 'form_copy' nav_object.pk %}">{% trans "Copy Form" %}</a></li>
