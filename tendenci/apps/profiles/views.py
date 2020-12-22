@@ -534,6 +534,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                 if recipients:
                     if notification:
                         extra_context = {
+                            'object': old_user,
                             'old_user': old_user,
                             'old_profile': old_profile,
                             'profile': profile,
