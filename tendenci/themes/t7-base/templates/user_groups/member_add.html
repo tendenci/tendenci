@@ -45,29 +45,32 @@
             </div>
             <div style="clear:left;"></div>
         </div>
-        <div class="field-wrapper">
-            {% if form.role.errors %}
-                <div class="errors">{{ form.role.errors|striptags }}</div>
-            {% endif %}
-            <label for="id_role">{{ form.role.label }}:</label>
-            {{ form.role }}
-        </div>
-        <div class="field-wrapper">
-            {% if form.status.errors %}
-                <div class="errors">{{ form.status.errors|striptags }}</div>
-            {% endif %}
-            <label for="id_status">{{ form.status.label }}:</label>
-            {{ form.status }}
-        </div>
-        <div class="field-wrapper">
-            {% if form.status_detail.errors %}
-                <div class="errors">{{ form.status_detail.errors|striptags }}</div>
-            {% endif %}
-            <label for="id_status_detail">{{ form.status_detail.label }}</label>
-            {{ form.status_detail }}
+        <p>Save each member with:</p>
+        <div style="margin-left: 4ch">
+	        <div class="field-wrapper">
+	            {% if form.role.errors %}
+	                <div class="errors">{{ form.role.errors|striptags }}</div>
+	            {% endif %}
+	            <label for="id_role">{{ form.role.label }}:</label>
+	            {{ form.role }}
+	        </div>
+	        <div class="field-wrapper">
+	            {% if form.status.errors %}
+	                <div class="errors">{{ form.status.errors|striptags }}</div>
+	            {% endif %}
+	            <label for="id_status">{{ form.status.label }}:</label>
+	            {{ form.status }}
+	        </div>
+	        <div class="field-wrapper">
+	            {% if form.status_detail.errors %}
+	                <div class="errors">{{ form.status_detail.errors|striptags }}</div>
+	            {% endif %}
+	            <label for="id_status_detail">{{ form.status_detail.label }}:</label>
+	            {{ form.status_detail }}
+	        </div>
         </div>
 
-        <div class="submit-row">
+        <div class="submit-row" style="margin-top:1ch">
             <input id='add_members_submit' type="submit" value="{% trans 'Save' %}" class="default" />
         </div>
     </form>
