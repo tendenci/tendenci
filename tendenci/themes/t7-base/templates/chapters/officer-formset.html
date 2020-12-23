@@ -1,0 +1,49 @@
+{% load base_filters %}
+
+<div class="chapter-officers">
+    <div class="id_officers">
+        <div class="label">
+            <label for="officer-table">OFFICERS</label>
+        </div>
+        <div class="field">
+            <table id="officer-table">
+        {% for officer_form in formset.forms %}
+            {% if forloop.first %}
+            <thead>
+                <tr>
+                    {% for field in officer_form.visible_fields %}
+                    <th class="officer-{{ field.label|lower }}">{{ field.label|capfirst }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody>
+            {% endif %}
+                <tr class="dynamic-form">
+                {% for field in officer_form.visible_fields %}
+                    <td class="officer-{{ field.label|lower }}">
+                    {% if forloop.first %}
+                        {% for hidden in officer_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                    {% endif %}
+                        {{ field.errors.as_ul }}
+                        {{ field }}
+                     </td>
+                {% endfor %}
+                </tr>
+
+                {% if forloop.last %}
+                <tr>
+                    <td colspan="{{ officer_form.visible_fields|length }}">
+                        <a href="javascript:void(0)" class="add-row">add officer</a>
+                    </td>
+                </tr>
+            </tbody>
+                {% endif %}
+        {% endfor %}
+        </table>
+        {{ formset.management_form }}
+        </div>
+    </div>
+</div>

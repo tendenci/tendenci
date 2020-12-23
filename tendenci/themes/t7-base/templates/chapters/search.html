@@ -1,0 +1,31 @@
+{% extends "chapters/base.html" %}
+
+{% load search_tags %}
+{% load pagination_tags %}
+{% load chapter_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Chapters' %}" href="{% url "chapters.feed" %}" />
+{% endblock %}
+
+{% block content %}
+{% autopaginate chapters 10 %}
+<div id="chapters">
+  
+  <div class="page-header">
+    <h1>{% trans 'Chapters List' %}</h1>
+  </div>
+  
+    {% chapter_search %}
+
+    <div class="chapters-wrap clearfix">
+    {% for chapter in chapters %}
+        {% search_result chapter %}
+    {% empty %}
+        <p>{% trans '0 chapters found' %}</p>
+    {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}

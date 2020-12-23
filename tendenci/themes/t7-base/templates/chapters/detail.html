@@ -1,0 +1,89 @@
+{% extends "chapters/base.html" %}
+{% load chapter_tags %}
+
+{% block content %}
+<div class="">
+  <div class="chapter-wrap">
+    <div class="page-header">
+      <h1>{{ chapter.title }}</h1>
+    </div>
+
+    {% if chapter.featured_image %}
+    <div class="chapter-featured-image">
+        <img src="{% url 'file' chapter.featured_image.id %}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
+    </div>
+    {% endif %}
+    
+    <div class="chapter-mission">
+      {{ chapter.mission|safe }}
+    </div>
+    
+    <div class="chapter-content">
+      {{ chapter.content|safe }}
+    </div>
+    
+    <div class="chapter-officers">
+      <div class="label">
+        <label for="officer-table">OFFICERS</label>
+      </div>
+      <table class="table" id="officer-table">
+        <thead>
+          <tr>
+            <th class="officer-position">Position</th>
+            <th class="officer-name">Name</th>
+            <th class="officer-phone">Phone</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          {% for officer in officers %}
+          <tr>
+            <td class="officer-position">{{ officer.position }}</td>
+            
+            <td class="officer-name">
+              <a href="{% url 'profile' officer.user.username  %}">
+                {% if officer.user.get_full_name %}
+                {{ officer.user.get_full_name }}
+                {% else %}
+                {{ officer.user }}
+                {% endif %}
+              </a>
+            </td>
+            
+            <td class="officer-phone">{{ officer.phone }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="chapter-sponsors">
+      <p>{{ chapter.sponsors|safe }}</p>
+    </div>
+    
+    {% if admin %}
+    <div class="chapter-notes">
+      {{ chapter.notes|safe }}
+    </div>
+    {% endif %}
+    
+    <div class="chapter-files">
+      <h2>Files {% if admin %}</h2>
+      
+      <a class="btn btn-default" href="{% url "file.add" %}">Add a File</a>{% endif %}
+      
+      <ul class="file-list">
+        {% for file in files %}
+        <li class="file-list">
+          <a href="{% url "file" file.pk %}">{{ file.get_name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+    {% include "chapters/meta.html" %}
+    <br />
+    
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "chapters/base.html" %}
+{% load chapter_tags %}
+
+{% block title %}{% trans "Delete Chapter" %} - {{ chapter.get_title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <div class="chapter-wrap">
+        <h1>{% trans "Delete a Chapter" %}</h1>
+        <h2>{{ chapter.title }} - <a href="{{ chapter.get_absolute_url }}">{{ chapter.get_absolute_url }}</a></h2>
+        <div class="content">{{ chapter.content|safe|truncatewords_html:"60" }}</div>
+        <div class="delete-prompt">
+            {% trans "Are you sure you want to permanently delete this chapter?" %}
+        </div>
+        <div class="delete-form">
+            <form name="chapter-delete" method="POST" action="{% url "chapters.delete" chapter.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+            </form>
+        </div>
+        <div class="back-item"><a href="{{ chapter.get_absolute_url }}">&laquo; {% trans "Back to chapter" %} {{ chapter.title }}</a></div>
+        <div class="back-search"><a href="{% url "chapters.search" %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_COMMITTEES_LABEL 'chapters' %} </a></div>
+    </div>
+</div>
+{% endblock %}
