@@ -35,7 +35,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
                      'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
-    option_fields = ['require_approval', 'position', 'status_detail']
+    option_fields = ['require_approval', 'pending_group', 'active_group', 'position', 'status_detail']
     if get_setting('module', 'corporate_memberships', 'usefreepass'):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
