@@ -311,8 +311,10 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     # group
     if group:
-        profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
-                                    group__id=group).values_list('member', flat=True))
+        if group > 0:
+            profiles = profiles.filter(user__user_groups=group)
+        else:
+            profiles = profiles.filter(user__user_groups=None)
 
     profiles = profiles.distinct()
 
@@ -350,6 +352,9 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
+    base_template = 'profiles/base-wide.html'
+    if memberships_search:
+        base_template = 'memberships/base-wide.html'
 
     EventLog.objects.log()
     return render_to_resp(request=request, template_name=template_name,
@@ -358,7 +363,8 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
-            'memberships_search': memberships_search})
+            'memberships_search': memberships_search,
+            'base_template': base_template})
 
 
 @login_required
@@ -528,6 +534,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                 if recipients:
                     if notification:
                         extra_context = {
+                            'object': old_user,
                             'old_user': old_user,
                             'old_profile': old_profile,
                             'profile': profile,

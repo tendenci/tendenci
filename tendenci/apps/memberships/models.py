@@ -2081,6 +2081,32 @@ class MembershipDefault(TendenciBaseModel):
                 self.directory = Directory.objects.create(**params)
                 self.save()
 
+    def get_common_urls(self):
+        """
+        Get common urls related with this membership, such as
+         directory_url, directory_edit_url, membership_link,
+         invoice_link, membership_type
+        """
+        site_url = get_setting('site', 'global', 'siteurl')
+        if self.directory:
+            directory_url = '{0}{1}'.format(site_url, reverse('directory',
+                                                 args=[self.directory.slug]))
+            directory_edit_url = '{0}{1}'.format(site_url, reverse('directory.edit',
+                                args=[self.directory.id]))
+        else:
+            directory_url = ''
+            directory_edit_url = ''
+        invoice = self.get_invoice()
+        if invoice:
+            invoice_link = '%s%s' % (site_url, invoice.get_absolute_url())
+        else:
+            invoice_link = ''
+        return {'membership_link': '%s%s' % (site_url, self.get_absolute_url()),
+                  'directory_url': directory_url,
+                  'directory_edit_url': directory_edit_url, 
+                  'membership_type': self.membership_type.name,
+                  'invoice_link':  invoice_link,}
+
     # def custom_fields(self):
     #     return self.membershipfield_set.order_by('field__position')
 

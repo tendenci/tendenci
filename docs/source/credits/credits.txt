@@ -14,6 +14,7 @@ Thank you to our current core developers adding issues, pull requests, documenta
 - Edna Diaz @ediaz1
 - Rachel Schipul @rschipul
 - Leanne Luce @leanneluce
+- Bernd Wechner @bernd-wechner
 
 Additional thanks to the people who have contributed to the product as a whole from the beginning. The list is mostly chronological and may not directly reflect their overall contributions. This is just a huge THANK YOU list!
 

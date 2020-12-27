@@ -28,6 +28,7 @@ from django.utils.translation import ugettext as _
 from django.utils.html import escape
 from django import forms
 from django.utils.encoding import smart_text
+import simplejson
 
 try:
     from django.utils import timezone
@@ -755,10 +756,9 @@ def ticket_list(request):
             return HttpResponseRedirect(reverse('helpdesk_list'))
         if not (saved_query.shared or saved_query.user == request.user):
             return HttpResponseRedirect(reverse('helpdesk_list'))
-
-        import pickle
         from base64 import b64decode
-        query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
+        query_params = simplejson.loads(b64decode(saved_query.query))
+        #query_params = pickle.loads(b64decode(str(saved_query.query).encode()))
     elif not (  'queue' in request.GET
             or  'assigned_to' in request.GET
             or  'status' in request.GET
@@ -857,7 +857,7 @@ def ticket_list(request):
     try:
         page = int(request.GET.get('page', '1'))
     except ValueError:
-         page = 1
+        page = 1
 
     try:
         tickets = ticket_paginator.page(page)
@@ -868,9 +868,9 @@ def ticket_list(request):
     if 'query' in context and settings.DATABASES['default']['ENGINE'].endswith('sqlite'):
         search_message = _('<p><strong>Note:</strong> Your keyword search is case sensitive because of your database. This means the search will <strong>not</strong> be accurate. By switching to a different database system you will gain better searching! For more information, read the <a href="http://docs.djangoproject.com/en/dev/ref/databases/#sqlite-string-matching">Django Documentation on string matching in SQLite</a>.')
 
-    import pickle
     from base64 import b64encode
-    urlsafe_query = b64encode(pickle.dumps(query_params)).decode()
+    urlsafe_query = b64encode(bytes(simplejson.dumps(query_params), encoding='utf-8')).decode('utf-8')
+    #urlsafe_query = b64encode(pickle.dumps(query_params)).decode()
 
     user_saved_queries = SavedSearch.objects.filter(Q(user=request.user) | Q(shared__exact=True))
 
