@@ -35,7 +35,7 @@ python-dateutil==2.8.1
 pdfminer.six==20170720
 stripe==2.42.0
 pycryptodome==3.9.6
-boto3==1.14.62
+boto3==1.16.43
 django-timezone-field==4.0
 django-ses==1.0.3
 django-tastypie==0.14.3
