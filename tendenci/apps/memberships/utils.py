@@ -1951,18 +1951,25 @@ def email_pending_members(email, **kwargs):
     Email to pending members or corporate members.
     """
     from django.template import Context, Template
+    from django.template.loader import get_template
     from tendenci.apps.corporate_memberships.models import CorpMembership
+    from tendenci.apps.theme.shortcuts import _strip_content_above_doctype
     site_url = get_setting('site', 'global', 'siteurl')
     site_display_name = get_setting('site', 'global', 'sitedisplayname')
     tmp_body = email.body
     
+    request = kwargs.get('request')
     recipient_type = kwargs.get('recipient_type')
     total_sent = 0
+    subject = email.subject
+    membership_type = kwargs.get('membership_type', None)
+    corpmembership_type = kwargs.get('corpmembership_type', None)
     
+    msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
+    msg += '<h1>Processing ...</h1>'
     if recipient_type == 'pending_members':
         pending_members =  MembershipDefault.objects.filter(status=True,
                                         status_detail__contains='ending')
-        membership_type = kwargs.get('membership_type')
         if membership_type:
             pending_members = pending_members.filter(membership_type=membership_type)
 
@@ -1986,18 +1993,22 @@ def email_pending_members(email, **kwargs):
     
                 email.send()
                 total_sent += 1
+
+                msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+
+                if total_sent % 10 == 0:
+                    yield msg
+                    msg = ''
     
             email.body = tmp_body  # restore to the original
-        return pending_members, total_sent
     else:
         # to pending corp members
-        pending_corp_members = CorpMembership.objects.filter(status=True,
+        pending_members = CorpMembership.objects.filter(status=True,
                                         status_detail__contains='ending')
-        corpmembership_type = kwargs.get('corpmembership_type')
         if corpmembership_type:
-            pending_corp_members = pending_corp_members.filter(corporate_membership_type=corpmembership_type)
+            pending_members = pending_members.filter(corporate_membership_type=corpmembership_type)
         
-        for corp_member in pending_corp_members:
+        for corp_member in pending_members:
             reps = corp_member.corp_profile.reps.all()
             for rep in reps:
                 first_name = rep.user.first_name
@@ -2019,7 +2030,52 @@ def email_pending_members(email, **kwargs):
 
                     email.send()
                     total_sent += 1
+                    msg += f'{total_sent}. Email sent to {first_name} {last_name} {email.recipient}<br />'
+
+                    if total_sent % 10 == 0:
+                        yield msg
+                        msg = ''
 
                 email.body = tmp_body  # restore to the original
-        return pending_corp_members, total_sent
+
+    if email.recipient_type == 'pending_members':
+        if not membership_type:
+            dest = _('ALL pending members')
+        else:
+            dest = membership_type.name
+    else:
+        if not corpmembership_type:
+            dest = _('ALL pending corp members')
+        else:
+            dest = corpmembership_type.name
+    opts = {}
+    opts['summary'] = '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
+    opts['summary'] += '<font face=""Arial"" color=""#000000"">'
+    opts['summary'] += 'Email Sent Appears Below in Raw Format'
+    opts['summary'] += '</font><br><br>'
+    opts['summary'] += email.body
+
+    # send summary
+    email.subject = 'SUMMARY: %s' % email.subject
+    email.body = opts['summary']
+    email.recipient = request.user.email
+    email.send()
+
+    msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
+    msg += '</div>'
+    yield msg
     
+    template_name='memberships/message/pending-members-conf.html'
+    template = get_template(template_name)
+    context={'total_sent': total_sent,
+           'pending_members': pending_members,
+           'recipient_type': email.recipient_type,
+           'membership_type': membership_type,
+           'corpmembership_type': corpmembership_type}
+    rendered = template.render(context=context, request=request)
+    rendered = _strip_content_above_doctype(rendered)
+    yield rendered
+
+    
+
