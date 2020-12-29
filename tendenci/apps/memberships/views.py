@@ -218,13 +218,19 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
             with open(default_body_file_path) as fp:
                 default_body = fp.read()
 
-    form = form_class(request.POST or None, instance=email, initial={'subject': default_subject, 'body': default_body})
+    form = form_class(request.POST or None, instance=email, initial={
+        'subject': default_subject,
+        'body': default_body,
+        'sender_display': request.user.get_full_name(),
+        'reply_to': request.user.email})
     
     if request.method == "POST":
         if form.is_valid():
             email = form.save()
-            email.sender_display = request.user.get_full_name()
-            email.reply_to = request.user.email
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "html"
             email.allow_anonymous_view = False

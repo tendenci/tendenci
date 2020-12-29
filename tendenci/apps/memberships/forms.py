@@ -332,7 +332,9 @@ class MessageForm(FormControlWidgetMixin, forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body',
+                  'sender_display',
+                  'reply_to',)
 
     def __init__(self, *args, **kwargs):
         super(MessageForm, self).__init__(*args, **kwargs)
