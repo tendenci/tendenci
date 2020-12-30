@@ -24,35 +24,28 @@ class DirectoryMeta():
         category_set = object.category_set
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
+        site_url = get_setting('module', 'directories', 'url')
 
         ### Build string -----------------------
-        value = '%s - %s' % (object.headline, object.activation_dt)
-        value = value.strip()
-
-        value = ''
-
+        
+        value = site_name + ' | '
+        
         # start w/ headline
         if object.headline:
             value += object.headline
-
-        # contact activation
-        if object.headline and object.activation_dt:
-            value += ' - %s' % object.activation_dt.strftime('%m-%d-%Y')
-        elif object.activation_dt:
-            value += object.activation_dt.strftime('%m-%d-%Y')
+            value += ' | '
 
         # primary keywords OR category/subcategory
-        if primary_keywords:
+        if site_url != 'directories':
+            value += site_url.capitalize()
+
+        elif primary_keywords:
             value = '%s : %s' % (value, primary_keywords)
         else:
             if category:
                 value = '%s %s' % (value, category)
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
-
-        value = '%s directory: ' % value
-
-        value = '%s Directories for %s' % (value, site_name)
 
         if geo_location:
             value = '%s in %s' % (value, geo_location)
