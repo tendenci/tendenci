@@ -25,14 +25,6 @@ class DirectoryMeta():
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
 
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-        creator_name = creator_name.strip()
-
         ### Build string -----------------------
         value = '%s - %s' % (object.headline, object.activation_dt)
         value = value.strip()
@@ -58,12 +50,9 @@ class DirectoryMeta():
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
 
-        value = '%s directory' % value
+        value = '%s directory: ' % value
 
-        if creator_name:
-            value = '%s contact: %s' % (value, creator_name)
-
-        value = '%s directories for %s' % (value, site_name)
+        value = '%s Directories for %s' % (value, site_name)
 
         if geo_location:
             value = '%s in %s' % (value, geo_location)
@@ -80,13 +69,6 @@ class DirectoryMeta():
         subcategory = category_set.get('sub_category', '')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-        creator_name = creator_name.strip()
 
         if object.summary:
             content = object.summary
@@ -100,9 +82,6 @@ class DirectoryMeta():
 
         ### Build string -----------------------
         value = object.headline
-
-        if creator_name:
-            value = '%s %s' % (value, creator_name)
 
         value = '%s : %s' % (value, content)
 
@@ -133,13 +112,6 @@ class DirectoryMeta():
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
 
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-
         ### Build string -----------------------
         value = ''
 
@@ -153,7 +125,6 @@ class DirectoryMeta():
                 geo_location,
                 site_name,
                 'white paper',
-                creator_name,
             ]
 
             # remove blank items
