@@ -21,10 +21,9 @@ class DirectoryMeta():
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
-        category_set = object.category_set
-        category = category_set.get('category', '')
-        subcategory = category_set.get('sub_category', '')
-        site_url = get_setting('module', 'directories', 'url')
+        category = ', '.join([cat.name for cat in object.cats.all()])
+        subcategory = ', '.join([sub_cat.name for sub_cat in object.sub_cats.all()])
+        directories_url = get_setting('module', 'directories', 'url')
 
         ### Build string -----------------------
         
@@ -36,14 +35,14 @@ class DirectoryMeta():
             value += ' | '
 
         # primary keywords OR category/subcategory
-        if site_url != 'directories':
-            value += site_url.capitalize()
+        if directories_url != 'directories':
+            value += directories_url.capitalize()
 
         elif primary_keywords:
-            value = '%s : %s' % (value, primary_keywords)
+            value += primary_keywords
         else:
             if category:
-                value = '%s %s' % (value, category)
+                value += category
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
 
@@ -58,8 +57,8 @@ class DirectoryMeta():
         ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         category_set = object.category_set
-        category = category_set.get('category', '')
-        subcategory = category_set.get('sub_category', '')
+        category = ', '.join([cat.name for cat in object.cats.all()])
+        subcategory = ', '.join([sub_cat.name for sub_cat in object.sub_cats.all()])
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
 
@@ -85,8 +84,6 @@ class DirectoryMeta():
                 value = '%s %s' % (value, category)
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
-
-            value = '%s directory' % value
 
         value = '%s Directories for %s %s' % (
             value, site_name, geo_location)
