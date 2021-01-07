@@ -252,7 +252,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         email = form.cleaned_data['email']
         search_criteria = form.cleaned_data['search_criteria']
         search_text = form.cleaned_data['search_text']
-        search_method = form.cleaned_data['search_method']
+        search_method = form.cleaned_data.get('search_method', 'contains')
         membership_type = form.cleaned_data.get('membership_type', None)
         member_only = form.cleaned_data.get('member_only', False)
         group = form.cleaned_data.get('group', False)
@@ -319,17 +319,17 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     profiles = profiles.distinct()
 
     if first_name:
-        profiles = profiles.filter(user__first_name__iexact=first_name)
+        profiles = profiles.filter(user__first_name__istartswith=first_name)
     if last_name:
-        profiles = profiles.filter(user__last_name__iexact=last_name)
+        profiles = profiles.filter(user__last_name__istartswith=last_name)
     if email:
-        profiles = profiles.filter(user__email__iexact=email)
+        profiles = profiles.filter(user__email__istartswith=email)
 
     if member_only:
         profiles = profiles.exclude(member_number='')
 
     if search_criteria and search_text:
-        search_type = '__iexact'
+        search_type = '__icontains'
         if search_method == 'starts_with':
             search_type = '__istartswith'
         elif search_method == 'contains':
