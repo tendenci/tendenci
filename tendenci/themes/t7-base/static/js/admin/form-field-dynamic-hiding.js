@@ -108,6 +108,7 @@ jQuery(function($) {
             }
     	}
     	else {
+	        fieldset.find(".field-field_function select").find('option[value="GroupSubscription"]').prop("selected", false);
             fieldset.find(".field-field_function select").css('visibility', 'hidden');
     	}
 
