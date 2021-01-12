@@ -1,3 +1,52 @@
+### 12.4 [2021-01-12]
+
+* Added the chapters module
+* Removed the "exact match" from profiles search and updated search form format.
+* Created the template tag list_jobs_categories. 
+* Added title, location and skills fields to jobs search.
+* Added sender_display and reply_to to email to pending members. 
+* Added canonical url to /news/, /articles/ and /events/. 
+* Updated dashboard to show the last three Tendenci blog posts. 
+* Added tokens to email sent via groups and newsletters.
+* Added the option to have pending and/or active reps groups based on corp membership types.
+* Updated Help files: 1) Set to pending for help files added by regular user. 2) Added email notification if added by non-superuser. 3) Fixed top menu for add/edit pages (was showing Articles instead of Help Files).
+* Restricted corp profile link on directory view to owner and admins only
+* Enabled user to edit directory they are member of (Thanks @yehuda-elementryx)
+* Fixed category and subcategory for directories meta title and description 
+* Made email fail mode configurable (Thanks @bernd-wechner)
+* Removed directory creator from metadata (Thanks @robbierobs and @evanspaeder)
+* Allowed superuser or reps or users with view_corpprofile perms to view their corp profile
+* Resolved timing out for email to pending members 
+* Updated boto3 version to 1.16.43 
+* Removed unnecessary duplication in forms menu (Thanks @bernd-wechner)
+* Made the officers table headings bold by default for committees. (Thanks @bernd-wechner)
+* Added the default fixture for industries
+* Fixed search not working for committees and chapters 
+* Fixed the issue about default not working in custom forms for boolean field
+* Fixed a bug for users with userid 0 (Thanks @bernd-wechner)
+* Updated the select boxes on member add for user groups (Thanks @bernd-wechner)
+* Updated profiles search to support searching for members NOT in any groups (Thanks @bernd-wechner)
+* Fixed header on group detail page (Thanks @bernd-wechner)
+* Added Membership Types to the Community menu (Thanks @bernd-wechner)
+* Support for timeless dates on membership cards (Thanks @bernd-wechner)
+* Added Members to Apps/Organization menu (Thanks @bernd-wechner)
+* Added membership type to member cards (Thanks @bernd-wechner)
+* Fixed unrestricted deserialization for helpdesk
+* Fixed members search showing Users menu instead of Membership menu.
+* Updated the description of the Primary Keywords setting 
+* Updated email to pending members to allow for segmenting based on membership types.
+* Allowed users with directories change permissions to view pending directories.
+* Allowed users with profiles change permissions to access users search and similar users list.
+* Extended truncated summary and body for directories/marketplace search results (Thanks @robbierobs)
+* Fixed some issues in recurring payment for authorizenet.
+* Changed h1 tags to h3 tags for news headline on news search page.
+* Updated recurring payment details page. 
+* Fixed import username limit (Thanks @evanspaeder)
+* Fixed some issues for event minimal_add 
+* Resolved permission bits not being saved for membership apps
+* Fixed a bug in forms module
+
+
 ### 12.3.3 [2020-11-17]
 
 * Updated similar users list to be case-insensitive.

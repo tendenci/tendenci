@@ -543,15 +543,19 @@ def corpmembership_edit(request, id,
 
 
 @is_enabled('corporate_memberships')
-@staff_member_required
+@login_required
 def corpprofile_view(request, id, template="corporate_memberships/profiles/view.html"):
     """
-        view a corp profile - superuser only
+        view a corp profile - superuser or reps or users with view_corpprofile perms.
     """
-    if not request.user.is_superuser:
-        raise Http403
-
     corp_profile = get_object_or_404(CorpProfile, id=id)
+    if not request.user.is_superuser:
+        if not has_perm(request.user,
+                    'corporate_memberships.view_corpprofile',
+                    corp_profile):
+            if not corp_profile.is_rep(request.user):
+                raise Http403
+
     corp_membership = corp_profile.corp_membership
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(

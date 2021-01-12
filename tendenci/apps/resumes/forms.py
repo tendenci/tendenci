@@ -50,9 +50,9 @@ class ResumeSearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super(ResumeSearchForm, self).__init__(*args, **kwargs)
-        self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['email'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
+        self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
+        self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
         
         for field in self.fields:
             if field not in ['search_criteria', 'search_text', 'search_method', 'grid_view']:
