@@ -2080,7 +2080,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
             if limit > 0:
                 pricings_total_cap = 0
                 for form in self.forms:
-                    pricings_total_cap += form.cleaned_data['registration_cap']
+                    pricings_total_cap += form.cleaned_data.get('registration_cap', 0)
                 if pricings_total_cap > limit:
                     raise forms.ValidationError(_('The registration limit set for this event is {0}, but the total limit specified for each pricing is {1}'.format(limit, pricings_total_cap)))
         return return_data
