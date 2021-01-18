@@ -136,7 +136,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')
@@ -1553,7 +1553,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')
