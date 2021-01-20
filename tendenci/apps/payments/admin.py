@@ -9,7 +9,7 @@ from tendenci.apps.theme.templatetags.static import static
 
 
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'view_on_site', 'invoice_link', 'amount',  'show_product', 'payer', 'status_detail', 'create_dt', ]
+    list_display = ['id', 'view_on_site', 'amount',  'show_product', 'payer', 'status_detail', 'invoice_link', 'create_dt', ]
     search_fields = [
         'first_name',
         'last_name',
