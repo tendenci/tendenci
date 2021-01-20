@@ -46,7 +46,7 @@ the payment entries in the general ledger for accounting purposes.
 </tr>
 
 <tr>
-<td colspan="4">{% trans "Created:" %} {{ payment.create_dt|date:'long' }}</td>
+<td colspan="4"><strong>{% trans "Created:" %} {{ payment.create_dt|date:'long' }}</strong></td>
 </tr>
 
 
@@ -90,8 +90,8 @@ the payment entries in the general ledger for accounting purposes.
 </tr>
 
 <tr>
-<td>{% trans "Amount:" %} {{ payment.amount|format_currency }}</td>
-<td>{% trans "Method:" %} {{ payment.method }}</td>
+<td><strong>{% trans "Amount:" %} {{ payment.amount|format_currency }}</strong></td>
+<td><strong>{% trans "Method:" %} {{ payment.method }}</strong></td>
 </tr>
 
 <tr>
@@ -100,7 +100,7 @@ the payment entries in the general ledger for accounting purposes.
 </tr>
 
 <tr>
-<td>{% trans "Description:" %} {{ payment.description }}</td>
+<td><strong>{% trans "Description:" %} {{ payment.description }}</strong></td>
 <td colspan="3">&nbsp;</td>
 </tr>
 
