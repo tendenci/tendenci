@@ -474,9 +474,8 @@ def corpmembership_edit(request, id,
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
-    if not is_superuser:
-        if not (corp_membership.is_pending and has_perm(request.user, 'corporate_memberships.approve_corpmembership')):
-            app_fields = app_fields.filter(admin_only=False)
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership'):
+        app_fields = app_fields.filter(admin_only=False)
     if corp_membership.is_expired:
         # if it is expired, remove the expiration_dt field so they can
         # renew this corporate membership
@@ -636,7 +635,7 @@ def corpmembership_view(request, id,
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
-    if not is_superuser:
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership'):
         app_fields = app_fields.filter(admin_only=False)
     if not can_edit:
         app_fields = app_fields.exclude(field_name__in=[
