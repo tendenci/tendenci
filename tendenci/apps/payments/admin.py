@@ -9,7 +9,7 @@ from tendenci.apps.theme.templatetags.static import static
 
 
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'view_on_site', 'invoice_link',  'show_product', 'payer', 'status_detail', 'create_dt', ]
+    list_display = ['id', 'view_on_site', 'invoice_link', 'amount',  'show_product', 'payer', 'status_detail', 'create_dt', ]
     search_fields = [
         'first_name',
         'last_name',
@@ -52,7 +52,7 @@ class PaymentAdmin(admin.ModelAdmin):
             
             return f'{instance.invoice.object_type}: {instance.invoice.get_object()}'
         return ""
-    show_product.short_description = _('Product')
+    show_product.short_description = _('Item')
     show_product.allow_tags = True
     show_product.admin_order_field = 'invoice__object_type'
 
@@ -66,7 +66,7 @@ class PaymentAdmin(admin.ModelAdmin):
             return f'{instance.first_name} {instance.last_name}'
  
         return ""
-    payer.short_description = _('Payer')
+    payer.short_description = _('User')
     payer.allow_tags = True
     payer.admin_order_field = Concat('first_name', Value(' '), 'last_name')
 
