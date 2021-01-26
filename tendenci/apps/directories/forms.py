@@ -40,7 +40,6 @@ request_duration_defaults = {
 }
 
 SEARCH_CATEGORIES = (
-    ('', _('-- SELECT ONE --') ),
     ('headline', _('Name')),
     ('body', _('Description')),
     ('city', _('City')),
