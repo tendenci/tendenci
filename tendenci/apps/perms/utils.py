@@ -225,7 +225,7 @@ def get_query_filters(user, perm, **kwargs):
     if not isinstance(user, User) or user.is_anonymous:
         anon_q = Q(allow_anonymous_view=True)
         status_q = Q(status=True)
-        status_detail_q = Q(status_detail__in=['active', 'published'])
+        status_detail_q = Q(status_detail__in=['active', 'published','pending'])
         anon_filter = (anon_q & status_q & status_detail_q)
         return anon_filter
     else:
@@ -245,7 +245,7 @@ def get_query_filters(user, perm, **kwargs):
                 user_q = Q(allow_user_view=True)
                 member_q = Q(allow_member_view=True)
                 status_q = Q(status=True)
-                status_detail_q = Q(status_detail__in=['active', 'published'])
+                status_detail_q = Q(status_detail__in=['active', 'published', 'pending'])
 
                 if perms_field:
                     group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]
@@ -260,7 +260,7 @@ def get_query_filters(user, perm, **kwargs):
                 anon_q = Q(allow_anonymous_view=True)
                 user_q = Q(allow_user_view=True)
                 status_q = Q(status=True)
-                status_detail_q = Q(status_detail__in=['active', 'published'])
+                status_detail_q = Q(status_detail__in=['active', 'published', 'pending'])
 
                 if perms_field:
                     group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]

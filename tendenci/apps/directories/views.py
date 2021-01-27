@@ -34,7 +34,7 @@ from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
-from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
+from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing, can_view_pending_directories
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
@@ -56,8 +56,33 @@ def details(request, slug=None, template_name="directories/view.html"):
 
 @is_enabled('directories')
 def search(request, template_name="directories/search.html"):
-    filters = get_query_filters(request.user, 'directories.view_directory')
+    user = request.user
+    username = request.user.username
+    filters = get_query_filters(user, 'directories.view_directory')
     directories = Directory.objects.filter(filters).distinct()
+
+    # Checking for view and change directory permission (staff)
+    can_view_pend = can_view_pending_directories(user)
+
+    # Finding pending directories from the directories query we ran above
+    pending_dirs = directories.filter(status_detail='pending').distinct()
+
+    # Bypassing this check if the user already has permissions
+    # else, we're looking to see if the user is the creator or has
+    # membership with the directory
+    if not can_view_pend:
+        for dir in pending_dirs:
+            dir_creator = dir.creator_username
+            creator = dir_creator == username
+
+            # Checking to see if the user has a membership with the directory
+            id = dir.id
+            directory = get_object_or_404(Directory, pk=id)
+            member = directory.has_membership_with(user)
+
+            if (not(creator or member)):
+                directories = directories.exclude(slug=dir.slug)
+
     cat = None
 
     if not request.user.is_anonymous:
@@ -494,10 +519,10 @@ def pending(request, template_name="directories/pending.html"):
 #         directory.status_detail = 'active'
 #         directory.allow_anonymous_view = True
 #         directory.save()
-# 
+#
 #         msg_string = 'Successfully published %s' % directory
 #         messages.add_message(request, messages.SUCCESS, _(msg_string))
-# 
+#
 #     return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
 
 
@@ -534,7 +559,7 @@ def approve(request, id, template_name="directories/approve.html"):
         # send email notification to user
         recipients = directory.get_owner_emails_list()
         if recipients:
-            notification.send_emails(recipients, 
+            notification.send_emails(recipients,
                 'directory_approved_user_notice', {
                         'object': directory,
                         'request': request,})
