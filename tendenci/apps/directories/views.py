@@ -34,7 +34,7 @@ from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
-from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing, can_view_pending
+from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing, can_view_pending_directories
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
@@ -62,7 +62,7 @@ def search(request, template_name="directories/search.html"):
     directories = Directory.objects.filter(filters).distinct()
 
     # Checking for view and change directory permission (staff)
-    can_view_pend = can_view_pending(user)
+    can_view_pend = can_view_pending_directories(user)
 
     # Finding pending directories from the directories query we ran above
     pending_dirs = directories.filter(status_detail='pending').distinct()

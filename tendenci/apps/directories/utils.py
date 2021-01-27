@@ -76,7 +76,7 @@ def get_payment_method_choices(user):
         else:
             return ()
 
-def can_view_pending(user):
+def can_view_pending_directories(user):
 
     can_view_directories = has_perm(user, 'directories.view_directory')
     can_change_directories = has_perm(user, 'directories.change_directory')
