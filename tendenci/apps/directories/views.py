@@ -34,7 +34,7 @@ from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
-from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing
+from tendenci.apps.directories.utils import directory_set_inv_payment, is_free_listing, can_view_pending
 from tendenci.apps.notifications import models as notification
 from tendenci.apps.directories.forms import DirectorySearchForm
 
@@ -62,12 +62,7 @@ def search(request, template_name="directories/search.html"):
     directories = Directory.objects.filter(filters).distinct()
 
     # Checking for view and change directory permission (staff)
-    can_view_directories = has_perm(user, 'directories.view_directory')
-    can_change_directories = has_perm(user, 'directories.change_directory')
-
-    can_view_pend = False
-    if can_view_directories and can_change_directories:
-        can_view_pend = True
+    can_view_pend = can_view_pending(user)
 
     # Finding pending directories from the directories query we ran above
     pending_dirs = directories.filter(status_detail='pending').distinct()
@@ -77,11 +72,8 @@ def search(request, template_name="directories/search.html"):
     # membership with the directory
     if not can_view_pend:
         for dir in pending_dirs:
-            creator = False
-            member = False
             dir_creator = dir.creator_username
-            if dir_creator == username:
-                creator = True
+            creator = dir_creator == username
 
             # Checking to see if the user has a membership with the directory
             id = dir.id

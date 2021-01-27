@@ -18,6 +18,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.payments.models import Payment
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.libs.storage import get_default_storage
 from tendenci.apps.base.utils import escape_csv
@@ -74,6 +75,14 @@ def get_payment_method_choices(user):
             return [(item, item) for item in directory_payment_types_list]
         else:
             return ()
+
+def can_view_pending(user):
+
+    can_view_directories = has_perm(user, 'directories.view_directory')
+    can_change_directories = has_perm(user, 'directories.change_directory')
+    can_view_pending = can_view_directories and can_change_directories
+
+    return can_view_pending
 
 def directory_set_inv_payment(user, directory, pricing):
     if get_setting('module', 'directories', 'directoriesrequirespayment'):
