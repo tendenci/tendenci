@@ -196,7 +196,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     allow_member_search = get_setting('module', 'users', 'allowmembersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.view_profile'):
         # block anon
         if request.user.is_anonymous:
             if not allow_anonymous_search:
@@ -217,7 +217,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     # decide whether or not to display the membership types drop down
     display_membership_type = False
-    if membership_view_perms == 'public' or request.user.profile.is_superuser:
+    if membership_view_perms == 'public' or has_perm(request.user, 'profiles.view_profile'):
         display_membership_type = True
     else:
         if membership_view_perms in ['all-members', 'member-type']:
@@ -252,7 +252,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         email = form.cleaned_data['email']
         search_criteria = form.cleaned_data['search_criteria']
         search_text = form.cleaned_data['search_text']
-        search_method = form.cleaned_data['search_method']
+        search_method = form.cleaned_data.get('search_method', 'contains')
         membership_type = form.cleaned_data.get('membership_type', None)
         member_only = form.cleaned_data.get('member_only', False)
         group = form.cleaned_data.get('group', False)
@@ -275,6 +275,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.exclude(member_number='')
     if not request.user.profile.is_superuser:
         profiles = profiles.filter(Q(status_detail="active"))
+    if not has_perm(request.user, 'profiles.view_profile'):
         if request.user.is_authenticated and request.user.profile.is_member:
             if allow_member_search:
                 filters = (Q(status=True) & Q(status_detail='active'))
@@ -310,23 +311,25 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
 
     # group
     if group:
-        profiles = profiles.filter(user__id__in=GroupMembership.objects.filter(
-                                    group__id=group).values_list('member', flat=True))
+        if group > 0:
+            profiles = profiles.filter(user__user_groups=group)
+        else:
+            profiles = profiles.filter(user__user_groups=None)
 
     profiles = profiles.distinct()
 
     if first_name:
-        profiles = profiles.filter(user__first_name__iexact=first_name)
+        profiles = profiles.filter(user__first_name__istartswith=first_name)
     if last_name:
-        profiles = profiles.filter(user__last_name__iexact=last_name)
+        profiles = profiles.filter(user__last_name__istartswith=last_name)
     if email:
-        profiles = profiles.filter(user__email__iexact=email)
+        profiles = profiles.filter(user__email__istartswith=email)
 
     if member_only:
         profiles = profiles.exclude(member_number='')
 
     if search_criteria and search_text:
-        search_type = '__iexact'
+        search_type = '__icontains'
         if search_method == 'starts_with':
             search_type = '__istartswith'
         elif search_method == 'contains':
@@ -349,6 +352,9 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
+    base_template = 'profiles/base-wide.html'
+    if memberships_search:
+        base_template = 'memberships/base-wide.html'
 
     EventLog.objects.log()
     return render_to_resp(request=request, template_name=template_name,
@@ -357,7 +363,8 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
-            'memberships_search': memberships_search})
+            'memberships_search': memberships_search,
+            'base_template': base_template})
 
 
 @login_required
@@ -527,6 +534,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                 if recipients:
                     if notification:
                         extra_context = {
+                            'object': old_user,
                             'old_user': old_user,
                             'old_profile': old_profile,
                             'profile': profile,
@@ -1003,7 +1011,7 @@ def user_education_edit(request, username, form_class=EducationForm, template_na
 
 @login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.change_profile'):
         raise Http403
 
     if request.method == 'POST':
@@ -1109,7 +1117,7 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
 @password_required
 def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'profiles.change_profile'):
         raise Http403
 
     sid = str(sid)

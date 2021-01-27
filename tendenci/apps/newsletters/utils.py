@@ -70,7 +70,6 @@ def is_newsletter_relay_set():
         else:
             return all([settings.AWS_ACCESS_KEY_ID,
                         settings.AWS_SECRET_ACCESS_KEY])
-
     else:
         return all([settings.NEWSLETTER_EMAIL_HOST,
                     settings.NEWSLETTER_EMAIL_HOST_USER,

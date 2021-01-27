@@ -1,0 +1,56 @@
+{% extends "chapters/base.html" %}
+{% load chapter_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_COMMITTEE_LABEL 'Chapter' %} Edit Meta Information{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t">
+    <h1>{% firstof MODULE_COMMITTEES_LABEL 'COMMITTEE' %} {% trans "Meta Information for" %}<br />
+    {{ chapter.title }}</h1>
+
+    <div class="chapter-wrap">
+        <div class="options">
+            <div class="quick-options">
+                {% chapter_options request.user chapter %}
+            </div>
+        </div>
+
+        <form action="{% url "chapters.edit.meta" chapter.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // delete confirmation
+            $('.delete').on("click", function(){
+                var delete_chapter = confirm("Permenantly delete {% firstof MODULE_COMMITTEES_LABEL 'Chapter' %}?");   // confirm
+                if(delete_chapter) $(this).parents('.chapter-wrap').find('form[name="chapter-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'js/global/dropdown.js' %}"></script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
+{% endblock %}

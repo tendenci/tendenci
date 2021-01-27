@@ -39,7 +39,7 @@ def detail(request, slug, template_name="committees/detail.html"):
         has_group_view_permission = False
         #Check user for group view permissions
         if request.user.is_authenticated:
-            groups = request.user.group_set.all()
+            groups = request.user.user_groups.all()
             perms = has_groups_perms(committee).filter(group__in=groups)
             for perm in perms:
                 #Check if permission has view committee permission

@@ -4,7 +4,7 @@ from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 from tendenci.apps.categories.models import Category
 from tendenci.apps.committees.models import Committee
 
-class CommitteeIndex(TendenciBaseSearchIndex):
+class CommitteeIndex(TendenciBaseSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title',)
 

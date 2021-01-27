@@ -84,9 +84,41 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'admin_only',
                   'number_passes',
                   'position',
+                  'pending_group',
+                  'active_group',
                   'status_detail',
                   )
 
+    def __init__(self, *args, **kwargs):
+        super(CorporateMembershipTypeForm, self).__init__(*args, **kwargs)
+        self.fields['pending_group'].queryset = self.fields['pending_group'].queryset.exclude(
+                    type='system_generated').exclude(type='membership')
+        self.fields['active_group'].queryset = self.fields['active_group'].queryset.exclude(
+                    type='system_generated').exclude(type='membership')
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        pending_group = cleaned_data.get("pending_group")
+        active_group = cleaned_data.get("active_group")
+        if pending_group and active_group and pending_group == active_group:
+            raise forms.ValidationError(_('The "Group for Reps upon Pending" and "Group for Reps upon Approval" can not be the same.'))
+        return cleaned_data
+
+    def clean_pending_group(self):
+        pending_group = self.cleaned_data['pending_group']
+        if pending_group:
+            if not self.instance or not self.instance.pending_group or self.instance.pending_group != pending_group:
+                if pending_group.members.count() > 0:
+                    raise forms.ValidationError(_("This group is not empty. Please select another one or add a new group."))
+        return pending_group
+    
+    def clean_active_group(self):
+        active_group = self.cleaned_data['active_group']
+        if active_group:
+            if not self.instance or not self.instance.active_group or self.instance.active_group != active_group:
+                if active_group.members.count() > 0:
+                    raise forms.ValidationError(_("This group is not empty. Please select another one or add a new group."))
+        return active_group
 
 class FreePassesForm(forms.ModelForm):
 
