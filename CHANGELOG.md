@@ -1,3 +1,23 @@
+### 12.4.1 [2021-02-04]
+
+* Removed "delete" option and added "inactivate" to the Action dropdown for navs to avoid being accidentally deleted.
+* Added settings for study groups
+* Added the help text for the directory Name field to clearly show this is the public name of the company, not the name of the person filling it out.
+* Allowed users who have approve permission to view and edit admin-only fields as the designated approvers need to be able to view and edit these fields.
+* Added required attribute for radio field type if needed
+* Updated FormControlWidgetMixin to exclude multiplehiddeninput and hiddeninput.
+* Updated admin view for the payments
+* Django_ses.SESBackend conditional added to newletter relay function (Thanks @robbierobs)
+* Updated django to 2.2.18
+* Updated Pillow to 8.1.8
+* Updated django-storages to 1.11.1
+* Updated xhtml2pdf to 0.2.5
+* Fixed an IntegrityError on membership type add when a name exists alreay. Updated the clean method for some forms as well to ensure it is loaded from super call to avoid missing validation from super class.
+* Fixed upload not working for photos with metadata
+* Fixed some format issues for payment view page
+* Fixed an KeyError on events pricing edit
+
+
 ### 12.4 [2021-01-12]
 
 * Added the chapters module
