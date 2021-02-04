@@ -183,7 +183,7 @@ class EventSearchForm(forms.Form):
                 self.fields[field].widget.attrs.update({'class': class_attr})
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventSearchForm, self).clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
@@ -212,7 +212,7 @@ class EventSimpleSearchForm(forms.Form):
             self.fields['search_category'].choices = SEARCH_CATEGORIES
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventSimpleSearchForm, self).clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
@@ -263,7 +263,7 @@ class CustomRegFormForField(forms.ModelForm):
         exclude = ["position"]
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(CustomRegFormForField, self).clean()
         field_function = cleaned_data.get("field_function")
         field_type = cleaned_data.get("field_type")
         choices = cleaned_data.get("choices")
@@ -843,7 +843,7 @@ class EventForm(TendenciBaseForm):
         return end_recurring
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventForm, self).clean()
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
         start_event_date = cleaned_data.get('start_event_date')
