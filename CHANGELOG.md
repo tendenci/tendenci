@@ -12,7 +12,7 @@
 * Updated Pillow to 8.1.8
 * Updated django-storages to 1.11.1
 * Updated xhtml2pdf to 0.2.5
-* Fixed an IntegrityError on membership type add when a name exists alreay. Updated the clean method for some forms as well to ensure it is loaded from super call to avoid missing validation from super class.
+* Fixed an IntegrityError on membership type add when a name exists already. Updated the clean method for some forms as well to ensure it is loaded from super call to avoid missing validation from super class.
 * Fixed upload not working for photos with metadata
 * Fixed some format issues for payment view page
 * Fixed an KeyError on events pricing edit
