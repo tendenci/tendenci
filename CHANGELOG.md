@@ -1,4 +1,4 @@
-### 12.4.2 [2021-02-05
+### 12.4.2 [2021-02-05]
 
 Removed the `urllize` filter from the description of event speakers, organizer and sponsors, because it is not needed for those fields with wysiwyg editor.
 
