@@ -1,3 +1,8 @@
+### 12.4.2 [2021-02-05
+
+Removed the `urllize` filter from the description of event speakers, organizer and sponsors, because it is not needed for those fields with wysiwyg editor.
+
+
 ### 12.4.1 [2021-02-04]
 
 * Removed "delete" option and added "inactivate" to the Action dropdown for navs to avoid being accidentally deleted.
