@@ -124,8 +124,10 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
 
-            if notice.notice_type == 'disapprove':
+            if notice.notice_type in ['disapprove_join', 'disapprove_renewal']:
                 status_detail_list = ['inactive']
+            elif notice.notice_type in ['join', 'renewal']:
+                status_detail_list = ['active', 'pending', 'paid - pending approval']
             else:
                 status_detail_list = ['active', 'expired']
 
@@ -149,6 +151,18 @@ class Command(BaseCommand):
                     filters.update({'approved': False})
 
                 memberships = memberships.filter(**filters)
+            elif notice.notice_type == 'join':
+                memberships = memberships.filter(
+                    join_dt__year=start_dt.year,
+                    join_dt__month=start_dt.month,
+                    join_dt__day=start_dt.day,
+                    renewal=False)
+            elif notice.notice_type == 'renewal':
+                memberships = memberships.filter(
+                    renew_dt__year=start_dt.year,
+                    renew_dt__month=start_dt.month,
+                    renew_dt__day=start_dt.day,
+                    renewal=True)
             else:  # 'expire'
                 memberships = memberships.filter(
                     expiration_dt__year=start_dt.year,
