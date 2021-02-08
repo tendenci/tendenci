@@ -68,7 +68,6 @@ class NavAdmin(TendenciBaseModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        print('actions=', actions)
         if 'delete_selected' in actions:
             del actions['delete_selected']
         if 'soft_delete_selected' in actions:
