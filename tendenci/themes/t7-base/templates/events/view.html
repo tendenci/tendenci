@@ -154,11 +154,11 @@ div.pricing-list-wrap li{
               {{ speaker.description|striptags|safe|truncatewords:"50" }}
             </div>
             <div class="speaker-desc-long">
-              {{ speaker.description|safe|urlize|linebreaks }}
+              {{ speaker.description|safe|linebreaks }}
             </div>
             {% else %}
             <div class="speaker-desc-short">
-              {{ speaker.description|safe|urlize|linebreaks }}
+              {{ speaker.description|safe|linebreaks }}
             </div>
             {% endif %}
             {% if speaker.description|striptags|wordcount > 50 %}
@@ -186,11 +186,11 @@ div.pricing-list-wrap li{
             {{ organizer.description|striptags|truncatewords:"50" }}
           </div>
           <div class="organizer-desc-long">
-            {{ organizer.description|safe|urlize|linebreaks }}
+            {{ organizer.description|safe|linebreaks }}
           </div>
           {% else %}
           <div class="organizer-desc-short">
-            {{ organizer.description|safe|urlize|linebreaks }}
+            {{ organizer.description|safe|linebreaks }}
           </div>
           {% endif %}
           {% if organizer.description|striptags|wordcount > 50 %}
@@ -206,7 +206,7 @@ div.pricing-list-wrap li{
             <h4 class="time-period">{% trans "Sponsor(s)" %}</h4> 
           </div>
           <div class="sponsor-desc-short">
-            {{ sponsor.description|safe|urlize }}
+            {{ sponsor.description|safe }}
           </div>
         </div>
         {% endif %}

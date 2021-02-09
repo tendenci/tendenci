@@ -23,7 +23,7 @@
                 <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                     {% if app_object %}
                         <li>
-                            <span class="content-head text-content-head">{% trans 'All Study Groups' %}</span>
+                            <span class="content-head text-content-head">{% trans 'All' %} {% firstof MODULE_STUDYGROUPS_LABEL_PLURAL "Study Groups" %}</span>
                         </li>
                     {% endif %}
 
@@ -37,14 +37,14 @@
 
                     <li class="content-item">
                         <span class="app-name">
-                            <a href="{% url 'studygroups.search' %}">{% trans "Search Study Groups" %}</a>
+                            <a href="{% url 'studygroups.search' %}">{% trans "Search" %} {% firstof MODULE_STUDYGROUPS_LABEL_PLURAL "Study Groups" %}</a>
                         </span>
                     </li>
 
                     {% if can_add_studygroup %}
                         <li class="content-item">
                             <span class="app-name">
-                                <a href="{% url 'studygroups.add' %}">{% trans "Add Study Group" %}</a>
+                                <a href="{% url 'studygroups.add' %}">{% trans "Add" %} {% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %}</a>
                             </span>
                         </li>
                     {% endif %}
@@ -62,13 +62,13 @@
                     {% if can_view_studygroup or can_edit_studygroup %}
                         <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
                             <li>
-                                <span class="content-head text-content-head">{% trans "This Study Group" %}</span>
+                                <span class="content-head text-content-head">{% trans "This" %} {% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %}</span>
                             </li>
 
                             {% if can_view_studygroup %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View Study Group" %}</a>
+                                        <a href="{{ app_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %}</a>
                                     </span>
                                 </li>
                             {% endif %}
@@ -82,7 +82,7 @@
                             {% if can_edit_studygroup %}
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a href="{% url 'studygroups.edit' app_object.pk %}">{% trans "Edit Study Group" %}</a>
+                                        <a href="{% url 'studygroups.edit' app_object.pk %}">{% trans "Edit" %} {% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %}</a>
                                     </span>
                                 </li>
 
@@ -104,7 +104,7 @@
 
                                 <li class="content-item">
                                     <span class="app-name">
-                                        <a class="delete" href="{% url 'studygroups.delete' app_object.pk %}">{% trans "Delete Study Group" %}</a>
+                                        <a class="delete" href="{% url 'studygroups.delete' app_object.pk %}">{% trans "Delete" %} {% firstof MODULE_STUDYGROUPS_LABEL "Study Group" %}</a>
                                     </span>
                                 </li>
                             {% endif %}

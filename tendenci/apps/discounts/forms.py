@@ -87,7 +87,7 @@ class DiscountForm(TendenciBaseForm):
         return data
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(DiscountForm, self).clean()
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
 

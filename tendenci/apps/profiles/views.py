@@ -168,6 +168,7 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
+    corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
 
     return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
@@ -180,6 +181,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'group_memberships': group_memberships,
         'memberships': memberships,
         'directories': directories,
+        'corps_list': corps_list,
         'registrations': registrations,
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,

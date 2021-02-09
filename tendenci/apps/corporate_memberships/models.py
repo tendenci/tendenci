@@ -104,8 +104,10 @@ SIZE_CHOICES = (
 NOTICE_TYPES = (
     ('approve_join', _('Join Approval Date')),
     ('disapprove_join', _('Join Disapproval Date')),
+    ('join', _('Apply Date')),
     ('approve_renewal', _('Renewal Approval Date')),
     ('disapprove_renewal', _('Renewal Disapproval Date')),
+    ('renewal', _('Renewal Date')),
     ('expiration', _('Expiration Date')),
 )
 
@@ -2285,7 +2287,9 @@ class Notice(models.Model):
 
         # allowed notice types
         allowed_notice_types = [
+            'join',
             'approve_join',
+            'renewal',
             'approve_renewal',
             'disapprove_join',
             'disapprove_renewal',

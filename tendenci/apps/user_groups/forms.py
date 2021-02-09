@@ -33,7 +33,7 @@ class GroupSearchForm(forms.Form):
     q = forms.CharField(required=False)
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(GroupSearchForm, self).clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 

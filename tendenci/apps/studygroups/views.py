@@ -19,6 +19,7 @@ from tendenci.apps.studygroups.models import StudyGroup, Officer
 from tendenci.apps.studygroups.forms import StudyGroupForm, OfficerForm, OfficerBaseFormSet
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
+from tendenci.apps.perms.decorators import is_enabled
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -26,6 +27,7 @@ except:
     notification = None
 
 
+@is_enabled('studygroups')
 def detail(request, slug, template_name="studygroups/detail.html"):
     study_group = get_object_or_404(StudyGroup, slug=slug)
 
@@ -60,6 +62,7 @@ def detail(request, slug, template_name="studygroups/detail.html"):
         raise Http403
 
 
+@is_enabled('studygroups')
 def search(request, template_name="studygroups/search.html"):
     query = request.GET.get('q', None)
     if query:
@@ -75,6 +78,8 @@ def search(request, template_name="studygroups/search.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'studygroups': studygroups})
 
+
+@is_enabled('studygroups')
 @login_required
 def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/add.html"):
 
@@ -157,6 +162,8 @@ def add(request, form_class=StudyGroupForm, meta_form_class=MetaForm, category_f
                 'categoryform':categoryform,
             })
 
+
+@is_enabled('studygroups')
 @login_required
 def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="studygroups/edit.html"):
 
@@ -252,6 +259,7 @@ def edit(request, id, form_class=StudyGroupForm, meta_form_class=MetaForm, categ
         })
 
 
+@is_enabled('studygroups')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="studygroups/edit-meta.html"):
     """
@@ -289,6 +297,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="studygroups/edit-
         context={'study_group': study_group, 'form': form})
 
 
+@is_enabled('studygroups')
 @login_required
 def delete(request, id, template_name="studygroups/delete.html"):
     study_group = get_object_or_404(StudyGroup, pk=id)
