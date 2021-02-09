@@ -1,0 +1,297 @@
+.hidden {
+    display: none;
+}
+
+.t {
+	width: 90%;
+}
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.chapters-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.chapters-nav li {
+	display: inline;
+}
+
+.t .chapters-wrap {
+	margin-bottom: 20px;
+}
+
+.t .chapter-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .chapters-wrap .chapter-content {
+    padding: 10px 10px 0 10px;
+}
+
+.t .chapters-wrap .chapter-wrap h2 {
+	width: 85%;
+}
+.t .chapters-wrap .chapter-wrap .content {
+	margin-bottom: 10px;
+}
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: -30px; right: 0;
+	padding: 5px;
+	white-space: nowrap;
+}
+.t .options-search {
+	position: static;
+}
+.t .view-options {
+	margin: 10px 0;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+
+
+/* chapter Print View
+ ------------------------- */
+.t-print .chapter-wrap {
+	width: 8in;
+	padding: .25in;
+	margin: 20px 0;
+	border: 1px solid silver;
+}
+.t-print .hide-this {
+	width: 8.5in;
+	margin: 20px 0;
+	position: relative;
+}
+.t-print .guide {
+	position: absolute;
+	top: 0; right: 0;
+}
+.t-print object {
+	visibility: hidden;
+}
+
+@media print {
+	.hide-this {
+		display: none;
+	}
+	.t-print .chapter-wrap {
+		width: 100%;
+		border: none;
+		padding: 0; margin: 0;
+	}
+}
+
+/* chapters Add/Edit
+ ------------------------- */
+
+.errors {
+	border: 2px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
+.clear {
+	clear: both;
+}
+.wrap {
+	white-space: pre-wrap;
+}
+.item-text {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 20px 0;
+	font-weight: bold;
+}
+
+/* label:field item */
+.item {
+	margin-bottom: 10px;
+}
+.item .errs {
+	color: red;
+	margin-left: 110px;
+}
+.item .label {
+	float: left;
+	font-size: 1.4em;
+	text-align: right;
+	width: 100px;
+	white-space: nowrap;
+}
+.item .label-wrap {
+	white-space: normal;
+}
+
+
+.item .field,
+.item .help {
+	margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+	width: 100%;
+}
+.item .field .mceLayout {
+	/* WYSIWYG; .1 keeps border intact */
+	width: 100.1% !important;
+}
+.item .field-short input,
+.item .field-short select {
+	width: 20%;
+}
+
+/* date-time item */
+.item-dt {
+	margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+	color: red;
+}
+.item-dt .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-dt .field input {
+	float: left;
+	width: 15%;
+	margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+	margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-checkbox .field input {
+	float: left;
+	margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+	height: 1px;
+	background-color: silver;
+	margin: 10px 0 10px 110px;
+	width: 85%;
+}
+/* horizontal rule long item */
+.item-hr-long {
+	height: 1px;
+	background-color: silver;
+	margin: 20px 0 20px 0;
+	width: 100%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+	height: 10px;
+	width: 100%;
+}
+
+/* Officer table */
+table#officer-table {
+    width: 100%;
+    border: 1px solid #CCC;
+    margin: 10px 0;
+}
+
+table#officer-table tr {
+    cursor: pointer;
+}
+
+table#officer-table thead tr {
+    background-color: #F6F6F6;
+}
+
+table#officer-table tbody tr:nth-child(2n) {
+    background-color: #F6F6F6;
+}
+
+table#officer-table th {
+    font-weight: normal;
+    padding: 10px;
+}
+
+table#officer-table td {
+    padding: 10px;
+}
+
+.officer-position {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.officer-name {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.officer-user {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.officer-phone {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.officer-delete {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+div.forms .chapter-officers {
+	margin-bottom: 15px;
+}
+
+div.forms .chapter-officers .label {
+	font-size: 16px;
+	margin-bottom: 2px;
+	color: #555;
+}

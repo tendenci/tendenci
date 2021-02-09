@@ -32,10 +32,10 @@ from tendenci.apps.theme.templatetags.static import static
 
 class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
     list_display = ['name', 'id', 'price', 'renewal_price', 'membership_type', 'apply_cap',
-                     'membership_cap', 'allow_above_cap', 'above_cap_price', 'admin_only', 'status_detail', 'position']
+                     'membership_cap', 'allow_above_cap', 'above_cap_price', 'reps_groups', 'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
     list_editable = ['position']
-    option_fields = ['require_approval', 'position', 'status_detail']
+    option_fields = ['require_approval', 'pending_group', 'active_group', 'position', 'status_detail']
     if get_setting('module', 'corporate_memberships', 'usefreepass'):
         option_fields.insert(0, 'number_passes')
     fieldsets = (
@@ -75,6 +75,24 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
         #form.save_m2m()
 
         return instance
+
+    @mark_safe
+    def reps_groups(self, instance):
+        reps_groups_links = ''
+        if instance.pending_group:
+            reps_groups_links = '<a href="%s">%s</a>' % (
+                  reverse('group.detail',
+                          args=[instance.pending_group.slug]),
+                          _('Pending'))
+        if instance.active_group:
+            if reps_groups_links:
+                reps_groups_links += '<br />'
+            reps_groups_links += '<a href="%s">%s</a>' % (
+                  reverse('group.detail',
+                          args=[instance.active_group.slug]),
+                          _('Active'))
+        return reps_groups_links
+    reps_groups.short_description = _('Reps Groups')
 
 
 class CorpMembershipAppFieldAdmin(admin.TabularInline):

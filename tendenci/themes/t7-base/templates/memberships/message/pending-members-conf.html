@@ -5,8 +5,18 @@
 <div class="t-message-pending">
 	{% if recipient_type == 'pending_members' %}
     <h1>{% trans "Email to Pending Members Confirmation" %}</h1>
+		{% if not membership_type %}
+		<i>{% trans "All Membership Types" %}</i>
+		{% else %}
+		<i>{{ membership_type }}</i>
+		{% endif %}
 	{% else %}
   <h1>{% trans "Email to Pending Corp Members Confirmation" %}</h1>
+		{% if not corpmembership_type %}
+		<i>{% trans "All Corporate Membership Types" %}</i>
+		{% else %}
+		<i>{{ corpmembership_type }}</i>
+		{% endif %}
 	{% endif %}
 	<div>{% trans "Total sent:" %} {{ total_sent }}</div>
 	<div>&nbsp;</div>
@@ -20,3 +30,15 @@
 	</ol>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+<script type="text/javascript">  
+    (function($) {
+        $('#m-streaming-content').remove();
+     })(jQuery);
+ </script>
+
+{% endblock %}
+

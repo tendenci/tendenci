@@ -55,9 +55,9 @@
       
       <p class="item-content">
         {% if directory.summary %}
-        {{ directory.summary|striptags|truncatewords:15|safe }}
+        {{ directory.summary|striptags|truncatewords:50|safe }}
         {% else %}
-        {{ directory.body|striptags|truncatewords:15|safe }}
+        {{ directory.body|striptags|truncatewords:50|safe }}
         {% endif %}
       </p>
     </div>

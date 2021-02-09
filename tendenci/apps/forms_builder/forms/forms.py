@@ -89,15 +89,16 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
                 if "choices" in arg_names and field.field_type != 'CountryField':
                     field_args["choices"] = field.get_choices()
                     #field_args["choices"] = zip(choices, choices)
-                if "initial" in arg_names:
+
+                if field_class == "BooleanField":
                     default = field.default.lower()
-                    if field_class == "BooleanField":
-                        if default == "checked" or default == "true" or \
-                            default == "on" or default == "1":
-                                default = True
-                        else:
-                            default = False
-                    field_args["initial"] = field.default
+                    if default == "checked" or default == "true" or \
+                        default == "on" or default == "1":
+                            default = True
+                    else:
+                        default = False
+                    field.default = default
+                field_args["initial"] = field.default
 
                 if field_widget is not None:
                     module, widget = field_widget.rsplit(".", 1)

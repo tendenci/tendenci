@@ -74,6 +74,13 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 ORIENTATION_EXIF_TAG_KEY = 274
 
 
+def custom_json_dumper(obj):
+    try:
+        return obj.toJSON()
+    except:
+        return repr(obj)
+
+
 def escape_csv(payload):
     """
     Escape the begining character in ('@','+','-', '=', '|')

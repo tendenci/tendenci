@@ -21,49 +21,30 @@ class DirectoryMeta():
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
-        category_set = object.category_set
-        category = category_set.get('category', '')
-        subcategory = category_set.get('sub_category', '')
-
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-        creator_name = creator_name.strip()
+        category = ', '.join([cat.name for cat in object.cats.all()])
+        subcategory = ', '.join([sub_cat.name for sub_cat in object.sub_cats.all()])
+        directories_url = get_setting('module', 'directories', 'url')
 
         ### Build string -----------------------
-        value = '%s - %s' % (object.headline, object.activation_dt)
-        value = value.strip()
-
-        value = ''
-
+        
+        value = site_name + ' | '
+        
         # start w/ headline
         if object.headline:
             value += object.headline
-
-        # contact activation
-        if object.headline and object.activation_dt:
-            value += ' - %s' % object.activation_dt.strftime('%m-%d-%Y')
-        elif object.activation_dt:
-            value += object.activation_dt.strftime('%m-%d-%Y')
+            value += ' | '
 
         # primary keywords OR category/subcategory
-        if primary_keywords:
-            value = '%s : %s' % (value, primary_keywords)
+        if directories_url != 'directories':
+            value += directories_url.capitalize()
+
+        elif primary_keywords:
+            value += primary_keywords
         else:
             if category:
-                value = '%s %s' % (value, category)
+                value += category
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
-
-        value = '%s directory' % value
-
-        if creator_name:
-            value = '%s contact: %s' % (value, creator_name)
-
-        value = '%s directories for %s' % (value, site_name)
 
         if geo_location:
             value = '%s in %s' % (value, geo_location)
@@ -76,17 +57,10 @@ class DirectoryMeta():
         ### Assign variables -----------------------
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         category_set = object.category_set
-        category = category_set.get('category', '')
-        subcategory = category_set.get('sub_category', '')
+        category = ', '.join([cat.name for cat in object.cats.all()])
+        subcategory = ', '.join([sub_cat.name for sub_cat in object.sub_cats.all()])
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-        creator_name = creator_name.strip()
 
         if object.summary:
             content = object.summary
@@ -101,9 +75,6 @@ class DirectoryMeta():
         ### Build string -----------------------
         value = object.headline
 
-        if creator_name:
-            value = '%s %s' % (value, creator_name)
-
         value = '%s : %s' % (value, content)
 
         if primary_keywords:
@@ -113,8 +84,6 @@ class DirectoryMeta():
                 value = '%s %s' % (value, category)
             if category and subcategory:
                 value = '%s : %s' % (value, subcategory)
-
-            value = '%s directory' % value
 
         value = '%s Directories for %s %s' % (
             value, site_name, geo_location)
@@ -133,13 +102,6 @@ class DirectoryMeta():
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
 
-        creator_name = ''
-        if object.creator:
-            creator_name = '%s %s' % (
-                object.creator.first_name,
-                object.creator.last_name
-            )
-
         ### Build string -----------------------
         value = ''
 
@@ -153,7 +115,6 @@ class DirectoryMeta():
                 geo_location,
                 site_name,
                 'white paper',
-                creator_name,
             ]
 
             # remove blank items

@@ -12,6 +12,8 @@
     {% if MODULE_NEWS_LABEL_PLURAL %}{% blocktrans with label_plural=MODULE_NEWS_LABEL_PLURAL %}{{ label_plural }}{% endblocktrans %}{% else %}{% trans "News" %}{% endif %} - {{ block.super }}
 {% endspaceless %}{% endblock %}
 
+{% block meta_canonical_url %}<link rel="canonical" href="{{ SITE_GLOBAL_SITEURL }}{% url 'news' %}" />{% endblock %}
+
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest News' %}" href="{% url 'news.feed' %}" />

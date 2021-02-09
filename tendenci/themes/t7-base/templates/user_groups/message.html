@@ -21,7 +21,9 @@
 <div class="t">
     <div class="group-view">
         <h1>{{ group.name }}</h1>
-
+		{% if membership_type %}
+		<i>{% trans 'Associated to Membership Type:' %} <a href="{% url 'admin:memberships_membershiptype_change' membership_type.id %}">{{ membership_type.name }}</a></i>
+		{% endif %}
         {% if form.errors %}
         <div class="forms">
         <ul class="errors">
@@ -46,7 +48,7 @@
             <div>{{ form.subject.label_tag }}</div>
             <div>{{ form.subject }}</div>
             <div>{{ form.body.label_tag }}</div>
-            <div>{{ form.body }}</div>
+            <div>{{ form.body }}{% if available_tokens %}<span class="help-block">{% trans 'Available tokens:' %} <code>{{ available_tokens }}</code></span>{% endif %}</div>
 
             <input type="submit" value="{% trans 'Send Message' %}" class="submit-btn">
         </form>

@@ -100,11 +100,11 @@ def search(request, template_name="resumes/search.html"):
         num_items = 10
                 
     if first_name:
-        resumes = resumes.filter(first_name__iexact=first_name)
+        resumes = resumes.filter(first_name__istartswith=first_name)
     if last_name:
-        resumes = resumes.filter(last_name__iexact=last_name)
+        resumes = resumes.filter(last_name__istartswith=last_name)
     if email:
-        resumes = resumes.filter(contact_email__iexact=email)
+        resumes = resumes.filter(contact_email__istartswith=email)
 
     if search_criteria and search_text:
         search_type = '__iexact'
