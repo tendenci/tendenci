@@ -1,3 +1,10 @@
+### 12.4.3 [2021-02-09]
+
+* Updated user profile to show corporation(s) a user is a representative of. 
+* Added Apply Date and Renewal Date to options for When to Send on the corporate memberships member notice. 
+* Fixed some issues for redirects. 
+
+
 ### 12.4.2 [2021-02-05]
 
 Removed the `urllize` filter from the description of event speakers, organizer and sponsors, because it is not needed for those fields with wysiwyg editor.
