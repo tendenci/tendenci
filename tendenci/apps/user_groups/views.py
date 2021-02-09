@@ -1,4 +1,3 @@
-
 import subprocess
 from datetime import datetime
 from datetime import date
@@ -118,6 +117,10 @@ def message(request, group_slug, template_name='user_groups/message.html'):
     from tendenci.apps.emails.models import Email
 
     group = get_object_or_404(Group, slug=group_slug)
+    if group.membership_types.all().exists():
+        membership_type = group.membership_types.all()[0]
+    else:
+        membership_type = None
     EventLog.objects.log(instance=group)
 
     members = GroupMembership.objects.filter(
@@ -157,8 +160,19 @@ def message(request, group_slug, template_name='user_groups/message.html'):
         else:
             # send email to members
             for member in members:
+                original_body = email.body
                 email.recipient = member.member.email
+                if membership_type:
+                    [membership] = member.member.membershipdefault_set.exclude(
+                        status_detail='archive').order_by('-create_dt')[:1] or [None]
+                    if membership:
+                        # do find and replace
+                        urls_dict = membership.get_common_urls()
+                        for key in urls_dict.keys():
+                            email.body = email.body.replace('[%s]' % key, urls_dict[key])
                 email.send()
+                # restore back to the original
+                email.body = original_body
 
             messages.add_message(
                 request,
@@ -172,9 +186,16 @@ def message(request, group_slug, template_name='user_groups/message.html'):
     else:
         print('form errors', list(form.errors.items()))
 
+    if membership_type:
+        available_tokens = '[membership_link], [membership_type], [directory_url], [directory_edit_url], [invoice_link]' 
+    else:
+        available_tokens = ''
+
     return render_to_resp(request=request, template_name=template_name, context={
         'group': group,
         'num_members': num_members,
+        'membership_type': membership_type,
+        'available_tokens': available_tokens,
         'form': form})
 
 

@@ -1,13 +1,16 @@
 from django.conf.urls import url
+from tendenci.apps.site_settings.utils import get_setting
 from . import views
 from .feeds import LatestEntriesFeed
 
+urlpath = get_setting('module', 'studygroups', 'url') or 'study-groups'
+
 urlpatterns = [
-    url(r'^study-groups/$', views.search, name="studygroups.search"),
-    url(r'^study-groups/add/$', views.add, name='studygroups.add'),
-    url(r'^study-groups/edit/(?P<id>\d+)/$', views.edit, name='studygroups.edit'),
-    url(r'^study-groups/edit/meta/(?P<id>\d+)/$', views.edit_meta, name="studygroups.edit.meta"),
-    url(r'^study-groups/delete/(?P<id>\d+)/$', views.delete, name='studygroups.delete'),
-    url(r'^study-groups/feed/$', LatestEntriesFeed(), name='studygroups.feed'),
-    url(r'^study-groups/(?P<slug>[\w\-\/]+)/$', views.detail, name="studygroups.detail"),
+    url(r'^%s/$' % urlpath, views.search, name="studygroups.search"),
+    url(r'^%s/add/$' % urlpath, views.add, name='studygroups.add'),
+    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, views.edit, name='studygroups.edit'),
+    url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, views.edit_meta, name="studygroups.edit.meta"),
+    url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, views.delete, name='studygroups.delete'),
+    url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='studygroups.feed'),
+    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, views.detail, name="studygroups.detail"),
 ]

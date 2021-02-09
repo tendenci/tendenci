@@ -69,6 +69,7 @@ class Command(BaseCommand):
             'navs',
             'stories',
             'videos',
+            'industries'
         ]
 
         # call loaddata on fixtures

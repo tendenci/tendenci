@@ -53,6 +53,7 @@ from tendenci.apps.corporate_memberships.models import (
                                          CorpMembershipImportData,
                                          CorporateMembershipType,
                                          Creator,
+                                         Notice,
                                          )
 from tendenci.apps.corporate_memberships.forms import (
                                          CorpMembershipForm,
@@ -332,13 +333,21 @@ def corpmembership_add(request, slug='',
                 recipients = [creator.email]
             else:
                 recipients = [request.user.email]
-            extra_context = {
-                'object': corp_membership,
-                'request': request,
-                'invoice': inv,
-            }
-            send_email_notification('corp_memb_added_user',
-                                    recipients, extra_context)
+                
+            if request.user.is_authenticated and Notice.objects.filter(
+                                 notice_time='attimeof',
+                                 notice_type='join',
+                                 status_detail='active'
+                                 ).exists():
+                corp_membership.send_notice_email(request, 'join')
+            else:
+                extra_context = {
+                    'object': corp_membership,
+                    'request': request,
+                    'invoice': inv,
+                }
+                send_email_notification('corp_memb_added_user',
+                                        recipients, extra_context)
 
             # send notification to administrators
             recipients = get_notice_recipients(
@@ -474,9 +483,8 @@ def corpmembership_edit(request, id,
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
-    if not is_superuser:
-        if not (corp_membership.is_pending and has_perm(request.user, 'corporate_memberships.approve_corpmembership')):
-            app_fields = app_fields.filter(admin_only=False)
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership'):
+        app_fields = app_fields.filter(admin_only=False)
     if corp_membership.is_expired:
         # if it is expired, remove the expiration_dt field so they can
         # renew this corporate membership
@@ -543,15 +551,19 @@ def corpmembership_edit(request, id,
 
 
 @is_enabled('corporate_memberships')
-@staff_member_required
+@login_required
 def corpprofile_view(request, id, template="corporate_memberships/profiles/view.html"):
     """
-        view a corp profile - superuser only
+        view a corp profile - superuser or reps or users with view_corpprofile perms.
     """
-    if not request.user.is_superuser:
-        raise Http403
-
     corp_profile = get_object_or_404(CorpProfile, id=id)
+    if not request.user.is_superuser:
+        if not has_perm(request.user,
+                    'corporate_memberships.view_corpprofile',
+                    corp_profile):
+            if not corp_profile.is_rep(request.user):
+                raise Http403
+
     corp_membership = corp_profile.corp_membership
     reps = corp_profile.reps.all()
     memberships = MembershipDefault.objects.filter(
@@ -632,7 +644,7 @@ def corpmembership_view(request, id,
     is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
-    if not is_superuser:
+    if not has_perm(request.user, 'corporate_memberships.approve_corpmembership'):
         app_fields = app_fields.filter(admin_only=False)
     if not can_edit:
         app_fields = app_fields.exclude(field_name__in=[
@@ -1170,8 +1182,15 @@ def corp_renew(request, id,
 
                 # send an email to dues reps
                 recipients = dues_rep_emails_list(new_corp_membership)
-                send_email_notification('corp_memb_renewed_user',
-                                        recipients, extra_context)
+                if Notice.objects.filter(notice_time='attimeof',
+                                 notice_type='renewal',
+                                 status=True,
+                                 status_detail='active'
+                                 ).exists():
+                    new_corp_membership.send_notice_email(request, 'renewal')
+                else:
+                    send_email_notification('corp_memb_renewed_user',
+                                            recipients, extra_context)
 
                 return HttpResponseRedirect(reverse(
                                             'corpmembership.renew_conf',

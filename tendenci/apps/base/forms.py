@@ -54,10 +54,10 @@ class FormControlWidgetMixin(object):
             non_form_control_widgets = [
                 'checkboxinput', 'radioselect', 'checkboxselectmultiple',
                 'userpermissionwidget', 'grouppermissionwidget', 'memberpermissionwidget',
+                'multiplehiddeninput', 'hiddeninput'
             ]
             if self.fields[field_name].widget.__class__.__name__.lower() not in non_form_control_widgets:
                 widget_attrs = self.fields[field_name].widget.attrs
-
                 class_attr = 'form-control'
                 if 'class' in widget_attrs:
                     class_attr = widget_attrs['class']

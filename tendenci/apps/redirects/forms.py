@@ -46,7 +46,7 @@ class RedirectForm(forms.ModelForm):
         return value
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(RedirectForm, self).clean()
         from_app = cleaned_data.get('from_app')
         from_url = cleaned_data.get('from_url')
         if not from_app and not from_url:

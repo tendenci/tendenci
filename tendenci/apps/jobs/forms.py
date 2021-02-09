@@ -400,9 +400,14 @@ class JobSearchForm(FormControlWidgetMixin, forms.Form):
                                           queryset=JobCategory.objects.none(),
                                           empty_label=_("Subcategories"),
                                           required=False)
+    location = forms.CharField(required=False, max_length=500,)
+    skills = forms.CharField(required=False, max_length=500,)
 
     def __init__(self, *args, **kwargs):
         super(JobSearchForm, self).__init__(*args, **kwargs)
+        self.fields['q'].widget.attrs.update({'placeholder': _('Enter job title / keywords')})
+        self.fields['location'].widget.attrs.update({'placeholder': _('Enter job location')})
+        self.fields['skills'].widget.attrs.update({'placeholder': _('Enter job skills')})
 
         # setup categories
         categories = JobCategory.objects.filter(parent__isnull=True)

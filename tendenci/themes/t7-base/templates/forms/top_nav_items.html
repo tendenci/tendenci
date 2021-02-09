@@ -20,7 +20,7 @@
     <li>
         <div class="yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                <ul class="list-unstyled content-dropdown-col col-sm-{% if app_object %}6{% else %}12{% endif %} col-xs-12">
                     {% if app_object %}
                         <li>
                             <span class="content-head text-content-head">{% trans "All Forms" %}</span>
@@ -68,7 +68,7 @@
 
                 {% if app_object %}
                     {% if can_view_form or can_edit_form %}
-                        <ul class="list-unstyled content-dropdown-col col-sm-12 col-xs-12">
+                        <ul class="list-unstyled content-dropdown-col col-sm-6 col-xs-12">
                             <li>
                                 <span class="content-head text-content-head">{% trans "This Form" %}</span>
                             </li>
@@ -100,12 +100,6 @@
                                 <li class="content-item">
                                     <span class="app-name">
                                         <a href="{% url 'admin:forms_form_change' app_object.pk %}">{% trans "Edit Form" %}</a>
-                                    </span>
-                                </li>
-
-                                <li class="content-item">
-                                    <span class="app-name">
-                                        <a href="{% url 'admin:forms_form_change' app_object.pk %}">{% trans "Edit Form Fields" %}</a>
                                     </span>
                                 </li>
                               {% else %}

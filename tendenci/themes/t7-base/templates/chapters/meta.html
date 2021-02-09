@@ -1,0 +1,95 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load chapter_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+
+{% has_perm user chapters.change_chapter chapter as can_edit %}
+{% has_perm user chapters.delete_chapter chapter as can_delete %}
+{% tags_for_object chapter as tags %}
+
+{% if user.is_authenticated %} 
+    <ul class="list-unstyled">
+      {% with chapter.category_set as chapter_cat %}
+      {% if chapter_cat %}
+      <li class="categories">
+        <strong>{% trans "Category:" %} </strong><a href="{% url "chapters.search" %}?q=category:{{ chapter_cat.category }}">{{ chapter_cat.category }}</a>
+        {% if chapter_cat.sub_category %}
+        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url "chapters.search" %}?q=sub_category:{{ chapter_cat.sub_category }}">{{ chapter_cat.sub_category }}</a>
+        {% endif %}
+      </li>
+      
+      {% endif %}
+      {% endwith %}
+      
+      {% if tags %}
+      <li class="tags">
+        <strong>Tags: </strong>
+        {% for tag in tags %}
+        <a href="{% url "chapters.search" %}?q=tag:{{ tag|lower|urlencode }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </li>
+      {% endif %}
+      
+      <div>
+        Created {{ chapter.create_dt|date:"long" }} by 
+        <a href="{{ chapter.creator.get_absolute_url }}">
+          
+          {% if chapter.creator.first_name %}
+          {{ chapter.creator.first_name }} {{ chapter.creator.last_name }}
+          {% else %}
+          {{ chapter.creator }}
+          {% endif %}
+          
+        </a>
+      </div>
+      
+      <div>
+        Last updated {{ chapter.update_dt|date:"long" }} by 
+        <a href="{{ chapter.owner.get_absolute_url }}">
+          
+          {% if chapter.owner.first_name %}
+          {{ chapter.owner.first_name }} {{ chapter.owner.last_name }}
+          {% else %}
+          {{ chapter.owner }}
+          {% endif %}
+          
+        </a>
+      </div>
+    </ul>
+      
+    
+	{% if can_edit %}
+	<nav class="navbar-default t-meta-editor-bar">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav t-meta-options-links">
+			      <li>{{ chapter.obj_perms }}</li>
+			      <li>{{ chapter.obj_status }}</li>
+			    </ul>
+	    
+		    <ul class="nav navbar-nav navbar-right t-meta-options-links">
+		      <li class="dropdown">
+		        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+		          {% spaceless %}
+		          {% trans "Options" %} 
+		          <span class="caret"></span>
+		          {% endspaceless %}</a>
+		        <ul class="dropdown-menu" role="menu">
+		          <li><a class="t-meta-edit-link" href="{% url "chapters.edit" chapter.pk %}">Edit</a></li>
+		          <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?q=app-id:%20chapters-{{ chapter.pk }}">Eventlogs</a></li>
+		          <li><a href="{% url "chapters.edit.meta" chapter.pk %}">{% trans "Edit Meta" %}</a></li>
+		          <li><a href="{% url "category.update" chapter.opt_app_label chapter.opt_module_name chapter.pk %}">{% trans "Edit Categories" %}</a></li>
+		          {% if can_delete %}
+		          <li><a class="delete" href="{% url "chapters.delete" chapter.pk %}">Delete</a></li> 
+		          {% endif %} 
+		        </ul>
+	        
+	      </li>
+	    </ul>
+	    </div>
+	  </div>
+	</nav>
+	{% endif %}
+
+{% endif %} 

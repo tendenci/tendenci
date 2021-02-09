@@ -1,6 +1,5 @@
 
 
-{% if SITE_GLOBAL_SEARCHINDEX %}
     <form id="t-jobs-search-form" class="form-inline t-search-form" action="{% if my_job %}{% url 'myjobs' %}{% else %}{% url 'jobs' %}{% endif %}" method="get">
         <div class="form-group{% if form.q.errors %} has-error{% endif %}">
             {% if form.q.errors %}
@@ -13,6 +12,48 @@
                 </p>
             {% endif %}
         </div>
+
+		<div class="form-group{% if form.q.errors %} has-error{% endif %}">
+            {{ form.q }}
+
+            {% if form.q.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.q.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.location.errors %} has-error{% endif %}">
+            {{ form.location }}
+
+            {% if form.location.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.location.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="form-group{% if form.skills.errors %} has-error{% endif %}">
+           {{ form.skills }}
+
+            {% if form.skills.errors %}
+                <p class="help-block">
+                    <ul class="list-unstyled">
+                        {% for error in form.skills.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% endif %}
+        </div><br />
 
         <div class="form-group{% if form.cat.errors %} has-error{% endif %}">
             {{ form.cat }}
@@ -41,19 +82,15 @@
                 </p>
             {% endif %}
         </div>
-
-        <div class="input-group add-on">      
-		    <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
-		    <div class="input-group-btn">
-		      <button class="btn btn-default" type="submit">
-		        <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
+		<div class="form-group">
+			<button class="btn btn-success" type="submit">
+		        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Jobs' %}"></i> {% trans 'Search Jobs' %}
 		      </button>
-		    </div>
-		  </div>
+		</div>
+
 	  
 	  {% if user.profile.is_staff %}
 	  <a class="btn btn-primary pull-right" href="{% url 'job.add' %}">Add Job</a>
 	  {% endif %}
   
     </form>
-{% endif %}

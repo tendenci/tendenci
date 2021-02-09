@@ -4,11 +4,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
+from django.db.models import Q
 
 from tendenci.apps.base.http import Http403
-from tendenci.apps.perms.utils import has_perm, get_query_filters
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.exports.utils import run_export_task
 
@@ -21,24 +20,23 @@ from tendenci.apps.redirects import dynamic_urls
 def search(request, template_name="redirects/search.html"):
     """
     This page lists out all redirects from newest to oldest.
-    If a search index is available, this page will also
-    have the option to search through redirects.
     """
-    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-
-    if has_index and query:
-        redirects = Redirect.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'redirects.add_redirect')
-        redirects = Redirect.objects.filter(filters).distinct()
-        if request.user.is_authenticated:
-            redirects = redirects.select_related()
-        redirects = redirects.order_by('-create_dt')
-
-    # check permission
-    if not has_perm(request.user, 'redirects.add_redirect'):
+    
+    # check permission - users without the add or change premissions don't need to see it
+    if not any([has_perm(request.user, 'redirects.add_redirect'),
+                has_perm(request.user,'redirects.change_redirect')]):
         raise Http403
+    
+    redirects = Redirect.objects.all()
+
+    if query:
+        redirects = redirects.filter(Q(from_app__icontains=query) |
+                                     Q(from_url__icontains=query) |
+                                     Q(to_url__icontains=query) |
+                                     Q(http_status__icontains=query))
+
+    redirects = redirects.order_by('-create_dt')
 
     return render_to_resp(request=request, template_name=template_name,
         context={'redirects': redirects})
@@ -76,7 +74,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
     redirect = get_object_or_404(Redirect, pk=id)
 
     # check permission
-    if not has_perm(request.user,'redirects.add_redirect'):
+    if not has_perm(request.user,'redirects.change_redirect'):
         raise Http403
 
     form = form_class(instance=redirect)

@@ -61,6 +61,15 @@
                 {% if 'member_number' in fieldnames %}
                 <th>{% trans 'Member Number' %}</th>
                 {% endif %}
+                {% if 'membership_type' in fieldnames %}
+                <th>{% trans 'Membership Type' %}</th>
+                {% endif %}
+                {% if 'join_dt' in fieldnames %}
+                <th>{% trans 'Joined' %}</th>
+                {% endif %}
+                {% if 'expire_dt' in fieldnames %}
+                <th>{% trans 'Expired' %}</th>
+                {% endif %}
                 <th>{% trans 'Reason if to be skipped' %}</th>
             </tr>
 
@@ -85,6 +94,15 @@
                 {% endif %}
                 {% if 'member_number' in fieldnames %}
                 <td>{{ u.member_number }}</td>
+                {% endif %}
+                {% if 'membership_type' in fieldnames %}
+                <td>{{ u.membership_type }}</td>
+                {% endif %}
+                {% if 'join_dt' in fieldnames %}
+                <td>{{ u.join_dt }}</td>
+                {% endif %}
+                {% if 'expire_dt' in fieldnames %}
+                <td>{{ u.expire_dt }}</td>
                 {% endif %}
                 <td>
                     {% if u.error %}

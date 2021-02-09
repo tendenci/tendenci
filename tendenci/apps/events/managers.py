@@ -45,7 +45,7 @@ class EventManager(TendenciBaseManager):
         user = kwargs.get('user', None)
         groups = []
         if user and user.is_authenticated:
-            groups = [g.pk for g in user.group_set.all()]
+            groups = [g.pk for g in user.user_groups.all()]
 
         # permission filters
         if user:

@@ -311,6 +311,15 @@
           {% endif %}
           
           {% endif  %}
+
+		     {% if corps_list %}
+			  <h3>{% trans "Representative of" %}</h3>
+	              <ul>
+	              {% for id, name in corps_list %}
+	                  <li><a href="{% url 'corpmembership.view_profile' id %}">{{ name }}</a></li>
+	              {% endfor %}
+	              </ul>
+			  {% endif %}
           {% endif %}
           
 
@@ -362,6 +371,7 @@
           {% trans "No upcoming event registrations." %}
           {% endif %}
         </div>
+
         {% endif %}
         
         

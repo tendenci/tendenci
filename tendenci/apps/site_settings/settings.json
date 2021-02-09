@@ -324,7 +324,7 @@
     },
     {
         "default_value": "",
-        "description": "Keywords that your site will automatically populate within the keywords meta tag, page titles and other locations on many modules.",
+        "description": "Keywords that your site will automatically populate within the keywords meta tag, page titles and other locations on many modules. This should be a two word phrase at MOST and is visible on the site in either h1 or h2 tags.",
         "data_type": "string",
         "update_dt": "2010-12-01 14:10:00",
         "input_type": "text",

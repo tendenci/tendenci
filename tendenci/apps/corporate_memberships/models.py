@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from functools import partial, reduce
 from builtins import str
+import subprocess
 
 from django import forms
 from importlib import import_module
@@ -62,6 +63,8 @@ from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.files.models import File
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.user_groups.models import Group
+from tendenci.libs.utils import python_executable
+
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -101,8 +104,10 @@ SIZE_CHOICES = (
 NOTICE_TYPES = (
     ('approve_join', _('Join Approval Date')),
     ('disapprove_join', _('Join Disapproval Date')),
+    ('join', _('Apply Date')),
     ('approve_renewal', _('Renewal Approval Date')),
     ('disapprove_renewal', _('Renewal Disapproval Date')),
+    ('renewal', _('Renewal Date')),
     ('expiration', _('Expiration Date')),
 )
 
@@ -152,8 +157,27 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                                         choices=REQUIRE_APPROVAL_CHOICES,
                                         default='for_non_paid_only',
                                         max_length=20)
+    pending_group = models.ForeignKey(Group,
+                                    verbose_name=_("Group for Reps upon Pending"),
+                                    related_name='corp_types_for_pending_group',
+                                    null=True,
+                                    blank=True,
+                                    on_delete=models.SET_NULL,
+                                    help_text=_('Group to add representatives upon their applications pending.'))
+    active_group = models.ForeignKey(Group,
+                                    verbose_name=_("Group for Reps upon Approval"),
+                                    related_name='corp_types_for_active_group',
+                                    null=True,
+                                    blank=True,
+                                    on_delete=models.SET_NULL,
+                                    help_text=_('Group to add representatives upon their applications approval.'))
 
     objects = CorpMembershipTypeManager()
+
+    def __init__(self, *args, **kwargs):
+        super(CorporateMembershipType, self).__init__(*args, **kwargs)
+        self._original_pending_group = self.pending_group
+        self._original_active_group = self.active_group
 
     class Meta:
         verbose_name = _("Corporate Membership Type")
@@ -175,6 +199,12 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                 self.position = 1
 
         super(CorporateMembershipType, self).save(*args, **kwargs)
+        # Sync pending_group and active_group if needed
+        if (self.pending_group and self.pending_group != self._original_pending_group) or \
+            (self.active_group and self.active_group != self._original_active_group):
+            subprocess.Popen([python_executable(), "manage.py",
+                              "sync_corp_reps_groups", '--corp_mem_type_id',
+                              str(self.id)])
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None, previous_expire_dt=None):
         """
@@ -349,6 +379,87 @@ class CorpProfile(TendenciBaseModel):
                                             '-expiration_dt'
                                             )[:1] or [None]
         return corp_membership
+    
+    def sync_type_reps_groups(self, reps_list=None, remove=False):
+        """
+        Sync reps for this corp membership to the reps groups based on this
+        corp membership type.
+        
+        If remove is True, just remove the reps from those groups if they're
+        not reps for other corporate memberships.
+        """
+        corp_memb = self.corp_membership
+        if not corp_memb:
+            return
+        
+        corp_type = corp_memb.corporate_membership_type
+        pending_group = corp_type.pending_group
+        active_group = corp_type.active_group
+
+        if corp_memb.status_detail not in ['active', 'pending', 'paid - pending approval']:
+            remove = True
+        
+        if pending_group or active_group:
+            if not reps_list:
+                reps_list = CorpMembershipRep.objects.filter(
+                        corp_profile=self).values_list('user', flat=True)
+            reps_list = set(reps_list)
+
+            if reps_list:
+                # Get reps list for other corp profiles with this type, so that we can check
+                # if they're reps for others before removing them from the groups
+                if pending_group:
+                    other_pending_corp_profiles_list = CorpMembership.objects.filter(
+                            corporate_membership_type=corp_type,
+                            status_detail__icontains='pending').exclude(id=corp_memb.id
+                                                    ).values_list('corp_profile', flat=True)
+                    other_pending_reps_list = CorpMembershipRep.objects.filter(
+                                                corp_profile__in=other_pending_corp_profiles_list
+                                                ).values_list('user', flat=True)
+                if active_group:
+                    other_active_corp_profiles_list = CorpMembership.objects.filter(
+                            corporate_membership_type=corp_type,
+                            status_detail='active').exclude(id=corp_memb.id
+                                            ).values_list('corp_profile', flat=True)
+                    other_active_reps_list = CorpMembershipRep.objects.filter(
+                                                corp_profile__in=other_active_corp_profiles_list
+                                                ).values_list('user', flat=True)
+    
+                for u in reps_list:
+                    # check if this user is also the rep for other corp memberships
+                    if pending_group:
+                        is_rep_for_other_pending = u in other_pending_reps_list
+                    if active_group:
+                        is_rep_for_other_active = u in other_active_reps_list
+        
+                    if pending_group:
+                        if remove and not is_rep_for_other_pending:
+                            pending_group.members.remove(u)
+                        else:
+                            if corp_memb.is_pending:
+                                if not pending_group.members.filter(id=u).exists():
+                                    # add rep to pending group
+                                    pending_group.members.add(u)
+            
+                                # remove from active group
+                                if active_group and active_group.members.filter(id=u).exists():
+                                    if not is_rep_for_other_active:
+                                        active_group.members.remove(u)
+        
+        
+                    if active_group:
+                        if remove and not is_rep_for_other_active:
+                            active_group.members.remove(u)
+                        else:
+                            if corp_memb.is_active:
+                                if not active_group.members.filter(id=u).exists():
+                                    # add rep to active group
+                                    active_group.members.add(u)
+            
+                                # remove from pending group
+                                if pending_group and pending_group.members.filter(id=u).exists():
+                                    if not is_rep_for_other_pending:
+                                        pending_group.members.remove(u)
 
     def is_rep(self, this_user):
         """
@@ -486,6 +597,10 @@ class CorpMembership(TendenciBaseModel):
         permissions = (("approve_corpmembership", _("Can approve corporate memberships")),)
         app_label = 'corporate_memberships'
 
+    def __init__(self, *args, **kwargs):
+        super(CorpMembership, self).__init__(*args, **kwargs)
+        self._original_status_detail = self.status_detail
+
     def __str__(self):
         return "%s" % (self.corp_profile.name)
 
@@ -516,6 +631,8 @@ class CorpMembership(TendenciBaseModel):
             self.entity = self.corp_profile.entity
         self.allow_anonymous_view = False
         super(CorpMembership, self).save(*args, **kwargs)
+        if self._original_status_detail != self.status_detail:
+            self.corp_profile.sync_type_reps_groups()
 
     @property
     def module_name(self):
@@ -1779,10 +1896,12 @@ class CorpMembershipRep(models.Model):
     def save(self, *args, **kwargs):
         super(CorpMembershipRep, self).save(*args, **kwargs)
         self.sync_reps_groups()
+        self.corp_profile.sync_type_reps_groups(reps_list=[self.user.id])
 
     def delete(self, *args, **kwargs):
         super(CorpMembershipRep, self).delete(*args, **kwargs)
         self.remove_from_reps_groups()
+        self.corp_profile.sync_type_reps_groups(reps_list=[self.user.id], remove=True)
 
     def sync_reps_groups(self):
         corp_app = CorpMembershipApp.objects.current_app()
@@ -2168,7 +2287,9 @@ class Notice(models.Model):
 
         # allowed notice types
         allowed_notice_types = [
+            'join',
             'approve_join',
+            'renewal',
             'approve_renewal',
             'disapprove_join',
             'disapprove_renewal',

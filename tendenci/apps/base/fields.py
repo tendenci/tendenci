@@ -11,6 +11,7 @@ from django.core import exceptions
 from django_countries import countries as COUNTRIES
 
 from tendenci.apps.base import forms
+from tendenci.apps.base.utils import custom_json_dumper
 from tendenci.apps.base.widgets import EmailVerificationWidget, PriceWidget
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -68,7 +69,7 @@ class DictField(models.TextField):
 
     def get_prep_value(self, value):
         if isinstance(value, dict):
-            return simplejson.dumps(value)
+            return simplejson.dumps(value, default=custom_json_dumper, indent=2)
 
         if isinstance(value, str):
             return value
