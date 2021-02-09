@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load perm_tags %}
 
 {% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ mem_user }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{{ membership.get_description }}{% endblock %}
@@ -14,6 +15,7 @@
 {% endblock %}
 
 {% block content %}
+{% has_perm request.user memberships.change_membershipdefault as can_edit_memberships %}
 <div class="t">
     <div class="membership-detail-wrap">
 
@@ -28,15 +30,15 @@
                 <a href="{% url "membership.details" membership.pk %}?print">
                     {% trans "Print Page" %}</a>
 
-                {% if member_can_edit_records %}
-					{% if user == membership.user %}
+                {% if member_can_edit_records and user == membership.user %}
                 	<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Your Membership" %}</a>
-					{% elif user.is_superuser %}
+                {% else %}
+					{% if can_edit_memberships %}
 					<a href="{% url "membership_default.edit" membership.pk %}">{% trans "Edit Membership" %}</a>
 					 {% endif %}
                 {% endif %}
 
-				{% if user.is_superuser %}
+				{% if request.user.is_staff and can_edit_memberships %}
                 <a href="{% url "admin:memberships_membershipdefault_change" membership.pk %}?next={{ request.path }}">
                     {% trans "Admin:Edit Membership" %}</a>
                 {% endif %}

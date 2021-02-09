@@ -74,6 +74,13 @@ def search(request, template_name="jobs/search.html"):
         query = form.cleaned_data.get('q')
         cat = form.cleaned_data.get('cat')
         sub_cat = form.cleaned_data.get('sub_cat')
+        location = form.cleaned_data.get('location')
+        skills = form.cleaned_data.get('skills')
+
+        if location:
+            jobs = jobs.filter(location__icontains=location)
+        if skills:
+            jobs = jobs.filter(skills__icontains=skills)
 
         if cat:
             jobs = jobs.filter(cat=cat)

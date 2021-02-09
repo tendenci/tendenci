@@ -7,6 +7,7 @@
 {% block title %}{{ month_names.1 }} {{ year }} {% trans 'Calendar' %} {% endblock %}
 {% block meta_description %} {% endblock %}
 {% block meta_keywords %} {% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ SITE_GLOBAL_SITEURL }}{% url 'event.month' %}" />{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

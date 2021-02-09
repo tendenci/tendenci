@@ -393,7 +393,6 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     'as it is required for setting up a recurring ' +
                     'payment for anonymous users.')
 
-    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
     if form.custom_payment and not form.recurring_payment:
         billing_form = BillingForm(request.POST or None)
         if request.user.is_authenticated:
@@ -404,6 +403,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     else:
         billing_form = None
 
+    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
         if field_default:
@@ -449,7 +450,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # Send message to the person who submitted the form.
                 email.recipient = email_to
                 email.body = submitter_body
-                email.send(fail_silently=True)
+                email.send(fail_silently=getattr(settings, 'EMAIL_FAIL_SILENTLY', True))
                 # log an event
                 EventLog.objects.log(instance=form, description='Confirmation email sent to {}'.format(email_to))
 
@@ -489,19 +490,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 #                                 f.seek(0)
 #                                 attachments.append((f.name.split('/')[-1], f.read()))
 
+                fail_silently = getattr(settings, 'EMAIL_FAIL_SILENTLY', True)
                 # Send message to the email addresses listed in the copies
                 if email_copies:
                     email.body = admin_body
                     email.recipient = email_copies
 #                     if request.user.is_anonymous or not request.user.is_active:
 #                         email.content_type = 'text'
-                    email.send(fail_silently=True, attachments=attachments)
+                    email.send(fail_silently=fail_silently, attachments=attachments)
 
                 # Email copies to recipient list indicated in the form
                 if email_recipients:
                     email.body = admin_body
                     email.recipient = email_recipients
-                    email.send(fail_silently=True, attachments=attachments)
+                    email.send(fail_silently=fail_silently, attachments=attachments)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:

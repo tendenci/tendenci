@@ -18,7 +18,7 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import EmailVerificationField, PriceField, CountrySelectField
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.careers.models import Career
-from tendenci.apps.corporate_memberships.models import (CorpMembership, CorpMembershipAuthDomain,)
+from tendenci.apps.corporate_memberships.models import (CorpMembership, CorpMembershipAuthDomain, CorporateMembershipType)
 from tendenci.apps.educations.models import Education
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.memberships.fields import (
@@ -214,7 +214,7 @@ class MembershipTypeForm(TendenciBaseForm):
                                                                     fields_pos_d=fields_pos_d)
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(MembershipTypeForm, self).clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
         expiration_grace_period = self.cleaned_data['expiration_grace_period']
         renewal_period_end = self.cleaned_data['renewal_period_end']
@@ -321,11 +321,20 @@ class MessageForm(FormControlWidgetMixin, forms.ModelForm):
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.model_name.lower()}),
         label=_('Email Content'))
-    
+    membership_type = forms.ModelChoiceField(label='',
+                                empty_label=_('All Membership Types'),
+                                required=False,
+                                queryset=MembershipType.objects.filter(status_detail='active'))
+    corpmembership_type = forms.ModelChoiceField(label='',
+                                empty_label=_('All Corporate Membership Types'),
+                                required=False,
+                                queryset=CorporateMembershipType.objects.filter(status_detail='active'))
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body',
+                  'sender_display',
+                  'reply_to',)
 
     def __init__(self, *args, **kwargs):
         super(MessageForm, self).__init__(*args, **kwargs)
@@ -1307,7 +1316,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             Membership.user
             Membership.user.profile
             Membership.invoice
-            Membership.user.group_set()
+            Membership.user.user_groups
         """
         user = kwargs.pop('user')
         request = kwargs.pop('request')
@@ -1930,7 +1939,7 @@ class MembershipDefaultForm(TendenciBaseForm):
             Membership.user.profile
             Membership.user.education
             Membership.invoice
-            Membership.user.group_set()
+            Membership.user.user_groups
         """
         request = kwargs.pop('request')
 

@@ -42,4 +42,17 @@
     {{ form.media }}
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">  
+    (function($) {
+        var mt = $( "select[name='membership_type']" );
+		$("input[value='pending_members']").closest('div.radio').append(mt);
+		$("label[for='id_membership_type']").closest('div.form-group').remove();
+		
+		var cmt = $( "select[name='corpmembership_type']" );
+		$("input[value='pending_corp_members']").closest('div.radio').append(cmt);
+		$("label[for='id_corpmembership_type']").closest('div.form-group').remove();
+     })(jQuery);
+ </script>
+
 {% endblock %}

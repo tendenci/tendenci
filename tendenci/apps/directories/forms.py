@@ -99,9 +99,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
             self.fields.pop('sub_cat')
 
     def clean(self):
-        cleaned_data = self.cleaned_data
-        q = self.cleaned_data.get('q', None)
-        cat = self.cleaned_data.get('search_category', None)
+        cleaned_data = super(DirectorySearchForm, self).clean()
+        q = cleaned_data.get('q', None)
+        cat = cleaned_data.get('search_category', None)
 
         if cat is None or cat == "" :
             if not (q is None or q == "" or 'tag:' in q):
@@ -308,6 +308,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(DirectoryForm, self).__init__(*args, **kwargs)
+        self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:

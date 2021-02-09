@@ -12,6 +12,7 @@
         {% trans "Articles List" %}
     {% endif %} - {{ block.super }}
 {% endspaceless %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ SITE_GLOBAL_SITEURL }}{% url 'articles' %}" />{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}

@@ -348,7 +348,7 @@ class TendenciBaseManager(models.Manager):
 
         user is a required argument since we'll be filtering by user.pk.
         """
-        groups = [g.pk for g in user.group_set.all()]
+        groups = [g.pk for g in user.user_groups.all()]
         status_detail = kwargs.get('status_detail', 'active')
         status = kwargs.get('status', True)
 
@@ -385,7 +385,7 @@ class TendenciBaseManager(models.Manager):
 
         user required since we'll filter by user.pk.
         """
-        groups = [g.pk for g in user.group_set.all()]
+        groups = [g.pk for g in user.user_groups.all()]
         status_detail = kwargs.get('status_detail', 'active')
         status = kwargs.get('status', True)
 
@@ -426,7 +426,7 @@ class TendenciBaseManager(models.Manager):
 
         user is a required argument since we'll be filtering by user.pk.
         """
-        groups = [g.pk for g in user.group_set.all()]
+        groups = [g.pk for g in user.user_groups.all()]
         status_detail = kwargs.get('status_detail', 'active')
         status = kwargs.get('status', True)
         is_member = kwargs.get('is_member', True)

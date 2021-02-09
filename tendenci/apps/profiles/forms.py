@@ -20,6 +20,7 @@ from tendenci.apps.profiles.models import Profile, UserImport
 from tendenci.apps.profiles.utils import update_user
 from tendenci.apps.base.utils import get_languages_with_local_name
 from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -33,7 +34,7 @@ APPS = ('profiles', 'user_groups', 'articles',
 PASSWORD_REGEX_DEFAULT = r'^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$'
 PASSWORD_HELP_TEXT_DEFAULT = _('Password must contain at least 1 number or 1 special character. Password must be 8 or more characters long.')
 
-class ProfileSearchForm(forms.Form):
+class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
     SEARCH_CRITERIA_CHOICES = (
                         ('', _('SELECT ONE')),
                         ('first_name', _('First Name')),
@@ -68,16 +69,16 @@ class ProfileSearchForm(forms.Form):
     search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
                                         required=False)
     search_text = forms.CharField(max_length=100, required=False)
-    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
-                                        required=False)
+#     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+#                                         required=False)
 
     def __init__(self, *args, **kwargs):
         mts = kwargs.pop('mts')
         self.user = kwargs.pop('user')
         super(ProfileSearchForm, self).__init__(*args, **kwargs)
-        self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['email'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
+        self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
+        self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
 
         if not mts:
             del self.fields['membership_type']
@@ -87,15 +88,20 @@ class ProfileSearchForm(forms.Form):
             choices += [(mt.id, mt.name) for mt in mts]
             self.fields['membership_type'].widget = forms.widgets.Select(
                                     choices=choices)
+            self.fields['membership_type'].widget.attrs.update({'class': 'form-control'})
 
         # group choices
         filters = get_query_filters(self.user, 'user_groups.view_group', **{'perms_field': False})
-        group_choices = [(0, _('SELECT ONE'))] + list(Group.objects.filter(
+        group_choices = [(0, _('SELECT ONE')), (-1, _('NONE - Not in any group!'))] + list(Group.objects.filter(
                             status=True, status_detail="active"
                              ).filter(filters).distinct().order_by('name'
                             ).values_list('pk', 'name'))
         self.fields['group'].widget = forms.widgets.Select(
                                     choices=group_choices)
+        self.fields['group'].widget.attrs.update({'class': 'form-control'})
+#         for field in self.fields:
+#             if field not in ['search_criteria', 'search_text', 'search_method', 'member_only']:
+#                 self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 
 class ProfileForm(TendenciBaseForm):
@@ -600,7 +606,7 @@ class UserPermissionForm(forms.ModelForm):
         # only display the permissions for the apps in APPS
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
-        content_types = ContentType.objects.exclude(app_label='auth')
+        content_types = ContentType.objects.exclude(app_label='auth').exclude(model='membershipset')
 
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
 

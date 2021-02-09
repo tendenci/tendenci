@@ -9,15 +9,16 @@ import time as ttime
 import subprocess
 import calendar
 from collections import OrderedDict
+from dateutil.parser import parse as dparse, ParserError 
 from dateutil.relativedelta import relativedelta
-
+ 
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
 import simplejson
@@ -26,7 +27,6 @@ from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -136,7 +136,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')
@@ -218,13 +218,19 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
             with open(default_body_file_path) as fp:
                 default_body = fp.read()
 
-    form = form_class(request.POST or None, instance=email, initial={'subject': default_subject, 'body': default_body})
+    form = form_class(request.POST or None, instance=email, initial={
+        'subject': default_subject,
+        'body': default_body,
+        'sender_display': request.user.get_full_name(),
+        'reply_to': request.user.email})
     
     if request.method == "POST":
         if form.is_valid():
             email = form.save()
-            email.sender_display = request.user.get_full_name()
-            email.reply_to = request.user.email
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "html"
             email.allow_anonymous_view = False
@@ -232,6 +238,8 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
             email.allow_member_view = False
             email.save(request.user)
             email.recipient_type = form.cleaned_data['recipient_type']
+            membership_type = form.cleaned_data['membership_type']
+            corpmembership_type = form.cleaned_data['corpmembership_type']
             subject = email.subject
 
             if email.recipient_type == 'myself':
@@ -258,32 +266,13 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
     
                 return HttpResponseRedirect(reverse('membership.message_pending', args=([email.id])))
             else:
-                pending_members, total_sent = email_pending_members(email, recipient_type=email.recipient_type)
+                retn_content = email_pending_members(email, recipient_type=email.recipient_type,
+                                                                    membership_type=membership_type,
+                                                                    corpmembership_type=corpmembership_type,
+                                                                    request=request)
 
-                opts = {}
-                opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-                opts['summary'] += 'Emails sent to ALL pending members ({})</font><br><br>'.format(total_sent)
-                opts['summary'] += '<font face=""Arial"" color=""#000000"">'
-                opts['summary'] += 'Email Sent Appears Below in Raw Format'
-                opts['summary'] += '</font><br><br>'
-                opts['summary'] += email.body
-    
-                # send summary
-                email.subject = 'SUMMARY: %s' % email.subject
-                email.body = opts['summary']
-                email.recipient = request.user.email
-                email.send()
-    
                 EventLog.objects.log(instance=email)
-                msg_string = 'Successfully sent email "%s" to pending members (%d).' % (subject, total_sent)
-                messages.add_message(request, messages.SUCCESS, msg_string)
-                
-                template_name='memberships/message/pending-members-conf.html'
-    
-                return render_to_resp(request=request, template_name=template_name,
-                          context={'total_sent': total_sent,
-                                   'pending_members': pending_members,
-                                   'recipient_type': email.recipient_type})
+                return StreamingHttpResponse(streaming_content=retn_content)
 
 
     return render_to_resp(request=request, template_name=template_name,
@@ -553,9 +542,52 @@ def membership_default_import_preview(request, mimport_id,
             user_display = imd.process_default_membership(idata)
 
             user_display['row_num'] = idata.row_num
+            for f in ['join_dt', 'expire_dt', 'membership_type']:
+                if f in idata.row_data:
+                    user_display[f] = idata.row_data[f]
+            
             users_list.append(user_display)
             if not fieldnames:
                 fieldnames = list(idata.row_data.keys())
+                
+        # DateTime fields are sensitive to parse failures
+        # They are not parsed in the preview yet, in fact all 
+        # data travens as strings to be cleaned and parsd just 
+        # before being saved to the respecive models. Datetimes 
+        # and dates are parsed with dateutil.parser, so we fo
+        # that here specifically so that someone importing dates
+        # sees a preview of the parse success/failure before 
+        # committing.
+        #
+        # We elect join_dt and expire_dt as the two most likely 
+        # dates of interest to someone importing members en 
+        # masse.
+        for dt in ['join_dt', 'expire_dt']:
+            if dt in fieldnames:
+                for u in users_list:
+                    if u[dt].strip():
+                        try:
+                            u[dt] = str(dparse(u[dt]))
+                        except ParserError:
+                            u[dt] = "Error"
+                    else:
+                        u[dt] = "None"
+
+        # Similarly membership_type if imported must be 
+        # imported as the id of a membership_type and it's 
+        # useful to get feedback on integrity at the preview
+        # before committing the import.
+        # TODO: This could generalize to all ID type imports supported
+        if 'membership_type' in fieldnames:
+            mts = {mt.pk:mt.name for mt in MembershipType.objects.all()}
+
+            for u in users_list:
+                try:
+                    mt = int(str(u['membership_type']))
+                except ValueError:
+                    mt = 'Value Error'
+                    
+                u['membership_type'] = mts.get(mt, 'None')
 
         return render_to_resp(request=request, template_name=template_name, context={
             'mimport': mimport,
@@ -1521,7 +1553,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')

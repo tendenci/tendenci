@@ -253,6 +253,7 @@ INSTALLED_APPS = [
     'tendenci.apps.announcements',
     'tendenci.apps.forums',
     'tendenci.apps.committees',
+    'tendenci.apps.chapters',
     'tendenci.apps.case_studies',
     'tendenci.apps.donations',
     'tendenci.apps.speakers',

@@ -8,11 +8,11 @@
     {% has_perm user directories.view_directory app_object as can_view_directory %}
     {% has_perm user directories.change_directory app_object as can_edit_directory %}
     {% has_perm user directories.delete_directory app_object as can_delete_directory %}
-{% else %}
-    {% has_perm user directories.view_directory as can_view_directory %}
-    {% has_perm user directories.change_directory as can_edit_directory %}
-    {% has_perm user directories.delete_directory as can_delete_directory %}
 {% endif %}
+{% has_perm user directories.view_directory as can_view_directories %}
+{% has_perm user directories.change_directory as can_edit_directories %}
+{% has_perm user directories.view_directorypricing as can_view_directorypricing %}
+ 
 
 
 <ul id="t-admin-megamenu-directories-dd" class="dropdown-menu" role="menu">
@@ -48,13 +48,15 @@
                         </li>
                     {% endif %}
 
-                    {% if user.profile.is_superuser %}
+                    {% if can_view_directories and can_edit_directories %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.pending' %}">{% trans "Pending" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "directories" %}</a>
                             </span>
                         </li>
+                    {% endif %}
 
+					{% if user.profile.is_superuser %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.export' %}">{% trans "Export" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "directories" %}</a>
@@ -63,7 +65,7 @@
                     {% endif %}
 
 					{% if not MODULE_DIRECTORIES_HIDEPRICINGTAB %}
-                    {% if can_edit_directory %}
+                    {% if can_view_directorypricing %}
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory_pricing.search' %}">{% trans "Pricing" %}</a>

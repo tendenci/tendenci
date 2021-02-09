@@ -253,7 +253,7 @@ table#officer-table tbody tr:nth-child(2n) {
 }
 
 table#officer-table th {
-    font-weight: normal;
+    font-weight: bold;
     padding: 10px;
 }
 
