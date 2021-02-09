@@ -2287,7 +2287,9 @@ class Notice(models.Model):
 
         # allowed notice types
         allowed_notice_types = [
+            'join',
             'approve_join',
+            'renewal',
             'approve_renewal',
             'disapprove_join',
             'disapprove_renewal',
