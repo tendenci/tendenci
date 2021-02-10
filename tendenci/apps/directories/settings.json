@@ -239,23 +239,6 @@
     },
 	{
         "default_value": "false",
-        "description": "The affiliation request is limited to the connection specified in the <a href='/admin/directories/allowedconnection/'>Allowed Connections</a> at directories admin backend.",
-        "data_type": "boolean",
-        "update_dt": "2020-10-27 15:00:00",
-        "input_type": "select",
-        "client_editable": false,
-        "name": "affiliation_limited",
-        "value": "false",
-        "label": "Affiliation Limited",
-        "input_value": "true,false",
-        "parent_id": 0,
-        "scope": "module",
-        "scope_category": "directories",
-        "store": true,
-        "updated_by": ""
-    },
-	{
-        "default_value": "false",
         "description": "If true, directory subcategories will not show up.",
         "data_type": "boolean",
         "update_dt": "2020-11-09 15:19:13",

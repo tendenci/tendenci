@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.directories.models import DirectoryPricing
-from tendenci.apps.directories.affiliates.models import AllowedConnection
+from tendenci.apps.directories.affiliates.models import Connection
 from tendenci.apps.directories.forms import DirectoryPricingForm
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.theme.templatetags.static import static
@@ -70,16 +70,16 @@ class DirectoryCategoryAdmin(admin.ModelAdmin):
         return qs.filter(parent__isnull=True)
 
 
-class AllowedConnectionAdmin(admin.ModelAdmin):
-    list_display = ['corp_type', 'allow_connected_by']
+class ConnectionAdmin(admin.ModelAdmin):
+    list_display = ['cat', 'allow_associated_by']
     fieldsets = (
-        (None, {'fields': ('corp_type', 'member_types')}),
+        (None, {'fields': ('cat', 'affliated_cats')}),
     )
     
-    def allow_connected_by(self, instance):
-        return ', '.join([m.name for m in instance.member_types.all()])
-    allow_connected_by.short_description = 'Allow to be connected by'
+    def allow_associated_by(self, instance):
+        return ', '.join([c.name for c in instance.affliated_cats.all()])
+    allow_associated_by.short_description = 'Can be associated by'
 
 
-admin.site.register(AllowedConnection, AllowedConnectionAdmin)
+admin.site.register(Connection, ConnectionAdmin)
 admin.site.register(DirectoryCategory, DirectoryCategoryAdmin)

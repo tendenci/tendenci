@@ -1,10 +1,9 @@
 {% load directory_filters %}
 
 {% if affiliates_list %}
-	{% with affiliates_list|dictsort:0 as sorted_affiliates_list %}
 		<h3>{% trans "Affiliations" %}</h3>
-		{% for type_name, affiliates in sorted_affiliates_list %}
-		<h4>{{ type_name }}</h4>
+		{% for cat, affiliates in affiliates_list %}
+		<h4>{{ cat }}</h4>
 			<ol>
 			{% for affiliate in affiliates %}
 			<li class="affiliate-wrap">
@@ -19,16 +18,14 @@
 			{% endfor %}
 			</ol>
 		{% endfor %}
-	{% endwith %}
 	{% endif %}
 	
-	{% if affiliated_list %}
-	{% with affiliated_list|dictsort:0 as sorted_affiliated_list %}
+	{% if parents_list %}
 		<h3>{% trans "Associated With" %}</h3>
-		{% for type_name, affiliated_directories in sorted_affiliated_list %}
-		<h4>{{ type_name }}</h4>
+		{% for cat, parent_directories in parents_list %}
+		<h4>{{ cat }}</h4>
 			<ol>
-			{% for d in affiliated_directories %}
+			{% for d in parent_directories %}
 			<li>
 			    {% if d.logo %}
 					<img class="img-responsive" style="max-width:50px; display: inline;" border="0" src="{{ d.get_logo_url }}" alt="">
@@ -39,7 +36,6 @@
 			</ol>
 			<br />
 		{% endfor %}
-	{% endwith %}
 {% endif %}
 	
 {% if MODULE_DIRECTORIES_AFFILIATES_ENABLED and directory.status_detail == 'active' %}

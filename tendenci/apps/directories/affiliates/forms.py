@@ -11,7 +11,6 @@ from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.emails.models import Email
 from tendenci.apps.notifications import models as notification
 from .models import RequestEmail, AffiliateRequest
-from .utils import get_content_from_template
 
 
 class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):

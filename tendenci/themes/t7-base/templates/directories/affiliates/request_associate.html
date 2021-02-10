@@ -11,12 +11,19 @@
 {% block content %}
 <div class="t clearfix">
 	<h1>{% trans "Request to Associate" %}</h1>
-	<h3>{% trans "To: " %}<a href="{% url 'directory' directory.slug %}">{{ directory }}</a> {% if corp_type %}<small>({{ corp_type }})</small>{% endif %}</h3>
+	<h3>{% trans "To: " %}<a href="{% url 'directory' directory.slug %}">{{ directory }}</a> {% if cats %}<small>
+    {% for cat in cats %}
+	({{ cat }}){% if not forloop.last %}, {% endif %}
+	{% endfor %}
+	</small>{% endif %}</h3>
 
 	<div class="well">Fill out the form below. <br />
-	{% if corp_type %}
-	Note that only {{ allowed_member_types }} can 
-	request to associate.
+	{% if cats %}
+	Note that only 
+	{% for cat in allowed_affliated_cats %}
+	{{ cat }}{% if not forloop.last %}, {% endif %}
+	{% endfor %}
+	can request to associate.
 	{% endif %}
 	</div>
 	<div class="news-wrap">

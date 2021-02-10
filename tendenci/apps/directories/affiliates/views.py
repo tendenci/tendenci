@@ -14,7 +14,6 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.event_logs.models import EventLog
 
 from .forms import RequestAssociateForm
-from .utils import get_allowed_affiliate_types
 from .models import AffiliateRequest
 
 @login_required
@@ -29,19 +28,12 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
     if not to_directory.allow_associate_by(request.user):
         raise Http404
     
-    # Get a list of allowed member types
-    if get_setting('module', 'directories', 'affiliation_limited'):
-        corp_type = to_directory.get_corp_type()
-        allowed_member_types = get_allowed_affiliate_types(corp_type)
-        
-        if not allowed_member_types:
-            raise Http404
-
-        corp_type = corp_type.name
-        allowed_member_types = ', '.join([aat.name for aat in allowed_member_types])
-    else:
-        corp_type = None
-        allowed_member_types = None
+    # Get a list of allowed affiliate categories
+    cats = to_directory.cats.all()
+    allowed_affliated_cats = to_directory.get_affliated_cats()
+    
+    if not allowed_affliated_cats:
+        raise Http404
     
     request_form = form_class(request.POST or None, request=request,
                               to_directory=to_directory,)
@@ -64,8 +56,8 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
     return render_to_resp(request=request, template_name=template_name,
         context={
             'directory': to_directory,
-            'corp_type': corp_type,
-            'allowed_member_types': allowed_member_types,
+            'cats': cats,
+            'allowed_affliated_cats': allowed_affliated_cats,
             'request_form': request_form,})
 
 

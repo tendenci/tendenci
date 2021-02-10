@@ -2,10 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
  
-from tendenci.apps.directories.models import Directory
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.corporate_memberships.models import CorporateMembershipType
-from tendenci.apps.memberships.models import MembershipType
+from tendenci.apps.directories.models import Directory, Category
 
  
 class AffiliateRequest(models.Model):
@@ -46,15 +43,17 @@ class RequestEmail(models.Model):
         return 'Submission for %s' % self.affiliate_request
 
 
-class AllowedConnection(models.Model):
+class Connection(models.Model):
     """
-    This model stores the allowed connection for marketplace listings (directories).
+    This model defines the connections for marketplace listings (directories).
     
-    Each corp type can allow multiple member types.
+    Each category can have multiple categories to be associated with.
     """
-    corp_type = models.OneToOneField(CorporateMembershipType, on_delete=models.CASCADE)
-    member_types = models.ManyToManyField(MembershipType)
+    cat = models.OneToOneField(Category, verbose_name=_("Category"), related_name='connections', on_delete=models.CASCADE)
+    affliated_cats = models.ManyToManyField(Category, verbose_name=_("Affliated Categories"), related_name='allowed_connections')
     
     class Meta:
-        ordering = ("corp_type",)
+        verbose_name = _("Allowed Connection")
+        verbose_name_plural = _("Allowed Connections")
+        ordering = ("cat",)
         app_label = 'directories'

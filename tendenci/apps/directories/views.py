@@ -49,43 +49,19 @@ def details(request, slug=None, template_name="directories/view.html"):
         EventLog.objects.log(instance=directory)
         
         if get_setting('module', 'directories', 'affiliates_enabled'):
-            affiliates_dict = {}
-            for d in directory.affiliates.all():
-                member_type = d.get_member_type()
-                member_type_name = member_type and member_type.name or ''
-                if member_type_name in affiliates_dict:
-                    affiliates_dict[member_type_name].append(d)
-                else:
-                    affiliates_dict[member_type_name] = [d]
-            # make a list of list, group by member_type_name, 
-            # so that it can be sorted with the template tag dictsort
-            # [(member_type_name, [d1, d2, ..]),...]
-            affiliates_list = list(affiliates_dict.items())
-            
-            # list of directories that this directory is affiliated to
-            affiliated_dict = {}
-            for affiliateship in Affiliateship.objects.filter(affiliate=directory):
-                d = affiliateship.directory
-                corp_type = d.get_corp_type()
-                corp_type_name = corp_type and corp_type.name or ''
-                if corp_type_name in affiliated_dict:
-                    affiliated_dict[corp_type_name].append(d)
-                else:
-                    affiliated_dict[corp_type_name] = [d]
-                
-            affiliated_list = list(affiliated_dict.items())
-            
+            affiliates_list = directory.get_list_affiliates()
+            parents_list = directory.get_list_parent_directories()
             # list of affiliate requests
             affiliate_requests = directory.from_directory.all()
         else:
             affiliates_list = None
-            affiliated_list = None
+            parents_list = None
             affiliate_requests = None
             
         return render_to_resp(request=request, template_name=template_name,
             context={'directory': directory,
                      'affiliates_list': affiliates_list,
-                     'affiliated_list': affiliated_list,
+                     'parents_list': parents_list,
                      'affiliate_requests': affiliate_requests})
 
     raise Http403
