@@ -175,6 +175,7 @@ INSTALLED_APPS = [
     'tastypie',
     'timezone_field',
     'gunicorn',
+    'rangefilter',
 
     'tendenci.libs.model_report',
     'tendenci.libs.tinymce',
