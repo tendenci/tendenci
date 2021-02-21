@@ -161,7 +161,7 @@ class DirectoryForm(TendenciBaseForm):
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
     status_detail = forms.ChoiceField(
-        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')), ('expired',_('Expired')),))
 
     list_type = forms.ChoiceField(initial='regular', choices=(('regular',_('Regular')),
                                                               ('premium', _('Premium')),))
