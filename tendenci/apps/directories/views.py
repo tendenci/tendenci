@@ -103,8 +103,9 @@ def search(request, template_name="directories/search.html"):
 
     EventLog.objects.log()
 
-    if "?" not in request.get_full_path():
-        directories = directories.none()
+    if not get_setting('module', 'directories', 'showresultswithoutsearch'):
+        if "?" not in request.get_full_path():
+            directories = directories.none()
 
     return render_to_resp(request=request, template_name=template_name,
         context={'directories': directories,
