@@ -236,5 +236,22 @@
         "scope_category": "directories",
         "store": true,
         "updated_by": " "
+    },
+    {
+        "default_value": "true",
+        "description": "By default, display search results without search on directories search page (default true)",
+        "data_type": "boolean",
+        "update_dt": "2021-02-19 11:48:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "showresultswithoutsearch",
+        "value": "true",
+        "label": "Display Search Results Without Search",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "directories",
+        "store": false,
+        "updated_by": ""
     }
 ]
