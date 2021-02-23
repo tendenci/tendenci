@@ -29,6 +29,7 @@
 			<div class="col-xs-8">
 				<h4><a href="{{ from_directory.get_absolute_url }}">
         		{% firstof from_directory.headline trans "Untitled" %}</a></h4>
+				<div>{% trans "Requested as:" %} <strong>{{ a_request.request_as }}</strong></div>
 				<div><em>{% trans "Submitted by" %} <a href="{% url 'profile' a_request.creator.username %}">{{ a_request.creator.get_full_name }}</a> on {{ a_request.create_dt }}</em></div>
 				<div><strong>{% trans "Message(s):" %}</strong></div>
 				{% for request_email in a_request.request_emails.all %}

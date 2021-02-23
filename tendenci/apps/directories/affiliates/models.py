@@ -10,6 +10,8 @@ class AffiliateRequest(models.Model):
                                        on_delete=models.CASCADE)
     from_directory = models.ForeignKey(Directory, related_name='from_directory',
                                             on_delete=models.CASCADE)
+    request_as = models.ForeignKey(Category, related_name='affiliate_requests',
+                                 null=True, on_delete=models.CASCADE)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     creator = models.ForeignKey(User, null=True, default=None,
                                 on_delete=models.SET_NULL,

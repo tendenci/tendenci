@@ -380,18 +380,21 @@ class Directory(TendenciBaseModel):
         return False
 
 
-    def can_connect_from(self, directory_from):
+    def can_connect_from(self, directory_from=None, directory_from_cat=None):
         """
         Check if this directory can be connected from ``directory_from``.
         """
         affliated_cats = self.get_affliated_cats()
+        if directory_from_cat:
+            return directory_from_cat in affliated_cats
         
-        for cat in directory_from.cats.all():
-            if cat in affliated_cats:
-                return True
+        if directory_from:
+            for cat in directory_from.cats.all():
+                if cat in affliated_cats:
+                    return True
         return False
 
-    def get_affliated_cats(self,):
+    def get_affliated_cats(self):
         """
         Get a list of categories that are allowed to connect with the categories of this directory.
         """
@@ -413,7 +416,7 @@ class Directory(TendenciBaseModel):
                 if not c.cat in parent_cats:
                     parent_cats.append(c.cat)
         return parent_cats
-    
+
     def get_list_affiliates(self):
         """
         Return a sorted list of list of affiliate directories, 
@@ -422,13 +425,15 @@ class Directory(TendenciBaseModel):
         """
         affiliates_dict = {}
         affliated_cats = self.get_affliated_cats()
-        for d in self.affiliates.all():
-            for cat in d.cats.all():
+        for affiliateship in Affiliateship.objects.filter(directory=self):
+            affiliate = affiliateship.affiliate
+            if affiliate.status_detail =='active':
+                cat = affiliateship.connected_as
                 if cat in affliated_cats:
                     if cat in affiliates_dict:
-                        affiliates_dict[cat].append(d)
+                        affiliates_dict[cat].append(affiliate)
                     else:
-                        affiliates_dict[cat] = [d]
+                        affiliates_dict[cat] = [affiliate]
 
         return sorted(list(affiliates_dict.items()), key=lambda item: item[0].position)
 
@@ -442,13 +447,14 @@ class Directory(TendenciBaseModel):
         parent_cats = self.get_parent_cats()
         for affiliateship in Affiliateship.objects.filter(affiliate=self):
             parent_d = affiliateship.directory
-            
-            for cat in parent_d.cats.all():
-                if cat in parent_cats:
-                    if cat in parents_dict:
-                        parents_dict[cat].append(parent_d)
-                    else:
-                        parents_dict[cat] = [parent_d]
+            if parent_d.status_detail =='active':
+                connected_cat = affiliateship.connected_as
+                for cat in parent_d.cats.all():
+                    if cat in parent_cats and connected_cat in cat.connections.affliated_cats.all():
+                        if cat in parents_dict:
+                            parents_dict[cat].append(parent_d)
+                        else:
+                            parents_dict[cat] = [parent_d]
 
         return sorted(list(parents_dict.items()), key=lambda item: item[0].position)
 
@@ -511,13 +517,15 @@ class Affiliateship(models.Model):
                                       on_delete=models.CASCADE)
     affiliate = models.ForeignKey(Directory, related_name='affiliateship_affiliate_directories',
                                        on_delete=models.CASCADE)
+    connected_as = models.ForeignKey(Category, null=True, related_name='cat_affiliateships',
+                                       on_delete=models.CASCADE)
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     creator = models.ForeignKey(User, null=True, default=None,
                                 on_delete=models.SET_NULL,
                                 editable=False)
  
     class Meta:
-        unique_together = ('directory', 'affiliate',)
+        unique_together = ('directory', 'affiliate', 'connected_as')
         verbose_name = _("Directory Affiliateship")
         ordering = ['directory', 'affiliate']
         app_label = 'directories'

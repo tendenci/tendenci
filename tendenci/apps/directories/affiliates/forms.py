@@ -6,15 +6,16 @@ from django.urls import resolve
 from django.urls.exceptions import Resolver404
 
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.directories.models import Directory
+from tendenci.apps.directories.models import Directory, Category
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.emails.models import Email
 from tendenci.apps.notifications import models as notification
-from .models import RequestEmail, AffiliateRequest
+from .models import RequestEmail, AffiliateRequest, Connection
 
 
 class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
     from_directory_url = forms.URLField(label=_('Your Listing URL'))
+    request_as = forms.ModelChoiceField(queryset=None, required=True)
     message = forms.CharField(max_length=1000,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     
@@ -33,9 +34,15 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
                                         get_setting('site', 'global', 'siteurl'),
                                         get_setting('module', 'directories', 'url'))
         self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL')})
+        affiliate_cats_queryset = Category.objects.filter(id__in=Connection.objects.filter(
+                                    cat__in=self.to_directory.cats.all()).values_list(
+                                        'affliated_cats', flat=True)).distinct()
+        self.fields['request_as'].queryset = affiliate_cats_queryset
 
-    def clean_from_directory_url(self):
+    def clean(self):
+        self.cleaned_data = super(RequestAssociateForm, self).clean()
         from_directory_url = self.cleaned_data['from_directory_url']
+        request_as = self.cleaned_data['request_as']
         
         # check if this request to associate is allowed
         o = urlparse(from_directory_url)
@@ -50,14 +57,16 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
             self.from_directory = Directory.objects.get(slug=resolver.kwargs['slug'])
             if not (self.request.user.is_superuser or self.from_directory.is_owner(self.request.user)):
                 raise forms.ValidationError(_("You are not allowed to submit this listing."))
-            elif not self.to_directory.can_connect_from(self.from_directory):
+            elif not self.to_directory.can_connect_from(directory_from=self.from_directory):
                 raise forms.ValidationError(_("This connection is not allowed."))
+            elif request_as not in self.from_directory.cats.all():
+                raise forms.ValidationError(_("This connection can not be established."))
         else:
             raise forms.ValidationError(_("Invalid marketplace listing."))
 
-        
         return self.cleaned_data
-    
+
+
     def save(self, *args, **kwargs):
         """
         Save the request form and send email notifications
@@ -66,11 +75,13 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         [affiliate_request] = AffiliateRequest.objects.filter(
             to_directory=self.to_directory,
             from_directory=self.from_directory,
+            request_as=self.cleaned_data['request_as']
             )[:1] or [None]
         if not affiliate_request:
             affiliate_request = AffiliateRequest.objects.create(
                 to_directory=self.to_directory,
                 from_directory=self.from_directory,
+                request_as=self.cleaned_data['request_as'],
                 creator= self.request.user,)
         self.instance.affiliate_request = affiliate_request
         self.instance.sender = self.request.user

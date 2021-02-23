@@ -80,11 +80,15 @@ def approve(request, affiliate_request_id):
 
     if request.method in ["POST"]:
         from_directory = affiliate_request.from_directory
-        if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory).exists():
+        request_as = affiliate_request.request_as
+
+        if not Affiliateship.objects.filter(directory=directory, affiliate=from_directory,
+                                            connected_as=request_as).exists():
             # Add affiliate to the directory
             Affiliateship.objects.create(
                 directory=directory,
                 affiliate=from_directory,
+                connected_as=request_as,
                 creator=request.user)
     
             # Email to the submitter of the affiliate request
@@ -107,8 +111,8 @@ def approve(request, affiliate_request_id):
                     from_directory=from_directory, to_directory=directory)
             EventLog.objects.log(instance=affiliate_request, description=description)
     
-            msg_string = _('Successfully accepted the affiliate request from %s') \
-                    % str(from_directory)
+            msg_string = _(f'Successfully accepted the affiliate request from {str(from_directory)} as {request_as}')
+
             messages.add_message(request, messages.SUCCESS, msg_string)
         
         # Remove the request

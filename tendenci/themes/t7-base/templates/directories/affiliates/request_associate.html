@@ -19,7 +19,7 @@
 
 	<div class="well">Fill out the form below. <br />
 	{% if cats %}
-	Note that only 
+	Note that only marketplaces with
 	{% for cat in allowed_affliated_cats %}
 	{{ cat }}{% if not forloop.last %}, {% endif %}
 	{% endfor %}
