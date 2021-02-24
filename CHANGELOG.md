@@ -1,3 +1,14 @@
+### 12.4.4 [2021-02-24]
+
+* Removed the `urlize` filter from the template events/view.html that is pulled down to the sites.
+* Made `name` to be the default category selection (Thanks @lgm527).
+* Changed both imageMaxWidth and imageMaxHeight to 2400 (was 1200 as the default) for image upload in wysiwyg editor.
+* Added django-admin-rangefilter. 
+* Added an option to directories search to display search results without search (Thanks @lgm527).
+* Removed `urlize` filter from forms/form_sent.html
+* Fixed a js issue about not being able to add officers to chapters and committees.
+
+
 ### 12.4.3 [2021-02-09]
 
 * Updated user profile to show corporation(s) a user is a representative of. 
