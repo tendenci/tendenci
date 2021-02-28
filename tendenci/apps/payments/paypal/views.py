@@ -10,7 +10,7 @@ from tendenci.apps.payments.utils import log_silent_post
 def thank_you(request, template_name='payments/receipt.html'):
     validate_type = 'PDT'
     payment, processed = paypal_thankyou_processing(request,
-                                    request.POST.copy(),
+                                    request.GET.copy(),
                                     validate_type=validate_type)
 
     return render_to_resp(request=request, template_name=template_name,
