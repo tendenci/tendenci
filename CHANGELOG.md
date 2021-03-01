@@ -1,3 +1,8 @@
+### 12.4.5 [2021-03-01]
+
+* Added affiliations functionality in directories.
+* Fixed an issue about data is passed via get not post for the paypal thankyou page.
+
 ### 12.4.4 [2021-02-24]
 
 * Removed the `urlize` filter from the template events/view.html that is pulled down to the sites.
