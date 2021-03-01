@@ -1,0 +1,106 @@
+{% extends "directories/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Affiliate Requests' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="t clearfix">
+	<h1>{% trans "Affiliate Requests" %}</h1>
+	<div>
+	<a href="{% url 'directory' directory.slug %}">{{ directory.headline }}</a>
+	</div>
+	<div><em>{% blocktrans with count_pluralize=count|pluralize %}{{ count }} affiliate request{{ count_pluralize }}{% endblocktrans %}</em></div>
+
+
+	<div>	
+	{% for a_request in affiliate_requests %}
+	{% with a_request.from_directory as from_directory %}
+		<div id="ar{{ a_request.id }}" class="row affiliate-request-wrap" style="margin: 1em auto; padding: 1em; border-top: 1px dashed #ccc;">
+			<div class="col-xs-4">
+			{% if from_directory.logo %}
+			<img class="t-directories-directory-image img-responsive" style="max-width:130px;" border="0" src="{{ from_directory.get_logo_url }}" alt="">
+			{% endif %}
+			</div>
+			<div class="col-xs-8">
+				<h4><a href="{{ from_directory.get_absolute_url }}">
+        		{% firstof from_directory.headline trans "Untitled" %}</a></h4>
+				<div>{% trans "Requested as:" %} <strong>{{ a_request.request_as }}</strong></div>
+				<div><em>{% trans "Submitted by" %} <a href="{% url 'profile' a_request.creator.username %}">{{ a_request.creator.get_full_name }}</a> on {{ a_request.create_dt }}</em></div>
+				<div><strong>{% trans "Message(s):" %}</strong></div>
+				{% for request_email in a_request.request_emails.all %}
+				<div><blockquote>{{ request_email.message }}</blockquote></div>
+				{% endfor %}
+				<br />
+				<div class="affiliate-request-actions">
+					<a href="{% url 'affiliates.request_approve' a_request.id %}" class="approve btn btn-primary">{% trans "Accept" %}</a> &nbsp;&nbsp;&nbsp;
+					<a href="{% url 'affiliates.request_reject' a_request.id %}"  class="reject btn btn-default">{% trans "Decline" %}</a>
+				</div>
+			</div>
+			
+		</div>
+	{% endwith %}
+	{% endfor %}
+    </div>
+	<p>&nbsp;</p>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$.ajaxSetup({beforeSend: function(xhr, settings){
+			 xhr.setRequestHeader('X-CSRFToken',
+			                      '{{ csrf_token }}');
+		}});
+
+		(function($) {
+        $(document).ready(function(){
+
+			var token = $("[name=csrfmiddlewaretoken]").val();
+
+            // approve confirmation
+            $('.approve').on("click", function(e){
+	            e.preventDefault();
+                var approve_affiliate_request = confirm('{% trans "Accept this request?" %}?');  // confirm
+                if(approve_affiliate_request){ // approve: if OK
+					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
+					var approve_url = $(this).attr('href');
+					
+					$.ajax({
+						url: approve_url,
+						type: "POST",
+						data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
+					    }).success(function(msg){
+					    	action_btns_wrap.html('<span class="text-success">ACCEPTED!</span>');
+					  });
+				}  // end if
+            });
+			// reject confirmation
+            $('.reject').on("click", function(e){
+				e.preventDefault();
+                var reject_affiliate_request = confirm('{% trans "Are you sure you want to decline this request?" %}?');  // confirm
+                if(reject_affiliate_request){ // reject: if OK
+					var action_btns_wrap = $(this).parents('.affiliate-request-actions');
+					var reject_url = $(this).attr('href');
+					
+					$.ajax({	
+					   	url: reject_url,
+						type: "POST",
+						data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
+						}).success(function(msg){
+					    	action_btns_wrap.html('<strong><span class="text-muted">Declined</span></strong>');
+					  });
+	
+				}  // end if
+            });
+
+        });
+	}(jQuery));
+    </script>
+
+{% endblock %}

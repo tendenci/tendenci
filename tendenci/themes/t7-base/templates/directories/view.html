@@ -25,7 +25,6 @@
 		     	<a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
              	{% endif %}
 				</div>
-	      	
 			{% endif %}
         </div>
 
@@ -54,3 +53,10 @@
     </article>
     <br />
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	{% include "directories/include/affiliates_js.html" %}
+{% endblock %}
+
+

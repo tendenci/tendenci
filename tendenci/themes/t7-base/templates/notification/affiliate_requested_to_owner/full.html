@@ -1,0 +1,13 @@
+<p>
+{{ first_name }} {{ last_name }} {{ SITE_GLOBAL_SITEURL }}{{ from_directory.get_absolute_url }} has requested to 
+affiliate with your organization in the {{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }}.
+</p>
+<p>
+{{ first_name }} {{ last_name }} holds the following certification(s): {# TODO: List of active certifications #}
+</p>
+<p>
+If you wish to view or accept your affiliation requests, please go to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ MODULE_DIRECTORIES_LABEL_PLURAL }} 
+at: {{ SITE_GLOBAL_SITEURL }}{% url 'affiliates.requests_list' directory.id %}#ar{{ affiliate_request.id }}.
+</p>
+
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>

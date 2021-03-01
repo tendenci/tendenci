@@ -1,6 +1,7 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load directory_filters %}
 
 {% has_perm user directories.change_directory directory as can_edit_directory %}
 {% has_perm user directories.delete_directory directory as can_delete_directory %}
@@ -66,6 +67,10 @@
             {% endif %}
         </address>
     {% endif %}
+	
+	{% if directory.status_detail == 'active' %}
+	{% include "directories/include/affiliates_display.html" %}
+	{% endif %}
 
 	{% with directory.cats_list as cats_list %}
     {% if cats_list %}

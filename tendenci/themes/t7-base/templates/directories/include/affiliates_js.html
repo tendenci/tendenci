@@ -1,0 +1,52 @@
+<script type="text/javascript">
+	$.ajaxSetup({beforeSend: function(xhr, settings){
+		 xhr.setRequestHeader('X-CSRFToken',
+		                      '{{ csrf_token }}');
+	}});
+
+	(function($) {
+    $(document).ready(function(){
+
+		var token = $("[name=csrfmiddlewaretoken]").val();
+
+		// cancel request
+        $('.cancel').on("click", function(e){
+			e.preventDefault();
+            var cancel_affiliate_request = confirm('{% trans "Are you sure you want to cancel this request?" %}?');  // confirm
+            if(cancel_affiliate_request){ // cancel: if OK
+				var request_wrap = $(this).parents('.affiliate-request-wrap');
+				var cancel_url = $(this).attr('href');
+				
+				$.ajax({	
+				   	url: cancel_url,
+					type: "POST",
+					data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
+					}).success(function(msg){
+				    	request_wrap.remove();
+				  });
+
+			}  // end if
+        });
+
+		// delete affiliate from directory
+        $('.delete').on("click", function(e){
+			e.preventDefault();
+            var delete_affiliate = confirm('{% trans "Are you sure you want to remove this affiliate?" %}?');  // confirm
+            if(delete_affiliate){ // delete: if OK
+				var affiliate_wrap = $(this).parents('.affiliate-wrap');
+				var delete_url = $(this).attr('href');
+				
+				$.ajax({	
+				   	url: delete_url,
+					type: "POST",
+					data: {'csrfmiddlewaretoken': token, 'ajax': 'true'}
+					}).success(function(msg){
+				    	affiliate_wrap.remove();
+				  });
+
+			}  // end if
+        });
+
+    });
+}(jQuery));
+</script>

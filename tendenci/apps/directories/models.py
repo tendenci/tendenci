@@ -127,6 +127,8 @@ class Directory(TendenciBaseModel):
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
+    
+    affiliates = models.ManyToManyField("Directory", through='Affiliateship')
 
     objects = DirectoryManager()
 
@@ -331,6 +333,203 @@ class Directory(TendenciBaseModel):
 
         return list(set(emails_list))
 
+    def get_corp_profile(self):
+        if hasattr(self, 'corpprofile'):
+            return self.corpprofile
+
+    def get_corp_type(self):
+        """
+        Returns the corporate membership type that associates with the directory.
+        """
+        corp_profile = self.get_corp_profile()
+        if corp_profile:
+            corp_membership = corp_profile.corp_membership
+            if corp_membership:
+                return corp_membership.corporate_membership_type
+
+    def get_membership(self):
+        [membership] = list(self.membershipdefault_set.filter(status_detail='active'))[:1] or [None]
+        return membership
+
+    def get_member_type(self):
+        """
+        Returns the membership type that associates with the directory.
+        """
+        membership = self.get_membership()
+        if membership:
+            return membership.membership_type
+
+    def is_owner(self, user_this):
+        if not user_this or not user_this.is_authenticated:
+            return False
+
+        # is creator or owner
+        if user_this == self.creator or user_this == self.owner:
+            return True
+
+        # is corp rep
+        if hasattr(self, 'corpprofile'):
+            if self.corpprofile.reps.filter(user__in=[user_this]):
+                return True
+        
+        # member
+        membership = self.get_membership()
+        if membership and membership.user == user_this:
+            return True
+        
+        return False
+
+
+    def can_connect_from(self, directory_from=None, directory_from_cat=None):
+        """
+        Check if this directory can be connected from ``directory_from``.
+        """
+        affliated_cats = self.get_affliated_cats()
+        if directory_from_cat:
+            return directory_from_cat in affliated_cats
+        
+        if directory_from:
+            for cat in directory_from.cats.all():
+                if cat in affliated_cats:
+                    return True
+        return False
+
+    def get_affliated_cats(self):
+        """
+        Get a list of categories that are allowed to connect with the categories of this directory.
+        """
+        affliated_cats = []
+        for cat in self.cats.all():
+            if hasattr(cat, 'connections'):
+                if cat.connections.affliated_cats.count() > 0:
+                    affliated_cats += list(cat.connections.affliated_cats.all())
+        return affliated_cats
+
+    def get_parent_cats(self):
+        """
+        Get a list of parent categories that this directory can associate to.
+        """
+        parent_cats = []
+        for cat in self.cats.all():
+            connections = cat.allowed_connections.all()
+            for c in connections:
+                if not c.cat in parent_cats:
+                    parent_cats.append(c.cat)
+        return parent_cats
+
+    def get_list_affiliates(self):
+        """
+        Return a sorted list of list of affiliate directories, 
+        grouped by category.
+        ex: [(category_name, [d1, d2, ..]),...]
+        """
+        affiliates_dict = {}
+        affliated_cats = self.get_affliated_cats()
+        for affiliateship in Affiliateship.objects.filter(directory=self):
+            affiliate = affiliateship.affiliate
+            if affiliate.status_detail =='active':
+                cat = affiliateship.connected_as
+                if cat in affliated_cats:
+                    if cat in affiliates_dict:
+                        affiliates_dict[cat].append(affiliate)
+                    else:
+                        affiliates_dict[cat] = [affiliate]
+
+        return sorted(list(affiliates_dict.items()), key=lambda item: item[0].position)
+
+    def get_list_parent_directories(self):
+        """
+        Return a sorted list of list of parent directories, 
+        grouped by category, 
+        ex: [(category_name, [d1, d2, ..]),...]
+        """
+        parents_dict = {}
+        parent_cats = self.get_parent_cats()
+        for affiliateship in Affiliateship.objects.filter(affiliate=self):
+            parent_d = affiliateship.directory
+            if parent_d.status_detail =='active':
+                connected_cat = affiliateship.connected_as
+                for cat in parent_d.cats.all():
+                    if cat in parent_cats and connected_cat in cat.connections.affliated_cats.all():
+                        if cat in parents_dict:
+                            parents_dict[cat].append(parent_d)
+                        else:
+                            parents_dict[cat] = [parent_d]
+
+        return sorted(list(parents_dict.items()), key=lambda item: item[0].position)
+
+    def allow_associate_by(self, user_this):
+        """
+        Check if user_this is allowed to submit affiliate requests.
+        
+        If the connection is limited to the allowed connection, 
+        this user will need to have a valid membership with the
+        membership type is in the allowed types. 
+        """
+        affliated_cats = self.get_affliated_cats()
+
+        if affliated_cats:
+            if user_this.is_superuser:
+                return True
+
+            # check if user_this is the owner of a directory with the category in affliated_cats
+            for directory in Directory.objects.filter(cats__in=affliated_cats):
+                if directory.is_owner(user_this):
+                    return True
+
+    def allow_approve_affiliations_by(self, user_this):
+        """
+        Check if user_this is allowed to approve affiliate requests.
+        
+        Superuser or the directory owner can approve.
+        The directory owners include creator, owner, and associated corp reps.
+        """
+        if not user_this or not user_this.is_authenticated:
+            return False
+
+        if user_this.is_superuser:
+            return True
+
+        # is creator or owner
+        if user_this == self.creator or user_this == self.owner:
+            return True
+
+        # is a corp rep
+        if hasattr(self, 'corpprofile'):
+            if self.corpprofile.reps.filter(user__in=[user_this]):
+                return True
+
+        return False
+
+    def allow_reject_affiliations_by(self, user_this):
+        """
+        Check if user_this is allowed to reject affiliate requests.
+        
+        Superuser or the directory owner can reject.
+        The directory owners include creator, owner, and associated corp reps.
+        """
+        return self.allow_approve_affiliations_by(user_this)
+
+
+
+class Affiliateship(models.Model):
+    directory = models.ForeignKey(Directory, related_name='affiliateship_directories',
+                                      on_delete=models.CASCADE)
+    affiliate = models.ForeignKey(Directory, related_name='affiliateship_affiliate_directories',
+                                       on_delete=models.CASCADE)
+    connected_as = models.ForeignKey(Category, null=True, related_name='cat_affiliateships',
+                                       on_delete=models.CASCADE)
+    create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
+    creator = models.ForeignKey(User, null=True, default=None,
+                                on_delete=models.SET_NULL,
+                                editable=False)
+ 
+    class Meta:
+        unique_together = ('directory', 'affiliate', 'connected_as')
+        verbose_name = _("Directory Affiliateship")
+        ordering = ['directory', 'affiliate']
+        app_label = 'directories'
+
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
@@ -382,3 +581,4 @@ class DirectoryPricing(models.Model):
                 return self.regular_price
             else:
                 return self.premium_price
+

@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from tendenci.apps.site_settings.utils import get_setting
 from . import views
 from .feeds import LatestEntriesFeed
@@ -10,6 +10,7 @@ if not urlpath:
 
 urlpatterns = [
     url(r'^%s/$' % urlpath, views.search, name="directories"),
+    url(r'^%s/affiliates/' % urlpath, include('tendenci.apps.directories.affiliates.urls')),
     url(r'^%s/search/$' % urlpath, views.search_redirect, name="directory.search"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, views.print_view, name="directory.print_view"),
     url(r'^%s/add/$' % urlpath, views.add, name="directory.add"),

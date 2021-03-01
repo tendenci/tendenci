@@ -24,3 +24,32 @@ can have one or more subcategories.
 The categories and subcategories added at admin backend will then show in the category and subcategory dropdowns respectively
 on directory add and edit. You can assign one or multiple categories and subcategories to a directory.
 
+
+Affiliations
+~~~~~~~~~~~~
+
+Steps to set up directory affiliations on your site:
+
+1. Turn on the setting "Affiliates Enabled" https://www.example.com/settings/module/directories/#id_affiliates_enabled. 
+
+2. Specify the allowed connections at admin backend for directories https://www.example.com/admin/directories/connection/. 
+
+2. Update the templates `directories/meta.html` and `directories/view.html` if they're pulled down 
+to your site.
+For directories/meta.html, add this block of code:
+::
+
+    {% if directory.status_detail == 'active' %}
+        {% include "directories/include/affiliates_display.html" %}
+    {% endif %}
+
+At the bottom of directories/view.html, include:
+::
+
+    {% block extra_body %}
+        {{ block.super }}
+        {% include "directories/include/affiliates_js.html" %}
+    {% endblock %}
+
+
+Notifications can be pulled down to your site to customize.
