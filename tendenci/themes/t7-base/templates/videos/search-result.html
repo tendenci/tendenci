@@ -15,7 +15,7 @@
     </a>
     <h4 title="{{ video.title }}"><a href="{{ video.get_absolute_url }}">
       {{ video.title|truncatewords:"6" }}</a></h4>
-    <div>{{ video.description|safe|truncatewords_html:"20" }}</div>
+    <div>{{ video.description|striptags|safe|truncatewords:"15" }}</div>
   </div>
   
 </div>
