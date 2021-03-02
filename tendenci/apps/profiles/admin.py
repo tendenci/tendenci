@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+from django.utils.translation import ngettext
+from django.contrib import messages
 
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
@@ -131,6 +133,20 @@ class MyUserAdmin(UserAdmin):
     def show_member_number(self, instance):
         [member_number] = Profile.objects.filter(user=instance).values_list('member_number', flat=True)[:1] or ['']
         return member_number
+
+    def has_delete_permission(self, request, obj=None):
+        result = super(MyUserAdmin, self).has_delete_permission(request, obj=obj)
+
+        if obj:
+            num_rps = obj.recurring_payments.filter(status=True, status_detail='active').count()
+            if num_rps > 0:
+                self.message_user(request, ngettext(
+                    f'This user "{obj}" has {num_rps} recurrent payment associated with, it cannot be deleted.',
+                    f'This user "{obj}" has {num_rps} recurrent payments associated with, it cannot be deleted.',
+                    num_rps,
+                ), messages.ERROR)
+                return False
+        return result
 
     show_member_number.short_description = 'Member number'
     show_member_number.admin_order_field = 'profile__member_number'
