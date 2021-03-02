@@ -373,7 +373,15 @@
         </div>
 
         {% endif %}
-        
+
+        {% if recurring_payments %}
+		 {% if request.user.is_superuser or request.user == profile.user %}
+        <h3>{% trans "Recurring Payments" %}</h3>
+		{% for rp in recurring_payments %}
+		<div><a href="{% url 'recurring_payment.view_account' rp.id %}">{{ rp.description }}</a></div>
+		{% endfor %}
+        {% endif %}
+        {% endif %}
         
         {% latest_contributions user_this as contributions %}
         {% if  contributions %}

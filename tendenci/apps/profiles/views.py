@@ -169,6 +169,7 @@ def index(request, username='', template_name="profiles/index.html"):
 
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
     corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
+    recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
     return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
@@ -188,6 +189,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'membership_reminders': membership_reminders,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
+        'recurring_payments': recurring_payments
         })
 
 
