@@ -1,3 +1,14 @@
+### 12.4.6 [2021-03-03]
+
+* Fixed a KeyError for resumes add at admin backend 
+* Adjusted video description on videos search to resolve a layout issue.
+* The associated recurrent payments, if any, now shows on user profiles.
+* Avoided users with recurrent payments being deleted 
+* Tracked errors with logging for the management command `make_recurring_payment_transactions`.
+* Removed wp_importer and wp_exporter 
+* Fixed an AttributeError in newsletters. 
+
+
 ### 12.4.5 [2021-03-01]
 
 * Added affiliations functionality in directories.
