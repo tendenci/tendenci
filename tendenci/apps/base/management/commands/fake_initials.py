@@ -100,8 +100,6 @@ class Command(BaseCommand):
                 'theme_editor',
                 'versions',
                 'videos',
-                'wp_exporter',
-                'wp_importer',
                 'djcelery',
                 'tastypie'
                 )

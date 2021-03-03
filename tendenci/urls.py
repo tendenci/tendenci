@@ -75,8 +75,6 @@ urlpatterns += [
     url(r'^redirects/', include('tendenci.apps.redirects.urls')),
     url(r'^mobile/', include('tendenci.apps.mobile.urls')),
     url(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
-    url(r'^wp_importer/', include('tendenci.apps.wp_importer.urls')),
-    url(r'^wp_exporter/', include('tendenci.apps.wp_exporter.urls')),
     url(r'^discounts/', include('tendenci.apps.discounts.urls')),
     url(r'^versions/', include('tendenci.apps.versions.urls')),
     url(r'^reports/', include('tendenci.apps.reports.urls')),
