@@ -379,11 +379,11 @@ footer {
 select#id_event_type {
   height: 36px;
 }
-#page-top iframe#id_organizer-description_ifr,
+/*#page-top iframe#id_organizer-description_ifr,
 #page-top iframe#id_place-description_ifr,
 iframe#speaker-0-description_ifr {
     height: 100px !important;
-}
+}*/
 
 
 
