@@ -1425,7 +1425,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         if d['use_custom_reg_form'] == '1' and d['bind_reg_form_to_conf_only'] == '1':
             if d['reg_form_id'] == '0':
                 raise forms.ValidationError(_('Please choose a custom registration form'))
-        return ','.join(data_list)
+        return value
 
     def clean_gratuity_options(self):
         value = self.cleaned_data['gratuity_options']
@@ -1502,6 +1502,9 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     self.instance.reg_form = reg_form
                 else:
                     self.instance.reg_form = None
+        else:
+            if self.instance.use_custom_reg_form == '':
+                self.instance.use_custom_reg_form = False
 
         return super(Reg8nEditForm, self).save(*args, **kwargs)
 
