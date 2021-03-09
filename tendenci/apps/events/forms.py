@@ -970,6 +970,18 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
     label = _('Location Information')
 
+    field_order = [
+                'place',
+                'name',
+                'description',
+                'address',
+                'city',
+                'state',
+                'zip',
+                'country',
+                'url',
+            ]
+
     class Meta:
         model = Place
         # django 1.8 requires fields or exclude
@@ -988,17 +1000,6 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         if self.fields.get('place'):
             self.fields.get('place').choices = choices
 
-        self.fields.keyOrder = [
-            'place',
-            'name',
-            'description',
-            'address',
-            'city',
-            'state',
-            'zip',
-            'country',
-            'url',
-        ]
         if self.instance.id:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
