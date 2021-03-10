@@ -1,3 +1,13 @@
+### 12.4.7 [2021-03-10]
+
+* Adjusted the order of fields for event location section on events add/edit
+* Updated the help text of some fields for custom forms.
+* Added an option (/settings/module/users/#id_showindustry) to show industry on profiles search and view.
+* Added the industry field to resumes.
+* Fixed an issue about tinymce fullscreen not working properly on event organizer, location and speaker
+* Fixed some issues in events edit when changes applied to all recurring events in series.
+
+
 ### 12.4.6 [2021-03-03]
 
 * Fixed a KeyError for resumes add at admin backend 
