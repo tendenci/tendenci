@@ -112,9 +112,9 @@ class Form(TendenciBaseModel):
     send_email = models.BooleanField(_("Send email"), default=False,
         help_text=_("If checked, the person submitting the form will be sent an email."))
     email_from = models.EmailField(_("Reply-To address"), blank=True,
-        help_text=_("The address the replies to the email will be sent to"))
+        help_text=_("Used as the Reply-to email address in the email to the submitter."))
     email_copies = models.CharField(_("Send copies to"), blank=True,
-        help_text=_("One or more email addresses, separated by commas"),
+        help_text=_("One or more email addresses for form recipients, separated by commas"),
         max_length=2000)
     completion_url = models.CharField(_("Completion URL"), max_length=1000, blank=True, null=True,
         help_text=_("Redirect to this page after form completion. Absolute URLS should begin with http. Relative URLs should begin with a forward slash (/)."))

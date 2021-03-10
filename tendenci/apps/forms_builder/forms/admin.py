@@ -79,7 +79,7 @@ class FormAdmin(TendenciBaseModelAdmin):
 
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", 'group', "template")}),
-        (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
+        (_("Email"), {"fields": ('subject_template', "email_copies", "send_email", "email_from", "email_text")}),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
