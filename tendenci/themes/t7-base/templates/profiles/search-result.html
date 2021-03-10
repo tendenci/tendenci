@@ -63,6 +63,9 @@
 
                         {% if membership.membership_type %}
                             <b>{% trans "Membership Type:" %}</b> <span style="white-space:nowrap">{{ membership.membership_type }}</span><br />
+                            {% if show_industry and membership.industry %}
+								<b>{% trans "Industry:" %}</b> <span style="white-space:nowrap">{{ membership.industry }}</span><br />
+							{% endif %}
                         {% endif %}
 
                         {% if membership.status_detail %}

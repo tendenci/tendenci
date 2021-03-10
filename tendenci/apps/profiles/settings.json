@@ -135,6 +135,23 @@
         "store": true,
         "updated_by": ""
     },
+	{
+        "default_value": "false",
+        "description": "If true, industries, if available, will be displayed on the member profiles search and view.",
+        "data_type": "boolean",
+        "update_dt": "2021-03-10 11:05:12",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "showindustry",
+        "value": "false",
+        "label": "Show Industry on Member Profiles",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "users",
+        "store": true,
+        "updated_by": ""
+    },
     {
         "default_value": "true",
         "description": "Hide Remember Me defines whether or not to even display the Remember Me checkbox on login pages.",

@@ -21,6 +21,7 @@ from tendenci.apps.profiles.utils import update_user
 from tendenci.apps.base.utils import get_languages_with_local_name
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.industries.models import Industry
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -66,6 +67,7 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
                                      initial=True, required=False)
     membership_type = forms.IntegerField(required=False)
     group = forms.IntegerField(required=False)
+    industry = forms.IntegerField(required=False)
     search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
                                         required=False)
     search_text = forms.CharField(max_length=100, required=False)
@@ -99,6 +101,16 @@ class ProfileSearchForm(FormControlWidgetMixin, forms.Form):
         self.fields['group'].widget = forms.widgets.Select(
                                     choices=group_choices)
         self.fields['group'].widget.attrs.update({'class': 'form-control'})
+        # industry
+        if get_setting('module', 'users', 'showindustry'):
+            industry_choices = [(0, _('SELECT ONE'))] + list(Industry.objects.filter(
+                            status=True, status_detail="active").order_by('position', '-update_dt'
+                            ).values_list('pk', 'industry_name'))
+            self.fields['industry'].widget = forms.widgets.Select(
+                                    choices=industry_choices)
+            self.fields['industry'].widget.attrs.update({'class': 'form-control'})
+        else:
+            del self.fields['industry']
 #         for field in self.fields:
 #             if field not in ['search_criteria', 'search_text', 'search_method', 'member_only']:
 #                 self.fields[field].widget.attrs.update({'class': 'form-control'})

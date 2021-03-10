@@ -24,37 +24,65 @@
        </div>
     </div>
 
-	{% if not memberships_search %}
-    {% if show_member_option %}
-    <div class="col-sm-6 form-group">
-    	<div class="col-sm-offset-4 col-sm-8">
-	         <div class="checkbox">
-	        <label>
-	          {{ search_form.member_only }} {{ search_form.member_only.label }}
-	        </label>
-	     </div>
-      </div>
-    </div> 
-	{% endif %}
-    {% endif %} 
-</div>
-
-<div class="row">
 	<div class="col-sm-6 form-group">
     <label for="id_last_name" class="col-sm-4 control-label">{{ search_form.group.label }}</label>
     	<div class="col-sm-8">
         {{ search_form.group }}
         </div>
-    </div>
-	{% if show_member_option %}
-    <div class="col-sm-6 form-group">
-    <label for="id_last_name" class="col-sm-4 control-label">{{ search_form.membership_type.label }}</label>
-    	<div class="col-sm-8">
-        {{ search_form.membership_type }}
-        </div>
-    </div>
-    {% endif %}
+    </div>	
 </div>
+
+
+{% if show_member_option %}
+
+	<div class="row">	
+	    <div class="col-sm-6 form-group">
+	    <label for="id_last_name" class="col-sm-4 control-label">{{ search_form.membership_type.label }}</label>
+	    	<div class="col-sm-8">
+	        {{ search_form.membership_type }}
+	        </div>
+	    </div>
+		{% if show_industry %}
+	    <div class="col-sm-6 form-group">
+	    <label for="id_last_name" class="col-sm-4 control-label">{{ search_form.industry.label }}</label>
+	    	<div class="col-sm-8">
+	        {{ search_form.industry }}
+	        </div>
+	    </div>
+
+		{% else %} 
+			{% if not memberships_search %} {# put the checkbox here if the industry field is NOT presented #}
+			<div class="row">
+			    <div class="col-sm-6 form-group">
+			    	<div class="col-sm-offset-4 col-sm-8">
+				         <div class="checkbox">
+				        <label>
+				          {{ search_form.member_only }} {{ search_form.member_only.label }}
+				        </label>
+				     </div>
+			      </div>
+			    </div> 
+			</div>
+			{% endif %} 
+			
+	    {% endif %} 
+	</div>
+	
+	{% if show_industry and not memberships_search %} {# put the checkbox here if the industry field is presented #}
+	<div class="row">
+	    <div class="col-sm-6 form-group">
+	    	<div class="col-sm-offset-4 col-sm-8">
+		         <div class="checkbox">
+		        <label>
+		          {{ search_form.member_only }} {{ search_form.member_only.label }}
+		        </label>
+		     </div>
+	      </div>
+	    </div> 
+	</div>
+	{% endif %} 
+
+{% endif %} 
 
 <div class="row form-inline">
     <div class="col-md-12 form-group">

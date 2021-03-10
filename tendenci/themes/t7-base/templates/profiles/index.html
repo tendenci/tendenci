@@ -146,11 +146,21 @@
               <td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
             </tr>
             {% endif %}
+
+			{% if industries %}
+				<tr>
+				 <td><strong>{% trans 'Industry' %}</strong></td>
+				 <td>
+				{% for industry in industries %}
+					<span>{{ industry }}</span>{% if not forloop.last %}, {% endif %}
+		        {% endfor %}
+				 </td>
+				</tr>
+			{% endif %}
             
           </table>
         </div>
-        
-        
+
         {% if request.user.profile.is_superuser %}
         <h3> {% trans 'Admin Notes' %} </h3>
         <p>

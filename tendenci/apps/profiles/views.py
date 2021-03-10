@@ -171,6 +171,12 @@ def index(request, username='', template_name="profiles/index.html"):
     corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
     recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
+    # industry
+    if memberships and get_setting('module', 'users', 'showindustry'):
+        industries = list(memberships.exclude(industry=None).values_list('industry__industry_name', flat=True))
+    else:
+        industries = None
+
     return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
         "user_this": user_this,
@@ -181,6 +187,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
         'memberships': memberships,
+        'industries': industries,
         'directories': directories,
         'corps_list': corps_list,
         'registrations': registrations,
@@ -248,6 +255,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         mts = None
 
     show_member_option = mts
+    show_industry = get_setting('module', 'users', 'showindustry')
 
     form = ProfileSearchForm(request.GET, mts=mts, user=request.user)
     if form.is_valid():
@@ -262,6 +270,9 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         group = form.cleaned_data.get('group', False)
         if group:
             group = int(group)
+        industry = form.cleaned_data.get('industry', False)
+        if industry:
+            industry = int(industry)
     else:
         first_name = None
         last_name = None
@@ -272,6 +283,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         membership_type = None
         member_only = False
         group = False
+        industry = False
 
     profiles = Profile.objects.filter(Q(status=True))
     if memberships_search:
@@ -355,6 +367,10 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.filter(user__membershipdefault__status_detail='active',
             user__membershipdefault__membership_type_id=membership_type)
 
+    if industry:
+        profiles = profiles.filter(user__membershipdefault__status_detail='active',
+            user__membershipdefault__industry_id=industry)
+
     profiles = profiles.order_by('user__last_name', 'user__first_name')
     base_template = 'profiles/base-wide.html'
     if memberships_search:
@@ -367,6 +383,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
+            'show_industry': show_industry,
             'memberships_search': memberships_search,
             'base_template': base_template})
 
