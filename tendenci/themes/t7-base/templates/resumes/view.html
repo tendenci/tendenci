@@ -97,6 +97,14 @@
                 </section>
             {% endif %}
 
+			{% if resume.industry %}
+                <section class="t-resumes-resume-industry">
+                    <h2>{% trans "Industry" %}</h2>
+                    <p>{{ resume.industry }}</p>
+                </section>
+            {% endif %}
+
+
             {% if resume.location %}
                 <section class="t-resumes-resume-location">
                     <h2>{% trans "Location" %}</h2>

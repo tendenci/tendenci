@@ -19,7 +19,15 @@
         <div class="forms">
         <form enctype="multipart/form-data" class="form-horizontal" action="{% url "resume.add" %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_RESUMES_LABEL trans 'Resume' %}" />
+
+			<div>&nbsp;</div>
+			<div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">
+                    {% trans 'Add' %} {% firstof MODULE_RESUMES_LABEL trans 'Resume' %}
+                </button>
+            </div>
+        	</div>
         </form>
         </div>
     </div>

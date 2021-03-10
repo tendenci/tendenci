@@ -17,6 +17,7 @@ class ResumeAdmin(TendenciBaseModelAdmin):
                      'description',
                      'resume_url',
                      'resume_file',
+                     'industry',
                      'location',
                      'skills',
                      'experience',
