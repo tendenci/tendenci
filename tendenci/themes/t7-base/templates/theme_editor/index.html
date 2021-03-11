@@ -24,6 +24,14 @@
 {% if current_file %}
 <div class="file_attrs"><big><b>{% if theme_read_only %}{% trans 'Currently Viewing' %}{% else %}{% trans "Currently Editing" %}{% endif %}</b> <span class="highlight">{{ current_file_path }}</span></big></div>
 {% endif %}
+
+{% if reload_required %}
+<div class="alert alert-warning alert-dismissible" role="alert">
+<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+   {% trans "Please note that the template caching is on which means a site reload is needed to have your changes to take effect. Contact your service provider if needed." %}
+</div>
+{% endif %}
+
 <table class="table" id="file-editor" width="100%">
     <tr>
         <td width="20%" valign="top">
