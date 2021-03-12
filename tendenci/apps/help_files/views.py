@@ -74,7 +74,7 @@ def topic(request, id, template_name="help_files/topic.html"):
 def faqs(request, template_name="help_files/faqs.html"):
     """ List of FAQ help files """
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
-    help_files = HelpFile.objects.filter(filters).filter(is_faq=True).distinct()
+    help_files = HelpFile.objects.filter(filters).filter(is_faq=True).distinct().order_by('id')
     if not request.user.is_anonymous:
         help_files = help_files.select_related()
 
