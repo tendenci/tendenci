@@ -183,7 +183,7 @@ class EventSearchForm(forms.Form):
                 self.fields[field].widget.attrs.update({'class': class_attr})
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventSearchForm, self).clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
@@ -212,7 +212,7 @@ class EventSimpleSearchForm(forms.Form):
             self.fields['search_category'].choices = SEARCH_CATEGORIES
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventSimpleSearchForm, self).clean()
         q = self.cleaned_data.get('q', None)
         cat = self.cleaned_data.get('search_category', None)
 
@@ -263,7 +263,7 @@ class CustomRegFormForField(forms.ModelForm):
         exclude = ["position"]
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(CustomRegFormForField, self).clean()
         field_function = cleaned_data.get("field_function")
         field_type = cleaned_data.get("field_type")
         choices = cleaned_data.get("choices")
@@ -843,7 +843,7 @@ class EventForm(TendenciBaseForm):
         return end_recurring
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(EventForm, self).clean()
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
         start_event_date = cleaned_data.get('start_event_date')
@@ -970,6 +970,18 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
     label = _('Location Information')
 
+    field_order = [
+                'place',
+                'name',
+                'description',
+                'address',
+                'city',
+                'state',
+                'zip',
+                'country',
+                'url',
+            ]
+
     class Meta:
         model = Place
         # django 1.8 requires fields or exclude
@@ -988,17 +1000,6 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
         if self.fields.get('place'):
             self.fields.get('place').choices = choices
 
-        self.fields.keyOrder = [
-            'place',
-            'name',
-            'description',
-            'address',
-            'city',
-            'state',
-            'zip',
-            'country',
-            'url',
-        ]
         if self.instance.id:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
@@ -1425,7 +1426,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
         if d['use_custom_reg_form'] == '1' and d['bind_reg_form_to_conf_only'] == '1':
             if d['reg_form_id'] == '0':
                 raise forms.ValidationError(_('Please choose a custom registration form'))
-        return ','.join(data_list)
+        return value
 
     def clean_gratuity_options(self):
         value = self.cleaned_data['gratuity_options']
@@ -1502,6 +1503,9 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     self.instance.reg_form = reg_form
                 else:
                     self.instance.reg_form = None
+        else:
+            if self.instance.use_custom_reg_form == '':
+                self.instance.use_custom_reg_form = False
 
         return super(Reg8nEditForm, self).save(*args, **kwargs)
 
@@ -2080,7 +2084,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
             if limit > 0:
                 pricings_total_cap = 0
                 for form in self.forms:
-                    pricings_total_cap += form.cleaned_data['registration_cap']
+                    pricings_total_cap += form.cleaned_data.get('registration_cap', 0)
                 if pricings_total_cap > limit:
                     raise forms.ValidationError(_('The registration limit set for this event is {0}, but the total limit specified for each pricing is {1}'.format(limit, pricings_total_cap)))
         return return_data

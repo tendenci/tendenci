@@ -214,7 +214,7 @@ class MembershipTypeForm(TendenciBaseForm):
                                                                     fields_pos_d=fields_pos_d)
 
     def clean(self):
-        cleaned_data = self.cleaned_data
+        cleaned_data = super(MembershipTypeForm, self).clean()
         # Make sure Expiretion Grace Period <= Renewal Period End
         expiration_grace_period = self.cleaned_data['expiration_grace_period']
         renewal_period_end = self.cleaned_data['renewal_period_end']
@@ -332,7 +332,9 @@ class MessageForm(FormControlWidgetMixin, forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('subject', 'body',)
+        fields = ('subject', 'body',
+                  'sender_display',
+                  'reply_to',)
 
     def __init__(self, *args, **kwargs):
         super(MessageForm, self).__init__(*args, **kwargs)

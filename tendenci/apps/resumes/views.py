@@ -85,6 +85,9 @@ def search(request, template_name="resumes/search.html"):
         search_text = form.cleaned_data['search_text']
         search_method = form.cleaned_data['search_method']
         grid_view = form.cleaned_data['grid_view']
+        industry = form.cleaned_data.get('industry', None)
+        if industry:
+            industry = int(industry)
     else:
         first_name = None
         last_name = None
@@ -93,6 +96,7 @@ def search(request, template_name="resumes/search.html"):
         search_text = None
         search_method = None
         grid_view = False
+        industry = None
     
     if grid_view:
         num_items = 50
@@ -100,11 +104,11 @@ def search(request, template_name="resumes/search.html"):
         num_items = 10
                 
     if first_name:
-        resumes = resumes.filter(first_name__iexact=first_name)
+        resumes = resumes.filter(first_name__istartswith=first_name)
     if last_name:
-        resumes = resumes.filter(last_name__iexact=last_name)
+        resumes = resumes.filter(last_name__istartswith=last_name)
     if email:
-        resumes = resumes.filter(contact_email__iexact=email)
+        resumes = resumes.filter(contact_email__istartswith=email)
 
     if search_criteria and search_text:
         search_type = '__iexact'
@@ -116,6 +120,9 @@ def search(request, template_name="resumes/search.html"):
         search_filter = {'%s%s' % (search_criteria,
                                    search_type): search_text}
         resumes = resumes.filter(**search_filter)
+
+    if industry:
+        resumes = resumes.filter(industry_id=industry)
 
     resumes = resumes.order_by('-create_dt')
 

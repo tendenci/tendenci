@@ -30,7 +30,7 @@ from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 
-from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.models import Directory, DirectoryPricing, Affiliateship
 from tendenci.apps.directories.models import Category as DirectoryCategory
 from tendenci.apps.directories.forms import (DirectoryForm, DirectoryPricingForm,
                                                DirectoryRenewForm, DirectoryExportForm)
@@ -47,9 +47,22 @@ def details(request, slug=None, template_name="directories/view.html"):
     if has_view_perm(request.user, 'directories.view_directory', directory) \
          or directory.has_membership_with(request.user):
         EventLog.objects.log(instance=directory)
-
+        
+        if get_setting('module', 'directories', 'affiliates_enabled'):
+            affiliates_list = directory.get_list_affiliates()
+            parents_list = directory.get_list_parent_directories()
+            # list of affiliate requests
+            affiliate_requests = directory.from_directory.all()
+        else:
+            affiliates_list = None
+            parents_list = None
+            affiliate_requests = None
+            
         return render_to_resp(request=request, template_name=template_name,
-            context={'directory': directory})
+            context={'directory': directory,
+                     'affiliates_list': affiliates_list,
+                     'parents_list': parents_list,
+                     'affiliate_requests': affiliate_requests})
 
     raise Http403
 
@@ -102,6 +115,10 @@ def search(request, template_name="directories/search.html"):
     directories = directories.order_by('headline')
 
     EventLog.objects.log()
+
+    if not get_setting('module', 'directories', 'showresultswithoutsearch'):
+        if "?" not in request.get_full_path():
+            directories = directories.none()
 
     return render_to_resp(request=request, template_name=template_name,
         context={'directories': directories,

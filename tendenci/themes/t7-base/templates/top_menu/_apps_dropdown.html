@@ -367,6 +367,13 @@
                                                     </a>
                                                 </li>
                                                {% endif %}
+                                               {% if MODULE_CHAPTERS_ENABLED %}
+                                                <li class="content-item">
+                                                    <a href="{% url 'chapters.search' %}"
+                                                        ><img class="nav-icon" src="{% static 'famfamfam/icons/chart_organisation.png' %}"/><span class="nav-label">{% trans 'Chapters' %}</span>
+                                                    </a>
+                                                </li>
+                                               {% endif %}
                                             </ul>
                                         </div>
                                     </div>

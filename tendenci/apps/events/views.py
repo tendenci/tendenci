@@ -946,7 +946,7 @@ def speaker_edit(request, id, form_class=SpeakerForm, template_name="events/edit
 #                                 speaker.event.remove(recur_event)
                             speaker.pk = None
                     speaker.save()
-                    speaker.event = recurring_events
+                    speaker.event.set(recurring_events)
 
                 speaker_ids = [speaker.pk for speaker in speakers]
                 for recur_event in recurring_events:
@@ -1066,6 +1066,7 @@ def regconf_edit(request, id, form_class=Reg8nEditForm, template_name="events/ed
                     recurring_events = recurring_events.filter(start_dt__gte=event.start_dt)
 
                 for cur_event in recurring_events:
+                    print(request.POST)
                     form_regconf2 = form_class(
                         request.POST, instance=cur_event.registration_configuration,
                         reg_form_queryset=reg_form_queryset, recurring_edit=True, prefix='regconf'
@@ -4613,7 +4614,8 @@ def import_add(request, form_class=ImportForm,
             EventLog.objects.log()
 
             # reset the password_promt session
-            del request.session['password_promt']
+            if 'password_promt' in request.session:
+                del request.session['password_promt']
 
             return HttpResponseRedirect(
                 reverse('event.import_preview', args=[import_i.id]))

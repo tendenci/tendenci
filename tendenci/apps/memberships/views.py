@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
 import simplejson
@@ -27,7 +27,6 @@ from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
@@ -137,7 +136,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')
@@ -219,13 +218,19 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
             with open(default_body_file_path) as fp:
                 default_body = fp.read()
 
-    form = form_class(request.POST or None, instance=email, initial={'subject': default_subject, 'body': default_body})
+    form = form_class(request.POST or None, instance=email, initial={
+        'subject': default_subject,
+        'body': default_body,
+        'sender_display': request.user.get_full_name(),
+        'reply_to': request.user.email})
     
     if request.method == "POST":
         if form.is_valid():
             email = form.save()
-            email.sender_display = request.user.get_full_name()
-            email.reply_to = request.user.email
+            if not email.sender_display:
+                email.sender_display = request.user.get_full_name()
+            if not email.reply_to:
+                email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "html"
             email.allow_anonymous_view = False
@@ -261,45 +266,13 @@ def message_pending_members(request, email_id=None, form_class=MessageForm, temp
     
                 return HttpResponseRedirect(reverse('membership.message_pending', args=([email.id])))
             else:
-                pending_members, total_sent = email_pending_members(email, recipient_type=email.recipient_type,
+                retn_content = email_pending_members(email, recipient_type=email.recipient_type,
                                                                     membership_type=membership_type,
-                                                                    corpmembership_type=corpmembership_type)
-                if email.recipient_type == 'pending_members':
-                    if not membership_type:
-                        dest = _('ALL pending members')
-                    else:
-                        dest = membership_type.name
-                else:
-                    if not corpmembership_type:
-                        dest = _('ALL pending corp members')
-                    else:
-                        dest = corpmembership_type.name
-                opts = {}
-                opts['summary'] = '<font face=""Arial"" color=""#000000"">'
-                opts['summary'] += 'Emails sent to {0} ({1})</font><br><br>'.format(dest, total_sent)
-                opts['summary'] += '<font face=""Arial"" color=""#000000"">'
-                opts['summary'] += 'Email Sent Appears Below in Raw Format'
-                opts['summary'] += '</font><br><br>'
-                opts['summary'] += email.body
-    
-                # send summary
-                email.subject = 'SUMMARY: %s' % email.subject
-                email.body = opts['summary']
-                email.recipient = request.user.email
-                email.send()
-    
+                                                                    corpmembership_type=corpmembership_type,
+                                                                    request=request)
+
                 EventLog.objects.log(instance=email)
-                msg_string = 'Successfully sent email "%s" to pending members (%d).' % (subject, total_sent)
-                messages.add_message(request, messages.SUCCESS, msg_string)
-                
-                template_name='memberships/message/pending-members-conf.html'
-    
-                return render_to_resp(request=request, template_name=template_name,
-                          context={'total_sent': total_sent,
-                                   'pending_members': pending_members,
-                                   'recipient_type': email.recipient_type,
-                                   'membership_type': membership_type,
-                                   'corpmembership_type': corpmembership_type})
+                return StreamingHttpResponse(streaming_content=retn_content)
 
 
     return render_to_resp(request=request, template_name=template_name,
@@ -1580,7 +1553,7 @@ def membership_default_edit(request, id, template='memberships/applications/add.
     # get the fields for the app
     app_fields = app.fields.filter(display=True)
 
-    if not request.user.profile.is_superuser:
+    if not has_perm(request.user, 'memberships.approve_membershipdefault'):
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('position')

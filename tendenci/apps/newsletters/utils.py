@@ -58,9 +58,17 @@ def get_newsletter_connection():
 
 
 def is_newsletter_relay_set():
-    return all([settings.NEWSLETTER_EMAIL_HOST,
-                settings.NEWSLETTER_EMAIL_HOST_USER,
-                settings.NEWSLETTER_EMAIL_HOST_PASSWORD])
+    connection = settings.NEWSLETTER_EMAIL_BACKEND
+    if connection == "django_ses.SESBackend":
+        if hasattr(settings, 'AWS_SES_ACCESS_KEY_ID') and hasattr(settings, 'AWS_SES_SECRET_ACCESS_KEY'):
+            return all([settings.AWS_SES_ACCESS_KEY_ID,
+                    settings.AWS_SES_SECRET_ACCESS_KEY]) 
+        return all([settings.AWS_ACCESS_KEY_ID,
+                    settings.AWS_SECRET_ACCESS_KEY])
+    else:
+        return all([settings.NEWSLETTER_EMAIL_HOST,
+                    settings.NEWSLETTER_EMAIL_HOST_USER,
+                    settings.NEWSLETTER_EMAIL_HOST_PASSWORD])
 
 
 def newsletter_articles_list(request, articles_days, simplified):

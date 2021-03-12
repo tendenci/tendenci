@@ -8,6 +8,7 @@ class DirectoriesConfig(AppConfig):
 
     def ready(self):
         super(DirectoriesConfig, self).ready()
+        from tendenci.apps.directories.affiliates import models
         from tendenci.apps.directories.signals import init_signals, create_notice_types
         init_signals()
         post_migrate.connect(create_notice_types, sender=self)

@@ -1,3 +1,121 @@
+### 12.4.7 [2021-03-10]
+
+* Adjusted the order of fields for event location section on events add/edit
+* Updated the help text of some fields for custom forms.
+* Added an option (/settings/module/users/#id_showindustry) to show industry on profiles search and view.
+* Added the industry field to resumes.
+* Fixed an issue about tinymce fullscreen not working properly on event organizer, location and speaker
+* Fixed some issues in events edit when changes applied to all recurring events in series.
+
+
+### 12.4.6 [2021-03-03]
+
+* Fixed a KeyError for resumes add at admin backend 
+* Adjusted video description on videos search to resolve a layout issue.
+* The associated recurrent payments, if any, now shows on user profiles.
+* Avoided users with recurrent payments being deleted 
+* Tracked errors with logging for the management command `make_recurring_payment_transactions`.
+* Removed wp_importer and wp_exporter 
+* Fixed an AttributeError in newsletters. 
+
+
+### 12.4.5 [2021-03-01]
+
+* Added affiliations functionality in directories.
+* Fixed an issue about data is passed via get not post for the paypal thankyou page.
+
+### 12.4.4 [2021-02-24]
+
+* Removed the `urlize` filter from the template events/view.html that is pulled down to the sites.
+* Made `name` to be the default category selection (Thanks @lgm527).
+* Changed both imageMaxWidth and imageMaxHeight to 2400 (was 1200 as the default) for image upload in wysiwyg editor.
+* Added django-admin-rangefilter. 
+* Added an option to directories search to display search results without search (Thanks @lgm527).
+* Removed `urlize` filter from forms/form_sent.html
+* Fixed a js issue about not being able to add officers to chapters and committees.
+
+
+### 12.4.3 [2021-02-09]
+
+* Updated user profile to show corporation(s) a user is a representative of. 
+* Added Apply Date and Renewal Date to options for When to Send on the corporate memberships member notice. 
+* Fixed some issues for redirects. 
+
+
+### 12.4.2 [2021-02-05]
+
+Removed the `urllize` filter from the description of event speakers, organizer and sponsors, because it is not needed for those fields with wysiwyg editor.
+
+
+### 12.4.1 [2021-02-04]
+
+* Removed "delete" option and added "inactivate" to the Action dropdown for navs to avoid being accidentally deleted.
+* Added settings for study groups
+* Added the help text for the directory Name field to clearly show this is the public name of the company, not the name of the person filling it out.
+* Allowed users who have approve permission to view and edit admin-only fields as the designated approvers need to be able to view and edit these fields.
+* Added required attribute for radio field type if needed
+* Updated FormControlWidgetMixin to exclude multiplehiddeninput and hiddeninput.
+* Updated admin view for the payments
+* Django_ses.SESBackend conditional added to newletter relay function (Thanks @robbierobs)
+* Updated django to 2.2.18
+* Updated Pillow to 8.1.8
+* Updated django-storages to 1.11.1
+* Updated xhtml2pdf to 0.2.5
+* Fixed an IntegrityError on membership type add when a name exists already. Updated the clean method for some forms as well to ensure it is loaded from super call to avoid missing validation from super class.
+* Fixed upload not working for photos with metadata
+* Fixed some format issues for payment view page
+* Fixed an KeyError on events pricing edit
+
+
+### 12.4 [2021-01-12]
+
+* Added the chapters module
+* Removed the "exact match" from profiles search and updated search form format.
+* Created the template tag list_jobs_categories. 
+* Added title, location and skills fields to jobs search.
+* Added sender_display and reply_to to email to pending members. 
+* Added canonical url to /news/, /articles/ and /events/. 
+* Updated dashboard to show the last three Tendenci blog posts. 
+* Added tokens to email sent via groups and newsletters.
+* Added the option to have pending and/or active reps groups based on corp membership types.
+* Updated Help files: 1) Set to pending for help files added by regular user. 2) Added email notification if added by non-superuser. 3) Fixed top menu for add/edit pages (was showing Articles instead of Help Files).
+* Restricted corp profile link on directory view to owner and admins only
+* Enabled user to edit directory they are member of (Thanks @yehuda-elementryx)
+* Fixed category and subcategory for directories meta title and description 
+* Made email fail mode configurable (Thanks @bernd-wechner)
+* Removed directory creator from metadata (Thanks @robbierobs and @evanspaeder)
+* Allowed superuser or reps or users with view_corpprofile perms to view their corp profile
+* Resolved timing out for email to pending members 
+* Updated boto3 version to 1.16.43 
+* Removed unnecessary duplication in forms menu (Thanks @bernd-wechner)
+* Made the officers table headings bold by default for committees. (Thanks @bernd-wechner)
+* Added the default fixture for industries
+* Fixed search not working for committees and chapters 
+* Fixed the issue about default not working in custom forms for boolean field
+* Fixed a bug for users with userid 0 (Thanks @bernd-wechner)
+* Updated the select boxes on member add for user groups (Thanks @bernd-wechner)
+* Updated profiles search to support searching for members NOT in any groups (Thanks @bernd-wechner)
+* Fixed header on group detail page (Thanks @bernd-wechner)
+* Added Membership Types to the Community menu (Thanks @bernd-wechner)
+* Support for timeless dates on membership cards (Thanks @bernd-wechner)
+* Added Members to Apps/Organization menu (Thanks @bernd-wechner)
+* Added membership type to member cards (Thanks @bernd-wechner)
+* Fixed unrestricted deserialization for helpdesk
+* Fixed members search showing Users menu instead of Membership menu.
+* Updated the description of the Primary Keywords setting 
+* Updated email to pending members to allow for segmenting based on membership types.
+* Allowed users with directories change permissions to view pending directories.
+* Allowed users with profiles change permissions to access users search and similar users list.
+* Extended truncated summary and body for directories/marketplace search results (Thanks @robbierobs)
+* Fixed some issues in recurring payment for authorizenet.
+* Changed h1 tags to h3 tags for news headline on news search page.
+* Updated recurring payment details page. 
+* Fixed import username limit (Thanks @evanspaeder)
+* Fixed some issues for event minimal_add 
+* Resolved permission bits not being saved for membership apps
+* Fixed a bug in forms module
+
+
 ### 12.3.3 [2020-11-17]
 
 * Updated similar users list to be case-insensitive.

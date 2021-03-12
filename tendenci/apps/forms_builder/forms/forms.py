@@ -275,7 +275,7 @@ class FormAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.model_name.lower()}))
 
-    email_text = forms.CharField(required=False, label=_('Confirmation Text'),
+    email_text = forms.CharField(required=False, label=_('Email Text to Submitter'),
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Form._meta.app_label,
         'storme_model':Form._meta.model_name.lower()}))

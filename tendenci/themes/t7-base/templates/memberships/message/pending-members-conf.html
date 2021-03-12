@@ -30,3 +30,15 @@
 	</ol>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+<script type="text/javascript">  
+    (function($) {
+        $('#m-streaming-content').remove();
+     })(jQuery);
+ </script>
+
+{% endblock %}
+

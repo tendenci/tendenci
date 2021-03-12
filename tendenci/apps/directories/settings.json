@@ -222,6 +222,23 @@
     },
 	{
         "default_value": "false",
+        "description": "Affiliates is enabled or not.",
+        "data_type": "boolean",
+        "update_dt": "2020-10-27 15:00:00",
+        "input_type": "select",
+        "client_editable": false,
+        "name": "affiliates_enabled",
+        "value": "false",
+        "label": "Affiliates Enabled",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "directories",
+        "store": true,
+        "updated_by": ""
+    },
+	{
+        "default_value": "false",
         "description": "If true, directory subcategories will not show up.",
         "data_type": "boolean",
         "update_dt": "2020-11-09 15:19:13",
@@ -236,5 +253,22 @@
         "scope_category": "directories",
         "store": true,
         "updated_by": " "
+    },
+    {
+        "default_value": "true",
+        "description": "By default, display search results without search on directories search page (default true)",
+        "data_type": "boolean",
+        "update_dt": "2021-02-19 11:48:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "showresultswithoutsearch",
+        "value": "true",
+        "label": "Display Search Results Without Search",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "directories",
+        "store": false,
+        "updated_by": ""
     }
 ]

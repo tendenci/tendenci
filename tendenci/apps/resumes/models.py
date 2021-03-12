@@ -15,6 +15,7 @@ from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.resumes.module_meta import ResumeMeta
+from tendenci.apps.industries.models import Industry
 
 
 def file_directory(instance, filename):
@@ -33,6 +34,7 @@ class Resume(TendenciBaseModel):
     slug = SlugField(_('URL Path'), unique=True)
     description = tinymce_models.HTMLField()
 
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     location = models.CharField(max_length=500, blank=True)  # cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
     skills = models.TextField(blank=True)
     experience = models.TextField(blank=True)

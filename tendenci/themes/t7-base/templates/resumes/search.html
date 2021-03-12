@@ -62,7 +62,8 @@
         {% endif %}
     </h4>
 
-	{% if is_grid_view %}		 
+	{% if is_grid_view %}
+		{% if resumes %}		 
 			 <table class="table table-striped table-bordered">
 			 <tr>
 				 <th>{% trans "Title" %}</th>
@@ -72,6 +73,7 @@
 				 <th>{% trans "Resume URL" %}</th>
 				 <th>{% trans "Resume File" %}</th>
 				 <th>{% trans "Location" %}</th>
+				<th>{% trans "Industry" %}</th>
 			 </tr>
 			 {% for resume in resumes %}
 			 	{% with is_linkedin_url=resume.is_linkedin_url %}
@@ -114,11 +116,12 @@
                      {% endif %}
 					</td>
 					<td>{{ resume.location }}</td>
+					<td>{% if resume.industry %} {{ resume.industry }}{% endif %}</td>
 				</tr>
 				{% endwith %}
 		     {% endfor %}
 			 </table>
-	
+		{% endif %}
 	{% else %}		 
 	    <section>
 	        {% for resume in resumes %}

@@ -787,9 +787,10 @@ class MembershipTypeAdmin(TendenciBaseModelAdmin):
             group.label = instance.name
             group.type = 'system_generated'
             group.email_recipient = request.user.email
-            group.show_as_option = 0
-            group.allow_self_add = 0
-            group.allow_self_remove = 0
+            group.show_as_option = False
+            group.allow_self_add = False
+            group.allow_self_remove = False
+            group.show_for_memberships = False
             group.description = "Auto-generated with the membership type. Used for membership only"
             group.notes = "Auto-generated with the membership type. Used for membership only"
             #group.use_for_membership = 1

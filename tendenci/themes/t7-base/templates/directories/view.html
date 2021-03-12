@@ -12,18 +12,19 @@
 
 {% block content %}
     <article id="t-directories-directory-{{ directory.pk }}" class="t-directories-directory">
+	{% with directory|is_directory_owner_with_membership:user as directory_owner_with_membership %}
         <div class="page-header">
             <h1>{{ directory.headline }}</h1>
+           
 		   {% if directory.status_detail == 'pending' %}
 				<div class="pull-right clearfix">
-				{% if directory|is_directory_owner_with_membership:user %}
+				{% if directory_owner_with_membership %}
              	<a href="{% url 'directory.edit' directory.id %}" class="btn btn-default">{% trans "Edit" %}</a>
                 {% endif %}
              	{% if request.user.is_superuser %}
 		     	<a href="{% url 'directory.approve' directory.id %}" class="btn btn-success">{% trans "Approve it" %}</a>
              	{% endif %}
 				</div>
-	      	
 			{% endif %}
         </div>
 
@@ -37,9 +38,12 @@
             {{ directory.body|safe }}
 
 			{% if directory.corpprofile %}
+			{% if user.profile.is_superuser or user == directory.creator or user == directory.owner or directory_owner_with_membership %}
 			<p><a href="{% url 'corpmembership.view_profile' directory.corpprofile.id %}">{% trans "View Corp Member Profile" %}</a></p>
 			{% endif %}
+			{% endif %}
         </div>
+    {% endwith %}
 
 		{% if directory.has_social_media %}
 		{% include "directories/include/social_media_links.html" %}
@@ -49,3 +53,10 @@
     </article>
     <br />
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	{% include "directories/include/affiliates_js.html" %}
+{% endblock %}
+
+

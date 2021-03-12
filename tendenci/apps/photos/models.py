@@ -735,13 +735,18 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         app_label = 'photos'
 
     def save(self, *args, **kwargs):
-        initial_save = not self.id
         if not self.id:
             self.guid = str(uuid.uuid4())
         if not self.group:
             self.group_id = get_default_group()
-
+            
+        if not self.id:
+            try:
+                exif_exists = self.get_exif_data()
+            except AttributeError:
+                pass
         super(Image, self).save(*args, **kwargs)
+        
         # clear the cache
         #caching.instance_cache_clear(self, self.pk)
         #caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
@@ -758,13 +763,7 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
                 cache.delete_many(cache.get("photos_cache_set.%s" % self.pk))
                 cache.delete("photos_cache_set.%s" % self.pk)
 
-        if initial_save:
-            try:
-                exif_exists = self.get_exif_data()
-                if exif_exists:
-                    self.save()
-            except AttributeError:
-                pass
+        
 
     def delete(self, *args, **kwargs):
         """

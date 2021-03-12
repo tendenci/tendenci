@@ -13,33 +13,58 @@ class ResumeAdmin(TendenciBaseModelAdmin):
     fieldsets = (
         (_('Resume Information'), {
             'fields': ('title',
-                       'slug',
-                       'description',
-                       'skills',
-                       'location',
-                       'contact_email',
-                       'contact_website',
-                       'tags',
-                       'activation_dt',
-                       'expiration_dt',
+                     'slug',
+                     'description',
+                     'resume_url',
+                     'resume_file',
+                     'industry',
+                     'location',
+                     'skills',
+                     'experience',
+                     'awards',
+                     'education',
+                     'tags',
+                     'requested_duration',
+                     'is_agency'
                 )
         }),
+        (_('Contact'), {
+          'fields': ('first_name',
+                     'last_name',
+                     'contact_address',
+                     'contact_address2',
+                     'contact_city',
+                     'contact_state',
+                     'contact_zip_code',
+                     'contact_country',
+                     'contact_phone',
+                     'contact_phone2',
+                     'contact_fax',
+                     'contact_email',
+                     'contact_website',
+                     ),
+            'classes': ['contact'],
+          }),
         (_('Permissions'), {'fields': ('allow_anonymous_view',)}),
         (_('Advanced Permissions'), {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
             )}),
-        (_('Status'), {'fields': (
-            'status_detail',
-            )}),
+        (_('Administrator Only'), {
+              'fields': ['activation_dt',
+                         'expiration_dt',
+                         'syndicate',
+                         'status_detail'],
+              'classes': ['admin-only'],
+            })
         )
     form = ResumeForm
     ordering = ['-update_dt']
 
     def get_form(self, request, obj=None, **kwargs):
-      FormModel = super(ResumeAdmin, self).get_form(request, obj, **kwargs)
-      FormModel.user = request.user
-      return FormModel
+        FormModel = super(ResumeAdmin, self).get_form(request, obj, **kwargs)
+        FormModel.user = request.user
+        return FormModel
 
 admin.site.register(Resume, ResumeAdmin)

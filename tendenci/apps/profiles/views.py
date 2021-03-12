@@ -168,6 +168,14 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
+    corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
+    recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
+
+    # industry
+    if memberships and get_setting('module', 'users', 'showindustry'):
+        industries = list(memberships.exclude(industry=None).values_list('industry__industry_name', flat=True))
+    else:
+        industries = None
 
     return render_to_resp(request=request, template_name=template_name, context={
         'can_edit': can_edit,
@@ -179,13 +187,16 @@ def index(request, username='', template_name="profiles/index.html"):
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
         'memberships': memberships,
+        'industries': industries,
         'directories': directories,
+        'corps_list': corps_list,
         'registrations': registrations,
         'membership_apps': membership_apps,
         'multiple_apps': multiple_apps,
         'membership_reminders': membership_reminders,
         'can_auto_renew': can_auto_renew,
         'auto_renew_is_set': auto_renew_is_set,
+        'recurring_payments': recurring_payments
         })
 
 
@@ -244,6 +255,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         mts = None
 
     show_member_option = mts
+    show_industry = get_setting('module', 'users', 'showindustry')
 
     form = ProfileSearchForm(request.GET, mts=mts, user=request.user)
     if form.is_valid():
@@ -252,12 +264,15 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         email = form.cleaned_data['email']
         search_criteria = form.cleaned_data['search_criteria']
         search_text = form.cleaned_data['search_text']
-        search_method = form.cleaned_data['search_method']
+        search_method = form.cleaned_data.get('search_method', 'contains')
         membership_type = form.cleaned_data.get('membership_type', None)
         member_only = form.cleaned_data.get('member_only', False)
         group = form.cleaned_data.get('group', False)
         if group:
             group = int(group)
+        industry = form.cleaned_data.get('industry', False)
+        if industry:
+            industry = int(industry)
     else:
         first_name = None
         last_name = None
@@ -268,6 +283,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         membership_type = None
         member_only = False
         group = False
+        industry = False
 
     profiles = Profile.objects.filter(Q(status=True))
     if memberships_search:
@@ -319,17 +335,17 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
     profiles = profiles.distinct()
 
     if first_name:
-        profiles = profiles.filter(user__first_name__iexact=first_name)
+        profiles = profiles.filter(user__first_name__istartswith=first_name)
     if last_name:
-        profiles = profiles.filter(user__last_name__iexact=last_name)
+        profiles = profiles.filter(user__last_name__istartswith=last_name)
     if email:
-        profiles = profiles.filter(user__email__iexact=email)
+        profiles = profiles.filter(user__email__istartswith=email)
 
     if member_only:
         profiles = profiles.exclude(member_number='')
 
     if search_criteria and search_text:
-        search_type = '__iexact'
+        search_type = '__icontains'
         if search_method == 'starts_with':
             search_type = '__istartswith'
         elif search_method == 'contains':
@@ -351,6 +367,10 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
         profiles = profiles.filter(user__membershipdefault__status_detail='active',
             user__membershipdefault__membership_type_id=membership_type)
 
+    if industry:
+        profiles = profiles.filter(user__membershipdefault__status_detail='active',
+            user__membershipdefault__industry_id=industry)
+
     profiles = profiles.order_by('user__last_name', 'user__first_name')
     base_template = 'profiles/base-wide.html'
     if memberships_search:
@@ -363,6 +383,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             'user_this': None,
             'search_form': form,
             'show_member_option': show_member_option,
+            'show_industry': show_industry,
             'memberships_search': memberships_search,
             'base_template': base_template})
 
@@ -534,6 +555,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/add_edit.h
                 if recipients:
                     if notification:
                         extra_context = {
+                            'object': old_user,
                             'old_user': old_user,
                             'old_profile': old_profile,
                             'profile': profile,

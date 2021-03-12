@@ -1,0 +1,72 @@
+{% load directory_filters %}
+
+{% if affiliates_list %}
+		<h3>{% trans "Affiliations" %}</h3>
+		{% for cat, affiliates in affiliates_list %}
+		<h4>{{ cat }}</h4>
+			<ol>
+			{% for affiliate in affiliates %}
+			<li class="affiliate-wrap">
+				{% if affiliate.logo %}
+					<img class="img-responsive" style="max-width:50px; display: inline;" border="0" src="{{ affiliate.get_logo_url }}" alt="">
+				{% endif %}
+				<a href="{% url 'directory' affiliate.slug %}">{{ affiliate.headline }}</a> &nbsp;&nbsp;&nbsp;
+			{% if request.user.is_superuser or directory|is_owner:user %}
+			    <a href="{% url 'affiliates.delete_affiliate' directory.id affiliate.id %}"  class="delete btn btn-default btn-xs">{% trans "Remove" %}</a>
+			{% endif %}
+			</li>
+			{% endfor %}
+			</ol>
+		{% endfor %}
+	{% endif %}
+	
+	{% if parents_list %}
+		<h3>{% trans "Associated With" %}</h3>
+		{% for cat, parent_directories in parents_list %}
+		<h4>{{ cat }}</h4>
+			<ol>
+			{% for d in parent_directories %}
+			<li>
+			    {% if d.logo %}
+					<img class="img-responsive" style="max-width:50px; display: inline;" border="0" src="{{ d.get_logo_url }}" alt="">
+				{% endif %}
+				<a href="{% url 'directory' d.slug %}">{{ d.headline }}</a>
+			</li>
+			{% endfor %}
+			</ol>
+			<br />
+		{% endfor %}
+{% endif %}
+	
+{% if MODULE_DIRECTORIES_AFFILIATES_ENABLED and directory.status_detail == 'active' %}
+	{% if directory|allow_request_to_associate:user %}
+	<br />
+	<div>
+	<a href="{% url 'affiliates.request_associate' directory.id %}" class="btn btn-success">{% blocktrans with headline=directory.headline %}Request to Associate with {{ headline }}{% endblocktrans %}</a>
+	</div>
+	<br />
+	
+	{% if request.user.is_superuser or directory|is_owner:user %}
+	<div>
+	<a href="{% url 'affiliates.requests_list' directory.id %}">{% trans "View All Affiliate Requests" %}</a>
+	</div>
+	<br />
+	{% endif %}
+	
+	{% else %}
+	    {% if affiliate_requests %}
+			{% if request.user.is_superuser or directory|is_owner:user %}
+			    <h3>{% trans "Requested to Associate with" %}</h3>
+				<ol>
+				{% for affiliate_request in affiliate_requests %}
+					<li class="affiliate-request-wrap" style="margin: 3px auto;"><a href="{% url 'directory' affiliate_request.to_directory.slug %}">{{ affiliate_request.to_directory.headline }}</a> &nbsp;&nbsp;&nbsp;
+					<a href="{% url 'affiliates.request_cancel' affiliate_request.id %}"  class="cancel btn btn-default btn-xs">{% trans "Cancel" %}</a>
+					</li>
+				{% endfor %}
+				</ol>
+				<br />
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	
+{% endif %}	

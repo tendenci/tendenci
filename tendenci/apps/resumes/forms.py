@@ -13,6 +13,7 @@ from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.base.fields import EmailVerificationField, CountrySelectField
 from tendenci.apps.base.forms import CustomCatpchaField
 from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.industries.models import Industry
 
 ALLOWED_FILE_EXT = (
     '.doc',
@@ -46,13 +47,23 @@ class ResumeSearchForm(forms.Form):
     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
                                         required=False)
     grid_view = forms.BooleanField(required=False)
+    industry = forms.IntegerField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super(ResumeSearchForm, self).__init__(*args, **kwargs)
-        self.fields['first_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['last_name'].widget.attrs.update({'placeholder': _('Exact Match Search')})
-        self.fields['email'].widget.attrs.update({'placeholder': _('Exact Match Search')})
+        self.fields['first_name'].widget.attrs.update({'placeholder': _('Enter first name')})
+        self.fields['last_name'].widget.attrs.update({'placeholder': _('Enter last name')})
+        self.fields['email'].widget.attrs.update({'placeholder': _('Enter email')})
+        
+        if Industry.objects.filter(status=True, status_detail='active').exists():
+            industry_choices = [(0, _('SELECT ONE'))] + list(Industry.objects.filter(
+                            status=True, status_detail="active").order_by('position', '-update_dt'
+                            ).values_list('pk', 'industry_name'))
+            self.fields['industry'].widget = forms.widgets.Select(
+                                    choices=industry_choices)
+        else:
+            del self.fields['industry']
         
         for field in self.fields:
             if field not in ['search_criteria', 'search_text', 'search_method', 'grid_view']:
@@ -118,6 +129,7 @@ class ResumeForm(TendenciBaseForm):
         'description',
         'resume_url',
         'resume_file',
+        'industry',
         'location',
         'skills',
         'experience',
@@ -155,6 +167,7 @@ class ResumeForm(TendenciBaseForm):
                                  'description',
                                  'resume_url',
                                  'resume_file',
+                                 'industry',
                                  'location',
                                  'skills',
                                  'experience',

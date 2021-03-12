@@ -33,15 +33,29 @@
       </div>
     </div>  
 </div>
+
+{% if form.industry %}
+<div class="row">
+    <div class="col-sm-6 form-group">
+    <label for="id_industry" class="col-sm-4 control-label">{{ form.industry.label }}</label>
+    	<div class="col-sm-8">
+         {{ form.industry }}
+         </div>
+    </div>
+</div>
+{% endif %}
   
 <div class="row">
 	<div class="col-md-12 form-group">
-	<label for="id_last_name" class="col-sm-2 control-label">{% trans 'Search By'%}</label>
+	<label class="col-sm-2 control-label">{% trans 'Search By'%}</label>
 	<div class="col-sm-10">
    	 		{{ form.search_criteria }} &nbsp;
    	 		{{ form.search_text }} &nbsp;
    	 		{{ form.search_method }}
-   	 		<input class="btn btn-primary" type="submit" name="search" value="{% trans 'Search' %}" />
+   	 		<button class="btn btn-success" type="submit">
+	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Resumes' %}"></i> {% trans 'Search' %}
+             </button>
+
   	</div>
 </div>
 </div>

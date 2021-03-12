@@ -40,7 +40,6 @@ request_duration_defaults = {
 }
 
 SEARCH_CATEGORIES = (
-    ('', _('-- SELECT ONE --') ),
     ('headline', _('Name')),
     ('body', _('Description')),
     ('city', _('City')),
@@ -99,9 +98,9 @@ class DirectorySearchForm(FormControlWidgetMixin, forms.Form):
             self.fields.pop('sub_cat')
 
     def clean(self):
-        cleaned_data = self.cleaned_data
-        q = self.cleaned_data.get('q', None)
-        cat = self.cleaned_data.get('search_category', None)
+        cleaned_data = super(DirectorySearchForm, self).clean()
+        q = cleaned_data.get('q', None)
+        cat = cleaned_data.get('search_category', None)
 
         if cat is None or cat == "" :
             if not (q is None or q == "" or 'tag:' in q):
@@ -162,7 +161,7 @@ class DirectoryForm(TendenciBaseForm):
     syndicate = forms.BooleanField(label=_('Include in RSS Feed'), required=False, initial=True)
 
     status_detail = forms.ChoiceField(
-        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')),))
+        choices=(('active',_('Active')),('inactive',_('Inactive')), ('pending',_('Pending')), ('expired',_('Expired')),))
 
     list_type = forms.ChoiceField(initial='regular', choices=(('regular',_('Regular')),
                                                               ('premium', _('Premium')),))
@@ -308,6 +307,7 @@ class DirectoryForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(DirectoryForm, self).__init__(*args, **kwargs)
+        self.fields['headline'].help_text = _('Company or Organization name')
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:
@@ -320,6 +320,16 @@ class DirectoryForm(TendenciBaseForm):
 
         if self.instance.logo:
             self.initial['logo'] = self.instance.logo
+        self.logo_extension_error_message = _('The logo must be of jpg, gif, or png image type.')
+        self.logo_mime_error_message = _('The logo is an invalid image. Try uploading another logo.')
+        if self.instance.pk:
+            if self.instance.get_membership():
+                # individual - display "Photo" instead of Logo
+                self.fields['logo'].label = _('Photo')
+                self.fields['logo'].help_text=_('Only jpg, gif, or png images.')
+                self.logo_extension_error_message = _('The photo must be of jpg, gif, or png image type.')
+                self.logo_mime_error_message = _('The photo is an invalid image. Try uploading another photo.')
+            
 
         if not self.user.profile.is_superuser:
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -407,12 +417,12 @@ class DirectoryForm(TendenciBaseForm):
 
                 # check the extension
                 if extension.lower() not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo must be of jpg, gif, or png image type.'))
+                    raise forms.ValidationError(self.logo_extension_error_message)
 
                 # check the image header
                 image_type = '.%s' % imghdr.what('', logo.read())
                 if image_type not in ALLOWED_LOGO_EXT:
-                    raise forms.ValidationError(_('The logo is an invalid image. Try uploading another logo.'))
+                    raise forms.ValidationError(self.logo_mime_error_message)
 
                 max_upload_size = get_max_file_upload_size()
                 if logo.size > max_upload_size:

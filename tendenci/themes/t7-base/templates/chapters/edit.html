@@ -1,0 +1,103 @@
+{% extends "chapters/base.html" %}
+{% load chapter_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{% firstof MODULE_COMMITTEES_LABEL 'Chapter' %} Edit{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'chosen/chosen.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="t">
+    <h1>{% firstof MODULE_COMMITTEES_LABEL 'Chapter' %} {% trans "Edit" %}</h1>
+    <form class="form-horizontal" action="{% url "chapters.edit" chapter.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+         {% chapter_form form formset %}
+
+        <fieldset class="boxy-grey" >
+                  <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
+                  <div id="category-form">
+                      {{ categoryform|styled_form }}
+                  </div>
+              </fieldset>
+        <fieldset class="boxy-grey">
+              <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
+              <div id="meta-form">
+                  {{ metaform|styled_form }}
+              </div>
+        </fieldset>
+
+        <input class="btn btn-primary" type="submit" value="{% trans 'Save Chapter Changes' %}" />
+          {% if chapter.status %}
+          <div class="form-delete-link">
+              <a class="delete" title="{% trans 'Link to delete confirmation page' %}" href="{% url "chapters.delete" chapter.pk %}">
+                  {% trans "Delete" %}
+              </a>
+          </div>
+          {% endif %}
+      </form>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {{ form.media }}
+    <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/dynamic-formset.js' %}?v=2"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // delete confirmation
+            $('.add-category').on("click", function(){
+                select_box = $(this).parent().prev().find('select');
+                var category = prompt('Category Name?','').toLowerCase();
+                category = category.replace('"','')
+                var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
+                if (category) select_box.append(option_html)
+                return false;
+            });
+            $('.add-sub-category').on("click", function(){
+                select_box = $(this).parent().prev().find('select');
+                var sub_category = prompt('Category Name?','').toLowerCase();
+                sub_category = sub_category.replace('"','')
+                var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
+                if (sub_category) select_box.append(option_html)
+                return false;
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $('#meta-form').hide();
+        $('#category-form').hide();
+        $('#meta-title').on("click", function() {
+            $('#meta-form').slideToggle('fast');
+            if ($('#meta-title span').text() == '+') {
+                $('#meta-title span').text('-');}
+            else {$('#meta-title span').text('+');}
+        });
+        $('#category-title').on("click", function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        });
+    </script>
+    <script type="text/javascript">
+		var clone = $('.dynamic-form:first').clone(true);
+        $('.add-row').on("click", function() {
+			cloned_row = addFormWithCloned(this, 'officers', clone);
+            //row = addForm(this, 'officers');
+            // Handle chosen jquery plugin
+			var current_officer_user = $(cloned_row).find(".officer-user select");
+			current_officer_user.chosen();
+            return false;
+        });
+    </script>
+    <script type="text/javascript">
+        $('select.officer-user').chosen();
+    </script>
+{% endblock %}

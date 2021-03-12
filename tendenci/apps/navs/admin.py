@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ngettext
+from django.contrib import messages
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.theme.templatetags.static import static
@@ -23,7 +25,7 @@ class ItemAdmin(admin.TabularInline):
 
 class NavAdmin(TendenciBaseModelAdmin):
     inlines = (ItemAdmin,)
-    list_display = ("title",)
+    list_display = ("title", "status_detail")
 
     fieldsets = (
         (None, {"fields": ("title", "description")}),
@@ -35,6 +37,7 @@ class NavAdmin(TendenciBaseModelAdmin):
     )
 
     form = NavForm
+    actions = ['inactivate_selected']
 
     class Media:
         js = (
@@ -46,5 +49,30 @@ class NavAdmin(TendenciBaseModelAdmin):
         css = {'all': [static('css/admin/dynamic-inlines-with-sort.css'),
                        static('css/admin/navitem-inline.css'),
                        static('css/admin/navchangelist.css')], }
+
+    def inactivate_selected(self, request, queryset):
+        """
+        Inactivate the selected navs.
+        """
+        updated = queryset.update(status_detail='inactive')
+        self.message_user(request, ngettext(
+                '%d nav was successfully marked as Inactive.',
+                '%d navs were successfully marked as Inactive.',
+                updated,
+            ) % updated, messages.SUCCESS)
+    
+    inactivate_selected.short_description = 'Mark selected navs as Inactive'
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        if 'soft_delete_selected' in actions:
+            del actions['soft_delete_selected']
+        return actions
+
 
 admin.site.register(Nav, NavAdmin)

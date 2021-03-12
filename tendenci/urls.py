@@ -75,8 +75,6 @@ urlpatterns += [
     url(r'^redirects/', include('tendenci.apps.redirects.urls')),
     url(r'^mobile/', include('tendenci.apps.mobile.urls')),
     url(r'^campaign_monitor/', include('tendenci.apps.campaign_monitor.urls')),
-    url(r'^wp_importer/', include('tendenci.apps.wp_importer.urls')),
-    url(r'^wp_exporter/', include('tendenci.apps.wp_exporter.urls')),
     url(r'^discounts/', include('tendenci.apps.discounts.urls')),
     url(r'^versions/', include('tendenci.apps.versions.urls')),
     url(r'^reports/', include('tendenci.apps.reports.urls')),
@@ -120,6 +118,7 @@ urlpatterns += [
     url(r'^', include('tendenci.apps.newsletters.urls')),
 
     url(r'^', include('tendenci.apps.committees.urls')),
+    url(r'^', include('tendenci.apps.chapters.urls')),
     url(r'^', include('tendenci.apps.case_studies.urls')),
     url(r'^', include('tendenci.apps.donations.urls')),
     url(r'^', include('tendenci.apps.speakers.urls')),

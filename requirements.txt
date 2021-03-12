@@ -1,10 +1,10 @@
 future
 six
 configparser
-Django>=2.2.17,<3.0
+Django>=2.2.19,<3.0
 django-formtools>=1.0
 pisa
-Pillow==7.2.0
+Pillow==8.1.0
 anyjson>=0.2.4
 django-authority>=0.4
 django-countries>=4.4
@@ -35,7 +35,7 @@ python-dateutil==2.8.1
 pdfminer.six==20170720
 stripe==2.42.0
 pycryptodome==3.9.6
-boto3==1.14.62
+boto3==1.16.43
 django-timezone-field==4.0
 django-ses==1.0.3
 django-tastypie==0.14.3
@@ -44,7 +44,7 @@ chardet==3.0.4
 psycopg2>=2.8.4,<2.9
 gunicorn==20.0.4
 gevent==20.9.0
-django-storages==1.9.1
+django-storages==1.11.1
 Whoosh==2.7.4
 simple-salesforce==0.68.1
 selenium==3.141.0
@@ -62,9 +62,10 @@ Embedly>=0.5.0
 django-bootstrap-form>=3.1,<4
 email-reply-parser
 django-markdown-deux
-xhtml2pdf==0.2.2
+xhtml2pdf==0.2.5
 python-magic
 XlsxWriter==0.9.6
 nameparser
 Authlib==0.14.3
+django-admin-rangefilter==0.6.4
 
