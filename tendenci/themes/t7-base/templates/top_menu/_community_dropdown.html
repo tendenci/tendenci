@@ -1,5 +1,7 @@
 {% load megamenu_tags %}
+{% load perm_tags %}
 
+{% has_perm user memberships.change_membership as can_edit_memb %}
 
 <li class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -21,14 +23,12 @@
                             {% endif %}
 
                             {% if MODULE_MEMBERSHIPS_ENABLED %}
-                            {% if USER_IS_SUPERUSER or user.profile.is_member %}
-                            {% if USER_IS_SUPERUSER or MODULE_USERS_ALLOWUSERSEARCH or MODULE_MEMBERSHIPS_MEMBERPROTECTION == 'public' %}
+                            {% if USER_IS_SUPERUSER or MODULE_USERS_ALLOWUSERSEARCH or MODULE_MEMBERSHIPS_MEMBERPROTECTION == 'public' or user.profile.is_member or can_edit_memb %}
                                 <li class="content-item">
                                     <a href="{% url 'membership.search' %}">
                                         <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members' %}</span>
                                     </a>
                                 </li>
-                            {% endif %}
                             {% endif %}
                             {% endif %}
 
@@ -65,14 +65,14 @@
                             {% endif %}
 
                             {% if USER_IS_SUPERUSER %}
-	                            {% if MODULE_MEMBERSHIPS_ENABLED %}
-	                            <br>Admin:
-				<li class="content-item">
+                                {% if MODULE_MEMBERSHIPS_ENABLED %}
+                                <br>Admin:
+                                <li class="content-item">
                                     <a href="{% url 'reports-admin-users' %}">
                                         <img class="nav-icon" src="{% static 'famfamfam/icons/wand.png' %}"/><span class="nav-label">{% trans 'Superusers' %}</span>
                                     </a>
                                 </li>
-				
+
                                 <li class="content-item">
                                     <a href="{% url 'admin:memberships_membershipdefault_changelist' %}">
                                         <img class="nav-icon" src="{% static 'famfamfam/icons/arrow_join.png' %}"/><span class="nav-label">{% trans 'Members' %}</span>
