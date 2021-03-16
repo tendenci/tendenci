@@ -413,10 +413,10 @@
         "status_detail": "active",
         "syndicate": true,
         "creator_username": "system_generated",
-        "slug": "test",
+        "slug": "hello-world",
         "contributor_type": 1,
         "allow_user_edit": false,
-        "title": "test",
+        "title": "Hello World",
         "allow_member_view": false,
         "allow_member_edit": false,
         "header_image": null

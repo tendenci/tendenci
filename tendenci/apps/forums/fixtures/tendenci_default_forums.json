@@ -153,7 +153,7 @@
     "fields": {
         "category": 1,
         "updated": null,
-        "name": "Welcome! Test your posts here.",
+        "name": "Welcome! Write your posts here.",
         "parent": null,
         "post_count": 0,
         "topic_count": 0,
@@ -161,7 +161,7 @@
         "moderators": [],
         "position": 50,
         "hidden": false,
-        "slug": "welcome-test-your-posts-here",
+        "slug": "welcome-your-posts-here",
         "description": ""
     },
     "model": "forums.forum",
@@ -364,20 +364,20 @@
         "closed": false,
         "poll_type": 1,
         "poll_question": "What would you like to see more of this year?",
-        "slug": "testing"
+        "slug": "random-thoughts"
     },
     "model": "forums.topic",
     "pk": 1
 },
 {
     "fields": {
-        "body": "test",
+        "body": "Hello World",
         "user_ip": "172.17.0.69",
         "updated": null,
         "on_moderation": false,
         "created": "2016-01-27T09:14:53.295",
-        "body_text": "test",
-        "body_html": "<p>test</p>",
+        "body_text": "Hello World",
+        "body_html": "<p>Hello World</p>",
         "topic": 1,
         "user": 1
     },
