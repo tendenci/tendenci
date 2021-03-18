@@ -649,7 +649,7 @@
 },
 {
     "fields": {
-        "field_type": "CharField",
+        "field_type": "EmailVerificationField",
         "form": 3,
         "visible": true,
         "default": "",

@@ -52,7 +52,7 @@
     },
     {
         "default_value": "false",
-        "description": "Create a new user on form submissions.<br /> <strong>Note that:</strong> Even if this setting is set to false, a new user will still be created if payment is involved or \"Subscribe to Group\" functionality is selected. To make your site GDPR compliant, you can add a new checkbox field to your form to obtain the user consent.",
+        "description": "Create a new user on form submissions if an email field is set up.<br /> <strong>Note that:</strong> Even if this setting is set to false, a new user will still be created if payment is involved or \"Subscribe to Group\" functionality is selected. To make your site GDPR compliant, you can add a new checkbox field to your form to obtain the user consent.",
         "data_type": "boolean",
         "update_dt": "2019-10-01 00:00:00",
         "input_type": "select",
