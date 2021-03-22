@@ -5,7 +5,8 @@
 
 
 {% if profile.user %}
-	{% has_perm user profiles.change_profile profile as can_edit_profile %}
+	{% has_perm request.user profiles.change_profile profile as can_edit_profile %}
+        {% has_perm request.user memberships.change_membershipdefault as can_edit_memberships %}
 	
     <div class="wrap-search-item">
         {% with profile.membership as membership %}
@@ -21,9 +22,11 @@
                         </a>
                     </h2>
                     <div class="col-md-3 col-xs-12" style="line-height:46px;">
-                        {% if membership and request.user.profile.is_superuser or can_edit_profile %}
-	                        {% if request.user.profile.is_superuser or can_edit_profile %}
+                        {% if membership and can_edit_memberships %}
+	                        {% if request.user.profile.is_superuser %}
 	                            <a href="{% url 'admin:memberships_membershipdefault_change' membership.pk %}">{% trans "Edit Membership" %}</a>
+				{% else %}
+	                            <a href="{% url 'membership_default.edit' membership.pk %}">{% trans "Edit Membership" %}</a>
 	                        {% endif %}
                         {% endif %}
                     </div>
@@ -52,17 +55,18 @@
                         {% endif %}
 
                         {% if profile.user.email %}
-                            {% if request.user.profile.is_superuser or not profile.hide_email or can_edit_profile %}
+                            {% if not profile.hide_email or can_edit_profile %}
                                 <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
                             {% endif %}
                         {% endif %}
 
-                        {% if request.user.profile.is_superuser or request.user == profile.user or can_edit_profile %}
+                        {% if request.user == profile.user or can_edit_profile %}
                             {% if profile.member_number %}
                                 <b>{% trans "Member Number:" %}</b> {{ profile.member_number }}<br />
                             {% endif %}
                         {% endif %}
 
+		        {% if request.user == profile.user or can_edit_memberships %}
                         {% if membership.membership_type %}
                             <b>{% trans "Membership Type:" %}</b> <span style="white-space:nowrap">{{ membership.membership_type }}</span><br />
                             {% if show_industry and membership.industry %}
@@ -73,10 +77,11 @@
                         {% if membership.status_detail %}
                             <b>{% trans "Membership Status:" %}</b> {{ membership.status_detail }}<br />
                         {% endif %}
+			{% endif %}
                     </div>
 
                     <div class="col-md-4 col-xs-12">
-                        {% if request.user.profile.is_superuser or not profile.hide_phone or can_edit_profile %}
+                        {% if not profile.hide_phone or can_edit_profile %}
 	                        {% if profile.phone %}
                                 <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
 	                        {% endif %}
@@ -86,7 +91,7 @@
                             {% endif %}
                         {% endif %}
 
-                        {% if request.user.profile.is_superuser or request.user == profile.user or can_edit_profile %}
+                        {% if request.user == profile.user or can_edit_profile %}
                             {% if membership.create_dt %}
                                 <b>{% trans "Create Date:" %}</b> {{ membership.create_dt | date }}<br />
                             {% endif %}
@@ -112,7 +117,9 @@
                 {% endif %}
             </div>
         {% endwith %}
-
+	
+         {% if can_edit_profile %}
         {% profile_meta %}
+	 {% endif %}
     </div>
 {% endif %}
