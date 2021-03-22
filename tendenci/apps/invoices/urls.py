@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^search/$', views.search, name="invoice.search"),
     # invoice reports
     url(r'^report/top_spenders/$', views.report_top_spenders, name="reports-top-spenders"),
+    url(r'^report/overview/$', views.reports_overview, name="invoices.reports_overview"),
 ]

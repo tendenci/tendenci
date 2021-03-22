@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from django import forms
 from django.db.models.fields import CharField, DecimalField
 from django.utils.translation import ugettext_lazy as _
@@ -63,7 +64,16 @@ class AdminVoidForm(FormControlWidgetMixin, forms.ModelForm):
         model = Invoice
         fields = ('void_reason',
                   )
-        
+
+
+class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
+    start_dt = forms.DateField(label=_('From'), required=False)
+    end_dt = forms.DateField(label=_('To'), required=False,)
+
+    def __init__(self, *args, **kwargs):
+        super(ReportsOverviewForm, self).__init__(*args, **kwargs)
+        self.fields['start_dt'].widget.attrs['class'] += ' datepicker'
+        self.fields['end_dt'].widget.attrs['class'] += ' datepicker'
 
 
 class InvoiceSearchForm(forms.Form):
@@ -114,6 +124,7 @@ class InvoiceSearchForm(forms.Form):
                                    required=False,
                                    empty_label=_('All Events'))
     event_id = forms.ChoiceField(label=_('Event ID'), required=False, choices=[])
+    object_type_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
     def __init__(self, *args, **kwargs):
         super(InvoiceSearchForm, self).__init__(*args, **kwargs)
