@@ -1,3 +1,17 @@
+### 12.4.8 [2021-03-23]
+
+* **SECURITY**: Bumped Pillow from 8.1.0 to 8.1.2 https://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html https://pillow.readthedocs.io/en/stable/releasenotes/8.1.2.html
+* **SECURITY**: Tightened security check for the password change page.
+* Added a warning message on theme editor to indicate site reload is needed if template caching is on. 
+* Ordering fix for helpfiles FAQ (Thanks @bernd-wechner)
+* Removed the word "test" from default fixtures
+* Extended max_length for user_display field on corp reps add/edit 
+* Updated the description for the setting "Create User on Form Submissions" and forms default fixtures.
+* Membership view improvements on members search (Thanks @bernd-wechner)
+* Resolved an error RelatedObjectDoesNotExist in helpdesk
+* Avoided a bad escape in forms
+
+
 ### 12.4.7 [2021-03-10]
 
 * Adjusted the order of fields for event location section on events add/edit
