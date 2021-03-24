@@ -34,7 +34,7 @@
 </form>
 <div>&nbsp;</div>
 <div class="row" style="margin: auto;">
-	<table class="table table-striped">
+	<table class="table table-striped table-bordered table-hover">
 		<tr>
 			<th>{% trans "Date Period" %}</th>
 			<th class="text-center">{% trans 'Invoice Total' %}</th>
@@ -57,11 +57,12 @@
 </div>
 
 <div class="row">
+	{% if invoice_total_amount  %}
 	<div class="col-md-6">
 	    <div class="panel panel-default">
 	
 		  <div class="panel-body">
-			<h3>{% trans 'Invoice Total by Module' %}</h3>
+			<h4>{% trans 'Invoice Total by Object Type' %}</h4>
 		    <div id="total_amount_pie" style="width: 430px; height: 300px;"></div>
            <div style="padding-left: 1.2em;">
 				{% for k, v in total_amount_d.items %}
@@ -72,11 +73,13 @@
 		  </div>
 		</div>
 	</div>
+	{% endif %}
 	
+	{% if invoice_total_amount_paid  %}
 	<div class="col-md-6">
 	    <div class="panel panel-default">
 		  <div class="panel-body">
-		    <h3>{% trans 'Total Amount Paid by Module' %}</h3>
+		    <h4>{% trans 'Total Amount Paid by Object Type' %}</h4>
 		    <div id="total_amount_paid_pie" style="width: 430px; height: 300px;"></div>
 			<div style="padding-left: 1.2em;">
 				{% for k, v in amount_paid_d.items %}
@@ -86,6 +89,7 @@
 		  </div>
 		</div>
 	</div>
+	{% endif %}
 </div>
       
 </div>
@@ -98,6 +102,7 @@
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% if invoice_total_amount or invoice_total_amount_paid %}
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
@@ -108,7 +113,7 @@
     	          colors: ['#3366CC', '#e2431e', '#1c91c0', '#e49307', '#24CBE5', '#DDDF00', '#ED561B', '#50B432'],
 				  pieHole: 0.4,
     	        };
-    	  
+    	{% if invoice_total_amount  %}
         var total_amount_data = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in total_amount_d.items %}
@@ -120,7 +125,8 @@
 
         var chart = new google.visualization.PieChart(document.getElementById('total_amount_pie'));
         chart.draw(total_amount_data, options);
-        
+		{% endif %}
+       {% if invoice_total_amount_paid  %}
        var total_amount_paid_data = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in amount_paid_d.items %}
@@ -134,13 +140,12 @@
 
        var chart = new google.visualization.PieChart(document.getElementById('total_amount_paid_pie'));
        chart.draw(total_amount_paid_data, options);
-
-	  
-       
+	   {% endif %}
+ 
       }
       
   </script>  
-
+{% endif %}
 
 <script type="text/javascript">
 
