@@ -81,10 +81,10 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
 
         for item in total_amount_by_object_type:
             if item['sum']:
-                total_amount_d[item['object_type']] = [object_type_d[item['object_type']], item['sum']]
+                total_amount_d[item['object_type']] = [object_type_d[item['object_type']], item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
         for item in amount_paid_by_object_type:
             if item['sum']:
-                amount_paid_d[item['object_type']] = [object_type_d[item['object_type']], item['sum']]
+                amount_paid_d[item['object_type']] = [object_type_d[item['object_type']], item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
 #         for item in total_balance_by_object_type:
 #             if item['balance']:
 #                 balance_d[item['object_type']] = [object_type_d[item['object_type']], item['balance']]

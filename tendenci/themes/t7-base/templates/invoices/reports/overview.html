@@ -58,7 +58,7 @@
 
 <div class="row">
 	{% if invoice_total_amount  %}
-	<div class="col-md-6">
+	<div class="col-sm-6">
 	    <div class="panel panel-default">
 	
 		  <div class="panel-body">
@@ -66,7 +66,7 @@
 		    <div id="total_amount_pie" style="width: 430px; height: 300px;"></div>
            <div style="padding-left: 1.2em;">
 				{% for k, v in total_amount_d.items %}
-		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }}</span>&nbsp;&nbsp;
+		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.2 }} / {{ v.1|format_currency }}</span>&nbsp;&nbsp;
 		          {% endfor %}
 	        </div>
 
@@ -76,14 +76,14 @@
 	{% endif %}
 	
 	{% if invoice_total_amount_paid  %}
-	<div class="col-md-6">
+	<div class="col-sm-6">
 	    <div class="panel panel-default">
 		  <div class="panel-body">
 		    <h4>{% trans 'Total Amount Paid by Object Type' %}</h4>
 		    <div id="total_amount_paid_pie" style="width: 430px; height: 300px;"></div>
 			<div style="padding-left: 1.2em;">
 				{% for k, v in amount_paid_d.items %}
-		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&balance=0&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }}</span>&nbsp;&nbsp;
+		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&balance=0&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.2 }} / {{ v.1|format_currency }}</span>&nbsp;&nbsp;
 		          {% endfor %}
 	        </div>
 		  </div>
