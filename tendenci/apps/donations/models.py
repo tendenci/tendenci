@@ -37,6 +37,8 @@ class Donation(models.Model):
 
     class Meta:
         app_label = 'donations'
+        verbose_name = _("Donation")
+        verbose_name_plural = _("Donations")
 
     def save(self, user=None, *args, **kwargs):
         for field in self._meta.fields:

@@ -90,6 +90,8 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='recurring_payment_owner', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
                 ('user', models.ForeignKey(related_name='recurring_payments', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Customer', to=settings.AUTH_USER_MODEL, null=True)),
             ],
+            options={'verbose_name': 'Recurring Payment', 'verbose_name_plural': 'Recurring Payments'},
+
         ),
         migrations.CreateModel(
             name='RecurringPaymentInvoice',
