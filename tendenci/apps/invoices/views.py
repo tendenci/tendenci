@@ -57,24 +57,27 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                                           is_void=False,
                                           create_dt__date__gte=start_dt,
                                           create_dt__date__lte=end_dt)
-        invoice_total_amount = invoices.aggregate(Sum('total'))['total__sum'] or 0
-        invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
-        invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
-        total_cc = Payment.objects.filter(status_detail='approved',
+        payments = Payment.objects.filter(status_detail='approved',
                                           invoice__is_void=False,
                                           create_dt__date__gte=start_dt,
                                           create_dt__date__lte=end_dt
-                                          ).exclude(trans_id='').aggregate(Sum('amount'))['amount__sum'] or 0
+                                          ).exclude(trans_id='')
+        invoice_total_amount = invoices.aggregate(Sum('total'))['total__sum'] or 0
+        invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
+        invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
+        total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
 
         total_amount_by_object_type = invoices.values('object_type').order_by('-sum').annotate(sum=Sum('total'))
         amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type').order_by('-sum').annotate(sum=Sum('total'))
-        #total_balance_by_object_type = invoices.values('object_type').order_by('-balance').annotate(balance=Sum('balance'))
+        total_balance_by_object_type = invoices.values('object_type').order_by('-balance_sum').annotate(balance_sum=Sum('balance'))
+        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type').order_by('-sum').annotate(sum=Sum('amount'))
 
         object_type_ids = Invoice.objects.values_list('object_type', flat=True).distinct()
         object_type_d = {}
         total_amount_d = {}
         amount_paid_d = {}
-        #balance_d = {}
+        balance_d = {}
+        total_cc_d = {}
         for ot_id in object_type_ids:
             ct = ContentType.objects.get(id=ot_id)
             object_type_d[ot_id] = ct.name
@@ -85,9 +88,12 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         for item in amount_paid_by_object_type:
             if item['sum']:
                 amount_paid_d[item['object_type']] = [object_type_d[item['object_type']], item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
-#         for item in total_balance_by_object_type:
-#             if item['balance']:
-#                 balance_d[item['object_type']] = [object_type_d[item['object_type']], item['balance']]
+        for item in total_balance_by_object_type:
+            if item['balance_sum']:
+                balance_d[item['object_type']] = [object_type_d[item['object_type']], item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
+        for item in total_cc_by_object_type:
+            if item['sum']:
+                total_cc_d[item['invoice__object_type']] = [object_type_d[item['invoice__object_type']], item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
 
     return render_to_resp(request=request, template_name=template_name,
         context={'form':form,
@@ -96,6 +102,8 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                  'is_y2d': is_y2d,
                  'total_amount_d': total_amount_d,
                  'amount_paid_d': amount_paid_d,
+                 'balance_d': balance_d,
+                 'total_cc_d': total_cc_d,
                  'invoice_total_amount': invoice_total_amount,
                  'invoice_total_amount_paid': invoice_total_amount_paid,
                  'invoice_total_balance': invoice_total_balance,
