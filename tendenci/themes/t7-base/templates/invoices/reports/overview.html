@@ -9,6 +9,11 @@
 {{ block.super }}
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<style>
+.total-cell a{
+	text-decoration: none !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -48,10 +53,10 @@
 			<br />{% trans "(Year to Date)" %}
 			{% endif %}
 			</td>
-			<td class="text-center">{{ invoice_total_amount|format_currency }}</td>
-			<td class="text-center">{{ invoice_total_amount_paid|format_currency }}</td>
+			<td class="text-center total-cell"><a title="View list of invoices in this period" href="{% url 'invoice.search' %}?tendered=tendered{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount|format_currency }}</a></td>
+			<td class="text-center total-cell"><a title="View list of invoices paid in this period" href="{% url 'invoice.search' %}?tendered=tendered&balance=0{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount_paid|format_currency }}</a></td>
 			<td class="text-center"><strong>{{ total_cc|format_currency }}</strong></td>
-			<td class="text-center">{{ invoice_total_balance|format_currency }}</td>
+			<td class="text-center total-cell"><a title="View list of invoices with balance in this period" href="{% url 'invoice.search' %}?tendered=tendered&balance=1{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_balance|format_currency }}</a></td>
 		</tr>
 	</table>
 </div>
@@ -62,11 +67,11 @@
 	    <div class="panel panel-default">
 	
 		  <div class="panel-body">
-			<h4>{% trans 'Invoice Total by Object Type' %}</h4>
+			<h4>{% trans 'Invoice Total by Invoice Type' %}</h4>
 		    <div id="total_amount_pie" style="width: 430px; height: 300px;"></div>
            <div style="padding-left: 1.2em;">
 				{% for k, v in total_amount_d.items %}
-		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
+		          <span><a title="View list of invoices for {{ v.0 }} in this period" href="{% url 'invoice.search' %}?tendered=tendered&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
 		          {% endfor %}
 	        </div>
 
@@ -79,11 +84,11 @@
 	<div class="col-sm-6">
 	    <div class="panel panel-default">
 		  <div class="panel-body">
-		    <h4>{% trans 'Total Amount Paid by Object Type' %}</h4>
+		    <h4>{% trans 'Total Amount Paid by Invoice Type' %}</h4>
 		    <div id="total_amount_paid_pie" style="width: 430px; height: 300px;"></div>
 			<div style="padding-left: 1.2em;">
 				{% for k, v in amount_paid_d.items %}
-		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&balance=0&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
+		          <span><a title="View list of invoices paid for {{ v.0 }} in this period" href="{% url 'invoice.search' %}?tendered=tendered&balance=0&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>: {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
 		          {% endfor %}
 	        </div>
 		  </div>
@@ -98,7 +103,7 @@
 	    <div class="panel panel-default">
 	
 		  <div class="panel-body">
-			<h4>{% trans 'Total Credit Card Payment by Object Type' %}</h4>
+			<h4>{% trans 'Total Credit Card Payment by Invoice Type' %}</h4>
 		    <div id="total_cc_pie" style="width: 430px; height: 300px;"></div>
            <div style="padding-left: 1.2em;">
 				{% for k, v in total_cc_d.items %}
@@ -115,11 +120,11 @@
 	<div class="col-sm-6">
 	    <div class="panel panel-default">
 		  <div class="panel-body">
-		    <h4>{% trans 'Total Balance by Object Type' %}</h4>
+		    <h4>{% trans 'Total Balance by Invoice Type' %}</h4>
 		    <div id="total_balance_pie" style="width: 430px; height: 300px;"></div>
 			<div style="padding-left: 1.2em;">
 				{% for k, v in balance_d.items %}
-		          <span><a href="{% url 'invoice.search' %}?tendered=tendered&balance=1&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>:  {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
+		          <span><a title="View list of invoices with balance for {{ v.0 }} in this period" href="{% url 'invoice.search' %}?tendered=tendered&balance=1&object_type_id={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ v.0 }}</a>:  {{ v.1|format_currency }} ({{ v.2 }})</span>&nbsp;&nbsp;
 		          {% endfor %}
 	        </div>
 		  </div>
@@ -147,7 +152,7 @@
     	var options = {
     	          //title: '',
     	          colors: ['#3366CC', '#e2431e', '#1c91c0', '#e49307', '#24CBE5', '#DDDF00', '#ED561B', '#50B432'],
-				  pieHole: 0.4,
+				  //pieHole: 0.4,
     	        };
     	{% if invoice_total_amount  %}
         var total_amount_data = google.visualization.arrayToDataTable([
