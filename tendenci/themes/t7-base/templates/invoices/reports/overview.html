@@ -9,10 +9,12 @@
 {{ block.super }}
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" media="print" href="{% static 'css/invoices-report-print.css' %}" /> 
 <style>
 .total-cell a{
 	text-decoration: none !important;
 }
+
 </style>
 {% endblock %}
 

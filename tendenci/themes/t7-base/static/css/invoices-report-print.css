@@ -1,0 +1,22 @@
+@media print {
+	*, *:before, *:after {
+	    background: transparent !important;
+	    color: #000 !important;
+	    -webkit-box-shadow: none !important;
+	    box-shadow: none !important;
+	    text-shadow: none !important;
+	}
+	a[href]:after {
+		content: none !important;
+	}
+	
+	#admin-bar, #t-admin-megamenu {
+		display: none;
+	}
+	form, footer{
+		display: none !important;
+	}
+	h3, h4 {
+    page-break-after: avoid;
+  }
+}

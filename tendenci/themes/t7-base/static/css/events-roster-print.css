@@ -23,3 +23,8 @@ span.member-icon{
     background-color: transparent;
     color: #000;
 }
+@media print {
+  a[href]:after {
+    content: none !important;
+  }
+}
