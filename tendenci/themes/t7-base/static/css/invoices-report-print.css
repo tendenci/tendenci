@@ -13,10 +13,19 @@
 	#admin-bar, #t-admin-megamenu {
 		display: none;
 	}
-	form, footer{
+	form, footer, #footer-wrap, #footer-valid{
 		display: none !important;
 	}
-	h3, h4 {
-    page-break-after: avoid;
+	.break-on-print {
+    	page-break-before: always;
   }
+
+	#total_amount_pie, #total_amount_paid_pie, #total_cc_pie, #total_balance_pie{
+		width: 630px;
+		height: 500px;
+		page-break-inside: avoid;
+	}
+	.panel{
+		page-break-inside: avoid;
+	}
 }

@@ -14,6 +14,10 @@
 .total-cell a{
 	text-decoration: none !important;
 }
+#total_amount_pie, #total_amount_paid_pie, #total_cc_pie, #total_balance_pie{
+	width: 430px;
+	height: 300px;
+}
 
 </style>
 {% endblock %}
@@ -57,7 +61,7 @@
 			</td>
 			<td class="text-center total-cell"><a title="View list of invoices paid in this period" href="{% url 'invoice.search' %}?balance=0{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount_paid|format_currency }}</a></td>
 			<td class="text-center"><strong>{{ total_cc|format_currency }}</strong></td>
-			<td class="text-center total-cell"><a title="View list of invoices with balance in this period" href="{% url 'invoice.search' %}?balance=1{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_balance|format_currency }}</a></td>
+			<td class="text-center total-cell"><a title="View list of invoices with open balance in this period" href="{% url 'invoice.search' %}?balance=1{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_balance|format_currency }}</a></td>
 			<td class="text-center total-cell"><a title="View list of invoices in this period" href="{% url 'invoice.search' %}?submit=submit{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount|format_currency }}</a></td>
 		</tr>
 	</table>
@@ -70,7 +74,7 @@
 	
 		  <div class="panel-body">
 			<h4>{% trans 'Invoice Total by Invoice Type' %}</h4>
-		    <div id="total_amount_pie" style="width: 430px; height: 300px;"></div>
+		    <div id="total_amount_pie"></div>
 				<ul style="list-style-type:circle">
 				{% for k, v in total_amount_d.items %}
 		          <li><a title="View list of invoices for {{ k }} in this period" href="{% url 'invoice.search' %}?invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title }}</a>: {{ v.0|format_currency }} ({{ v.1 }})</li>
@@ -86,7 +90,7 @@
 	    <div class="panel panel-default">
 		  <div class="panel-body">
 		    <h4>{% trans 'Total Amount Paid by Invoice Type' %}</h4>
-		    <div id="total_amount_paid_pie" style="width: 430px; height: 300px;"></div>
+		    <div id="total_amount_paid_pie"></div>
 			<ul style="list-style-type:circle">
 				{% for k, v in amount_paid_d.items %}
 		          <li><a title="View list of invoices paid for {{ k }} in this period" href="{% url 'invoice.search' %}?balance=0&invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title  }}</a>: {{ v.0|format_currency }} ({{ v.1 }})</li>
@@ -105,7 +109,7 @@
 	
 		  <div class="panel-body">
 			<h4>{% trans 'Total Credit Card Payment by Invoice Type' %}</h4>
-		    <div id="total_cc_pie" style="width: 430px; height: 300px;"></div>
+		    <div id="total_cc_pie"></div>
             <ul style="list-style-type:circle">
 				{% for k, v in total_cc_d.items %}
 		          <li>{{ k|underscore_space|title  }}:  {{ v.0|format_currency }} ({{ v.1 }})</li>
@@ -122,7 +126,7 @@
 	    <div class="panel panel-default">
 		  <div class="panel-body">
 		    <h4>{% trans 'Total Amount Not Paid by Invoice Type' %}</h4>
-		    <div id="total_balance_pie" style="width: 430px; height: 300px;"></div>
+		    <div id="total_balance_pie"></div>
 			<ul style="list-style-type:circle">
 				{% for k, v in balance_d.items %}
 		          <li><a title="View list of invoices with balance for {{ k }} in this period" href="{% url 'invoice.search' %}?balance=1&invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title  }}</a>:  {{ v.0|format_currency }} ({{ v.1 }})</li>
@@ -159,7 +163,7 @@
         var total_amount_data = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in total_amount_d.items %}
-          [ "{{ k }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
           {% endfor %}
         ]);
 		//options['colors'] = ['#1c91c0', '#e49307'];
@@ -172,7 +176,7 @@
        var total_amount_paid_data = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in amount_paid_d.items %}
-          [ "{{ k }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
           {% endfor %}
          ]);
         //options['colors'] = ['#6F9654', '#f1ca3a'];
@@ -188,7 +192,7 @@
        var total_cc = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in total_cc_d.items %}
-          [ "{{ k }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
           {% endfor %}
          ]);
         //options['colors'] = ['#6F9654', '#f1ca3a'];
@@ -204,7 +208,7 @@
        var total_balance = google.visualization.arrayToDataTable([
           ['Action', 'Number'],
 		  {% for k, v in balance_d.items %}
-          [ "{{ k }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
           {% endfor %}
          ]);
         //options['colors'] = ['#6F9654', '#f1ca3a'];
