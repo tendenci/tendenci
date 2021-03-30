@@ -35,8 +35,9 @@
 		{% if form.start_dt.help_text %}
 		<i style="margin-left: 3em;">{{ form.start_dt.help_text }}</i><br />
 		{% endif %}
- 		{% trans 'From'%} {{ form.start_dt }} &nbsp;
- 		{% trans 'To'%} {{ form.end_dt }} 
+ 		{% trans 'From:' %} {{ form.start_dt }} &nbsp;
+ 		{% trans 'To:' %} {{ form.end_dt }} &nbsp;
+		{{ form.entity }}
  		<button class="btn btn-success" type="submit">
         <i alt="{% trans 'Submit' %}"></i> {% trans 'Go' %}
          </button>

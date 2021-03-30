@@ -43,6 +43,7 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
     if earliest_dt:
         form.fields['start_dt'].help_text = _(f'Earliest date: {earliest_dt.strftime("%Y-%m-%d")}')
     if form.is_valid():
+        entity = form.cleaned_data.get('entity', None)
         start_dt = form.cleaned_data.get('start_dt', None)
         end_dt = form.cleaned_data.get('end_dt', None)
         # first date of the year
@@ -61,6 +62,9 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
                                           create_dt__date__gte=start_dt,
                                           create_dt__date__lte=end_dt
                                           ).exclude(trans_id='')
+        if entity:
+            invoices = invoices.filter(entity=entity)
+            payments = payments.filter(invoice__entity=entity)
         invoice_total_amount = invoices.aggregate(Sum('total'))['total__sum'] or 0
         invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0

@@ -67,6 +67,7 @@ class AdminVoidForm(FormControlWidgetMixin, forms.ModelForm):
 
 
 class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
+    entity = forms.ChoiceField(choices=(), required=False)
     start_dt = forms.DateField(label=_('From'), required=False)
     end_dt = forms.DateField(label=_('To'), required=False,)
 
@@ -74,6 +75,8 @@ class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
         super(ReportsOverviewForm, self).__init__(*args, **kwargs)
         self.fields['start_dt'].widget.attrs['class'] += ' datepicker'
         self.fields['end_dt'].widget.attrs['class'] += ' datepicker'
+        entities = Invoice.objects.values('entity__id', 'entity__entity_name').order_by('entity__entity_name').distinct('entity__entity_name')
+        self.fields['entity'].choices = [('', _('ALL Entities')),] + [(item['entity__id'], item['entity__entity_name']) for item in entities]
 
 
 class InvoiceSearchForm(forms.Form):
