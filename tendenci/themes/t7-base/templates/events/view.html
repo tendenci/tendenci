@@ -309,7 +309,7 @@ div.pricing-list-wrap li{
         
         {% if event.place.description|striptags|wordcount > 50 %}
         <div class="line event-place-desc-short">
-          {{ event.place.description|striptags|truncatewords:"50" }}
+          {{ event.place.description|striptags|truncatewords:"50"|safe }}
         </div>
         <div class="line event-place-desc-long">
           {{ event.place.description|safe|linebreaks }}
