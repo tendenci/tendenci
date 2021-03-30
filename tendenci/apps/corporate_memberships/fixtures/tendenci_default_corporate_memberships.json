@@ -58,7 +58,7 @@
         "ud5": "",
         "state": "PA",
         "notes": "",
-        "email": "bleven@tendenci.com",
+        "email": "",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,
         "status": true,
@@ -112,7 +112,7 @@
         "ud5": "",
         "state": "TX",
         "notes": "",
-        "email": "communications@tendenci.com",
+        "email": "",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,
         "status": true,
@@ -166,7 +166,7 @@
         "ud5": "",
         "state": "TX",
         "notes": "",
-        "email": "rschipul@tendenci.com",
+        "email": "",
         "owner_username": "system_generated",
         "allow_anonymous_view": true,
         "status": true,
@@ -1409,25 +1409,10 @@
 },
 {
     "fields": {
-        "verified_dt": "2015-10-16T17:52:49.847",
-        "create_dt": "2015-10-16T17:52:23.855",
-        "verified": true,
-        "updated_by": null,
-        "creator": null,
-        "update_dt": "2015-10-16T17:52:49.847",
-        "guid": "90b76ea4-7458-11e5-aebb-0242ac11010e",
-        "corp_profile": 3,
-        "verified_email": "jqian@tendenci.com"
-    },
-    "model": "corporate_memberships.indivemailverification",
-    "pk": 1
-},
-{
-    "fields": {
-        "first_name": "Rachel",
-        "last_name": "Schipul",
+        "first_name": "Patrice",
+        "last_name": "Moreno",
         "hash": "2475881ccc5d710006bcb1808102fc2e",
-        "email": "rschipul@tendenci.com"
+        "email": "pmoreno@example.com"
     },
     "model": "corporate_memberships.creator",
     "pk": 1
