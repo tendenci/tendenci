@@ -1,3 +1,11 @@
+### 12.4.9 [2021-03-31]
+
+* Added an invoice reports overview.
+* Fixed photo upload crash with GPS info.
+* Resolved the issue regarding free corp memberships that are not required approval should be approved automatically.
+* Fixed a issue for event location summary formatting. 
+
+
 ### 12.4.8 [2021-03-23]
 
 * **SECURITY**: Bumped Pillow from 8.1.0 to 8.1.2 https://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html https://pillow.readthedocs.io/en/stable/releasenotes/8.1.2.html
