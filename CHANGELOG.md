@@ -1,3 +1,7 @@
+### 12.4.10 [2021-03-31]
+
+* Showed the link to invoice reports overview for superuser only (Hided from non-superuser).
+
 ### 12.4.9 [2021-03-31]
 
 * Added an invoice reports overview.
