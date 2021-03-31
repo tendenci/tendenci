@@ -70,6 +70,9 @@ def list_helpfiles(parser, token):
            The tags required on items to be included.
         ``random``
            Use this with a value of true to randomize the items included.
+        ``filters``
+            Use only single quotes for text inside. These will be placed inside Q() tags. Use &, |, and commas to separate values. You currently cannot combine & and | in a single filter section.
+            Comma separated groups will try to be grouped in a single statement.
 
     Example::
 

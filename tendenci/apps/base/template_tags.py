@@ -1,6 +1,6 @@
 from builtins import str
 import random
-from operator import or_
+from operator import or_, and_
 from functools import reduce
 
 from django.template import Node, Variable
@@ -76,6 +76,7 @@ class ListNode(Node):
         randomize = False
         group = u''
         status_detail = u'active'
+        user_filter = u''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -89,6 +90,16 @@ class ListNode(Node):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
+
+        if 'filters' in self.kwargs:
+            try:
+                user_filter = Variable(self.kwargs['filters'])
+                user_filter = user_filter.resolve(context)
+            except:
+                user_filter = self.kwargs['filters']
+
+            user_filter = user_filter.replace('"', '')
+            user_filter = user_filter.split(',')
 
         if 'user' in self.kwargs:
             try:
@@ -198,6 +209,37 @@ class ListNode(Node):
             items = self.custom_model_filter(items, user)
 
         objects = []
+
+        # this trusts the dev a lot to not break things
+        if user_filter:
+            for f in user_filter:
+                if "|" in f:
+                    f = f.split('|')
+                    f_qs = [fx.split('=') for fx in f]
+                    f_query = Q()
+
+                    for fxi in f_qs:
+                        f_query.add(Q(**{fxi[0].strip(): fxi[1].strip() }), Q.OR)
+
+                    # just filter on each find
+                    items = items.filter(f_query)
+                    
+                else:
+                    if "&" in f:
+                        f = f.split('&')
+                        f_qs = [fx.split('=') for fx in f]
+                        f_query = Q()
+
+                        for fxi in f_qs:
+                            f_query.add(Q(**{fxi[0].strip(): fxi[1].strip() }), Q.AND)
+
+                        # just filter on each find
+                        items = items.filter(f_query)
+
+                    else:
+                        fxi = f.split('=')
+                        f_query = Q(**{fxi[0].strip(): fxi[1].strip() })
+                        items = items.filter(f_query)          
 
         # exclude certain primary keys
         if exclude:
