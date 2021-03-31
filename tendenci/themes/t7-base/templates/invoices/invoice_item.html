@@ -4,7 +4,6 @@
 
 {% invoices_search_line_header request invoice '#000000' %}
 
-{% if obj %}
   <tr>
   <!-- Date -->
   <td>
@@ -29,11 +28,13 @@
 
   <!-- Item -->
   <td>
+	{% if obj %}
     {% if obj.get_absolute_url %}
     <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
     {% else %}
     {{ obj }}
     {% endif %}
+ 	{% endif %}
   </td>
 
   <!-- <td>{{ invoice.bill_to_email }}</td> -->
@@ -98,4 +99,4 @@
   </td>
 
 </tr>
-{% endif %}
+

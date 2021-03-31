@@ -82,16 +82,16 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
 
         for item in total_amount_by_object_type:
             if item['sum']:
-                total_amount_d[item['object_type__app_label']] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
+                total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
         for item in amount_paid_by_object_type:
             if item['sum']:
-                amount_paid_d[item['object_type__app_label']] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
+                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
         for item in total_balance_by_object_type:
             if item['balance_sum']:
-                balance_d[item['object_type__app_label']] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
+                balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
         for item in total_cc_by_object_type:
             if item['sum']:
-                total_cc_d[item['invoice__object_type__app_label']] = [item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
+                total_cc_d[item['invoice__object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
 
     return render_to_resp(request=request, template_name=template_name,
         context={'form':form,
@@ -402,8 +402,11 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.filter(**search_filter)
 
     if invoice_type:
-        content_type = ContentType.objects.filter(app_label=invoice_type)
-        invoices = invoices.filter(object_type__in=content_type)
+        if invoice_type == 'unknown':
+            invoices = invoices.filter(object_type=None)
+        else:
+            content_type = ContentType.objects.filter(app_label=invoice_type)
+            invoices = invoices.filter(object_type__in=content_type)
         if invoice_type == 'events':
             # Set event filters
             event_set = set()

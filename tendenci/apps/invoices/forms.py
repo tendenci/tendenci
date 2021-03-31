@@ -158,6 +158,8 @@ class InvoiceSearchForm(forms.Form):
         for entry in invoices:
             if entry.object_type:
                 invoice_choices.append((entry.object_type.app_label, entry.object_type.app_label))
+            else:
+                invoice_choices.append(('unknown', _('Unknown')))
         self.fields['invoice_type'].choices = invoice_choices
 
         # Set event_id choices
