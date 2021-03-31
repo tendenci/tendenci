@@ -427,7 +427,9 @@ def make_range(value):
 
 @register.filter
 def underscore_space(value):
-    return value.replace("_", " ")
+    if isinstance(value, str):
+        return value.replace("_", " ")
+    return value
 
 @register.filter
 def format_string(value, arg):
