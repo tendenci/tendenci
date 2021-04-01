@@ -73,7 +73,7 @@ def list_helpfiles(parser, token):
         ``filters``
             Use only single quotes for text where needed. These will be placed inside Q() tags. 
             Use &, |, and commas to separate values. 
-            Only one opperator is allowed per comma separated group.
+            Only one operator is allowed per comma separated group.
             Each comma separated group will be applied in a single statement.
             If more is required a custom function should be made.
             ex: {% list_helpfiles as help_files_list filters="is_faq=True&is_featured=True" %}

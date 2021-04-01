@@ -1,6 +1,6 @@
 from builtins import str
 import random
-from operator import or_, and_
+from operator import or_
 from functools import reduce
 
 from django.template import Node, Variable
