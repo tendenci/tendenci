@@ -6,7 +6,7 @@ body {
 #page-top a:hover {
   text-decoration: none;
 }
-#page-top img:not(.square. .full) {
+#page-top img:not(.square, .full) {
   display: block;
   vertical-align: middle;
   max-width: 100%;
