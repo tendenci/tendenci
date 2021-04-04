@@ -36,9 +36,11 @@ from tendenci.apps.site_settings.utils import get_setting
 
 @superuser_required
 def reports_overview(request, template_name="invoices/reports/overview.html"):
-    form = ReportsOverviewForm(request.GET)
     today = date.today()
+    first_date_of_year = date(today.year, 1, 1)
     is_y2d = False
+    form = ReportsOverviewForm(request.GET, initial={'start_dt': first_date_of_year,
+                                                     'end_dt': today})
     [earliest_dt] = Invoice.objects.order_by('create_dt').values_list('create_dt', flat=True)[:1] or [None]
     if earliest_dt:
         form.fields['start_dt'].help_text = _(f'Earliest date: {earliest_dt.strftime("%Y-%m-%d")}')
@@ -47,8 +49,7 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         start_dt = form.cleaned_data.get('start_dt', None)
         end_dt = form.cleaned_data.get('end_dt', None)
         # first date of the year
-        first_date_of_year = date(today.year, 1, 1)
-        today = date.today()
+        
         is_y2d = not (start_dt or end_dt) or (start_dt == first_date_of_year and end_dt==today)
         if not start_dt:
             start_dt = first_date_of_year

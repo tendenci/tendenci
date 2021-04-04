@@ -71,8 +71,11 @@ class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
     start_dt = forms.DateField(label=_('From'), required=False)
     end_dt = forms.DateField(label=_('To'), required=False,)
 
-    def __init__(self, *args, **kwargs):
-        super(ReportsOverviewForm, self).__init__(*args, **kwargs)
+    def __init__(self, data, **kwargs):
+        initial = kwargs.get('initial', {})
+        if not data:
+            data = {**initial, **data}
+        super(ReportsOverviewForm, self).__init__(data, **kwargs)
         self.fields['start_dt'].widget.attrs['class'] += ' datepicker'
         self.fields['end_dt'].widget.attrs['class'] += ' datepicker'
         entities = Invoice.objects.values('entity__id', 'entity__entity_name').order_by('entity__entity_name').distinct('entity__entity_name')
