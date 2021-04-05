@@ -76,7 +76,7 @@
         "client_editable": true,
         "name": "donationsallocations",
         "value": "",
-        "label": "Donation Allocatons",
+        "label": "Donation Allocations",
         "input_value": " ",
         "parent_id": 0,
         "scope": "module",
