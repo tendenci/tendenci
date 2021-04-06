@@ -25,6 +25,9 @@ def post_saved(instance, **kwargs):
 
 
 def post_deleted(instance, **kwargs):
+    if not instance.user:
+        # user has been deleted, no need to update the post_count on their profile
+        return
     Profile = util.get_pybb_profile_model()
     User = compat.get_user_model()
     try:

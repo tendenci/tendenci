@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from django import forms
 from django.db.models.fields import CharField, DecimalField
 from django.utils.translation import ugettext_lazy as _
@@ -63,7 +64,22 @@ class AdminVoidForm(FormControlWidgetMixin, forms.ModelForm):
         model = Invoice
         fields = ('void_reason',
                   )
-        
+
+
+class ReportsOverviewForm(FormControlWidgetMixin, forms.Form):
+    entity = forms.ChoiceField(choices=(), required=False)
+    start_dt = forms.DateField(label=_('From'), required=False)
+    end_dt = forms.DateField(label=_('To'), required=False,)
+
+    def __init__(self, data, **kwargs):
+        initial = kwargs.get('initial', {})
+        if not data:
+            data = {**initial, **data}
+        super(ReportsOverviewForm, self).__init__(data, **kwargs)
+        self.fields['start_dt'].widget.attrs['class'] += ' datepicker'
+        self.fields['end_dt'].widget.attrs['class'] += ' datepicker'
+        entities = Invoice.objects.values('entity__id', 'entity__entity_name').order_by('entity__entity_name').distinct('entity__entity_name')
+        self.fields['entity'].choices = [('', _('ALL Entities')),] + [(item['entity__id'], item['entity__entity_name']) for item in entities]
 
 
 class InvoiceSearchForm(forms.Form):
@@ -114,6 +130,7 @@ class InvoiceSearchForm(forms.Form):
                                    required=False,
                                    empty_label=_('All Events'))
     event_id = forms.ChoiceField(label=_('Event ID'), required=False, choices=[])
+    object_type_id = forms.IntegerField(widget=forms.HiddenInput, required=False)
 
     def __init__(self, *args, **kwargs):
         super(InvoiceSearchForm, self).__init__(*args, **kwargs)
@@ -144,6 +161,8 @@ class InvoiceSearchForm(forms.Form):
         for entry in invoices:
             if entry.object_type:
                 invoice_choices.append((entry.object_type.app_label, entry.object_type.app_label))
+            else:
+                invoice_choices.append(('unknown', _('Unknown')))
         self.fields['invoice_type'].choices = invoice_choices
 
         # Set event_id choices

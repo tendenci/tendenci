@@ -1,0 +1,31 @@
+@media print {
+	*, *:before, *:after {
+	    background: transparent !important;
+	    color: #000 !important;
+	    -webkit-box-shadow: none !important;
+	    box-shadow: none !important;
+	    text-shadow: none !important;
+	}
+	a[href]:after {
+		content: none !important;
+	}
+	
+	#admin-bar, #t-admin-megamenu {
+		display: none;
+	}
+	form, footer, #footer-wrap, #footer-valid{
+		display: none !important;
+	}
+	.break-on-print {
+    	page-break-before: always;
+  }
+
+	#total_amount_pie, #total_amount_paid_pie, #total_cc_pie, #total_balance_pie{
+		width: 630px;
+		height: 500px;
+		page-break-inside: avoid;
+	}
+	.panel{
+		page-break-inside: avoid;
+	}
+}

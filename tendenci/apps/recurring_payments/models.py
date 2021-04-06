@@ -109,6 +109,8 @@ class RecurringPayment(models.Model):
 
     class Meta:
         app_label = 'recurring_payments'
+        verbose_name = _("Recurring Payment")
+        verbose_name_plural = _("Recurring Payments")
 
     def __str__(self):
         return '%s - %s' % (self.user, self.description)

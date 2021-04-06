@@ -1,5 +1,3 @@
-
-from builtins import str
 import uuid
 import os
 from PIL import Image as PILImage
@@ -11,6 +9,7 @@ from PIL import ImageEnhance
 from datetime import datetime
 from inspect import isclass
 from io import BytesIO
+from urllib.parse import urlencode
 
 from django.db import models
 from django.urls import reverse
@@ -49,6 +48,8 @@ from tendenci.apps.photos.utils.reflection import add_reflection
 from tendenci.apps.photos.utils.watermark import apply_watermark
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.theme.templatetags.static import static
+from tendenci.apps.site_settings.utils import get_setting
+
 
 # max_length setting for the ImageModel ImageField
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)
@@ -817,32 +818,37 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
 
         self.exif_data['lat'], self.exif_data['lng'] = self.get_lat_lng(
                                     self.exif_data.get('GPSInfo'))
+        
         self.exif_data['location'] = self.get_location_via_latlng(
                                             self.exif_data['lat'],
                                             self.exif_data['lng']
                                         )
         return True
 
+    def convert_dms_to_dd_coordinates(self, coordinates, coordinates_ref):
+        decimal_degrees = float(coordinates[0]) + float(coordinates[1]) / 60 + float(coordinates[2]) / 3600
+
+        if coordinates_ref in ["S", "W"]:
+            decimal_degrees = -decimal_degrees
+
+        return decimal_degrees
+
     def get_lat_lng(self, gps_info):
         """
         Calculate the latitude and longitude from gps_info.
         """
-        lat, lng = None, None
-        if isinstance(gps_info, dict):
-            try:
-                lat = [float(x)/float(y) for x, y in gps_info[2]]
-                latref = gps_info[1]
-                lng = [float(x)/float(y) for x, y in gps_info[4]]
-                lngref = gps_info[3]
-            except (KeyError, ZeroDivisionError):
-                return None, None
+        if not gps_info:
+            return None, None
 
-            lat = lat[0] + lat[1]/60 + lat[2]/3600
-            lng = lng[0] + lng[1]/60 + lng[2]/3600
-            if latref == 'S':
-                lat = -lat
-            if lngref == 'W':
-                lng = -lng
+        try:
+            dms_lat = gps_info[2]
+            latref = gps_info[1]
+            lat = self.convert_dms_to_dd_coordinates(dms_lat, latref)
+            dms_lng = gps_info[4]
+            lngref = gps_info[3]
+            lng = self.convert_dms_to_dd_coordinates(dms_lng, lngref)
+        except KeyError:
+            return None, None
 
         return lat, lng
 
@@ -851,14 +857,20 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         Get location via lat and lng.
         """
         if lat and lng:
-            url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&sensor=false' % (lat, lng)
-            r = requests.get(url)
-            if r.status_code == 200:
-                data = simplejson.loads(r.content)
-                for result in data.get('results'):
-                    types = result.get('types')
-                    if types and types[0] == 'postal_code':
-                        return result.get('formatted_address')
+            api_key = get_setting('module', 'locations', 'google_geocoding_api_key')
+            if api_key:
+                GEOCODE_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+                opts = {'sensor': 'false',
+                        'latlng': f'{lat},{lng}',
+                        'key': api_key}
+                url = f'{GEOCODE_BASE_URL}?{urlencode(opts)}'
+                r = requests.get(url)
+                if r.status_code == 200:
+                    data = simplejson.loads(r.content)
+                    for result in data.get('results'):
+                        types = result.get('types')
+                        if types and types[0] == 'postal_code':
+                            return result.get('formatted_address')
         return None
 
     def meta_keywords(self):

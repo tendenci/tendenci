@@ -669,6 +669,14 @@ def _get_next(request):
 def password_change(request, id, template_name='registration/custom_password_change_form.html',
                     post_change_redirect=None, password_change_form=ValidatingPasswordChangeForm):
     user_edit = get_object_or_404(User, pk=id)
+    try:
+        profile = user_edit.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user_edit)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+
     if post_change_redirect is None:
         post_change_redirect = reverse('profile', kwargs={'username': user_edit.username})
     if request.method == "POST":

@@ -1,7 +1,4 @@
-
-
-from builtins import str
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 import time as ttime
 import subprocess
 
@@ -18,6 +15,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.template.loader import get_template
+from django.db.models import Sum
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -29,10 +27,86 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.invoices.forms import ReportsOverviewForm, AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
 from tendenci.apps.invoices.utils import invoice_pdf
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
+
+
+@superuser_required
+def reports_overview(request, template_name="invoices/reports/overview.html"):
+    today = date.today()
+    first_date_of_year = date(today.year, 1, 1)
+    is_y2d = False
+    form = ReportsOverviewForm(request.GET, initial={'start_dt': first_date_of_year,
+                                                     'end_dt': today})
+    [earliest_dt] = Invoice.objects.order_by('create_dt').values_list('create_dt', flat=True)[:1] or [None]
+    if earliest_dt:
+        form.fields['start_dt'].help_text = _(f'Earliest date: {earliest_dt.strftime("%Y-%m-%d")}')
+    if form.is_valid():
+        entity = form.cleaned_data.get('entity', None)
+        start_dt = form.cleaned_data.get('start_dt', None)
+        end_dt = form.cleaned_data.get('end_dt', None)
+        # first date of the year
+        
+        is_y2d = not (start_dt or end_dt) or (start_dt == first_date_of_year and end_dt==today)
+        if not start_dt:
+            start_dt = first_date_of_year
+        if not end_dt:
+            end_dt = today
+        invoices = Invoice.objects.filter(is_void=False,
+                                          create_dt__date__gte=start_dt,
+                                          create_dt__date__lte=end_dt)
+        payments = Payment.objects.filter(status_detail='approved',
+                                          invoice__is_void=False,
+                                          create_dt__date__gte=start_dt,
+                                          create_dt__date__lte=end_dt
+                                          ).exclude(trans_id='')
+        if entity:
+            invoices = invoices.filter(entity=entity)
+            payments = payments.filter(invoice__entity=entity)
+        invoice_total_amount = invoices.aggregate(Sum('total'))['total__sum'] or 0
+        invoice_total_amount_paid = invoices.filter(balance__lte=0).aggregate(Sum('total'))['total__sum'] or 0
+        invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
+        total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        total_amount_by_object_type = invoices.values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
+        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
+        total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').order_by('-balance_sum').annotate(balance_sum=Sum('balance'))
+        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').order_by('-sum').annotate(sum=Sum('amount'))
+
+        total_amount_d = {}
+        amount_paid_d = {}
+        balance_d = {}
+        total_cc_d = {}
+
+        for item in total_amount_by_object_type:
+            if item['sum']:
+                total_amount_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount)]
+        for item in amount_paid_by_object_type:
+            if item['sum']:
+                amount_paid_d[item['object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/invoice_total_amount_paid)]
+        for item in total_balance_by_object_type:
+            if item['balance_sum']:
+                balance_d[item['object_type__app_label'] or 'unknown'] = [item['balance_sum'], '{0:.2%}'.format(item['balance_sum']/invoice_total_balance)]
+        for item in total_cc_by_object_type:
+            if item['sum']:
+                total_cc_d[item['invoice__object_type__app_label'] or 'unknown'] = [item['sum'], '{0:.2%}'.format(item['sum']/total_cc)]
+
+    return render_to_resp(request=request, template_name=template_name,
+        context={'form':form,
+                 'start_dt': start_dt,
+                 'end_dt': end_dt,
+                 'is_y2d': is_y2d,
+                 'total_amount_d': total_amount_d,
+                 'amount_paid_d': amount_paid_d,
+                 'balance_d': balance_d,
+                 'total_cc_d': total_cc_d,
+                 'invoice_total_amount': invoice_total_amount,
+                 'invoice_total_amount_paid': invoice_total_amount_paid,
+                 'invoice_total_balance': invoice_total_balance,
+                 'total_cc': total_cc})
 
 
 @is_enabled('invoices')
@@ -247,9 +321,9 @@ def search(request, template_name="invoices/search.html"):
     invoice_type = u''
     event = None
     event_id = None
+    object_type_id = None
 
     form = InvoiceSearchForm(request.GET)
-
     if form.is_valid():
         start_dt = form.cleaned_data.get('start_dt')
         end_dt = form.cleaned_data.get('end_dt')
@@ -264,6 +338,7 @@ def search(request, template_name="invoices/search.html"):
         invoice_type = form.cleaned_data.get('invoice_type')
         event = form.cleaned_data.get('event')
         event_id = form.cleaned_data.get('event_id')
+        object_type_id = form.cleaned_data.get('object_type_id')
 
     if tendered:
         if 'void' in tendered:
@@ -328,8 +403,11 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.filter(**search_filter)
 
     if invoice_type:
-        content_type = ContentType.objects.filter(app_label=invoice_type)
-        invoices = invoices.filter(object_type__in=content_type)
+        if invoice_type == 'unknown':
+            invoices = invoices.filter(object_type=None)
+        else:
+            content_type = ContentType.objects.filter(app_label=invoice_type)
+            invoices = invoices.filter(object_type__in=content_type)
         if invoice_type == 'events':
             # Set event filters
             event_set = set()
@@ -339,6 +417,10 @@ def search(request, template_name="invoices/search.html"):
                 event_set.add(event_id)
             if event or event_id:
                 invoices = invoices.filter(registration__event__pk__in=event_set)
+    if object_type_id:
+        [content_type] = ContentType.objects.filter(id=object_type_id)[:1] or [None]
+        if content_type:
+            invoices = invoices.filter(object_type=content_type)
 
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')

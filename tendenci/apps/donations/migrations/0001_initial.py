@@ -43,5 +43,6 @@ class Migration(migrations.Migration):
                 ('owner', models.ForeignKey(related_name='donation_owner', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
+            options={'verbose_name': 'Donation', 'verbose_name_plural': 'Donations'},
         ),
     ]

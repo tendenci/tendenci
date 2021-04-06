@@ -1,0 +1,235 @@
+{% extends "invoices/base.html" %}
+{% load bootstrap_pagination_tags %}
+{% load invoice_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Invoice Reports Overview' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'timepicker/timepicker.css' %}" />
+<link rel="stylesheet" media="print" href="{% static 'css/invoices-report-print.css' %}" /> 
+<style>
+.total-cell a{
+	text-decoration: none !important;
+}
+#total_amount_pie, #total_amount_paid_pie, #total_cc_pie, #total_balance_pie{
+	width: 430px;
+	height: 300px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="t-invoice-reports">
+
+  <div class="page-header">
+     <h1>{% trans "Invoice Reports Overview" %}</h1>
+  </div>
+
+<form action="." method="get">
+<div class="row form-inline">
+    <div class="col-md-12 form-group">
+		{% if form.start_dt.help_text %}
+		<i style="margin-left: 3em;">{{ form.start_dt.help_text }}</i><br />
+		{% endif %}
+ 		{% trans 'From:' %} {{ form.start_dt }} &nbsp;
+ 		{% trans 'To:' %} {{ form.end_dt }} &nbsp;
+		{{ form.entity }}
+ 		<button class="btn btn-success" type="submit">
+        <i alt="{% trans 'Submit' %}"></i> {% trans 'Go' %}
+         </button>
+    </div>
+</div>
+</form>
+<div>&nbsp;</div>
+<div class="row" style="margin: auto;">
+	<table class="table table-striped table-bordered table-hover">
+		<tr>
+			<th>{% trans "Date Period" %}</th>
+			<th class="text-center">{% trans 'Total Amount Paid' %}</th>
+			<th class="text-center">{% trans 'Total Credit Card Payment' %}</th>
+			<th class="text-center">{% trans "Total Amount Not Paid" %}</th>
+			<th class="text-center">{% trans 'Invoice Total' %}</th>
+		</tr>
+		<tr>
+			<td>{{ start_dt }} - {{ end_dt }}
+			{% if is_y2d  %}
+			<br />{% trans "(Year to Date)" %}
+			{% endif %}
+			</td>
+			<td class="text-center total-cell"><a title="View list of invoices paid in this period" href="{% url 'invoice.search' %}?balance=0{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount_paid|format_currency }}</a></td>
+			<td class="text-center"><strong>{{ total_cc|format_currency }}</strong></td>
+			<td class="text-center total-cell"><a title="View list of invoices with open balance in this period" href="{% url 'invoice.search' %}?balance=1{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_balance|format_currency }}</a></td>
+			<td class="text-center total-cell"><a title="View list of invoices in this period" href="{% url 'invoice.search' %}?submit=submit{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ invoice_total_amount|format_currency }}</a></td>
+		</tr>
+	</table>
+</div>
+
+<div class="row">
+	{% if invoice_total_amount  %}
+	<div class="col-sm-6">
+	    <div class="panel panel-default">
+	
+		  <div class="panel-body">
+			<h4>{% trans 'Invoice Total by Invoice Type' %}</h4>
+		    <div id="total_amount_pie"></div>
+				<ul style="list-style-type:circle">
+				{% for k, v in total_amount_d.items %}
+		          <li><a title="View list of invoices for {{ k }} in this period" href="{% url 'invoice.search' %}?invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title }}</a>: {{ v.0|format_currency }} ({{ v.1 }})</li>
+		          {% endfor %}
+				</ul>
+		  </div>
+		</div>
+	</div>
+	{% endif %}
+	
+	{% if invoice_total_amount_paid  %}
+	<div class="col-sm-6">
+	    <div class="panel panel-default">
+		  <div class="panel-body">
+		    <h4>{% trans 'Total Amount Paid by Invoice Type' %}</h4>
+		    <div id="total_amount_paid_pie"></div>
+			<ul style="list-style-type:circle">
+				{% for k, v in amount_paid_d.items %}
+		          <li><a title="View list of invoices paid for {{ k }} in this period" href="{% url 'invoice.search' %}?balance=0&invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title  }}</a>: {{ v.0|format_currency }} ({{ v.1 }})</li>
+		          {% endfor %}
+	        </ul>
+		  </div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+      
+<div class="row">
+	{% if total_cc  %}
+	<div class="col-sm-6">
+	    <div class="panel panel-default">
+	
+		  <div class="panel-body">
+			<h4>{% trans 'Total Credit Card Payment by Invoice Type' %}</h4>
+		    <div id="total_cc_pie"></div>
+            <ul style="list-style-type:circle">
+				{% for k, v in total_cc_d.items %}
+		          <li>{{ k|underscore_space|title  }}:  {{ v.0|format_currency }} ({{ v.1 }})</li>
+		          {% endfor %}
+	        </ul>
+
+		  </div>
+		</div>
+	</div>
+	{% endif %}
+	
+	{% if invoice_total_balance  %}
+	<div class="col-sm-6">
+	    <div class="panel panel-default">
+		  <div class="panel-body">
+		    <h4>{% trans 'Total Amount Not Paid by Invoice Type' %}</h4>
+		    <div id="total_balance_pie"></div>
+			<ul style="list-style-type:circle">
+				{% for k, v in balance_d.items %}
+		          <li><a title="View list of invoices with balance for {{ k }} in this period" href="{% url 'invoice.search' %}?balance=1&invoice_type={{ k }}{% if start_dt %}&start_dt={{ start_dt|date:'Y-m-d' }}{% endif %}{% if end_dt %}&end_dt={{ end_dt|date:'Y-m-d' }}{% endif %}">{{ k|underscore_space|title  }}</a>:  {{ v.0|format_currency }} ({{ v.1 }})</li>
+		          {% endfor %}
+	        </ul>
+		  </div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% if invoice_total_amount or invoice_total_amount_paid or total_cc_d or balance_d %}
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+    	var options = {
+    	          //title: '',
+    	          colors: ['#3366CC', '#e2431e', '#1c91c0', '#e49307', '#24CBE5', '#DDDF00', '#ED561B', '#50B432'],
+				  //pieHole: 0.4,
+    	        };
+    	{% if invoice_total_amount  %}
+        var total_amount_data = google.visualization.arrayToDataTable([
+          ['Action', 'Number'],
+		  {% for k, v in total_amount_d.items %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        ]);
+		//options['colors'] = ['#1c91c0', '#e49307'];
+		//options['title'] = 'Invoice Total Amount by Module'
+
+        var chart = new google.visualization.PieChart(document.getElementById('total_amount_pie'));
+        chart.draw(total_amount_data, options);
+		{% endif %}
+       {% if invoice_total_amount_paid  %}
+       var total_amount_paid_data = google.visualization.arrayToDataTable([
+          ['Action', 'Number'],
+		  {% for k, v in amount_paid_d.items %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          {% endfor %}
+         ]);
+        //options['colors'] = ['#6F9654', '#f1ca3a'];
+		//options['title'] = 'Total Amount Paid by Module'
+		//options['pieStartAngle'] = 180
+		options['colors'] = ['#50B432', '#ed6270', '#1c91c0', '#DDDF00', '#ED561B', '#04a0f9', '#e49307', '2bdb25', '#24CBE5'];
+
+       var chart = new google.visualization.PieChart(document.getElementById('total_amount_paid_pie'));
+       chart.draw(total_amount_paid_data, options);
+	   {% endif %}
+
+	   {% if total_cc  %}
+       var total_cc = google.visualization.arrayToDataTable([
+          ['Action', 'Number'],
+		  {% for k, v in total_cc_d.items %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          {% endfor %}
+         ]);
+        //options['colors'] = ['#6F9654', '#f1ca3a'];
+		//options['title'] = 'Total Amount Paid by Module'
+		//options['pieStartAngle'] = 180
+		options['colors'] = ['#24CBE5', '#DDDF00', '#04a0f9', '#1c91c0', '#50B432', '#ed6270', '#e49307', '2bdb25', '#ED561B'];
+
+       var chart = new google.visualization.PieChart(document.getElementById('total_cc_pie'));
+       chart.draw(total_cc, options);
+	   {% endif %}
+
+		{% if invoice_total_balance  %}
+       var total_balance = google.visualization.arrayToDataTable([
+          ['Action', 'Number'],
+		  {% for k, v in balance_d.items %}
+          [ "{{ k|underscore_space|title }}",     {{ v.0 }}]{% if not forloop.last %},{% endif %}
+          {% endfor %}
+         ]);
+        //options['colors'] = ['#6F9654', '#f1ca3a'];
+		//options['title'] = 'Total Amount Paid by Module'
+		//options['pieStartAngle'] = 180
+		options['colors'] = ['#e49307', '#ED561B', '2bdb25', '#24CBE5', '#50B432', '#ed6270', '#1c91c0', '#DDDF00', '#04a0f9'];
+
+       var chart = new google.visualization.PieChart(document.getElementById('total_balance_pie'));
+       chart.draw(total_balance, options);
+	   {% endif %}
+ 
+      }
+      
+  </script>  
+{% endif %}
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+	  $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+	  });
+</script>
+{% endblock %}

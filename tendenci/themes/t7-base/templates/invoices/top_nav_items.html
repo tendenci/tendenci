@@ -28,6 +28,13 @@
                         </li>
                     {% endif %}
 
+					{% if user.profile.is_superuser %}
+					<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'invoices.reports_overview' %}">{% trans "Invoice Reports Overview" %}</a>
+                            </span>
+                        </li>
+					{% endif %}
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'invoice.search' %}">{% trans "Search Invoices" %}</a>

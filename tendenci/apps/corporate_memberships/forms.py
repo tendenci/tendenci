@@ -1063,7 +1063,7 @@ class CorpApproveForm(forms.Form):
 
 
 class CorpMembershipRepForm(forms.ModelForm):
-    user_display = forms.CharField(max_length=100,
+    user_display = forms.CharField(max_length=800,
                         required=False,
                         help_text=_('Rep must be a valid user on the website. Enter name or username or email, then press the down arrow key to select a suggestion'))
 

@@ -363,16 +363,22 @@ def corpmembership_add(request, slug='',
             # log an event
             EventLog.objects.log(instance=corp_membership)
             # handle online payment
-            if corp_membership.payment_method.is_online:
-                if corp_membership.invoice and \
+            if corp_membership.payment_method.is_online and \
+                    corp_membership.invoice and \
                     corp_membership.invoice.balance > 0:
-                    return HttpResponseRedirect(
-                                    reverse('payment.pay_online',
-                                    args=[corp_membership.invoice.id,
-                                          corp_membership.invoice.guid]))
+                return HttpResponseRedirect(
+                                reverse('payment.pay_online',
+                                args=[corp_membership.invoice.id,
+                                      corp_membership.invoice.guid]))
             else:
-                if is_superuser and corp_membership.status \
-                    and corp_membership.status_detail == 'active':
+                # Approve automatically in these two cases
+                # 1) Free corporate memberships with "for Non-Paid Only" selected as require approval, and
+                #    user is logged in.
+                # 2) Superuser with active corporate memberships.
+                if any([request.user.is_authenticated and \
+                        corp_membership.invoice.balance == 0 and \
+                        corp_memb_type.require_approval == 'for_non_paid_only',
+                        is_superuser and corp_membership.status_detail == 'active']):
                     corp_membership.approve_join(request)
 
             return HttpResponseRedirect(reverse('corpmembership.add_conf',

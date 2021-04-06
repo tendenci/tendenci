@@ -38,10 +38,11 @@ except ImportError:
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.helpdesk.forms import TicketForm, UserSettingsForm, EmailIgnoreForm, EditTicketForm, TicketCCForm, EditFollowUpForm, TicketDependencyForm
 from tendenci.apps.helpdesk.lib import send_templated_mail, query_to_dict, apply_query, safe_template_context
-from tendenci.apps.helpdesk.models import Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch, IgnoreEmail, TicketCC, TicketDependency, QueueMembership
+from tendenci.apps.helpdesk.models import UserSettings, Ticket, Queue, FollowUp, TicketChange, PreSetReply, Attachment, SavedSearch, IgnoreEmail, TicketCC, TicketDependency, QueueMembership
 from tendenci.apps.helpdesk import settings as helpdesk_settings
 from tendenci.apps.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.helpdesk.settings import DEFAULT_USER_SETTINGS
 
 if helpdesk_settings.HELPDESK_ALLOW_NON_STAFF_TICKET_UPDATE:
     # treat 'normal' users like 'staff'
@@ -945,6 +946,8 @@ def create_ticket(request):
             return HttpResponseRedirect(ticket.get_absolute_url())
     else:
         initial_data = {}
+        if not hasattr(request.user, 'usersettings'):
+            UserSettings.objects.create(user=request.user, settings=DEFAULT_USER_SETTINGS)
         if request.user.usersettings.settings.get('use_email_as_submitter', False) and request.user.email:
             initial_data['submitter_email'] = request.user.email
         if 'queue' in request.GET:
