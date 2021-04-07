@@ -1,3 +1,13 @@
+### 12.4.12 [2021-04-07]
+
+* Bumped Django to 2.2.20.
+* Added a link to chapters under the community tab. 
+* Added an "Add Event" link to the Apps menu. 
+* Fixed an AttributeError for forums post deletion.
+* Updated invoice reports overview to display default date range and to handle invoices without object type.
+* Updated translation for pt_BR (Thanks @farribeiro)
+
+
 ### 12.4.10 [2021-03-31]
 
 * Showed the link to invoice reports overview for superuser only (Hided from non-superuser).
