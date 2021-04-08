@@ -41,11 +41,17 @@
                     </li>
 
                     {% if user.is_authenticated %}
+						<li class="content-item">
+                            <span class="app-name">
+                                <a href="{% url 'directory.my_directories_only' %}">{% trans "My" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans "directories" %}</a>
+                            </span>
+                        </li> 
+
                         <li class="content-item">
                             <span class="app-name">
                                 <a href="{% url 'directory.add' %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL trans "Directory" %}</a>
                             </span>
-                        </li>
+                        </li>	
                     {% endif %}
 
                     {% if can_view_directories and can_edit_directories %}
