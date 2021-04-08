@@ -1170,6 +1170,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+        
+        if 'industry' in self.fields:
+            # the industry has been moved to profile
+            del self.fields['industry']
 
         # NOTE: customer attr is needed by MembershipTypeModelChoiceField!
         self.fields['membership_type'].customer = customer
@@ -1691,7 +1695,6 @@ class MembershipDefaultForm(TendenciBaseForm):
             'license_number',
             'license_state',
             'region',
-            'industry',
             'company_size',
             'promotion_code',
             'directory',
@@ -1726,6 +1729,9 @@ class MembershipDefaultForm(TendenciBaseForm):
             if isinstance(request.user, User):
                 request_user = request.user
 
+        instance = kwargs.get('instance', None)
+        if instance and instance.user.profile:
+            instance.industry = instance.user.profile.industry
         super(MembershipDefaultForm, self).__init__(*args, **kwargs)
 
         # initialize field widgets ---------------------------
@@ -1784,6 +1790,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
             profile_attrs = [
                 'email2',
+                'industry',
                 'company',
                 'department',
                 'position_title',
@@ -2134,6 +2141,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         # profile.display_name = self.cleaned_data.get('display_name', u'')
         profile_attrs = [
             'display_name',
+            'industry',
             'company',
             'position_title',
             'education',

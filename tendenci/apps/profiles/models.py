@@ -21,6 +21,7 @@ from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.industries.models import Industry
 #from tendenci.apps.user_groups.models import Group
 
 
@@ -56,6 +57,7 @@ class Profile(Person):
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=250, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)

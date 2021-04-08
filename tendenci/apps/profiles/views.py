@@ -172,8 +172,8 @@ def index(request, username='', template_name="profiles/index.html"):
     recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
     # industry
-    if memberships and get_setting('module', 'users', 'showindustry'):
-        industries = list(memberships.exclude(industry=None).values_list('industry__industry_name', flat=True))
+    if profile.industry and get_setting('module', 'users', 'showindustry'):
+        industries = [profile.industry]
     else:
         industries = None
 
@@ -368,8 +368,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             user__membershipdefault__membership_type_id=membership_type)
 
     if industry:
-        profiles = profiles.filter(user__membershipdefault__status_detail='active',
-            user__membershipdefault__industry_id=industry)
+        profiles = profiles.filter(industry_id=industry)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
     base_template = 'profiles/base-wide.html'

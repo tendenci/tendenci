@@ -214,6 +214,7 @@ class ProfileForm(TendenciBaseForm):
                   'mobile_phone',
                   'email',
                   'email2',
+                  'industry',
                   'company',
                   'position_title',
                   'position_assignment',
