@@ -171,6 +171,14 @@ class GroupForm(TendenciBaseForm):
         self.fields['entity'].required = True
         self.fields['entity'].empty_label = None
 
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if name:
+            if Group.objects.all_inactive().filter(name=name).exists():
+                raise forms.ValidationError(
+                _(f"'{name}' is not available. Please use a different group name."))
+        return self.cleaned_data['name']
+
 
 class GroupMembershipForm(forms.ModelForm):
     def __init__(self, group=None, user_id=None, *args, **kwargs):
