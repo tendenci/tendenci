@@ -811,17 +811,8 @@ def ticket_list(request):
 
         ### KEYWORD SEARCHING
         q = request.GET.get('q', None)
-
-        if q:
-            qset = (
-                Q(title__icontains=q) |
-                Q(description__icontains=q) |
-                Q(resolution__icontains=q) |
-                Q(submitter_email__icontains=q)
-            )
-            context = dict(context, query=q)
-
-            query_params['other_filter'] = qset
+        context['query'] = q
+        query_params['search_string'] = q
 
         ### SORTING
         sort = request.GET.get('sort', None)
