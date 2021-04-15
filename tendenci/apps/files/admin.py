@@ -39,7 +39,7 @@ class FileAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
             static('js/categories.js'),
         )
 

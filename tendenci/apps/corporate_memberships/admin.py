@@ -50,7 +50,7 @@ class CorporateMembershipTypeAdmin(TendenciBaseModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/admin-list-reorder.js'),
         )
@@ -142,7 +142,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/corpmembershipapp_tabular_inline_ordering.js'),
             static('js/global/tinymce.event_handlers.js'),
@@ -392,7 +392,7 @@ class NoticeAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            "//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js",
+            "//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
             static('js/global/tinymce.event_handlers.js'),
         )
 
@@ -490,7 +490,7 @@ class CorpMembershipAppField2Admin(admin.ModelAdmin):
 
     class Media:
         js = (
-            "//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js",
+            "//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js",
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/admin-list-reorder.js'),
         )

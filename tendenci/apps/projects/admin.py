@@ -34,7 +34,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',
+            '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js',
             '//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js',
             static('js/admin/staff-dynamic-sort.js'),
             static('js/global/tinymce.event_handlers.js'),
