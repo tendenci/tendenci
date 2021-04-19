@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.core import exceptions
 
 from tendenci.apps.perms.utils import get_query_filters
 
@@ -66,6 +67,20 @@ class ListNode(Node):
         """
         return items
 
+    def clean_field_value(self, k, v):
+        """
+        Clean the value `v` for the field `k`.
+        """
+        [field] = [field for field in self.model._meta.fields if field.name==k][:1] or [None]
+        if field:
+            try:
+                value = field.to_python(v)
+                field.run_validators(value)
+            except exceptions.ValidationError:
+                value = None
+            return value
+        return None
+    
     def render(self, context):
         tags = u''
         query = u''
@@ -76,6 +91,7 @@ class ListNode(Node):
         randomize = False
         group = u''
         status_detail = u'active'
+        user_filter = u''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -89,6 +105,16 @@ class ListNode(Node):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
+
+        if 'filters' in self.kwargs:
+            try:
+                user_filter = Variable(self.kwargs['filters'])
+                user_filter = user_filter.resolve(context)
+            except:
+                user_filter = self.kwargs['filters']
+
+            user_filter = user_filter.replace('"', '')
+            user_filter = user_filter.split(',')
 
         if 'user' in self.kwargs:
             try:
@@ -198,6 +224,45 @@ class ListNode(Node):
             items = self.custom_model_filter(items, user)
 
         objects = []
+
+        # this trusts the dev a lot to not break things
+        if user_filter:
+            for f in user_filter:
+                if "|" in f:
+                    f = f.split('|')
+                    f_qs = [fx.split('=') for fx in f]
+                    f_query = Q()
+
+                    for fxi in f_qs:
+                        k, v = fxi[0].strip(), fxi[1].strip()
+                        if hasattr(self.model, k):
+                            v = self.clean_field_value(k, v)
+                            if v is not None:
+                                f_query.add(Q(**{k: v}), Q.OR)
+
+                    # just filter on each find
+                    items = items.filter(f_query)
+                    
+                else:
+                    if "&" in f:
+                        f = f.split('&')
+                        f_qs = [fx.split('=') for fx in f]
+                        f_query = Q()
+
+                        for fxi in f_qs:
+                            k, v = fxi[0].strip(), fxi[1].strip()
+                            if hasattr(self.model, k):
+                                v = self.clean_field_value(k, v)
+                                if v is not None:
+                                    f_query.add(Q(**{k: v}), Q.AND)
+
+                        # just filter on each find
+                        items = items.filter(f_query)
+
+                    else:
+                        fxi = f.split('=')
+                        f_query = Q(**{fxi[0].strip(): fxi[1].strip() })
+                        items = items.filter(f_query)          
 
         # exclude certain primary keys
         if exclude:
