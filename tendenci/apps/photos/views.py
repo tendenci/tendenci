@@ -98,7 +98,10 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
 
     try:
-        original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+        if all([photo.image.width, photo.image.height]):
+            original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+        else:
+            original_source_url = reverse('photo_original', kwargs={'id':id,})
     except TypeError:
         # exception happens if image is corrupted. maybe it should raise 404 here?
         original_source_url = ''

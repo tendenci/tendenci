@@ -64,10 +64,12 @@
                 <div class="size-numerals">{{ photo.get_large_size|join:" x " }}</div>
             </div>
             {% if can_view_original %}
+			{% if photo.image.width and photo.image.height %}
             <div class="size-wrap{% if size_name == "original" %} highlight{% endif %}">
                 <div class="size-name"><a target="_blank" href="{% url "photo_original" photo.pk %}">{% trans "Original (opens in new tab)" %}</a></div>
                 <div class="size-numerals">{{ photo.image.width }} x {{ photo.image.height }}</div>
             </div>
+            {% endif %}
             {% endif %}
 
         </div><!-- .sizes -->
