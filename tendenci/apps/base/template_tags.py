@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.core import exceptions
 
 from tendenci.apps.perms.utils import get_query_filters
 
@@ -66,6 +67,20 @@ class ListNode(Node):
         """
         return items
 
+    def clean_field_value(self, k, v):
+        """
+        Clean the value `v` for the field `k`.
+        """
+        [field] = [field for field in self.model._meta.fields if field.name==k][:1] or [None]
+        if field:
+            try:
+                value = field.to_python(v)
+                field.run_validators(value)
+            except exceptions.ValidationError:
+                value = None
+            return value
+        return None
+    
     def render(self, context):
         tags = u''
         query = u''
@@ -219,7 +234,11 @@ class ListNode(Node):
                     f_query = Q()
 
                     for fxi in f_qs:
-                        f_query.add(Q(**{fxi[0].strip(): fxi[1].strip() }), Q.OR)
+                        k, v = fxi[0].strip(), fxi[1].strip()
+                        if hasattr(self.model, k):
+                            v = self.clean_field_value(k, v)
+                            if v is not None:
+                                f_query.add(Q(**{k: v}), Q.OR)
 
                     # just filter on each find
                     items = items.filter(f_query)
@@ -231,7 +250,11 @@ class ListNode(Node):
                         f_query = Q()
 
                         for fxi in f_qs:
-                            f_query.add(Q(**{fxi[0].strip(): fxi[1].strip() }), Q.AND)
+                            k, v = fxi[0].strip(), fxi[1].strip()
+                            if hasattr(self.model, k):
+                                v = self.clean_field_value(k, v)
+                                if v is not None:
+                                    f_query.add(Q(**{k: v}), Q.AND)
 
                         # just filter on each find
                         items = items.filter(f_query)
