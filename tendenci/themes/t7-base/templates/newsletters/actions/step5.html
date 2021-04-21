@@ -16,6 +16,16 @@
       <h1>{% trans 'Ready to Send!' %}</h1>
     </div>
 
+  <p>
+	<strong>{% trans 'Newsletter Recipients: ' %}</strong>
+	{% if object.member_only %}
+	{% trans 'ALL members' %}
+	{% elif object.group %}
+	{% trans 'Usergroup ' %} <a href="{% url 'group.detail' object.group.slug %}">{{ object.group }}</a>
+	{% endif %}
+	({% trans 'total:' %} {{ object.get_recipients.count }})
+  </p>
+
     {% if form.non_field_errors %}
     <div class="body-copy-alerts">
       <ul>
