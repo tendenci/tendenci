@@ -1,3 +1,15 @@
+### 12.4.13 [2021-04-22]
+
+* **SECURITY**: Upgraded jQuery from 3.4.1 to 3.6.0 (There is a XSS vulnerability in the version < 3.5.0 https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/)
+* Moved the industry field from memberships to profiles.
+* Users can view a list of their own directories.
+* Added filters to ListNode (Thanks @theox26)
+* Added newsletter recipients on "Ready to Send" confirmation page 
+* Fixed a potential IntegrityError on user groups add.
+* Fixed a TypeError on tickets search.
+* Fixed a NoReverseMatch error in the photos view.
+
+
 ### 12.4.12 [2021-04-07]
 
 * Bumped Django to 2.2.20.
