@@ -1,6 +1,11 @@
-{% extends "reports/base.html" %}
+{% extends "event_logs/base-wide.html" %}
 {% load reports_tags %}
 {% load humanize %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
 
 {% block content %}
 {% url "reports-events-summary-historical" as hist_logs_url %}
