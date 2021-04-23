@@ -1,0 +1,44 @@
+{% extends "profiles/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Upload Profile Photo'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" />
+
+{% endblock %}
+
+{% block content %}
+<div>
+
+ <h1>{% trans 'Upload Your Phofile Photo'%}</h1>
+	<form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+	{{ upload_form|styled_form }}
+ 
+	<div>&nbsp;</div>
+	<div class="row">
+        <div id="cropper"></div>
+    </div>
+
+	<div>&nbsp;</div>
+    <div class="form-group">
+        <div class="col-xs-offset-9 col-xs-3">
+            <button type="submit" class="btn btn-primary text-capitalize crop_image">{% trans "Submit" %}</button>
+        </div>
+    </div>
+    </form>
+
+</div>
+
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+{% include 'profiles/include/photo_upload_js.html' %}
+</script>
+
+{% endblock %}

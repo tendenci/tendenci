@@ -24,6 +24,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.utils.html import strip_tags
 from django.db.models.functions import Lower
+# from django.views.generic import UpdateView
+# from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 import simplejson
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -51,7 +54,7 @@ from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
 UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm,
-ActivateForm)
+ActivateForm, PhotoUploadForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
@@ -63,7 +66,54 @@ try:
 except ImproperlyConfigured:
     notification = None
 
-friends = False
+
+@login_required
+def profile_photo_upload(request, id=None, template_name='profiles/upload_photo.html'):
+    if not id:
+        # upload their own profile photo
+        profile = get_object_or_404(Profile, user=request.user)
+    else:
+        user = get_object_or_404(User, pk=id)
+        try:
+            profile = user.profile
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create_profile(user=user)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+ 
+    upload_form=PhotoUploadForm(request.POST or None,
+                                     request.FILES or None,
+                                     instance=profile,)
+    if request.method == "POST":
+        if upload_form.is_valid():
+            profile = upload_form.save()
+ 
+            EventLog.objects.log()
+            if request.is_ajax():
+                return JsonResponse({
+                        'status': 'success',
+                        'message': 'Profile Photo Uploaded Successfully'
+                    }, status=200)
+            
+            messages.success(request, _("Successfully uploaded your profile photo."))
+            return HttpResponseRedirect(reverse('profile', args=[profile.user.username]))
+        else:
+            if upload_form.errors and 'photo' in upload_form.errors.as_data():
+                err = upload_form.errors.as_data()['photo'][0].messages[0]
+            else:
+                err = ''
+            if request.is_ajax():
+                return JsonResponse({
+                            'status': 'failed',
+                            'message': 'Invalid Photo: ' + err
+                        }, status=200)
+     
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'upload_form': upload_form,
+            'profile_upload': profile,
+            })
 
 
 @login_required

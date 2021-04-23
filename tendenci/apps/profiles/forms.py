@@ -22,6 +22,7 @@ from tendenci.apps.base.utils import get_languages_with_local_name
 from tendenci.apps.perms.utils import get_query_filters
 from tendenci.apps.base.forms import FormControlWidgetMixin
 from tendenci.apps.industries.models import Industry
+from tendenci.apps.files.validators import FileValidator
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -605,6 +606,18 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions')
+
+
+class PhotoUploadForm(FormControlWidgetMixin, forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields= ('photo',)
+
+    def __init__(self, *args, **kwargs):
+        super(PhotoUploadForm, self).__init__(*args, **kwargs)
+        self.fields['photo'].label = _('Select a Photo')
+        self.fields['photo'].help_text = _('JPEG and PNG only')
+        self.fields['photo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png',))]
 
 
 class UserPermissionForm(forms.ModelForm):

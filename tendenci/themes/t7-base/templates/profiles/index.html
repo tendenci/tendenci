@@ -52,7 +52,7 @@
           <div class="row">
             <div class="col-sm-2">
               {% if user_this == request.user %}
-              <a href="//gravatar.com/" target="_blank" title="Create / update your gravatar">
+              <a href="{% url 'profile.upload_photo' %}" title="Update my photo">
                 {% gravatar user_this 128 %}
               </a>
               {% else %}
@@ -64,7 +64,11 @@
               {% if request.user.is_staff or request.user.id == user_this.id  %}
               <div class="pull-right">
               <a class="btn btn-default" href="{% url "profile.edit" user_this.id %}">{% trans "Edit Profile" %}</a>
-              <a href="https://en.gravatar.com" class="btn btn-default">Edit Profile Picture</a>
+              {% if user_this == request.user %}
+              <a href="{% url 'profile.upload_photo' %}" class="btn btn-default">Update My Profile Picture</a>
+              {% else %}
+              <a href="{% url 'profile.upload_photo' user_this.id %}" class="btn btn-default">Update Profile Picture</a>
+              {% endif %}
               </div>
               {% endif %}
               {% if profile.display_name %}
