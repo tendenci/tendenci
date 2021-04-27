@@ -825,7 +825,7 @@
         "css_class": "",
         "membership_app": 1,
         "required": false,
-        "label": "company",
+        "label": "Company",
         "content_type": null,
         "help_text": "",
         "position": 23,
