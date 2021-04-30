@@ -1,6 +1,7 @@
 from django.template import Library
 from django.conf import settings
 
+from tendenci.apps.site_settings.utils import get_setting
 
 register = Library()
 
@@ -117,9 +118,7 @@ def invoice_total_display(request, invoice):
                 payment = payment_set[0]
                 payment_method = payment.method
 
-    merchant_login = False
-    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
-        merchant_login = True
+    merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 
     context = {
         'request': request,
