@@ -222,11 +222,6 @@ class Profile(Person):
                     default_storage.delete(size_path)
 
     def save(self, *args, **kwargs):
-        if self.photo and self._original_photo:
-            if self._original_photo != self.photo:
-                # remove existing photo from storage
-                self.delete_old_photo()
-
         if not self.id:
             self.guid = str(uuid.uuid4())
 
@@ -243,6 +238,11 @@ class Profile(Person):
             self.allow_member_view = True
 
         super(Profile, self).save(*args, **kwargs)
+
+        if self.photo and self._original_photo:
+            if self._original_photo != self.photo:
+                # remove existing photo from storage
+                self.delete_old_photo()
 
         try:
             from tendenci.apps.campaign_monitor.utils import update_subscription
@@ -574,6 +574,10 @@ class Profile(Person):
         im.save(thumb_io, im.format)
         default_storage.save(size_path, File(thumb_io))
         return settings.MEDIA_URL + size_path
+
+    def get_original_photo_url(self):
+        if self.photo:
+            return settings.MEDIA_URL + self.photo.name
 
 
 def get_import_file_path(instance, filename):

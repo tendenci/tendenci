@@ -1,6 +1,6 @@
 (function () {
 
-	var uploadPhotoURL = '{% url "profile.upload_photo" %}';
+	var uploadPhotoURL = '{% url "profile.upload_photo" profile_upload.user.id %}';
     var image_crop = $('#cropper').croppie({
         viewport: {
             width: 200,
@@ -15,8 +15,21 @@
 
 	var photo_name = '';
 	var extension = '';
-	$(".crop_image").attr("disabled", true);
 	$('button.crop_image').html('Crop & Save');
+	
+	{% if profile_upload.photo %}
+	var original_photo_url = '{{ profile_upload.get_original_photo_url }}';
+	image_crop.croppie('bind', {
+   		 url: original_photo_url,
+         zoom: 0
+	});
+	photo_name = original_photo_url.split('/').pop().toLowerCase();
+	extension = photo_name.split('.').pop();
+	{% else %}
+	$(".crop_image").attr("disabled", true);
+	{% endif %}
+
+	
     $('#id_photo').on('change', function(){
         var reader = new FileReader();
         reader.onload = function (event) {
@@ -26,8 +39,8 @@
         }
         reader.readAsDataURL(this.files[0]);
 		// get photo name
-		photo_name = this.files[0].name;
-		extension = photo_name.split('.').pop().toLowerCase();
+		photo_name = this.files[0].name.toLowerCase();
+		extension = photo_name.split('.').pop();
 		$(".crop_image").attr("disabled", false);
 		//console.log(photo_name);
         
@@ -42,7 +55,8 @@
 		}else{
 			format = 'jpeg';
 		}
-        image_crop.croppie('result', {type: 'blob', format: format}).then(function(blob) {	
+		//console.log('format=', format);
+        image_crop.croppie('result', {type: 'blob', format: format, quality: 0.99}).then(function(blob) {	
             formData.append('photo', blob, photo_name);
             ajaxFormPost(formData, uploadPhotoURL);
         });

@@ -609,14 +609,14 @@ class UserForm(forms.ModelForm):
 
 
 class PhotoUploadForm(FormControlWidgetMixin, forms.ModelForm):
+    photo = forms.ImageField(label=_('Select a Photo'), widget=forms.FileInput(),
+                             help_text=_('JPEG and PNG only'))
     class Meta:
         model = Profile
         fields= ('photo',)
 
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
-        self.fields['photo'].label = _('Select a Photo')
-        self.fields['photo'].help_text = _('JPEG and PNG only')
         self.fields['photo'].validators = [FileValidator(allowed_extensions=('.jpeg', '.jpg', '.png',))]
 
 
