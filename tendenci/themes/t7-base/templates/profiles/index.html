@@ -51,8 +51,8 @@
         <div class="page-header">
           <div class="row">
             <div class="col-sm-2">
-              {% if user_this == request.user %}
-              <a href="{% url 'profile.upload_photo' %}" title="Update my photo">
+              {% if request.user.is_superuser or user_this == request.user %}
+              <a href="{% url 'profile.upload_photo' user_this.id %}" title="Change profile photo">
                 {% gravatar user_this 128 %}
               </a>
               {% else %}
