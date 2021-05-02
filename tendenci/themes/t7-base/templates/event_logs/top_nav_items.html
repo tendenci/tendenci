@@ -15,10 +15,16 @@
     <li>
         <div class="yamm-content custom-yamm-content content-dropdown">
             <div class="row">
-                <ul class="list-unstyled content-dropdown col-sm-6 col-xs-12">
+                <ul class="list-unstyled content-dropdown col-sm-12 col-xs-12">
                     <li class="content-item">
                         <span class="app-name">
                             <a href="{% url 'event_log.search' %}">{% trans "Search" %}</a>
+                        </span>
+                    </li>
+
+                    <li class="content-item">
+                        <span class="app-name">
+                            <a href="{% url 'reports-events-summary' %}">{% trans "Summary Report" %}</a>
                         </span>
                     </li>
 

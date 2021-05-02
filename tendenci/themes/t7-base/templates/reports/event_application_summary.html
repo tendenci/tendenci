@@ -1,16 +1,24 @@
-{% extends "reports/base.html" %}
+{% extends "event_logs/base-wide.html" %}
 {% load reports_tags %}
 {% load humanize %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
 
 {% block content %}
 <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}<br />
 {{ application }}</h1>
 
-<div class="event-log-summary-nav">
-    <a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
-    {{ date_range.0|date:"M Y" }}
-    <a href="./?{% month_url next %}">{% trans "Next" %}</a>
-</div>
+
+<nav class="event-log-summary-nav" aria-label="previous and next month navigation">
+  <ul class="list-inline text-center">
+    <li class="pull-left"><h2><a href="./?{% month_url previous %}"><i class="fa fa-angle-left"></i></a></h2></li>
+    <li><h2 class="text-center">{{ date_range.0|date:"M Y" }}</h2></li>
+    <li class="pull-right" ><h2><a href="./?{% month_url next %}"><i class="fa fa-angle-right"></i></a></h2></li>
+  </ul>
+</nav>
 
 <table class="events-summary-chart">
 <tr>
