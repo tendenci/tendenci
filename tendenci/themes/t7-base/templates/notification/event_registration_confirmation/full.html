@@ -3,7 +3,7 @@
 <html><body>
 
 <h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
-<h3 style="margin:0;">{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Event Registration Confirmation" %}</h3>
+<h3 style="margin:0;">{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Event Registration Confirmation" %} {% if for_admin %}{% trans "(Admin Copy)" %}{% endif %}</h3>
 
 {% if total_amount <= 0 %}
     <h3 style="margin-top:0;">{% trans "Price: Free!" %}</h3>

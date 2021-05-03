@@ -1319,6 +1319,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'reminder_days',
             'registration_email_type',
             'registration_email_text',
+            'reply_to'
         )
 
         fieldsets = [(_('Registration Configuration'), {
@@ -1338,6 +1339,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'reminder_days',
                     'registration_email_type',
                     'registration_email_text',
+                    'reply_to'
                     ],
           'legend': ''
           })

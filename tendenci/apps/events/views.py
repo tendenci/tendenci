@@ -2088,7 +2088,8 @@ def register(request, event_id=0,
 
                                         'event': event,
                                         'total_amount': reg8n.invoice.total,
-                                        'is_paid': reg8n.invoice.balance == 0
+                                        'is_paid': reg8n.invoice.balance == 0,
+                                        'reply_to': reg_conf.reply_to,
 
                                      },
                                     True, # save notice in db

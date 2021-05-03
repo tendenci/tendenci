@@ -214,6 +214,8 @@ class RegistrationConfiguration(models.Model):
                                             choices=REGEMAIL_TYPE_CHOICES,
                                             default=EMAIL_DEFAULT_ONLY)
     registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
+    reply_to = models.EmailField(_('Registration email reply to'), max_length=120, null=True, blank=True,
+                                 help_text=_('The email address that receives the reply message when registrants reply their registration confirmation emails.'))
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -614,6 +616,10 @@ class Registration(models.Model):
 
         # only send email on success! or first fail
         if payment.is_paid or payment_attempts <= 1:
+            if self.event.registration_configuration:
+                reply_to = self.event.registration_configuration.reply_to
+            else:
+                reply_to = None
             notification.send_emails(
                 [self.registrant.email],  # recipient(s)
                 'event_registration_confirmation',  # template
@@ -628,6 +634,7 @@ class Registration(models.Model):
                     'event': self.event,
                     'total_amount': self.invoice.total,
                     'is_paid': payment.is_paid,
+                    'reply_to': reply_to,
                 },
                 True,  # notice saved in db
             )
