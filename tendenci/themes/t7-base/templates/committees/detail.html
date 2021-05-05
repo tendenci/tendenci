@@ -12,20 +12,13 @@
       {{ committee.mission|safe }}
     </div>
     
-    <div class="committee-content">
-      {{ committee.content|safe }}
-    </div>
-    
     <div class="committee-officers">
-      <div class="label">
-        <label for="officer-table">OFFICERS</label>
-      </div>
+      <h2>Members</h2>
       <table class="table" id="officer-table">
         <thead>
           <tr>
             <th class="officer-position">Position</th>
             <th class="officer-name">Name</th>
-            <th class="officer-phone">Phone</th>
           </tr>
         </thead>
         
@@ -37,18 +30,20 @@
             <td class="officer-name">
               <a href="{% url 'profile' officer.user.username  %}">
                 {% if officer.user.get_full_name %}
-                {{ officer.user.get_full_name }}
+	                {{ officer.user.get_full_name }}
                 {% else %}
-                {{ officer.user }}
+    	            {{ officer.user }}
                 {% endif %}
               </a>
             </td>
-            
-            <td class="officer-phone">{{ officer.phone }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+    </div>
+    
+    <div class="committee-content">
+      {{ committee.content|safe }}
     </div>
     
     <div class="committee-sponsors">
@@ -62,9 +57,11 @@
     {% endif %}
     
     <div class="committee-files">
-      <h2>Files {% if admin %}</h2>
+      <h2>Files</h2>
       
-      <a class="btn btn-default" href="{% url "file.add" %}">Add a File</a>{% endif %}
+      {% if admin %}
+      <a class="btn btn-default" href="{% url "file.add" %}">Add a File</a>
+      {% endif %}
       
       <ul class="file-list">
         {% for file in files %}
