@@ -8,8 +8,8 @@ from django.urls.exceptions import Resolver404
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.directories.models import Directory, Category
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.emails.models import Email
 from tendenci.apps.notifications import models as notification
+from tendenci.apps.site_settings.utils import get_setting
 from .models import RequestEmail, AffiliateRequest, Connection
 
 

@@ -21,22 +21,51 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
                          template_name="directories/affiliates/request_associate.html"):
     if not get_setting('module', 'directories', 'affiliates_enabled'):
         raise Http404
-    
+
     to_directory = get_object_or_404(Directory, pk=to_directory_id)
 
     # Check user permission
     if not to_directory.allow_associate_by(request.user):
         raise Http404
-    
+
     # Get a list of allowed affiliate categories
     cats = to_directory.cats.all()
     allowed_affliated_cats = to_directory.get_affliated_cats()
-    
+
     if not allowed_affliated_cats:
         raise Http404
+
+    # Get initial for the from_directory_url field, and display a warning message if there is no listings available to connect
+
+    warning_msg_string = ''
+    directory_initial = None
+    initial_opts = None
+    # get a list of directories that can be connected by this user 
+    directories = Directory.get_my_directories_filter(request.user, my_directories_only=True
+                                    ).filter(status_detail='active').filter(cats__in=allowed_affliated_cats
+                                                                            ).distinct()
+    if not directories:
+        if not request.user.is_superuser:
+            warning_msg_string = _('ATTENTION! No listings available for you to connect!')
+        else:
+            # superuser can connect all within the allowed affiliate categories
+            directories = Directory.objects.filter(status_detail='active').filter(cats__in=allowed_affliated_cats
+                                                                            ).distinct()
+            if directories:
+                [directory_initial] = [d for d in directories if d not in to_directory.affiliates.all()][:1] or [None]
+                if not directory_initial:
+                    warning_msg_string = _('ATTENTION! No listings available to connect!')
+    else:
+        [directory_initial] = [d for d in directories if d not in to_directory.affiliates.all()][:1] or [None]
+        if not directory_initial:
+            warning_msg_string = _(f'ATTENTION! Your listing has been connected already! Click <a href="{directories[0].get_absolute_url()}">Here</a> to view your listing')
+
+    if directory_initial:
+        site_url = get_setting('site', 'global', 'siteurl')
+        initial_opts = {'from_directory_url': f'{site_url}{directory_initial.get_absolute_url()}'}
     
     request_form = form_class(request.POST or None, request=request,
-                              to_directory=to_directory,)
+                              to_directory=to_directory, initial=initial_opts)
 
     if request.method == "POST":
         if request_form.is_valid():
@@ -58,7 +87,8 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
             'directory': to_directory,
             'cats': cats,
             'allowed_affliated_cats': allowed_affliated_cats,
-            'request_form': request_form,})
+            'request_form': request_form,
+            'warning_msg_string': warning_msg_string})
 
 
 @csrf_protect
