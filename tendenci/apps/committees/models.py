@@ -70,6 +70,8 @@ class Officer(models.Model):
     user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(max_length=120, null=True, blank=True)
+                                 
 
     class Meta:
         app_label = 'committees'
