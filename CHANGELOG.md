@@ -1,3 +1,16 @@
+### 12.5.1 [2021-05-07]
+
+* **SECURITY**: Bumped Django to 2.2.22. https://docs.djangoproject.com/en/3.2/releases/2.2.22/
+* **New feature**: Added profile photo upload. Now users don't have to go to gravatar.com to upload their profile photos. If they don't have their profile photos uploaded, their gravatars will still be used if available.
+* Added "Revenue & Key Metrics by Tendenci" to the top menu under Reports (Thanks Edna).
+* Added an option to specify a reply to email address for event registration confirmation emails
+* Updated affiliates to set initial for the listing to connect, and display warning messages if no listings are available to connect.
+* Added email field to the officers for committees and chapters.
+* Fixed some nav issues for event log summary.
+* Updated default memberships fixture to capitalize the first character of company.
+* Fixed the green “Pay Invoice” button not showing on invoices view
+
+
 ### 12.4.13 [2021-04-22]
 
 * **SECURITY**: Upgraded jQuery from 3.4.1 to 3.6.0 (There is a XSS vulnerability in the version < 3.5.0 https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/)
