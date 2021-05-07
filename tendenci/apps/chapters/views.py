@@ -49,6 +49,8 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=chapter.group).distinct()
+        show_officers_phone = officers.exclude(phone__isnull=True).exclude(phone='').exists()
+        show_officers_email = officers.exclude(email__isnull=True).exclude(email='').exists()
 
         return render_to_resp(request=request, template_name=template_name,
             context={
@@ -56,6 +58,8 @@ def detail(request, slug, template_name="chapters/detail.html"):
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
+                'show_officers_phone': show_officers_phone,
+                'show_officers_email': show_officers_email
             })
     else:
         raise Http403

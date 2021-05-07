@@ -21,6 +21,7 @@ class OfficerAdminInline(admin.TabularInline):
             'position',
             'user',
             'phone',
+            'email'
         )},),
     )
     extra = 0
