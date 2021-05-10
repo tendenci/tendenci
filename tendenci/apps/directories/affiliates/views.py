@@ -52,17 +52,22 @@ def request_associate(request, to_directory_id, form_class=RequestAssociateForm,
             directories = Directory.objects.filter(status_detail='active').filter(cats__in=allowed_affliated_cats
                                                                             ).distinct()
             if directories:
-                [directory_initial] = [d for d in directories if d not in to_directory.affiliates.all()][:1] or [None]
+                [directory_initial] = [d for d in directories if d not in to_directory.affiliates.filter(affiliateship_affiliate_directories__connected_as__isnull=False)][:1] or [None]
                 if not directory_initial:
                     warning_msg_string = _('ATTENTION! No listings available to connect!')
     else:
-        [directory_initial] = [d for d in directories if d not in to_directory.affiliates.all()][:1] or [None]
+        [directory_initial] = [d for d in directories if d not in to_directory.affiliates.filter(affiliateship_affiliate_directories__connected_as__isnull=False)][:1] or [None]
         if not directory_initial:
-            warning_msg_string = _(f'ATTENTION! Your listing has been connected already! Click <a href="{directories[0].get_absolute_url()}">Here</a> to view your listing')
+            affiliateship = Affiliateship.objects.filter(directory=to_directory, affiliate__in=directories, connected_as__isnull=False)[0]
+            connected_directory = affiliateship.affiliate
+            connected_as = affiliateship.connected_as
+            warning_msg_string = _(f'ATTENTION! Your listing has been connected as "{connected_as}" already! Click <a href="{connected_directory.get_absolute_url()}">Here</a> to view your listing')
 
     if directory_initial:
         site_url = get_setting('site', 'global', 'siteurl')
         initial_opts = {'from_directory_url': f'{site_url}{directory_initial.get_absolute_url()}'}
+        if directory_initial.cats.all().exists():
+            initial_opts.update({'request_as': directory_initial.cats.all()[0]})
     
     request_form = form_class(request.POST or None, request=request,
                               to_directory=to_directory, initial=initial_opts)

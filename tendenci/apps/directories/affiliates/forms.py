@@ -33,7 +33,8 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['from_directory_url'].help_text = _('Example: %s/%s/example/') % (
                                         get_setting('site', 'global', 'siteurl'),
                                         get_setting('module', 'directories', 'url'))
-        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL')})
+        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL'),
+                                                               'size': 50})
         affiliate_cats_queryset = Category.objects.filter(id__in=Connection.objects.filter(
                                     cat__in=self.to_directory.cats.all()).values_list(
                                         'affliated_cats', flat=True)).distinct()
