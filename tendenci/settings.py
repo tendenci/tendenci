@@ -774,10 +774,10 @@ HAYSTACK_SIGNAL_PROCESSOR = 'tendenci.apps.search.signals.QueuedSignalProcessor'
 EXPLORER_CONNECTIONS = { 'default': 'default' }
 EXPLORER_DEFAULT_CONNECTION = 'default'
 EXPLORER_UNSAFE_RENDERING = True
-def EXPLORER_PERMISSION_VIEW(u):
-    return u.is_superuser
-def EXPLORER_PERMISSION_CHANGE(u):
-    return u.is_superuser
+def EXPLORER_PERMISSION_VIEW(r):
+    return r.user.is_superuser
+def EXPLORER_PERMISSION_CHANGE(r):
+    return r.user.is_superuser
 
 # ---------------------------------------------------------------------------- #
 # Debugging Tools
