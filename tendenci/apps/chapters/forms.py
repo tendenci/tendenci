@@ -24,6 +24,10 @@ class ChapterForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Chapter._meta.app_label,
         'storme_model':Chapter._meta.model_name.lower()}))
+    sponsors = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Chapter._meta.app_label,
+        'storme_model':Chapter._meta.model_name.lower()}))
     photo_upload = forms.FileField(label=_('Featured Image'), required=False,
                                    validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
 
