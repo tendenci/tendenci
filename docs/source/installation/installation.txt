@@ -56,13 +56,11 @@ Also ensure that Ubuntu is configured to automatically install security updates:
 Ubuntu 20.04 LTS
 """"""""""""""""
 
-Install the required system dependencies:
+Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8, so no need to install Python 3):
 ::
 
     sudo apt install build-essential \
-      libevent-dev libpq-dev \
-      libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
-
+      libpq-dev python3-dev
 
 
 Ubuntu 18.04 LTS
@@ -72,7 +70,8 @@ Install the required system dependencies:
 ::
 
     sudo apt install build-essential \
-      libpq-dev python3-dev
+      libevent-dev libpq-dev \
+      libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
 
 
 Add the universe repository:
