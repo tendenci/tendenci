@@ -678,13 +678,13 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['confirm_password'].widget.attrs.update({'size': 28})
 
         if 'username' in self_fields_keys:
-            username = app_field_objs.filter(field_name='username')[0]
+            username_field_obj = app_field_objs.filter(field_name='username')[0]
             self.fields['username'] = forms.RegexField(regex=r'^[\w.@+-]+$',
-                                required=False,
+                                required=username_field_obj.required,
                                 max_length=30,
                                 widget=forms.TextInput,
-                                label=username.label,
-                                help_text=username.help_text,
+                                label=username_field_obj.label,
+                                help_text=username_field_obj.help_text,
                                 error_messages = {
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
