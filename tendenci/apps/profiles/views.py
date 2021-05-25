@@ -4,6 +4,7 @@ import math
 import time
 import subprocess
 from datetime import datetime, timedelta
+import uuid
 
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -652,9 +653,16 @@ def delete(request, id, template_name="profiles/delete.html"):
         #profile.delete()
         #user.delete()
         if profile:
+            profile.status = False
             profile.status_detail = 'inactive'
             profile.save()
         user.is_active = False
+        # append a random string to username and email for the soft-deleted
+        random_str = f'-soft-delete-{str(uuid.uuid4())}'
+        user.username = f'{user.username}{random_str[:(120-len(user.username))]}'
+        if user.email:
+            user.email = f'{user.email}{random_str[:(254-len(user.email))]}'
+
         user.save()
 
         return HttpResponseRedirect(reverse('profile.search'))
