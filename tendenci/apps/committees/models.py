@@ -12,13 +12,14 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.committees.managers import CommitteeManager
 from tendenci.apps.committees.module_meta import CommitteeMeta
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.base.fields import SlugField
 
 
 class Committee(BasePage):
     """
     Committees Plugin. Similar to Pages with extra fields.
     """
-
+    slug = SlugField(_('URL Path'), unique=True)
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
     sponsors =tinymce_models.HTMLField(blank=True, default='')
