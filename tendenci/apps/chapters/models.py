@@ -15,12 +15,14 @@ from tendenci.apps.chapters.module_meta import ChapterMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.files.models import File
+from tendenci.apps.base.fields import SlugField
 
 
 class Chapter(BasePage):
     """
     Chapters module. Similar to Pages with extra fields.
     """
+    slug = SlugField(_('URL Path'), unique=True)
     entity = models.OneToOneField(Entity, null=True,
                                   on_delete=models.SET_NULL,)
     mission = tinymce_models.HTMLField(null=True, blank=True)
