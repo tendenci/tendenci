@@ -1,23 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-28 12:48-0500\n"
-"PO-Revision-Date: 2018-08-22 15:59+0000\n"
-"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
-"Language-Team: Spanish (Mexico) (http://www.transifex.com/tendenci/tendenci/"
-"language/es_MX/)\n"
-"Language: es_MX\n"
+"POT-Creation-Date: 2021-05-26 15:18+0000\n"
+"PO-Revision-Date: 2021-05-25 17:57+0000\n"
+"Last-Translator: Jayjay Montalbo <jayjay@bixly.com>\n"
+"Language-Team: Spanish (Mexico) (http://www.transifex.com/tendenci/tendenci/language/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_MX\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/committees/models.py:58
+#: apps/committees/models.py:22
+msgid "URL Path"
+msgstr "Ruta URL"
+
+#: apps/committees/models.py:60
 msgid "title"
 msgstr "título"
