@@ -237,7 +237,7 @@ def search(request, template_name="files/search.html"):
     layout = get_setting("module", "files", "layout")
     base_template_path = "files/base.html"
     if layout == 'grid':
-        base_template_path = "base-wide.html"
+        base_template_path = "files/base-wide.html"
 
     return render_to_resp(
         request=request, template_name=template_name, context={
