@@ -1,3 +1,22 @@
+### 12.5.2 [2021-06-02]
+
+* **SECURITY**: Bumped Django to 2.2.24. https://docs.djangoproject.com/en/3.2/releases/2.2.24/
+* Bumped Pillow from 8.1.2 to 8.2.0
+* Bumped django-ses from 1.0.3 to 2.0.0
+* Updated django-sql-explorer from 1.1.3 to 2.1.2
+* Updated the "Request to Associate" for the affiliates.
+* Removed the old invoicing link /reports/ from top menu and redirected it to the invoices report overview.
+* Fixed "Error App label is required.. Model name is required." when an image in the sponsors field is being uploaded for committees and chapters.
+* Updated docs to add the support for ubuntu 20.04 LTS and remove the support for ubuntu 16.04 LTS.
+* Fixed "Required field has no asterisk" (issue #1014).
+* Made slug field unique for chapters and committees to avoid the MultipleObjectsReturned error.
+* Resolved the issue on soft deleting users from the front end.
+* Resolved the issue regarding invoice logo not showing on PDF. 
+* Fixed an InvalidOperation error for discounts.
+* Fixed a TypeError on event registration when admin override is selected but override price is not entered.
+* Fixed the issue about not being able to add officers to studygroups.
+
+
 ### 12.5.1 [2021-05-07]
 
 * **SECURITY**: Bumped Django to 2.2.22. https://docs.djangoproject.com/en/3.2/releases/2.2.22/
