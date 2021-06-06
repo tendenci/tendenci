@@ -1,3 +1,4 @@
+from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -5,6 +6,7 @@ from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -32,7 +34,7 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
     if has_perm(request.user, 'chapters.view_chapter', chapter):
         EventLog.objects.log(instance=chapter)
-        officers = chapter.officers()
+        officers = chapter.officers().filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))
 
         #has_group_view_permission is True if there is at least one
         #group where the user is a member that has a view_chapter permission.

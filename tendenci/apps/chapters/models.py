@@ -98,6 +98,7 @@ class Officer(models.Model):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=120, null=True, blank=True)
+    expire_dt = models.DateField(_('Expire Date'), blank=True, null=True)
 
     class Meta:
         app_label = 'chapters'

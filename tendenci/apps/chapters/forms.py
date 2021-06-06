@@ -223,3 +223,4 @@ class OfficerForm(forms.ModelForm):
         else:
             self.fields['user'].queryset = User.objects.none()
         self.fields['user'].widget.attrs['class'] = 'officer-user'
+        self.fields['expire_dt'].widget.attrs['class'] = 'datepicker'
