@@ -5,6 +5,7 @@
 
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="form-inline t-search-form" action="{% url 'chapters.search' %}" method="get" role="search">
+    {% if form.region %}
     <div class="form-group{% if form.region.errors %} has-error{% endif %}">
         {{ form.region }}
 
@@ -18,7 +19,9 @@
             </p>
         {% endif %}
     </div>
+    {% endif %}
 
+	{% if form.state %}
     <div class="form-group{% if form.state.errors %} has-error{% endif %}">
        {{ form.state }}
 
@@ -32,6 +35,7 @@
             </p>
         {% endif %}
     </div><br />
+    {% endif %}
 
 	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
         {{ form.q }}
