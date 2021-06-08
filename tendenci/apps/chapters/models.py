@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
+from django.template.defaultfilters import slugify
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -67,6 +68,13 @@ class Chapter(BasePage):
         return Officer.objects.filter(chapter=self).order_by('pk')
     
     def save(self, *args, **kwargs):
+        if not self.id:
+            setattr(self, 'entity', None)
+            setattr(self, 'group', None)
+            # auto-generate a group and an entity
+            self._auto_generate_entity()
+            self._auto_generate_group()
+
         photo_upload = kwargs.pop('photo', None)
 
         super(Chapter, self).save(*args, **kwargs)
@@ -83,6 +91,54 @@ class Chapter(BasePage):
 
             self.featured_image = image
             self.save()
+
+    def _auto_generate_group(self):
+        if not (hasattr(self, 'group') and self.group):
+            # create a group for this type
+            group = Group()
+            group.name = f'{self.title}'[:200]
+            group.slug = slugify(group.name)
+            # ensure uniqueness of the slug
+            if Group.objects.filter(slug=group.slug).exists():
+                tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
+                if tmp_groups:
+                    t_list = [g.slug[len(group.slug):] for g in tmp_groups]
+                    num = 1
+                    while str(num) in t_list:
+                        num += 1
+                    group.slug = f'{group.slug}{str(num)}'
+                    # group name is also a unique field
+                    group.name = f'{group.name}{str(num)}'
+
+            group.label = self.title
+            group.type = 'system_generated'
+            group.email_recipient = self.creator.email
+            group.show_as_option = False
+            group.allow_self_add = False
+            group.allow_self_remove = False
+            group.show_for_memberships = False
+            group.description = "Auto-generated with the chapter."
+            group.notes = "Auto-generated with the chapter. Used for chapters only"
+            #group.use_for_membership = 1
+            group.creator = self.creator
+            group.creator_username = self.creator.username
+            group.owner = self.creator
+            group.owner_username = self.creator.username
+            group.entity = self.entity
+
+            group.save()
+
+            self.group = group
+
+    def _auto_generate_entity(self):
+        if not (hasattr(self, 'group') and self.entity):
+            # create an entity
+            entity = Entity.objects.create(
+                    entity_name=self.title[:200],
+                    entity_type='Chapter',
+                    email=self.creator.email,
+                    allow_anonymous_view=False)
+            self.entity = entity
 
 
 class Position(models.Model):

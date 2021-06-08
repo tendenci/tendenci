@@ -41,8 +41,6 @@ class ChapterForm(TendenciBaseForm):
         fields = (
         'title',
         'slug',
-        'entity',
-        'group',
         'region',
         'state',
         'mission',
@@ -61,8 +59,6 @@ class ChapterForm(TendenciBaseForm):
         fieldsets = [('Chapter Information', {
                       'fields': ['title',
                                  'slug',
-                                 'entity',
-                                 'group',
                                  'region',
                                  'state',
                                  'mission',
@@ -130,8 +126,6 @@ class ChapterAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Chapter._meta.app_label,
         'storme_model':Chapter._meta.model_name.lower()}))
 
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active").order_by('name'))
-
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Featured Image'), required=False,
@@ -144,8 +138,6 @@ class ChapterAdminForm(TendenciBaseForm):
         fields = (
         'title',
         'slug',
-        'entity',
-        'group',
         'mission',
         'content',
         'notes',

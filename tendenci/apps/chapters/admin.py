@@ -53,8 +53,6 @@ class ChapterAdmin(TendenciBaseModelAdmin):
         (None, {'fields': (
             'title',
             'slug',
-            'entity',
-            'group',
             'region',
             'state',
             'mission',
