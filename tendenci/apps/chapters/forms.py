@@ -243,14 +243,14 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         super(ChapterSearchForm, self).__init__(*args, **kwargs)
         self.fields['q'].widget.attrs.update({'placeholder': _('Chapter title / keywords')})
-        if Chapter.objects.exclude(region__isnull=False).exists():
+        if Chapter.objects.exclude(region__isnull=True).exists():
             regions = Region.objects.filter(id__in=Chapter.objects.values_list('region', flat=True))
             self.fields['region'].choices = [('', _('All Regions'))] + [(region.id, region.region_name) for region in regions]
         else:
             del self.fields['region']
             
         if Chapter.objects.exclude(state='').exists():
-            states = Chapter.objects.exclude(state='').values_list('state', flat=True)
+            states = Chapter.objects.exclude(state='').values_list('state', flat=True).distinct()
             self.fields['state'].choices = [('', _('All States'))] + [(state, state) for state in states]
         else:
             del self.fields['state']
