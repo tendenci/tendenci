@@ -76,6 +76,17 @@
       {{ chapter.notes|safe }}
     </div>
     {% endif %}
+
+	{% if chapter.region %}
+    <p class="chapter-region">
+    <strong>{% trans 'Region:' %}</strong> {{ chapter.region }}
+    </p>
+    {% endif %}
+	{% if chapter.state %}
+    <p class="chapter-state">
+     <strong>{% trans 'State:' %}</strong> {{ chapter.state }}
+    </p>
+    {% endif %}
     
     <div class="chapter-files">
       <h2>Files {% if admin %}</h2>

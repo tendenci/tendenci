@@ -9,6 +9,8 @@ from django.db import models
 import simplejson
 from django.core import exceptions
 from django_countries import countries as COUNTRIES
+from localflavor.us.us_states import STATE_CHOICES
+from localflavor.ca.ca_provinces import PROVINCE_CHOICES
 
 from tendenci.apps.base import forms
 from tendenci.apps.base.utils import custom_json_dumper
@@ -127,6 +129,15 @@ class CountrySelectField(fields.ChoiceField):
         self.choices = initial_choices + tuple(countries)
         self.initial = ''
 
+
+class StateSelectField(fields.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        super(StateSelectField, self).__init__(*args, **kwargs)
+        choices = (('','-----------'),) + tuple((state, state_f.title()) for state, state_f in STATE_CHOICES) \
+                + tuple((prov, prov_f.title()) for prov, prov_f in PROVINCE_CHOICES)
+        choices = sorted(choices)
+        self.choices = choices
+        self.initial = ''
 
 class PriceField(fields.DecimalField):
 

@@ -10,6 +10,9 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.files.validators import FileValidator
+from tendenci.apps.base.fields import StateSelectField
+from tendenci.apps.base.forms import FormControlWidgetMixin
+from tendenci.apps.regions.models import Region
 
 class ChapterForm(TendenciBaseForm):
     mission = forms.CharField(required=False,
@@ -30,6 +33,7 @@ class ChapterForm(TendenciBaseForm):
         'storme_model':Chapter._meta.model_name.lower()}))
     photo_upload = forms.FileField(label=_('Featured Image'), required=False,
                                    validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
+    state = StateSelectField(required=False)
 
 
     class Meta:
@@ -39,6 +43,8 @@ class ChapterForm(TendenciBaseForm):
         'slug',
         'entity',
         'group',
+        'region',
+        'state',
         'mission',
         'content',
         'notes',
@@ -57,6 +63,8 @@ class ChapterForm(TendenciBaseForm):
                                  'slug',
                                  'entity',
                                  'group',
+                                 'region',
+                                 'state',
                                  'mission',
                                  'content',
                                  'notes',
@@ -128,6 +136,7 @@ class ChapterAdminForm(TendenciBaseForm):
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Featured Image'), required=False,
                                    validators=[FileValidator(allowed_extensions=('.jpg', '.jpeg', '.gif', '.png'))],)
+    state = StateSelectField(required=False)
 
     class Meta:
         model = Chapter
@@ -224,3 +233,25 @@ class OfficerForm(forms.ModelForm):
             self.fields['user'].queryset = User.objects.none()
         self.fields['user'].widget.attrs['class'] = 'officer-user'
         self.fields['expire_dt'].widget.attrs['class'] = 'datepicker'
+
+
+class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    region = forms.ChoiceField(choices=(), required=False)
+    state = forms.ChoiceField(choices=(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ChapterSearchForm, self).__init__(*args, **kwargs)
+        self.fields['q'].widget.attrs.update({'placeholder': _('Chapter title / keywords')})
+        if Chapter.objects.exclude(region__isnull=False).exists():
+            regions = Region.objects.filter(id__in=Chapter.objects.values_list('region', flat=True))
+            self.fields['region'].choices = [('', _('All Regions'))] + [(region.id, region.region_name) for region in regions]
+        else:
+            del self.fields['region']
+            
+        if Chapter.objects.exclude(state='').exists():
+            states = Chapter.objects.exclude(state='').values_list('state', flat=True)
+            self.fields['state'].choices = [('', _('All States'))] + [(state, state) for state in states]
+        else:
+            del self.fields['state']
+

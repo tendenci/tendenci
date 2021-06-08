@@ -18,7 +18,7 @@ from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.chapters.models import Chapter, Officer
-from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet
+from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet, ChapterSearchForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
@@ -69,19 +69,31 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
 @is_enabled('chapters')
 def search(request, template_name="chapters/search.html"):
-    query = request.GET.get('q', None)
-    if query:
-        chapters = Chapter.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'chapters.view_chapter')
-        chapters = Chapter.objects.filter(filters).distinct()
+    form = ChapterSearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        region = form.cleaned_data.get('region')
+        state = form.cleaned_data.get('state')
+        
+        if query:
+            chapters = Chapter.objects.search(query, user=request.user)
+        else:
+            filters = get_query_filters(request.user, 'chapters.view_chapter')
+            chapters = Chapter.objects.filter(filters).distinct()
 
-    chapters = chapters.order_by('-create_dt')
+        if region:
+            chapters = chapters.filter(region=region)
+        if state:
+            chapters = chapters.filter(state=state)
+        chapters = chapters.order_by('-create_dt')
+    else:
+        chapters = Chapter.objects.none()
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'chapters': chapters})
+        context={'chapters': chapters,
+                 'form': form})
 
 
 @is_enabled('chapters')

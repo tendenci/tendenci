@@ -16,6 +16,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.files.models import File
 from tendenci.apps.base.fields import SlugField
+from tendenci.apps.regions.models import Region
 
 
 class Chapter(BasePage):
@@ -36,6 +37,8 @@ class Chapter(BasePage):
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
+    state = models.CharField(_('state'), max_length=50, blank=True, default='')
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

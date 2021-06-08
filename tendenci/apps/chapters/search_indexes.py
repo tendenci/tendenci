@@ -7,6 +7,8 @@ from tendenci.apps.chapters.models import Chapter
 class ChapterIndex(TendenciBaseSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title',)
+    region = indexes.CharField(model_attr='region', null=True)
+    state = indexes.CharField(model_attr='state', null=True)
 
     # categories
     category = indexes.CharField()
