@@ -40,7 +40,7 @@
       <ul class="list-unstyled">
         {% for price in pricing %}
         <li>
-		   <input style="vertical-align:top;" type="radio" id="price-{{ price.id }}" name="pricing_id" value="{{ price.id }}">
+		   <input style="vertical-align:top;" type="radio" name="pricing_id" value="{{ price.id }}">
           <label for="price-{{ price.id }}">
 				{{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
 	          <div class="event-price" itemprop="price" content="{{ price.price }}">
