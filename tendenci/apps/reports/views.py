@@ -13,13 +13,13 @@ from tendenci.apps.reports.models import Report, Run
 from tendenci.apps.reports.forms import ReportForm, RunForm
 
 
-class ReportListView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        # redirect to invoices reports overview
-        return reverse('invoices.reports_overview')
-#     model = Report
-#     context_object_name = "reports"
-#     template_name = "reports/report_list.html"
+class ReportListView(ListView):
+#     def get_redirect_url(self, *args, **kwargs):
+#         # redirect to invoices reports overview
+#         return reverse('invoices.reports_overview')
+    model = Report
+    context_object_name = "reports"
+    template_name = "reports/report_list.html"
 
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
