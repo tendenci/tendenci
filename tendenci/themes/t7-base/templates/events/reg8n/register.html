@@ -459,8 +459,10 @@
             </div>
             
             <input type="hidden" name="confirmed" />
+			{% if not event.is_table %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
+             {% endif %}
             <div class="clear"></div>
             <input class="btn btn-success" type="submit" name="commit" value="{% trans 'Confirm My Registration' %}" />
            <br /><br />
