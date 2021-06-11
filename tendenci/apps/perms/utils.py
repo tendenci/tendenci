@@ -89,7 +89,13 @@ def assign_files_perms(instance, **kwargs):
     content_type = ContentType.objects.get_for_model(instance.__class__)
 
     if not files:
-        orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
+        orphaned_files = File.objects.filter(content_type=content_type, object_id=0)
+        if hasattr(instance, 'owner') and instance.owner:
+            # When adding new content (articles, news,...), files uploaded would not be
+            # associated with any object, thus the orphaned files.
+            # Only update perms for the orphaned files OWNED by this user.
+            orphaned_files = orphaned_files.filter(creator=instance.owner)
+        orphaned_files = list(orphaned_files)
         coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
         files = orphaned_files + coupled_files
 
