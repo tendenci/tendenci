@@ -1,3 +1,16 @@
+### 12.5.3 [2021-06-11]
+
+* **SECURITY**: Avoided a potential race condition when assigning permissions for the uploaded files.
+* Added expiration date to the officers for chapters and committees.
+* Added state and region fields to chapters.
+* The entity and group are now automatically created (instead of manually assigned) on chapters add.
+* Added radio buttons to the event pricing list.
+* Restored back the /reports/ link.
+* Videos list page shows thumbnail for youtube videos if no images specified. 
+* Fixed a TypeError in the discounts.
+* Fixed an error on updating index for recurring_payments.
+
+
 ### 12.5.2 [2021-06-02]
 
 * **SECURITY**: Bumped Django to 2.2.24. https://docs.djangoproject.com/en/3.2/releases/2.2.24/
