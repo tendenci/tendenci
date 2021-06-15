@@ -68,6 +68,23 @@
         "updated_by": ""
     },
     {
+        "default_value": "false",
+        "description": "If true, radio buttons will be displayed to the pricing list on event details page so that users can directly select a pricing to register without going to the intermediary page.",
+        "data_type": "boolean",
+        "update_dt": "2021-06-15 15:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "rbonpricinglist",
+        "value": "false",
+        "label": "Show Radio Buttons to the Event Pricing List",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "events",
+        "store": true,
+        "updated_by": ""
+    },
+    {
         "default_value": "true",
         "description": "If true, registrants should be able to select a different pricing for each additional registrant. Guests will be validated based on the email address that is entered.",
         "data_type": "boolean",
