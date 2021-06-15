@@ -117,6 +117,8 @@ def invoice_total_display(request, invoice):
             if payment_set:
                 payment = payment_set[0]
                 payment_method = payment.method
+                if payment.check_number:
+                    payment_method = f'{payment_method} ({payment.check_number})'
 
     merchant_login = get_setting("site", "global", "merchantaccount") != 'asdf asdf asdf'
 

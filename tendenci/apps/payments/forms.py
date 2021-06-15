@@ -22,6 +22,7 @@ class MarkAsPaidForm(forms.ModelForm):
         fields = (
             'amount',
             'payment_method',
+            'check_number',
             'submit_dt',
         )
 

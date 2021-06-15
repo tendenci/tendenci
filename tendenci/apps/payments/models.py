@@ -11,6 +11,7 @@ class Payment(models.Model):
     guid = models.CharField(max_length=50)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     payment_attempted = models.BooleanField(default=True)
+    check_number = models.CharField(max_length=10, default='', blank=True)
     response_code = models.CharField(max_length=2, default='')
     response_subcode = models.CharField(max_length=10, default='')
     response_reason_code = models.CharField(max_length=15, default='')
