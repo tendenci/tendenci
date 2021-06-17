@@ -2,6 +2,7 @@ from datetime import datetime, date, time
 import time as ttime
 from io import BytesIO
 from xhtml2pdf import pisa
+import csv
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -206,3 +207,62 @@ def process_invoice_export(start_dt=None, end_dt=None,
             subject=subject,
             body=body)
         email.send()
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+def get_invoice_data(invoice, field_names):
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    data = {}
+    for field_name in field_names:
+        data[field_name] = ''
+
+    if invoice.create_dt:
+        data['Date'] = invoice.create_dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    data['Invoice No.'] = invoice.pk
+
+    if invoice.bill_to_first_name and invoice.bill_to_last_name:
+        data['Member/User'] = f'{invoice.bill_to_first_name} {invoice.bill_to_last_name}'
+    elif invoice.bill_to:
+        data['Member/User'] = invoice.bill_to
+
+    obj = invoice.get_object()
+    if obj:
+        data['Item'] = obj
+
+    data[f'Total Amount ({currency_symbol})'] = invoice.total
+
+    data[f'balance ({currency_symbol})'] = invoice.balance
+
+    if invoice.balance == 0:
+        if invoice.is_void:
+            data['Status'] = 'Void'
+        else:
+            data['Status'] = 'Paid'
+    else:
+        data['Status'] = f'Balance: {currency_symbol}{invoice.balance}'
+
+    return data
+    
+def iter_invoices(invoices, ):
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    field_names = ['Date', 'Invoice No.', 'Member/User', 'Item', f'Total Amount ({currency_symbol})', f'balance ({currency_symbol})', 'Status']
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_names)
+    # write headers
+    yield writer.writerow(dict(zip(field_names, field_names)))
+
+    for invoice in invoices:
+        yield writer.writerow(get_invoice_data(invoice, field_names))
+
+    
+    
+    
+    
