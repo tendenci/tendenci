@@ -529,7 +529,10 @@ class Registration(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return 'Registration - %s' % self.event.title
+        addons_text = self.addons_included
+        if addons_text:
+            return f'Registration - {self.event.title} - Addons: {addons_text}'
+        return f'Registration - {self.event.title}'
 
     @property
     def group(self):   
