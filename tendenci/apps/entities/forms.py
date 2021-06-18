@@ -19,6 +19,7 @@ class EntityForm(TendenciBaseForm):
         'email',
         'website',
         'summary',
+        'show_for_donation',
         'notes',
         'admin_notes',
         'status_detail',
@@ -33,6 +34,7 @@ class EntityForm(TendenciBaseForm):
                                  'source',
                                  'website',
                                  'summary',
+                                 'show_for_donation',
                                  ],
                       'legend': ''
                       }),

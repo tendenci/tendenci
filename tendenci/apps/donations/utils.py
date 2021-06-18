@@ -36,6 +36,9 @@ def donation_inv_add(user, donation, **kwargs):
     inv.ship_date = datetime.now()
     inv.message = 'Thank You.'
     inv.status = True
+    
+    if donation.donate_to_entity:
+        inv.entity = donation.donate_to_entity
 
     inv.estimate = True
     inv.status_detail = 'tendered'

@@ -28,6 +28,15 @@
     <td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ donation.donation_amount|format_currency }}</font></b></td>
     </tr>
 
+	{% if donation.donate_to_entity %}
+        <tr>
+        <td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+        <td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Allocate Donation to:" %}
+        </font></td>
+        <td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ donation.donate_to_entity }}</font></b></td>
+        </tr>
+    {% endif %}
+
     {% if donation.allocation %}
         <tr>
         <td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>

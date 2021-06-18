@@ -22,6 +22,11 @@
 <p>in the amount of </p>
 <p><strong>{{ donation.donation_amount }}</strong></p>
 <p>&nbsp; </p>
+	{% if donation.donate_to_entity %}
+        <p>to be allocated to </p>
+        <p><strong>{{ donation.donate_to_entity }}</strong></p>
+        <p>&nbsp; </p>
+    {% endif %}
     {% if donation.allocation %}
         <p>to be allocated to </p>
         <p><strong>{{ donation.allocation }}</strong></p>

@@ -35,6 +35,9 @@ class Entity(models.Model):
     summary = models.TextField(blank=True)
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
+    
+    show_for_donation = models.BooleanField(_('Use for Donation Allocation'), default=False,
+            help_text=_('If checked, it will appear as an option for donation allocation on the donation form.'),)
 
     # Model removed from TendenciBaseModel. Those fields added below
     allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
