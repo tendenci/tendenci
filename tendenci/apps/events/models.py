@@ -529,9 +529,9 @@ class Registration(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        addons_text = self.addons_included
-        if addons_text:
-            return f'Registration - {self.event.title} - Addons: {addons_text}'
+#         addons_text = self.addons_included
+#         if addons_text:
+#             return f'Registration - {self.event.title} - Addons: {addons_text}'
         return f'Registration - {self.event.title}'
 
     @property
@@ -799,9 +799,9 @@ class Registration(models.Model):
 
     @property
     def addons_included(self):
-        addons_text = u''
+        addons_text = ''
         if not self.event.has_addons:
-            return u''
+            return ''
 
         reg8n_to_addons_list = RegAddonOption.objects.filter(
             regaddon__registration=self).values_list(
@@ -811,9 +811,10 @@ class Registration(models.Model):
                 'regaddon__amount')
 
         if reg8n_to_addons_list:
+            currency_symbol = get_setting('site', 'global', 'currencysymbol')
             for addon_item in reg8n_to_addons_list:
                 if addon_item[0] == self.registrant.registration_id:
-                    addons_text += u'%s(%s) ' % (addon_item[1], addon_item[2])
+                    addons_text += f'{addon_item[1]}({addon_item[2]})({currency_symbol}{addon_item[3]}) '
 
         return addons_text
 
