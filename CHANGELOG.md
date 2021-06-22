@@ -1,3 +1,13 @@
+### 12.5.4 [2021-06-22]
+
+* Added the export feature to the invoices search.
+* Added the ability to use entities for donation allocation for better reporting
+* Invoice "mark as paid" can now enter a check number.
+* Added a setting "Show Radio Buttons to the Event Pricing List" /settings/module/events/#id_rbonpricinglist to turn on/off Radio Buttons for the Event Pricing List.
+* Removed bullets in front of the checkboxes or radio buttons on event registration.
+* Fixed the date picker on invoices search.
+
+
 ### 12.5.3 [2021-06-11]
 
 * **SECURITY**: Avoided a potential race condition when assigning permissions for the uploaded files.
