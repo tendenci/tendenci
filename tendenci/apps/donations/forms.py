@@ -130,8 +130,10 @@ class DonationForm(forms.ModelForm):
 
         self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         # donate_to_entity or allocation
-        entity_qs = Entity.objects.filter(show_for_donation=True).filter(
-            get_query_filters(self.user, 'entities.view_entity')).distinct()
+        filters = Entity.get_search_filter(self.user)
+        entity_qs = Entity.objects.filter(show_for_donation=True)
+        if filters:
+            entity_qs = entity_qs.filter(filters).distinct()
         if not entity_qs.exists():
             del self.fields['donate_to_entity']
             allocation_str = get_setting('module', 'donations', 'donationsallocations')

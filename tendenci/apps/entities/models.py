@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.entities.managers import EntityManager
@@ -75,3 +76,19 @@ class Entity(models.Model):
             self.guid = str(uuid.uuid4())
 
         super(Entity, self).save(*args, **kwargs)
+
+    @staticmethod
+    def get_search_filter(user):
+        from tendenci.apps.perms.utils import has_perm
+        if user.profile.is_superuser or has_perm(user, 'entities.view_entity'):
+            return None
+
+        if user.is_authenticated:
+            creator_owner_q = (Q(creator=user) | Q(owner=user))
+            if user.profile.is_member:
+                return  Q(status=True) & Q(status_detail='active') & ((Q(allow_member_view=True) | Q(allow_user_view=True) | Q(allow_anonymous_view=True)) | creator_owner_q)
+            else:
+                return  Q(status=True) & Q(status_detail='active') & ((Q(allow_user_view=True) | Q(allow_anonymous_view=True)) | creator_owner_q)
+        else:
+            return Q(status=True) & Q(status_detail='active') & Q(allow_anonymous_view=True)
+

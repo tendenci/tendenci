@@ -10,7 +10,7 @@ from tendenci.apps.base.http import Http403
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.entities.forms import EntityForm
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 
 
 def index(request, id=None, template_name="entities/view.html"):
@@ -26,8 +26,10 @@ def index(request, id=None, template_name="entities/view.html"):
         raise Http403
 
 def search(request, template_name="entities/search.html"):
-    filters = get_query_filters(request.user, 'entities.view_entity')
-    entities = Entity.objects.filter(filters).distinct()
+    filters = Entity.get_search_filter(request.user)
+    entities = Entity.objects.all()
+    if filters:
+        entities = entities.filter(filters).distinct()
 
     EventLog.objects.log()
 
