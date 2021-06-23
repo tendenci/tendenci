@@ -9,16 +9,11 @@
     <h1>{% firstof MODULE_ENTITIES_LABEL trans 'Entities' %} {% trans "Edit" %}</h1>
 
     <div class="entities-wrap">
-        <div class="options">
-             <div class="quick-options">
-                {% entity_options request.user entity %}
-             </div>
-        </div>
 
         <form action="{% url "entity.edit" entity.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Save Changes' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Save Changes' %}" />
         </div>
         </form>
     </div>

@@ -12,7 +12,7 @@
         <form action="{% url "entity.add" %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
-            <input type="submit" value="{% trans 'Add' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}" />
+            <input class="btn btn-primary" type="submit" value="{% trans 'Add' %} {% firstof MODULE_ENTITIES_LABEL 'Entity' %}" />
         </div>
         </form>
     </div>

@@ -13,6 +13,7 @@ from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 
 
+@login_required
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
     entity = get_object_or_404(Entity, pk=id)
@@ -25,6 +26,8 @@ def index(request, id=None, template_name="entities/view.html"):
     else:
         raise Http403
 
+
+@login_required
 def search(request, template_name="entities/search.html"):
     filters = Entity.get_search_filter(request.user)
     entities = Entity.objects.all()
@@ -36,6 +39,8 @@ def search(request, template_name="entities/search.html"):
     return render_to_resp(request=request, template_name=template_name,
         context={'entities':entities})
 
+
+@login_required
 def print_view(request, id, template_name="entities/print-view.html"):
     entity = get_object_or_404(Entity, pk=id)
 
@@ -46,6 +51,7 @@ def print_view(request, id, template_name="entities/print-view.html"):
             context={'entity': entity})
     else:
         raise Http403
+
 
 @login_required
 def add(request, form_class=EntityForm, template_name="entities/add.html"):

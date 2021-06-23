@@ -1,11 +1,12 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from form_utils.forms import BetterModelForm
 
 from tendenci.apps.entities.models import Entity
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.forms import FormControlWidgetMixin
 
 
-class EntityForm(TendenciBaseForm):
+class EntityForm(FormControlWidgetMixin, BetterModelForm):
     status_detail = forms.ChoiceField(
         choices=(('active',_('Active')),('inactive',_('Inactive')),))
 
@@ -20,6 +21,9 @@ class EntityForm(TendenciBaseForm):
         'website',
         'summary',
         'show_for_donation',
+        'allow_anonymous_view',
+        'allow_user_view',
+        'allow_member_view',
         'notes',
         'admin_notes',
         'status_detail',
@@ -40,10 +44,9 @@ class EntityForm(TendenciBaseForm):
                       }),
                       (_('Permissions'), {
                       'fields': ['allow_anonymous_view',
-                                 'user_perms',
-                                 'group_perms',
+                                 'allow_user_view',
+                                 'allow_member_view',
                                  ],
-                      'classes': ['permissions'],
                       }),
                      (_('Administrator Only'), {
                       'fields': ['admin_notes',
@@ -52,6 +55,7 @@ class EntityForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super(EntityForm, self).__init__(*args, **kwargs)
 
         if not self.user.profile.is_superuser:
