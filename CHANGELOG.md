@@ -1,3 +1,7 @@
+### 12.5.5 [2021-06-23]
+
+* Bugfix a FieldError at /donations/. 
+
 ### 12.5.4 [2021-06-22]
 
 * Added the export feature to the invoices search.
