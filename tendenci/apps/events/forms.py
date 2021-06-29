@@ -531,8 +531,11 @@ class FormForCustomRegForm(forms.ModelForm):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
 
-        if override and override_price <0:
-            raise forms.ValidationError(_('Override price must be a positive number.'))
+        if override:
+            if override_price is None:
+                raise forms.ValidationError(_('Please enter the override price or uncheck the override.'))
+            elif  override_price <0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price
 
     def clean_use_free_pass(self):
