@@ -14,3 +14,13 @@ def discount_used(events):
         if event.discount_count > 0:
             return True
     return False
+
+@register.filter
+def is_registrant(event, user):
+    """
+    Check if this user is a registrant of this event.
+    """
+    if hasattr(user, 'registrant_set'):
+        return user.registrant_set.filter(
+            registration__event=event).exists()
+    return False

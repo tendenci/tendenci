@@ -1,5 +1,6 @@
 {% extends "events/base-wide.html" %}
 {% load event_tags %}
+{% load event_filters %}
 {% load styled_forms %}
 {% load base_filters %}
 
@@ -55,6 +56,15 @@
          {% include "events/include/spots_status.html" %}
 
     </div>
+
+	{% if request.user.is_authenticated %}
+		{% if event|is_registrant:request.user %}
+			<div class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  		{% trans "You have already registered" %}
+			</div>
+		{% endif %}
+	{% endif %}
 
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}
     <div class="event-info well" style="background-color:#FFFFEB;">
