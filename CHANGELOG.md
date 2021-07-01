@@ -1,3 +1,10 @@
+### 12.5.6 [2021-07-01]
+
+* Bumped Pillow from 8.2.0 to 8.3.0.
+* Added a grace period column to the Corporate Memberships Overview.
+* The text "you have already registered" shows on event registration if user has already registered the event.
+* Bug fixes and patch rollups.
+
 ### 12.5.5 [2021-06-23]
 
 * Bugfix a FieldError at /donations/. 
