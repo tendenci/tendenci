@@ -527,7 +527,7 @@ GAVATAR_DEFAULT_URL = 'images/icons/default-user-80.jpg'
 DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # User agent for external retrieval of files/images
-TENDENCI_USER_AGENT = 'Tendenci/11 (+https://www.tendenci.com)'
+TENDENCI_USER_AGENT = 'Tendenci/12 (+https://www.tendenci.com)'
 
 # Google Static Maps URL signing secret used to generate a digital signature
 GOOGLE_SMAPS_URL_SIGNING_SECRET = ''
