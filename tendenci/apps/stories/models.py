@@ -23,7 +23,6 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 class StoryPhoto(File):
     class Meta:
         app_label = 'stories'
-        manager_inheritance_from_future = True
 
 
 class Story(OrderingBaseModel, TendenciBaseModel):

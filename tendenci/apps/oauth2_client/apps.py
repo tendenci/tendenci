@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class Oauth2ClientConfig(AppConfig):
-    name = 'oauth2_client'
+    name = 'tendenci.apps.oauth2_client'

@@ -15,7 +15,6 @@ from tendenci.libs.abstracts.models import OrderingBaseModel
 class TestimonialPhoto(File):
     class Meta:
         app_label = 'testimonials'
-        manager_inheritance_from_future = True
 
 
 class Testimonial(OrderingBaseModel, TendenciBaseModel):

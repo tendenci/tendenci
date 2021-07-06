@@ -7,7 +7,8 @@ import csv
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-from django.db.models.fields import AutoField, FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models.fields import AutoField
 from django.utils.encoding import smart_str
 from tendenci.apps.base.utils import validate_email
 from django.core.files.storage import default_storage

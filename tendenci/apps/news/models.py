@@ -27,7 +27,6 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 class NewsImage(File):
     class Meta:
         app_label = 'news'
-        manager_inheritance_from_future = True
 
 
 class News(TendenciBaseModel):

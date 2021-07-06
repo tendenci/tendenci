@@ -1,5 +1,7 @@
+from functools import partial as curry
 from django.db import models
-from django.utils.functional import curry
+# curry dropped from django 3.2
+#from django.utils.functional import curry
 from tendenci.apps.meta.utils import generate_meta_keywords
 
 class Meta(models.Model):

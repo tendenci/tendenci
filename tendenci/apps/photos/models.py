@@ -23,7 +23,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.encoding import smart_str, force_text
-from django.utils.functional import curry
+from functools import partial as curry
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 import simplejson

@@ -28,7 +28,6 @@ class ClientList(models.Model):
 class CategoryPhoto(File):
     class Meta:
         app_label = 'projects'
-        manager_inheritance_from_future = True
 
 
 class Category(models.Model):

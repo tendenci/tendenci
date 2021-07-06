@@ -2835,4 +2835,3 @@ class MembershipFile(File):
     """
     class Meta:
         app_label = 'memberships'
-        manager_inheritance_from_future = True

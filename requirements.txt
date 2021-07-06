@@ -1,7 +1,7 @@
 future
 six
 configparser
-Django>=2.2.24,<3.0
+Django>=3.2.5,<4.0
 django-formtools>=1.0
 pisa
 Pillow==8.3.0
@@ -14,8 +14,8 @@ dj-pagination>=2.3.0
 django-picklefield>=0.1.6
 django-simple-captcha==0.5.12
 django-nocaptcha-recaptcha==0.0.20
-django-tagging==0.4.6
-django-haystack==2.8.1
+django-tagging==0.5.0
+django-haystack==3.0
 django-debug-toolbar>=1.9.1
 django-sql-explorer==2.1.2
 feedparser>=4.1
@@ -50,7 +50,7 @@ simple-salesforce==0.68.1
 selenium==3.141.0
 raven==6.10.0
 tendenci-django-admin-bootstrapped>=4.0
-django-bootstrap3==12.0.3
+django-bootstrap3==15.0.0
 django-app-namespace-template-loader==0.4
 django-annoying
 unidecode

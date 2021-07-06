@@ -1206,7 +1206,6 @@ class RecurringEvent(models.Model):
 class EventPhoto(File):
     class Meta:
         app_label = 'events'
-        manager_inheritance_from_future = True
 
 
 class Event(TendenciBaseModel):
