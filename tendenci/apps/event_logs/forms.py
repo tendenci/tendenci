@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from form_utils.forms import BetterForm
+from tendenci.libs.form_utils.forms import BetterForm
 
 from .utils import get_app_list_choices
 

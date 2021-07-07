@@ -32,7 +32,7 @@ from tendenci.apps.events.models import (
     RecurringEvent, Registrant
 )
 
-from form_utils.forms import BetterModelForm
+from tendenci.libs.form_utils.forms import BetterModelForm
 from tendenci.libs.tinymce.widgets import TinyMCE
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm

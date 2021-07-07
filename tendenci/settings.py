@@ -131,7 +131,7 @@ TEMPLATES = [
       'libraries': {
         # tendenci.apps.theme.templatetags.static replaces these, so rename them
         # to avoid conflicts
-        'django.static': 'django.contrib.staticfiles.templatetags.staticfiles',
+        'django.static': 'django.templatetags.static',
         'django.staticfiles': 'django.templatetags.static',
       },
       'builtins': [
@@ -468,12 +468,12 @@ EXTRA_LANG_INFO = {
         'name': 'Tagalog',
         'name_local': u'Tagalog', #unicode codepoints here
     },
-    'tl_PH': {
-        'bidi': False, # right-to-left
-        'code': 'tl_PH',
-        'name': 'Tagalog (Philippines)',
-        'name_local': u'Tagalog (Philippines)',
-    },
+#     'tl_PH': {
+#         'bidi': False, # right-to-left
+#         'code': 'tl_PH',
+#         'name': 'Tagalog (Philippines)',
+#         'name_local': u'Tagalog (Philippines)',
+#     },
     'he': {
         'bidi': True, # right-to-left
         'code': 'he',
