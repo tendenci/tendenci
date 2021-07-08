@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.shortcuts import redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp

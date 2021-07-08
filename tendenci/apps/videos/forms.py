@@ -1,7 +1,7 @@
 from datetime import datetime
 from django import forms
 from django.contrib.admin import widgets
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.videos.models import Video
 from tendenci.libs.tinymce.widgets import TinyMCE

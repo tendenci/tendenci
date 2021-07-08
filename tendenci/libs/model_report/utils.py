@@ -2,7 +2,7 @@
 from decimal import Decimal
 from string import capwords
 from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_text
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.entities.models import Entity

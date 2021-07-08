@@ -19,7 +19,7 @@ from copy import deepcopy
 import dateutil.parser as dparser
 
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import simplejson as json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required

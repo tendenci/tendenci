@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django import forms
 
 from tendenci.libs.form_utils.forms import BetterForm

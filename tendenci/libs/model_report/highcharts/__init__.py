@@ -2,7 +2,7 @@
 from builtins import str
 from decimal import Decimal
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.libs.model_report.highcharts.base import true, false, null, DictObject
 from tendenci.libs.model_report.highcharts.options import get_highchart_data
 

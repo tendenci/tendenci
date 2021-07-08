@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.contrib.auth.models import AnonymousUser
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.discounts.models import DiscountUse

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf.urls import url
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.safestring import mark_safe

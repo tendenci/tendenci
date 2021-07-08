@@ -3,7 +3,7 @@ from django.shortcuts import HttpResponseRedirect, get_object_or_404, redirect, 
 from django.http import HttpResponse
 from django.contrib import messages
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 
 from tendenci.apps.base.http import Http403

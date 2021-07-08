@@ -4,7 +4,7 @@ import re
 
 from django.forms import fields, ValidationError
 from django.db.models import CharField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 import simplejson
 from django.core import exceptions

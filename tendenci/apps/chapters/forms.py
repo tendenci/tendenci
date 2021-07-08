@@ -3,7 +3,7 @@ from os.path import splitext, basename
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import BaseInlineFormSet
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.chapters.models import Chapter, Officer
 from tendenci.apps.user_groups.models import Group

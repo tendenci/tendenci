@@ -17,7 +17,7 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # from djcelery.models import TaskMeta
 
 from tendenci.apps.perms.decorators import is_enabled

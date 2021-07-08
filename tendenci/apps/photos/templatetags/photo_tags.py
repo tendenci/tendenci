@@ -2,7 +2,7 @@ from builtins import str
 import re
 
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.photos.models import Image, Pool, PhotoSet
 from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs

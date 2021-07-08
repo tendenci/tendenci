@@ -6,7 +6,7 @@ from django.conf import settings
 
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # from captcha.fields import CaptchaField, CaptchaTextInput
 from captcha.fields import CaptchaField
 from nocaptcha_recaptcha.fields import NoReCaptchaField

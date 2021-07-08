@@ -41,7 +41,7 @@ from django.db import router
 from django.utils.encoding import force_text
 from django.contrib.auth import get_permission_codename
 from django.utils.html import format_html, strip_tags
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.core.validators import EmailValidator
 
 from django.utils.functional import Promise
@@ -384,7 +384,7 @@ def generate_meta_keywords(value):
         from operator import itemgetter
 
         from django.utils.text import unescape_entities
-        from django.utils.translation import ugettext_lazy as _
+        from django.utils.translation import gettext_lazy as _
 
         # translate the stop words
         TR_STOP_WORDS = _(' '.join(STOP_WORDS))

@@ -11,7 +11,7 @@ from django.urls import reverse
 # from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from django.shortcuts import render
 from django.views.generic import TemplateView

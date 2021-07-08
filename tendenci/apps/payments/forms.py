@@ -1,6 +1,6 @@
 from datetime import datetime
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.apps.payments.models import Payment, PaymentMethod
 
 PAYMENT_METHODS = PaymentMethod.objects.filter().values_list(

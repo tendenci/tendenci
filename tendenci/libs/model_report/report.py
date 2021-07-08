@@ -5,7 +5,7 @@ from itertools import groupby
 from itertools import chain
 
 from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models.fields import DateTimeField, DateField
 from django.utils.encoding import force_text
 from django.db.models import Q

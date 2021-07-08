@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group as AuthGroup
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.forms import GroupAdminForm

@@ -1,7 +1,7 @@
 from tendenci.apps.boxes.models import Box
 from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from tendenci.libs.tinymce.widgets import TinyMCE
 
 class BoxForm(TendenciBaseForm):

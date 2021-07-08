@@ -1,7 +1,7 @@
 # settings - jobspaymenttypes, jobsrequirespayment
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.apps.jobs.models import JobPricing
 from tendenci.apps.invoices.models import Invoice

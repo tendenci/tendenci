@@ -5,7 +5,7 @@ from functools import reduce
 from django import forms
 from django.apps import apps
 from django.utils.text import capfirst
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.contrib.auth.models import User

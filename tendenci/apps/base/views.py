@@ -23,7 +23,7 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.views.i18n import set_language as dj_set_language
 from django.utils.translation import check_for_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 # local

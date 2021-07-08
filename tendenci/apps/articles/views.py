@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, Http404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.http import Http403

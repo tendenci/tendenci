@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django import forms
 from django.db.models import Q
 from django.forms.widgets import RadioSelect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet
 from django.forms.utils import ErrorList
