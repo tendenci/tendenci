@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<ct>\d+)/(?P<object_id>\d+)/$', views.version_list, name="versions"),
+    re_path(r'^(?P<ct>\d+)/(?P<object_id>\d+)/$', views.version_list, name="versions"),
 ]

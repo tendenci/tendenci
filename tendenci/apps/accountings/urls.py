@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^account_numbers/$', views.account_numbers,
+    re_path(r'^account_numbers/$', views.account_numbers,
         name="accounting.account_numbers"),
 ]

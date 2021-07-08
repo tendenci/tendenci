@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    url(r'^export/$', views.export, name='boxes.export'),
+    re_path(r'^export/$', views.export, name='boxes.export'),
 ]
