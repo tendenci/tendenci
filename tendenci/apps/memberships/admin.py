@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.admin import SimpleListFilter
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.template.defaultfilters import slugify
 from django.utils.encoding import iri_to_uri
 from django.urls import reverse
@@ -521,16 +521,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
         extra_urls = [
-            url(r'^approve/(?P<pk>\d+)/$',
+            re_path(r'^approve/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
-            url(r'^renew/(?P<pk>\d+)/$',
+            re_path(r'^renew/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.renew),
                 name='membership.admin_renew'),
-            url(r'^disapprove/(?P<pk>\d+)/$',
+            re_path(r'^disapprove/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.disapprove),
                 name='membership.admin_disapprove'),
-            url(r'^expire/(?P<pk>\d+)/$',
+            re_path(r'^expire/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.expire),
                 name='membership.admin_expire'),
         ]
@@ -859,7 +859,7 @@ class NoticeAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(NoticeAdmin, self).get_urls()
         extra_urls = [
-            url(r'^clone/(?P<pk>\d+)/$',
+            re_path(r'^clone/(?P<pk>\d+)/$',
                 self.admin_site.admin_view(self.clone),
                 name='membership_notice.admin_clone'),
         ]

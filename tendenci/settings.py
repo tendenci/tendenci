@@ -58,6 +58,10 @@ DEBUG = False
 
 SITE_ID = 1
 
+# Maintaining the historical behavior, the default value for DEFAULT_AUTO_FIELD is AutoField.
+# Starting with 3.2 new projects are generated with DEFAULT_AUTO_FIELD set to BigAutoField.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 ROOT_URLCONF = 'tendenci.urls'
 
 DATABASES = {

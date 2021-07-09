@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -96,7 +96,7 @@ class MultipleFileAdmin(admin.ModelAdmin):
         """
         urls = super(MultipleFileAdmin, self).get_urls()
         extra_urls = [
-            url("^add",
+            re_path("^add",
                 self.admin_site.admin_view(self.add_multiple_file_view),
                 name="multiplefile_add"),
         ]
