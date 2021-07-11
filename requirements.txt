@@ -50,7 +50,6 @@ selenium==3.141.0
 raven==6.10.0
 tendenci-django-admin-bootstrapped>=4.0
 django-bootstrap3==15.0.0
-django-app-namespace-template-loader==0.4
 django-annoying
 unidecode
 Markdown
