@@ -13,6 +13,7 @@ class Entity(models.Model):
     ENTITY_TYPES = (
         ('', _('SELECT ONE')),
         ('Committee', _('Committee')),
+        ('Chapter', _('Chapter')),
         ('Reporting', _('Reporting')),
         ('Study Group', _('Study Group')),
         ('Directory', _('Directory')),

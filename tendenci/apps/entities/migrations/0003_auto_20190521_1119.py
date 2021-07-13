@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='entity',
             name='entity_type',
-            field=models.CharField(blank=True, choices=[('', 'SELECT ONE'), ('Committee', 'Committee'), ('Reporting', 'Reporting'), ('Study Group', 'Study Group'), ('Directory', 'Directory'), ('Corporate Membership', 'Corporate Membership'), ('Membership', 'Membership'), ('Technical Interest Group', 'Technical Interest Group'), ('Other', 'Other')], default='Reporting', max_length=200, verbose_name='Type'),
+            field=models.CharField(blank=True, choices=[('', 'SELECT ONE'), ('Committee', 'Committee'), ('Chapter', 'Chapter'), ('Reporting', 'Reporting'), ('Study Group', 'Study Group'), ('Directory', 'Directory'), ('Corporate Membership', 'Corporate Membership'), ('Membership', 'Membership'), ('Technical Interest Group', 'Technical Interest Group'), ('Other', 'Other')], default='Reporting', max_length=200, verbose_name='Type'),
         ),
     ]
