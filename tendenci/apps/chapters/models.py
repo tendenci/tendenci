@@ -112,7 +112,7 @@ class Chapter(BasePage):
 
             group.label = self.title
             group.type = 'system_generated'
-            group.email_recipient = self.creator.email
+            group.email_recipient = self.creator and self.creator.email or ''
             group.show_as_option = False
             group.allow_self_add = False
             group.allow_self_remove = False
@@ -121,9 +121,9 @@ class Chapter(BasePage):
             group.notes = "Auto-generated with the chapter. Used for chapters only"
             #group.use_for_membership = 1
             group.creator = self.creator
-            group.creator_username = self.creator.username
+            group.creator_username = self.creator_username
             group.owner = self.creator
-            group.owner_username = self.creator.username
+            group.owner_username = self.owner_username
             group.entity = self.entity
 
             group.save()
@@ -131,12 +131,12 @@ class Chapter(BasePage):
             self.group = group
 
     def _auto_generate_entity(self):
-        if not (hasattr(self, 'group') and self.entity):
+        if not (hasattr(self, 'entity') and self.entity):
             # create an entity
             entity = Entity.objects.create(
                     entity_name=self.title[:200],
                     entity_type='Chapter',
-                    email=self.creator.email,
+                    email=self.creator and self.creator.email or '',
                     allow_anonymous_view=False)
             self.entity = entity
 
