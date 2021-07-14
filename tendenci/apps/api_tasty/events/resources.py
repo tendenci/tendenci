@@ -25,6 +25,7 @@ class EventResource(TendenciResource):
 
     class Meta(TendenciResource.Meta):
         queryset = Event.objects.all()
+        object_class = Event
         resource_name = 'event'
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
