@@ -116,6 +116,7 @@ def management_forms_tampered(formsets=None):
 def get_search_group_choices():
     event_group_ids = set(Event.objects.all().values_list('groups', flat=True))
     groups = Group.objects.filter(
+                    show_for_events=True,
                     id__in=event_group_ids).distinct(
                     ).order_by('name').values_list('id', 'label', 'name')
     return [(id, label or name) for id, label, name in groups]
