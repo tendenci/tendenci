@@ -24,7 +24,7 @@ class EventResource(TendenciResource):
     place = fields.ForeignKey(PlaceResource, 'place', null=True)
 
     class Meta(TendenciResource.Meta):
-        queryset = Event.objects.all()
+        queryset = Event.objects.filter(status=True)
         object_class = Event
         resource_name = 'event'
         list_allowed_methods = ['get', 'post']
