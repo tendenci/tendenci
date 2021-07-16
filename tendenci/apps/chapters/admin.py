@@ -111,6 +111,12 @@ class ChapterAdmin(TendenciBaseModelAdmin):
 
         return instance
 
+    def save_related(self, request, form, formsets, change):
+        super(ChapterAdmin, self).save_related(request, form, formsets, change)
+        # update group perms to officers
+        form.instance.update_group_perms()
+
+
     def save_formset(self, request, form, formset, change):
         """
         Associate the user to each instance saved.

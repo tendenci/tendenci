@@ -1,5 +1,6 @@
-from builtins import str
+from datetime import date
 
+from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
@@ -139,6 +140,24 @@ class Chapter(BasePage):
                     email=self.creator and self.creator.email or '',
                     allow_anonymous_view=False)
             self.entity = entity
+
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
 
 
 class Position(models.Model):
