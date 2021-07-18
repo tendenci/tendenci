@@ -142,7 +142,7 @@
 	            {% if profile.region %}
 	            <tr>
 	              <td>{% trans 'Region' %}</td>
-	              <td>{{ profile.region }}</td>
+	              <td>{{ profile.get_region_name }}</td>
 	            </tr>
 	            {% endif %}
             <tr>
