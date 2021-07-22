@@ -45,6 +45,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import validate_email
 
 
 THIS_YEAR = datetime.today().year
@@ -812,7 +813,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 not (self.request.user.is_superuser or self.is_corp_rep):
             created = False
             user = self.request.user
-            user.email = user.email or user_attrs['email']
+            user.email = validate_email(user.email) and user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
         elif User.objects.filter(email=user_attrs['email']).exists():
