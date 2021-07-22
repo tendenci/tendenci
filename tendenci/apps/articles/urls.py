@@ -7,7 +7,7 @@ urlpath = get_setting('module', 'articles', 'url') or 'articles'
 
 urlpatterns = [
     re_path(r'^%s/$' % urlpath, views.search, name="articles"),
-    path('^%s/search/' % urlpath, views.search_redirect, name="article.search"),
+    path('%s/search/' % urlpath, views.search_redirect, name="article.search"),
     re_path(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, views.print_view, name="article.print_view"),
     re_path(r'^%s/add/$' % urlpath, views.add, name="article.add"),
     re_path(r'^%s/edit/(?P<id>\d+)/$' % urlpath, views.edit, name="article.edit"),

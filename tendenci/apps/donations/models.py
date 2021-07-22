@@ -33,7 +33,7 @@ class Donation(models.Model):
     owner = models.ForeignKey(User, null=True, related_name="donation_owner", on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=150, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
-    status = models.NullBooleanField(default=True)
+    status = models.BooleanField(default=True, null=True)
 
     objects = DonationManager()
 
