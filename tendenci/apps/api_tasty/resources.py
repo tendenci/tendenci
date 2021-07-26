@@ -7,8 +7,8 @@ from tendenci.apps.api_tasty.auth import DeveloperApiKeyAuthentication
 from tendenci.apps.api_tasty.users.resources import UserResource
 
 class TendenciResource(ModelResource):
-    owner = fields.ForeignKey(UserResource, 'owner', null=True)
-    creator = fields.ForeignKey(UserResource, 'creator', null=True)
+    owner = fields.ForeignKey(UserResource, 'owner', null=True, full=True)
+    creator = fields.ForeignKey(UserResource, 'creator', null=True, full=True)
 
     class Meta:
         #abstract = True

@@ -19,9 +19,9 @@ class TypeResource(ModelResource):
         detail_allowed_methods = ['get',]
 
 class EventResource(TendenciResource):
-    entity = fields.ForeignKey(EntityResource, 'entity', null=True)
-    type = fields.ForeignKey(TypeResource, 'type', null=True)
-    place = fields.ForeignKey(PlaceResource, 'place', null=True)
+    entity = fields.ForeignKey(EntityResource, 'entity', null=True, full=True)
+    type = fields.ForeignKey(TypeResource, 'type', null=True, full=True)
+    place = fields.ForeignKey(PlaceResource, 'place', null=True, full=True)
 
     class Meta(TendenciResource.Meta):
         queryset = Event.objects.filter(status=True)
