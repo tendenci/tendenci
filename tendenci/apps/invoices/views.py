@@ -72,10 +72,10 @@ def reports_overview(request, template_name="invoices/reports/overview.html"):
         invoice_total_balance = invoices.aggregate(Sum('balance'))['balance__sum'] or 0
         total_cc = payments.aggregate(Sum('amount'))['amount__sum'] or 0
 
-        total_amount_by_object_type = invoices.values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
-        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').order_by('-sum').annotate(sum=Sum('total'))
-        total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').order_by('-balance_sum').annotate(balance_sum=Sum('balance'))
-        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').order_by('-sum').annotate(sum=Sum('amount'))
+        total_amount_by_object_type = invoices.values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        amount_paid_by_object_type = invoices.filter(balance__lte=0).values('object_type__app_label').annotate(sum=Sum('total')).order_by('-sum')
+        total_balance_by_object_type = invoices.filter(balance__gt=0).values('object_type__app_label').annotate(balance_sum=Sum('balance')).order_by('-balance_sum')
+        total_cc_by_object_type = payments.filter(invoice__balance__lte=0).values('invoice__object_type__app_label').annotate(sum=Sum('amount')).order_by('-sum')
 
         total_amount_d = {}
         amount_paid_d = {}
