@@ -69,7 +69,7 @@ copyright = u'2020, Tendenci'
 # built documents.
 #
 # The short X.Y version.
-version = '12.0'
+version = '14.0'
 # The full version, including alpha/beta/rc tags.
 release = tendenci_version
 
@@ -128,7 +128,7 @@ html_title = "Tendenci - The Open Source AMS Software for NGOs and Governments"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
-html_short_title= "Tendenci 12"
+html_short_title= "Tendenci 14"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.

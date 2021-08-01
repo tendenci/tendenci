@@ -1,0 +1,30 @@
+Upgrade 12.X to 14.0
+====================
+
+
+Step 1: Prepare for Upgrade
+---------------------------
+
+Back up your site and database!
+
+Replace the content of the ``requirements/tendenci.txt`` with the following:
+::
+
+    tendenci>=14,<15
+
+
+Step 2: Upgrade Tendenci
+------------------------
+
+Run:
+::
+
+    cd /var/www/mysite/
+    source /srv/mysite/bin/activate
+    # For production sites, run
+    pip install -r requirements/prod.txt --upgrade
+    # For dev sites on your local, run
+    pip install -r requirements/dev.txt --upgrade
+    python manage.py migrate
+    python manage.py deploy
+    python manage.py clear_cache
