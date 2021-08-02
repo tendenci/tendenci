@@ -68,6 +68,23 @@
     },
 	{
         "default_value": "false",
+        "description": "If true, the invoices search will not show free membership/corporate membership invoices.",
+        "data_type": "boolean",
+        "update_dt": "2021-08-02 16:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "hidefreememinvoices",
+        "value": "false",
+        "label": "Hide Free Membership/Corporate Membership Invoices",
+        "input_value": "true,false",
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "invoices",
+        "store": true,
+        "updated_by": ""
+    },
+	{
+        "default_value": "false",
         "description": "If true, no private (obscure) URLs can be accessed if users are not logged in.",
         "data_type": "boolean",
         "update_dt": "2020-10-15 17:00:00",
