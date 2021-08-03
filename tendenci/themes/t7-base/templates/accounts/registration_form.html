@@ -33,7 +33,9 @@
             <label for="{{ form.username.id_for_label }}" class="col-sm-3 control-label required">{{ form.username.label }}</label>
             <div class="col-sm-6">
                 {{ form.username }}
-
+				<p class="help-block">
+                 {{ form.username.help_text }}
+                </p>
                 {% if form.username.errors %}
                     <p id="{{ form.username.id_for_label }}-help-block" class="help-block">
                         {{ form.username.errors.as_text }}
@@ -85,7 +87,7 @@
             <label for="{{ form.password1.id_for_label }}" class="col-sm-3 control-label required">{{ form.password1.label }}</label>
             <div class="col-sm-6">
                 {{ form.password1 }}
-                <p class="help-text">
+                <p class="help-block">
                         {{ form.password1.help_text }}
                     </p>
                 {% if form.password1.errors %}

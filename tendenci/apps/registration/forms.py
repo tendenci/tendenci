@@ -7,6 +7,7 @@ Forms and validation code for user registration.
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.auth.validators import UnicodeUsernameValidator
 
 from tendenci.apps.registration.models import RegistrationProfile
 from tendenci.apps.base.fields import EmailVerificationField
@@ -33,10 +34,10 @@ class RegistrationForm(forms.Form):
     ``RegistrationProfile.objects.create_inactive_user()``.
 
     """
-    username = forms.RegexField(regex=r'^\w+$',
-                                max_length=30,
+    username = forms.CharField(label=_('Username'), max_length=150,
                                 widget=forms.TextInput(attrs=attrs_dict),
-                                label=_(u'Username'))
+                                help_text=_('150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                validators=[UnicodeUsernameValidator()],)
     email = EmailVerificationField(label=_(u'Email Address'), attrs=attrs_dict)
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_(u'Password'),
