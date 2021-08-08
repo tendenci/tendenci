@@ -208,6 +208,22 @@ class Profile(Person):
 
         return self.display_name or name or user.email or user.username
 
+    def get_region_name(self):
+        """
+        Get the region name if the region field stores the value of region id.
+        
+        The region field is a char field in Profile. It is currently assigned
+        on memberships join and edit as the value of a region id. So, the id
+        needs to be converted to region_name to display on user profile. 
+        """
+        if self.region and self.region.isdigit():
+            from tendenci.apps.regions.models import Region
+            region_id = int(self.region)
+            if Region.objects.filter(id=region_id).exists():
+                region = Region.objects.get(id=region_id)
+                return region.region_name
+        return self.region
+
     def delete_old_photo(self):
         """
         Delete old photo and its cropped ones.

@@ -46,8 +46,9 @@ class MembershipResource(TendenciResource):
     payment_method = fields.ForeignKey(PaymentMethodResource, 'payment_method', null=True)
 
     class Meta(TendenciResource.Meta):
-        queryset = MembershipDefault.objects.all()
+        queryset = MembershipDefault.objects.filter(status=True).exclude(status_detail='archive')
         resource_name = 'membership'
+        object_class = MembershipDefault
         validation = TendenciValidation(form_class=MembershipForm)
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']

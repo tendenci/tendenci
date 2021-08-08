@@ -26,7 +26,8 @@ from django.utils.safestring import mark_safe
 
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.emails.models import Email
-from tendenci.apps.base.utils import add_tendenci_footer, is_valid_domain
+from tendenci.apps.base.utils import add_tendenci_footer
+from tendenci.apps.base.utils import validate_email
 
 
 logger = logging.getLogger(__name__)
@@ -434,7 +435,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     body = add_tendenci_footer(body)
 
     for email_addr in emails:
-        if is_valid_domain(email_addr):
+        if validate_email(email_addr):
             recipients = [email_addr]
 
             if recipient_bcc:

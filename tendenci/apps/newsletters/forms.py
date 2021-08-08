@@ -15,7 +15,7 @@ from tendenci.apps.newsletters.models import (
     DAYS_CHOICES,
     INCLUDE_CHOICES
 )
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.perms.utils import get_groups_query_filters
 from tendenci.apps.user_groups.models import Group
 
 EMAIL_SEARCH_CRITERIA_CHOICES = (
@@ -85,7 +85,7 @@ class OldGenerateForm(forms.ModelForm):
         
         default_groups = Group.objects.filter(status=True, status_detail="active")
         if not self.request.user.is_superuser:
-            filters = get_query_filters(self.request.user, 'user_groups.view_group', **{'perms_field': False})
+            filters = get_groups_query_filters(self.request.user,)
             default_groups = default_groups.filter(filters).distinct()
         self.fields['group'].queryset = default_groups
 

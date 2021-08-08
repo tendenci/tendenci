@@ -101,6 +101,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
     
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
+        instance = update_perms_and_save(request, form, instance)
 
         # save photo
         if 'photo_upload' in form.cleaned_data:
@@ -108,8 +109,13 @@ class ChapterAdmin(TendenciBaseModelAdmin):
             if photo:
                 instance.save(photo=photo)
 
-        instance = update_perms_and_save(request, form, instance)
         return instance
+
+    def save_related(self, request, form, formsets, change):
+        super(ChapterAdmin, self).save_related(request, form, formsets, change)
+        # update group perms to officers
+        form.instance.update_group_perms()
+
 
     def save_formset(self, request, form, formset, change):
         """

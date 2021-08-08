@@ -1,5 +1,6 @@
-from builtins import str
+from datetime import date
 
+from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
@@ -112,7 +113,7 @@ class Chapter(BasePage):
 
             group.label = self.title
             group.type = 'system_generated'
-            group.email_recipient = self.creator.email
+            group.email_recipient = self.creator and self.creator.email or ''
             group.show_as_option = False
             group.allow_self_add = False
             group.allow_self_remove = False
@@ -121,9 +122,9 @@ class Chapter(BasePage):
             group.notes = "Auto-generated with the chapter. Used for chapters only"
             #group.use_for_membership = 1
             group.creator = self.creator
-            group.creator_username = self.creator.username
+            group.creator_username = self.creator_username
             group.owner = self.creator
-            group.owner_username = self.creator.username
+            group.owner_username = self.owner_username
             group.entity = self.entity
 
             group.save()
@@ -131,14 +132,32 @@ class Chapter(BasePage):
             self.group = group
 
     def _auto_generate_entity(self):
-        if not (hasattr(self, 'group') and self.entity):
+        if not (hasattr(self, 'entity') and self.entity):
             # create an entity
             entity = Entity.objects.create(
                     entity_name=self.title[:200],
                     entity_type='Chapter',
-                    email=self.creator.email,
+                    email=self.creator and self.creator.email or '',
                     allow_anonymous_view=False)
             self.entity = entity
+
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
 
 
 class Position(models.Model):

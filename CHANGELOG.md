@@ -1,3 +1,14 @@
+### 12.5.7 [2021-07-20]
+
+* Events search respects the group's `show_for_events` checkbox.
+* The group dropdown on newsletters add now shows a list of groups that the user has change perm (instead of view perm).
+* Chapter officers are granted the view and change perms for their own group so that their group would show up in the group dropdown when they add a newsletter.
+* Fixed an AttributeError on chapters add
+* Updated tendenci_default_memberships.json to make renew_link clickable.
+* Resolved the region display issue on user profile.
+* Fixed some issues for api_tasty.
+
+
 ### 12.5.6 [2021-07-01]
 
 * Bumped Pillow from 8.2.0 to 8.3.0.

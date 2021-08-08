@@ -3,9 +3,7 @@ from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
 from django.db.models import Q
 
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -277,6 +275,53 @@ def get_query_filters(user, perm, **kwargs):
                 user_filter = (status_q & (((anon_q | user_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
                 return user_filter
+
+
+def get_groups_query_filters(user, **kwargs):
+    """
+    This function generates the query filters for a list of groups that
+    the user has the CHANGE (EDIT) permission.
+
+    For example, for the group dropdown on newsletters generator, 
+      only those groups that the user can change will show up. 
+    """
+    if not isinstance(user, User) or user.is_anonymous:
+        return Q()
+    else:
+        if user.profile.is_superuser:
+            return Q(status=True)
+        elif has_perm(user, 'user_groups.change_group'):
+            return Q(status=True, status_detail__in=['active', 'published'])
+        else:
+            from tendenci.apps.user_groups.models import Group
+            group_q = Q()
+            perm = 'change_group'
+            # groups user is member of
+            group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]
+
+            content_type = ContentType.objects.get(
+                    app_label=Group._meta.app_label, model=Group._meta.model_name)
+            # get a list of groups that the user can change
+            group_ids_with_perm = ObjectPermission.objects.filter(
+                            codename=perm,
+                            content_type=content_type,
+                            ).filter(Q(group__in=group_ids) | Q(user=user)
+                                             ).values_list('object_id', flat=True)
+            if group_ids_with_perm:
+                group_q = Q(id__in=group_ids_with_perm)
+
+            status_q = Q(status=True)
+            status_detail_q = Q(status_detail__in=['active', 'published'])
+            creator_perm_q = Q(creator=user)
+            owner_perm_q = Q(owner=user)
+
+            if user.profile.is_member:
+                user_q = Q(allow_user_edit=True)
+                member_q = Q(allow_member_edit=True)
+                return (status_q & (((user_q | member_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+            else:
+                user_q = Q(allow_user_edit=True)
+                return (status_q & (((user_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
 
 def get_administrators():

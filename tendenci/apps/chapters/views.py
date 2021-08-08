@@ -246,6 +246,9 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
             chapter.save()
             formset.save()
 
+            # update group perms to officers
+            chapter.update_group_perms()
+
             EventLog.objects.log(instance=chapter)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % chapter)
