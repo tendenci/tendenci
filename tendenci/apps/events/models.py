@@ -125,6 +125,7 @@ class Place(models.Model):
     city = models.CharField(max_length=150, blank=True)
     state = models.CharField(max_length=150, blank=True)
     zip = models.CharField(max_length=150, blank=True)
+    county = models.CharField(_('county'), max_length=50, blank=True)
     country = models.CharField(max_length=150, blank=True)
 
     # online location
