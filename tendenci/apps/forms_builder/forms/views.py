@@ -43,6 +43,8 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 @is_enabled('forms')
@@ -404,6 +406,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         billing_form = None
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    if get_setting('site', 'global', 'captcha'): # add captcha
+        captcha_field = CustomCatpchaField(label=_('Type the code below'))
+        if billing_form:
+            billing_form.fields['captcha'] = captcha_field
+        else:
+            form_for_form.fields['captcha'] = captcha_field
     
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
