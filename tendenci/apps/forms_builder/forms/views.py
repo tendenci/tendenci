@@ -2,8 +2,6 @@
 # non-ascii characters.
 # from __future__ import must occur at the beginning of the file
 import datetime
-import random
-import string
 import time
 import csv
 
@@ -16,7 +14,6 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.core.files.storage import default_storage
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 # from djcelery.models import TaskMeta
 
@@ -28,9 +25,7 @@ from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
-from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
