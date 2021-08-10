@@ -43,6 +43,7 @@ class ChapterForm(TendenciBaseForm):
         'slug',
         'region',
         'state',
+        'county',
         'mission',
         'content',
         'notes',
@@ -61,6 +62,7 @@ class ChapterForm(TendenciBaseForm):
                                  'slug',
                                  'region',
                                  'state',
+                                 'county',
                                  'mission',
                                  'content',
                                  'notes',
@@ -231,6 +233,8 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
     region = forms.ChoiceField(choices=(), required=False)
     state = forms.ChoiceField(choices=(), required=False)
+    county = forms.CharField(required=False, max_length=50,)
+
 
     def __init__(self, *args, **kwargs):
         super(ChapterSearchForm, self).__init__(*args, **kwargs)
@@ -246,4 +250,8 @@ class ChapterSearchForm(FormControlWidgetMixin, forms.Form):
             self.fields['state'].choices = [('', _('All States'))] + [(state, state) for state in states]
         else:
             del self.fields['state']
+        if Chapter.objects.exclude(county='').exists():
+            self.fields['county'].widget.attrs.update({'placeholder': _('County')})
+        else:
+            del self.fields['county']
 

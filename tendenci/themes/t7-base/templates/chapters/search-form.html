@@ -37,6 +37,22 @@
     </div><br />
     {% endif %}
 
+	{% if form.county %}
+    <div class="form-group{% if form.county.errors %} has-error{% endif %}">
+       {{ form.county }}
+
+        {% if form.county.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.county.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
+    </div><br />
+    {% endif %}
+
 	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
         {{ form.q }}
 

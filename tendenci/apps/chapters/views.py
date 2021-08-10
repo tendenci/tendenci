@@ -74,6 +74,7 @@ def search(request, template_name="chapters/search.html"):
         query = form.cleaned_data.get('q')
         region = form.cleaned_data.get('region')
         state = form.cleaned_data.get('state')
+        county = form.cleaned_data.get('county')
         
         if query:
             chapters = Chapter.objects.search(query, user=request.user)
@@ -85,6 +86,8 @@ def search(request, template_name="chapters/search.html"):
             chapters = chapters.filter(region=region)
         if state:
             chapters = chapters.filter(state=state)
+        if county:
+            chapters = chapters.filter(county__iexact=county)
         chapters = chapters.order_by('-create_dt')
     else:
         chapters = Chapter.objects.none()
