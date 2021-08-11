@@ -219,7 +219,8 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
-    corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
+    corps_list = user_this.corpmembershiprep_set.filter(corp_profile__status=True
+                            ).values_list('corp_profile__id', 'corp_profile__name')
     recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
     # industry
