@@ -1,3 +1,15 @@
+### 12.5.8 [2021-08-11]
+
+* Added the option (setting "Hide Free Membership/Corporate Membership Invoices") to not display free membership and corp membership invoices on invoices search.
+* Updated username field for the self register form.
+* Changed max_length to 150 for the address field in directory to match with the address field in profiles.
+* Prevented soft deleted corp profiles from showing on user profile.
+* Moved the captcha field to the bottom of the custom forms.
+* Included the invoice link (if exists) to form entry.
+* Added the `county` field to event place and chapters.
+* Validated emails beore being sent.
+* Events full details are pulled with tasty API.
+
 ### 12.5.7 [2021-07-20]
 
 * Events search respects the group's `show_for_events` checkbox.
