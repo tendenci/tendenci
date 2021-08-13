@@ -709,7 +709,6 @@ MERCHANT_ACCOUNT_NAMES = ('stripe', 'authorizenet', 'firstdatae4', 'paypal')
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_IMAGE_SIZE = (172,80)
-CAPTCHA_OUTPUT_FORMAT = u'%(image)s <br />%(hidden_field)s %(text_field)s'
 
 # Google reCAPTCHA
 NORECAPTCHA_SITE_KEY = ''
