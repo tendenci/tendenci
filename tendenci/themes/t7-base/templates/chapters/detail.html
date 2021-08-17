@@ -87,6 +87,11 @@
      <strong>{% trans 'State:' %}</strong> {{ chapter.state }}
     </p>
     {% endif %}
+	{% if chapter.county %}
+    <p class="chapter-county">
+     <strong>{% trans 'County:' %}</strong> {{ chapter.county }}
+    </p>
+    {% endif %}
     
     <div class="chapter-files">
       <h2>Files {% if admin %}</h2>

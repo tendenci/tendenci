@@ -2,8 +2,6 @@
 # non-ascii characters.
 # from __future__ import must occur at the beginning of the file
 import datetime
-import random
-import string
 import time
 import csv
 
@@ -28,9 +26,7 @@ from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.profiles.models import Profile
 from tendenci.apps.recurring_payments.models import RecurringPayment
-from tendenci.apps.recurring_payments.forms import RecurringPaymentForm
 from tendenci.apps.exports.utils import run_export_task
 
 from tendenci.apps.forms_builder.forms.forms import (
@@ -43,6 +39,8 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
 from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 @is_enabled('forms')
@@ -404,6 +402,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         billing_form = None
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
+    if get_setting('site', 'global', 'captcha'): # add captcha
+        captcha_field = CustomCatpchaField(label=_('Type the code below'))
+        if billing_form:
+            billing_form.fields['captcha'] = captcha_field
+        else:
+            form_for_form.fields['captcha'] = captcha_field
     
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)

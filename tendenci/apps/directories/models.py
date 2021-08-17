@@ -73,7 +73,7 @@ class Directory(TendenciBaseModel):
 
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
-    address = models.CharField(_('Address'), max_length=100, blank=True)
+    address = models.CharField(_('Address'), max_length=150, blank=True)
     address2 = models.CharField(_('Address 2'), max_length=100, blank=True)
     city = models.CharField(_('City'), max_length=50, blank=True)
     state = models.CharField(_('State'), max_length=50, blank=True)

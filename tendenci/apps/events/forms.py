@@ -76,6 +76,7 @@ SEARCH_CATEGORIES_ADMIN = (
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
     ('place__city__icontains', _('Event Location - City')),
+    ('place__county__icontains', _('Event Location - County')),
     ('place__state__icontains', _('Event Location - State')),
     ('tags__icontains', _('Tags')),
 
@@ -982,6 +983,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
                 'city',
                 'state',
                 'zip',
+                'county',
                 'country',
                 'url',
             ]

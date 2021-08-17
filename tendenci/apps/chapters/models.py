@@ -40,6 +40,7 @@ class Chapter(BasePage):
     join_link = models.CharField(max_length=200, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
+    county = models.CharField(_('county'), max_length=50, blank=True)
     state = models.CharField(_('state'), max_length=50, blank=True, default='')
 
     perms = GenericRelation(ObjectPermission,

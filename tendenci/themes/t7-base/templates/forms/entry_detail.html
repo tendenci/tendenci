@@ -13,6 +13,15 @@
 <div class="t">
     <div class="form-builder-wrap">
         <h2>{{ entry.form.title }}</h2>
+		{% with entry.get_invoice as invoice %}
+		{% if invoice %}
+			<h4> 
+			 {% trans "Balance Due:" %} {{ invoice.balance|format_currency }}
+			 {% if invoice.balance > 0 %}{% trans "(Not Paid)" %}{% else %}{% if invoice.total > 0 %}{% trans "(Paid)" %}{% endif %}{% endif %}</strong></small>
+			- <a href="{% url 'invoice.view' invoice.id %}">{% trans 'View Invoice' %}</a>
+		</h4>
+		{% endif %}
+		{% endwith %}
          <div class="quick-options">
             {% forms_entry_options request.user entry %}
          </div>
