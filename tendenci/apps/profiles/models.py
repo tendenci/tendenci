@@ -19,7 +19,7 @@ from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.models import BaseImport, BaseImportData
-from tendenci.apps.base.utils import UnicodeWriter, correct_filename
+from tendenci.apps.base.utils import correct_filename
 from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
@@ -625,28 +625,27 @@ class UserImport(BaseImport):
         app_label = 'profiles'
 
     def generate_recap(self):
+        import csv
         if not self.recap_file and self.header_line:
             file_name = 'user_import_%d_recap.csv' % self.id
             file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
                                    file_name)
-            f = default_storage.open(file_path, 'wb')
-            recap_writer = UnicodeWriter(f, encoding='utf-8')
-            header_row = self.header_line.split(',')
-            if 'status' in header_row:
-                header_row.remove('status')
-            if 'status_detail' in header_row:
-                header_row.remove('status_detail')
-            header_row.extend(['action', 'error'])
-            recap_writer.writerow(header_row)
-            data_list = UserImportData.objects.filter(
-                uimport=self).order_by('row_num')
-            for idata in data_list:
-                data_dict = idata.row_data
-                row = [data_dict[k] for k in header_row if k in data_dict]
-                row.extend([idata.action_taken, idata.error])
-                recap_writer.writerow(row)
-
-            f.close()
+            with default_storage.open(file_path, 'w') as f:
+                recap_writer = csv.writer(f)
+                header_row = self.header_line.split(',')
+                if 'status' in header_row:
+                    header_row.remove('status')
+                if 'status_detail' in header_row:
+                    header_row.remove('status_detail')
+                header_row.extend(['action', 'error'])
+                recap_writer.writerow(header_row)
+                data_list = UserImportData.objects.filter(
+                    uimport=self).order_by('row_num')
+                for idata in data_list:
+                    data_dict = idata.row_data
+                    row = [data_dict[k] for k in header_row if k in data_dict]
+                    row.extend([idata.action_taken, idata.error])
+                    recap_writer.writerow(row)
             self.recap_file.name = file_path
             self.save()
 
