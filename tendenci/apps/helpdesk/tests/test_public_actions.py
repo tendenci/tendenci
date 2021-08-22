@@ -43,9 +43,9 @@ class PublicActionsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertTemplateNotUsed(response, 'helpdesk/public_view_form.html')
-        self.assertEqual(ticket.status, Ticket.CLOSED_STATUS)
+        self.assertEqual(ticket.status, Ticket.RESOLVED_STATUS)
         self.assertEqual(ticket.resolution, resolution_text)
-        self.assertEqual(current_followups+1, ticket.followup_set.all().count())
+        self.assertEqual(current_followups, ticket.followup_set.all().count())
 
         ticket.resolution = old_resolution
         ticket.status = old_status
