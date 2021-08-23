@@ -55,6 +55,7 @@ class ChapterAdmin(TendenciBaseModelAdmin):
             'slug',
             'region',
             'state',
+            'county',
             'mission',
             'content',
             'notes',
