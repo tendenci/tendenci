@@ -2046,6 +2046,23 @@ class MembershipDefault(TendenciBaseModel):
     def add_directory(self):
         if get_setting('module',  'memberships', 'adddirectory'):
             if not self.directory:
+                # if a directory already exists for this user with the same
+                # membership type, use it instead of creating a new one.
+                [directory_id] = MembershipDefault.objects.filter(
+                                        user=self.user,
+                                        membership_type=self.membership_type,
+                                        directory__isnull=False
+                                        ).exclude(id=self.id).order_by('-id'
+                                    ).values_list('directory', flat=True)[:1] or [None]
+                if directory_id:
+                    self.directory_id = directory_id
+                    self.save()
+                    self.directory = Directory.objects.get(id=directory_id)
+                    if self.directory.status_detail != 'pending':
+                        self.directory.status_detail = 'pending'
+                        self.directory.save()
+                    return
+
                 # 'entity_parent': self.entity,
                 directory_entity = Entity.objects.create(
                                     entity_name=self.user.get_full_name(),
