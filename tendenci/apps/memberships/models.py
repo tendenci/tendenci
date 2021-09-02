@@ -44,7 +44,6 @@ from tendenci.apps.notifications import models as notification
 from tendenci.apps.directories.models import Directory
 from tendenci.apps.industries.models import Industry
 from tendenci.apps.regions.models import Region
-from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.entities.models import Entity
 
@@ -2047,6 +2046,23 @@ class MembershipDefault(TendenciBaseModel):
     def add_directory(self):
         if get_setting('module',  'memberships', 'adddirectory'):
             if not self.directory:
+                # if a directory already exists for this user with the same
+                # membership type, use it instead of creating a new one.
+                [directory_id] = MembershipDefault.objects.filter(
+                                        user=self.user,
+                                        membership_type=self.membership_type,
+                                        directory__isnull=False
+                                        ).exclude(id=self.id).order_by('-id'
+                                    ).values_list('directory', flat=True)[:1] or [None]
+                if directory_id:
+                    self.directory_id = directory_id
+                    self.save()
+                    self.directory = Directory.objects.get(id=directory_id)
+                    if self.directory.status_detail != 'pending':
+                        self.directory.status_detail = 'pending'
+                        self.directory.save()
+                    return
+
                 # 'entity_parent': self.entity,
                 directory_entity = Entity.objects.create(
                                     entity_name=self.user.get_full_name(),
@@ -2177,28 +2193,27 @@ class MembershipImport(models.Model):
         return self.get_file().file.name
 
     def generate_recap(self):
+        import csv
         if not self.recap_file and self.header_line:
             file_name = 'membership_import_%d_recap.csv' % self.id
             file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
                                    file_name)
-            f = default_storage.open(file_path, 'wb')
-            recap_writer = UnicodeWriter(f, encoding='utf-8')
-            header_row = self.header_line.split(',')
-            if 'status' in header_row:
-                header_row.remove('status')
-            if 'status_detail' in header_row:
-                header_row.remove('status_detail')
-            header_row.extend(['action', 'error'])
-            recap_writer.writerow(header_row)
-            data_list = MembershipImportData.objects.filter(
-                mimport=self).order_by('row_num')
-            for idata in data_list:
-                data_dict = idata.row_data
-                row = [data_dict[k] for k in header_row if k in data_dict]
-                row.extend([idata.action_taken, idata.error])
-                recap_writer.writerow(row)
-
-            f.close()
+            with default_storage.open(file_path, 'w') as f:
+                recap_writer = csv.writer(f)
+                header_row = self.header_line.split(',')
+                if 'status' in header_row:
+                    header_row.remove('status')
+                if 'status_detail' in header_row:
+                    header_row.remove('status_detail')
+                header_row.extend(['action', 'error'])
+                recap_writer.writerow(header_row)
+                data_list = MembershipImportData.objects.filter(
+                    mimport=self).order_by('row_num')
+                for idata in data_list:
+                    data_dict = idata.row_data
+                    row = [data_dict[k] for k in header_row if k in data_dict]
+                    row.extend([idata.action_taken, idata.error])
+                    recap_writer.writerow(row)
             self.recap_file.name = file_path
             self.save()
 

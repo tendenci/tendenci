@@ -9,7 +9,9 @@
 | 6.x.x   | :x: |
 | 7.x.x   | :x: |
 | 11.x.x  | :x: |
-| 12.3.2  | :white_check_mark: |
+| 12.5.8  | :white_check_mark: |
+
+**Note:** The latest version is the only supported version.
 
 ## Reporting a Vulnerability
 

@@ -140,6 +140,9 @@ class ChapterAdminForm(TendenciBaseForm):
         fields = (
         'title',
         'slug',
+        'region',
+        'state',
+        'county',
         'mission',
         'content',
         'notes',

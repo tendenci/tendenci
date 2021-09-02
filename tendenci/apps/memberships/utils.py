@@ -1327,7 +1327,7 @@ class ImportMembDefault(object):
 
     def clean_username(self, memb_data):
         if 'username' in memb_data:
-            memb_data['username'] = memb_data['username'][:30]
+            memb_data['username'] = memb_data['username'][:150]
 
     def process_default_membership(self, idata, **kwargs):
         """
