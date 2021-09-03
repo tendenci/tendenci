@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('files', '0007_auto_20200902_1545'),
+        ('entities', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('entities', '0005_entity_show_for_donation'),
+        ('files', '0001_initial'),
     ]
 
     operations = [
