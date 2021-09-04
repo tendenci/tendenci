@@ -29,7 +29,7 @@ from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Fiel
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.base.fields import CountrySelectField
-#from tendenci.apps.base.forms import CustomCatpchaField
+from tendenci.apps.base.forms import CustomCatpchaField
 
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -183,8 +183,8 @@ class FormForForm(FormControlWidgetMixin, forms.ModelForm):
             add_fields(self, self.form_fields)
             add_pricing_fields(self, self.form)
 
-#         if get_setting('site', 'global', 'captcha'): # add captcha if not logged in
-#             self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
+        if get_setting('site', 'global', 'captcha'): # add captcha if not logged in
+            self.fields['captcha'] = CustomCatpchaField(label=_('Type the code below'))
 
         self.add_form_control_class()
 

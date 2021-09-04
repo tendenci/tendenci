@@ -402,11 +402,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
     if get_setting('site', 'global', 'captcha'): # add captcha
-        captcha_field = CustomCatpchaField(label=_('Type the code below'))
         if billing_form:
+            # append the captcha to the end of the billing form
+            captcha_field = CustomCatpchaField(label=_('Type the code below'))
+            if 'captcha' in form_for_form.fields:
+                form_for_form.fields.pop('captcha')
             billing_form.fields['captcha'] = captcha_field
-        else:
-            form_for_form.fields['captcha'] = captcha_field
     
     for field in form_for_form.fields:
         field_default = request.GET.get(field, None)
