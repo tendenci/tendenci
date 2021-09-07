@@ -8,8 +8,8 @@ from django.urls.exceptions import Resolver404
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.directories.models import Directory, Category
 from tendenci.apps.base.forms import FormControlWidgetMixin
-from tendenci.apps.emails.models import Email
 from tendenci.apps.notifications import models as notification
+from tendenci.apps.site_settings.utils import get_setting
 from .models import RequestEmail, AffiliateRequest, Connection
 
 
@@ -33,7 +33,8 @@ class RequestAssociateForm(FormControlWidgetMixin, forms.ModelForm):
         self.fields['from_directory_url'].help_text = _('Example: %s/%s/example/') % (
                                         get_setting('site', 'global', 'siteurl'),
                                         get_setting('module', 'directories', 'url'))
-        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL')})
+        self.fields['from_directory_url'].widget.attrs.update({'placeholder': _('Your marketplace listing URL'),
+                                                               'size': 50})
         affiliate_cats_queryset = Category.objects.filter(id__in=Connection.objects.filter(
                                     cat__in=self.to_directory.cats.all()).values_list(
                                         'affliated_cats', flat=True)).distinct()

@@ -586,10 +586,10 @@
             </div>
             {% endif %}
 
-            {% if membership.industry %}
+            {% if membership.user.profile.industry %}
             <div class="field">
                 <div class="label label-info">{% trans 'Industry' %}</div>
-                <div class="value">{{ membership.industry }}</div>
+                <div class="value">{{ membership.user.profile.industry }}</div>
             </div>
             {% endif %}
 

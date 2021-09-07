@@ -1,5 +1,9 @@
 import uuid
 from datetime import datetime, timedelta
+from functools import reduce
+import operator
+
+from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -69,7 +73,7 @@ class Directory(TendenciBaseModel):
 
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
-    address = models.CharField(_('Address'), max_length=100, blank=True)
+    address = models.CharField(_('Address'), max_length=150, blank=True)
     address2 = models.CharField(_('Address 2'), max_length=100, blank=True)
     city = models.CharField(_('City'), max_length=50, blank=True)
     state = models.CharField(_('State'), max_length=50, blank=True)
@@ -379,6 +383,19 @@ class Directory(TendenciBaseModel):
         
         return False
 
+    @staticmethod
+    def get_my_directories_filter(user, my_directories_only=False):
+        if user.is_authenticated and my_directories_only:
+            filter_or = ({'creator': user,
+                         'owner': user,
+                         'membershipdefault__user': user,
+                         'corpprofile__reps__user': user})
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}
+                        ) for key, value in filter_or.items()])
+            return Directory.objects.filter(q_obj_or).filter(status=True,
+                                status_detail__in=['active', 'pending', 'paid - pending approval'])
+
+        return Directory.objects.none()
 
     def can_connect_from(self, directory_from=None, directory_from_cat=None):
         """

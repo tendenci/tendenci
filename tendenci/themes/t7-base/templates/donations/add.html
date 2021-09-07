@@ -59,6 +59,19 @@
     <div class="clear-left"></div>
     
     {% endif %}
+
+	{% if form.donate_to_entity %}
+    <div class="field-wrapper">
+      {% if form.form.donate_to_entity.errors %}
+      <div class="errs">{{ form.form.donate_to_entity.errors }}</div>
+      {% endif %}
+      <label for="id_form.allocation" class="field-label">
+        {% trans 'Donate to'%}</label>
+      {{ form.donate_to_entity }}
+    </div>
+    <div class="clear-left"></div>
+    
+    {% endif %}
     
     <div class="field-wrapper">
       {% if form.payment_method.errors %}

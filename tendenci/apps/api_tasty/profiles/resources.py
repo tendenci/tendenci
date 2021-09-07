@@ -23,7 +23,7 @@ class ProfileResource(TendenciResource):
     entity = fields.ForeignKey(EntityResource, 'entity', null=True)
 
     class Meta(TendenciResource.Meta):
-        queryset = Profile.objects.all()
+        queryset = Profile.objects.filter(status=True)
         resource_name = 'profile'
         validation = TendenciValidation(form_class=ProfileForm)
         list_allowed_methods = ['get', 'post']

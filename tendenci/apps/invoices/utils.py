@@ -2,6 +2,7 @@ from datetime import datetime, date, time
 import time as ttime
 from io import BytesIO
 from xhtml2pdf import pisa
+import csv
 
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
@@ -14,6 +15,7 @@ from tendenci.apps.base.utils import UnicodeWriter
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import escape_csv
+from tendenci.apps.files.models import File
 
 def invoice_pdf(request, invoice):
     obj = invoice.get_object()
@@ -41,6 +43,19 @@ def invoice_pdf(request, invoice):
         if invoice.box_and_packing:
             tmp_total += invoice.box_and_packing
 
+    # base64 encoded logo image
+    invoice_logo_file_id = get_setting('module', 'invoices', 'invoicelogo')
+    logo_base64_src = ''
+    if invoice_logo_file_id:
+        try:
+            invoice_logo_file_id = int(invoice_logo_file_id)
+        except ValueError:
+            invoice_logo_file_id = 0
+        if invoice_logo_file_id:
+            [file] = File.objects.filter(id=invoice_logo_file_id)[:1] or [None]
+            if file:
+                logo_base64_src = f"data:{file.mime_type()};base64,{file.get_binary(size=(300, 150))}"
+    
     template_name="invoices/pdf.html"
     template = get_template(template_name)
     html  = template.render(context={
@@ -49,6 +64,7 @@ def invoice_pdf(request, invoice):
                              'payment_method': payment_method,
                              'tmp_total': tmp_total,
                              'pdf_version': True,
+                             'logo_base64_src': logo_base64_src
                             }, request=request)
     result = BytesIO()
     pisa.pisaDocument(BytesIO(html.encode("utf-8")), result)
@@ -191,3 +207,62 @@ def process_invoice_export(start_dt=None, end_dt=None,
             subject=subject,
             body=body)
         email.send()
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
+def get_invoice_data(invoice, field_names):
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    data = {}
+    for field_name in field_names:
+        data[field_name] = ''
+
+    if invoice.create_dt:
+        data['Date'] = invoice.create_dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    data['Invoice No.'] = invoice.pk
+
+    if invoice.bill_to_first_name and invoice.bill_to_last_name:
+        data['Member/User'] = f'{invoice.bill_to_first_name} {invoice.bill_to_last_name}'
+    elif invoice.bill_to:
+        data['Member/User'] = invoice.bill_to
+
+    obj = invoice.get_object()
+    if obj:
+        data['Item'] = obj
+
+    data[f'Total Amount ({currency_symbol})'] = invoice.total
+
+    data[f'balance ({currency_symbol})'] = invoice.balance
+
+    if invoice.balance == 0:
+        if invoice.is_void:
+            data['Status'] = 'Void'
+        else:
+            data['Status'] = 'Paid'
+    else:
+        data['Status'] = f'Balance: {currency_symbol}{invoice.balance}'
+
+    return data
+    
+def iter_invoices(invoices, ):
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    field_names = ['Date', 'Invoice No.', 'Member/User', 'Item', f'Total Amount ({currency_symbol})', f'balance ({currency_symbol})', 'Status']
+    
+    writer = csv.DictWriter(Echo(), fieldnames=field_names)
+    # write headers
+    yield writer.writerow(dict(zip(field_names, field_names)))
+
+    for invoice in invoices:
+        yield writer.writerow(get_invoice_data(invoice, field_names))
+
+    
+    
+    
+    

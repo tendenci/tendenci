@@ -1,11 +1,13 @@
-from builtins import str
+from datetime import date
 
+from django.db.models import Q
 from django.db import models
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericRelation
+from django.template.defaultfilters import slugify
 
 from tendenci.libs.tinymce import models as tinymce_models
 from tendenci.apps.pages.models import BasePage
@@ -15,12 +17,15 @@ from tendenci.apps.chapters.module_meta import ChapterMeta
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.files.models import File
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.regions.models import Region
 
 
 class Chapter(BasePage):
     """
     Chapters module. Similar to Pages with extra fields.
     """
+    slug = SlugField(_('URL Path'), unique=True)
     entity = models.OneToOneField(Entity, null=True,
                                   on_delete=models.SET_NULL,)
     mission = tinymce_models.HTMLField(null=True, blank=True)
@@ -34,6 +39,9 @@ class Chapter(BasePage):
     contact_email = models.CharField(max_length=200, null=True, blank=True)
     join_link = models.CharField(max_length=200, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.SET_NULL)
+    county = models.CharField(_('county'), max_length=50, blank=True)
+    state = models.CharField(_('state'), max_length=50, blank=True, default='')
 
     perms = GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -62,6 +70,13 @@ class Chapter(BasePage):
         return Officer.objects.filter(chapter=self).order_by('pk')
     
     def save(self, *args, **kwargs):
+        if not self.id:
+            setattr(self, 'entity', None)
+            setattr(self, 'group', None)
+            # auto-generate a group and an entity
+            self._auto_generate_entity()
+            self._auto_generate_group()
+
         photo_upload = kwargs.pop('photo', None)
 
         super(Chapter, self).save(*args, **kwargs)
@@ -79,6 +94,72 @@ class Chapter(BasePage):
             self.featured_image = image
             self.save()
 
+    def _auto_generate_group(self):
+        if not (hasattr(self, 'group') and self.group):
+            # create a group for this type
+            group = Group()
+            group.name = f'{self.title}'[:200]
+            group.slug = slugify(group.name)
+            # ensure uniqueness of the slug
+            if Group.objects.filter(slug=group.slug).exists():
+                tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
+                if tmp_groups:
+                    t_list = [g.slug[len(group.slug):] for g in tmp_groups]
+                    num = 1
+                    while str(num) in t_list:
+                        num += 1
+                    group.slug = f'{group.slug}{str(num)}'
+                    # group name is also a unique field
+                    group.name = f'{group.name}{str(num)}'
+
+            group.label = self.title
+            group.type = 'system_generated'
+            group.email_recipient = self.creator and self.creator.email or ''
+            group.show_as_option = False
+            group.allow_self_add = False
+            group.allow_self_remove = False
+            group.show_for_memberships = False
+            group.description = "Auto-generated with the chapter."
+            group.notes = "Auto-generated with the chapter. Used for chapters only"
+            #group.use_for_membership = 1
+            group.creator = self.creator
+            group.creator_username = self.creator_username
+            group.owner = self.creator
+            group.owner_username = self.owner_username
+            group.entity = self.entity
+
+            group.save()
+
+            self.group = group
+
+    def _auto_generate_entity(self):
+        if not (hasattr(self, 'entity') and self.entity):
+            # create an entity
+            entity = Entity.objects.create(
+                    entity_name=self.title[:200],
+                    entity_type='Chapter',
+                    email=self.creator and self.creator.email or '',
+                    allow_anonymous_view=False)
+            self.entity = entity
+
+    def update_group_perms(self, **kwargs):
+        """
+        Update the associated group perms for the officers of this chapter. 
+        Grant officers the view and change permissions for their own group.
+        """
+        if not self.group:
+            return
+ 
+        ObjectPermission.objects.remove_all(self.group)
+    
+        perms = ['view', 'change']
+
+        officer_users = [officer.user for officer in self.officers(
+            ).filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))]
+        if officer_users:
+            ObjectPermission.objects.assign(officer_users,
+                                        self.group, perms=perms)
+
 
 class Position(models.Model):
     title = models.CharField(_(u'title'), max_length=200)
@@ -95,6 +176,9 @@ class Officer(models.Model):
     user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(max_length=120, null=True, blank=True)
+    expire_dt = models.DateField(_('Expire Date'), blank=True, null=True,
+                                 help_text=_('Leave it blank if never expires.'))
 
     class Meta:
         app_label = 'chapters'

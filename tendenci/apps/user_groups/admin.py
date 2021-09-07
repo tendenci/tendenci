@@ -15,7 +15,7 @@ class GroupAdmin(TendenciBaseModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'label', 'entity', 'email_recipient', 'permissions')}),
         (_('Flags'), {'fields': (
-            'show_as_option', 'allow_self_add', 'allow_self_remove', 'sync_newsletters')}),
+            'show_as_option', 'allow_self_add', 'allow_self_remove', 'sync_newsletters', 'show_for_events')}),
         (_('Administrative'), {'fields': (
             'allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms', 'status_detail')}),
     )

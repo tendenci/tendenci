@@ -25,7 +25,12 @@
           <tr>
             <th class="officer-position">Position</th>
             <th class="officer-name">Name</th>
+            {% if show_officers_phone %}
             <th class="officer-phone">Phone</th>
+            {% endif %}
+            {% if show_officers_email %}
+            <th class="officer-phone">Email</th>
+            {% endif %}
           </tr>
         </thead>
         
@@ -43,8 +48,13 @@
                 {% endif %}
               </a>
             </td>
-            
-            <td class="officer-phone">{{ officer.phone }}</td>
+
+            {% if show_officers_phone %}
+            <td class="officer-phone">{% if officer.phone %}{{ officer.phone }}{% endif %}</td>
+            {% endif %}
+            {% if show_officers_email %}
+            <td class="officer-phone">{% if officer.email %}{{ officer.email }}{% endif %}</td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>

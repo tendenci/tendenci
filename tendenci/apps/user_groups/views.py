@@ -368,9 +368,14 @@ def group_membership_self_remove(request, slug, user_id):
 
     return HttpResponseRedirect(reverse('group.search'))
 
+
+@login_required
 def groupmembership_bulk_add(request, group_slug,
                         form_class=GroupMembershipBulkForm,
                         template_name="user_groups/member_add.html"):
+    if not has_perm(request.user,'user_groups.add_groupmembership'):
+        raise Http403
+
     group = get_object_or_404(Group, slug=group_slug)
 
     user_count = User.objects.all().count()

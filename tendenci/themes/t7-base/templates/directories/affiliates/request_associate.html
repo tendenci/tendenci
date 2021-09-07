@@ -16,6 +16,13 @@
 	({{ cat }}){% if not forloop.last %}, {% endif %}
 	{% endfor %}
 	</small>{% endif %}</h3>
+	
+	{% if warning_msg_string %}
+	<div class="alert alert-warning alert-dismissible" role="alert">
+	  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  {{ warning_msg_string|safe }}
+	</div>
+	{% endif %}
 
 	<div class="well">Fill out the form below. <br />
 	{% if cats %}

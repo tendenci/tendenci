@@ -3,9 +3,7 @@ from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
 from django.db.models import Q
 
 from tendenci.apps.perms.object_perms import ObjectPermission
@@ -89,7 +87,13 @@ def assign_files_perms(instance, **kwargs):
     content_type = ContentType.objects.get_for_model(instance.__class__)
 
     if not files:
-        orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
+        orphaned_files = File.objects.filter(content_type=content_type, object_id=0)
+        if hasattr(instance, 'owner') and instance.owner:
+            # When adding new content (articles, news,...), files uploaded would not be
+            # associated with any object, thus the orphaned files.
+            # Only update perms for the orphaned files OWNED by this user.
+            orphaned_files = orphaned_files.filter(creator=instance.owner)
+        orphaned_files = list(orphaned_files)
         coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
         files = orphaned_files + coupled_files
 
@@ -152,39 +156,16 @@ def has_perm(user, perm, obj=None):
     """
         A simple wrapper around the user.has_perm
         functionality.
-
-        It checks for impersonation and has high
-        hopes for future checks with friends and
-        settings functionalities.
     """
-    # check to see if there is impersonation
-    if hasattr(user, 'impersonated_user'):
-        if isinstance(user.impersonated_user, User):
-            # check the logged in users permissions
-            if not user.profile.is_superuser:
-                logged_in_has_perm = user.has_perm(perm, obj)
-                if not logged_in_has_perm:
-                    return False
-            else:
-                if user.impersonated_user.profile.is_superuser:
-                    return True
-                impersonated_has_perm = user.impersonated_user.has_perm(perm, obj)
-                if not impersonated_has_perm:
-                    return False
-                else:
-                    return True
-    else:
-        if user.profile.is_superuser:
-            return True
-        return user.has_perm(perm, obj)
+    if user.profile.is_superuser:
+        return True
+    return user.has_perm(perm, obj)
 
 
 def has_view_perm(user, perm, obj=None):
     """
     Method used in details views to check permissions faster on a single object.
     """
-    # impersonation
-    user = getattr(user, 'impersonated_user', user)
     obj.status_detail = obj.status_detail.lower()
     active_status_details = ("active", 'published')
     if obj:
@@ -213,8 +194,6 @@ def get_query_filters(user, perm, **kwargs):
     Method to generate search query filters for different user types.
     * super_perm kwarg simulates admin behavior.
     """
-    # impersonation
-    user = getattr(user, 'impersonated_user', user)
 
     perms_field = kwargs.get('perms_field', True)
     #super_perm = kwargs.get('super_perm', False)
@@ -271,6 +250,53 @@ def get_query_filters(user, perm, **kwargs):
                 user_filter = (status_q & (((anon_q | user_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
                 return user_filter
+
+
+def get_groups_query_filters(user, **kwargs):
+    """
+    This function generates the query filters for a list of groups that
+    the user has the CHANGE (EDIT) permission.
+
+    For example, for the group dropdown on newsletters generator, 
+      only those groups that the user can change will show up. 
+    """
+    if not isinstance(user, User) or user.is_anonymous:
+        return Q()
+    else:
+        if user.profile.is_superuser:
+            return Q(status=True)
+        elif has_perm(user, 'user_groups.change_group'):
+            return Q(status=True, status_detail__in=['active', 'published'])
+        else:
+            from tendenci.apps.user_groups.models import Group
+            group_q = Q()
+            perm = 'change_group'
+            # groups user is member of
+            group_ids = [int(g.group.id) for g in user.group_member.select_related('group')]
+
+            content_type = ContentType.objects.get(
+                    app_label=Group._meta.app_label, model=Group._meta.model_name)
+            # get a list of groups that the user can change
+            group_ids_with_perm = ObjectPermission.objects.filter(
+                            codename=perm,
+                            content_type=content_type,
+                            ).filter(Q(group__in=group_ids) | Q(user=user)
+                                             ).values_list('object_id', flat=True)
+            if group_ids_with_perm:
+                group_q = Q(id__in=group_ids_with_perm)
+
+            status_q = Q(status=True)
+            status_detail_q = Q(status_detail__in=['active', 'published'])
+            creator_perm_q = Q(creator=user)
+            owner_perm_q = Q(owner=user)
+
+            if user.profile.is_member:
+                user_q = Q(allow_user_edit=True)
+                member_q = Q(allow_member_edit=True)
+                return (status_q & (((user_q | member_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+            else:
+                user_q = Q(allow_user_edit=True)
+                return (status_q & (((user_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
 
 def get_administrators():

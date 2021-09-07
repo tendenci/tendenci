@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^%s/$' % urlpath, views.search, name="directories"),
     url(r'^%s/affiliates/' % urlpath, include('tendenci.apps.directories.affiliates.urls')),
     url(r'^%s/search/$' % urlpath, views.search_redirect, name="directory.search"),
+    url(r"^%s/mylist/$" % urlpath, views.search, 
+        {'my_directories_only': True}, name="directory.my_directories_only"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, views.print_view, name="directory.print_view"),
     url(r'^%s/add/$' % urlpath, views.add, name="directory.add"),
     url(r'^%s/query_price/$' % urlpath, views.query_price, name="directory.query_price"),

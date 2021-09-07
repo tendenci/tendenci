@@ -312,6 +312,20 @@
     
      <fieldset>
     	<legend>D) {% trans 'Company Information'%}</legend>
+		<div class="form-group">
+		    <label for="id_company" class="col-sm-3 control-label">{{ form.industry.label }}{%if from.industry.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
+		    <div class="col-sm-9">
+		      {% if form.industry.errors %}
+		         <div class="text-danger">{{ form.industry.errors }}</div>
+		      {% endif %}
+		      
+		      {{ form.industry }}
+		      
+		      {% if form.industry.help_text %}
+		      <div class="help-block">{{ form.industry.help_text }}</div>
+		      {% endif %}
+		    </div>
+	   </div>
 	   <div class="form-group">
 		    <label for="id_company" class="col-sm-3 control-label">{{ form.company.label }}{%if from.company.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label>
 		    <div class="col-sm-9">

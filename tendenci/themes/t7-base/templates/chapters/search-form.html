@@ -4,17 +4,75 @@
 {% has_perm user chapters.add_chapter as can_add_chapters %}
 
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="form-inline" action="{% url 'chapters.search' %}" method="get" role="search">
-  <div class="form-group">
-    <div class="input-group add-on">      
-      <input class="form-control" type="text" name="q" value="{{ request.GET.q|striptags }}" placeholder="Search" />
-      <div class="input-group-btn">
-        <button class="btn btn-default" type="submit">
-          <i class="glyphicon glyphicon-search" alt="{% trans 'Search' %}"></i>
-        </button>
-      </div>
+<form class="form-inline t-search-form" action="{% url 'chapters.search' %}" method="get" role="search">
+    {% if form.region %}
+    <div class="form-group{% if form.region.errors %} has-error{% endif %}">
+        {{ form.region }}
+
+        {% if form.region.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.region.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
     </div>
-  </div>
+    {% endif %}
+
+	{% if form.state %}
+    <div class="form-group{% if form.state.errors %} has-error{% endif %}">
+       {{ form.state }}
+
+        {% if form.state.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.state.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
+    </div><br />
+    {% endif %}
+
+	{% if form.county %}
+    <div class="form-group{% if form.county.errors %} has-error{% endif %}">
+       {{ form.county }}
+
+        {% if form.county.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.county.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
+    </div><br />
+    {% endif %}
+
+	<div class="form-group{% if form.q.errors %} has-error{% endif %}">
+        {{ form.q }}
+
+        {% if form.q.errors %}
+            <p class="help-block">
+                <ul class="list-unstyled">
+                    {% for error in form.q.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+        {% endif %}
+    </div>
+
+	<div class="form-group">
+		<button class="btn btn-success" type="submit">
+	        <i class="glyphicon glyphicon-search" alt="{% trans 'Search Chapters' %}"></i> {% trans 'Search' %}
+	      </button>
+	</div>
+
   
   {% if can_add_chapters %}
   <div class="form-group pull-right">

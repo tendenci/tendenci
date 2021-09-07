@@ -10,7 +10,7 @@
 		content: none !important;
 	}
 	
-	#admin-bar, #t-admin-megamenu {
+	#admin-bar, #t-admin-megamenu, .edit-box, #myUtilbar {
 		display: none;
 	}
 	form, footer, #footer-wrap, #footer-valid{

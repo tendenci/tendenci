@@ -45,6 +45,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import tcurrency
 from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
+from tendenci.apps.base.utils import validate_email
 
 
 THIS_YEAR = datetime.today().year
@@ -678,13 +679,13 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
             self.fields['confirm_password'].widget.attrs.update({'size': 28})
 
         if 'username' in self_fields_keys:
-            username = app_field_objs.filter(field_name='username')[0]
+            username_field_obj = app_field_objs.filter(field_name='username')[0]
             self.fields['username'] = forms.RegexField(regex=r'^[\w.@+-]+$',
-                                required=False,
+                                required=username_field_obj.required,
                                 max_length=30,
                                 widget=forms.TextInput,
-                                label=username.label,
-                                help_text=username.help_text,
+                                label=username_field_obj.label,
+                                help_text=username_field_obj.help_text,
                                 error_messages = {
                                     'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
@@ -812,7 +813,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                 not (self.request.user.is_superuser or self.is_corp_rep):
             created = False
             user = self.request.user
-            user.email = user.email or user_attrs['email']
+            user.email = validate_email(user.email) and user.email or user_attrs['email']
             user.first_name = user.first_name or user_attrs['first_name']
             user.last_name = user.last_name or user_attrs['last_name']
         elif User.objects.filter(email=user_attrs['email']).exists():
@@ -1170,6 +1171,10 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+        
+        if 'industry' in self.fields:
+            # the industry has been moved to profile
+            del self.fields['industry']
 
         # NOTE: customer attr is needed by MembershipTypeModelChoiceField!
         self.fields['membership_type'].customer = customer
@@ -1691,7 +1696,6 @@ class MembershipDefaultForm(TendenciBaseForm):
             'license_number',
             'license_state',
             'region',
-            'industry',
             'company_size',
             'promotion_code',
             'directory',
@@ -1726,6 +1730,9 @@ class MembershipDefaultForm(TendenciBaseForm):
             if isinstance(request.user, User):
                 request_user = request.user
 
+        instance = kwargs.get('instance', None)
+        if instance and instance.user.profile:
+            instance.industry = instance.user.profile.industry
         super(MembershipDefaultForm, self).__init__(*args, **kwargs)
 
         # initialize field widgets ---------------------------
@@ -1784,6 +1791,7 @@ class MembershipDefaultForm(TendenciBaseForm):
 
             profile_attrs = [
                 'email2',
+                'industry',
                 'company',
                 'department',
                 'position_title',
@@ -2134,6 +2142,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         # profile.display_name = self.cleaned_data.get('display_name', u'')
         profile_attrs = [
             'display_name',
+            'industry',
             'company',
             'position_title',
             'education',

@@ -1,5 +1,6 @@
 {% extends "events/base-wide.html" %}
 {% load event_tags %}
+{% load event_filters %}
 {% load styled_forms %}
 {% load base_filters %}
 
@@ -19,7 +20,7 @@
     .addon-forms .label{
     	color: #000;
     }
-    ul.registrant-pricing{
+    ul.registrant-pricing, .registrant-form ul{
     	list-style: none;
     }
     .input-group-addon{
@@ -55,6 +56,15 @@
          {% include "events/include/spots_status.html" %}
 
     </div>
+
+	{% if request.user.is_authenticated %}
+		{% if event|is_registrant:request.user %}
+			<div class="alert alert-warning alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	  		{% trans "You have already registered" %}
+			</div>
+		{% endif %}
+	{% endif %}
 
     {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}
     <div class="event-info well" style="background-color:#FFFFEB;">
@@ -221,12 +231,12 @@
                                 <div class="form-field admin-{{ field.name }} override">
                                     <div class="error">{{ field.errors }}</div>
                                     {% if field|is_checkbox %}
-                                        <div>{{ field }} {% trans field.label %}</div>
+                                        <div>{{ field }} {{ field.label }}</div>
                                     {% else %}
                                         {% if field.name == 'override' %}
-                                        <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
+                                        <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{{ field.label }}</label></div>
                                         {% else %}
-                                        <div>{% trans field.label %} {{ field }}</div>
+                                        <div>{{ field.label }} {{ field }}</div>
                                         {% endif %}
                                     {% endif %}
                                     {% if field.help_text %}
@@ -237,14 +247,14 @@
                                 {% if field.name == 'memberid' %}
                                 <div class=" form-field memberid">
                                     <div class="error">{{ field.errors }}</div>
-                                    <div>{% trans field.label %}: {{ field }}</div>
+                                    <div>{{ field.label }}: {{ field }}</div>
                                     <div class="help-text">{{ field.help_text }}</div>
                                 </div>
                                 {% else %}
                                 {% if field.name == 'reminder' %}
                                 <div class=" form-field reminder">
                                     <div class="error">{{ field.errors }}</div>
-                                    <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-reminder">{% trans field.label %}</label></div>
+                                    <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-reminder">{{ field.label }}</label></div>
                                     <div class="help-text">{{ field.help_text }}</div>
                                 </div>
                                 {% else %}
@@ -253,7 +263,7 @@
                                     <div class="checkbox-input">
                                         <div class="error">{{ field.errors }}</div>
                                         <div class="field">{{ field }}</div>
-                                        <div class="form-label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                        <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
                                         {% if field.help_text %}
                                         <div class="help-text">{{ field.help_text }}</div>
                                         {% endif %}
@@ -263,7 +273,7 @@
                                     {% if field.errors %}
                                     <div class="error">{{ field.errors }}</div>
                                     {% endif %}
-                                    <div class="form-label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+                                    <div class="form-label {% if field.field.required %} required{% endif %}">{{ field.label }}</div>
                                     <div class="field">{{ field }}</div>
                                     {% endif %}
                                     {% if field.help_text %}
@@ -459,8 +469,10 @@
             </div>
             
             <input type="hidden" name="confirmed" />
+			{% if not event.is_table %}
             <input class="btn btn-default" type="submit" name="addmore" value="{% trans "Add Another Registrant" %}" />
              <br /><br />
+             {% endif %}
             <div class="clear"></div>
             <input class="btn btn-success" type="submit" name="commit" value="{% trans 'Confirm My Registration' %}" />
            <br /><br />

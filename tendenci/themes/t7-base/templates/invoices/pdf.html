@@ -55,7 +55,7 @@ div.invoice-meta{
           <td class="td-right" style="width: 30%;">
              {% if MODULE_INVOICES_INVOICELOGO %}
               <div id="invoice-meta-logo print-view">
-                <img src="/files/{{ MODULE_INVOICES_INVOICELOGO }}/300x150/crop/90/" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
+                <img src="{{ logo_base64_src }}" width="50" height="50" alt="{% trans 'invoice logo' %}" title="{% trans 'invoice logo' %}" />
               </div>
               {% endif %}
           </td>

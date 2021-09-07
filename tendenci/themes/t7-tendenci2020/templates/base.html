@@ -40,8 +40,8 @@
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url 'open_search' %}">
     
     {% block jquery_script %}
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-migrate-3.3.2.min.js"></script>
     {% endblock jquery_script %}
     
     {% block includebootstrap3css %}
@@ -113,20 +113,13 @@
     {% endif %} 
   
     {% block top_bar %}
-        {% if request.user.is_superuser %}
-            {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-                {% if request.user.is_authenticated %}
-                    {% include "top_menu/user_top-new.html" %}
-                {% endif %}
-            {% else %}
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser  %}
                 {% include "top_menu/admin_top-new.html" %}
-                
                 {% if request.session.theme %}
                     {% include "themes/theme_top.html" %}
                 {% endif %}
-            {% endif %}
-        {% else %}
-            {% if request.user.is_authenticated %}
+            {% else %}
                 {% include "top_menu/user_top-new.html" %}
             {% endif %}
         {% endif %}

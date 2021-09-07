@@ -44,6 +44,10 @@
                     <div class="col-md-4 col-xs-12">
                     	{% include "profiles/include/social_media_links.html" %}
                     
+						{% if show_industry and profile.industry %}
+							<b>{% trans "Industry:" %}</b> <span style="white-space:nowrap">{{ profile.industry }}</span><br />
+						{% endif %}
+							
                         {% if profile.company %}
                             <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
                         {% endif %}
@@ -69,9 +73,6 @@
 		        {% if request.user == profile.user or can_edit_memberships %}
                         {% if membership.membership_type %}
                             <b>{% trans "Membership Type:" %}</b> <span style="white-space:nowrap">{{ membership.membership_type }}</span><br />
-                            {% if show_industry and membership.industry %}
-								<b>{% trans "Industry:" %}</b> <span style="white-space:nowrap">{{ membership.industry }}</span><br />
-							{% endif %}
                         {% endif %}
 
                         {% if membership.status_detail %}

@@ -40,14 +40,22 @@
       <ul class="list-unstyled">
         {% for price in pricing %}
         <li>
-          {{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
-          <div class="event-price" itemprop="price" content="{{ price.price }}">
-            <strong>{{ price.price|format_currency }}</strong><br>
-            {% include "events/include/pricing_spots_status.html" %}
-          </div>
-          ({% trans "ends" %} 
-          {{ price.end_dt|date:"m/d/Y" }})
-          <span itemprop="priceCurrency" content="USD" />
+		{% if MODULE_EVENTS_RBONPRICINGLIST %}
+		   <input style="vertical-align:top;" type="radio" name="pricing_id" value="{{ price.id }}">
+          <label for="price-{{ price.id }}">
+		{% endif %}
+				{{ price.title }}{% if price.target_display %} ({{ price.target_display }}) {% endif %}
+	          <div class="event-price" itemprop="price" content="{{ price.price }}">
+	            <strong>{{ price.price|format_currency }}</strong><br>
+	            {% include "events/include/pricing_spots_status.html" %}
+	          </div>
+         
+	          ({% trans "ends" %} 
+	          {{ price.end_dt|date:"m/d/Y" }})
+	          <span itemprop="priceCurrency" content="USD" />
+		{% if MODULE_EVENTS_RBONPRICINGLIST %}
+          </label>
+		{% endif %}
         </li>
         {% endfor %}
       </ul>

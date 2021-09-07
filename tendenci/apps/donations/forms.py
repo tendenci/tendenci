@@ -3,6 +3,9 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.donations.models import Donation
 from tendenci.apps.donations.utils import get_allocation_choices, get_payment_method_choices, get_preset_amount_choices
 from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.perms.utils import get_query_filters
+
 
 class DonationAdminForm(forms.ModelForm):
     # get the payment_method choices from settings
@@ -95,6 +98,7 @@ class DonationForm(forms.ModelForm):
                   'email',
                   'email_receipt',
                   'allocation',
+                  'donate_to_entity',
                   'referral_source',
                   'comments',
                   )
@@ -125,11 +129,24 @@ class DonationForm(forms.ModelForm):
                 pass
 
         self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        allocation_str = get_setting('module', 'donations', 'donationsallocations')
-        if allocation_str:
-            self.fields['allocation'].choices = get_allocation_choices(self.user, allocation_str)
+        # donate_to_entity or allocation
+        filters = Entity.get_search_filter(self.user)
+        entity_qs = Entity.objects.filter(show_for_donation=True)
+        if filters:
+            entity_qs = entity_qs.filter(filters).distinct()
+        if not entity_qs.exists():
+            del self.fields['donate_to_entity']
+            allocation_str = get_setting('module', 'donations', 'donationsallocations')
+            if allocation_str:
+                self.fields['allocation'].choices = get_allocation_choices(self.user, allocation_str)
+            else:
+                del self.fields['allocation']
         else:
             del self.fields['allocation']
+            self.fields['donate_to_entity'].queryset = entity_qs
+            self.fields['donate_to_entity'].empty_label = _("Select One")
+            self.fields['donate_to_entity'].label = _('Donate to')
+        
         preset_amount_str = (get_setting('module', 'donations', 'donationspresetamounts')).strip('')
         if preset_amount_str:
             self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))

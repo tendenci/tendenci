@@ -7,6 +7,11 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="alternate" type="application/rss+xml" title="{% trans 'Chapters' %}" href="{% url "chapters.feed" %}" />
+<style>
+	.t-search-form .form-group{
+		margin-bottom: 15px !important;
+	}
+</style>
 {% endblock %}
 
 {% block content %}

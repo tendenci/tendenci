@@ -32,7 +32,7 @@
     {% article_search %}
     
         <em>
-        	{% with obj_count=paginator.count  %}
+        	{% with obj_count=paginator.count pluralize=paginator.count|pluralize  %}
         		{% if MODULE_ARTICLES_LABEL and MODULE_ARTICLES_LABEL_PLURAL %}
         			{%  if obj_count == 1 %}
         				{% blocktrans %}{{ obj_count }} {{ MODULE_ARTICLES_LABEL }} Found{% endblocktrans %}

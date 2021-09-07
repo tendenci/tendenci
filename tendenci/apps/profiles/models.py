@@ -3,12 +3,15 @@ import uuid
 import hashlib
 import re
 from urllib.parse import urlencode
+from PIL import Image
+from io import BytesIO
 
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import default_storage
+from django.core.files import File
 from django.conf import settings
 from django.db import connection, ProgrammingError
 
@@ -16,16 +19,28 @@ from tendenci.apps.base.utils import create_salesforce_contact
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.base.models import BaseImport, BaseImportData
-from tendenci.apps.base.utils import UnicodeWriter
+from tendenci.apps.base.utils import correct_filename
 from tendenci.libs.abstracts.models import Person
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.templatetags.static import static
 from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.industries.models import Industry
 #from tendenci.apps.user_groups.models import Group
 
 
+ALLOWED_PHOTO_SIZES = [128, 56, 100, 80, 48]
+
 # class Profile(Identity, Address):
 #     pass
+
+def profile_directory(instance, filename):
+    filename = correct_filename(filename)
+    m = hashlib.md5()
+    m.update(instance.user.username.encode())
+
+    hex_digest = m.hexdigest()[:8]
+
+    return f'profiles/photos/{hex_digest}{instance.user.id}/{filename}'
 
 
 class Profile(Person):
@@ -51,11 +66,15 @@ class Profile(Person):
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
+    # photo
+    photo = models.ImageField(upload_to=profile_directory, blank=True, null=True)
+
     # profile meta data
     salutation = models.CharField(_('salutation'), max_length=15, blank=True, choices=SALUTATION_CHOICES)
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
+    industry = models.ForeignKey(Industry, blank=True, null=True, on_delete=models.SET_NULL)
     company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=250, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
@@ -116,6 +135,10 @@ class Profile(Person):
             return self.user.username
         else:
             return u''
+
+    def __init__(self, *args, **kwargs):
+        super(Profile, self).__init__(*args, **kwargs)
+        self._original_photo = self.photo
 
     def get_absolute_url(self):
         from tendenci.apps.profiles.utils import clean_username
@@ -185,6 +208,35 @@ class Profile(Person):
 
         return self.display_name or name or user.email or user.username
 
+    def get_region_name(self):
+        """
+        Get the region name if the region field stores the value of region id.
+        
+        The region field is a char field in Profile. It is currently assigned
+        on memberships join and edit as the value of a region id. So, the id
+        needs to be converted to region_name to display on user profile. 
+        """
+        if self.region and self.region.isdigit():
+            from tendenci.apps.regions.models import Region
+            region_id = int(self.region)
+            if Region.objects.filter(id=region_id).exists():
+                region = Region.objects.get(id=region_id)
+                return region.region_name
+        return self.region
+
+    def delete_old_photo(self):
+        """
+        Delete old photo and its cropped ones.
+        """
+        if self._original_photo:
+            if default_storage.exists(self._original_photo.name):
+                default_storage.delete(self._original_photo.name)
+            head, tail = os.path.split(self._original_photo.name)
+            for size in ALLOWED_PHOTO_SIZES:
+                size_path = head + '/sizes/' + str(size) + '/' + tail
+                if default_storage.exists(size_path):
+                    default_storage.delete(size_path)
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid4())
@@ -202,6 +254,11 @@ class Profile(Person):
             self.allow_member_view = True
 
         super(Profile, self).save(*args, **kwargs)
+
+        if self.photo and self._original_photo:
+            if self._original_photo != self.photo:
+                # remove existing photo from storage
+                self.delete_old_photo()
 
         try:
             from tendenci.apps.campaign_monitor.utils import update_subscription
@@ -474,6 +531,10 @@ class Profile(Person):
         return m.hexdigest()
 
     def get_gravatar_url(self, size):
+        if self.photo:
+            photo_url = self.get_photo_url(size=size)
+            if photo_url:
+                return photo_url
         # Use old avatar, if exists, as the default
         default = ''
         if get_setting('module', 'users', 'useoldavatarasdefault'):
@@ -505,6 +566,35 @@ class Profile(Person):
         gravatar_url += urlencode({'d':default, 's':str(size)})
         return gravatar_url
 
+    def get_photo_url(self, size=128):
+        """
+        Get the url of the photo with the size specified.
+        """
+        if not self.photo:
+            return None
+
+        if not size in ALLOWED_PHOTO_SIZES:
+            # this size if not allowed, set it to default
+            size = 128
+
+        head, tail = os.path.split(self.photo.name)
+        size_path = head + '/sizes/' + str(size) + '/' + tail
+        if default_storage.exists(size_path):
+            return settings.MEDIA_URL + size_path
+
+        im = Image.open(self.photo.path)
+        im.thumbnail((size, size))
+        
+        #im.save(size_path)
+        thumb_io = BytesIO()
+        im.save(thumb_io, im.format)
+        default_storage.save(size_path, File(thumb_io))
+        return settings.MEDIA_URL + size_path
+
+    def get_original_photo_url(self):
+        if self.photo:
+            return settings.MEDIA_URL + self.photo.name
+
 
 def get_import_file_path(instance, filename):
     return "imports/profiles/{uuid}/{filename}".format(
@@ -535,28 +625,27 @@ class UserImport(BaseImport):
         app_label = 'profiles'
 
     def generate_recap(self):
+        import csv
         if not self.recap_file and self.header_line:
             file_name = 'user_import_%d_recap.csv' % self.id
             file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
                                    file_name)
-            f = default_storage.open(file_path, 'wb')
-            recap_writer = UnicodeWriter(f, encoding='utf-8')
-            header_row = self.header_line.split(',')
-            if 'status' in header_row:
-                header_row.remove('status')
-            if 'status_detail' in header_row:
-                header_row.remove('status_detail')
-            header_row.extend(['action', 'error'])
-            recap_writer.writerow(header_row)
-            data_list = UserImportData.objects.filter(
-                uimport=self).order_by('row_num')
-            for idata in data_list:
-                data_dict = idata.row_data
-                row = [data_dict[k] for k in header_row if k in data_dict]
-                row.extend([idata.action_taken, idata.error])
-                recap_writer.writerow(row)
-
-            f.close()
+            with default_storage.open(file_path, 'w') as f:
+                recap_writer = csv.writer(f)
+                header_row = self.header_line.split(',')
+                if 'status' in header_row:
+                    header_row.remove('status')
+                if 'status_detail' in header_row:
+                    header_row.remove('status_detail')
+                header_row.extend(['action', 'error'])
+                recap_writer.writerow(header_row)
+                data_list = UserImportData.objects.filter(
+                    uimport=self).order_by('row_num')
+                for idata in data_list:
+                    data_dict = idata.row_data
+                    row = [data_dict[k] for k in header_row if k in data_dict]
+                    row.extend([idata.action_taken, idata.error])
+                    recap_writer.writerow(row)
             self.recap_file.name = file_path
             self.save()
 

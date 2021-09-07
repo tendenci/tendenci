@@ -34,6 +34,7 @@
                 <th>{% trans 'Type' %}</th>
                 <th>{% trans 'Active' %}</th>
                 <th>{% trans 'Pending' %}</th>
+                <th>{% trans 'In Grace Period' %}</th>
                 <th>{% trans 'Expired' %}</th>
                 <th><strong>{% trans 'Total' %}</strong></th>
             </tr>
@@ -44,6 +45,7 @@
                 <td><a href="{% url "admin:corporate_memberships_corporatemembershiptype_change" type.type.id %}">{{ type.type.name }}</a></td>
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
+                <td>{{ type.in_grace_period }}</td>
                 <td>{{ type.expired }}</td>
                 <td><strong><a href="{% url "corpmembership.search" %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></strong></td>
             </tr>
@@ -52,6 +54,7 @@
                 <td><strong>{% trans 'Total' %}</strong></td>
                 <td><strong>{{ total.total_active }}</strong></td>
                 <td><strong>{{ total.total_pending }}</strong></td>
+                <td><strong>{{ total.total_in_grace_period }}</strong></td>
                 <td><strong>{{ total.total_expired }}</strong></td>
                 <td><strong>{{ total.total_total }}</strong></td>
             </tr>
@@ -72,13 +75,14 @@
       function drawChart() {
             var options = {
                       title: 'By Status',
-                      colors: ['#1c91c0', '#e49307', '#DC3912']
+                      colors: ['#1c91c0', '#e49307', '#50B432', '#DC3912']
                     };
 
             var status_data = google.visualization.arrayToDataTable([
               ['{% trans 'Status' %}', '{% trans 'Count' %}'],
               ['{% trans 'Active' %}',  {{ total.total_active  }}],
               ['{% trans 'Pending' %}',  {{ total.total_pending }}],
+              ['{% trans 'In Grace Period' %}',  {{ total.total_in_grace_period }}],
               ['{% trans 'Expired' %}',  {{ total.total_expired}}]
             ]);
 
@@ -95,19 +99,19 @@
               {% endfor %}
                ]);
 
-               var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
-               chart.draw(type_data, options);
+           var chart = new google.visualization.PieChart(document.getElementById('chart_bytype_div'));
+           chart.draw(type_data, options);
 
 
           var data = google.visualization.arrayToDataTable([
            ['{% trans 'Corp. Membership Type' %}',
            '{% trans 'Active' %}', '{% trans 'Pending' %}',
-           '{% trans 'Expired' %}'],
+           '{% trans 'In Grace Period' %}', '{% trans 'Expired' %}'],
            {% for type in summary %}
            ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
-           {{ type.expired }}],
+           {{ type.in_grace_period }}, {{ type.expired }}],
            {% empty %}
-           ['', 0, 0, 0],
+           ['', 0, 0, 0, 0],
            {% endfor %}
          ]);
 
@@ -117,7 +121,7 @@
            bar: { groupWidth: '75%' },
            isStacked: true,
            height: 400,
-           colors: ['#1c91c0', '#e49307', '#DC3912'],
+           colors: ['#1c91c0', '#e49307', '#50B432', '#DC3912'],
            hAxis: {title: '{% trans 'Corp. Membership Type' %}', titleTextStyle: {color: 'black'}}
          };
 

@@ -69,7 +69,7 @@
     },
     {
         "default_value": "",
-        "description": "Allocations is a comma delimited list of places that a user can allocate Donation. The options will appear in a drop-down menu on the Make a Donation page.",
+        "description": "Allocations is a comma delimited list of places that a user can allocate Donation. The options will appear in a drop-down menu on the Make a Donation page.<br /><strong>Please use <a href=\"/entities/\">Entities</a> instead of this setting for better reporting.</strong>",
         "data_type": "string",
         "update_dt": "2010-09-02 17:19:12",
         "input_type": "text",

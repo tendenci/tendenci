@@ -11,6 +11,7 @@ from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.base.fields import PriceField
 from tendenci.apps.discounts.utils import assign_discount
+from tendenci.apps.base.utils import currency_check
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
 
@@ -91,9 +92,10 @@ class DiscountForm(TendenciBaseForm):
         start_dt = cleaned_data.get("start_dt")
         end_dt = cleaned_data.get("end_dt")
 
-        if start_dt > end_dt:
-            errors = self._errors.setdefault("end_dt", ErrorList())
-            errors.append(_(u"This cannot be earlier than the start date."))
+        if start_dt and end_dt:
+            if start_dt > end_dt:
+                errors = self._errors.setdefault("end_dt", ErrorList())
+                errors.append(_(u"This cannot be earlier than the start date."))
 
         # Always return the full collection of cleaned data.
         return cleaned_data
@@ -163,6 +165,6 @@ class DiscountHandlingForm(forms.Form):
 
     def get_discounted_prices(self):
         prices = self.cleaned_data['prices']
-        price_list = [Decimal(price) for price in prices.split(';')]
+        price_list = [currency_check(price) for price in prices.split(';')]
 
         return assign_discount(price_list, self.discount)

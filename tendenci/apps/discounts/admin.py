@@ -15,10 +15,12 @@ class DiscountAdmin(TendenciBaseModelAdmin):
         (_('Discount Information'), {
             'fields': (
                 'discount_code',
-                'start_dt',
-                'end_dt',
                 'value',
                 'cap',
+                'never_expires',
+                'apps',
+                'start_dt',
+                'end_dt',
             )
         }),
         (_('Permissions'), {

@@ -215,7 +215,15 @@
                                                             ><img class="nav-icon" src="{% static 'famfamfam/icons/date.png' %}"/><span class="nav-label">{% trans 'Events List' %}</span>
                                                         </a>
                                                     </li>
-
+                                                    
+                                                    {% has_perm user events.add_event as can_add_event %}
+                                                     {% if can_add_event %}
+                                                    <li class="content-item">
+                                                        <a href="{% url 'event.add' %}"
+                                                            ><img class="nav-icon" src="{% static 'famfamfam/icons/date_add.png' %}"/><span class="nav-label">{% trans 'Add Event' %}</span>
+                                                        </a>
+                                                    </li>
+                                                     {% endif %}
                                                 </ul>
 
                                                 <ul class="list-unstyled col-sm-6 col-xs-12">

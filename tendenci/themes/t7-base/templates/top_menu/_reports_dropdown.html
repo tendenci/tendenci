@@ -14,15 +14,41 @@
                     <div class="col-sm-12 content-dropdown-col">
                         <div id="megamenu-reports-accordion" class="panel-group" role="tablist" aria-multiselectable="true">
 
-
-                        <div class="panel panel-default">
+                            <div class="panel panel-default">
                                 <div class="panel-heading" role="tab" id="reports-heading-1">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-1">{% trans '1. Membership Overview' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-1">{% trans '1. ' %}<i class="fa fa-money" aria-hidden="true">&nbsp;</i>{% trans 'Revenue &amp; Key Metrics by Tendenci' %}</a>
                                     </h4>
                                 </div>
 
                                 <div id="report-collapse-1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="reports-heading-1">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <ul class="list-unstyled col-sm-12 col-xs-12">
+                                                <li class="content-item">
+                                                    <a href="{% url 'invoices.reports_overview' %}"><span class="nav-label">{% trans '1. Revenue Generated' %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-memberships_overview' %}"><span class="nav-label">{% trans '2. Membership Summary' %}</span></a>
+                                                </li>
+                                                <li class="content-item">
+                                                    <a href="{% url 'reports-events-summary' %}"><span class="nav-label">{% trans '3. Eventlog Summary' %}</span></a>
+                                                </li>
+                                              
+                                            </ul>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </div>
+
+                        <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="reports-heading-2">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-2">{% trans '2. Membership Overview' %}</a>
+                                    </h4>
+                                </div>
+
+                                <div id="report-collapse-2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-2">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
@@ -48,13 +74,13 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-2">
+                                <div class="panel-heading" role="tab" id="reports-heading-3">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-2">{% trans '2. Membership Data' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-3">{% trans '3. Membership Data' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-2">
+                                <div id="report-collapse-3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-3">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
@@ -120,13 +146,13 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-3">
+                                <div class="panel-heading" role="tab" id="reports-heading-4">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-3">{% trans '3. Membership Trends' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-4">{% trans '4. Membership Trends' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-3">
+                                <div id="report-collapse-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-4">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
@@ -149,13 +175,13 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-4">
+                                <div class="panel-heading" role="tab" id="reports-heading-5">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-4">{% trans '4. User Management' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-5">{% trans '5. User Management' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-4">
+                                <div id="report-collapse-5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-5">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
@@ -187,19 +213,16 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-5">
+                                <div class="panel-heading" role="tab" id="reports-heading-6">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-5">{% trans '5. Financial' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-6">{% trans '6. Financial' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-5">
+                                <div id="report-collapse-6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-6">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
-                                                <li class="content-item">
-                                                    <a href="{% url 'report_list' %}"><span class="nav-label">{% trans "Invoicing" %}</span></a>
-                                                </li>
                                                <li class="content-item">
                                                     <a href="{% url 'invoices.reports_overview' %}"><span class="nav-label">{% trans "Invoice Reports Overview" %}</span></a>
                                                 </li>
@@ -216,13 +239,13 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-6">
+                                <div class="panel-heading" role="tab" id="reports-heading-7">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-6">{% trans '6. Site Activity' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-7">{% trans '7. Site Activity' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-6">
+                                <div id="report-collapse-7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-7">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">
@@ -245,13 +268,13 @@
                             </div>
 
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" id="reports-heading-7">
+                                <div class="panel-heading" role="tab" id="reports-heading-8">
                                     <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-7">{% trans '7. Custom Reports' %}</a>
+                                        <a data-toggle="collapse" data-parent="#megamenu-reports-accordion" href="#report-collapse-8">{% trans '8. Custom Reports' %}</a>
                                     </h4>
                                 </div>
 
-                                <div id="report-collapse-7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-7">
+                                <div id="report-collapse-8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reports-heading-8">
                                     <div class="panel-body">
                                         <div class="row">
                                             <ul class="list-unstyled col-sm-12 col-xs-12">

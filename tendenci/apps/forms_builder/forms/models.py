@@ -4,6 +4,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.safestring import mark_safe
+from django.contrib.contenttypes.models import ContentType
 
 from django_countries import countries as COUNTRIES
 from localflavor.us.us_states import STATE_CHOICES
@@ -18,6 +19,7 @@ from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.base.utils import checklist_update
 from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.user_groups.utils import get_default_group
+from tendenci.apps.invoices.models import Invoice
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -526,7 +528,13 @@ class FormEntry(models.Model):
                     anonymous_profile.save()
 
         return anonymous_creator
-        
+
+    def get_invoice(self):
+        invoice = None
+        if self.pricing or self.custom_price:
+            object_type = ContentType.objects.get(app_label=self._meta.app_label, model=self._meta.model_name)
+            [invoice] = Invoice.objects.filter(object_type=object_type, object_id=self.id)[:1] or [None]
+        return invoice
 
 
 class FieldEntry(models.Model):

@@ -70,10 +70,17 @@ def list_helpfiles(parser, token):
            The tags required on items to be included.
         ``random``
            Use this with a value of true to randomize the items included.
+        ``filters``
+            Use only single quotes for text where needed. These will be placed inside Q() tags. 
+            Use &, |, and commas to separate values. 
+            Only one operator is allowed per comma separated group.
+            Each comma separated group will be applied in a single statement.
+            If more is required a custom function should be made.
+            ex: {% list_helpfiles as help_files_list filters="is_faq=True&is_featured=True" %}
 
     Example::
 
-        {% list_help_files as help_files_list limit=5 tags="cool" %}
+        {% list_helpfiles as help_files_list limit=5 tags="cool" %}
         {% for help_file in help_files_list %}
             {{ help_file.question }}
         {% endfor %}

@@ -99,12 +99,12 @@
         });
     </script>
     <script type="text/javascript">
+        var clone = $('.dynamic-form:first').clone(true);
         $('.add-row').on("click", function() {
-          addForm(this, 'officers');
+	      cloned_row = addFormWithCloned(this, 'officers', clone);
           // Handle chosen jquery plugin
-          $('#officer-table select').removeClass('chzn-done');
-          $('#officer-table div.chzn-container').remove();
-          $('select.officer-user').chosen();
+          var current_officer_user = $(cloned_row).find(".officer-user select");
+          current_officer_user.chosen();
           return false;
         });
     </script>

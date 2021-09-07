@@ -12,13 +12,14 @@ from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.committees.managers import CommitteeManager
 from tendenci.apps.committees.module_meta import CommitteeMeta
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.base.fields import SlugField
 
 
 class Committee(BasePage):
     """
     Committees Plugin. Similar to Pages with extra fields.
     """
-
+    slug = SlugField(_('URL Path'), unique=True)
     mission = tinymce_models.HTMLField(null=True, blank=True)
     notes = tinymce_models.HTMLField(null=True, blank=True)
     sponsors =tinymce_models.HTMLField(blank=True, default='')
@@ -70,6 +71,10 @@ class Officer(models.Model):
     user = models.ForeignKey(User,  related_name="%(app_label)s_%(class)s_user", on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone = models.CharField(max_length=50, null=True, blank=True)
+    email = models.EmailField(max_length=120, null=True, blank=True)
+    expire_dt = models.DateField(_('Expire Date'), blank=True, null=True,
+                                 help_text=_('Leave it blank if never expires.'))
+                                 
 
     class Meta:
         app_label = 'committees'

@@ -6,11 +6,15 @@
       {% if video.image %}
       <img class="img-responsive" src="{{ video.image.url }}">
       {% else %}
-      {% if video.thumbnail %}
-      <img class="img-responsive" src="{{ video.thumbnail }}">
-      {% else %}
-      <img class="img-responsive" src="{% static 'images/default-photo.jpg' %}">
-      {%endif%}
+	     {% if video.thumbnail %}
+	         <img class="img-responsive" src="{{ video.thumbnail }}">
+	     {% else %}
+	         {% if video.is_youtube_video %}
+	         	<img class="img-responsive" src="https://img.youtube.com/vi/{{ video.youtube_video_id }}/0.jpg">
+	        {% else %}
+	            <img class="img-responsive" src="{% static 'images/default-photo.jpg' %}">
+	        {%endif%}
+	     {%endif%}
       {%endif%}
     </a>
     <h4 title="{{ video.title }}"><a href="{{ video.get_absolute_url }}">

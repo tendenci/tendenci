@@ -1,0 +1,54 @@
+{% extends "profiles/base.html" %}
+{% load profile_tags %}
+{% load styled_forms %}
+
+{% block title %}{% trans 'Upload Profile Photo'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" />
+<style>
+img.cr-image{
+	max-width: none !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+
+{% if profile_upload.user == request.user %}
+ <h1>{% trans 'Change Your Phofile Photo'%}</h1>
+{% else %}
+ <h1>{% trans 'Change Phofile Photo for '%} <a href="{% url 'profile' profile_upload.user.username %}">{{ profile_upload.user.username }}</a></h1>
+{% endif %}
+	
+	<form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+	{{ upload_form|styled_form }}
+ 
+	<div>&nbsp;</div>
+	<div class="row">
+        <div id="cropper"></div>
+    </div>
+
+	<div>&nbsp;</div>
+    <div class="form-group">
+        <div class="col-xs-offset-9 col-xs-3">
+            <button type="submit" class="btn btn-primary text-capitalize crop_image">{% trans "Submit" %}</button>
+        </div>
+    </div>
+    </form>
+
+</div>
+
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+{% include 'profiles/include/photo_upload_js.html' %}
+</script>
+
+{% endblock %}

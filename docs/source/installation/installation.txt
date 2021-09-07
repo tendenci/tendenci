@@ -17,7 +17,7 @@ and will also make it easy to setup/test/discard multiple copies/configurations 
 System Requirements
 -------------------
 
-These instructions cover the installation of Tendenci on a system running Ubuntu 18.04 (recommended) and Ubuntu 16.04. 
+These instructions cover the installation of Tendenci on a system running Ubuntu 20.04 LTS and Ubuntu 18.04 LTS. 
 
 It should technically be possible to install Tendenci on nearly any Linux, Mac, or Windows system,
 and some partial instructions for installing on macOS are included below.  However, we generally
@@ -52,6 +52,20 @@ Also ensure that Ubuntu is configured to automatically install security updates:
     sudo apt install unattended-upgrades update-notifier-common
     sudo dpkg-reconfigure -plow unattended-upgrades
 
+
+Ubuntu 20.04 LTS
+""""""""""""""""
+
+Install the required system dependencies (Ubuntu 20.04 LTS comes with Python 3.8, so no need to install Python 3):
+::
+
+    sudo apt install build-essential \
+      libpq-dev python3-dev
+
+
+Ubuntu 18.04 LTS
+""""""""""""""""
+
 Install the required system dependencies:
 ::
 
@@ -60,27 +74,27 @@ Install the required system dependencies:
       libjpeg8 libjpeg-dev libfreetype6 libfreetype6-dev
 
 
-For Ubuntu 18.04, add the universe repository:
+Add the universe repository:
 ::
 
     sudo add-apt-repository universe
 
 
-Install Python 3.7:
+Install Python 3.8:
 ::
 
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
-    sudo apt install python3.7
+    sudo apt install python3.8
     
 
-Install ``python3.7-dev`` and ``pip``:
+Install ``python3.8-dev`` and ``pip``:
 ::
 
-    sudo apt install python3.7-dev --upgrade
+    sudo apt install python3.8-dev --upgrade
     # The python3-distutils is missing in Ubuntu 18.04 https://github.com/pypa/get-pip/issues/43. Install it before proceeding.
     sudo apt-get install python3-distutils
-    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.7
+    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python3.8
 
 
 System Preparation on macOS
@@ -120,14 +134,13 @@ development effort.
 Install PostgreSQL and some required modules:
 ::
 
-    sudo apt install postgresql postgresql-contrib postgis
+    sudo apt install postgresql postgis
 
 Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB_PASS`` and
 ``DB_NAME`` with an appropriate user name, password, and database name):
 ::
 
     # switch to the "postgres" user assuming installation above went correctly
-    sudo -u postgres -s
     DB_USER=mysite
     echo "DB_USER="$DB_USER
     DB_PASS=mysite
@@ -138,21 +151,19 @@ Create a user and database for Tendenci in PostgreSQL (Replace ``DB_USER``, ``DB
 Verify what you typed is what you intended. Next create your database *still* as the 'postgres' user:
 ::
 
-    psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
-    psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
-    psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
-    psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
-    psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
-    psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
-    psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
-    psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
-    psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
+    sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';"
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET client_encoding TO 'UTF8';"
+    sudo -u postgres psql -c "ALTER ROLE $DB_USER SET default_transaction_isolation TO 'read committed';"
+    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME WITH OWNER $DB_USER;"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_topology;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION fuzzystrmatch;"
+    sudo -u postgres psql -d $DB_NAME -c "CREATE EXTENSION postgis_tiger_geocoder;"
     
     # confirm your database was created correctly
-    psql -l
-    
-    # deactivate the postgres user reverting back to "root"
-    exit
+    sudo -u postgres psql -l
+
     # verify path statement reads as your admin Ubuntu user which is by default "root"
     whoami
     # this should return something like:
@@ -184,11 +195,14 @@ Prepare a virtualenv for Tendenci:
 ::
 
     # whoami - make sure you are NOT "root". If so, type "exit" to back up one level.
-    sudo apt-get install virtualenv
+    sudo apt install virtualenv
     sudo mkdir -p /srv
     sudo chown "$(id -u -n)" /srv/
     cd /srv/
-    python3.7 -m virtualenv -p python3.7 mysite
+    # For Ubuntu 20.04 LTS
+    virtualenv mysite
+    # For Ubuntu 18.04 LTS
+    python3.8 -m virtualenv -p python3.8 mysite
     sudo chown root /srv/
 
 To use the virtualenv, you must "activate" it:
@@ -231,7 +245,7 @@ If you have anaconda installed on your machine, you must specify the path to the
 that you would like to use:
 ::
 
-    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.7/bin/python3 venv
+    virtualenv -p /Library/Frameworks/Python.framework/Versions/3.8/bin/python3 venv
 
 The commands shown above for activating/deactivating the virtualenv on Ubuntu should also work on
 macOS.
@@ -300,7 +314,7 @@ Copy "tendenci2020" theme to the themes directory (adjust your path if your virt
 ::
 
     mkdir /var/www/mysite/themes/tendenci2020
-    cp -r /srv/mysite/lib/python3.7/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
+    cp -r /srv/mysite/lib/python3.8/site-packages/tendenci/themes/t7-tendenci2020/* /var/www/mysite/themes/tendenci2020/
 
 
 Initialize the database and static files:

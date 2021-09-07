@@ -112,6 +112,9 @@ div.pricing-list-wrap li{
           <p><strong>{{ event.place.name }}</strong><br />
             {{ event.place.address }} <br />
             {{ event.place.city_state|join:", "}} {{ event.place.zip }} <br />
+            {% if event.place.county %}
+            {{ event.place.county }}<br />
+            {% endif %}
             {{ event.place.country }}
           </p>
         </div>
@@ -305,6 +308,9 @@ div.pricing-list-wrap li{
         <p><strong>{{ event.place.name }}</strong></p>
         <p>{{ event.place.address }}<br />
           {{ event.place.city_state|join:", "}} {{ event.place.zip }}<br />
+		  {% if event.place.county %}
+			{{ event.place.county }}<br />
+		  {% endif %}
           {{ event.place.country }}</p>
         
         {% if event.place.description|striptags|wordcount > 50 %}

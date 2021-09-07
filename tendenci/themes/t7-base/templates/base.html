@@ -79,15 +79,10 @@
 	        {% endif %}
         {% block top_bar %}
         {% if request.user.is_authenticated %}
-            {% if request.user.is_superuser %}
-                {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
-                    {% include "top_menu/user_top-new.html" %}
-                {% else %}
-                    {% include "top_menu/admin_top-new.html" %}
-
-                    {% if request.session.theme %}
-                        {% include "themes/theme_top.html" %}
-                    {% endif %}
+            {% if request.user.is_superuser  %}
+                {% include "top_menu/admin_top-new.html" %}
+                {% if request.session.theme %}
+                    {% include "themes/theme_top.html" %}
                 {% endif %}
             {% else %}
                 {% include "top_menu/user_top-new.html" %}
@@ -105,8 +100,8 @@
         {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 
         {% block jquery_script %}
-            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-            <script src="https://code.jquery.com/jquery-migrate-3.1.0.min.js"></script>
+            <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://code.jquery.com/jquery-migrate-3.3.2.min.js"></script>
         {% endblock jquery_script %}
 
         <script type="text/javascript">

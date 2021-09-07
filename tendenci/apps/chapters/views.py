@@ -1,3 +1,4 @@
+from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -5,6 +6,7 @@ from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -16,7 +18,7 @@ from tendenci.apps.categories.models import Category
 from tendenci.apps.files.models import File
 from tendenci.apps.perms.decorators import is_enabled
 from tendenci.apps.chapters.models import Chapter, Officer
-from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet
+from tendenci.apps.chapters.forms import ChapterForm, OfficerForm, OfficerBaseFormSet, ChapterSearchForm
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters
 from tendenci.apps.perms.fields import has_groups_perms
 
@@ -32,7 +34,7 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
     if has_perm(request.user, 'chapters.view_chapter', chapter):
         EventLog.objects.log(instance=chapter)
-        officers = chapter.officers()
+        officers = chapter.officers().filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))
 
         #has_group_view_permission is True if there is at least one
         #group where the user is a member that has a view_chapter permission.
@@ -49,6 +51,8 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=chapter.group).distinct()
+        show_officers_phone = officers.exclude(phone__isnull=True).exclude(phone='').exists()
+        show_officers_email = officers.exclude(email__isnull=True).exclude(email='').exists()
 
         return render_to_resp(request=request, template_name=template_name,
             context={
@@ -56,6 +60,8 @@ def detail(request, slug, template_name="chapters/detail.html"):
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
+                'show_officers_phone': show_officers_phone,
+                'show_officers_email': show_officers_email
             })
     else:
         raise Http403
@@ -63,19 +69,34 @@ def detail(request, slug, template_name="chapters/detail.html"):
 
 @is_enabled('chapters')
 def search(request, template_name="chapters/search.html"):
-    query = request.GET.get('q', None)
-    if query:
-        chapters = Chapter.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'chapters.view_chapter')
-        chapters = Chapter.objects.filter(filters).distinct()
+    form = ChapterSearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        region = form.cleaned_data.get('region')
+        state = form.cleaned_data.get('state')
+        county = form.cleaned_data.get('county')
+        
+        if query:
+            chapters = Chapter.objects.search(query, user=request.user)
+        else:
+            filters = get_query_filters(request.user, 'chapters.view_chapter')
+            chapters = Chapter.objects.filter(filters).distinct()
 
-    chapters = chapters.order_by('-create_dt')
+        if region:
+            chapters = chapters.filter(region=region)
+        if state:
+            chapters = chapters.filter(state=state)
+        if county:
+            chapters = chapters.filter(county__iexact=county)
+        chapters = chapters.order_by('-create_dt')
+    else:
+        chapters = Chapter.objects.none()
 
     EventLog.objects.log()
 
     return render_to_resp(request=request, template_name=template_name,
-        context={'chapters': chapters})
+        context={'chapters': chapters,
+                 'form': form})
 
 
 @is_enabled('chapters')
@@ -227,6 +248,9 @@ def edit(request, id, form_class=ChapterForm, meta_form_class=MetaForm, category
             #save relationships
             chapter.save()
             formset.save()
+
+            # update group perms to officers
+            chapter.update_group_perms()
 
             EventLog.objects.log(instance=chapter)
 

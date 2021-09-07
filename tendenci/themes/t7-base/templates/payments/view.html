@@ -94,6 +94,11 @@ the payment entries in the general ledger for accounting purposes.
 <td><strong>{% trans "Method:" %} {{ payment.method }}</strong></td>
 </tr>
 
+{% if payment.check_number %}
+<td>&nbsp;</td>
+<td>{% trans "Check Number:" %} {{ payment.check_number}}</td>
+{% endif %}
+
 <tr>
 <td>{% trans "Invoice Number:" %} {{ payment.invoice_num_}}</td>
 <td>{% trans "AVS Result Code:" %} {{ payment.avs_code }}</td>

@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.template.loader import get_template
 from django.db.models import Sum
+from django.http import StreamingHttpResponse
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.base.decorators import password_required
@@ -29,7 +30,7 @@ from tendenci.apps.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.payments.models import Payment
 from tendenci.apps.invoices.forms import ReportsOverviewForm, AdminNotesForm, AdminVoidForm, AdminAdjustForm, InvoiceSearchForm, EmailInvoiceForm
-from tendenci.apps.invoices.utils import invoice_pdf
+from tendenci.apps.invoices.utils import invoice_pdf, iter_invoices
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
 
@@ -422,6 +423,12 @@ def search(request, template_name="invoices/search.html"):
         if content_type:
             invoices = invoices.filter(object_type=content_type)
 
+    # exclude FREE membership and corp membership invoices, if specified in the setting.
+    if get_setting("module", "invoices", "hidefreememinvoices"):
+        invoices = invoices.exclude(total=0,
+                    object_type__in=ContentType.objects.filter(
+                        app_label__in=['corporate_memberships', 'memberships']))
+
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -429,7 +436,18 @@ def search(request, template_name="invoices/search.html"):
                                    Q(owner=request.user) |
                                    Q(bill_to_email__iexact=request.user.email)
                                    ).order_by('-create_dt')
+
+    if 'export' in request.GET:
+        EventLog.objects.log(description="invoices export from invoices search")
+
+        response = StreamingHttpResponse(
+        streaming_content=(iter_invoices(invoices)),
+        content_type='text/csv',)
+        response['Content-Disposition'] = f'attachment;filename=invoices_export_{ttime.time()}.csv'
+        return response
+
     EventLog.objects.log()
+
     return render_to_resp(request=request, template_name=template_name,
         context={'invoices': invoices, 'form':form,})
 

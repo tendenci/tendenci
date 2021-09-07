@@ -1788,6 +1788,14 @@ def register(request, event_id=0,
     discount_applied = False
     discount_amount = 0
 
+    if not pricing_id:
+        pricing_id = request.GET.get('pricing_id', None)
+        if pricing_id:
+            try:
+                pricing_id = int(pricing_id)
+            except ValueError:
+                pricing_id = None
+
     if is_strict:
         # strict requires logged in
         if not request.user.is_authenticated:
@@ -1824,9 +1832,15 @@ def register(request, event_id=0,
             raise Http404
 
         if len(pricings) > 1:
-            return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),))
+            if pricing_id:
+                pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
+                if pricing not in pricings:
+                    raise Http403
+            else:
+                return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),))
+        else:
+            pricing = pricings[0]
 
-        pricing = pricings[0]
         if pricing.quantity == 1:
             individual = True
             event.default_pricing = pricing
@@ -2088,7 +2102,8 @@ def register(request, event_id=0,
 
                                         'event': event,
                                         'total_amount': reg8n.invoice.total,
-                                        'is_paid': reg8n.invoice.balance == 0
+                                        'is_paid': reg8n.invoice.balance == 0,
+                                        'reply_to': reg_conf.reply_to,
 
                                      },
                                     True, # save notice in db

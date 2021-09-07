@@ -31,7 +31,12 @@
           <tr>
             <th class="officer-position">Position</th>
             <th class="officer-name">Name</th>
+            {% if show_officers_phone %}
             <th class="officer-phone">Phone</th>
+            {% endif %}
+            {% if show_officers_email %}
+            <th class="officer-phone">Email</th>
+            {% endif %}
           </tr>
         </thead>
         
@@ -50,7 +55,12 @@
               </a>
             </td>
             
-            <td class="officer-phone">{{ officer.phone }}</td>
+            {% if show_officers_phone %}
+            <td class="officer-phone">{% if officer.phone %}{{ officer.phone }}{% endif %}</td>
+            {% endif %}
+            {% if show_officers_email %}
+            <td class="officer-phone">{% if officer.email %}{{ officer.email }}{% endif %}</td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -65,6 +75,22 @@
     <div class="chapter-notes">
       {{ chapter.notes|safe }}
     </div>
+    {% endif %}
+
+	{% if chapter.region %}
+    <p class="chapter-region">
+    <strong>{% trans 'Region:' %}</strong> {{ chapter.region }}
+    </p>
+    {% endif %}
+	{% if chapter.state %}
+    <p class="chapter-state">
+     <strong>{% trans 'State:' %}</strong> {{ chapter.state }}
+    </p>
+    {% endif %}
+	{% if chapter.county %}
+    <p class="chapter-county">
+     <strong>{% trans 'County:' %}</strong> {{ chapter.county }}
+    </p>
     {% endif %}
     
     <div class="chapter-files">

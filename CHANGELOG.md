@@ -1,3 +1,114 @@
+### 12.5.8 [2021-08-11]
+
+* Added the option (setting "Hide Free Membership/Corporate Membership Invoices") to not display free membership and corp membership invoices on invoices search.
+* Updated username field for the self register form.
+* Changed max_length to 150 for the address field in directory to match with the address field in profiles.
+* Prevented soft deleted corp profiles from showing on user profile.
+* Moved the captcha field to the bottom of the custom forms.
+* Included the invoice link (if exists) to form entry.
+* Added the `county` field to event place and chapters.
+* Validated emails beore being sent.
+* Events full details are pulled with tasty API.
+
+### 12.5.7 [2021-07-20]
+
+* Events search respects the group's `show_for_events` checkbox.
+* The group dropdown on newsletters add now shows a list of groups that the user has change perm (instead of view perm).
+* Chapter officers are granted the view and change perms for their own group so that their group would show up in the group dropdown when they add a newsletter.
+* Fixed an AttributeError on chapters add
+* Updated tendenci_default_memberships.json to make renew_link clickable.
+* Resolved the region display issue on user profile.
+* Fixed some issues for api_tasty.
+
+
+### 12.5.6 [2021-07-01]
+
+* Bumped Pillow from 8.2.0 to 8.3.0.
+* Added a grace period column to the Corporate Memberships Overview.
+* The text "you have already registered" shows on event registration if user has already registered the event.
+* Bug fixes and patch rollups.
+
+### 12.5.5 [2021-06-23]
+
+* Bugfix a FieldError at /donations/. 
+
+### 12.5.4 [2021-06-22]
+
+* Added the export feature to the invoices search.
+* Added the ability to use entities for donation allocation for better reporting
+* Invoice "mark as paid" can now enter a check number.
+* Added a setting "Show Radio Buttons to the Event Pricing List" /settings/module/events/#id_rbonpricinglist to turn on/off Radio Buttons for the Event Pricing List.
+* Removed bullets in front of the checkboxes or radio buttons on event registration.
+* Fixed the date picker on invoices search.
+
+
+### 12.5.3 [2021-06-11]
+
+* **SECURITY**: Avoided a potential race condition when assigning permissions for the uploaded files.
+* Added expiration date to the officers for chapters and committees.
+* Added state and region fields to chapters.
+* The entity and group are now automatically created (instead of manually assigned) on chapters add.
+* Added radio buttons to the event pricing list.
+* Restored back the /reports/ link.
+* Videos list page shows thumbnail for youtube videos if no images specified. 
+* Fixed a TypeError in the discounts.
+* Fixed an error on updating index for recurring_payments.
+
+
+### 12.5.2 [2021-06-02]
+
+* **SECURITY**: Bumped Django to 2.2.24. https://docs.djangoproject.com/en/3.2/releases/2.2.24/
+* Bumped Pillow from 8.1.2 to 8.2.0
+* Bumped django-ses from 1.0.3 to 2.0.0
+* Updated django-sql-explorer from 1.1.3 to 2.1.2
+* Updated the "Request to Associate" for the affiliates.
+* Removed the old invoicing link /reports/ from top menu and redirected it to the invoices report overview.
+* Fixed "Error App label is required.. Model name is required." when an image in the sponsors field is being uploaded for committees and chapters.
+* Updated docs to add the support for ubuntu 20.04 LTS and remove the support for ubuntu 16.04 LTS.
+* Fixed "Required field has no asterisk" (issue #1014).
+* Made slug field unique for chapters and committees to avoid the MultipleObjectsReturned error.
+* Resolved the issue on soft deleting users from the front end.
+* Resolved the issue regarding invoice logo not showing on PDF. 
+* Fixed an InvalidOperation error for discounts.
+* Fixed a TypeError on event registration when admin override is selected but override price is not entered.
+* Fixed the issue about not being able to add officers to studygroups.
+
+
+### 12.5.1 [2021-05-07]
+
+* **SECURITY**: Bumped Django to 2.2.22. https://docs.djangoproject.com/en/3.2/releases/2.2.22/
+* **New feature**: Added profile photo upload. Now users don't have to go to gravatar.com to upload their profile photos. If they don't have their profile photos uploaded, their gravatars will still be used if available.
+* Added "Revenue & Key Metrics by Tendenci" to the top menu under Reports (Thanks Edna).
+* Added an option to specify a reply to email address for event registration confirmation emails
+* Updated affiliates to set initial for the listing to connect, and display warning messages if no listings are available to connect.
+* Added email field to the officers for committees and chapters.
+* Fixed some nav issues for event log summary.
+* Updated default memberships fixture to capitalize the first character of company.
+* Fixed the green “Pay Invoice” button not showing on invoices view
+
+
+### 12.4.13 [2021-04-22]
+
+* **SECURITY**: Upgraded jQuery from 3.4.1 to 3.6.0 (There is a XSS vulnerability in the version < 3.5.0 https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/)
+* Moved the industry field from memberships to profiles.
+* Users can view a list of their own directories.
+* Added filters to ListNode (Thanks @theox26)
+* Added newsletter recipients on "Ready to Send" confirmation page 
+* Fixed a potential IntegrityError on user groups add.
+* Fixed a TypeError on tickets search.
+* Fixed a NoReverseMatch error in the photos view.
+
+
+### 12.4.12 [2021-04-07]
+
+* Bumped Django to 2.2.20.
+* Added a link to chapters under the community tab. 
+* Added an "Add Event" link to the Apps menu. 
+* Fixed an AttributeError for forums post deletion.
+* Updated invoice reports overview to display default date range and to handle invoices without object type.
+* Updated translation for pt_BR (Thanks @farribeiro)
+
+
 ### 12.4.10 [2021-03-31]
 
 * Showed the link to invoice reports overview for superuser only (Hided from non-superuser).

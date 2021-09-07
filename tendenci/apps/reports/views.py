@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 import subprocess
 
-from django.views.generic import DetailView, ListView, CreateView
+from django.views.generic import DetailView, ListView, CreateView, RedirectView
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from tendenci.libs.utils import python_executable
 from tendenci.apps.perms.decorators import superuser_required
@@ -13,6 +14,9 @@ from tendenci.apps.reports.forms import ReportForm, RunForm
 
 
 class ReportListView(ListView):
+#     def get_redirect_url(self, *args, **kwargs):
+#         # redirect to invoices reports overview
+#         return reverse('invoices.reports_overview')
     model = Report
     context_object_name = "reports"
     template_name = "reports/report_list.html"

@@ -7,6 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'chosen/chosen.css' %}">
 {% endblock %}
 
@@ -47,6 +48,8 @@
     {{ block.super }}
     {{ form.media }}
     <script type="text/javascript" src="{% static 'js/global/tinymce.event_handlers.js' %}"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="{% static 'timepicker/timepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/dynamic-formset.js' %}?v=2"></script>
     <script type="text/javascript">
@@ -68,6 +71,8 @@
                 if (sub_category) select_box.append(option_html)
                 return false;
             });
+
+            $('.datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
         });
     </script>
     <script type="text/javascript">

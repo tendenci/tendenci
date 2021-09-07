@@ -1,25 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Tendenci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-28 12:16-0500\n"
-"PO-Revision-Date: 2018-08-22 15:59+0000\n"
-"Last-Translator: Jenny Qian <jqian@tendenci.com>\n"
-"Language-Team: Russian (http://www.transifex.com/tendenci/tendenci/language/"
-"ru/)\n"
-"Language: ru\n"
+"POT-Creation-Date: 2021-05-26 15:18+0000\n"
+"PO-Revision-Date: 2021-05-25 17:57+0000\n"
+"Last-Translator: Jayjay Montalbo <jayjay@bixly.com>\n"
+"Language-Team: Russian (http://www.transifex.com/tendenci/tendenci/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: apps/committees/models.py:58
+#: apps/committees/models.py:22
+msgid "URL Path"
+msgstr "URL Путь"
+
+#: apps/committees/models.py:60
 msgid "title"
 msgstr "Название"

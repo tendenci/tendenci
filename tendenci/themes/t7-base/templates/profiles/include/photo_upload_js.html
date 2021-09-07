@@ -1,0 +1,137 @@
+(function () {
+
+	var uploadPhotoURL = '{% url "profile.upload_photo" profile_upload.user.id %}';
+    var image_crop = $('#cropper').croppie({
+        viewport: {
+            width: 200,
+            height: 200,
+            type:'square' //circle
+        },
+        boundary:{
+            width: 500,
+            height: 300
+        }
+    });
+
+	var photo_name = '';
+	var extension = '';
+	$('button.crop_image').html('Crop & Save');
+	
+	{% if profile_upload.photo %}
+	var original_photo_url = '{{ profile_upload.get_original_photo_url }}';
+	image_crop.croppie('bind', {
+   		 url: original_photo_url,
+         zoom: 0
+	});
+	photo_name = original_photo_url.split('/').pop().toLowerCase();
+	extension = photo_name.split('.').pop();
+	{% else %}
+	$(".crop_image").attr("disabled", true);
+	{% endif %}
+
+	
+    $('#id_photo').on('change', function(){
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            image_crop.croppie('bind', {
+                url: event.target.result,
+            });
+        }
+        reader.readAsDataURL(this.files[0]);
+		// get photo name
+		photo_name = this.files[0].name.toLowerCase();
+		extension = photo_name.split('.').pop();
+		$(".crop_image").attr("disabled", false);
+		//console.log(photo_name);
+        
+    });
+
+    $('.crop_image').click(function(event){
+		event.preventDefault();
+        var formData = new FormData();
+        var format;
+        if (extension == 'png'){
+			format = 'png';
+		}else{
+			format = 'jpeg';
+		}
+		//console.log('format=', format);
+        image_crop.croppie('result', {type: 'blob', format: format, quality: 0.99}).then(function(blob) {	
+            formData.append('photo', blob, photo_name);
+            ajaxFormPost(formData, uploadPhotoURL);
+        });
+		// disable submit button
+		$(".crop_image").attr("disabled", true);
+    });
+
+
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = cookies[i].trim();
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+	
+	function csrfSafeMethod(method) {
+	    // these HTTP methods do not require CSRF protection
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+	function ajaxFormPost(formData, actionURL){
+	    $.ajax({
+	        url: actionURL,
+	        type: 'POST',
+	        data: formData,
+	        cache: false,
+	        async: true,
+	        processData: false,
+	        contentType: false,
+	        timeout: 5000,
+	        beforeSend: function(xhr){
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        },
+	        success: function(response) {
+	            if (response['status'] === 'success') {
+	                swal({
+	                    title: 'Success!',
+	                    text: response['message'],
+	                    type: 'success',
+						icon: "success",
+	                    //timer:2000
+	                }).then(function() {
+	                   location.href = "{% url 'profile' profile_upload.user.username %}";
+	                },function(){
+	                });
+	            } else {
+	                swal({
+	                    title: 'Failed!',
+	                    text: response['message'],
+	                    type: 'error'
+	                });
+	                 $(".crop_image").attr("disabled", false);
+	            }
+	        },
+			error: function(jqXHR, textStatus, errorThrown) {
+                swal({
+	                    title:'Failed!',
+	                    text: 'An error occurred. Please try again later.',
+	                    type:'error'
+	                });
+	                 $(".crop_image").attr("disabled", false);
+			 },
+	        complete: function(){
+	        }
+	    });
+	}
+	
+})();

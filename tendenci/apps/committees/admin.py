@@ -20,6 +20,8 @@ class OfficerAdminInline(admin.TabularInline):
             'position',
             'user',
             'phone',
+            'email',
+            'expire_dt'
         )},),
     )
     extra = 0

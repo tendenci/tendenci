@@ -4,6 +4,7 @@ import math
 import time
 import subprocess
 from datetime import datetime, timedelta
+import uuid
 
 from django.db import models
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.utils.html import strip_tags
 from django.db.models.functions import Lower
+# from django.views.generic import UpdateView
+# from django.utils.decorators import method_decorator
+from django.http import JsonResponse
 import simplejson
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
@@ -51,7 +55,7 @@ from tendenci.apps.profiles.models import Profile, UserImport, UserImportData
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
 UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
 UserMembershipForm, ProfileMergeForm, ProfileSearchForm, UserUploadForm,
-ActivateForm)
+ActivateForm, PhotoUploadForm)
 from tendenci.apps.profiles.utils import get_member_reminders, ImportUsers
 from tendenci.apps.events.models import Registrant
 from tendenci.apps.memberships.models import MembershipType
@@ -63,7 +67,54 @@ try:
 except ImproperlyConfigured:
     notification = None
 
-friends = False
+
+@login_required
+def profile_photo_upload(request, id=None, template_name='profiles/upload_photo.html'):
+    if not id:
+        # upload their own profile photo
+        profile = get_object_or_404(Profile, user=request.user)
+    else:
+        user = get_object_or_404(User, pk=id)
+        try:
+            profile = user.profile
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create_profile(user=user)
+
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+ 
+    upload_form=PhotoUploadForm(request.POST or None,
+                                     request.FILES or None,
+                                     instance=profile,)
+    if request.method == "POST":
+        if upload_form.is_valid():
+            profile = upload_form.save()
+ 
+            EventLog.objects.log()
+            if request.is_ajax():
+                return JsonResponse({
+                        'status': 'success',
+                        'message': 'Profile Photo Uploaded Successfully'
+                    }, status=200)
+            
+            messages.success(request, _("Successfully uploaded your profile photo."))
+            return HttpResponseRedirect(reverse('profile', args=[profile.user.username]))
+        else:
+            if upload_form.errors and 'photo' in upload_form.errors.as_data():
+                err = upload_form.errors.as_data()['photo'][0].messages[0]
+            else:
+                err = ''
+            if request.is_ajax():
+                return JsonResponse({
+                            'status': 'failed',
+                            'message': 'Invalid Photo: ' + err
+                        }, status=200)
+     
+    return render_to_resp(request=request, template_name=template_name,
+        context={
+            'upload_form': upload_form,
+            'profile_upload': profile,
+            })
 
 
 @login_required
@@ -168,12 +219,13 @@ def index(request, username='', template_name="profiles/index.html"):
         membership_apps = None
 
     directories = set([m.directory for m in memberships.exclude(directory_id__isnull=True) if m.directory])
-    corps_list = user_this.corpmembershiprep_set.all().values_list('corp_profile__id', 'corp_profile__name')
+    corps_list = user_this.corpmembershiprep_set.filter(corp_profile__status=True
+                            ).values_list('corp_profile__id', 'corp_profile__name')
     recurring_payments = user_this.recurring_payments.filter(status=True, status_detail='active')
 
     # industry
-    if memberships and get_setting('module', 'users', 'showindustry'):
-        industries = list(memberships.exclude(industry=None).values_list('industry__industry_name', flat=True))
+    if profile.industry and get_setting('module', 'users', 'showindustry'):
+        industries = [profile.industry]
     else:
         industries = None
 
@@ -368,8 +420,7 @@ def search(request, memberships_search=False, template_name="profiles/search.htm
             user__membershipdefault__membership_type_id=membership_type)
 
     if industry:
-        profiles = profiles.filter(user__membershipdefault__status_detail='active',
-            user__membershipdefault__industry_id=industry)
+        profiles = profiles.filter(industry_id=industry)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
     base_template = 'profiles/base-wide.html'
@@ -603,9 +654,16 @@ def delete(request, id, template_name="profiles/delete.html"):
         #profile.delete()
         #user.delete()
         if profile:
+            profile.status = False
             profile.status_detail = 'inactive'
             profile.save()
         user.is_active = False
+        # append a random string to username and email for the soft-deleted
+        random_str = f'-soft-delete-{str(uuid.uuid4())}'
+        user.username = f'{user.username}{random_str[:(120-len(user.username))]}'
+        if user.email:
+            user.email = f'{user.email}{random_str[:(254-len(user.email))]}'
+
         user.save()
 
         return HttpResponseRedirect(reverse('profile.search'))

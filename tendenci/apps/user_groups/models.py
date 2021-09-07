@@ -109,9 +109,6 @@ class Group(TendenciBaseModel):
         return name
 
     def is_member(self, user):
-        # impersonation
-        user = getattr(user, 'impersonated_user', user)
-
         if isinstance(user, User):
             return self.members.filter(id=user.id).exists()
 

@@ -6,8 +6,8 @@ django-helpdesk - A Django powered ticket tracker for small enterprise.
 lib.py - Common functions (eg multipart e-mail)
 """
 
-from builtins import str
 from django.utils.encoding import smart_str
+from django.db.models import Q
 
 import logging
 logger = logging.getLogger('helpdesk')
@@ -161,9 +161,14 @@ def apply_query(queryset, params):
         filter = {key: params['filtering'][key]}
         queryset = queryset.filter(**filter)
 
-    if params.get('other_filter', None):
+    q = params.get('search_string', None)
+    if q:
         # eg a Q() set
-        queryset = queryset.filter(params['other_filter'])
+        queryset = queryset.filter(Q(title__icontains=q) |
+                 Q(description__icontains=q) |
+                 Q(resolution__icontains=q) |
+                 Q(submitter_email__icontains=q))
+        #queryset = queryset.filter(params['other_filter'])
 
     sorting = params.get('sorting', None)
     if sorting:

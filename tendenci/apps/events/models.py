@@ -125,6 +125,7 @@ class Place(models.Model):
     city = models.CharField(max_length=150, blank=True)
     state = models.CharField(max_length=150, blank=True)
     zip = models.CharField(max_length=150, blank=True)
+    county = models.CharField(_('county'), max_length=50, blank=True)
     country = models.CharField(max_length=150, blank=True)
 
     # online location
@@ -214,6 +215,8 @@ class RegistrationConfiguration(models.Model):
                                             choices=REGEMAIL_TYPE_CHOICES,
                                             default=EMAIL_DEFAULT_ONLY)
     registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
+    reply_to = models.EmailField(_('Registration email reply to'), max_length=120, null=True, blank=True,
+                                 help_text=_('The email address that receives the reply message when registrants reply their registration confirmation emails.'))
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -527,7 +530,10 @@ class Registration(models.Model):
         app_label = 'events'
 
     def __str__(self):
-        return 'Registration - %s' % self.event.title
+#         addons_text = self.addons_included
+#         if addons_text:
+#             return f'Registration - {self.event.title} - Addons: {addons_text}'
+        return f'Registration - {self.event.title}'
 
     @property
     def group(self):   
@@ -614,6 +620,10 @@ class Registration(models.Model):
 
         # only send email on success! or first fail
         if payment.is_paid or payment_attempts <= 1:
+            if self.event.registration_configuration:
+                reply_to = self.event.registration_configuration.reply_to
+            else:
+                reply_to = None
             notification.send_emails(
                 [self.registrant.email],  # recipient(s)
                 'event_registration_confirmation',  # template
@@ -628,6 +638,7 @@ class Registration(models.Model):
                     'event': self.event,
                     'total_amount': self.invoice.total,
                     'is_paid': payment.is_paid,
+                    'reply_to': reply_to,
                 },
                 True,  # notice saved in db
             )
@@ -789,9 +800,9 @@ class Registration(models.Model):
 
     @property
     def addons_included(self):
-        addons_text = u''
+        addons_text = ''
         if not self.event.has_addons:
-            return u''
+            return ''
 
         reg8n_to_addons_list = RegAddonOption.objects.filter(
             regaddon__registration=self).values_list(
@@ -801,9 +812,10 @@ class Registration(models.Model):
                 'regaddon__amount')
 
         if reg8n_to_addons_list:
+            currency_symbol = get_setting('site', 'global', 'currencysymbol')
             for addon_item in reg8n_to_addons_list:
                 if addon_item[0] == self.registrant.registration_id:
-                    addons_text += u'%s(%s) ' % (addon_item[1], addon_item[2])
+                    addons_text += f'{addon_item[1]}({addon_item[2]})({currency_symbol}{addon_item[3]}) '
 
         return addons_text
 

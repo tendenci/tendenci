@@ -76,6 +76,7 @@ SEARCH_CATEGORIES_ADMIN = (
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
     ('place__city__icontains', _('Event Location - City')),
+    ('place__county__icontains', _('Event Location - County')),
     ('place__state__icontains', _('Event Location - State')),
     ('tags__icontains', _('Tags')),
 
@@ -94,6 +95,7 @@ SEARCH_CATEGORIES = (
     ('place__name__icontains', _('Event Location - Name')),
     ('place__address__icontains', _('Event Location - Address')),
     ('place__city__icontains', _('Event Location - City')),
+    ('place__county__icontains', _('Event Location - County')),
     ('place__state__icontains', _('Event Location - State')),
     ('tags__icontains', _('Tags')),
 
@@ -116,6 +118,7 @@ def management_forms_tampered(formsets=None):
 def get_search_group_choices():
     event_group_ids = set(Event.objects.all().values_list('groups', flat=True))
     groups = Group.objects.filter(
+                    show_for_events=True,
                     id__in=event_group_ids).distinct(
                     ).order_by('name').values_list('id', 'label', 'name')
     return [(id, label or name) for id, label, name in groups]
@@ -531,8 +534,11 @@ class FormForCustomRegForm(forms.ModelForm):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
 
-        if override and override_price <0:
-            raise forms.ValidationError(_('Override price must be a positive number.'))
+        if override:
+            if override_price is None:
+                raise forms.ValidationError(_('Please enter the override price or uncheck the override.'))
+            elif  override_price <0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price
 
     def clean_use_free_pass(self):
@@ -978,6 +984,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
                 'city',
                 'state',
                 'zip',
+                'county',
                 'country',
                 'url',
             ]
@@ -1319,6 +1326,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
             'reminder_days',
             'registration_email_type',
             'registration_email_text',
+            'reply_to'
         )
 
         fieldsets = [(_('Registration Configuration'), {
@@ -1338,6 +1346,7 @@ class Reg8nEditForm(FormControlWidgetMixin, BetterModelForm):
                     'reminder_days',
                     'registration_email_type',
                     'registration_email_text',
+                    'reply_to'
                     ],
           'legend': ''
           })
@@ -1945,8 +1954,9 @@ class RegistrantForm(forms.Form):
     def clean_override_price(self):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
-        if override and override_price <0:
-            raise forms.ValidationError(_('Override price must be a positive number.'))
+        if override:
+            if (override_price is None) or override_price < 0:
+                raise forms.ValidationError(_('Override price must be a positive number.'))
         return override_price
 
     def clean_use_free_pass(self):

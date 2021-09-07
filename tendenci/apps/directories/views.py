@@ -68,9 +68,13 @@ def details(request, slug=None, template_name="directories/view.html"):
 
 
 @is_enabled('directories')
-def search(request, template_name="directories/search.html"):
-    filters = get_query_filters(request.user, 'directories.view_directory')
-    directories = Directory.objects.filter(filters).distinct()
+def search(request, my_directories_only=False, template_name="directories/search.html"):
+    if my_directories_only and request.user.is_authenticated:
+        directories = Directory.get_my_directories_filter(request.user, my_directories_only=my_directories_only
+                                                          ).distinct()
+    else:
+        filters = get_query_filters(request.user, 'directories.view_directory')
+        directories = Directory.objects.filter(filters).distinct()
     cat = None
 
     if not request.user.is_anonymous:

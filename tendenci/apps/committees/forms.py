@@ -20,6 +20,10 @@ class CommitteeForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Committee._meta.app_label,
         'storme_model':Committee._meta.model_name.lower()}))
+    sponsors = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Committee._meta.app_label,
+        'storme_model':Committee._meta.model_name.lower()}))
 
     class Meta:
         model = Committee
@@ -190,3 +194,4 @@ class OfficerForm(forms.ModelForm):
         else:
             self.fields['user'].queryset = User.objects.none()
         self.fields['user'].widget.attrs['class'] = 'officer-user'
+        self.fields['expire_dt'].widget.attrs['class'] = 'datepicker'

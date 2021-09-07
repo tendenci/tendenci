@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.entities.models import Entity
 from tendenci.apps.donations.managers import DonationManager
 
 class Donation(models.Model):
@@ -25,6 +26,7 @@ class Donation(models.Model):
     allocation = models.CharField(max_length=150, default='', blank=True,  null=True)
     payment_method = models.CharField(max_length=50, default='cc')
     invoice = models.ForeignKey(Invoice, blank=True, null=True, on_delete=models.SET_NULL)
+    donate_to_entity = models.ForeignKey(Entity, blank=True, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True,  related_name="donation_creator", on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=150, null=True)

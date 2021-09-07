@@ -1,3 +1,4 @@
+from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -5,6 +6,7 @@ from django.urls import reverse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_resp
 from tendenci.apps.base.http import Http403
@@ -32,7 +34,7 @@ def detail(request, slug, template_name="committees/detail.html"):
 
     if has_perm(request.user, 'committees.view_committee', committee):
         EventLog.objects.log(instance=committee)
-        officers = committee.officers()
+        officers = committee.officers().filter(Q(expire_dt__isnull=True) | Q(expire_dt__gte=date.today()))
 
         #has_group_view_permission is True if there is at least one
         #group where the user is a member that has a view_committee permission.
@@ -49,6 +51,8 @@ def detail(request, slug, template_name="committees/detail.html"):
 
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).filter(group=committee.group).distinct()
+        show_officers_phone = officers.exclude(phone__isnull=True).exclude(phone='').exists()
+        show_officers_email = officers.exclude(email__isnull=True).exclude(email='').exists()
 
         return render_to_resp(request=request, template_name=template_name,
             context={
@@ -56,6 +60,8 @@ def detail(request, slug, template_name="committees/detail.html"):
                 'officers': officers,
                 'files': files,
                 'has_group_view_permission': has_group_view_permission,
+                'show_officers_phone': show_officers_phone,
+                'show_officers_email': show_officers_email
             })
     else:
         raise Http403

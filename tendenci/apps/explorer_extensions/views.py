@@ -20,8 +20,8 @@ from tendenci.apps.explorer_extensions.forms import DatabaseDumpForm
 
 
 def get_app_permissions(request):
-    return {'can_view': app_settings.EXPLORER_PERMISSION_VIEW(request.user),
-            'can_change': app_settings.EXPLORER_PERMISSION_CHANGE(request.user)}
+    return {'can_view': app_settings.EXPLORER_PERMISSION_VIEW(request),
+            'can_change': app_settings.EXPLORER_PERMISSION_CHANGE(request)}
 
 def _export_page(request):
     ctx = {}

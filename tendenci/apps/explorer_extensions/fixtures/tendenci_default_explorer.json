@@ -1,7 +1,7 @@
 [
 {
     "fields": {
-        "description": null,
+        "description": "",
         "title": "All Interactive Users",
         "created_at": "2015-08-24T15:45:30.751",
         "last_run_date": "2016-01-13T17:30:40.431",
@@ -14,7 +14,7 @@
 },
 {
     "fields": {
-        "description": null,
+        "description": "",
         "title": "All Members",
         "created_at": "2015-08-24T15:45:30.754",
         "last_run_date": "2016-01-13T17:30:33.251",
@@ -27,7 +27,7 @@
 },
 {
     "fields": {
-        "description": null,
+        "description": "",
         "title": "All Corporate Members",
         "created_at": "2015-08-24T15:45:30.755",
         "last_run_date": "2016-06-08T15:55:13.740",
@@ -40,7 +40,7 @@
 },
 {
     "fields": {
-        "description": null,
+        "description": "",
         "title": "All Users in a Specific Group (replace <YOUR GROUP ID> with your group id)",
         "created_at": "2015-08-24T15:45:30.757",
         "last_run_date": "2016-01-13T17:30:28.175",
