@@ -102,11 +102,6 @@ class SearchForm(forms.Form):
         sqs = sqs.filter(status=True)
         user = self.user
 
-        # check to see if there is impersonation
-        if hasattr(user,'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-
         is_an_admin = user.profile.is_superuser
 
         # making a special case for corp memb because it needs to utilize two settings

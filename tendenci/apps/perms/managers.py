@@ -518,14 +518,6 @@ class TendenciBaseManager(models.Manager):
 
         return sqs
 
-    def _impersonation(self, user):
-        """
-        Test for impersonation and return the impersonee
-        """
-        if hasattr(user, 'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-        return user
 
     def _permissions_sqs(self, sqs, user, status_detail, **kwargs):
         if user.is_authenticated and user.profile.is_superuser:
@@ -557,7 +549,6 @@ class TendenciBaseManager(models.Manager):
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
-        user = self._impersonation(user)
         self.user = user
 
         # if the status_detail is something like "published"

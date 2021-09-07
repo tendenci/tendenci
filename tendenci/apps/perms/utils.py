@@ -156,39 +156,16 @@ def has_perm(user, perm, obj=None):
     """
         A simple wrapper around the user.has_perm
         functionality.
-
-        It checks for impersonation and has high
-        hopes for future checks with friends and
-        settings functionalities.
     """
-    # check to see if there is impersonation
-    if hasattr(user, 'impersonated_user'):
-        if isinstance(user.impersonated_user, User):
-            # check the logged in users permissions
-            if not user.profile.is_superuser:
-                logged_in_has_perm = user.has_perm(perm, obj)
-                if not logged_in_has_perm:
-                    return False
-            else:
-                if user.impersonated_user.profile.is_superuser:
-                    return True
-                impersonated_has_perm = user.impersonated_user.has_perm(perm, obj)
-                if not impersonated_has_perm:
-                    return False
-                else:
-                    return True
-    else:
-        if user.profile.is_superuser:
-            return True
-        return user.has_perm(perm, obj)
+    if user.profile.is_superuser:
+        return True
+    return user.has_perm(perm, obj)
 
 
 def has_view_perm(user, perm, obj=None):
     """
     Method used in details views to check permissions faster on a single object.
     """
-    # impersonation
-    user = getattr(user, 'impersonated_user', user)
     obj.status_detail = obj.status_detail.lower()
     active_status_details = ("active", 'published')
     if obj:
@@ -217,8 +194,6 @@ def get_query_filters(user, perm, **kwargs):
     Method to generate search query filters for different user types.
     * super_perm kwarg simulates admin behavior.
     """
-    # impersonation
-    user = getattr(user, 'impersonated_user', user)
 
     perms_field = kwargs.get('perms_field', True)
     #super_perm = kwargs.get('super_perm', False)

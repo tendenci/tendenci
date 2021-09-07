@@ -206,19 +206,6 @@ class EventLogManager(Manager):
 
         # set up the user information
         if user:
-            # check for impersonation and set the correct user, descriptions, etc
-            impersonated_user = getattr(user, 'impersonated_user', None)
-            if impersonated_user:
-                if event_log.description:
-                    event_log.description = '%s (impersonating %s)' % (
-                        event_log.description,
-                        impersonated_user.username,
-                    )
-                else:
-                    event_log.description = '(impersonating %s)' % (
-                        impersonated_user.username,
-                    )
-
             if isinstance(user, AnonymousUser):
                 event_log.username = 'anonymous'
             else:
