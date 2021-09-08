@@ -1,3 +1,8 @@
+### 12.5.10 [2021-09-08]
+
+* Bumped Pillow to 8.3.2
+
+
 ### 12.5.9 [2021-09-07]
 
 * Resolved the issue about recap file is significantly larger than the original import file for memberships and profiles import.
