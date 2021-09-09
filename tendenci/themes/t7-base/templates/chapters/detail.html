@@ -12,6 +12,12 @@
     <div class="chapter-featured-image">
         <img src="{% url 'file' chapter.featured_image.id %}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
     </div>
+	{% else %}
+		{% if MODULE_CHAPTERS_DEFAULTIMAGE %}
+	    <div class="chapter-featured-image">
+	        <img src="{{ MODULE_CHAPTERS_DEFAULTIMAGE }}" alt="{{ chapter.title }}" title="{{ chapter.title  }}">
+	    </div>
+	    {% endif %}
     {% endif %}
     
     <div class="chapter-mission">
