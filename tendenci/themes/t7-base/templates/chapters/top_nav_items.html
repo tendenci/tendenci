@@ -75,6 +75,13 @@
                                         <a href="{{ app_object.get_absolute_url }}">{% trans "View Chapter" %}</a>
                                     </span>
                                 </li>
+	                            {% if can_add_chapter %}
+	                                <li class="content-item">
+	                                    <span class="app-name">
+	                                        <a href="{% url "chapters.copy_from" app_object.pk %}">{% trans "Clone Chapter" %}</a>
+	                                    </span>
+	                                </li>
+	                            {% endif %}
                             {% endif %}
 
                             {% if can_edit_chapter %}

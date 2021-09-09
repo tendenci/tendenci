@@ -6,6 +6,7 @@
 
 {% has_perm user chapters.change_chapter chapter as can_edit %}
 {% has_perm user chapters.delete_chapter chapter as can_delete %}
+{% has_perm user chapters.add_chapter as can_add %}
 {% tags_for_object chapter as tags %}
 
 {% if user.is_authenticated %} 
@@ -80,6 +81,9 @@
 		          <li><a class="t-meta-eventlog-link" href="{% url "event_log.search" %}?q=app-id:%20chapters-{{ chapter.pk }}">Eventlogs</a></li>
 		          <li><a href="{% url "chapters.edit.meta" chapter.pk %}">{% trans "Edit Meta" %}</a></li>
 		          <li><a href="{% url "category.update" chapter.opt_app_label chapter.opt_module_name chapter.pk %}">{% trans "Edit Categories" %}</a></li>
+				  {% if can_add %}
+		          <li><a class="clone" href="{% url "chapters.copy_from" chapter.pk %}">Clone</a></li> 
+		          {% endif %} 
 		          {% if can_delete %}
 		          <li><a class="delete" href="{% url "chapters.delete" chapter.pk %}">Delete</a></li> 
 		          {% endif %} 
