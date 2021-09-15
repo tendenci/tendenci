@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from tendenci.apps.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.videos.models import Video, Category, VideoType
@@ -44,7 +46,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
             return dt.strftime('%x')
         return u''
     get_release_dt.short_description = _('Release Date')
-    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt']
+    list_display = ['title', 'tags', 'category', 'video_type', 'get_release_dt', 'show_group']
     list_editable = ['category', 'video_type']
     if not get_setting('module', 'videos', 'order_by_release_dt'):
         list_display.append('position')
@@ -52,7 +54,7 @@ class VideoAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
-        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'tags', 'description', 'release_dt')}),
+        (None, {'fields': ('title', 'slug', 'category', 'video_type', 'image', 'clear_image', 'video_url', 'group', 'tags', 'description', 'release_dt')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -76,6 +78,18 @@ class VideoAdmin(TendenciBaseModelAdmin):
             static('js/admin/admin-list-reorder.js'),
             static('js/global/tinymce.event_handlers.js'),
         )
+
+    @mark_safe
+    def show_group(self, instance):
+        if instance.group:
+            return '<a href="{0}" title="{1}">{1}</a>'.format(
+                    reverse('group.detail', args=[instance.group.slug]),
+                    instance.group,
+                    instance.group.id,
+                )
+        return ""
+    show_group.short_description = 'Group'
+    show_group.admin_order_field = 'group'
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(VideoAdmin, self).get_fieldsets(request, obj)
