@@ -75,6 +75,12 @@ class Group(TendenciBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
 
+        if self.allow_member_view:
+            # The allow_member_view field can't be edited on group edit
+            # but its default value is True
+            # Set it to False
+            self.allow_member_view = False
+ 
         # add the default entity
         if not self.entity:
             self.entity = Entity.objects.first()
