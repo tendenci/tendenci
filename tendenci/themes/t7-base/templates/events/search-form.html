@@ -30,8 +30,29 @@
         {{ form.event_type }}
         </div>
     </div>
- 
 </div>
+
+{% if form.event_place_type or form.national_only %}  
+<div class="row">
+	{% if form.event_place_type %} 
+	  <div class="col-sm-6 form-group">
+		<label for="id_event_group" class="col-sm-4 control-label">{{ form.event_place_type.label }}</label>
+	       <div class="col-sm-8">
+	       {{ form.event_place_type }}
+	       </div>
+	   </div>
+	{% endif %} 
+	{% if form.national_only %} 
+	  <div class="col-sm-6 form-group">
+	        <div class="checkbox">
+	          <label>
+	            {{ form.national_only }} {{ form.national_only.label }}
+	          </label>
+	       </div>
+	    </div>
+	{% endif %} 
+</div>
+{% endif %} 
 
 <div class="row">
      <div class="col-md-12 col-sm-12 form-group">
@@ -44,7 +65,7 @@
 	    </div>
 	  </div>
   </div>
-  
+
 {% if form.registration %}  
 <div class="row">
   <div class="col-sm-12 form-group">
