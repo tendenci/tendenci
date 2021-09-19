@@ -24,3 +24,39 @@ $('select#id_place-place').on("change", function() {
         );
     }
 });
+function hideShowAddressFields(action="show") {
+	const address_fields = [$('#id_place-place'),
+							$('#id_place-address'), 
+							$('#id_place-city'),
+							$('#id_place-state'),
+							$('#id_place-zip'),
+							$('#id_place-county'),
+							$('#id_place-country')];
+	if (action =='show'){
+		for (let i = 0; i < address_fields.length; i++) {
+		  address_fields[i].closest('.form-group').show();
+		}
+	}else{
+		for (let i = 0; i < address_fields.length; i++) {
+		  address_fields[i].closest('.form-group').hide();
+		}
+	}
+}
+function processVirtual(virtual_field){
+	if($(virtual_field).prop('checked')) {
+		hideShowAddressFields(action="hide");
+    } else {
+		hideShowAddressFields(action="show");
+    }
+}
+
+var virtual_field = $('#id_place-virtual');
+processVirtual(virtual_field);
+virtual_field.on("change", function() {
+	processVirtual(virtual_field);
+    /*if($(this).prop('checked')) {
+		hideShowAddressFields(action="hide");
+    } else {
+		hideShowAddressFields(action="show");
+    }*/
+});

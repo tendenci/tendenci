@@ -980,6 +980,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
     label = _('Location Information')
 
     field_order = [
+                'virtual',
                 'place',
                 'name',
                 'description',
@@ -989,6 +990,7 @@ class PlaceForm(FormControlWidgetMixin, forms.ModelForm):
                 'zip',
                 'county',
                 'country',
+                'national',
                 'url',
             ]
 

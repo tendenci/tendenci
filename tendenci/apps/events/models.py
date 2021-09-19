@@ -117,6 +117,7 @@ class Place(models.Model):
     """
     _original_name = None
 
+    virtual = models.BooleanField(default=False, help_text=_('Is it a virtual event?'))
     name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
@@ -127,6 +128,7 @@ class Place(models.Model):
     zip = models.CharField(max_length=150, blank=True)
     county = models.CharField(_('county'), max_length=50, blank=True)
     country = models.CharField(max_length=150, blank=True)
+    national = models.BooleanField(default=False, help_text=_('Is it a national event?'))
 
     # online location
     url = models.URLField(blank=True)
