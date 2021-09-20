@@ -47,7 +47,6 @@ from tendenci.apps.files.validators import FileValidator
 from tendenci.apps.emails.models import Email
 from tendenci.apps.base.utils import validate_email
 
-
 THIS_YEAR = datetime.today().year
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -118,11 +117,11 @@ def get_suggestions(entry):
         user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
 
     if entry.first_name and entry.last_name:
-        #mentioned_fn = entry.first_name
-        #mentioned_ln = entry.last_name
+        # mentioned_fn = entry.first_name
+        # mentioned_ln = entry.last_name
         mentioned_em = entry.email
     else:
-        #mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+        # mentioned_fn, mentioned_ln, mentioned_em = None, None, None
         mentioned_em = None
 
     sqs = SearchQuerySet()
@@ -158,22 +157,22 @@ class MembershipTypeForm(TendenciBaseForm):
     class Meta:
         model = MembershipType
         fields = (
-                  #'app',
+                  # 'app',
                   'name',
                   'price',
                   'admin_fee',
                   'description',
-                  #'group',
-                  #'period_type',
+                  # 'group',
+                  # 'period_type',
                   'type_exp_method',
                   'renewal_price',
                   'allow_renewal',
                   'renewal',
                   'never_expires',
-                  #'c_period',
-                  #'c_expiration_method',
-                  #'corporate_membership_only',
-                  #'corporate_membership_type_id',
+                  # 'c_period',
+                  # 'c_expiration_method',
+                  # 'corporate_membership_only',
+                  # 'corporate_membership_type_id',
                   'require_approval',
                   'require_payment_approval',
                   'admin_only',
@@ -222,7 +221,6 @@ class MembershipTypeForm(TendenciBaseForm):
         if expiration_grace_period > renewal_period_end:
             raise forms.ValidationError(_("The Expiration Grace Period should be less than or equal to the Renewal Period End."))
         return cleaned_data
-
 
     def clean_expiration_grace_period(self):
         value = self.cleaned_data['expiration_grace_period']
@@ -312,9 +310,9 @@ class MessageForm(FormControlWidgetMixin, forms.ModelForm):
         initial='pending_members',
         widget=forms.widgets.RadioSelect(),
         choices=(
-            ('myself',_('Myself Only (for testing)')),
-            ('pending_members',_('Pending Members')),
-            ('pending_corp_members',_('Pending Corp Members')),
+            ('myself', _('Myself Only (for testing)')),
+            ('pending_members', _('Pending Members')),
+            ('pending_corp_members', _('Pending Corp Members')),
             ),
         help_text=_('Note that if "Myself Only" is selected, the view_link and edit_link will not be replaced if you\'re not a member.'))
     subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
@@ -491,6 +489,7 @@ class AutoRenewSetupForm(forms.Form):
 
 
 class MembershipAppFieldAdminForm(forms.ModelForm):
+
     class Meta:
         model = MembershipAppField
         fields = (
@@ -634,6 +633,7 @@ def assign_fields(form, app_field_objs):
 
 
 class UserForm(FormControlWidgetMixin, forms.ModelForm):
+
     class Meta:
         model = User
         fields = "__all__"
@@ -686,8 +686,8 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                 widget=forms.TextInput,
                                 label=username_field_obj.label,
                                 help_text=username_field_obj.help_text,
-                                error_messages = {
-                                    'invalid' : _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
+                                error_messages={
+                                    'invalid': _("Allowed characters are letters, digits, at sign (@), period (.), plus sign (+), dash (-), and underscore (_).")
                                 })
 
         self.field_names = [name for name in self.fields]
@@ -723,13 +723,13 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
                                                     activate_link=reverse('profile.activate_email'),
                                                     username=requests.utils.quote(un), email=requests.utils.quote(email),
                                                     next_path=self.request.get_full_path())
-        inactive_user_err_msg =  mark_safe(_('''This email "{email}" is associated with previous site activity.
+        inactive_user_err_msg = mark_safe(_('''This email "{email}" is associated with previous site activity.
                     Please click {activation_link} and we'll send you an email to activate your account and then you
                     will be returned to this application.''').format(email=email, activation_link=activation_link))
 
         if self.request.user.is_authenticated and self.request.user.username == un:
             # they are logged in and join or renewal for themselves
-            if email and email !=  self.request.user.email:
+            if email and email != self.request.user.email:
                 # email is changed
                 if User.objects.filter(email=email).exists():
                     raise forms.ValidationError(_('''This Email address "%s" already exists in the system.
@@ -844,6 +844,7 @@ class UserForm(FormControlWidgetMixin, forms.ModelForm):
 class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
     country = CountrySelectField(label=_('Country'), required=False)
     country_2 = CountrySelectField(label=_('Country'), required=False)
+
     class Meta:
         model = Profile
         fields = "__all__"
@@ -885,6 +886,8 @@ class ProfileForm(FormControlWidgetMixin, forms.ModelForm):
 
 YEAR_CHOICES = [(i, i) for i in range(1900, THIS_YEAR + 50)]
 YEAR_CHOICES = [(0, '?')] + YEAR_CHOICES
+
+
 class EducationForm(FormControlWidgetMixin, forms.Form):
 
     school1 = forms.CharField(label=_('School'), max_length=200, required=False, initial='')
@@ -915,7 +918,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
         if app_field_objs:
             assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields]
-        
+
         # If none Education fields are presented on the form, clear fields from the
         # EducationForm to prevent the existing education data from being wipped out.
         if app_field_objs and app_field_objs.filter(field_name__in=['school1', 'major1', 'degree1', 'graduation_dt1',
@@ -954,9 +957,9 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 
         data = self.cleaned_data
 
-        if not self.user: # meaning add
+        if not self.user:  # meaning add
             education_list = user.educations.all().order_by('pk')[0:4]
-        else: # meaning edit
+        else:  # meaning edit
             education_list = self.user.educations.all().order_by('pk')[0:4]
 
         cnt = 0
@@ -971,14 +974,14 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
                     graduation_year = int(graduation_year)
                 except ValueError:
                     graduation_year = 0
-                education.school=school
-                education.major=major
-                education.degree=degree
-                education.graduation_year=graduation_year
+                education.school = school
+                education.major = major
+                education.degree = degree
+                education.graduation_year = graduation_year
                 education.save()
 
         if cnt < 4:
-            for i in range(cnt+1, 5):
+            for i in range(cnt + 1, 5):
                 school = data.get('school%s' % i, '')
                 major = data.get('major%s' % i, '')
                 degree = data.get('degree%s' % i, '')
@@ -998,6 +1001,7 @@ class EducationForm(FormControlWidgetMixin, forms.Form):
 
 
 class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
+
     class Meta:
         model = MembershipDemographic
         fields = "__all__"
@@ -1028,7 +1032,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
             demographic_fields = get_selected_demographic_fields(self.app, forms)
             for field_name, field in demographic_fields:
                 # Commenting out the line below because it loses the field widget as the field has already been assigned
-                #self.fields[field_name] = field
+                # self.fields[field_name] = field
                 # set initial value
                 if self.demographics and field_name in self.fields:
                     ud_field = MembershipAppField.objects.get(field_name=field_name,
@@ -1044,7 +1048,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                         self.fields[field_name].initial = getattr(self.demographics, field_name)
 
         self.add_form_control_class()
-        
+
     def assign_file_perms(self, file_instance):
         """
         Assign permissions for the uploaded file.
@@ -1055,7 +1059,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
         file_instance.allow_user_view = False
         file_instance.allow_member_view = False
         file_instance.is_public = False
-        
+
         if member_protection == 'public':
             file_instance.allow_anonymous_view = True
             file_instance.is_public = True
@@ -1068,7 +1072,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
             file_instance.owner_username = self.request.user.username
 
     def save(self, commit=True, *args, **kwargs):
-        pks ={}
+        pks = {}
         if self.file_upload_fields:
             for key in self.file_upload_fields:
                 new_file = self.cleaned_data.get(key, None)
@@ -1083,7 +1087,7 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
                     if file_instance:
                         file_instance.delete()
                         data = u''
-                        pks.update({ key : data })
+                        pks.update({ key: data })
 
                 if new_file:
                     file_instance = get_ud_file_instance(self.demographics, key)
@@ -1097,12 +1101,12 @@ class DemographicsForm(FormControlWidgetMixin, forms.ModelForm):
 
                     file_instance.save()
                     data = {
-                        'type' : u'file',
-                        'pk' : str(file_instance.pk),
-                        'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
+                        'type': u'file',
+                        'pk': str(file_instance.pk),
+                        'html': '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                     }
                     data = str(data)
-                    pks.update({ key : data })
+                    pks.update({ key: data })
 
         demographic = super(DemographicsForm, self).save(commit=commit, *args, **kwargs)
         if pks:
@@ -1171,7 +1175,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
-        
+
         if 'industry' in self.fields:
             # the industry has been moved to profile
             del self.fields['industry']
@@ -1208,7 +1212,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
             self.fields['membership_type'].initial = memb_type
             apply_above_cap, above_cap_price = self.corp_membership.get_above_cap_price()
             if apply_above_cap:
-                require_payment =  above_cap_price > 0
+                require_payment = above_cap_price > 0
             else:
                 require_payment = (memb_type.price > 0 or (memb_type.admin_fee and memb_type.admin_fee > 0))
         else:
@@ -1254,7 +1258,7 @@ class MembershipDefault2Form(FormControlWidgetMixin, forms.ModelForm):
                 del self.fields['renew_dt']
             else:
                 self.fields['renew_dt'].widget = forms.TextInput(attrs={'readonly': 'readonly'})
-                #self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
+                # self.fields['renew_dt'].widget.attrs['readonly'] = 'readonly'
 
         if not self.edit_mode and self.membership_app.donation_enabled:
             self.fields['donation_option_value'] = DonationOptionAmountField(required=False)
@@ -1391,6 +1395,7 @@ class MembershipExportForm(forms.Form):
         ('active', _('Export Active Memberships')),
         ('pending', _('Export Pending Memberships')),
         ('expired', _('Export Expired Memberships')),
+        ('all', _('Export All Memberships')),
     )
 
     EXPORT_FIELD_CHOICES = (
@@ -1609,7 +1614,7 @@ class MembershipDefaultForm(TendenciBaseForm):
     extra_country = forms.CharField(initial=u'', required=False)
     extra_address_type = forms.CharField(initial=u'', required=False)
 
-    #education fields here
+    # education fields here
     school1 = forms.CharField(initial=u'', required=False)
     major1 = forms.CharField(initial=u'', required=False)
     degree1 = forms.CharField(initial=u'', required=False)
@@ -2031,32 +2036,32 @@ class MembershipDefaultForm(TendenciBaseForm):
             membership.save()
 
             # save education fields ----------------------------
-        if self.education_list: # meaning education instances exists already
+        if self.education_list:  # meaning education instances exists already
             cnt = 1
             for education in self.education_list:
                 school = request.POST.get('school%s' % cnt, '')
                 major = request.POST.get('major%s' % cnt, '')
-                degree = request.POST.get('degree%s' %cnt, '')
+                degree = request.POST.get('degree%s' % cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
                 try:
                     graduation_year = int(graduation_year)
                 except ValueError:
                     graduation_year = 0
                 if any([school, major, degree, graduation_year]):
-                    education.school=school
-                    education.major=major
-                    education.degree=degree
-                    education.graduation_year=graduation_year
+                    education.school = school
+                    education.major = major
+                    education.degree = degree
+                    education.graduation_year = graduation_year
                     education.save()
 
                 cnt += 1
 
             current_count = cnt
-            if current_count < 4: # not all education fields have entries before
+            if current_count < 4:  # not all education fields have entries before
                 for cnt in range(current_count, 5):
                     school = request.POST.get('school%s' % cnt, '')
                     major = request.POST.get('major%s' % cnt, '')
-                    degree = request.POST.get('degree%s' %cnt, '')
+                    degree = request.POST.get('degree%s' % cnt, '')
                     graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
                     try:
                         graduation_year = int(graduation_year)
@@ -2071,11 +2076,11 @@ class MembershipDefaultForm(TendenciBaseForm):
                             graduation_year=graduation_year
                         )
 
-        else:   # create education instances here
-            for cnt in range(1,5):
+        else:  # create education instances here
+            for cnt in range(1, 5):
                 school = request.POST.get('school%s' % cnt, '')
                 major = request.POST.get('major%s' % cnt, '')
-                degree = request.POST.get('degree%s' %cnt, '')
+                degree = request.POST.get('degree%s' % cnt, '')
                 graduation_year = request.POST.get('graduation_dt%s' % cnt, 0)
                 try:
                     graduation_year = int(graduation_year)
@@ -2218,9 +2223,9 @@ class MembershipDefaultForm(TendenciBaseForm):
 
                         file_instance.save()
                         data = {
-                            'type' : u'file',
-                            'pk' : str(file_instance.pk),
-                            'html' : '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
+                            'type': u'file',
+                            'pk': str(file_instance.pk),
+                            'html': '<a href="%s" target="blank">View here</a>' % file_instance.get_absolute_url(),
                         }
                         data = str(data)
                         setattr(demographics, field_name, data)

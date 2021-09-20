@@ -209,7 +209,7 @@ def run_membership_export(request,
         identifier = int(ttime.time())
     temp_file_path = 'export/memberships/{0}_{1}_temp.csv'.format(identifier, cp_id)
     default_storage.save(temp_file_path, ContentFile(''))
-    
+
     # start the process
     subprocess.Popen([python_executable(), "manage.py",
                   "membership_export_process",
@@ -219,7 +219,7 @@ def run_membership_export(request,
                   '--identifier=%s' % identifier,
                   '--user=%s' % request.user.id,
                   '--cp_id=%d' % cp_id,
-                  '--ids=%s' % ids,])
+                  '--ids=%s' % ids, ])
 
 
 def get_membership_rows(
@@ -243,7 +243,7 @@ def get_membership_rows(
         memberships = MembershipDefault.objects.filter(
             status=True).exclude(status_detail='archive')
 
-        if export_status_detail:
+        if export_status_detail and export_status_detail != "all":
             if export_status_detail == 'pending':
                 memberships = memberships.filter(
                     status_detail__icontains='pending')
@@ -284,9 +284,9 @@ def get_membership_rows(
             cnt = 0
             for education in education_list:
                 row_dict[education_field_list[cnt]] = education.school
-                row_dict[education_field_list[cnt+1]] = education.major
-                row_dict[education_field_list[cnt+2]] = education.degree
-                row_dict[education_field_list[cnt+3]] = education.graduation_year
+                row_dict[education_field_list[cnt + 1]] = education.major
+                row_dict[education_field_list[cnt + 2]] = education.degree
+                row_dict[education_field_list[cnt + 3]] = education.graduation_year
                 cnt += 4
 
         if demographic:
@@ -660,7 +660,7 @@ def prepare_chart_data(days, height=300):
     data = []
     max_count = 0
 
-    #append mem count per day
+    # append mem count per day
     for day in days:
         count = count_active_memberships(day)
         if count > max_count:
@@ -850,7 +850,7 @@ def get_notice_token_help_text(notice=None):
                     'view_link',
                     'invoice_link',
                     'renew_link',
-                    'expire_dt',]
+                    'expire_dt', ]
     if get_setting('module', 'recurring_payments', 'enabled') and get_setting('module', 'memberships', 'autorenew'):
         other_labels += ['link_to_setup_auto_renew']
     other_labels += ['site_contact_name',
@@ -858,7 +858,7 @@ def get_notice_token_help_text(notice=None):
                     'site_display_name',
                     'time_submitted',
                     ]
-    if get_setting('module',  'memberships', 'adddirectory'):
+    if get_setting('module', 'memberships', 'adddirectory'):
         other_labels.append('directory_url')
         other_labels.append('directory_edit_url')
     help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
@@ -934,7 +934,7 @@ class NoMembershipTypes(Exception):
 
 
 def render_to_max_types(*args, **kwargs):
-    if not isinstance(args,list):
+    if not isinstance(args, list):
         args = []
         args.append('memberships/max_types.html')
 
@@ -963,12 +963,12 @@ def memb_import_parse_csv(mimport):
         csv_reader = csv.reader(csvfile)
         fieldnames = next(csv_reader)
         fieldnames = normalize_field_names(fieldnames)
-    
+
         data_list = []
-    
+
         for row in csv_reader:
             data_list.append(dict(zip(fieldnames, row)))
-    
+
         return fieldnames, data_list
 
 
@@ -1073,6 +1073,7 @@ class ImportMembDefault(object):
     """
     Check and process (insert/update) a membership.
     """
+
     def __init__(self, request_user, mimport,
                                dry_run=True, **kwargs):
         """
@@ -1098,7 +1099,7 @@ class ImportMembDefault(object):
         self.education_fields = ['school1', 'major1', 'degree1', 'graduation_year1',
                                   'school2', 'major2', 'degree2', 'graduation_year2',
                                   'school3', 'major3', 'degree3', 'graduation_year3',
-                                  'school4', 'major4', 'degree4', 'graduation_year4',]
+                                  'school4', 'major4', 'degree4', 'graduation_year4', ]
         self.should_handle_demographic = False
         self.should_handle_education = False
         self.membership_fields = dict([(field.name, field)
@@ -1569,10 +1570,10 @@ class ImportMembDefault(object):
                     graduation_year = 0
                 if any([school, major, degree, graduation_year]):
                     try:
-                        education = educations[x-1]
+                        education = educations[x - 1]
                     except IndexError:
                         education = Education(user=user)
-                    education.school =school
+                    education.school = school
                     education.major = major
                     education.degree = degree
                     education.graduation_year = graduation_year
@@ -1691,7 +1692,7 @@ class ImportMembDefault(object):
         elif instance.__class__ == Profile:
             assign_to_fields = self.profile_fields
         elif instance.__class__ == MembershipDemographic:
-            assign_to_fields =self.membershipdemographic_fields
+            assign_to_fields = self.membershipdemographic_fields
         else:
             assign_to_fields = self.membership_fields
 
@@ -1875,6 +1876,7 @@ def get_membership_type_by_name(name):
 
     return memb_type
 
+
 def get_membership_app(membership):
     """
     Get app for membership if it is not associated with any app.
@@ -1957,18 +1959,18 @@ def email_pending_members(email, **kwargs):
     site_url = get_setting('site', 'global', 'siteurl')
     site_display_name = get_setting('site', 'global', 'sitedisplayname')
     tmp_body = email.body
-    
+
     request = kwargs.get('request')
     recipient_type = kwargs.get('recipient_type')
     total_sent = 0
     subject = email.subject
     membership_type = kwargs.get('membership_type', None)
     corpmembership_type = kwargs.get('corpmembership_type', None)
-    
+
     msg = '<div class="hide" id="m-streaming-content" style="margin: 2em 5em;text-align: left; line-height: 1.3em;">'
     msg += '<h1>Processing ...</h1>'
     if recipient_type == 'pending_members':
-        pending_members =  MembershipDefault.objects.filter(status=True,
+        pending_members = MembershipDefault.objects.filter(status=True,
                                         status_detail__contains='ending')
         if membership_type:
             pending_members = pending_members.filter(membership_type=membership_type)
@@ -1976,9 +1978,9 @@ def email_pending_members(email, **kwargs):
         for member in pending_members:
             first_name = member.user.first_name
             last_name = member.user.last_name
-    
+
             email.recipient = member.user.email
-    
+
             if email.recipient:
                 view_url = '{0}{1}'.format(site_url, reverse('membership.details', args=[member.id]))
                 edit_url = '{0}{1}'.format(site_url, reverse('membership_default.edit', args=[member.id]))
@@ -1988,9 +1990,9 @@ def email_pending_members(email, **kwargs):
                                    "first_name": first_name,
                                    'last_name': last_name,
                                    'view_url': view_url,
-                                   'edit_url': edit_url,})
+                                   'edit_url': edit_url, })
                 email.body = template.render(context)
-    
+
                 email.send()
                 total_sent += 1
 
@@ -1999,7 +2001,7 @@ def email_pending_members(email, **kwargs):
                 if total_sent % 10 == 0:
                     yield msg
                     msg = ''
-    
+
             email.body = tmp_body  # restore to the original
     else:
         # to pending corp members
@@ -2007,7 +2009,7 @@ def email_pending_members(email, **kwargs):
                                         status_detail__contains='ending')
         if corpmembership_type:
             pending_members = pending_members.filter(corporate_membership_type=corpmembership_type)
-        
+
         for corp_member in pending_members:
             reps = corp_member.corp_profile.reps.all()
             for rep in reps:
@@ -2025,7 +2027,7 @@ def email_pending_members(email, **kwargs):
                                        "first_name": first_name,
                                        'last_name': last_name,
                                        'view_url': view_url,
-                                       'edit_url': edit_url,})
+                                       'edit_url': edit_url, })
                     email.body = template.render(context)
 
                     email.send()
@@ -2065,10 +2067,10 @@ def email_pending_members(email, **kwargs):
     msg += f'DONE!<br /><br />Successfully sent email "{subject}" to <strong>{total_sent}</strong> pending members.'
     msg += '</div>'
     yield msg
-    
-    template_name='memberships/message/pending-members-conf.html'
+
+    template_name = 'memberships/message/pending-members-conf.html'
     template = get_template(template_name)
-    context={'total_sent': total_sent,
+    context = {'total_sent': total_sent,
            'pending_members': pending_members,
            'recipient_type': email.recipient_type,
            'membership_type': membership_type,
@@ -2076,6 +2078,4 @@ def email_pending_members(email, **kwargs):
     rendered = template.render(context=context, request=request)
     rendered = _strip_content_above_doctype(rendered)
     yield rendered
-
-    
 
